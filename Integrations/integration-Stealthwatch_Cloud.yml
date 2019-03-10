@@ -860,6 +860,5 @@ script:
     description: 'Get sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
 - No test

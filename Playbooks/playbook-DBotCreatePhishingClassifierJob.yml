@@ -1,0 +1,188 @@
+id: DBotCreatePhishingClassifierJob
+version: -1
+name: DBot Create Phishing Classifier Job
+description: 'Train the phishing machine learning model. This playbook should be used
+  as job, to run repeatedly, for example every week. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f296bee-5970-4a35-819b-30ace9905ff7
+    type: start
+    task:
+      id: 3f296bee-5970-4a35-819b-30ace9905ff7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 831b0954-1008-49f0-84e1-43dc7c585ec0
+    type: playbook
+    task:
+      id: 831b0954-1008-49f0-84e1-43dc7c585ec0
+      version: -1
+      name: DBotCreatePhishingClassifier
+      description: Create a phishing classifier using machine learning technique,
+        based on email content
+      playbookName: DBot Create Phishing Classifier
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      modelListStoreName:
+        simple: phishing_model
+      emailSubjectKey:
+        simple: name
+      emailTagKey:
+        simple: closeReason
+      emailTextKey:
+        simple: details
+      hashData:
+        simple: "no"
+      historicalDataFileListName: {}
+      incidentsEvaluationQuery:
+        simple: type:Phishing and created:>="180 days ago" and created:<"7 days ago"
+      incidentsTrainingQuery:
+        simple: type:Phishing and created:>="7 days ago"
+      isContextNeeded:
+        simple: "no"
+      maxIncidentsToFetchOnTraining:
+        simple: "3000"
+      phishingLabels:
+        simple: malicious,other
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: f2153861-94b2-4de6-8883-546b3e4dc5b9
+    type: title
+    task:
+      id: f2153861-94b2-4de6-8883-546b3e4dc5b9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: a0577456-3576-460d-8ede-15c6569f611a
+    type: regular
+    task:
+      id: a0577456-3576-460d-8ede-15c6569f611a
+      version: -1
+      name: Close incident
+      description: Close the investigation - we want to close the incident if the
+        playbook successfully finished.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: cd901cee-98fa-416b-8e39-519218a516ea
+    type: regular
+    task:
+      id: cd901cee-98fa-416b-8e39-519218a516ea
+      version: -1
+      name: Clean context
+      description: Clear all context data
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 4.1.0
+tests:
+  - CreatePhishingClassifierMLTest

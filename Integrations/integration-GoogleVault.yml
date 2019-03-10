@@ -4,7 +4,7 @@ commonfields:
 name: google-vault
 display: Google Vault
 category: IT Services
-image: data:image/png;base64,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
+image: data:image/png;base64,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 #guardrails-disable-line
 description: Archiving and eDiscovery for G Suite.
 configuration:
 - display: Username
@@ -28,26 +28,34 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     from googleapiclient.discovery import build
     from httplib2 import Http
     import json
     from oauth2client import file, client, tools, service_account
-    from google.cloud import storage
+    from google.oauth2 import service_account as google_service_account
+    import googleapiclient.http
     import dateparser
     import datetime
+    import io
+    import os
 
     #  @@@@@@@@ GLOBALS @@@@@@@@
 
     # If modifying these scopes, delete the file token.json.
-    SCOPES = 'https://www.googleapis.com/auth/ediscovery'
-    DEMISTO_MATTER = "test_search_phishing"
+    SCOPES = ['https://www.googleapis.com/auth/ediscovery', 'https://www.googleapis.com/auth/devstorage.full_control']
+    DEMISTO_MATTER = 'test_search_phishing'
 
-    ADMIN_EMAIL = demisto.params()["gsuite_credentials"]["identifier"].encode("utf-8")
-    PRIVATE_KEY_CONTENT = demisto.params()["auth_json"].encode("utf-8")
+    ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
+    PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
 
 
     # @@@@@@@@ HELPER FUNCS @@@@@@@@
+    def validate_input_values(arguments_values_to_verify, available_values):
+        for value in arguments_values_to_verify:
+            if value not in available_values:
+                return_error('Argument: \'{}\' is not one of the posible values: {}'.format(value, ', '.join(available_values)))
+
 
     def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
         """Gets valid user credentials from storage.
@@ -65,12 +73,10 @@ script:
             scopes=scopes)
         return cred.create_delegated(delegated_user)
 
-
     def connect():
         creds = get_credentials()
         service = build('vault', 'v1', http=creds.authorize(Http()))
         return service
-
 
     def is_matter_exist(matter_name): # Not needed at the moment
         """
@@ -84,17 +90,14 @@ script:
             return True
         return False
 
-
     def get_open_matters(service):
         """ Gets first 10 matters """
         open_matters = service.matters().list(state='OPEN').execute()
         return open_matters
 
-
     def get_matter_by_id(service, matter_id):
         matter = service.matters().get(matterId=matter_id).execute()
         return matter
-
 
     def get_matters_by_state(service, state):
         state = state.upper()
@@ -102,46 +105,40 @@ script:
         matter_list = service.matters().list(state=matter_state).execute()
         return matter_list
 
-
     def get_matter_by_id(service, matter_id):
         return service.matters().get(matterId=matter_id).execute()
-
 
     def delete_matter(service, matter_id):
         delete_response = service.matters().delete(
             matterId=matter_id).execute()
         return get_matter_by_id(service, matter_id)  # Note - this is different that the other state updates
 
-
     def close_matter(service, matter_id):
         close_response = service.matters().close(matterId=matter_id, body={}).execute()
         return close_response['matter']
-
 
     def reopen_matter(service, matter_id):
         reopen_response = service.matters().reopen(matterId=matter_id, body={}).execute()
         return reopen_response['matter']
 
-
     def undelete_matter(service, matter_id):
         undeleted_matter = service.matters().undelete(matterId=matter_id, body={}).execute()
         return undeleted_matter
-
 
     def add_held_account(service, matter_id, hold_id, account_id):
         held_account = {'accountId': account_id}
         return service.matters().holds().accounts().create(matterId=matter_id, holdId=hold_id, body=held_account).execute()
 
-
     def remove_held_account(service, matter_id, hold_id, account_id):
         return service.matters().holds().accounts().delete(matterId=matter_id, holdId=hold_id, accountId=account_id).execute()
-
 
     def remove_hold(service, matter_id, hold_id):
         return service.matters().holds().delete(matterId=matter_id, holdId=hold_id).execute()
 
-
     def list_holds(service, matter_id):
+        '''
+         Return a list of existing holds
+        '''
         done_paginating = False
         holds = []
         response = service.matters().holds().list(
@@ -158,7 +155,6 @@ script:
                 done_paginating = True
         return holds
 
-
     def timeframe_to_utc_zulu_range(timeframe_str):
         '''
         Converts a time-frame to UTC Zulu format that can be used for startTime and endTime in various Google Vault requests.
@@ -169,9 +165,10 @@ script:
             start_time = parsed_str.isoformat() + 'Z'
             return (start_time, end_time)
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to parse date correctly: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
 
+            return_error('Unable to parse date correctly: {}'.format(ex))
 
     def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_time="", end_time=""):
         '''
@@ -208,13 +205,11 @@ script:
         request['accounts'] = accounts_for_query
         return request
 
-
     def create_hold_mail_accounts(service, matter_id, request_body):
         '''
         Creates a hold in Google Vault
         '''
         return service.matters().holds().create(matterId=matter_id, body=request_body).execute()
-
 
     def create_export(service, matter, request_body):
         '''
@@ -222,14 +217,13 @@ script:
         '''
         return service.matters().exports().create(matterId=matter, body=request_body).execute()
 
-
-    def create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit="", export_pst="True", export_mbox="False", search_method="All Accounts", include_drafts="True", data_scope="All Data"):
+    def create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit="", export_pst='True', export_mbox='False', search_method='All Accounts', include_drafts='True', data_scope='All Data'):
         '''
         Creates the query that will be used in the request to create a mail export
         '''
         org_unit_id = org_unit
         # --- Sanitizing Input ---
-        exclude_drafts = "false"
+        exclude_drafts = 'false'
         if time_frame:
             start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
         elif start_time:
@@ -240,20 +234,20 @@ script:
                 emails = emails.split(',')
             else:
                 emails = [emails]
-        if str(include_drafts).upper() == "FALSE":
-            exclude_drafts = "true"
-        if data_scope.upper() == "HELD DATA":
-            data_scope = "HELD_DATA"
-        if data_scope.upper() == "ALL DATA":
-            data_scope = "ALL_DATA"
-        if data_scope.upper() == "UNPROCESSED DATA":
-            data_scope = "UNPROCESSED_DATA"
-        if search_method.upper() == "ORGANIZATIONAL UNIT(REQUIRES OU ARGUMENT)":
-            search_method = "ORG_UNIT"
-        if search_method.upper() == "ALL ACCOUNTS":
-            search_method = "ENTIRE_ORG"
-        if search_method.upper() == "SPECIFIC ACCOUNTS(REQUIRES EMAILS ARGUMENT)":
-            search_method = "ACCOUNT"
+        if str(include_drafts).upper() == 'FALSE':
+            exclude_drafts = 'true'
+        if data_scope.upper() == 'HELD DATA':
+            data_scope = 'HELD_DATA'
+        if data_scope.upper() == 'ALL DATA':
+            data_scope = 'ALL_DATA'
+        if data_scope.upper() == 'UNPROCESSED DATA':
+            data_scope = 'UNPROCESSED_DATA'
+        if search_method.upper() == 'ORGANIZATIONAL UNIT(REQUIRES OU ARGUMENT)':
+            search_method = 'ORG_UNIT'
+        if search_method.upper() == 'ALL ACCOUNTS':
+            search_method = 'ENTIRE_ORG'
+        if search_method.upper() == 'SPECIFIC ACCOUNTS(REQUIRES EMAILS ARGUMENT)':
+            search_method = 'ACCOUNT'
 
         # --- Building Request ---
         request = {}
@@ -261,10 +255,10 @@ script:
         emails_for_query = []
         account_info = { 'emails': [] }
         org_unit_info = {'orgUnitId': org_unit_id}
-        corpus = "MAIL"
-        export_format = "PST"  # Default
-        if export_mbox.upper() == "TRUE":
-            export_format = "MBOX"
+        corpus = 'MAIL'
+        export_format = 'PST'  # Default
+        if export_mbox.upper() == 'TRUE':
+            export_format = 'MBOX'
         mail_options = {
             'exportFormat': export_format
         }
@@ -284,20 +278,20 @@ script:
                 emails_for_query.append(email)  # Add them to the list
             account_info['emails'] = emails_for_query  # Add the list to the account_info dictionary
             query['accountInfo'] = account_info  # Add the account_info dictionary into the query object
-        if search_method == "ORG_UNIT":
+        if search_method == 'ORG_UNIT':
             query['orgUnitInfo'] = org_unit_info
         request['query'] = query # Adding query AFTER IT'S COMPLETED
         request['exportOptions'] = { 'mailOptions': mail_options }
         request['name'] = export_name
         return request
 
-    def create_drive_export_query(export_name, emails, team_drives, time_frame, start_time, end_time, terms, org_unit="", search_method="Specific Accounts(requires emails argument)", include_teamdrives="True", data_scope="All Data"):
+    def create_drive_export_query(export_name, emails, team_drives, time_frame, start_time, end_time, terms, org_unit="", search_method='Specific Accounts(requires emails argument)', include_teamdrives='True', data_scope='All Data'):
         '''
         Creates the query that will be used in the request to create a groups export
         '''
         org_unit_id = org_unit
         # --- Sanitizing Input ---
-        include_teamdrives = "true"
+        include_teamdrives = 'true'
         if time_frame:
             start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
         elif start_time:
@@ -313,20 +307,20 @@ script:
                 team_drives = team_drives.split(',')
             else:
                 team_drives = [team_drives]
-        if str(include_teamdrives).upper() == "FALSE":
-            include_teamdrives = "false"
-        if data_scope.upper() == "HELD DATA":
-            data_scope = "HELD_DATA"
-        if data_scope.upper() == "ALL DATA":
-            data_scope = "ALL_DATA"
-        if data_scope.upper() == "UNPROCESSED DATA":
-            data_scope = "UNPROCESSED_DATA"
-        if search_method.upper() == "ORGANIZATIONAL UNIT(REQUIRES OU ARGUMENT)":
-            search_method = "ORG_UNIT"
-        if search_method.upper() == "SPECIFIC ACCOUNTS(REQUIRES EMAILS ARGUMENT)":
-            search_method = "ACCOUNT"
-        if search_method.upper() == "TEAM DRIVE":
-            search_method = "TEAM_DRIVE"
+        if str(include_teamdrives).upper() == 'FALSE':
+            include_teamdrives = 'false'
+        if data_scope.upper() == 'HELD DATA':
+            data_scope = 'HELD_DATA'
+        if data_scope.upper() == 'ALL DATA':
+            data_scope = 'ALL_DATA'
+        if data_scope.upper() == 'UNPROCESSED DATA':
+            data_scope = 'UNPROCESSED_DATA'
+        if search_method.upper() == 'ORGANIZATIONAL UNIT(REQUIRES OU ARGUMENT)':
+            search_method = 'ORG_UNIT'
+        if search_method.upper() == 'SPECIFIC ACCOUNTS(REQUIRES EMAILS ARGUMENT)':
+            search_method = 'ACCOUNT'
+        if search_method.upper() == 'TEAM DRIVE':
+            search_method = 'TEAM_DRIVE'
 
         # --- Building Request ---
         request = {}
@@ -336,7 +330,7 @@ script:
         account_info = { 'emails': [] }
         teamdrive_info = {'teamDriveIds' : []}
         org_unit_info = {'orgUnitId': org_unit_id}
-        corpus = "DRIVE"
+        corpus = 'DRIVE'
 
         # --- Building all small parts into big request object ---
         query['dataScope'] = data_scope
@@ -352,22 +346,21 @@ script:
             for email in emails:  # Go over all of them
                 emails_for_query.append(email)  # Add them to the list
             account_info['emails'] = emails_for_query  # Add the list to the account_info dictionary
-        if team_drives and include_teamdrives.upper() == "TRUE": # If user specified team_drives and not emails
+        if team_drives and include_teamdrives.upper() == 'TRUE': # If user specified team_drives and not emails
             for teamdrive_id in team_drives:
                 teamdrives_for_query.append(teamdrive_id)
             teamdrive_info['teamDriveIds'] = teamdrives_for_query
-        if search_method == "ORG_UNIT":
+        if search_method == 'ORG_UNIT':
             query['orgUnitInfo'] = org_unit_info
-        if search_method == "TEAM_DRIVE":
+        if search_method == 'TEAM_DRIVE':
             query['teamDriveInfo'] = teamdrive_info
-        if search_method == "ACCOUNT":
+        if search_method == 'ACCOUNT':
             query['accountInfo'] = account_info  # Add the account_info dictionary into the query object. This line SHOULD NOT exist if the user wants to use team_drives.
         request['query'] = query # Adding query AFTER IT'S COMPLETED
         request['name'] = export_name
         return request
 
-
-    def create_groups_export_query(export_name, emails, time_frame, start_time, end_time, terms, search_method, export_pst="True", export_mbox="False", data_scope="All Data"):
+    def create_groups_export_query(export_name, emails, time_frame, start_time, end_time, terms, search_method, export_pst='True', export_mbox='False', data_scope='All Data'):
         '''
         Creates the query that will be used in the request to create a groups export
         '''
@@ -382,22 +375,22 @@ script:
                 emails = emails.split(',')
             else:
                 emails = [emails]
-        if data_scope.upper() == "HELD DATA":
-            data_scope = "HELD_DATA"
-        if data_scope.upper() == "ALL DATA":
-            data_scope = "ALL_DATA"
-        if data_scope.upper() == "UNPROCESSED DATA":
-            data_scope = "UNPROCESSED_DATA"
+        if data_scope.upper() == 'HELD DATA':
+            data_scope = 'HELD_DATA'
+        if data_scope.upper() == 'ALL DATA':
+            data_scope = 'ALL_DATA'
+        if data_scope.upper() == 'UNPROCESSED DATA':
+            data_scope = 'UNPROCESSED_DATA'
 
         # --- Building Request ---
         request = {}
         query = {}
         emails_for_query = []
         account_info = { 'emails': [] }
-        corpus = "GROUPS"
-        export_format = "PST"  # Default
-        if export_mbox.upper() == "TRUE":
-            export_format = "MBOX"
+        corpus = 'GROUPS'
+        export_format = 'PST'  # Default
+        if export_mbox.upper() == 'TRUE':
+            export_format = 'MBOX'
         groups_options = {
             'exportFormat': export_format
         }
@@ -421,7 +414,6 @@ script:
         request['name'] = export_name
         return request
 
-
     def get_export_by_id(service, matter_id, export_id):
         return service.matters().exports().get(matterId=matter_id, exportId=export_id).execute()
 
@@ -431,340 +423,483 @@ script:
     def remove_held_accounts(service, matter_id, hold_id):
         pass
 
+    def download_storage_object(object_ID, bucket_name):
+        service = connect_to_storage()
+        req = service.objects().get_media(bucket=bucket_name, object=object_ID)
+        out_file = io.BytesIO()
+        downloader = googleapiclient.http.MediaIoBaseDownload(out_file, req)
+        done = False
+        while not done:
+            done = downloader.next_chunk()[1]
+        return out_file
 
-    # @@@@@@@@ ACTUAL FUNCS @@@@@@@@
+    def get_storage_credentials():
+        privateKeyJson = json.loads(PRIVATE_KEY_CONTENT)
+        crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES, subject=ADMIN_EMAIL)
+        return crads
+
+    def connect_to_storage():
+        service = build('storage', 'v1', credentials=get_storage_credentials())
+        return service
+
+
+    def get_object_mame_by_type(objectsArr,extension):
+        for file in objectsArr:
+            objName = str(file.get('objectName'))
+            if(objName.endswith(extension)):
+                return objName
+
+    def build_key_val_pair(tagDict):
+        demisto.info('this is value: ')
+        demisto.info(tagDict['@TagName'])
+        demisto.info('this is key: ')
+        demisto.info(tagDict['@TagValue'])
+
+        key = filter(str.isalnum, str(tagDict['@TagName']))
+        value = tagDict['@TagValue'].encode('utf-8')
+        keyValPair = { key: value}
+        return keyValPair
+
+    def build_document_dict(document):
+        file_info = document['Files']['File']['ExternalFile']
+        newDocumentDict = {
+            'DocType' : os.path.splitext(file_info['@FileName'])[1][1:].strip().lower(),
+            'MD5' : file_info['@Hash']
+        }
+        tags = document['Tags']['Tag']
+        for currentTagDict in tags:
+            newDocumentDict.update(build_key_val_pair(currentTagDict))
+        return newDocumentDict
+
+    def build_dict_list(documentsArr):
+        documentsDictList = []
+        for document in documentsArr:
+            currentDocumentDict = build_document_dict(document)
+            documentsDictList.append(currentDocumentDict)
+
+        return documentsDictList
+
+    def get_current_matter_from_context(matter_id):
+        context_matter = demisto.dt(demisto.context(), 'GoogleVault.Matter(val.MatterID === "{0}")'.format(matter_id))
+
+        context_matter = context_matter[0] if type(context_matter) is list else context_matter
+
+        if not context_matter:
+            context_matter = {
+                'MatterID': matter_id,
+                'Export': []
+            }
+        return context_matter
+
+    def populate_matter_with_export(current_matter, current_export):
+        # add new export to matter
+
+        exports = current_matter.get('Export', [])
+        if type(exports) is dict:
+            exports = [exports]
+
+        # remove duplicate export after new updated exports were entered
+        filtered_export = list(filter(lambda export:
+            export['ExportID'] != current_export['ExportID'],
+        exports))
+        filtered_export.append(current_export)
+        current_matter['Export'] = filtered_export
+
+        return current_matter
+
+
+
+
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTUAL FUNCS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
 
     def list_matters_command():
         '''
         Lists all matters in the project, with their corresponding state.
         '''
-        service = connect()
-        state = demisto.args().get('state', "STATE_UNSPECIFIED")
-        matters = (get_matters_by_state(service, state))['matters']
-        if not matters:
-            demisto.results('No matters found.')
-        else:
-            output = []
-            context_output = []
-            for matter in matters:
-                output.append({
-                    'Matter Name': matter.get('name'),
-                    'Matter ID': matter.get('matterId'),
-                    'Matter State': matter.get('state')
-                })
-                context_output.append({
-                    'Name': matter.get('name'),
-                    'ID': matter.get('matterId'),
-                    'State': matter.get('state')  # Getting new state
-                    })
-            markdown = '' # Use this to add extra line
-            title = ""
-            if state == "All" or not state:
-                title = "Here are all your matters"
+        try:
+            service = connect()
+            state = demisto.args().get('state', 'STATE_UNSPECIFIED')
+            validate_input_values([state],['All','Open','Closed','Deleted','STATE_UNSPECIFIED',''])
+            matters = (get_matters_by_state(service, state))['matters']
+
+            if not matters:
+                demisto.results('No matters found.')
             else:
-                title = "Here are your {} matters".format(state.lower())
-            markdown += tableToMarkdown(title, output, ['Matter Name', 'Matter ID', 'Matter State'])
+                output = []
+                context_output = []
+                for matter in matters:
+                    output.append({
+                        'Matter Name': matter.get('name'),
+                        'Matter ID': matter.get('matterId'),
+                        'Matter State': matter.get('state')
+                    })
+                    context_output.append({
+                        'Name': matter.get('name'),
+                        'MatterID': matter.get('matterId'),
+                        'State': matter.get('state')  # Getting new state
+                        })
+                markdown = '' # Use this to add extra line
+                title = ""
+                if state == 'All' or not state:
+                    title = 'Here are all your matters'
+                else:
+                    title = 'Here are your {} matters'.format(state.lower())
+                markdown += tableToMarkdown(title, output, ['Matter Name', 'Matter ID', 'Matter State'])
+
+                demisto.results( {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': matters,
+                    'HumanReadable': markdown,
+                    'EntryContext': {
+                        'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
+                                 }
+                } )
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to list amatters. Error: {}'.format(ex))
+
+
+    def create_matter_command():
+        try:
+            service = connect()
+            matter_name = demisto.getArg('name')
+            matter_description = demisto.getArg('description')
+            matter_content =   {
+              'name': matter_name,
+              'description': matter_description,
+            }
+            matter = service.matters().create(body=matter_content).execute()
+            markdown = ""
+            if matter_description:
+                markdown = 'Matter: {} was created successfully with description: {}.\nID: {}.'.format(matter_name, matter_description, matter.get('matterId'))
+            else:
+                markdown = 'Matter: {} was created successfully without a description.\nID: {}.'.format(matter_name, matter.get('matterId'))
+            title = 'Matter creation successful.'
+            markdown_matter = []
+            markdown_matter.append({
+            'Matter Name': matter.get('name'),
+            'Matter ID': matter.get('matterId'),
+            'Matter State': matter.get('state')
+            })
+            markdown += tableToMarkdown(title, markdown_matter, ['Matter Name', 'Matter ID', 'Matter State']) #  Why is the title displayed in a weird way?
+
+            output_context = []
+            output_context.append({
+            'Name': matter.get('name'),
+            'MatterID': matter.get('matterId'),
+            'State': matter.get('state')
+            })
 
             demisto.results( {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
-                'Contents': matters,
+                'Contents': matter,
                 'HumanReadable': markdown,
                 'EntryContext': {
-                    'GoogleVault.Matter(val.ID == obj.ID)': context_output
-                             }
-            } )
-
-
-    def create_matter_command():
-        service = connect()
-        matter_name = demisto.getArg('name')
-        matter_description = demisto.getArg('description')
-        matter_content =   {
-          'name': matter_name,
-          'description': matter_description,
-        }
-        matter = service.matters().create(body=matter_content).execute()
-        markdown = ""
-        if matter_description:
-            markdown = "Matter: {} was created successfully with description: {}.\nID: {}.".format(matter_name, matter_description, matter.get('matterId'))
-        else:
-            markdown = "Matter: {} was created successfully without a description.\nID: {}.".format(matter_name, matter.get('matterId'))
-        title = "Matter creation successful."
-        markdown_matter = []
-        markdown_matter.append({
-        'Matter Name': matter.get('name'),
-        'Matter ID': matter.get('matterId'),
-        'Matter State': matter.get('state')
-        })
-        markdown += tableToMarkdown(title, markdown_matter, ['Matter Name', 'Matter ID', 'Matter State']) #  Why is the title displayed in a weird way?
-
-        output_context = []
-        output_context.append({
-        'Name': matter.get('name'),
-        'ID': matter.get('matterId'),
-        'State': matter.get('state')
-        })
-
-        demisto.results( {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': matter,
-            'HumanReadable': markdown,
-            'EntryContext': {
-            'GoogleVault.Matter(val.ID == obj.ID)': output_context
-           }
-        })
+                'GoogleVault.Matter(val.MatterID === obj.MatterID)': output_context
+               }
+            })
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to create matter. Error: {}'.format(ex))
 
 
     def update_matter_state_command():
         """
         * Note: This updates context only if a change in the current state was successful
         """
-        service = connect()
-        matter_id = demisto.getArg('matterID')
-        wanted_state = demisto.getArg('state')
-        matter_found = get_matter_by_id(service, matter_id)
-        current_state = matter_found.get('state')
-        if current_state: # if a matter was found with that ID:
-            context_output = []
-            result_of_update = ""
-            # Dealing with CLOSE:
-            if wanted_state ==  'CLOSE':
-                if current_state == 'DELETED':
-                    result_of_update = "Matter is deleted and so it cannot be closed. It's possible to re-open it and then close."
-                elif current_state == 'CLOSED':
-                    demisto.results("Matter is already closed.")
-                elif current_state == 'OPEN':
-                    try:
-                        close_response = close_matter(service, matter_id)
-                        result_of_update = "Matter was successfully closed."
-                    except Exception, ex:
-                        if "Matters have users on hold" in str(ex):
-                            demisto.log("{}".format(ex))
-                            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'The matter has holds that prevent it from being closed.'})
-                            sys.exit(2)
+        try:
+            service = connect()
+            matter_id = demisto.getArg('matterID')
+            wanted_state = demisto.getArg('state')
 
-            # Dealing with DELETE:
-            elif wanted_state == 'DELETE':
-                if current_state == 'OPEN':
-                    try:
-                        close_response = close_matter(service, matter_id) # Todo: check if contains holds. If it does, return error to user
-                        delete_response = delete_matter(service, matter_id)
-                        result_of_update = "Matter was {} and is now DELETED.".format(current_state)
-                    except Exception, ex:
-                        if "Matters have users on hold" in str(ex):
-                            demisto.log("{}".format(ex))
-                            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'The matter has holds that prevent it from being deleted.'})
-                            sys.exit(2)
-                elif current_state == 'CLOSED':
-                    try:
-                        delete_response = delete_matter(service, matter_id)
-                        result_of_update = "Matter was {} and is not DELETED.".format(current_state)
-                    except Exception, ex:
-                        if "Matters have users on hold" in str(ex):
-                            demisto.log("{}".format(ex))
-                            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'The matter has holds that prevent it from being deleted.'})
-                            sys.exit(2)
-                elif current_state == 'DELETED':
-                    demisto.results("Matter is already deleted.")
+            validate_input_values([wanted_state],['CLOSE','DELETE','REOPEN','UNDELETE'])
+            matter_found = get_matter_by_id(service, matter_id)
+            current_state = matter_found.get('state')
 
-            # Dealing with REOPEN:
-            elif wanted_state == 'REOPEN':
-                if current_state == 'OPEN':
-                    demisto.results("Matter is already open.")
-                elif current_state == 'CLOSED':
-                    reopen_response = reopen_matter(service, matter_id)
-                    result_of_update = "Matter was {} and is now OPEN.".format(current_state)
-                elif current_state == 'DELETED':
-                    undelete_response = undelete_matter(service, matter_id)
-                    reopen_response = reopen_matter(service, matter_id)
-                    result_of_update = "Matter was {} and is now OPEN.".format(current_state)
+            if current_state: # if a matter was found with that ID:
+                context_output = []
+                result_of_update = ""
+                # Dealing with CLOSE:
+                if wanted_state ==  'CLOSE':
+                    if current_state == 'DELETED':
+                        result_of_update = 'Matter is deleted and so it cannot be closed. It is possible to re-open it and then close.'
+                    elif current_state == 'CLOSED':
+                        demisto.results('Matter is already closed.')
+                    elif current_state == 'OPEN':
+                        try:
+                            close_response = close_matter(service, matter_id)
+                            result_of_update = 'Matter was successfully closed.'
+                        except Exception, ex:
+                            if 'Matters have users on hold' in str(ex):
+                                demisto.log('{}'.format(ex))
+                                return_error('The matter has holds that prevent it from being closed.')
+                            if 'Quota exceeded for quota metric' in str(ex):
+                                return_error('Quota for Google Vault API exceeded')
 
-            # Dealing with UNDELETE:
-            elif wanted_state == 'UNDELETE':
-                if current_state == 'OPEN':
-                    demisto.results("Matter is already open.")
-                elif current_state == 'CLOSED':
-                    demisto.results("Matter is closed at the moment.")
-                elif current_state == 'DELETED':
-                    undelete_response = undelete_matter(service, matter_id)
-                    result_of_update = "Matter was {} and is now CLOSED.".format(current_state)
+                # Dealing with DELETE:
+                elif wanted_state == 'DELETE':
+                    if current_state == 'OPEN':
+                        try:
+                            close_response = close_matter(service, matter_id) # Todo: check if contains holds. If it does, return error to user
+                            delete_response = delete_matter(service, matter_id)
+                            result_of_update = 'Matter was {} and is now DELETED.'.format(current_state)
+                        except Exception, ex:
+                            if 'Matters have users on hold' in str(ex):
+                                demisto.log('{}'.format(ex))
+                                return_error('The matter has holds that prevent it from being deleted.')
+                            if 'Quota exceeded for quota metric' in str(ex):
+                                return_error('Quota for Google Vault API exceeded')
 
-            if result_of_update:  # If an update was done then update context:
-                context_output.append({
-                'Name': matter_found.get('name'),
-                'ID': matter_found.get('matterId'),
-                'State': get_matter_by_id(service, matter_id).get('state')  # Getting new state
-                    })
+                    elif current_state == 'CLOSED':
+                        try:
+                            delete_response = delete_matter(service, matter_id)
+                            result_of_update = 'Matter was {} and is not DELETED.'.format(current_state)
+                        except Exception, ex:
+                            if 'Matters have users on hold' in str(ex):
+                                demisto.log('{}'.format(ex))
+                                return_error('The matter has holds that prevent it from being deleted.')
+                            if 'Quota exceeded for quota metric' in str(ex):
+                                return_error('Quota for Google Vault API exceeded')
 
-                demisto.results( {
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['text'],
-                    'Contents': result_of_update,
-                    'EntryContext': {
-                    'GoogleVault.Matter(val.ID == obj.ID)': context_output
-                                 }
-                 })
-        else:
-            demisto.results("No matter was found with that ID.")  # Todo: never gets here. Gotta catch the exception
+                    elif current_state == 'DELETED':
+                        demisto.results('Matter is already deleted.')
+
+                # Dealing with REOPEN:
+                elif wanted_state == 'REOPEN':
+                    if current_state == 'OPEN':
+                        demisto.results('Matter is already open.')
+                    elif current_state == 'CLOSED':
+                        reopen_response = reopen_matter(service, matter_id)
+                        result_of_update = 'Matter was {} and is now OPEN.'.format(current_state)
+                    elif current_state == 'DELETED':
+                        undelete_response = undelete_matter(service, matter_id)
+                        reopen_response = reopen_matter(service, matter_id)
+                        result_of_update = 'Matter was {} and is now OPEN.'.format(current_state)
+
+                # Dealing with UNDELETE:
+                elif wanted_state == 'UNDELETE':
+                    if current_state == 'OPEN':
+                        demisto.results('Matter is already open.')
+                    elif current_state == 'CLOSED':
+                        demisto.results('Matter is closed at the moment.')
+                    elif current_state == 'DELETED':
+                        undelete_response = undelete_matter(service, matter_id)
+                        result_of_update = 'Matter was {} and is now CLOSED.'.format(current_state)
+
+                if result_of_update:  # If an update was done then update context:
+                    context_output.append({
+                    'Name': matter_found.get('name'),
+                    'MatterID': matter_found.get('matterId'),
+                    'State': get_matter_by_id(service, matter_id).get('state')  # Getting new state
+                        })
+
+                    demisto.results( {
+                        'Type': entryTypes['note'],
+                        'ContentsFormat': formats['text'],
+                        'Contents': result_of_update,
+                        'EntryContext': {
+                        'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
+                                     }
+                     })
+            else:
+                demisto.results('No matter was found with that ID.')  # Todo: never gets here. Gotta catch the exception
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to update matter. Error: {}'.format(ex))
 
 
     def add_account_to_hold_command():  # Todo: Not sure if context is good (It works, but maybe not according to conventions)
-        service = connect()
-        matter_id = demisto.getArg('matterID')
-        hold_id = demisto.getArg('holdID')
-        account_id = demisto.getArg('accountID')
-        response = add_held_account(service, matter_id, hold_id, account_id)
+        try:
+            service = connect()
+            matter_id = demisto.getArg('matterID')
+            hold_id = demisto.getArg('holdID')
+            account_id = demisto.getArg('accountID')
+            response = add_held_account(service, matter_id, hold_id, account_id)
 
-        msg_to_usr = "Account {} was successfully added to hold {} in matter {}".format(account_id, hold_id, matter_id)
-        context_output = []
-        context_output.append({
-            "ID": hold_id,
-            "matterID": matter_id,
-            "HeldAccount": {
-                "accountID": account_id,
-                "IsHeld": True
+            msg_to_usr = 'Account {} was successfully added to hold {} in matter {}'.format(account_id, hold_id, matter_id)
+            context_output = []
+            context_output.append({
+                'ID': hold_id,
+                'matterID': matter_id,
+                'HeldAccount': {
+                    'accountID': account_id,
+                    'IsHeld': True
+                    }
+            })
+
+            demisto.results( {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': msg_to_usr,
+                'EntryContext': {
+                'GoogleVault.Hold(val.ID === obj.ID)': context_output
                 }
-        })
+            })
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to add account to hold. Error: {}'.format(ex))
 
-        demisto.results( {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': msg_to_usr,
-            'EntryContext': {
-            'GoogleVault.Hold(val.ID == obj.ID)': context_output
-                         }
-         })
 
 
     def search_matter_command():
         """
         * This can be highly optimized. What it currently does is search ALL matters and then filter by name / ID
         * If a matter with an ID is found, there's no need to keep on searching. This can be optimized too.
-        * Note - this is case INSENSITIVE. Searching for "MatTER1" will find "matter1" too.
+        * Note - this is case INSENSITIVE. Searching for 'MatTER1' will find 'matter1' too.
         """
-        service = connect()
-        wanted_name = demisto.getArg('matterName')
-        wanted_id = demisto.getArg('matterID')
-        if wanted_name or wanted_id:
-            if wanted_name:
-                wanted_name = wanted_name.lower()
-            if wanted_id:
-                wanted_id = wanted_id.lower()
-        else:
-            demisto.results("No name or ID were specified. Please specify at least one of them.")
-            sys.exit(0)
-        matters = get_matters_by_state(service, state='STATE_UNSPECIFIED')['matters']
-        output = []
-        markdown_matters = []
-        found_anything = False
-        for matter in matters:
-            if matter.get('name').lower() == wanted_name or matter.get('matterId').lower() == wanted_id:
-                found_anything = True
-                markdown_matters.append({
-                    'Matter Name': matter.get('name'),
-                    'Matter ID': matter.get('matterId'),
-                    'Matter State': matter.get('state')
-                })
-                output.append({
-                    'Name': matter.get('name'),
-                    'ID': matter.get('matterId'),
-                    'State': matter.get('state')
-                })
-        if not found_anything: # If finished for loop through matters and no matter was found
-            demisto.results('No matters found.')
-        else:
-            markdown = '' # Use this to add extra line
-            if wanted_name:
-                title = "Here are matters that have the name {}".format(wanted_name)
+        try:
+            service = connect()
+            wanted_name = demisto.getArg('matterName')
+            wanted_id = demisto.getArg('matterID')
+            if wanted_name or wanted_id:
+                if wanted_name:
+                    wanted_name = wanted_name.lower()
+                if wanted_id:
+                    wanted_id = wanted_id.lower()
             else:
-                title = "Here is the matter with ID {}".format(wanted_id)
-            markdown += tableToMarkdown(title, markdown_matters, ['Matter Name', 'Matter ID', 'Matter State'])
-            demisto.results( {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': markdown_matters,
-                'HumanReadable': markdown,
-                'EntryContext': {
-                    'GoogleVault.Matter(val.ID == obj.ID)': output
-                }
-            } )
+                demisto.results('No name or ID were specified. Please specify at least one of them.')
+                sys.exit(0)
+            matters = get_matters_by_state(service, state='STATE_UNSPECIFIED')['matters']
+            output = []
+            markdown_matters = []
+            found_anything = False
+            for matter in matters:
+                if matter.get('name').lower() == wanted_name or matter.get('matterId').lower() == wanted_id:
+                    found_anything = True
+                    markdown_matters.append({
+                        'Matter Name': matter.get('name'),
+                        'Matter ID': matter.get('matterId'),
+                        'Matter State': matter.get('state')
+                    })
+                    output.append({
+                        'Name': matter.get('name'),
+                        'MatterID': matter.get('matterId'),
+                        'State': matter.get('state')
+                    })
+            if not found_anything: # If finished for loop through matters and no matter was found
+                demisto.results('No matters found.')
+            else:
+                markdown = '' # Use this to add extra line
+                if wanted_name:
+                    title = 'Here are matters that have the name {}'.format(wanted_name)
+                else:
+                    title = 'Here is the matter with ID {}'.format(wanted_id)
+                markdown += tableToMarkdown(title, markdown_matters, ['Matter Name', 'Matter ID', 'Matter State'])
+                demisto.results( {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': markdown_matters,
+                    'HumanReadable': markdown,
+                    'EntryContext': {
+                        'GoogleVault.Matter(val.MatterID === obj.MatterID)': output
+                    }
+                } )
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to search matter. Error: {}'.format(ex))
 
 
     def remove_account_from_hold_command():
-        service = connect()
-        matter_id = demisto.getArg('matterID')
-        hold_id = demisto.getArg('holdID')
-        account_id = demisto.getArg('accountID')
-        response = remove_held_account(service, matter_id, hold_id, account_id)
+        try:
+            service = connect()
+            matter_id = demisto.getArg('matterID')
+            hold_id = demisto.getArg('holdID')
+            account_id = demisto.getArg('accountID')
+            response = remove_held_account(service, matter_id, hold_id, account_id)
 
-        msg_to_usr = "Account {} was successfully removed from hold {} in matter {}".format(account_id, hold_id, matter_id)
-        context_output = []
-        context_output.append({
-        'matterID': matter_id,
-        "ID": hold_id,
-        "HeldAccount": {  # Does this allow only 1 HeldAccount to exist in a hold?
-            "ID": account_id,
-            "IsHeld": False
-            },
-        })
-        demisto.results( {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': msg_to_usr,
-            'EntryContext': {
-            'GoogleVault.Hold(val.ID == obj.ID)': context_output
-                         }
-         })
+            msg_to_usr = 'Account {} was successfully removed from hold {} in matter {}'.format(account_id, hold_id, matter_id)
+            context_output = []
+            context_output.append({
+            'matterID': matter_id,
+            'ID': hold_id,
+            'HeldAccount': {  # Does this allow only 1 HeldAccount to exist in a hold?
+                'ID': account_id,
+                'IsHeld': False
+                },
+            })
+            demisto.results( {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': msg_to_usr,
+                'EntryContext': {
+                'GoogleVault.Hold(val.ID === obj.ID)': context_output
+                             }
+             })
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to remove account from hold. Error: {}'.format(ex))
 
 
     def delete_hold_command():
-        service = connect()
-        matter_id = demisto.getArg('matterID')
-        hold_id = demisto.getArg('holdID')
-        response = remove_hold(service, matter_id, hold_id)
-        msg_to_usr = "Hold {} was successfully deleted from matter {}".format(hold_id, matter_id)
-        demisto.results( {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': msg_to_usr,
-         })
+        try:
+            service = connect()
+            matter_id = demisto.getArg('matterID')
+            hold_id = demisto.getArg('holdID')
+            response = remove_hold(service, matter_id, hold_id)
+            msg_to_usr = 'Hold {} was successfully deleted from matter {}'.format(hold_id, matter_id)
+            demisto.results( {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': msg_to_usr,
+            })
+
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to delete hold. Error: {}'.format(ex))
 
 
     def list_holds_command():
-        service = connect()
-        matter_id = demisto.getArg('matterID')
-        holds = list_holds(service, matter_id)
-        if not holds:
-            demisto.results('No holds found.')
-        else:
-            output = []
-            context_output = []
-            for hold in holds:
-                output.append({
-                    'Matter ID': matter_id,
-                    'Hold Name': hold.get('name'),
-                    'Hold ID': hold.get('holdId')
-                })
-                context_output.append({
-                    'name': hold.get('name'),
-                    'ID': hold.get('holdId'),
-                    'matterID': matter_id
+        try:
+            service = connect()
+            matter_id = demisto.getArg('matterID')
+            holds = list_holds(service, matter_id)
+            if not holds:
+                demisto.results('No holds found.')
+            else:
+                output = []
+                context_output = []
+                for hold in holds:
+                    output.append({
+                        'Matter ID': matter_id,
+                        'Hold Name': hold.get('name'),
+                        'Hold ID': hold.get('holdId')
                     })
-            markdown = '' # Use this to add extra line
-            title = "Here are all the holds under matter {}.".format(matter_id)
-            markdown += tableToMarkdown(title, output, ['Hold Name', 'Hold ID', 'Matter ID'])
+                    context_output.append({
+                        'name': hold.get('name'),
+                        'ID': hold.get('holdId'),
+                        'MatterID': matter_id
+                        })
+                markdown = '' # Use this to add extra line
+                title = 'Here are all the holds under matter {}.'.format(matter_id)
+                markdown += tableToMarkdown(title, output, ['Hold Name', 'Hold ID', 'Matter ID'])
 
-            demisto.results( {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': holds,
-                'HumanReadable': markdown,
-                'EntryContext': {
-                    'GoogleVault.Hold(val.ID == obj.ID)': context_output
-                             }
-            } )
+                demisto.results( {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': holds,
+                    'HumanReadable': markdown,
+                    'EntryContext': {
+                        'GoogleVault.Hold(val.ID === obj.ID)': context_output
+                                 }
+                })
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to list holds. Error: {}'.format(ex))
 
 
     def create_hold_command():
@@ -777,13 +912,17 @@ script:
         start_time = demisto.getArg('startTime')
         end_time = demisto.getArg('endTime')
         terms = demisto.getArg('terms')
+
+        validate_input_values([corpus],['Mail','Drive', 'Groups'])
         query = create_hold_query(hold_name, corpus, accounts, time_frame, start_time, end_time, terms)
         response = ""
         try:
             response = create_hold_mail_accounts(service, matter_id, query)
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create hold. Error: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to create hold. Error: {}'.format(ex))
+
         hold_id = response['holdId']
         output = []
         context_output = []
@@ -797,15 +936,15 @@ script:
             'matterID': matter_id
             })
         markdown = '' # Use this to add extra line
-        title = "Here are the details of your newly created hold:"
+        title = 'Here are the details of your newly created hold:'
         markdown += tableToMarkdown(title, output, ['Hold Name', 'Hold ID'])
         demisto.results( {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': {"Hold Name": hold_name, "Hold ID": hold_id},
+            'Contents': {'Hold Name': hold_name, 'Hold ID': hold_id},
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Hold(val.ID == obj.ID)': context_output
+                'GoogleVault.Hold(val.ID === obj.ID)': context_output
                          }
         } )
 
@@ -829,24 +968,23 @@ script:
         export_mbox = demisto.getArg('exportMBOX')
         org_unit = demisto.getArg('ou')
 
+        validate_input_values([include_drafts, export_pst, export_mbox],['true','false',''])
+        validate_input_values([data_scope],['All Data','Held Data','Unprocessed Data'])
+        validate_input_values([search_method],['All Accounts','Specific Accounts(requires emails argument)','Organizational Unit(requires ou argument)'])
+
         query =  create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit, export_pst, export_mbox, search_method, include_drafts, data_scope)
         response = ""
         try:
             response = create_export(service, matter_id, query)
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to create export. Error: {}'.format(ex))
+
         create_time = response.get('createTime')
         export_id = response.get('id')
 
-        context_output = []
-        context_output.append({
-            'MatterID': matter_id,
-            'ID': export_id,
-            'Name': export_name,
-            'CreateTime': create_time
-        })
-        title = "A new export has been created successfully:\n"
+        title = 'A new export has been created successfully:\n'
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
             'Matter ID': matter_id,
             'Export ID': export_id,
@@ -854,13 +992,24 @@ script:
             'Created Time': create_time
         }
         markdown = tableToMarkdown(title, output_for_markdown, ['Matter ID', 'Export ID', 'Export Name', 'Created Time'])
+
+        new_export = {
+            'MatterID': matter_id,
+            'ExportID': export_id,
+            'Name': export_name,
+            'CreateTime': create_time
+        }
+
+        context_matter = get_current_matter_from_context(matter_id)
+        new_matter = populate_matter_with_export(context_matter,new_export)
+
         demisto.results( {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': context_output,
+            'Contents': response,
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Matter(val.MatterID === "{0}")'.format(matter_id): new_matter
             }
         })
 
@@ -880,24 +1029,33 @@ script:
         end_time = demisto.getArg('endTime')
         terms = demisto.getArg('terms')
 
+        validate_input_values([include_teamdrives],['true','false',''])
+        validate_input_values([data_scope],['All Data','Held Data','Unprocessed Data'])
+        validate_input_values([search_method],['Team Drive','Specific Accounts(requires emails argument)','Organizational Unit(requires ou argument)'])
+
         query =  create_drive_export_query(export_name, emails, team_drives, time_frame, start_time, end_time, terms, org_unit, search_method, include_teamdrives, data_scope)
         response = ""
         try:
             response = create_export(service, matter_id, query)
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to create export. Error: {}'.format(ex))
+
         create_time = response.get('createTime')
         export_id = response.get('id')
 
-        context_output = []
-        context_output.append({
+        new_export = {
             'MatterID': matter_id,
-            'ID': export_id,
+            'ExportID': export_id,
             'Name': export_name,
             'CreateTime': create_time
-        })
-        title = "A new export has been created successfully:\n"
+        }
+
+        context_matter = get_current_matter_from_context(matter_id)
+        new_matter = populate_matter_with_export(context_matter,new_export)
+
+        title = 'A new export has been created successfully:\n'
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
             'Matter ID': matter_id,
             'Export ID': export_id,
@@ -908,10 +1066,10 @@ script:
         demisto.results( {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': context_output,
+            'Contents': response,
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Matter(val.MatterID === "{0}")'.format(matter_id): new_matter
             }
         })
 
@@ -921,7 +1079,7 @@ script:
         matter_id = demisto.getArg('matterID')
         export_name = demisto.getArg('exportName')
         data_scope = demisto.getArg('dataScope')
-        search_method = "ACCOUNT"  # Hard-coded only for groups export
+        search_method = 'ACCOUNT'  # Hard-coded only for groups export
         emails = demisto.getArg('groups')
         start_time = demisto.getArg('startTime')
         end_time = demisto.getArg('endTime')
@@ -930,24 +1088,31 @@ script:
         export_pst = demisto.getArg('exportPST')
         export_mbox = demisto.getArg('exportMBOX')
 
+        validate_input_values([export_pst, export_mbox],['true','false',''])
+        validate_input_values([data_scope],['All Data','Held Data','Unprocessed Data'])
+
         query =  create_groups_export_query(export_name, emails, time_frame, start_time, end_time, terms, search_method, export_pst, export_mbox, data_scope)
         response = ""
         try:
             response = create_export(service, matter_id, query)
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to create export. Error: {}'.format(ex))
         create_time = response.get('createTime')
         export_id = response.get('id')
 
-        context_output = []
-        context_output.append({
+        new_export = {
             'MatterID': matter_id,
-            'ID': export_id,
+            'ExportID': export_id,
             'Name': export_name,
             'CreateTime': create_time
-        })
-        title = "A new export has been created successfully:\n"
+        }
+
+        context_matter = get_current_matter_from_context(matter_id)
+        new_matter = populate_matter_with_export(context_matter,new_export)
+
+        title = 'A new export has been created successfully:\n'
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
             'Matter ID': matter_id,
             'Export ID': export_id,
@@ -958,42 +1123,212 @@ script:
         demisto.results( {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': context_output,
+            'Contents': response,
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Matter(val.MatterID === "{0}")'.format(matter_id): new_matter
             }
         })
 
-
-    def get_export_command():
-        service = connect()
+    def get_multiple_exports_command():
+        export_IDs = argToList(demisto.getArg('exportIDS'))
         matter_id = demisto.getArg('matterId')
-        export_id = demisto.getArg('exportID')
+        id_concatenation = demisto.getArg('queryIDS')
+        if id_concatenation:
+            if '#' not in id_concatenation:
+                return_error('Should enter a concatenation of MatterID and ExportID with "#" delimeter such: <Matter_ID>#<ExportID>')
+
+            matter_id, export_id = id_concatenation.split('#')
+            export_IDs = [export_id]
+
+        if not (matter_id and export_IDs):
+            return_error('Missing parameter MetterID or ExportID')
+
+        current_matter = get_current_matter_from_context(matter_id)
+
+        for export_id in export_IDs:
+            new_export = get_export_command(export_id, matter_id);
+            current_matter = populate_matter_with_export(current_matter, new_export)
+
+        demisto.results({
+            'ContentsFormat': formats['text'],
+            'Contents': '',
+            'Type': entryTypes['note'],
+            'EntryContext': {
+                'GoogleVault.Matter(val.MatterID === "{0}")'.format(matter_id): current_matter
+            }
+        })
+
+    def get_export_command(export_id, matter_id):
+        service = connect()
+
         try:
             response = get_export_by_id(service, matter_id, export_id)
-            usr_msg = "Here are your export details:\nMatter ID: {}\nExport ID: {}\nExport Name: {}\nExporting Status: {}.".format(matter_id, export_id, response.get('name'), response.get('status'))
             export_name = response.get('name')
             export_status = response.get('status')
-            context_output = []
-            context_output.append({
-                'MatterID': matter_id,
-                'ID': export_id,
-                'Name': export_name,
-                'Status': export_status
+            create_time = response.get('createTime')
+            bucket_name = response.get('cloudStorageSink').get('files')[0].get('bucketName') if export_status == 'COMPLETED' else ''
+            zip_object_name = get_object_mame_by_type(response.get('cloudStorageSink').get('files'), '.zip') if export_status == 'COMPLETED' else ''
+            xml_object_name = get_object_mame_by_type(response.get('cloudStorageSink').get('files'), '.xml') if export_status == 'COMPLETED' else ''
+
+            title = 'You Export details:\n'
+            output_for_markdown = {  # This one is for tableToMarkdown to correctly map
+            'Matter ID': matter_id,
+            'Export ID': export_id,
+            'Export Name': export_name,
+            'Status': export_status,
+            'Created Time': create_time,
+            'Bucket Name(for download)': bucket_name,
+            'Download ID': zip_object_name,
+            'View ID': xml_object_name
+            }
+            if(export_status == 'COMPLETED'):
+                headers = ['Matter ID', 'Export ID', 'Export Name', 'Status', 'Created Time', 'Bucket Name(for download)', 'Download ID','View ID']
+            else:
+                headers = ['Matter ID', 'Export ID', 'Export Name', 'Status', 'Created Time']
+            markdown = tableToMarkdown(title, output_for_markdown, headers)
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': response,
+                'HumanReadable': markdown,
             })
+
+            export_status = {
+                'MatterID': matter_id,
+                'ExportID': export_id,
+                'ExportName': export_name,
+                'Status': export_status,
+                'BucketName': bucket_name,
+                'DownloadID': zip_object_name,
+                'ViewID': xml_object_name
+            }
+
+            return export_status
+
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to get export. Error: {}'.format(ex))
+
+    def download_export_command():
+        try:
+            bucket_name = demisto.getArg('bucketName')
+            download_ID = demisto.getArg('downloadID')
+            out_file = download_storage_object(download_ID, bucket_name)
+            demisto.results(fileResult(demisto.uniqueFile() + '.zip', out_file.getvalue()))
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to download export. Error: {}'.format(ex))
+
+
+    def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
+
+        out_file = download_storage_object(object_ID, bucket_name)
+        out_file_json = json.loads(xml2json(out_file.getvalue()))
+
+        if not out_file_json['Root']['Batch'].get('Documents'):
+            demisto.results('The export given contains 0 documents')
+            sys.exit(0)
+        documents = out_file_json['Root']['Batch']['Documents']['Document']
+
+        if type(documents) is dict:
+            documents = [documents]
+
+        dictList = build_dict_list(documents)
+
+        if len(dictList) > max_results:
+            return dictList[0:max_results]
+
+        return dictList
+
+    def get_drive_results_command():
+        try:
+            max_results = int(demisto.getArg('maxResult'))
+            view_ID = demisto.getArg('viewID')
+            bucket_name = demisto.getArg('bucketName')
+            output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
+
+            if not (output[0].get('Author') or output[0].get('Collaborators') or output[0].get('Title')):
+                return_error('Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
+
+            markedown_output = map(lambda document: {
+                'Title': document.get('Title'),
+                'Author': document.get('Author'),
+                'Collaborators': document.get('Collaborators'),
+                'Others': document.get('Others'),
+                'DateCreated': document.get('DateCreated'),
+                'DateModified': document.get('DateModified'),
+                'DocType': document.get('DocType'),
+                'MD5': document.get('MD5'),
+            },output)
+
+            title = 'Your DRIVE inquiry details\n'
+            headers = ['Title', 'Author', 'Collaborators', 'Others', 'Labels', 'Viewers', 'DateCreated', 'DateModified','DocType', 'MD5']
+            markdown = tableToMarkdown(title, markedown_output, headers)
+
+            exportID = str(view_ID).split('/')[1]
+            contextOutput = {'ExportID': exportID, 'Results': markedown_output}
+
             demisto.results( {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': context_output,
-            'HumanReadable': usr_msg,
+            'Contents': contextOutput,
+            'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
-                             }
+                'GoogleVault.Matter.Export(val.ExportID === obj.ExportID)': contextOutput
+                }
             })
+
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to get export. Error: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to display export result. Error: {}'.format(ex))
+
+    def get_mail_and_groups_results_command(inquiryType):
+        try:
+            max_results = int(demisto.getArg('maxResult'))
+            view_ID = demisto.getArg('viewID')
+            bucket_name = demisto.getArg('bucketName')
+            output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
+
+            if not (output[0].get('From') or output[0].get('To') or output[0].get('Subject')) :
+                return_error('Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
+
+            markedown_output = map(lambda document: {
+                'From': document.get('From'),
+                'To': document.get('To'),
+                'CC': document.get('CC'),
+                'BCC': document.get('BCC'),
+                'Subject': document.get('Subject'),
+                'DateSent': document.get('DateSent'),
+                'DateReceived': document.get('DateReceived'),
+            },output)
+
+            title = 'Your {} inquiry details\n'.format(inquiryType)
+            headers = ['Subject', 'From', 'To', 'CC', 'BCC', 'DateSent']
+            markdown = tableToMarkdown(title, markedown_output, headers)
+
+            exportID = str(view_ID).split('/')[1]
+            contextOutput = {'ExportID': exportID, 'Results': markedown_output}
+
+            demisto.results( {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': contextOutput,
+                'HumanReadable': markdown,
+                'EntryContext': {
+                    'GoogleVault.Matter.Export(val.ExportID === obj.ExportID)': contextOutput
+                                }
+            })
+
+        except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to display export result. Error: {}'.format(ex))
+
 
 
     # @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
@@ -1002,10 +1337,12 @@ script:
         # This is the call made when pressing the integration test button.
         try:
             service = connect()
-            get_matters_by_state(service, "STATE_UNSPECIFIED")
+            get_matters_by_state(service, 'STATE_UNSPECIFIED')
             demisto.results('ok')
             sys.exit(0)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                return_error('Quota for Google Vault API exceeded')
             return_error(ex.message)
     elif demisto.command() == 'gvault-list-matters':
         list_matters_command()
@@ -1032,14 +1369,22 @@ script:
     elif demisto.command() == 'gvault-create-export-groups':
         create_groups_export_command()
     elif demisto.command() == 'gvault-export-status':
-        get_export_command()
+        get_multiple_exports_command()
+    elif demisto.command() == 'gvault-download-results':
+        download_export_command()
+    elif demisto.command() == 'gvault-get-drive-results':
+        get_drive_results_command()
+    elif demisto.command() == 'gvault-get-mail-results':
+        get_mail_and_groups_results_command('MAIL')
+    elif demisto.command() == 'gvault-get-groups-results':
+        get_mail_and_groups_results_command('GROUPS')
   type: python
   commands:
   - name: gvault-create-export-mail
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: exportName
       required: true
       description: Export Name
@@ -1049,7 +1394,7 @@ script:
       - All Data
       - Held Data
       - Unprocessed Data
-      description: Choice of Search scope
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
       defaultValue: All Data
     - name: searchMethod
       auto: PREDEFINED
@@ -1057,68 +1402,67 @@ script:
       - All Accounts
       - Specific Accounts(requires emails argument)
       - Organizational Unit(requires ou argument)
-      description: Choice of Search method
+      description: Search method, default is "All Accounts"; "All Accounts", "Specific Accounts" (requires the "email" argument), "Organizational Unit" (requires the "ou" argument)
       defaultValue: All Accounts
     - name: emails
-      description: If the search method is set to Specific Accounts (separated by
-        comma)
+      description: CSV list of emails to search in. Use this argument if the "searchMethod" argument is set to "Specific Accounts"
     - name: ou
-      description: The organizational unit (specify only if the search method is set
-        to Organizational Unit)
+      description: The organizational unit. Only use this argument if the "searchMethod" argument is set
+        to "Organizational Unit"
     - name: includeDrafts
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Include/Exclude drafts in the search
+      description: Whether to include drafts in the search, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: timeFrame
-      description: 'Search time frame. E.g: "1 min ago","2 weeks ago","3 months ago"'
+      description: 'Search time frame, e.g., "1 min ago","2 weeks ago","3 months ago"'
     - name: startTime
-      description: UTC start time (2018-10-16T12:59:02.584000Z)
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
     - name: endTime
-      description: UTC end time (2018-10-16T12:59:02.584000Z)
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
     - name: terms
-      description: Add specific terms for the search (subject:example)
+      description: Apply specific terms to the search, e.g., (subject:example)
     - name: exportPST
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in PST format, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: exportMBOX
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in MBOX format, default is "false"; "true" or "false"
       defaultValue: "false"
     outputs:
-    - contextPath: GoogleVault.Export.MatterID
+    - contextPath: GoogleVault.Matter.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Export.ID
+    - contextPath: GoogleVault.Matter.Export.ExportID
       description: Export ID
       type: string
-    - contextPath: GoogleVault.Export.Name
+    - contextPath: GoogleVault.Matter.Export.Name
       description: Export's name
       type: string
-    - contextPath: GoogleVault.Export.CreateTime
+    - contextPath: GoogleVault.Matter.Export.CreateTime
       description: Export's creation time
       type: string
     description: Creates a Google Vault export in order to perform search actions
-      on emails.
+      on emails
   - name: gvault-create-matter
     arguments:
     - name: name
       required: true
-      description: New matter's name
+      description: A name for the new matter
     - name: description
-      description: Description for the matter
+      description: A description for the matter
     outputs:
     - contextPath: GoogleVault.Matter.Name
-      description: Matter Name
+      description: Matter name
       type: string
     - contextPath: GoogleVault.Matter.ID
       description: Matter ID
@@ -1126,7 +1470,7 @@ script:
     - contextPath: GoogleVault.Matter.State
       description: Matter's state
       type: string
-    description: Creates a new matter with the given name and description. The initial
+    description: Creates a new matter with the specified name and description. The initial
       state is open, and the owner is the method caller. First, checks if a matter
       with the same name already exists.
   - name: gvault-create-export-drive
@@ -1143,7 +1487,7 @@ script:
       - All Data
       - Held Data
       - Unprocessed Data
-      description: Choice of Search scope
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
       defaultValue: All Data
     - name: searchMethod
       auto: PREDEFINED
@@ -1151,36 +1495,35 @@ script:
       - Specific Accounts(requires emails argument)
       - Organizational Unit(requires ou argument)
       - Team Drive
-      description: Choice of Search method
+      description: Search method, default is "Specific Accounts"; "Specific Accounts" (requires the "email" argument), "Organizational Unit" (requires the "ou" argument), "Team Drive"
       defaultValue: Specific Accounts(requires emails argument)
     - name: emails
-      description: If the search method is set to Specific Accounts (separated by
-        comma)
+      description: CSV list of emails to search in. Use this argument if the "searchMethod" argument is set to "Specific Accounts"
     - name: ou
-      description: The organizational unit (specify only if the search method is set
-        to Organizational Unit)
+      description: The organizational unit. Only use this argument if the "searchMethod" argument is set
+        to "Organizational Unit"
     - name: teamDrive
-      description: If the search method is set to Team Drives
+      description: If the searchMethod is set to Team Drives
     - name: includeTeamDrives
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Include/Exclude team drives
+      description: Whether to include team drives, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: timeFrame
       description: Search time frame
     - name: startTime
-      description: UTC start time (2018-10-16T12:59:02.584000Z)
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
     - name: endTime
-      description: UTC end time (2018-10-16T12:59:02.584000Z)
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
     - name: terms
-      description: Add specific terms for the search
+      description: Apply specific terms to the search
     outputs:
-    - contextPath: GoogleVault.Matter.ID
+    - contextPath: GoogleVault.Matter.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Matter.Export.ID
+    - contextPath: GoogleVault.Matter.Export.ExportID
       description: Export ID
       type: string
     - contextPath: GoogleVault.Matter.Export.Name
@@ -1195,7 +1538,7 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: state
       required: true
       auto: PREDEFINED
@@ -1204,66 +1547,65 @@ script:
       - DELETE
       - REOPEN
       - UNDELETE
-      description: New matter state
+      description: New matter state; "CLOSE", "DELETE", "REOPEN", "UNDELETE"
     outputs:
     - contextPath: GoogleVault.Matter.Name
       description: Matter name
       type: string
-    - contextPath: GoogleVault.Matter.ID
+    - contextPath: GoogleVault.Matter.MatterID
       description: Matter ID
       type: string
     - contextPath: GoogleVault.Matter.State
       description: Matter's state
       type: string
-    description: Change the matter's state
+    description: Matter's updated state
   - name: gvault-create-export-groups
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: exportName
       required: true
-      description: Export Name
+      description: Export name
     - name: dataScope
       auto: PREDEFINED
       predefined:
       - All Data
       - Held Data
       - Unprocessed Data
-      description: 'Choice of Search scope '
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
       defaultValue: All Data
     - name: groups
       required: true
-      description: Enter one or more Groups separated by commas. You can search up
-        to 50 Groups.
+      description: CSV list of groups, maximum of 50 groups
     - name: timeFrame
       description: Search time frame
     - name: startTime
-      description: UTC start time (2018-10-16T12:59:02.584000Z)
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
     - name: endTime
-      description: UTC end time (2018-10-16T12:59:02.584000Z)
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
     - name: terms
-      description: Add specific terms for the search
+      description: Apply specific terms to the search
     - name: exportPST
       default: true
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in PST format, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: exportMBOX
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in MBOX format, default is "false"; "true" or "false"
       defaultValue: "false"
     outputs:
-    - contextPath: GoogleVault.Matter.ID
+    - contextPath: GoogleVault.Matter.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Matter.Export.ID
+    - contextPath: GoogleVault.Matter.Export.ExportID
       description: Export ID
       type: string
     - contextPath: GoogleVault.Matter.Export.Name
@@ -1278,10 +1620,10 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: holdName
       required: true
-      description: New hold's name
+      description: Name of the new hold
     - name: corpus
       required: true
       auto: PREDEFINED
@@ -1289,28 +1631,28 @@ script:
       - Mail
       - Drive
       - Groups
-      description: New hold's corpus type
+      description: New hold's corpus type; "Mail", "Drive", "Groups"
     - name: accountID
       required: true
-      description: At least one account/group ID to place in the hold (comma separated)
+      description: CSV list of accounts/group IDs to place in the hold, requires at least one account/group ID
       isArray: true
     - name: timeFrame
-      description: User's choice for search time.
+      description: Search timeframe
     - name: startTime
-      description: UTC start time (1994-11-05T13:15:30Z )
+      description: Search start time in UTC (1994-11-05T13:15:30Z )
     - name: endTime
-      description: UTC end time (1994-11-05T13:15:30Z )
+      description: Search end time in UTC (1994-11-05T13:15:30Z )
     - name: terms
-      description: The terms that must be met for a message to be covered by this
+      description: The terms that must be matched for a message to be covered by this
         hold.
     outputs:
-    - contextPath: GoogleVault.Matter.Hold.Name
+    - contextPath: GoogleVaulty.Hold.Name
       description: Hold name
       type: string
-    - contextPath: GoogleVault.Matter.Hold.ID
+    - contextPath: GoogleVault.Hold.ID
       description: Hold ID
       type: string
-    - contextPath: GoogleVault.Matter.Hold.Account.ID
+    - contextPath: GoogleVault.Hold.Account.ID
       description: Held account ID
       type: string
     description: 'Creates a hold in the given matter. Holds are used to preserve data
@@ -1319,37 +1661,37 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: holdID
       required: true
-      description: Hold ID
+      description: The hold ID
     - name: accountID
       required: true
-      description: Account/group ID to place in hold
+      description: The account/group ID to place in hold
     outputs:
     - contextPath: GoogleVault.Matter.Hold.Account.ID
-      description: Held account ID
+      description: The held account ID
     description: 'Adds a Held Account to a hold. This structure is immutable. '
   - name: gvault-remove-heldAccount
     arguments:
     - name: matterID
       required: true
-      description: Provide the wanted matter ID
+      description: The matter ID
     - name: holdID
       required: true
-      description: Provide the wanted hold ID
+      description: The hold ID
     - name: accountID
       required: true
       description: Account ID to remove from hold
-    description: Removes a Held Account from a hold.
+    description: Removes a Held Account from a hold
   - name: gvault-delete-hold
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: holdID
       required: true
-      description: Hold ID
+      description: The hold ID
     description: Removes a hold by ID. This will release any Held Accounts on this
       Hold.
   - name: gvault-list-matters
@@ -1361,14 +1703,13 @@ script:
       - Open
       - Closed
       - Deleted
-      description: 'If set, list only matters with that specific state. The default
-        is listing matters of all states. '
+      description: If set, list only matters with that specific state, default is "ALL"; "ALL", "OPEN", "CLOSED", "DELETED"
       defaultValue: All
     outputs:
     - contextPath: GoogleVault.Matter.Name
-      description: Matter Name
+      description: The matter name
       type: string
-    - contextPath: GoogleVault.Matter.ID
+    - contextPath: GoogleVault.Matter.MatterID
       description: Matter ID
       type: string
     - contextPath: GoogleVault.Matter.State
@@ -1378,17 +1719,17 @@ script:
   - name: gvault-get-matter
     arguments:
     - name: matterName
-      description: Search by matter name (More than one matter with the same name
+      description: Search by matter name (multiple matters with the same name
         can exist)
     - name: matterID
-      description: Search by matter ID (Unique Identifier)
+      description: Search by matter ID
     outputs:
     - contextPath: GoogleVault.Matter.Name
-      description: Matter Name
+      description: Matter name
     - contextPath: GoogleVault.Matter.ID
       description: Matter ID
     - contextPath: GoogleVault.Matter.State
-      description: Matter's state(OPEN,CLOSED,DELETED)
+      description: Matter's state
     description: Search for a matter by name or by ID
   - name: gvault-list-holds
     arguments:
@@ -1404,29 +1745,160 @@ script:
     - contextPath: GoogleVault.Matter.Hold.ID
       description: Hold ID
       type: string
-    description: Lists all holds for a given matter
+    description: Lists all holds for a specified matter
   - name: gvault-export-status
     arguments:
     - name: matterId
-      required: true
-      description: Matter ID
-    - name: exportID
-      required: true
-      description: Export ID
+      description: The matter ID
+    - name: exportIDS
+      description: CSV list of one or more export IDs
+      isArray: true
+    - name: queryIDS
+      description: 'MatterID and ExportID concatenation separated by ''#'' (used only
+        for playbook) such: <Matter_ID>#<ExportID>'
     outputs:
-    - contextPath: GoogleVault.Export.MatterID
+    - contextPath: GoogleVault.Matter.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Export.ID
+    - contextPath: GoogleVault.Matter.Export.ExportID
       description: Export ID
       type: string
-    - contextPath: GoogleVault.Export.Name
-      description: Export Name
+    - contextPath: GoogleVault.Matter.Export.Name
+      description: Export name
       type: string
-    - contextPath: GoogleVault.Export.Status
-      description: Export Status (COMPLETED,FAILED,IN_PROGRESS)
+    - contextPath: GoogleVault.Matter.Export.Status
+      description: Export status
       type: string
-    description: Gets a specified Export status
+    - contextPath: GoogleVault.Matter.Export.BucketName
+      description: Bucket holder name for this export
+      type: string
+    - contextPath: GoogleVault.Matter.Export.DownloadID
+      description: ID to be used by the "download-export" command
+      type: string
+    - contextPath: GoogleVault.Matter.Export.ViewID
+      description: ID to be used by the "get-X-results" command (X=drive/mail/groups)
+      type: string
+    description: Gets the status of one or more specified exports
+  - name: gvault-download-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: Name of the bucket that holds the export
+    - name: downloadID
+      required: true
+      description: The export download ID
+    description: Downloads an export by bucket name and download ID
+  - name: gvault-get-drive-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: Name of the bucket that holds the export
+    - name: viewID
+      required: true
+      description: The export view ID
+    - name: maxResult
+      default: true
+      description: Maximum number of results to return (a high threshold can
+        slow down your browser), default is "30"
+      defaultValue: "30"
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.Results.Title
+      description: Title of the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Author
+      description: Author of the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Others
+      description: Other users related to the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Viewers
+      description: Viewers of the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateModified
+      description: The date the file was last modified
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateCreated
+      description: The date the file was created
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DocType
+      description: File type (extension)
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.MD5
+      description: The MD5 of the file (SHA-1)
+      type: string
+    description: 'Get the results of a specified drive export '
+  - name: gvault-get-mail-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: Name of the bucket that holds the export
+    - name: viewID
+      required: true
+      description: The export view ID
+    - name: maxResult
+      default: true
+      description: Maximum number of results to return (a high threshold can
+        slow down your browser), default is "30"
+      defaultValue: "30"
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.Results.CC
+      description: Email addresses CCed on the mail
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.BCC
+      description: Email addresses BCCed on the mail
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateSent
+      description: The date the email was sent
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.From
+      description: The sender of the email
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Subject
+      description: The subject of the email
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateReceived
+      description: The date the email was received
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.To
+      description: The address the email was sent to
+      type: string
+    description: Get the results of a specified mail export
+  - name: gvault-get-groups-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: Name of the bucket that holds the export
+    - name: viewID
+      required: true
+      description: The export view ID
+    - name: maxResult
+      default: true
+      description: Maximum number of results to return (a high threshold can
+        slow down your browser), default is "30"
+      defaultValue: "30"
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.Results.CC
+      description: Email addresses CCed on the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.BCC
+      description: Email addresses BCCed on the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateSent
+      description: The date the message was sent
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.From
+      description: The sender of the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Subject
+      description: The subject of the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateReceived
+      description: The date the message was received
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.To
+      description: The address the message was sent to
+      type: string
+    description: Get the results of a specified group export
   dockerimage: demisto/gvault
   runonce: false
 tests:

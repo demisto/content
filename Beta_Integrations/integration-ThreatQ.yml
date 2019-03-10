@@ -22,7 +22,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: 'Email '
+- display: Email
   name: credentials
   defaultvalue: ""
   type: 9
@@ -276,7 +276,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {'ThreatQ(val.name && val.name == obj.name)': createContext(tq_attr_context, removeNull=True),
-                        'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
+                        'DBotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
                     createContext(dbot_score, removeNull=True),
             }
         }

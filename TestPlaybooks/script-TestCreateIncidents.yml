@@ -1,0 +1,51 @@
+commonfields:
+  id: TestCreateIncidents
+  version: -1
+name: TestCreateIncidents
+script: |-
+  NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
+  incident1_template = {
+      'type': 'Simulation',
+      'name': 'Tag1',
+      'details': 'This is a email bla bla bla',
+  }
+
+  incident2_template = {
+      'type': 'Simulation',
+      'name': 'Tag2',
+      'details': 'This2 is2 a2 email2 bla2 bla2 bla2',
+  }
+
+  for i in range(0, NUMBER_OF_INCIDENTS):
+      demisto.executeCommand("createNewIncident", incident1_template)
+  for i in range(0, NUMBER_OF_INCIDENTS):
+      demisto.executeCommand("createNewIncident", incident2_template)
+
+  demisto.results({
+      'Contents': 'Done crete incidents',
+      'ContentsFormat': formats['text'],
+      'EntryContext': {
+          'EmailSujbectKey': 'name',
+          'EmailBodyKey': 'details',
+          'EmailTagKey': 'name',
+          'IncidentsQuery': 'type:Simulation'
+      }
+  })
+type: python
+tags: []
+enabled: true
+args:
+- name: numberOfIncidents
+  defaultValue: "2"
+outputs:
+- contextPath: EmailSujbectKey
+  description: EmailSujbectKey
+- contextPath: EmailBodyKey
+  description: EmailBodyKey
+- contextPath: EmailTagKey
+  description: EmailTagKey
+- contextPath: IncidentsQuery
+  description: IncidentsQuery
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

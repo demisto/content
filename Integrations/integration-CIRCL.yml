@@ -1,0 +1,386 @@
+commonfields:
+  id: CIRCL
+  version: -1
+name: CIRCL
+display: CIRCL
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: |-
+  CIRCL Passive DNS is a database storing historical DNS records from various resources.
+  CIRCL Passive SSL is a database storing historical X.509 certificates seen per IP address. The Passive SSL historical data is indexed per IP address.
+configuration:
+- display: Server URL (e.g. https://www.circl.lu)
+  name: url
+  defaultvalue: https://www.circl.lu
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    import requests
+    import json
+    import time
+    import datetime
+    import os
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    BASE_URL = demisto.getParam('url')
+    USERNAME = demisto.getParam('credentials')['identifier']
+    PASSWORD = demisto.getParam('credentials')['password']
+    AUTH = (USERNAME, PASSWORD)
+    USE_SSL = True if demisto.params().get('insecure') else False
+    IS_USING_PROXY = True if demisto.params().get('proxy') else False
+    LAST_TIME_KEY = 'time_last'
+
+    if not IS_USING_PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    def http_request(method, url):
+        response = requests.request(
+            method,
+            url,
+            auth=AUTH
+        )
+
+        if response.status_code != 200:
+            return_error('Error in API call: [%d] - %s' % (response.status_code, response.reason))
+
+        return response
+
+    def validate_sha1(sha1):
+        if len(sha1) != 40:
+            return_error('Invalid SHA-1, expected 40 characters: %s' % (sha1))
+
+    def validate_ip_of_cidr(ip):
+        regex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$'
+
+        match = re.search(regex, ip)
+
+        if match is None:
+            return_error('Invalid IP or CIDR: %s' % (ip))
+
+    def timestamp_to_string(timestamp):
+        if timestamp is None:
+            return None
+
+        return datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+    def dns_get_command(url):
+        response = http_dns_get(url)
+
+        results = list(map(lambda line: json.loads(line), response.text.splitlines()))
+        results = merge_by_rdata(results)
+
+        records = []
+
+        for result in results:
+            records.append(create_dns_record_context(result))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': response.text,
+            'HumanReadable': tableToMarkdown("CIRCL Dns - " + url, records),
+            'EntryContext': {
+                'CIRCLdns.Query(val.Value===obj.Value)': {
+                    'Value': url,
+                    'Record': records,
+                }
+            }
+        })
+    
+    def http_dns_get(url):
+        query_url = BASE_URL + '/pdns/query/' + url
+
+        return http_request('GET', query_url)
+
+    # The results may contain several records with the same 'rdata' but different (not interesting) other properties.
+    # This function will merge the records and keep the later "last seen time".
+    def merge_by_rdata(results):
+        results_map = dict()
+
+        for e in results:
+            key = e['rdata']
+            other = results_map.get(key)
+
+            if other is not None and other[LAST_TIME_KEY] > e[LAST_TIME_KEY]:
+                e = other
+
+            results_map[key] = e
+
+        return list(results_map.values())
+
+    def create_dns_record_context(record):
+        last_time = timestamp_to_string(record[LAST_TIME_KEY])
+
+        return {
+            'Data': record['rdata'],
+            'LastTime': last_time,
+        }
+
+    def list_certificates(queryValue):
+        validate_ip_of_cidr(queryValue)
+        response = http_list_certificates(queryValue)
+
+        data = response.json()
+        records = []
+
+        for ip, ip_data in data.items():
+            records.append(create_ip_context(ip, ip_data))
+
+        result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': data,
+            'HumanReadable': tableToMarkdown('List certificates for ' + queryValue, records),
+            'EntryContext': {
+                'CIRCLssl.IPAddress(val.Value===obj.Value)': records
+            }
+        }
+
+        demisto.results(result)
+    
+    def http_list_certificates(queryValue):
+        query_url = BASE_URL + '/v2pssl/query/' + queryValue
+
+        return http_request('GET', query_url)
+
+    def create_ip_context(ip, ipData):
+        certificates = []
+
+        for sha1 in ipData['certificates']:
+            subjects = ipData['subjects'].get(sha1, {}).get('values', [])
+            certificates.append(create_list_certificate_context(sha1, subjects))
+
+        return {
+            'Value': ip,
+            'Certificate': certificates
+        }
+
+    def create_list_certificate_context(sha1, subjects):
+        return {
+            'SHA1': sha1,
+            'Subjects': subjects
+        }
+
+    def list_certificate_seen_ips(sha1, limit):
+        validate_sha1(sha1)
+        response = http_list_certificate_seen_ips(sha1)
+
+        data = response.json()
+        certificate = create_certificate_seen_ips_context(sha1, data, limit)
+
+        result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': data,
+            'HumanReadable': 'Hits: ' + str(certificate['Hits']),
+            'EntryContext': {
+                'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
+            }
+        }
+
+        demisto.results(result)
+
+    def http_list_certificate_seen_ips(sha1):
+        query_url = BASE_URL + '/v2pssl/cquery/' + sha1
+
+        return http_request('GET', query_url)
+
+    def create_certificate_seen_ips_context(sha1, data, limit):
+        return {
+            'SHA1': sha1,
+            'Hits': data['hits'],
+            'IPAddress': data['seen'][:limit],
+        }
+
+    def get_certificate_details(sha1):
+        validate_sha1(sha1)
+        response = http_get_certificate_details(sha1)
+
+        data = response.json()
+        certificate = create_certificate_details(sha1, data)
+
+        result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': data,
+            'HumanReadable': tableToMarkdown("CIRCL ssl certificate - " + sha1, certificate),
+            'EntryContext': {
+                'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
+            }
+        }
+
+        demisto.results(result)
+   
+    def http_get_certificate_details(sha1):
+        query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
+
+        return http_request('GET', query_url)
+
+    def create_certificate_details(sha1, data):
+        info = data['info']
+        usage = ''
+        distribution = ''
+
+        extension = info.get('extension', {})
+        
+        usage = extension.get('keyUsage', usage)
+        usage = extension.get('extendedKeyUsage', usage)
+        distribution = extension.get('crlDistributionPoints', distribution)
+        times_seen = data.get('icsi', {}).get('times_seen')
+
+        return {
+            'SHA1': sha1,
+            'Usage': usage,
+            'Distribution': distribution,
+            'Issuer': info['issuer'],
+            'Time': info['not_before'],
+            'Subject': info['subject'],
+            'Key': info['key'],
+            'Pem': data['pem'],
+            'Seen': times_seen,
+        }
+
+    ''' EXECUTION CODE '''
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        command = demisto.command()
+        args = demisto.args()
+
+        if command == 'test-module':
+            result = http_dns_get('test.com')
+            demisto.results('ok')
+
+        elif command == 'circl-dns-get':
+            dns_get_command(args.get('queryValue'))
+
+        elif command == 'circl-ssl-list-certificates':
+            list_certificates(args.get('queryValue'))
+
+        elif command == 'circl-ssl-query-certificate':
+            limit = int(args.get('limitResults', 100))
+            sha1 = args.get('certificate')
+
+            list_certificate_seen_ips(sha1, limit)
+
+        elif command == 'circl-ssl-get-certificate':
+            get_certificate_details(args.get('certificate'))
+        
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: circl-dns-get
+    arguments:
+    - name: queryValue
+      required: true
+      description: IP address, hostname, or domain name
+    outputs:
+    - contextPath: CIRCLdns.Query.Value
+      description: Query Value
+      type: string
+    - contextPath: CIRCLdns.Query.Record.Data
+      description: DNS Record or IP Address
+      type: string
+    - contextPath: CIRCLdns.Query.Record.LastTime
+      description: DNS record last recorded time
+      type: date
+    description: Get DNS records for your query value from CIRCL's Passive DNS.
+  - name: circl-ssl-list-certificates
+    arguments:
+    - name: queryValue
+      required: true
+      description: IP address or CIDR block
+    outputs:
+    - contextPath: CIRCLssl.IPAddress.Value
+      description: IP address
+      type: string
+    - contextPath: CIRCLssl.IPAddress.Certificate.SHA1
+      description: ' The SHA-1 fingerprint of the certificate'
+      type: string
+    - contextPath: CIRCLssl.IPAddress.Certificate.Subjects
+      description: Certificate subjects
+      type: string
+    description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates
+      history.
+  - name: circl-ssl-query-certificate
+    arguments:
+    - name: certificate
+      required: true
+      description: SHA-1 fingerprint of a certificate
+    - name: limitResults
+      description: Limit the results number (Increasing number can cause browser slowdowns).
+      defaultValue: "100"
+    outputs:
+    - contextPath: CIRCLssl.Certificate.SHA1
+      description: ' The SHA-1 fingerprint of the certificate'
+      type: string
+    - contextPath: CIRCLssl.Certificate.Hits
+      description: Number of hits for the certificate (number of associated addresses)
+      type: number
+    - contextPath: CIRCLssl.Certificate.IPAddress
+      description: IP address associated to the certificate
+      type: string
+    description: Query a certificate value to get all associated addresses
+  - name: circl-ssl-get-certificate
+    arguments:
+    - name: certificate
+      required: true
+      description: SHA-1 fingerprint of a certificate
+    outputs:
+    - contextPath: CIRCLssl.Certificate.SHA1
+      description: 'The SHA-1 fingerprint of the certificate'
+      type: string
+    - contextPath: CIRCLssl.Certificate.Usage
+      description: Extended key usage
+      type: string
+    - contextPath: CIRCLssl.Certificate.Distribution
+      description: CRL distribution points
+      type: string
+    - contextPath: CIRCLssl.Certificate.Issuer
+      description: Certificate issuer
+      type: string
+    - contextPath: CIRCLssl.Certificate.Time
+      description: Certificate issued time (***not_before)
+      type: date
+    - contextPath: CIRCLssl.Certificate.Subject
+      description: Certificate subject
+      type: string
+    - contextPath: CIRCLssl.Certificate.Key
+      description: Certificate public key
+      type: string
+    - contextPath: CIRCLssl.Certificate.Pem
+      description: Certificate in PEM format
+      type: string
+    - contextPath: CIRCLssl.Certificate.Seen
+      description: Number of times the certificate was seen
+      type: number
+    description: Get the raw certificate and related information.
+  runonce: false
+tests:
+  - CirclIntegrationTest

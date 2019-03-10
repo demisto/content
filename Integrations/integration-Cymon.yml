@@ -531,4 +531,3 @@ script:
           description: The IP on which the malicious activity was reported
       description: Retrieves a report on a given domain
   runonce: false
-releaseNotes: "Created integration to Cymon service"

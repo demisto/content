@@ -327,7 +327,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: ThreatGrid
+        simple: ThreatGrid.Sample
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false

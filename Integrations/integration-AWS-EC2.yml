@@ -4741,6 +4741,5 @@ script:
     execution: true
   dockerimage: demisto/boto3:1.9.55
   runonce: false
-releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute. Upgraded Boto3 to ver 1.9.55"
 tests:
   - No Tests

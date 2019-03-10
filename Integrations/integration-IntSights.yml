@@ -1,57 +1,972 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: IntSights
   version: -1
-name: IntSights
-display: IntSights
-category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
-description: Use IntSights to manage and fetch alerts
-detaileddescription: 'The credentials username is your user ID and the password is
-  the API key. '
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: https://api.intsights.com/
+  display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: https://api.intsights.com/
-  type: 0
   required: true
+  type: 0
 - display: Credentials
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage",
     "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
   name: type
-  defaultvalue: ""
+  required: false
   type: 0
-  required: false
-- display: Trust any certificate (unsecure)
+- defaultvalue: 'false'
+  display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
+  type: 13
+- display: '(MSSP accounts only) Sub account ID:'
+  name: mssp_sub_account_id
+  required: false
+  type: 0
+description: Use IntSights to manage and fetch alerts
+detaileddescription: The credentials username is your user ID and the password is
+  the API key.
+display: IntSights
+name: IntSights
 script:
+  commands:
+  - arguments:
+    - default: true
+      description: The image ID
+      isArray: false
+      name: image-id
+      required: true
+      secret: false
+    description: Get's alert's image by ID
+    execution: false
+    name: intsights-get-alert-image
+  - arguments:
+    - default: true
+      description: The alert ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    description: Get alert activities
+    execution: false
+    name: intsights-get-alert-activities
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Activities.Type
+      description: The activity type
+      type: string
+    - contextPath: IntSights.Alerts.Activities.Initiator
+      description: The initiator of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Activities.CreatedDate
+      description: The alert date of creation
+      type: date
+    - contextPath: IntSights.Alerts.Activities.UpdateDate
+      description: The date the alert was updated
+      type: date
+    - contextPath: IntSights.Alerts.Activities.RemediationBlocklistUpdate
+      description: Remediation blocklist update
+      type: string
+    - contextPath: IntSights.Alerts.Activities.AskTheAnalyst.Replies
+      description: Analyst replies to questions
+      type: string
+    - contextPath: IntSights.Alerts.Activities.Mail.Replies
+      description: Mail replies
+      type: string
+    - contextPath: IntSights.Alerts.Activities.ReadBy
+      description: Alert read by
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Assigned user email
+      isArray: false
+      name: assignee-email
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If the assigned user is MSSP user or not
+      isArray: false
+      name: is-mssp-optional
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    description: Assign an alert
+    execution: false
+    name: intsights-assign-alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Assignees.AssigneeID
+      description: The ID of the assignee
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    description: Unassign an alert
+    execution: false
+    name: intsights-unassign-alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Destination email addresses array (comma-separated)
+      isArray: false
+      name: emails
+      required: true
+      secret: false
+    - default: false
+      description: Content added to the alert details
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    description: Send mail with the alert details and a question
+    execution: false
+    name: intsights-send-mail
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: Alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Mail.EmailID
+      description: The email ID
+      type: string
+    - contextPath: IntSights.Alerts.Question
+      description: The question asked
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Question to ask Intsights analyst about the requested alert
+      isArray: false
+      name: question
+      required: true
+      secret: false
+    description: Send a question to IntSights analyst about the requested alert
+    execution: false
+    name: intsights-ask-the-analyst
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: Alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Question
+      description: The question asked
+      type: string
+  - arguments:
+    - default: true
+      description: Unique alert ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: The new tag string
+      isArray: false
+      name: tag-name
+      required: true
+      secret: false
+    description: Adds a tag to the alert
+    execution: false
+    name: intsights-add-tag-to-alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Tags.TagName
+      description: The name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tags.ID
+      description: The Tag ID
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Tags's unique ID to remove
+      isArray: false
+      name: tag-id
+      required: true
+      secret: false
+    description: Removes a tag from the alert
+    execution: false
+    name: intsights-remove-tag-from-alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Tags.ID
+      description: The tag ID
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Desired comment
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    description: Add comment to alert
+    execution: false
+    name: intsights-add-comment-to-alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Comment
+      description: The comment
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The desired severity
+      isArray: false
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: true
+      secret: false
+    description: Change the alert's severity
+    execution: false
+    name: intsights-update-alert-severity
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Severity
+      description: The severity of the alert
+      type: string
+  - arguments:
+    - default: true
+      description: Alert's unique ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    description: Returns alert object by alert ID
+    execution: false
+    name: intsights-get-alert-by-id
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Severity
+      description: The alert severity
+      type: string
+    - contextPath: IntSights.Alerts.Type
+      description: The alert type
+      type: string
+    - contextPath: IntSights.Alerts.FoundDate
+      description: The date the alert was found
+      type: date
+    - contextPath: IntSights.Alerts.SourceType
+      description: The alert source type
+      type: string
+    - contextPath: IntSights.Alerts.SourceURL
+      description: The alert source URL
+      type: string
+    - contextPath: IntSights.Alerts.SourceEmail
+      description: The alert source email
+      type: string
+    - contextPath: IntSights.Alerts.SourceNetworkType
+      description: The network type of the alert
+      type: string
+    - contextPath: IntSights.Alerts.IsClosed
+      description: Whether or not the alert is closed
+      type: boolean
+    - contextPath: IntSights.Alerts.IsFlagged
+      description: Whether or not the alert is flagged
+      type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
+  - arguments:
+    - default: true
+      description: Desired IOC value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    description: Search for exact IOC value
+    execution: false
+    name: intsights-get-ioc-by-value
+    outputs:
+    - contextPath: IntSights.Iocs.ID
+      description: The IOC ID
+      type: string
+    - contextPath: IntSights.Iocs.Value
+      description: The IOC value
+      type: string
+    - contextPath: IntSights.Iocs.Type
+      description: The IOC type
+      type: string
+    - contextPath: IntSights.Iocs.FirstSeen
+      description: When the IOC was first seen
+      type: date
+    - contextPath: IntSights.Iocs.LastSeen
+      description: When the IOC was last seen
+      type: date
+    - contextPath: IntSights.Iocs.SourceID
+      description: The IOC source ID
+      type: string
+    - contextPath: IntSights.Iocs.SourceName
+      description: The IOC source name
+      type: string
+    - contextPath: IntSights.Iocs.SourceConfidenceLevel
+      description: The IOC source confidence level
+      type: string
+    - contextPath: IntSights.Iocs.Severity
+      description: The IOC severity
+      type: string
+    - contextPath: IntSights.Iocs.AccountID
+      description: The IOC account ID
+      type: string
+    - contextPath: IntSights.Iocs.Domain
+      description: The IOC domain
+      type: string
+    - contextPath: IntSights.Iocs.Status
+      description: The IOC status
+      type: string
+    - contextPath: IntSights.Iocs.Flags.IsInAlexa
+      description: Whether or not the IOC is in Alexa
+      type: boolean
+    - contextPath: IntSights.Iocs.Enrichment.Status
+      description: IOC enrichment status
+      type: string
+    - contextPath: IntSights.Iocs.Enrichment.Data
+      description: IOC enrichment data
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Data
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: IOC's type
+      isArray: false
+      name: type
+      predefined:
+      - Urls
+      - Hashes
+      - IpAddresses
+      - Domains
+      required: false
+      secret: false
+    - default: false
+      description: '"Desired number of resultsDefault value: 1000 Size range: 1-1000"'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Ioc severityAllowed values: "High", "Medium", "Low"'
+      isArray: false
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: false
+      secret: false
+    - default: false
+      description: Ioc source
+      isArray: false
+      name: source-ID
+      required: false
+      secret: false
+    - default: false
+      description: 'Beginning of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+      isArray: false
+      name: first-seen-from
+      required: false
+      secret: false
+    - default: false
+      description: 'End of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+      isArray: false
+      name: first-seen-to
+      required: false
+      secret: false
+    - default: false
+      description: 'Beginning of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+      isArray: false
+      name: last-seen-from
+      required: false
+      secret: false
+    - default: false
+      description: 'End of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+      isArray: false
+      name: last-seen-to
+      required: false
+      secret: false
+    description: Get count totals of the available IOCs
+    execution: false
+    name: intsights-get-iocs
+    outputs:
+    - contextPath: IntSights.Iocs.ID
+      description: The IOC ID
+      type: string
+    - contextPath: IntSights.Iocs.Value
+      description: The IOC value
+      type: string
+    - contextPath: IntSights.Iocs.Type
+      description: The IOC type
+      type: string
+    - contextPath: IntSights.Iocs.FirstSeen
+      description: IOC first seen
+      type: date
+    - contextPath: IntSights.Iocs.LastSeen
+      description: IOC last seen
+      type: date
+    - contextPath: IntSights.Iocs.SourceID
+      description: The IOC source ID
+      type: string
+    - contextPath: IntSights.Iocs.SourceName
+      description: The IOC source name
+      type: string
+    - contextPath: IntSights.Iocs.SourceConfidenceLevel
+      description: The IOC source confidence level
+      type: string
+    - contextPath: IntSights.Iocs.Severity
+      description: The IOC severity
+      type: string
+    - contextPath: IntSights.Iocs.AccountID
+      description: The IOC account ID
+      type: string
+    - contextPath: IntSights.Iocs.Domain
+      description: The IOC domain
+      type: string
+    - contextPath: IntSights.Iocs.Status
+      description: The IOC status
+      type: string
+    - contextPath: IntSights.Iocs.Flags.IsInAlexa
+      description: Whether or not the IOC is in Alexa
+      type: boolean
+    - contextPath: IntSights.Iocs.Enrichment.Status
+      description: IOC enrichment status
+      type: string
+    - contextPath: IntSights.Iocs.Enrichment.Data
+      description: IOC enrichment data
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Data
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Alert's type
+      isArray: false
+      name: alert-type
+      predefined:
+      - AttackIndication
+      - DataLeakage
+      - Phishing
+      - BrandSecurity
+      - ExploitableData
+      - VIP
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert's severity
+      isArray: false
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert's source type
+      isArray: false
+      name: source-type
+      predefined:
+      - ApplicationStores
+      - BlackMarkets
+      - HackingForums
+      - SocialMedia
+      - PasteSites
+      - Others
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert's network type
+      isArray: false
+      name: network-type
+      predefined:
+      - ClearWeb
+      - DarkWeb
+      required: false
+      secret: false
+    - default: false
+      description: Start date to fetch from in Unix Millisecond Timestamp
+      isArray: false
+      name: source-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End date to fetch to in Unix Millisecond Timestamp
+      isArray: false
+      name: source-date-to
+      required: false
+      secret: false
+    - default: false
+      description: Start date to fetch from in Unix Millisecond Timestamp
+      isArray: false
+      name: found-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End date to fetch to in Unix Millisecond Timestamp
+      isArray: false
+      name: found-date-to
+      required: false
+      secret: false
+    - default: false
+      description: Show assigned/unAssigned alerts
+      isArray: false
+      name: assigned
+      required: false
+      secret: false
+    - default: false
+      description: Show flagged/unflagged alerts
+      isArray: false
+      name: is-flagged
+      required: false
+      secret: false
+    - default: false
+      description: Show closed/open alerts
+      isArray: false
+      name: is-closed
+      required: false
+      secret: false
+    - default: false
+      description: Show alerts within specified time delta, given in days
+      isArray: false
+      name: time-delta
+      required: false
+      secret: false
+    description: Fetch alerts
+    execution: false
+    name: intsights-get-alerts
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Severity
+      description: The alert severity
+      type: string
+    - contextPath: IntSights.Alerts.Type
+      description: The alert type
+      type: string
+    - contextPath: IntSights.Alerts.FoundDate
+      description: The date the alert was found
+      type: date
+    - contextPath: IntSights.Alerts.SourceType
+      description: The alert source type
+      type: string
+    - contextPath: IntSights.Alerts.SourceURL
+      description: The alert source URL
+      type: string
+    - contextPath: IntSights.Alerts.SourceEmail
+      description: The alert source email
+      type: string
+    - contextPath: IntSights.Alerts.SourceNetworkType
+      description: The network type of the alert
+      type: string
+    - contextPath: IntSights.Alerts.IsClosed
+      description: Whether or not the alert is closed
+      type: boolean
+    - contextPath: IntSights.Alerts.IsFlagged
+      description: Whether or not the alert is flagged
+      type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
+  - arguments:
+    - default: true
+      description: The alert ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    description: request alert takedown
+    execution: false
+    name: intsights-alert-takedown-request
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert's ID
+      type: string
+  - arguments:
+    - default: true
+      description: The alert ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    description: Get alert takedown status
+    execution: false
+    name: intsights-get-alert-takedown-status
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The takedown status
+      type: string
+  - arguments:
+    - default: true
+      description: The alert id
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: 'Comma separated list of each IOC''s type. Options: Domains,IPs,URLs'
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of each IOC's value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: 'Comma separated list of each IOC''s blocklist status. Options:
+        Sent,NotSent'
+      isArray: false
+      name: blocklist-status
+      required: true
+      secret: false
+    description: Update IOC blocklist status
+    execution: false
+    name: intsights-update-ioc-blocklist-status
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Status
+      description: 'The blocklist status '
+      type: string
+  - arguments:
+    - default: true
+      description: The alert ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    description: Get IOC blocklist status
+    execution: false
+    name: intsights-get-ioc-blocklist-status
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Status
+      description: The blocklist status
+      type: string
+  - arguments:
+    - default: false
+      description: The alert ID
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The alert's closed reason
+      isArray: false
+      name: reason
+      predefined:
+      - ProblemSolved
+      - InformationalOnly
+      - ProblemWeAreAlreadyAwareOf
+      - CompanyOwnedDomain
+      - LegitimateApplication/Profile
+      - NotRelatedToMyCompany
+      - FalsePositive
+      - Other
+      required: true
+      secret: false
+    - default: false
+      description: The alert's comments
+      isArray: false
+      name: free-text
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'False'
+      description: The alerts' hidden status (Delete alert from the account instance
+        - only when reason is FalsePositive)
+      isArray: false
+      name: is-hidden
+      required: false
+      secret: false
+    - default: false
+      description: The alert's rate
+      isArray: false
+      name: rate
+      required: false
+      secret: false
+    description: Close an alert
+    execution: false
+    name: intsights-close-alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Closed.Reason
+      description: The alert's closed reason
+      type: string
+  - description: Get all mssp sub accounts
+    execution: false
+    name: intsights-mssp-get-sub-accounts
+    outputs:
+    - contextPath: IntSights.MsspAccount.ID
+      description: The IntSight's mssp sub account's ID
+      type: String
+    - contextPath: IntSights.MsspAccount.Status
+      description: The IntSight's mssp sub account's enabled status
+      type: String
+    - contextPath: IntSights.MsspAccount.AssetsCount
+      description: The IntSight's mssp sub account's assets count
+      type: Number
+    - contextPath: IntSights.MsspAccount.AssetLimit
+      description: The IntSight's mssp sub account's asset limit
+      type: Number
+    - contextPath: IntSights.MsspAccount.CompanyName
+      description: The IntSight's mssp sub account's company name
+      type: String
+  isfetch: true
+  runonce: false
   script: |-
     import requests
     import json
     import base64
+    from datetime import datetime
 
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
     URL = demisto.getParam('server')
@@ -68,7 +983,22 @@ script:
 
     id_and_api_key = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
     encoded_auth_key = base64.b64encode(id_and_api_key.encode("utf-8"))
-    HEADERS = {'Authorization': 'Basic ' + encoded_auth_key, 'Content-Type': 'application/json', 'Account-Id': demisto.getParam('credentials')['identifier']}
+    mssp_account_id = demisto.getParam('mssp_sub_account_id')
+
+    HEADERS = {'Authorization': 'Basic ' + encoded_auth_key, 'Content-Type': 'application/json',
+               'Account-Id': demisto.getParam('credentials')['identifier']}
+
+    # Change the Account-Id to the sub account id, so all actions will be on the sub account.
+    if mssp_account_id:
+        HEADERS['Account-Id'] = mssp_account_id
+
+    IOC_TYPE_TO_DBOT_TYPE = {
+        'IpAddresses': 'ip',
+        'Urls': 'url',
+        'Domains': 'domain',
+        'Hashes': 'hash'
+    }
+
 
     def req(method, path, json_data=None, params=None):
         """
@@ -81,20 +1011,80 @@ script:
         return r
 
 
+    def convert_iso_string_to_python_date(date_in_iso_format):
+        iso_format = "%Y-%m-%dT%H:%M:%S"
+        date_in_python_format = datetime.strptime(date_in_iso_format, iso_format)
+        return date_in_python_format
+
+
+    def convert_python_date_to_unix_millisecond(python_date_object):
+        timestamp_in_unix_millisecond = date_to_timestamp(python_date_object, 'datetime.datetime')
+        return timestamp_in_unix_millisecond
+
+
+    def increase_iso_by_x_days(date_in_iso_format, num_of_days):
+        iso_format = "%Y-%m-%dT%H:%M:%S"
+        date_in_python_format = convert_iso_string_to_python_date(date_in_iso_format)
+        new_date_in_python_format = date_in_python_format + timedelta(days=int(num_of_days))
+        new_date_in_iso_format = new_date_in_python_format.isoformat()
+        return new_date_in_iso_format
+
+
+    def remove_milliseconds_from_iso(date_in_iso_format):
+        date_parts_arr = date_in_iso_format.split('.')
+        date_in_iso_without_milliseconds = date_parts_arr[0]
+        return date_in_iso_without_milliseconds
+
+
+    def increase_timestamp_by_x_days(date_in_unix_ms_timestamp, num_of_days):
+        date_in_iso = timestamp_to_datestring(date_in_unix_ms_timestamp)
+        date_in_iso_without_ms = remove_milliseconds_from_iso(date_in_iso)
+        date_in_iso_plus_x_days = increase_iso_by_x_days(date_in_iso_without_ms, num_of_days)
+        timestamp_in_unix_ms_plus_x_days = date_to_timestamp(date_in_iso_plus_x_days)
+        return timestamp_in_unix_ms_plus_x_days
+
+
+    def update_params_with_end_and_start_date(params, oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp):
+        params['foundDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        params['foundDateTo'] = now_date_in_unix_timestamp
+        params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        params['sourceDateTo'] = now_date_in_unix_timestamp
+
+
+    def update_params_with_delta_arg(params, time_delta_in_days_int):
+        now_date_in_iso = datetime.utcnow().isoformat()
+        now_date_in_iso_without_ms = remove_milliseconds_from_iso(now_date_in_iso)
+        now_date_in_unix_timestamp = date_to_timestamp(now_date_in_iso_without_ms)
+        oldest_day_to_search_in_unix_timestamp = increase_timestamp_by_x_days(now_date_in_unix_timestamp,
+                                                                              -1 * time_delta_in_days_int)
+        update_params_with_end_and_start_date(params, oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp)
+        del params['time-delta']
+
+
+    def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
+        if 'foundDateFrom' in params or 'foundDateTo' in params:
+            demisto.debug(
+                "ERROR in get_alerts() - can't use found-date-to or found-date-from arguments with time-delta argument")
+            return_error("Error: can't assign delta when assigned both found-date-to or found-date-from")
+        else:
+            update_params_with_delta_arg(params, time_delta_in_days_int)
+        return params
+
+
     def handle_filters():
         """
         Apply filters to alert list
         """
         argsConversion = {
-            'alert-type':'alertType',
-            'source-type':'sourceType',
-            'network-type':'networkType',
-            'source-date-from':'sourceDateFrom',
-            'source-date-to':'sourceDateTo',
-            'found-date-from':'foundDateFrom',
-            'found-date-to':'foundDateTo',
-            'is-flagged':'isFlagged',
-            'is-closed':'isClosed',
+            'alert-type': 'alertType',
+            'source-type': 'sourceType',
+            'network-type': 'networkType',
+            'source-date-from': 'sourceDateFrom',
+            'source-date-to': 'sourceDateTo',
+            'found-date-from': 'foundDateFrom',
+            'found-date-to': 'foundDateTo',
+            'is-flagged': 'isFlagged',
+            'is-closed': 'isClosed',
             'source-ID': 'sourceId',
             'first-seen-from': 'firstSeenFrom',
             'first-seen-to': 'firstSeenTo',
@@ -106,6 +1096,9 @@ script:
         for k in demisto.args():
             if demisto.getArg(k):
                 params[argsConversion.get(k) or k] = demisto.getArg(k)
+        if demisto.getArg('time-delta'):
+            time_delta_in_days = demisto.getArg('time-delta')
+            update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
         return params
 
 
@@ -116,53 +1109,110 @@ script:
             r = []
         else:
             r = resp.json()
-        alerts = []
+
+        alerts_HR = []
+        alerts_ctx = []
         for alert_id in r:
-            alert_information = get_alert_by_id_helper(alert_id)
-            alerts.append(alert_information)
-        return alerts
+            alert_informationHR, alert_informationCtx = get_alert_by_id_helper(alert_id)
+            alerts_HR.append(alert_informationHR)
+            alerts_ctx.append(alert_informationCtx)
+        return alerts_HR, alerts_ctx
+
+
+    def extract_mail(replies):
+        mails = []
+        for reply in replies:
+            mails.append(reply.get('Email'))
+
+        return '\n'.join(mails)
+
+
+    def extract_remediation(remidiations):
+        remdies = []
+        string_format = "{0} - Status: {1}"
+        for remdy in remidiations:
+            remdies.append(string_format.format(remdy.get('Value'), remdy.get('Status')))
+
+        return '\n'.join(remdies)
+
+
+    def hash_identifier(hash_val):
+        if md5Regex.match(hash_val):
+            return 'MD5'
+        elif sha1Regex.match(hash_val):
+            return 'SHA1'
+        elif sha256Regex.match(hash_val):
+            return 'SHA256'
+        return 'Unknown'
+
+
+    def extract_tags(tags):
+        pretty_tags = []
+        string_format = "ID: {0} - Name: {1}"
+        for tag in tags:
+            pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
+        return pretty_tags
 
 
     def get_alerts():
         """
         Gets all alerts and returns as a list.
         """
-        alerts = get_alerts_helper(handle_filters())
+        alerts_HR, alerts_ctx = get_alerts_helper(handle_filters())
 
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts},
-            'Contents': alerts,
-            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_ctx},
+            'Contents': alerts_ctx,
+            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_HR,
+                                             ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
+                                              'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
+                                              'Description', 'Title', 'TakedownStatus', 'SubType'], removeNull=False),
             'ContentsFormat': formats['json']
         })
 
 
-    def alert_to_readable(r):
+    def alert_to_readable(r, parse_tags):
         """
         Convert alert to readable format
         """
-        return {
-            'ID': demisto.get(r,'_id'),
-            'Severity': demisto.get(r,'Details.Severity'),
-            'Type': demisto.get(r,'Details.Type'),
-            'FoundDate': demisto.get(r,'FoundDate'),
-            'SourceType': demisto.get(r,'Details.Source.Type'),
-            'SourceURL': demisto.get(r,'Details.Source.URL'),
-            'SourceEmail': demisto.get(r,'Details.Source.Email'),
-            'SourceNetworkType': demisto.get(r,'Details.Source.NetworkType'),
-            'IsClosed': demisto.get(r,'IsClosed'),
-            'IsFlagged': demisto.get(r,'IsFlagged'),
-            'Assets': demisto.get(r,'Assets')
+
+        readable = {
+            'ID': demisto.get(r, '_id'),
+            'Severity': demisto.get(r, 'Details.Severity'),
+            'Type': demisto.get(r, 'Details.Type'),
+            'FoundDate': demisto.get(r, 'FoundDate'),
+            'SourceType': demisto.get(r, 'Details.Source.Type'),
+            'SourceURL': demisto.get(r, 'Details.Source.URL'),
+            'SourceEmail': demisto.get(r, 'Details.Source.Email'),
+            'SourceNetworkType': demisto.get(r, 'Details.Source.NetworkType'),
+            'IsClosed': demisto.get(r, 'IsClosed'),
+            'IsFlagged': demisto.get(r, 'IsFlagged'),
+            'Assets': demisto.get(r, 'Assets'),
+            'Images': demisto.get(r, 'Details.Images'),
+            'Description': demisto.get(r, 'Details.Description'),
+            'Title': demisto.get(r, 'Details.Title'),
+            'TakedownStatus': demisto.get(r, 'TakedownStatus'),
+            'SubType': demisto.get(r, 'Details.SubType')
         }
+
+        tags = demisto.get(r, 'Details.Tags')
+        if parse_tags:
+            readable['Tags'] = extract_tags(tags)
+        else:
+            readable['Tag'] = []
+            for tag in tags:
+                readable['Tag'].append({'ID': tag.get('_id'), 'Name': tag.get('Name')})
+
+        return readable
 
 
     def get_alert_by_id_helper(alert_id):
         """
         Helper for getting details by ID
         """
-        r = req('GET', 'public/v1/data/alerts/get-alert/' + alert_id).json()
-        return alert_to_readable(r)
+        r = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id).json()
+        return alert_to_readable(r, True), alert_to_readable(r, False)
 
 
     def get_alert_by_id():
@@ -170,12 +1220,15 @@ script:
         Get alert details by id
         """
         alert_id = demisto.getArg('alert-id')
-        activity = get_alert_by_id_helper(alert_id)
+        activity_hr, activity_ctx = get_alert_by_id_helper(alert_id)
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity},
-            'Contents': activity,
-            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': activity_ctx},
+            'Contents': activity_hr,
+            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr],
+                                             ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
+                                              'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
+                                              'Description', 'Title', 'TakedownStatus', 'SubType']),
             'ContentsFormat': formats['json']
         })
 
@@ -195,14 +1248,16 @@ script:
         """
         alert_id = demisto.getArg('alert-id')
         question = demisto.getArg('question')
-        r = req('POST', 'public/v1/data/alerts/ask-the-analyst/'+ alert_id, json_data={'Question':question})
+        r = req('POST', 'public/v1/data/alerts/ask-the-analyst/' + alert_id, json_data={'Question': question})
         question_details = {'ID': alert_id, 'Question': question}
         demisto.results(
             {
                 'Type': entryTypes['note'],
                 'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': question_details},
                 'Contents': question_details,
-                'HumanReadable': tableToMarkdown('IntSights Ask the Analyst: Your question has been successfully sent to an analyst about the requested alert', [question_details], ['ID', 'Question']),
+                'HumanReadable': tableToMarkdown(
+                    'IntSights Ask the Analyst: Your question has been successfully sent to an analyst about the requested alert',
+                    [question_details], ['ID', 'Question']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -216,24 +1271,39 @@ script:
         r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id).json()
         activities = []
 
+        human_readables = []
         alert = {'ID': alert_id, 'Activities': []}
         for k in r:
             alert['Activities'].append({
-                'ID': demisto.get(k,'_id'),
+                'ID': demisto.get(k, '_id'),
                 'Type': demisto.get(k, 'Type'),
-                'Initiator': demisto.get(k,'Initiator'),
-                'CreatedDate': demisto.get(k,'CreatedDate'),
-                'UpdateDate': demisto.get(k,'UpdateDate'),
-                'RemediationBlocklistUpdate': demisto.get(k,'AdditionalInformation.RemediationBlocklistUpdate'),
-                'AskTheAnalyst': {'Replies': demisto.get(k,'AdditionalInformation.AskTheAnalyst.Replies')},
-                'Mail': {'Replies': demisto.get(k,'AdditionalInformation.Mail.Replies')},
-                'ReadBy': demisto.get(k,'ReadBy')
+                'Initiator': demisto.get(k, 'Initiator'),
+                'CreatedDate': demisto.get(k, 'CreatedDate'),
+                'UpdateDate': demisto.get(k, 'UpdateDate'),
+                'RemediationBlocklistUpdate': demisto.get(k, 'AdditionalInformation.RemediationBlocklistUpdate'),
+                'AskTheAnalyst': {'Replies': demisto.get(k, 'AdditionalInformation.AskTheAnalyst.Replies')},
+                'Mail': {'Replies': demisto.get(k, 'AdditionalInformation.Mail.Replies')},
+                'ReadBy': demisto.get(k, 'ReadBy')
+            })
+            human_readables.append({
+                'ID': demisto.get(k, '_id'),
+                'Type': demisto.get(k, 'Type'),
+                'Initiator': demisto.get(k, 'Initiator'),
+                'CreatedDate': demisto.get(k, 'CreatedDate'),
+                'UpdateDate': demisto.get(k, 'UpdateDate'),
+                'RemediationBlocklistUpdate': extract_remediation(
+                    demisto.get(k, 'AdditionalInformation.RemediationBlocklistUpdate')),
+                'AskTheAnalyst': {'Replies': demisto.get(k, 'AdditionalInformation.AskTheAnalyst.Replies')},
+                'Mail': extract_mail(demisto.get(k, 'AdditionalInformation.Mail.Replies')),
+                'ReadBy': demisto.get(k, 'ReadBy')
             })
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
             'Contents': r,
-            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', alert['Activities'], ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate', 'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
+            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readables,
+                                             ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
+                                              'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
             'ContentsFormat': formats['json']
         })
 
@@ -244,15 +1314,18 @@ script:
         """
         alert_id = demisto.getArg('alert-id')
         severity = demisto.getArg('severity')
-        r = req('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data = {'Severity': severity})
+        r = req('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data={'Severity': severity})
         severity_details = {'ID': alert_id, 'Severity': severity}
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': severity_details},
             'Contents': severity_details,
-            'HumanReadable': tableToMarkdown('IntSights Update Alert Severity: The Alert severity has been successfully updated.', [severity_details], ['ID', 'Severity']),
+            'HumanReadable': tableToMarkdown(
+                'IntSights Update Alert Severity: The Alert severity has been successfully updated.', [severity_details],
+                ['ID', 'Severity']),
             'ContentsFormat': formats['json']
         })
+
 
     def get_assignee_id(assignee_email):
         r = req('GET', 'public/v1/account/users-details')
@@ -262,6 +1335,7 @@ script:
                 return user.get('_id')
 
         raise Exception('user not found')
+
 
     def assign_alert():
         """
@@ -276,12 +1350,14 @@ script:
         url = 'public/v1/data/alerts/assign-alert/' + alert_id
         if is_mssp:
             url += '?IsMssp=' + is_mssp
-        r = req('PATCH', url, json_data = {'AssigneeID': assignee_id})
+        r = req('PATCH', url, json_data={'AssigneeID': assignee_id})
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': assign_details},
             'Contents': assign_details,
-            'HumanReadable': tableToMarkdown('IntSights Assign Alert: The Alert has been successfully assigned to assigneeID', [assign_details], ['ID', 'Assignees.AssigneeID']),
+            'HumanReadable': tableToMarkdown(
+                'IntSights Assign Alert: The Alert has been successfully assigned to assigneeID', [assign_details],
+                ['ID', 'Assignees.AssigneeID']),
             'ContentsFormat': formats['json']
         })
 
@@ -310,8 +1386,10 @@ script:
         free_text = demisto.getArg('free-text')
         is_hidden = demisto.getArg('is-hidden')
         rate = demisto.getArg('rate')
-        close_details = {'ID': alert_id, 'Close Reason': reason, 'Closed FreeText': free_text, 'Closed Rate': rate, 'IsHidden': is_hidden}
-        close_details_context = {'ID': alert_id, 'Closed': {'Reason': reason, 'FreeText': free_text, 'Rate': rate}, 'IsHidden': is_hidden}
+        close_details = {'ID': alert_id, 'Close Reason': reason, 'Closed FreeText': free_text, 'Closed Rate': rate,
+                         'IsHidden': is_hidden}
+        close_details_context = {'ID': alert_id, 'Closed': {'Reason': reason, 'FreeText': free_text, 'Rate': rate},
+                                 'IsHidden': is_hidden}
         url = 'public/v1/data/alerts/close-alert/' + alert_id
         json_data = {'Reason': reason}
 
@@ -327,7 +1405,9 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': close_details},
             'Contents': close_details_context,
-            'HumanReadable': tableToMarkdown('IntSights Close Alert: The Alert has successfully been closed.', [close_details], ['ID', 'Close Reason', 'Closed FreeText', 'Closed Rate', 'IsHidden']),
+            'HumanReadable': tableToMarkdown('IntSights Close Alert: The Alert has successfully been closed.',
+                                             [close_details],
+                                             ['ID', 'Close Reason', 'Closed FreeText', 'Closed Rate', 'IsHidden']),
             'ContentsFormat': formats['json']
         })
 
@@ -339,7 +1419,7 @@ script:
         alert_id = demisto.getArg('alert-id')
         emails = argToList(demisto.getArg('emails'))
         content = demisto.getArg('content')
-        r = req('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails,'Content': content})
+        r = req('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails, 'Content': content})
         ec = {
             'ID': alert_id,
             'EmailID': emails,
@@ -436,40 +1516,78 @@ script:
         Convert IOC to readable format
         """
         ioc_context = {
-            'ID': demisto.get(r,'_id'),
-            'SourceID': demisto.get(r,'SourceID'),
-            'AccountID': demisto.get(r,'AccountID'),
-            'Type': demisto.get(r,'Type'),
-            'Value': demisto.get(r,'Value'),
-            'FirstSeen': demisto.get(r,'FirstSeen'),
-            'LastSeen': demisto.get(r,'LastSeen'),
-            'Domain': demisto.get(r,'Domain'),
-            'Status': demisto.get(r,'Status'),
-            'Severity': demisto.get(r,'Severity'),
+            'ID': demisto.get(r, '_id'),
+            'SourceID': demisto.get(r, 'SourceID'),
+            'AccountID': demisto.get(r, 'AccountID'),
+            'Type': demisto.get(r, 'Type'),
+            'Value': demisto.get(r, 'Value'),
+            'FirstSeen': demisto.get(r, 'FirstSeen'),
+            'LastSeen': demisto.get(r, 'LastSeen'),
+            'Domain': demisto.get(r, 'Domain'),
+            'Status': demisto.get(r, 'Status'),
+            'Severity': demisto.get(r, 'Severity'),
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'Flags': {'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa')},
-            'Enrichment': {'Status': demisto.get(r, 'Enrichment.Status')},
-            'Enrichment': {'Date': demisto.get(r, 'Enrichment.Data')}
+            'Enrichment': {
+                'Status': demisto.get(r, 'Enrichment.Status'),
+                'Data': demisto.get(r, 'Enrichment.Data'),
+                'Date': demisto.get(r, 'Enrichment.Data')  # Backwards compatability issue
+            }
         }
         ioc_readable = {
-            'ID': demisto.get(r,'_id'),
-            'SourceID': demisto.get(r,'SourceID'),
-            'AccountID': demisto.get(r,'AccountID'),
-            'Type': demisto.get(r,'Type'),
-            'Value': demisto.get(r,'Value'),
-            'FirstSeen': demisto.get(r,'FirstSeen'),
-            'LastSeen': demisto.get(r,'LastSeen'),
-            'Domain': demisto.get(r,'Domain'),
-            'Status': demisto.get(r,'Status'),
-            'Severity': demisto.get(r,'Severity'),
+            'ID': demisto.get(r, '_id'),
+            'SourceID': demisto.get(r, 'SourceID'),
+            'AccountID': demisto.get(r, 'AccountID'),
+            'Type': demisto.get(r, 'Type'),
+            'Value': demisto.get(r, 'Value'),
+            'FirstSeen': demisto.get(r, 'FirstSeen'),
+            'LastSeen': demisto.get(r, 'LastSeen'),
+            'Domain': demisto.get(r, 'Domain'),
+            'Status': demisto.get(r, 'Status'),
+            'Severity': demisto.get(r, 'Severity').get('Value'),
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
             'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
-            'Enrichment Date': demisto.get(r, 'Enrichment.Data')
+            'Enrichment Data': demisto.get(r, 'Enrichment.Data')
         }
-        return ioc_context, ioc_readable
+        dbot_score = {
+            'Indicator': ioc_context['Value'],
+            'Type': IOC_TYPE_TO_DBOT_TYPE[ioc_context['Type']],
+            'Vendor': 'IntSights',
+            'Score': translate_severity(ioc_readable['Severity'])
+        }
+        malicious_dict = {
+            'Vendor': 'IntSights',
+            'Description': 'IntSights severity level is High'
+        }
+        domain = {}
+        if ioc_context['Domain']:
+            domain['Name'] = ioc_context['Domain']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                domain['Malicious'] = malicious_dict
+
+        ip_info = {}
+        if ioc_context['Type'] == 'IpAddresses':
+            ip_info['Address'] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                ip_info['Malicious'] = malicious_dict
+
+        url_info = {}
+        if ioc_context['Type'] == 'Urls':
+            url_info['Data'] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                url_info['Malicious'] = malicious_dict
+
+        hash_info = {}
+        if ioc_context['Type'] == 'Hashes':
+            hash_info['Name'] = ioc_context['Value']
+            hash_info[hash_identifier(ioc_context['Value'])] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                hash_info['Malicious'] = malicious_dict
+
+        return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
 
 
     def search_for_IOC():
@@ -477,14 +1595,43 @@ script:
         Search for IOC by value
         """
         value = demisto.getArg('value')
-        r = req('GET', 'public/v1/iocs/ioc-by-value', handle_filters()).json()
-        ioc_context, ioc_readable = IOC_to_readable(r)
+        r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters())
+
+        if r.status_code != 204:
+            r = r.json()
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(r)
+
+            demisto.results(
+                {
+                    'Type': entryTypes['note'],
+                    'EntryContext': {
+                        'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                        'DBotScore': dbot_score,
+                        'Domain': domain,
+                        'IP': ip_info,
+                        'URL': url_info,
+                        'File': hash_info
+                    },
+                    'Contents': r,
+                    'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable],
+                                                     ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen',
+                                                      'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName',
+                                                      'SourceConfidence', 'IsInAlexa', 'Enrichment Status',
+                                                      'Enrichment Data']),
+                    'ContentsFormat': formats['json']
+                }
+            )
+        else:
+            results_for_no_content('IOC Information')
+
+
+    def results_for_no_content(cmd_name):
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': ioc_context},
-                'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                'EntryContext': {'IntSights': {}},
+                'Contents': {},
+                'HumanReadable': '### {} \n\n Could not get any results.'.format(cmd_name),
                 'ContentsFormat': formats['json']
             }
         )
@@ -494,12 +1641,10 @@ script:
         """
         Translate alert severity to demisto
         """
-        if sev == 'High':
+        if sev == 'High' or sev == 'Medium':
             return 3
-        elif sev == 'Medium':
-            return 2
         elif sev == 'Low':
-            return 1
+            return 2
         return 0
 
 
@@ -517,9 +1662,9 @@ script:
             demisto.args()['is-closed'] = False
 
         demisto.args()['alert-type'] = demisto.getParam('type')
-        alerts = get_alerts_helper(handle_filters())
+        alerts_HR, alerts_ctx = get_alerts_helper(handle_filters())
         incidents = []
-        for alert in alerts:
+        for alert in alerts_ctx:
             incidents.append({
                 'name': alert['Type'] + ' - ' + alert['ID'],
                 'occurred': alert['FoundDate'],
@@ -535,18 +1680,38 @@ script:
         Gets all IOCs with the given filters
         """
         r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters()).json()
+        domains = []
+        ip_infos = []
+        url_infos = []
+        hash_infos = []
+        dbot_scores = []
         iocs_context = []
         iocs_readable = []
         for k in r:
-            ioc_context, ioc_readable = IOC_to_readable(k)
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(k)
             iocs_context.append(ioc_context)
             iocs_readable.append(ioc_readable)
+            dbot_scores.append(dbot_score)
+            domains.append(domain)
+            ip_infos.append(ip_info)
+            url_infos.append(url_info)
+            hash_infos.append(hash_info)
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': iocs_context},
+                'EntryContext': {
+                    'IntSights.Iocs': iocs_context,
+                    'DBotScore': dbot_scores,
+                    'Domain': domains,
+                    'IP': ip_infos,
+                    'URL': url_info,
+                    'File': hash_info
+                },
                 'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable,
+                                                 ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen',
+                                                  'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence',
+                                                  'IsInAlexa', 'Enrichment Status', 'Enrichment Data']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -565,7 +1730,8 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
             'Contents': ec,
-            'HumanReadable': '### IntSights Alert Takedown\n' + 'The Alert Takedown request has been sent successfully for ' + str(alert_id),
+            'HumanReadable': '### IntSights Alert Takedown\n' + 'The Alert Takedown request has been sent successfully for ' + str(
+                alert_id),
             'ContentsFormat': formats['json']
         })
 
@@ -608,7 +1774,8 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': statuses}},
             'Contents': {'ID': alert_id, 'Status': statuses},
-            'HumanReadable': tableToMarkdown('IntSights Update IOC BlockList Status for ' + alert_id, data, ['BlocklistStatus']),
+            'HumanReadable': tableToMarkdown('IntSights Update IOC BlockList Status for ' + alert_id, data,
+                                             ['BlocklistStatus']),
             'ContentsFormat': formats['json']
         })
 
@@ -618,17 +1785,62 @@ script:
         r = req('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id).json()
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'Insights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
+            'EntryContext': {
+                'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
             'Contents': r,
             'HumanReadable': tableToMarkdown('IntSights Blocklist Status for ' + alert_id, r, ['Status']),
             'ContentsFormat': formats['json']
         })
 
 
+    def get_mssp_sub_accounts():
+        account_id = demisto.getParam('credentials')['identifier']
+        accounts = req('GET', 'public/v1/mssp/customers').json()
+        if not accounts:
+            return_error("intsights-mssp-get-sub-accounts failed to return data.")
+
+        # Fix accounts _id keys
+        for account in accounts:
+            account["ID"] = account["_id"]
+            del account["_id"]
+
+        if len(accounts) < 1:
+            return_error('Current MSSP Account has no sub accounts.')
+
+        account_ids = [i["ID"] for i in accounts]
+        if mssp_account_id not in account_ids:
+            demisto.log("[DEBUG] - MSSP sub accounts:" + str(accounts))
+            return_error('Entered sub account id ({}) is not part of this mssp account'.format(mssp_account_id))
+
+        for i, account in enumerate(account_ids):
+            # Call account
+            HEADERS['Account-Id'] = account
+            account_ua = req('GET', 'public/v1/account/used-assets').json()
+
+            if not account_ua:
+                continue
+
+            accounts[i].update(account_ua)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'IntSights.MsspAccount(val.ID === obj.ID)': accounts},
+            'HumanReadable': tableToMarkdown('IntSights MSSP accounts used assets ' + account_id, [a for a in accounts],
+                                             ["ID", 'CompanyName', "Status", "AssetsLimit", "AssetsCount"]),
+            'Contents': accounts,
+            'ContentsFormat': formats['json']
+        })
+
+        # Restore the header
+        HEADERS['Account-Id'] = mssp_account_id
+
+
     if demisto.command() == 'test-module':
         req('GET', 'public/v1/api/version')
         demisto.results('ok')
-    elif demisto.command() =='intsights-get-alerts':
+    elif demisto.command() == 'intsights-mssp-get-sub-accounts':
+        get_mssp_sub_accounts()
+    elif demisto.command() == 'intsights-get-alerts':
         get_alerts()
     elif demisto.command() == 'intsights-get-alert-image':
         get_alert_image()
@@ -671,547 +1883,6 @@ script:
     else:
         return_error('Unrecognized command: ' + demisto.command())
   type: python
-  commands:
-  - name: intsights-get-alert-image
-    arguments:
-    - name: image-id
-      required: true
-      default: true
-      description: The image ID
-    description: Get's alert's image by ID
-  - name: intsights-get-alert-activities
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: The alert ID
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Activities.Type
-      description: The activity type
-      type: string
-    - contextPath: IntSights.Alerts.Activities.Initiator
-      description: The initiator of the alert
-      type: string
-    - contextPath: IntSights.Alerts.Activities.CreatedDate
-      description: The alert date of creation
-      type: date
-    - contextPath: IntSights.Alerts.Activities.UpdateDate
-      description: The date the alert was updated
-      type: date
-    - contextPath: IntSights.Alerts.Activities.RemediationBlocklistUpdate
-      description: Remediation blocklist update
-      type: string
-    - contextPath: IntSights.Alerts.Activities.AskTheAnalyst.Replies
-      description: Analyst replies to questions
-      type: string
-    - contextPath: IntSights.Alerts.Activities.Mail.Replies
-      description: Mail replies
-      type: string
-    - contextPath: IntSights.Alerts.Activities.ReadBy
-      description: Alert read by
-      type: string
-    description: Get alert activities
-  - name: intsights-assign-alert
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    - name: assignee-email
-      required: true
-      description: Assigned user email
-    - name: is-mssp-optional
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: If the assigned user is MSSP user or not
-      defaultValue: "false"
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Assignees.AssigneeID
-      description: The ID of the assignee
-      type: string
-    description: Assign an alert
-  - name: intsights-unassign-alert
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    description: Unassign an alert
-  - name: intsights-send-mail
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    - name: emails
-      required: true
-      description: Destination email addresses array (comma-separated)
-    - name: content
-      required: true
-      description: Content added to the alert details
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: Alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Mail.EmailID
-      description: The email ID
-      type: string
-    - contextPath: IntSights.Alerts.Question
-      description: The question asked
-      type: string
-    description: Send mail with the alert details and a question
-  - name: intsights-ask-the-analyst
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    - name: question
-      required: true
-      description: Question to ask Intsights analyst about the requested alert
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: Alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Question
-      description: The question asked
-      type: string
-    description: Send a question to IntSights analyst about the requested alert
-  - name: intsights-add-tag-to-alert
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Unique alert ID
-    - name: tag-name
-      required: true
-      description: The new tag string
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Tags.TagName
-      description: The name of the tag
-      type: string
-    - contextPath: IntSights.Alerts.Tags.ID
-      description: The Tag ID
-      type: string
-    description: Adds a tag to the alert
-  - name: intsights-remove-tag-from-alert
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    - name: tag-id
-      required: true
-      description: Tags's unique ID to remove
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Tags.ID
-      description: The tag ID
-      type: string
-    description: ' Removes a tag from the alert'
-  - name: intsights-add-comment-to-alert
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    - name: comment
-      required: true
-      description: Desired comment
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Comment
-      description: The comment
-      type: string
-    description: Add comment to alert
-  - name: intsights-update-alert-severity
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    - name: severity
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - High
-      - Medium
-      - Low
-      description: The desired severity
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Severity
-      description: The severity of the alert
-      type: string
-    description: Change the alert's severity
-  - name: intsights-get-alert-by-id
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: Alert's unique ID
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Severity
-      description: The alert severity
-      type: string
-    - contextPath: IntSights.Alerts.Type
-      description: The alert type
-      type: string
-    - contextPath: IntSights.Alerts.FoundDate
-      description: The date the alert was found
-      type: date
-    - contextPath: IntSights.Alerts.SourceType
-      description: The alert source type
-      type: string
-    - contextPath: IntSights.Alerts.SourceURL
-      description: The alert source URL
-      type: string
-    - contextPath: IntSights.Alerts.SourceEmail
-      description: The alert source email
-      type: string
-    - contextPath: IntSights.Alerts.SourceNetworkType
-      description: The network type of the alert
-      type: string
-    - contextPath: IntSights.Alerts.IsClosed
-      description: Whether or not the alert is closed
-      type: boolean
-    - contextPath: IntSights.Alerts.IsFlagged
-      description: Whether or not the alert is flagged
-      type: boolean
-    description: Returns alert object by alert ID
-  - name: intsights-get-ioc-by-value
-    arguments:
-    - name: value
-      required: true
-      default: true
-      description: Desired IOC value
-    outputs:
-    - contextPath: IntSights.Iocs.ID
-      description: The IOC ID
-      type: string
-    - contextPath: IntSights.Iocs.Value
-      description: The IOC value
-      type: string
-    - contextPath: IntSights.Iocs.Type
-      description: The IOC type
-      type: string
-    - contextPath: IntSights.Iocs.FirstSeen
-      description: When the IOC was first seen
-      type: date
-    - contextPath: IntSights.Iocs.LastSeen
-      description: When the IOC was last seen
-      type: date
-    - contextPath: IntSights.Iocs.SourceID
-      description: The IOC source ID
-      type: string
-    - contextPath: IntSights.Iocs.SourceName
-      description: The IOC source name
-      type: string
-    - contextPath: IntSights.Iocs.SourceConfidenceLevel
-      description: The IOC source confidence level
-      type: string
-    - contextPath: IntSights.Iocs.Severity
-      description: The IOC severity
-      type: string
-    - contextPath: IntSights.Iocs.AccountID
-      description: The IOC account ID
-      type: string
-    - contextPath: IntSights.Iocs.Domain
-      description: The IOC domain
-      type: string
-    - contextPath: IntSights.Iocs.Status
-      description: The IOC status
-      type: string
-    - contextPath: IntSights.Iocs.Flags.IsInAlexa
-      description: Whether or not the IOC is in Alexa
-      type: boolean
-    - contextPath: IntSights.Iocs.Enrichment.Status
-      description: IOC enrichment status
-      type: string
-    - contextPath: IntSights.Iocs.Enrichment.Data
-      description: IOC enrichment data
-      type: string
-    description: Search for exact IOC value
-  - name: intsights-get-iocs
-    arguments:
-    - name: type
-      auto: PREDEFINED
-      predefined:
-      - Urls
-      - Hashes
-      - IpAddresses
-      - Domains
-      description: IOC's type
-    - name: limit
-      description: '"Desired number of resultsDefault value: 1000 Size range: 1-1000"'
-    - name: severity
-      auto: PREDEFINED
-      predefined:
-      - High
-      - Medium
-      - Low
-      description: 'Ioc severityAllowed values: "High", "Medium", "Low"'
-    - name: source-ID
-      description: Ioc source
-    - name: first-seen-from
-      description: 'Beginning of the date range when the IOC first seen in the following string format - MM/DD/YYYY
-        Default value: 0'
-    - name: first-seen-to
-      description: 'End of the date range when the IOC first seen in the following string format - MM/DD/YYYY
-        Default value: 0'
-    - name: last-seen-from
-      description: 'Beginning of the date range when the IOC last seen in the following string format - MM/DD/YYYY
-        Default value: 0'
-    - name: last-seen-to
-      description: 'End of the date range when the IOC last seen in the following string format - MM/DD/YYYY
-        Default value: 0'
-    outputs:
-    - contextPath: IntSights.Iocs.ID
-      description: The IOC ID
-      type: string
-    - contextPath: IntSights.Iocs.Value
-      description: The IOC value
-      type: string
-    - contextPath: IntSights.Iocs.Type
-      description: The IOC type
-      type: string
-    - contextPath: IntSights.Iocs.FirstSeen
-      description: IOC first seen
-      type: date
-    - contextPath: IntSights.Iocs.LastSeen
-      description: IOC last seen
-      type: date
-    - contextPath: IntSights.Iocs.SourceID
-      description: The IOC source ID
-      type: string
-    - contextPath: IntSights.Iocs.SourceName
-      description: The IOC source name
-      type: string
-    - contextPath: IntSights.Iocs.SourceConfidenceLevel
-      description: The IOC source confidence level
-      type: string
-    - contextPath: IntSights.Iocs.Severity
-      description: The IOC severity
-      type: string
-    - contextPath: IntSights.Iocs.AccountID
-      description: The IOC account ID
-      type: string
-    - contextPath: IntSights.Iocs.Domain
-      description: The IOC domain
-      type: string
-    - contextPath: IntSights.Iocs.Status
-      description: The IOC status
-      type: string
-    - contextPath: IntSights.Iocs.Flags.IsInAlexa
-      description: Whether or not the IOC is in Alexa
-      type: boolean
-    - contextPath: IntSights.Iocs.Enrichment.Status
-      description: IOC enrichment status
-      type: string
-    - contextPath: IntSights.Iocs.Enrichment.Data
-      description: IOC enrichment data
-      type: string
-    description: Get count totals of the available IOCs
-  - name: intsights-get-alerts
-    arguments:
-    - name: alert-type
-      auto: PREDEFINED
-      predefined:
-      - AttackIndication
-      - DataLeakage
-      - Phishing
-      - BrandSecurity
-      - ExploitableData
-      - VIP
-      description: Alert's type
-    - name: severity
-      auto: PREDEFINED
-      predefined:
-      - High
-      - Medium
-      - Low
-      description: Alert's severity
-    - name: source-type
-      auto: PREDEFINED
-      predefined:
-      - ApplicationStores
-      - BlackMarkets
-      - HackingForums
-      - SocialMedia
-      - PasteSites
-      - Others
-      description: Alert's source type
-    - name: network-type
-      auto: PREDEFINED
-      predefined:
-      - ClearWeb
-      - DarkWeb
-      description: Alert's network type
-    - name: source-date-from
-      description: Start date to fetch from in Unix Millisecond Timestamp
-    - name: source-date-to
-      description: End date to fetch to in Unix Millisecond Timestamp
-    - name: found-date-from
-      description: Start date to fetch from in Unix Millisecond Timestamp
-    - name: found-date-to
-      description: End date to fetch to in Unix Millisecond Timestamp
-    - name: assigned
-      description: Show assigned/unAssigned alerts
-    - name: is-flagged
-      description: Show flagged/unflagged alerts
-    - name: is-closed
-      description: Show closed/open alerts
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Severity
-      description: The alert severity
-      type: string
-    - contextPath: IntSights.Alerts.Type
-      description: The alert type
-      type: string
-    - contextPath: IntSights.Alerts.FoundDate
-      description: The date the alert was found
-      type: date
-    - contextPath: IntSights.Alerts.SourceType
-      description: The alert source type
-      type: string
-    - contextPath: IntSights.Alerts.SourceURL
-      description: The alert source URL
-      type: string
-    - contextPath: IntSights.Alerts.SourceEmail
-      description: The alert source email
-      type: string
-    - contextPath: IntSights.Alerts.SourceNetworkType
-      description: The network type of the alert
-      type: string
-    - contextPath: IntSights.Alerts.IsClosed
-      description: Whether or not the alert is closed
-      type: boolean
-    - contextPath: IntSights.Alerts.IsFlagged
-      description: Whether or not the alert is flagged
-      type: boolean
-    description: Fetch alerts
-  - name: intsights-alert-takedown-request
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: The alert ID
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert's ID
-      type: string
-    description: request alert takedown
-  - name: intsights-get-alert-takedown-status
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: The alert ID
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.TakedownStatus
-      description: The takedown status
-      type: string
-    description: Get alert takedown status
-  - name: intsights-update-ioc-blocklist-status
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: The alert id
-    - name: type
-      required: true
-      description: 'Comma separated list of each IOC''s type. Options: Domains,IPs,URLs'
-    - name: value
-      required: true
-      description: Comma separated list of each IOC's value
-    - name: blocklist-status
-      required: true
-      description: 'Comma separated list of each IOC''s blocklist status. Options:
-        Sent,NotSent'
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Status
-      description: 'The blocklist status '
-      type: string
-    description: Update IOC blocklist status
-  - name: intsights-get-ioc-blocklist-status
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
-      description: The alert ID
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Status
-      description: The blocklist status
-      type: string
-    description: Get IOC blocklist status
-  - name: intsights-close-alert
-    arguments:
-    - name: alert-id
-      required: true
-      description: The alert ID
-    - name: reason
-      auto: PREDEFINED
-      required: true
-      predefined:
-      - ProblemSolved
-      - InformationalOnly
-      - ProblemWeAreAlreadyAwareOf
-      - CompanyOwnedDomain
-      - LegitimateApplication/Profile
-      - NotRelatedToMyCompany
-      - FalsePositive
-      - Other
-      description: The alert's closed reason
-    - name: free-text
-      description: The alert's comments
-    - name: is-hidden
-      description: The alerts' hidden status (Delete alert from the account instance - only when reason is FalsePositive)
-      defaultValue: "False"
-    - name: rate
-      description: The alert's rate
-    outputs:
-    - contextPath: IntSights.Alerts.ID
-      description: The alert ID
-      type: string
-    - contextPath: IntSights.Alerts.Closed.Reason
-      description: The alert's closed reason
-      type: string
-    description: Close an alert
-  isfetch: true
-  runonce: false
+image: data:image/png;base64,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
+tests:
+- IntSights Test

@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # validating that each modified file has a valid schema, release notes, proper prefix & suffix
-echo "Validating files"
-python Tests/scripts/validate_files_structure.py
+echo "Validating files..."
+PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py
 
 if [[ $? -ne 0 ]]
-then
+  then
     echo "Please fix the aforementioned errors and then commit again"
     exit 1
 fi
+
 
 # prevent push to master
 if [ -z "$1"  ]; then

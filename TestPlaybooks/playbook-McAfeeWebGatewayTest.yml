@@ -265,7 +265,7 @@ tasks:
       list_id:
         simple: com.scur.type.string.263
       name:
-        simple: ${incident.created}
+        simple: escaping <, > and & worked on ${incident.created}
     view: |-
       {
         "position": {

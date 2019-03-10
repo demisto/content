@@ -9,6 +9,9 @@ DEFAULT_TIMEOUT = 60
 DEFAULT_INTERVAL = 20
 ENTRY_TYPE_ERROR = 4
 
+INC_CREATION_ERR = 'Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and ' \
+                   'the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.'
+
 
 class PB_Status:
     COMPLETED = 'completed'
@@ -125,27 +128,29 @@ def __create_incident_with_playbook(client, name, playbook_id):
     # create incident
     kwargs = {'createInvestigation': True, 'playbookId': playbook_id}
     try:
-        r = client.CreateIncident(name, None, None, None, None,
-                         None, None, **kwargs)
+        r = client.CreateIncident(name, None, None, None, None, None, None, **kwargs)
     except RuntimeError as err:
         print_error(str(err))
 
     response_json = r.json()
     inc_id = response_json['id']
 
+    if inc_id == 'incCreateErr':
+        print_error(INC_CREATION_ERR)
+        return False, -1
+
     # get incident
     incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
 
-    # poll up to 1 second
-    timeout = time.time() + 10
+    # poll the incidents queue for a max time of 25 seconds
+    timeout = time.time() + 25
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
-            if inc_id == 'incCreateErr':
-                print_error('Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
-                return False, -1
-            print_error('failed to get incident with id:' + inc_id)
+            print_error('Got timeout for searching incident with id {}, '
+                        'got {} incidents in the search'.format(inc_id, incidents['total']))
             return False, -1
+
         time.sleep(1)
 
     return incidents['data'][0], inc_id
@@ -167,7 +172,7 @@ def __delete_incident(client, incident):
         'all': False
     })
 
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error('delete incident failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
         return False
@@ -178,7 +183,7 @@ def __delete_incident(client, incident):
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
     res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error('delete integration instance failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
         return False

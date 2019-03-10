@@ -1,0 +1,696 @@
+id: MISP V2 Test
+version: -1
+name: MISP V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d7745d08-2749-4a30-8106-a5bfeee720cb
+    type: start
+    task:
+      id: d7745d08-2749-4a30-8106-a5bfeee720cb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 32b4cc36-31ab-483d-8b87-cfbc84a79d88
+    type: regular
+    task:
+      id: 32b4cc36-31ab-483d-8b87-cfbc84a79d88
+      version: -1
+      name: Get file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: MISP
+    nexttasks:
+      '#none#':
+      - "9"
+      - "21"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 44d6d733-6661-431f-89f5-fc50106d482f
+    type: condition
+    task:
+      id: 44d6d733-6661-431f-89f5-fc50106d482f
+      version: -1
+      name: is any dbotscore from misp?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: match
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: ^(MISP)*
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: b403a865-1347-4375-8a09-63f2f0d3d868
+    type: title
+    task:
+      id: b403a865-1347-4375-8a09-63f2f0d3d868
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 5d914019-8073-4eb7-8442-d26cba11b518
+    type: regular
+    task:
+      id: 5d914019-8073-4eb7-8442-d26cba11b518
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 22434ee7-bbcd-4b53-8039-2342f0d2748c
+    type: regular
+    task:
+      id: 22434ee7-bbcd-4b53-8039-2342f0d2748c
+      version: -1
+      name: Create event
+      script: MISP V2|||misp-create-event
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      category: {}
+      comment: {}
+      distribution: {}
+      info:
+        simple: Testplayboook
+      published: {}
+      threat_level_id: {}
+      to_ids: {}
+      type: {}
+      value:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 72b0b1b7-6d32-47f4-843b-dd65a72799b5
+    type: regular
+    task:
+      id: 72b0b1b7-6d32-47f4-843b-dd65a72799b5
+      version: -1
+      name: Upload sample
+      script: MISP V2|||misp-upload-sample
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      analysis: {}
+      category: {}
+      comment: {}
+      distribution: {}
+      event_id:
+        simple: ${MISP.Event.ID}
+      fileEntryID:
+        simple: ${File.EntryID}
+      info: {}
+      threat_level_id: {}
+      to_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 64bbd9d7-9f77-4889-8300-434c7227524d
+    type: regular
+    task:
+      id: 64bbd9d7-9f77-4889-8300-434c7227524d
+      version: -1
+      name: Search for event
+      script: MISP V2|||misp-search
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      category: {}
+      eventid: {}
+      from: {}
+      last: {}
+      org: {}
+      tags: {}
+      to: {}
+      to_ids: {}
+      type: {}
+      uuid: {}
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: d3af10c5-6fa6-4cf2-8f46-b4837c809131
+    type: regular
+    task:
+      id: d3af10c5-6fa6-4cf2-8f46-b4837c809131
+      version: -1
+      name: Download sample
+      script: MISP V2|||misp-download-sample
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      allSamples: {}
+      eventID:
+        simple: ${MISP.Event.ID}
+      hash:
+        simple: ${File.MD5}
+      unzip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: d5ac9c34-2298-48aa-810a-a0498e2bb113
+    type: regular
+    task:
+      id: d5ac9c34-2298-48aa-810a-a0498e2bb113
+      version: -1
+      name: Delete event
+      script: MISP V2|||misp-delete-event
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 05dd6cc9-ad04-44f4-8a91-3a3ce048d5d6
+    type: regular
+    task:
+      id: 05dd6cc9-ad04-44f4-8a91-3a3ce048d5d6
+      version: -1
+      name: Check file hash
+      script: MISP V2|||file
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file:
+        simple: ${File.MD5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 477db974-998e-4946-8980-fc92a08fb621
+    type: regular
+    task:
+      id: 477db974-998e-4946-8980-fc92a08fb621
+      version: -1
+      name: Check URL
+      script: MISP V2|||url
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      long: {}
+      threshold: {}
+      url:
+        simple: emale.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: df89695b-1a08-4951-8c7a-a4e748d61b2d
+    type: regular
+    task:
+      id: df89695b-1a08-4951-8c7a-a4e748d61b2d
+      version: -1
+      name: Check IP
+      script: MISP V2|||ip
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 8.8.1.1
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: dafcc0d8-8093-4b88-829c-7c37ab26829c
+    type: regular
+    task:
+      id: dafcc0d8-8093-4b88-829c-7c37ab26829c
+      version: -1
+      name: Add IP attribute
+      script: MISP V2|||misp-add-attribute
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      category:
+        simple: External analysis
+      comment:
+        simple: this is a comment
+      distribution: {}
+      id:
+        simple: ${MISP.Event.ID}
+      to_ids: {}
+      type:
+        simple: ip-dst
+      value:
+        simple: 8.8.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 3d435e98-73be-4c31-89cc-1fe172514ae2
+    type: regular
+    task:
+      id: 3d435e98-73be-4c31-89cc-1fe172514ae2
+      version: -1
+      name: Add URL attribute
+      script: MISP V2|||misp-add-attribute
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      category:
+        simple: External analysis
+      comment:
+        simple: this is a comment
+      distribution: {}
+      id:
+        simple: ${MISP.Event.ID}
+      to_ids: {}
+      type:
+        simple: url
+      value:
+        simple: emale.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: fc77bdea-16c9-4c19-88ea-8ecbad035c96
+    type: condition
+    task:
+      id: fc77bdea-16c9-4c19-88ea-8ecbad035c96
+      version: -1
+      name: is any dbotscore from misp?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.1.1
+      - - operator: match
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: ^(MISP)*
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: ca95bdea-bfa2-456f-8e64-fdea285656c1
+    type: condition
+    task:
+      id: ca95bdea-bfa2-456f-8e64-fdea285656c1
+      version: -1
+      name: is any dbotscore from misp?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: emale.com
+      - - operator: match
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: ^(MISP)*
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: c6a2b94a-86db-42b3-8549-b852c21d2bb2
+    type: regular
+    task:
+      id: c6a2b94a-86db-42b3-8549-b852c21d2bb2
+      version: -1
+      name: Download sample (deprecated script)
+      scriptName: misp_download_sample
+      type: regular
+      iscommand: false
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      allSamples: {}
+      eventID:
+        simple: ${MISP.Event.ID}
+      hash:
+        simple: ${File.MD5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 3dae19cf-5b93-4a81-8277-6d884e0570d7
+    type: regular
+    task:
+      id: 3dae19cf-5b93-4a81-8277-6d884e0570d7
+      version: -1
+      name: Upload sample (deprecated script)
+      scriptName: misp_upload_sample
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      analysis: {}
+      category: {}
+      comment: {}
+      distribution: {}
+      event_id: {}
+      fileEntryID:
+        simple: ${File.EntryID}
+      info: {}
+      to_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: a46f4c12-a656-4b58-8e85-26404dd6986d
+    type: regular
+    task:
+      id: a46f4c12-a656-4b58-8e85-26404dd6986d
+      version: -1
+      name: Add sighting
+      script: '|||misp-add-sighting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        simple: ${MISP.Event.Attribute.ID}
+      type:
+        simple: sighting
+      uuid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 1110,
+        "x": -250,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

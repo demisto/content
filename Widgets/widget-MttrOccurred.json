@@ -2,7 +2,7 @@
   "id": "mean-time-to-resolution-occurred",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Mean Time To Resolution (Occurred)",
+  "name": "Mean Time to Resolution (Occurred)",
   "dataType": "incidents",
   "widgetType": "duration",
   "query": "-category:job and status:closed",

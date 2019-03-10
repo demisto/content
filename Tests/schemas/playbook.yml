@@ -234,7 +234,7 @@ schema;arg_filter_schema:
 schema;timertriggers_schema:
   type: map
   mapping:
-    fieldName:
+    fieldname:
       type: str
     action:
       type: str

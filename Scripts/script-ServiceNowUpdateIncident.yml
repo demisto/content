@@ -252,6 +252,5 @@ dependson:
   - ServiceNow|||servicenow-update-record
   - ServiceNow|||servicenow-query-table
 runonce: false
-releaseNotes: "ServiceNow update record example"
 tests:
   - No test - Hibernating instance

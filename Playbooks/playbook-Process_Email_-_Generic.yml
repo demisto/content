@@ -818,6 +818,5 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-releaseNotes: "-"
 tests:
   - No test

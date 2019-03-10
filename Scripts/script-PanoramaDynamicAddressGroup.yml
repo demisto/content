@@ -45,3 +45,6 @@ args:
 - name: fileName
   description: Name of output file
 scripttarget: 0
+deprecated: true
+tests:
+- palo_alto_firewall_test_pb

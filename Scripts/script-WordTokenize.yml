@@ -112,4 +112,3 @@ runonce: true
 dockerimage: demisto/nltk:1.0
 tests:
   - WordTokenizeTest
-releaseNotes: "-"

@@ -211,7 +211,7 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
-        return_error(e)
+        return_error(e.message)
   type: python
   commands:
   - name: devo-query

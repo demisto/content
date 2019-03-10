@@ -1,0 +1,398 @@
+id: CreatePhishingClassifierMLTest
+version: -1
+name: Create Phishing Classifier ML Test
+description: Test CreatePhishingClassifierML playbook
+fromversion: 4.1.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db64e108-0b5f-447c-898e-252858a97819
+    type: start
+    task:
+      id: db64e108-0b5f-447c-898e-252858a97819
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 024c14f4-bbeb-4269-8dbc-399eaa48daa4
+    type: playbook
+    task:
+      id: 024c14f4-bbeb-4269-8dbc-399eaa48daa4
+      version: -1
+      name: CreatePhishingClassifierML
+      description: Create a phishing classifier using machine learning technique,
+        based on email content
+      playbookName: DBot Create Phishing Classifier
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      modelListStoreName:
+        simple: phishing_model_test
+      emailSubjectKey:
+        simple: ${EmailSujbectKey}
+      emailTagKey:
+        simple: ${EmailTagKey}
+      emailTextKey:
+        simple: ${EmailBodyKey}
+      hashData:
+        simple: "no"
+      historicalDataFileListName:
+        simple: historicFileTest
+      incidentsEvaluationQuery:
+        simple: ${IncidentsQuery}
+      incidentsTrainingQuery:
+        simple: ${IncidentsQuery}
+      isContextNeeded:
+        simple: "yes"
+      maxIncidentsToFetchOnTraining:
+        simple: "2000"
+      phishingLabels:
+        simple: '*'
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 8672a476-8ec4-4699-8ce4-0c96fb964226
+    type: regular
+    task:
+      id: 8672a476-8ec4-4699-8ce4-0c96fb964226
+      version: -1
+      name: Create incidents
+      scriptName: TestCreateIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      numberOfIncidents:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: aea9f205-82b1-484c-8362-4c4638d43e81
+    type: regular
+    task:
+      id: aea9f205-82b1-484c-8362-4c4638d43e81
+      version: -1
+      name: Predict Tag1
+      scriptName: DBotPredictPhishingLabel
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      emailBody: {}
+      emailSubject:
+        simple: tag1 this is a email bla bla bla
+      hashData: {}
+      modelListName:
+        simple: ${DBotTextClassifier.ListName}
+      warningThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: a6b723fe-fda3-4ab4-82de-a24a90c0cd51
+    type: regular
+    task:
+      id: a6b723fe-fda3-4ab4-82de-a24a90c0cd51
+      version: -1
+      name: verify tag1
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue:
+        simple: tag1
+      fields: {}
+      path:
+        simple: DBotPredictPhishingLabel.Label
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 36024f92-a162-4bef-8165-7fe950bb7f48
+    type: title
+    task:
+      id: 36024f92-a162-4bef-8165-7fe950bb7f48
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 360aa493-2459-4b6f-884e-57f777c014ed
+    type: regular
+    task:
+      id: 360aa493-2459-4b6f-884e-57f777c014ed
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 09767906-11d1-430a-854b-268e8adb914b
+    type: regular
+    task:
+      id: 09767906-11d1-430a-854b-268e8adb914b
+      version: -1
+      name: Create historic file list
+      scriptName: TestCreateTagTextFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      listName:
+        simple: historicFileTest
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 48a8ae8a-96cf-4349-870b-cf9c6d1fb5de
+    type: regular
+    task:
+      id: 48a8ae8a-96cf-4349-870b-cf9c6d1fb5de
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: DBotPredictPhishingLabel
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 52cebe3d-526d-42ff-80d5-177ce5b1b5ec
+    type: regular
+    task:
+      id: 52cebe3d-526d-42ff-80d5-177ce5b1b5ec
+      version: -1
+      name: Predict Tag3
+      scriptName: DBotPredictPhishingLabel
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      emailBody: {}
+      emailSubject:
+        simple: an3 example3
+      hashData: {}
+      modelListName:
+        simple: ${DBotTextClassifier.ListName}
+      warningThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: fa591f3f-fc67-4cc3-8f6d-294d25855c66
+    type: regular
+    task:
+      id: fa591f3f-fc67-4cc3-8f6d-294d25855c66
+      version: -1
+      name: verify tag3
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue:
+        simple: tag3
+      fields: {}
+      path:
+        simple: DBotPredictPhishingLabel.Label
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: d018265c-65d2-47a0-8f35-4178fea4b4fa
+    type: regular
+    task:
+      id: d018265c-65d2-47a0-8f35-4178fea4b4fa
+      version: -1
+      name: Verify context model evaluation
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Precision,Recall,Size,F1
+      path:
+        simple: DBotPredictPhishingEvaluation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

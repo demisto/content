@@ -145,6 +145,5 @@ script:
       default: true
       description: A valid Access Key
     description: refresh Access Key valid time
-releaseNotes: "Do not use with the new Mimecast integration, only with the deprecated version."
 tests:
 - No test

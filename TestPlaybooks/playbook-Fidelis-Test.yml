@@ -1,0 +1,440 @@
+id: Fidelis-Test
+version: -1
+name: Fidelis-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f38d03e0-1546-4b37-8447-60c020960c91
+    type: start
+    task:
+      id: f38d03e0-1546-4b37-8447-60c020960c91
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 71d013fe-e40b-4551-8b59-8bd3335013ce
+    type: regular
+    task:
+      id: 71d013fe-e40b-4551-8b59-8bd3335013ce
+      version: -1
+      name: Start Clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 90e77fe0-523d-47f6-89fc-09e60b3b6059
+    type: regular
+    task:
+      id: 90e77fe0-523d-47f6-89fc-09e60b3b6059
+      version: -1
+      name: Get Alarms
+      script: '|||fidelis-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end_time: {}
+      ioc: {}
+      severity: {}
+      start_time: {}
+      threat_score: {}
+      time_frame:
+        simple: Last 30 Days
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 47db31a7-2c40-4139-8970-63f09dafb020
+    type: regular
+    task:
+      id: 47db31a7-2c40-4139-8970-63f09dafb020
+      version: -1
+      name: Get Alarms - custom time frame
+      script: '|||fidelis-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      end_time:
+        simple: 2019-01-11T09:50:48Z
+      ioc: {}
+      severity: {}
+      start_time:
+        simple: 2019-01-09T07:50:48Z
+      threat_score: {}
+      time_frame:
+        simple: Custom
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 83f1f428-913f-4587-8acb-049c80a54e8a
+    type: condition
+    task:
+      id: 83f1f428-913f-4587-8acb-049c80a54e8a
+      version: -1
+      name: Check Get Alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: bac80683-1567-4549-8b0c-225f3ea10d79
+    type: regular
+    task:
+      id: bac80683-1567-4549-8b0c-225f3ea10d79
+      version: -1
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Test condition was not satisfied.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 38eebf8e-fe15-441f-82d2-bcdad0440184
+    type: regular
+    task:
+      id: 38eebf8e-fe15-441f-82d2-bcdad0440184
+      version: -1
+      name: Get Specific Alert
+      script: '|||fidelis-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 83f59551-22e8-41d0-80ba-fb829ff35277
+    type: condition
+    task:
+      id: 83f59551-22e8-41d0-80ba-fb829ff35277
+      version: -1
+      name: Check Get Alert
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Alert.Protocol
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 6ee012c3-39a7-498e-80a2-529cbbaa3025
+    type: title
+    task:
+      id: 6ee012c3-39a7-498e-80a2-529cbbaa3025
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 7c2e106a-ce05-4cf3-8fc6-f17d281e97ad
+    type: regular
+    task:
+      id: 7c2e106a-ce05-4cf3-8fc6-f17d281e97ad
+      version: -1
+      name: Get Alert report
+      script: '|||fidelis-get-alert-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 97dfac05-bc4d-4341-8cc6-181aade75bb8
+    type: regular
+    task:
+      id: 97dfac05-bc4d-4341-8cc6-181aade75bb8
+      version: -1
+      name: Get Malware Data
+      script: '|||fidelis-get-malware-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 999d4f0c-6600-4fb5-86ff-59277227cc76
+    type: regular
+    task:
+      id: 999d4f0c-6600-4fb5-86ff-59277227cc76
+      version: -1
+      name: Get Pcap Components
+      script: '|||fidelis-list-pcap-components'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 25ae062d-1aab-4822-8ba3-1cfa4bbf8c19
+    type: condition
+    task:
+      id: 25ae062d-1aab-4822-8ba3-1cfa4bbf8c19
+      version: -1
+      name: Check Pcap Components
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Component.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: a6670f4b-de1f-4f45-84f3-33683546828a
+    type: regular
+    task:
+      id: a6670f4b-de1f-4f45-84f3-33683546828a
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed to get Pcap Component
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 1270,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

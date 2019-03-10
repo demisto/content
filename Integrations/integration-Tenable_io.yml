@@ -29,12 +29,10 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
   type: 8
   required: false
 script:
@@ -683,6 +681,6 @@ script:
     description: 'Check the status of a specific scan using its ID. The status can
       hold following possible values : Running, Completed and Empty (Ready to run).'
   runonce: false
-releaseNotes: "Added field for scan folders"
+releaseNotes: "-"
 tests:
   - Tenable.io test
