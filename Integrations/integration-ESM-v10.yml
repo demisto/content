@@ -55,6 +55,12 @@ configuration:
   defaultvalue: "10.2"
   type: 0
   required: true
+- display: ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select "auto-discovery" to extract
+    the format automatically.
+  name: time_format
+  defaultvalue: auto-discovery
+  type: 0
+  required: false
 - display: 'McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert
     3) '
   name: timezone
@@ -83,11 +89,12 @@ script:
     VERIFY = demisto.params()['insecure'] is False
     requests.packages.urllib3.disable_warnings()
     VERSION = demisto.params()['version']
+    IS_V2_API = VERSION in ['10.2', '10.3']
 
     ESM_URL = demisto.params()['ip'] + ":" + demisto.params()['port']
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    ESM_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
+    ESM_DATE_FORMAT = demisto.params()['time_format']
     TIMEZONE = float(demisto.params().get('timezone'))
 
     def throw_error(error_str):
@@ -96,6 +103,27 @@ script:
             sys.exit(0)
         else:
             demisto.error(error_str)
+
+
+    @logger
+    def parse_time(time_str):
+        if ESM_DATE_FORMAT != 'auto-discovery':
+            return ESM_DATE_FORMAT
+
+        regex_to_format = {
+            r'\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}': '%Y/%m/%d %H:%M:%S',  # '2018-12-31 16:54:32'
+            r'\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}': '%d/%m/%Y %H:%M:%S',  # '31-12-2018 16:54:32'
+        }
+        integration_context = demisto.getIntegrationContext()
+
+        if integration_context.get('time_format') is None:
+            for regex, time_format in regex_to_format.items():
+                if re.match(regex, time_str):
+                    integration_context['time_format'] = time_format
+                    break
+
+        demisto.setIntegrationContext(integration_context)
+        return integration_context['time_format']
 
 
     @logger
@@ -255,7 +283,7 @@ script:
             if time_range == 'CUSTOM' and (not custom_start or not custom_end):
                 throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
-            cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if VERSION == '10.2' else '', query_type,)
+            cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if IS_V2_API else '', query_type,)
 
             if time_range == 'CUSTOM':
                 cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
@@ -275,7 +303,7 @@ script:
 
         @logger
         def get_query_result(self, resultID):
-            cmd = '%sqryGetStatus' % ('v2/' if VERSION == '10.2' else '',)
+            cmd = '%sqryGetStatus' % ('v2/' if IS_V2_API else '',)
             query = json.dumps({'resultID': resultID})
 
             res = self.cmdquery(cmd, query)
@@ -303,7 +331,7 @@ script:
 
         @logger
         def fetch_results(self, resultID):
-            cmd = '%sqryGetResults?startPos=0&reverse=false&numRows=10000' % ('v2/' if VERSION == '10.2' else '',)
+            cmd = '%sqryGetResults?startPos=0&reverse=false&numRows=10000' % ('v2/' if IS_V2_API else '',)
 
             query = json.dumps({'resultID': resultID})
 
@@ -335,7 +363,7 @@ script:
 
         @logger
         def fetch_all_fields(self):
-            res = self.cmdquery('%sqryGetFilterFields' % ('v2/' if VERSION == '10.2' else '',))
+            res = self.cmdquery('%sqryGetFilterFields' % ('v2/' if IS_V2_API else '',))
 
             # convert to an appropriate table
             for x in res:
@@ -376,7 +404,6 @@ script:
 
         @logger
         def update_alarms_status(self, action, alarm_ids):
-            pass
             cmd = 'alarm%(action)sTriggeredAlarm' % {'action': action}
             query = json.dumps({'triggeredIds': [{'value': int(i)} for i in alarm_ids]})
 
@@ -398,7 +425,7 @@ script:
 
         @logger
         def get_alarm_event_details(self, event_id):
-            cmd = ('%sipsGetAlertData' % ('v2/' if VERSION == '10.2' else '',))
+            cmd = ('%sipsGetAlertData' % ('v2/' if IS_V2_API else '',))
             query = json.dumps({'id': event_id})
 
             res = self.cmdquery(cmd, query)
@@ -575,7 +602,7 @@ script:
             res = self.cmdquery(cmd)
             cases = []
             if since_date_range:
-                start_time, _ = parse_date_range(since_date_range, ESM_DATE_FORMAT)
+                start_time, _ = parse_date_range(since_date_range, '%Y/%m/%d %H:%M:%S')
                 for case in res:
                     if case.get('openTime') > start_time:
                         cases.append(case)
@@ -965,7 +992,7 @@ script:
             if mode in ('cases', 'both'):
                 # get new cases
                 cases = [case for case in esm.get_cases() if case['id']['value'] > last_case]
-                cases.sort(cmp=lambda case1, case2: case1['id']['value'].__cmp__(case2['id']['value']))
+                cases.sort(key=lambda case: case['id']['value'])
                 cases = cases[:MAX_CASES_PER_FETCH]
 
                 if cases:
@@ -979,7 +1006,7 @@ script:
                     incidents.extend(cases_to_incidents(esm, cases))
 
             if next_run is not None:
-                next_run_datetime = datetime.strptime(next_run, ESM_DATE_FORMAT)
+                next_run_datetime = datetime.strptime(next_run, parse_time(next_run))
                 next_run = (next_run_datetime + timedelta(seconds=1)).isoformat()
             else:
                 next_run = start_alarms
@@ -1584,4 +1611,4 @@ script:
     description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
-releaseNotes: "Fetch incidents fixed. ESM Timezone now supported. esm-get-cases-list now support filtering by time range"
+releaseNotes: "Fetch incidents fixed. ESM Timezone now supported. esm-get-cases-list now support filtering by time range. Added time format parameter"
