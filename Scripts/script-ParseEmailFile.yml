@@ -3390,4 +3390,3 @@ scripttarget: 0
 runonce: false
 deprecated: true
 runas: DBotWeakRole
-releaseNotes: "deprecated script has been updated"
