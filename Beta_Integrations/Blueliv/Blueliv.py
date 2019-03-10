@@ -9,7 +9,7 @@ from sdk.blueliv_api import BluelivAPI
 
 TOKEN = demisto.params().get('token')
 URL = demisto.params()['url']
-SERVER = URL if URL.endswith('/') else URL[:-1]
+SERVER = URL[:-1] if URL.endswith('/') else URL
 
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
