@@ -1,10 +1,10 @@
 {
-  "id": "active-incidents-by-severity",
+  "id": "active-incidents-by-type",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Active Incidents by Severity",
+  "name": "Active Incidents - Line chart",
   "dataType": "incidents",
-  "widgetType": "pie",
+  "widgetType": "line",
   "query": "-category:job and -status:archived and -status:closed",
   "isPredefined": true,
   "dateRange": {
@@ -21,7 +21,8 @@
   },
   "params": {
     "groupBy": [
-      "severity"
+      "occurred(d)",
+      "type"
     ]
   },
   "description": ""

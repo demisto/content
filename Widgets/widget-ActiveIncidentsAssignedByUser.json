@@ -1,11 +1,11 @@
 {
-  "id": "incidents-by-role",
+  "id": "incidents-assigned-by-user",
   "version": -1,
-  "name": "Incidents by Role",
+  "fromVersion": "3.5.0",
+  "name": "Active Incidents Assigned by User",
   "dataType": "incidents",
   "widgetType": "bar",
-  "query": "-category:job and -status:closed",
-  "size": 10,
+  "query": "-status:archived and -status:closed",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -21,7 +21,7 @@
   },
   "params": {
     "groupBy": [
-      "roles"
+      "owner"
     ]
   },
   "description": ""

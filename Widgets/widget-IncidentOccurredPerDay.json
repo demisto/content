@@ -4,7 +4,7 @@
   "name": "Incidents Occurred Per Day",
   "dataType": "incidents",
   "widgetType": "line",
-  "query": "-category:job",
+  "query": "",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",

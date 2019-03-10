@@ -4,7 +4,7 @@
   "name": "Incidents Top Close Analysts",
   "dataType": "incidents",
   "widgetType": "bar",
-  "query": "-category:job and status:Closed",
+  "query": "status:closed",
   "size": 5,
   "isPredefined": true,
   "dateRange": {
