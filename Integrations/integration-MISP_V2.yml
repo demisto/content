@@ -32,10 +32,23 @@ script:
     import base64
     import requests
     import time
+    import warnings
     from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
+    import logging
+    logging.getLogger("pymisp").setLevel(logging.ERROR)
 
-    # disable insecure warnings
+
+    def warn(*args, **kwargs):
+        """
+        Do nothing with warnings
+        """
+        pass
+
+    # Disable requests warnings
     requests.packages.urllib3.disable_warnings()
+
+    # Disable python warnings
+    warnings.warn = warn
 
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -184,7 +197,9 @@ script:
             'Galaxy',
             'Tag'
         ]
-
+        # Sometimes, the pymisp will return str instead of a dict. json.loads() wouldn't work unless we'll dumps it first
+        if isinstance(response, str):
+            response = json.loads(json.dumps(response))
         # Remove 'Event' keyword
         events = [event.get('Event') for event in response]
         for i in range(0, len(events)):
@@ -1725,4 +1740,3 @@ script:
   runonce: false
 tests:
 - MISP V2 Test
-releaseNotes: add_sighting command and test connection

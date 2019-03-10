@@ -1,7 +1,9 @@
 id: extract_indicators_-_generic
 version: -1
 name: Extract Indicators - Generic
-description: Extract indicators from input data
+description: |-
+  Deprecated: We recommend using extractIndicators command instead.
+  Extract indicators from input data.
 starttaskid: "0"
 fromversion: 3.5.0
 tasks:
@@ -232,3 +234,5 @@ outputs:
 - contextPath: Account.Email.Address
   description: Extracted emails
   type: string
+tests:
+    - No tests - Deprecated
