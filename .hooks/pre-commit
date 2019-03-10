@@ -1,18 +1,13 @@
 #!/bin/bash
 
 # validating that each modified file has a valid schema, release notes, proper prefix & suffix
-echo "Validating files"
-python Tests/scripts/validate_files_structure.py
+echo "Validating files..."
+PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py
 
 if [[ $? -ne 0 ]]
   then
     echo "Please fix the aforementioned errors and then commit again"
     exit 1
-
-  else
-    echo "Updating id_set"
-    python Tests/scripts/update_id_set.py
-    git add Tests/id_set.json
 fi
 
 

@@ -842,4 +842,3 @@ script:
     - contextPath: ATPIncidents.Result.uuid
       description: The GUID assigned for this incident
     description: Query incidents from ATP
-releaseNotes: "Fix satp-files command output when ATP has not seen the file before"
