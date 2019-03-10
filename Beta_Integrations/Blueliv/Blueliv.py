@@ -8,7 +8,8 @@ from sdk.blueliv_api import BluelivAPI
 ''' GLOBALS/PARAMS '''
 
 TOKEN = demisto.params().get('token')
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+URL = demisto.params()['url'][:-1]
+SERVER = URL if URL.endswith('/') else URL
 
 ''' HELPER FUNCTIONS '''
 
@@ -17,6 +18,7 @@ def verify_response_code(response):
 
     if response.status_code != 200:
         return_error(response.error_msg)
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
