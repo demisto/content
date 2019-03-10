@@ -63,10 +63,10 @@ class IntegrationValidator(object):
             for arg in command['arguments']:
                 if arg in arg_list:
                     self._is_valid = False
-                    print("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
-                          "please remove one of its appearances "
-                          "as we do not allow duplicates".format(arg, command['name'],
-                                                                 self.current_integration.get('name')))
+                    print_error("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
+                                "please remove one of its appearances "
+                                "as we do not allow duplicates".format(arg, command['name'],
+                                                                       self.current_integration.get('name')))
                 else:
                     arg_list.append(arg)
 
@@ -84,9 +84,10 @@ class IntegrationValidator(object):
             param_name = configuration_param['name']
             if param_name in param_list:
                 self._is_valid = False
-                print("The parameter '{}' of the integration '{}' is duplicated, please remove one of its appearances "
-                      "as we do not allow duplicated parameters".format(param_name,
-                                                                        self.current_integration.get('name')))
+                print_error("The parameter '{}' of the "
+                            "integration '{}' is duplicated, please remove one of its appearances as we do not "
+                            "allow duplicated parameters".format(param_name,
+                                                                 self.current_integration.get('name')))
             else:
                 param_list.append(param_name)
 
