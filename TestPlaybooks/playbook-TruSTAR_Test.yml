@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9cab348f-c3db-47bf-8f35-653b0d7a89d2
+    taskid: 4a41ee2c-daa1-4b04-87d1-d1175a907c63
     type: start
     task:
-      id: 9cab348f-c3db-47bf-8f35-653b0d7a89d2
+      id: 4a41ee2c-daa1-4b04-87d1-d1175a907c63
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: d7e4d09a-8ed7-4df4-8029-438d8cbfb07e
+    taskid: 243bc1c2-fd3f-4c07-884a-993d5b9d5b56
     type: regular
     task:
-      id: d7e4d09a-8ed7-4df4-8029-438d8cbfb07e
+      id: 243bc1c2-fd3f-4c07-884a-993d5b9d5b56
       version: -1
       name: Trending Indicators
       description: Returns the 10 indicators that have recently appeared in the most
@@ -53,12 +54,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 387e8a11-8d6d-40a0-8d29-da5a39ddcc7f
+    taskid: 43e16ce6-3a2b-49ad-83aa-d61c9fc16f6d
     type: regular
     task:
-      id: 387e8a11-8d6d-40a0-8d29-da5a39ddcc7f
+      id: 43e16ce6-3a2b-49ad-83aa-d61c9fc16f6d
       version: -1
       name: VerifyContext
       description: |-
@@ -87,12 +89,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 9e088e2f-df91-4f4f-8e65-7ddae43f450c
+    taskid: 2dbd6137-845b-47d1-8792-bf6fd9a50cb6
     type: regular
     task:
-      id: 9e088e2f-df91-4f4f-8e65-7ddae43f450c
+      id: 2dbd6137-845b-47d1-8792-bf6fd9a50cb6
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -115,12 +118,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 9d276059-570d-4858-8d10-5de86416d76e
+    taskid: 585ff705-62dd-4f42-8c10-ecc4f161a84d
     type: regular
     task:
-      id: 9d276059-570d-4858-8d10-5de86416d76e
+      id: 585ff705-62dd-4f42-8c10-ecc4f161a84d
       version: -1
       name: Search Indicators with the term http
       description: Searches for all indicators that contain the given search term.
@@ -145,12 +149,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 40e023a1-4752-4369-88ad-7c51e94ab277
+    taskid: 906ed14d-6893-4877-8fe6-3245fc3333cf
     type: regular
     task:
-      id: 40e023a1-4752-4369-88ad-7c51e94ab277
+      id: 906ed14d-6893-4877-8fe6-3245fc3333cf
       version: -1
       name: Get correlated reports of a URL indicator
       description: Returns a paginated list of all reports that contain any of the
@@ -161,7 +166,7 @@ tasks:
       brand: TruSTAR
     nexttasks:
       '#none#':
-      - "8"
+      - "9"
     scriptarguments:
       distribution-type: {}
       enclave-ids: {}
@@ -177,12 +182,13 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 2be18922-0ae8-4f8e-826a-105aa33c2608
+    taskid: 8650a974-09e1-4501-858c-76a58526493d
     type: title
     task:
-      id: 2be18922-0ae8-4f8e-826a-105aa33c2608
+      id: 8650a974-09e1-4501-858c-76a58526493d
       version: -1
       name: Done
       type: title
@@ -193,15 +199,268 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 7cbb11b0-44a7-447e-8f10-71a84affe068
+    type: regular
+    task:
+      id: 7cbb11b0-44a7-447e-8f10-71a84affe068
+      version: -1
+      name: Search for URL using url
+      description: Returns url maliciousness details
+      script: TruSTAR|||url
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      threshold: {}
+      url:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1070
         }
       }
+    note: false
+  "10":
+    id: "10"
+    taskid: 899bd499-98c1-4e53-8c9c-ccd92102cbfa
+    type: regular
+    task:
+      id: 899bd499-98c1-4e53-8c9c-ccd92102cbfa
+      version: -1
+      name: Search for Domain using domain
+      description: Returns domain maliciousness details
+      script: TruSTAR|||domain
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        simple: www.google.com
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 3f31994d-a8f4-4f98-89e4-7939defcbbd9
+    type: regular
+    task:
+      id: 3f31994d-a8f4-4f98-89e4-7939defcbbd9
+      version: -1
+      name: Search for File using file
+      description: Returns file maliciousness details
+      script: TruSTAR|||file
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file:
+        simple: 84c82835a5d21bbcf75a61706d8ab549
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 4bd45ed1-60e4-4b51-8896-c48b076dc928
+    type: regular
+    task:
+      id: 4bd45ed1-60e4-4b51-8896-c48b076dc928
+      version: -1
+      name: Search for IP using ip
+      description: Returns ip maliciousness details
+      script: TruSTAR|||ip
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 790cc70a-620b-4871-8281-0ad6ee766222
+    type: condition
+    task:
+      id: 790cc70a-620b-4871-8281-0ad6ee766222
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 5790cd03-828d-499e-87ee-cd3c365abcd5
+    type: condition
+    task:
+      id: 5790cd03-828d-499e-87ee-cd3c365abcd5
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 0fb11a99-d2d9-473c-8ea0-2f0bc3702c49
+    type: condition
+    task:
+      id: 0fb11a99-d2d9-473c-8ea0-2f0bc3702c49
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TruSTAR.File.Value
+            iscontext: true
+          right:
+            value:
+              simple: 84c82835a5d21bbcf75a61706d8ab549
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: f6fe353e-0bc4-419c-86cc-59a8d92d4bca
+    type: condition
+    task:
+      id: f6fe353e-0bc4-419c-86cc-59a8d92d4bca
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50

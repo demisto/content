@@ -218,6 +218,5 @@ dependson:
   - ServiceNow|||servicenow-create-record
   - ServiceNow|||servicenow-query-table
 runonce: false
-releaseNotes: "ServiceNow create record example"
 tests:
   - No test - Hibernating instance

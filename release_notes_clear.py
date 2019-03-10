@@ -4,9 +4,7 @@
 # Usage: python release_notes_clear.py
 import os
 import glob
-import argparse
 
-from Tests.scripts.update_id_set import update_id_set
 
 def yml_remove_releaseNote_record(file_path):
     '''
@@ -64,13 +62,13 @@ def json_remove_releaseNote_record(file_path):
         elif consider_multiline_notes:
             # not a releaseNote title (right after a releaseNote block (single or multi line)
             if line.strip():
-                if line.strip()[0] == '"': # regular line
+                if line.strip()[0] == '"':  # regular line
                     consider_multiline_notes = False
                     new_lines.append(line)
-                elif line.strip() == '}': # releaseNote was at end of dict
+                elif line.strip() == '}':  # releaseNote was at end of dict
                     # needs to remove ',' from last line
                     idx = new_lines[-1].rfind(',')
-                    new_lines[-1] = new_lines[-1][:idx] + new_lines[-1][idx+1:]
+                    new_lines[-1] = new_lines[-1][:idx] + new_lines[-1][idx + 1:]
                     consider_multiline_notes = False
                     new_lines.append(line)
                     pass
@@ -88,8 +86,8 @@ def json_remove_releaseNote_record(file_path):
 
 
 FILE_EXTRACTER_DICT = {
-    '*.yml' : yml_remove_releaseNote_record,
-    '*.json' : json_remove_releaseNote_record,
+    '*.yml': yml_remove_releaseNote_record,
+    '*.json': json_remove_releaseNote_record,
 }
 
 
@@ -109,19 +107,10 @@ def remove_releaseNotes_folder(folder_path, files_extension):
     print '--> Changed %d out of %d files' % (count, len(scan_files), )
 
 
-
-def get_git_sha():
-    parser = argparse.ArgumentParser(description='Utility for getting latest release')
-    parser.add_argument('-g', '--gitsha', help='Git SHA1')
-    options = parser.parse_args()
-    return options.gitsha
-
-
 def main(root_dir):
-    update_id_set(get_git_sha())
-
-    yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks'] # yml
-    json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets', 'Classifiers', 'Layouts', 'IncidentFields' ] # json
+    yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks']  # yml
+    json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets',
+                            'Classifiers', 'Layouts', 'IncidentFields']  # json
 
     for folder in yml_folders_to_scan:
         print 'Scanning directory: "%s"' % (folder, )

@@ -64,6 +64,18 @@ schema;field_schema:
       type: number
     hidden:
       type: bool
+    columns:
+      type: any
+    defaultRows:
+      type: any
+    threshold:
+      type: number
+    sla:
+      type: number
+    caseInsensitive:
+      type: bool
+    breachScript:
+      type: str
     associatedTypes:
       type: any
     systemAssociatedTypes:

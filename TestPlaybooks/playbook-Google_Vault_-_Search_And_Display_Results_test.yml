@@ -1,0 +1,587 @@
+id: Google_Vault-Search_And_Display_Results_test
+version: -1
+name: Google Vault - Search And Display Results test
+description: 'This is a test for Google Vault playbooks. It calls all search commands:
+  Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Search
+  Mail. In addition it uses: Google Vault - Search And Display Results with 3 different
+  variations.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 67026096-99fb-46cd-8ea0-dc40849a1592
+    type: start
+    task:
+      id: 67026096-99fb-46cd-8ea0-dc40849a1592
+      version: -1
+      name: ""
+      discription: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: e0317594-5c77-4a8a-8a59-29d8cf70e3e6
+    type: playbook
+    task:
+      id: e0317594-5c77-4a8a-8a59-29d8cf70e3e6
+      version: -1
+      name: Google Vault - Search Mail
+      playbookName: Google Vault - Search Mail
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      dataScope:
+        simple: All Data
+      downloadFile:
+        simple: "true"
+      emails:
+        simple: admin@demistodev.com
+      endTime: {}
+      exportMBOX:
+        simple: "false"
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .='Mail_Export_' + val +'_Time_' + Date.now()
+      exportPST:
+        simple: "true"
+      includeDrafts:
+        simple: "true"
+      matterID:
+        simple: 6e067f1d-7fac-4ab2-bd9f-eede4f32dd32
+      maxResultForDisplay: {}
+      ou: {}
+      pollInterval:
+        simple: "1"
+      pollTimeout:
+        simple: "5"
+      searchMethod:
+        simple: All Accounts
+      startTime: {}
+      terms:
+        simple: test*
+      timeFrame: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 45234d7f-d884-4cb2-8a16-669f444abc8d
+    type: playbook
+    task:
+      id: 45234d7f-d884-4cb2-8a16-669f444abc8d
+      version: -1
+      name: Google Vault - Search Groups
+      discription: ''
+      playbookName: Google Vault - Search Groups
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      dataScope:
+        simple: All Data
+      downloadFile:
+        simple: "true"
+      endTime: {}
+      exportMBOX:
+        simple: "false"
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .='Groups_Export_' + val +'_Time_' + Date.now()
+      exportPST:
+        simple: "true"
+      groups:
+        simple: maya-group-test@demistodev.com,ido-group-test@demistodev.com
+      matterID:
+        simple: 6e067f1d-7fac-4ab2-bd9f-eede4f32dd32
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "1"
+      pollTimeout:
+        simple: "5"
+      startTime: {}
+      terms: {}
+      timeFrame: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: be5c0c5d-1b9d-44d1-8bdf-4745edd2e77e
+    type: playbook
+    task:
+      id: be5c0c5d-1b9d-44d1-8bdf-4745edd2e77e
+      version: -1
+      name: Google Vault - Search Drive
+      discription: ''
+      playbookName: Google Vault - Search Drive
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      dataScope:
+        simple: All Data
+      downloadFile:
+        simple: "true"
+      emails:
+        simple: test@demistodev.com,maya@demistodev.com
+      endTime: {}
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .='Drive_Export_' + val +'_Time_' + Date.now()
+      includeTeamDrives:
+        simple: "false"
+      matterID:
+        simple: 6e067f1d-7fac-4ab2-bd9f-eede4f32dd32
+      maxResultForDisplay:
+        simple: "30"
+      ou: {}
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+      searchMethod:
+        simple: Team Drive
+      startTime: {}
+      teamDrive:
+        simple: 0ANbMMsaWJNw2Uk9PVA,0AOM4L2G2JU4NUk9PVA
+      terms: {}
+      timeFrame: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 57c92c3c-0d19-4902-82d7-9e2fdde96035
+    type: regular
+    task:
+      id: 57c92c3c-0d19-4902-82d7-9e2fdde96035
+      version: -1
+      name: Generate ID
+      discription: ''
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "2"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 0d4137d2-6d60-4e74-8846-903659071062
+    type: regular
+    task:
+      id: 0d4137d2-6d60-4e74-8846-903659071062
+      version: -1
+      name: Delete Context
+      discription: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 4c33e963-636b-4b26-8554-be3806d35b73
+    type: playbook
+    task:
+      id: 4c33e963-636b-4b26-8554-be3806d35b73
+      version: -1
+      name: Google Vault - Display Results
+      discription: ''
+      playbookName: Google Vault - Display Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ExportID:
+        simple: ${GoogleVault.Matter.Export.ExportID}
+      MatterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      SearchtType:
+        simple: Groups
+      downloadFile:
+        simple: "false"
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 520f9286-a87e-4933-852d-d140bf7a0d07
+    type: playbook
+    task:
+      id: 520f9286-a87e-4933-852d-d140bf7a0d07
+      version: -1
+      name: Google Vault - Display Results
+      discription: ''
+      playbookName: Google Vault - Display Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ExportID:
+        simple: ${GoogleVault.Matter.Export.ExportID}
+      MatterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      SearchtType:
+        simple: Mail
+      downloadFile:
+        simple: "false"
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: a5752fd1-3aa7-49db-89d9-f9e792aec769
+    type: playbook
+    task:
+      id: a5752fd1-3aa7-49db-89d9-f9e792aec769
+      version: -1
+      name: Google Vault - Display Results
+      discription: ''
+      playbookName: Google Vault - Display Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      ExportID:
+        simple: ${GoogleVault.Matter.Export.ExportID}
+      MatterID:
+        simple: ${GoogleVault.Matter.Export.MatterID}
+      SearchtType:
+        simple: Drive
+      downloadFile:
+        simple: "false"
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 82eb61da-df56-4a0f-886b-7604a89755ae
+    type: regular
+    task:
+      id: 82eb61da-df56-4a0f-886b-7604a89755ae
+      version: -1
+      name: Delete Context
+      discription: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 45c14124-5ae6-4bb6-84b6-36c1303666ae
+    type: regular
+    task:
+      id: 45c14124-5ae6-4bb6-84b6-36c1303666ae
+      version: -1
+      name: Delete Context
+      discription: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: a175ecdb-ed33-4887-8252-03c47705b5f7
+    type: regular
+    task:
+      id: a175ecdb-ed33-4887-8252-03c47705b5f7
+      version: -1
+      name: Generate ID
+      discription: ''
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "2"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: ee6dd8c8-125c-416d-8038-3c7bccd41eba
+    type: regular
+    task:
+      id: ee6dd8c8-125c-416d-8038-3c7bccd41eba
+      version: -1
+      name: Generate ID
+      discription: ''
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "2"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2180,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []

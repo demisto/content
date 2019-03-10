@@ -33,11 +33,10 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     var BASE_URL = params.server.replace(/[\/]+$/, '') + '/api/';
     var USERNAME = params.username;
     var API_KEY = params.apikey;
-
     var commandDict = {
         'test-module': {
             method: 'GET',
@@ -49,8 +48,13 @@ script:
             url: 'intelligence/',
             version: 'v2',
         },
+        'threatstream-import': {
+            method: 'PATCH',
+            url: 'intelligence/',
+            version: 'v1',
+            headers: { 'Content-Type': ['application/json'] }
+        }
     }
-
     var sendRequest = function(method, url, version, args, headers, multipart) {
         var fullurl = BASE_URL + version + '/' + url;
         if (method === 'GET') {
@@ -64,7 +68,6 @@ script:
             };
             fullurl += encodeToURLQuery(cred);
         }
-
         var res = !multipart ?
             http(
                 fullurl,
@@ -84,10 +87,9 @@ script:
                     Headers: headers,
                 },
                 args,
-                insecure,
-                proxy
+                params.insecure,
+                params.proxy
             );
-
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (res.StatusCode === 404) {
                 return undefined;
@@ -98,21 +100,20 @@ script:
             var urlWithoutApiKey = fullurl.replace(API_KEY, '*******');
             throw 'Failed to reach ' + urlWithoutApiKey + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-
-        return JSON.parse(res.Body);
+        if (res.Body) {
+            return JSON.parse(res.Body);
+        } else {
+            return JSON.parse(JSON.stringify(res));
+        }
     }
-
     var buildEmptyEntryContext = function() {
         return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     }
-
     var isStandardCommand = function(command) {
         return (command == 'ip' || command == 'file' || command == 'domain');
     }
-
     var fillReputationOutput = function(command, object) {
         var output = {};
-
         output['Confidence'] = object.confidence;
         output['Severity'] = object.meta.severity;
         output['Created'] = object.created_ts;
@@ -121,7 +122,6 @@ script:
         output['Source'] = object.source;
         output['Status'] = object.status;
         output['Threat Score'] = object.threatscore;
-
         if (command == 'ip' || command == 'domain') {
             if (object.asn) {
                 output['ASN'] = object.asn;
@@ -135,7 +135,6 @@ script:
                 output['Hostname'] = object.rdns;
             }
         }
-
         output['Details'] = '';
         if (object.meta.detail !== undefined) {
             output['Details'] += object.meta.detail;
@@ -147,10 +146,8 @@ script:
                 output['Details'] += object.meta.detail2;
             }
         }
-
         return output;
     }
-
     var createMapEntry = function(output) {
         var mapEntry;
         var lat = parseFloat(output.Latitude);
@@ -159,10 +156,8 @@ script:
             var location = {lat: parseFloat(output.Latitude), lng: parseFloat(output.Longitude)};
             mapEntry = {Type: entryTypes.map, Contents: location, ContentsFormat: formats.json};
         }
-
         return mapEntry;
     }
-
     var parseReputationResult = function(command, result) {
         var outputs = [];
         var contexts = [];
@@ -170,7 +165,6 @@ script:
         objects.sort(function(x, y) {return x.created_ts < y.created_ts});
         for (var i = 0; i < objects.length; i++) {
             var output = fillReputationOutput(command, objects[i]);
-
             if (!isStandardCommand(command)) {
                 var context = convertKeysToPascalCase(output);
                 delete context.Details;
@@ -183,10 +177,8 @@ script:
                 }
                 contexts.push(context);
             }
-
             outputs.push(output);
         }
-
         // create human readable
         var entry = buildEmptyEntryContext();
         entry.Contents = result;
@@ -194,7 +186,6 @@ script:
         var commandTitle = isStandardCommand(command) ? command : (command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1)));
         commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
         entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
-
         // set the context according to the newest data
         var output = outputs[0];
         var context;
@@ -211,7 +202,7 @@ script:
                 ipContext.Geo.Organization = output['Organization'];
                 ipContext.Geo.Location = output['Latitude'] + ', ' + output['Longitude'];
                 ipContext.Hostname = output['Hostname'];
-                if (output['Threat Score'] >= args.threshold) {
+                if (output['Threat Score'] >= args.threshold && output['Status'] !== 'falsepos') {
                     ipContext.Malicious = {};
                     ipContext.Malicious.Vendor = output['Source'];
                 }
@@ -223,10 +214,9 @@ script:
                     context.Score = output['Threat Score']
                     entry.EntryContext['Domain'] = context;
                 }
-
                 entry.EntryContext['IP'] = ipContext;
 
-            } else if (command == 'file') {
+            } else if (command == 'file' && output['Status'] !== 'falsepos') {
                 context.MD5 = args.value;
                 if (output['Threat Score'] >= args.threshold) {
                     context.Malicious = {};
@@ -235,7 +225,6 @@ script:
                 context.Score = output['Threat Score']
                 entry.EntryContext['File'] = context;
             }
-
             if (command == 'ip' || command == 'domain') {
                 var mapEntry = createMapEntry(output);
             }
@@ -243,42 +232,34 @@ script:
             contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
             entry.EntryContext[contextKey] = contexts;
         }
-
         var dbotScore = 1;
-        if (output['Threat Score'] >= args.threshold) {
+        if (output['Threat Score'] >= args.threshold && output['Status'] !== 'falsepos') {
             dbotScore = 3;
-        } else if (output['Threat Score'] > 0) {
+        } else if (output['Threat Score'] > 0 && output['Status'] !== 'falsepos') {
             dbotScore = 2;
         }
-
         entry.EntryContext.DBotScore = {
             Indicator: args.value,
             Type: args.type,
             Vendor: 'ThreatStream',
             Score: dbotScore
         };
-
         var entries = [entry];
         if (mapEntry) {
             entries.push(mapEntry);
         }
-
         return entries;
     }
-
     function isObjectEmpty (obj) {
         return Object.keys(obj).length === 0;
     }
-
     var parseResult = function(command, result) {
         if(result && !(isObjectEmpty(result)) && !(result['objects'] instanceof Array)){
             result['objects'] = [result['objects']];
         }
-
         if (dq(result, 'objects').length == 0) {
             return 'Anomali ThreatStream - No records found.';
         }
-
         var entry;
         switch (command) {
             case 'ip':
@@ -288,14 +269,12 @@ script:
             case 'threatstream-checksum-reputation':
                 entry = parseReputationResult(command, result);
                 break;
-
+            case 'threatstream-push-indicator':
             default:
                 entry = result;
         }
-
         return entry;
     }
-
     var apiCommand = command;
     switch (command) {
         case 'ip':
@@ -304,36 +283,40 @@ script:
             args.value = args.ip;
             delete args.ip;
             break;
-
         case 'file':
             apiCommand = 'threatstream-intelligence';
             args.type = 'md5';
             args.value = args.file;
             delete args.checksum;
             break;
-
         case 'domain':
             apiCommand = 'threatstream-intelligence';
             args.type = 'domain';
             args.value = args.domain;
             delete args.domain;
             break;
-
         case 'threatstream-email-reputation':
             apiCommand = 'threatstream-intelligence';
             args.type = 'email';
             args.value = args.email;
             delete args.email;
             break;
-
         case 'threatstream-file-reputation':
             apiCommand = 'threatstream-intelligence';
             args.type = 'md5';
             args.value = args.file_md5;
             delete args.md5;
             break;
+        case 'threatstream-push-indicator':
+            apiCommand = 'threatstream-import';
+            args = { "meta": { "source_confidence_weight": args.confidenceWeight }, "objects": [ {
+                "args.indicatorType": args.indicator,
+                "classification": args.classification,
+                "itype": args.itype,
+                "confidence": args.confidence,
+                "severity": args.severity } ] };
+            break;
     }
-
     var commandData = commandDict[apiCommand];
     var result = sendRequest(
         commandData.method,
@@ -343,11 +326,9 @@ script:
         commandData.headers,
         commandData.multipart
     );
-
     if (command === 'test-module') {
         return 'ok';
     }
-
     if (result && result.meta && result.meta.next) {
         // hide the api key
         result.meta.next = result.meta.next.replace(API_KEY, '*******');
@@ -619,4 +600,56 @@ script:
       description: Domain name (obtained through reverse domain name lookup) associated
         with the IP address that is associated with the indicator.
     description: Checks the reputation of the given IP
-hidden: false
+  - name: threatstream-push-indicator
+    arguments:
+    - name: confidenceWeight
+      required: true
+      description: To use your source's confidence entirely, set source_confidence_
+        weight to 100.
+      defaultValue: "100"
+    - name: indicator
+      required: true
+      description: indicator value (1.2.3.4/google.com etc)
+    - name: indicatorType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - srcip
+      - domain
+      - url
+      - email
+      - md5
+      description: type of indicator to insert
+    - name: itype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - bot_ip
+      - mal_domain
+      - mal_url
+      - compromised_email
+      - apt_md5
+      description: indicator type (internal by threat stream, complete list can be
+        found in API docs)
+    - name: classification
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Classification of the indicator—public or private
+      defaultValue: private
+    - name: confidence
+      required: true
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence
+      defaultValue: "100"
+    - name: severity
+      required: true
+      description: 'Severity you want to assign to the indicator when it is imported.
+        Possible values: low, medium, high, very-high'
+      defaultValue: "100"
+    description: Push indicator into ThreatStream
+  runonce: false
+tests:
+  - Anomali_ThreatStream_Test

@@ -12,7 +12,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M TestPlaybooks.playbook-test.yml"
+            return "M Playbooks.playbook-test.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -46,12 +46,13 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
     def tearDown(self):
         os.remove(FILTER_CONF)
 
+
 class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
     def run_git_command(self, command):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M integrations.integration-test.yml"
+            return "M integration-test.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -75,7 +76,6 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
 
     def test_changed_playbook(self):
         self.create_test_file()
-        run_git_command = self.run_git_command
 
         with open(FILTER_CONF, 'r') as filter_file:
             filterd_tests = filter_file.readlines()
@@ -87,13 +87,12 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
         os.remove(FILTER_CONF)
 
 
-
 class TestConfigureTests_ChangedBoth(unittest.TestCase):
     def run_git_command(self, command):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M TestPlaybooks.playbook-test.yml\nA integrations.integration-test.yml"
+            return "M Playbooks.playbook-test.yml\nA integration-test.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -133,7 +132,7 @@ class TestConfigureTests_AllTesting(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M TestPlaybooks.script-test.yml"
+            return "M Playbooks.playbook-invalid.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")

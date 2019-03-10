@@ -380,7 +380,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: EmailWithNonUnicodeSubject.eml
+        simple: EmailWithNonAsciiSubject.eml
       headers: {}
       insecure: {}
       method:
@@ -391,7 +391,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonUnicodeSubject.eml
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiSubject.eml
       username: {}
     separatecontext: false
     view: |-
@@ -420,7 +420,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: EmailWithNonUnicodeAttachmentName.eml
+        simple: EmailWithNonAsciiAttachmentName.eml
       headers: {}
       insecure: {}
       method:
@@ -431,7 +431,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonUnicodeAttachmentName.eml
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiAttachmentName.eml
       username: {}
     separatecontext: false
     view: |-
@@ -473,7 +473,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: EmailWithNonUnicodeAttachmentName.eml
+                  simple: EmailWithNonAsciiAttachmentName.eml
           transformers:
           - operator: getField
             args:
@@ -522,7 +522,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: EmailWithNonUnicodeSubject.eml
+                  simple: EmailWithNonAsciiSubject.eml
           transformers:
           - operator: getField
             args:

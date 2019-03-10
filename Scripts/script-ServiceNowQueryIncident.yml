@@ -187,6 +187,5 @@ dependson:
   must:
   - ServiceNow|||servicenow-query-table
 runonce: false
-releaseNotes: "ServiceNow query table example"
 tests:
   - No test - Hibernating instance

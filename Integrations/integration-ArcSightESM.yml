@@ -2,7 +2,7 @@ commonfields:
   id: ArcSight ESM
   version: -1
 name: ArcSight ESM
-display: ArcSight ESM
+display: ArcSight ESM (deprecated)
 category: Analytics & SIEM
 image: data:image/png;base64,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
 description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
@@ -160,7 +160,7 @@ script:
                 Body: stringBody
             },
             params.insecure,
-            params.useproxy
+            params.proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -1132,7 +1132,6 @@ script:
       defaultValue: "true"
     description: commands.server.arcsight.query.description
   - name: as-add-entries
-    description: Import/add new entries to Active List.
     arguments:
     - name: resourceId
       required: true
@@ -1146,21 +1145,17 @@ script:
     description: Add new entries to Active List
     execution: true
   - name: as-clear-entries
-    description: Deletes all the entries in the Active List
     arguments:
     - name: resourceId
-      description: Resource id of specific Active List
       required: true
-      description: resource id of Active list
+      description: Resource id of specific Active List
     description: Clean all entries in the Active List
     execution: true
   - name: as-get-entries
-    description: Returns the entries which the Active List contains
     arguments:
     - name: resourceId
       description: Resource id of specific Active List
       required: true
-      description: resource id of Active list
     - name: entryFilter
       description: 'Filters the entries. Example: entryFilter="moo:moo1"'
     outputs:
@@ -1169,7 +1164,6 @@ script:
         entries
     description: Get all entries from Active List
   - name: as-get-security-events
-    description: Returns security event object by providing id
     arguments:
     - name: startDate
       description: 'Start time filter. Example: 2017-05-22T10:00:00'
@@ -1236,6 +1230,5 @@ script:
     execution: true
   isfetch: true
 hidden: false
-releaseNotes: "Added logout handling"
 tests:
 - No test

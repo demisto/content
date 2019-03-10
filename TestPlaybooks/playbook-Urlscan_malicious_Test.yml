@@ -5,12 +5,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d0575ef2-4421-4988-8d6e-ca54cba5f879
+    taskid: 9ea3ae9a-a213-4b9e-87fd-71f51ba77883
     type: start
     task:
-      id: d0575ef2-4421-4988-8d6e-ca54cba5f879
+      id: 9ea3ae9a-a213-4b9e-87fd-71f51ba77883
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -20,17 +21,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -232
+          "x": 50,
+          "y": 50
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 1af7c3fb-a179-456b-8505-c1c4084f3ba2
+    taskid: 9bc7b4cf-277c-47a4-81e6-a6a7183f08a5
     type: regular
     task:
-      id: 1af7c3fb-a179-456b-8505-c1c4084f3ba2
+      id: 9bc7b4cf-277c-47a4-81e6-a6a7183f08a5
       version: -1
       name: Check Malicious url
       description: Check if file MD5 is malicious
@@ -50,17 +52,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 204
+          "x": 50,
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: af5ffda2-df68-48c9-8334-8460471d0502
+    taskid: 12719fdb-d543-4e84-8fb0-7741ba17d63f
     type: regular
     task:
-      id: af5ffda2-df68-48c9-8334-8460471d0502
+      id: 12719fdb-d543-4e84-8fb0-7741ba17d63f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -79,17 +82,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 41
+          "x": 50,
+          "y": 195
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 9e47f1d3-66e3-4d11-815b-a916da889bc9
+    taskid: 6f74c347-29c4-4d43-84b8-5fc392e4cb0c
     type: condition
     task:
-      id: 9e47f1d3-66e3-4d11-815b-a916da889bc9
+      id: 6f74c347-29c4-4d43-84b8-5fc392e4cb0c
       version: -1
       name: Get result
       description: Filter context keys by applying one of the various available manipulations
@@ -123,17 +127,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 369
+          "x": 50,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: ef8d4bdc-c119-4f5b-8334-ae8628dee019
+    taskid: e1b4e220-e38f-4532-8c00-7d7fa3e240f6
     type: title
     task:
-      id: ef8d4bdc-c119-4f5b-8334-ae8628dee019
+      id: e1b4e220-e38f-4532-8c00-7d7fa3e240f6
       version: -1
       name: Malicious
       type: title
@@ -146,17 +151,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 595
+          "x": 50,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: b90c2d4b-80f0-46f5-8f1e-47e10b77d36f
+    taskid: 345e49f9-ed15-4c45-87a2-da0cf749e196
     type: regular
     task:
-      id: b90c2d4b-80f0-46f5-8f1e-47e10b77d36f
+      id: 345e49f9-ed15-4c45-87a2-da0cf749e196
       version: -1
       name: Check non-malicious url
       description: Check if file MD5 is malicious
@@ -168,25 +174,27 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      limit: {}
       searchParameter:
-        simple: https://urlscan.io/
+        simple: shlepme.com
       url:
-        simple: https://google.com
+        simple: shlepme.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1007,
-          "y": 204
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
-    taskid: 141c0d90-0ad9-4727-88b6-cca6ff7a132f
+    taskid: d3ec8081-1680-4d9c-885a-b388117e26ec
     type: condition
     task:
-      id: 141c0d90-0ad9-4727-88b6-cca6ff7a132f
+      id: d3ec8081-1680-4d9c-885a-b388117e26ec
       version: -1
       name: Get result
       description: Filter context keys by applying one of the various available manipulations
@@ -216,41 +224,46 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: urlscan.io
+              simple: shlepme.com
     view: |-
       {
         "position": {
-          "x": 1007,
-          "y": 369
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: 2f38abe3-90c3-41c8-88e6-440008088b24
+    taskid: 07f20b44-ec5e-4b8e-872e-fef08a19a4fa
     type: title
     task:
-      id: 2f38abe3-90c3-41c8-88e6-440008088b24
+      id: 07f20b44-ec5e-4b8e-872e-fef08a19a4fa
       version: -1
       name: Not Malicious
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1007,
-          "y": 595
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
-    taskid: 9022387e-6d2c-4207-8e37-00bd9061e779
+    taskid: 73caa715-ba15-47ba-85ac-fa232f56b6a3
     type: regular
     task:
-      id: 9022387e-6d2c-4207-8e37-00bd9061e779
+      id: 73caa715-ba15-47ba-85ac-fa232f56b6a3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -272,20 +285,132 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1007,
-          "y": 41
+          "x": 50,
+          "y": 865
         }
       }
     note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 9a6b0bbd-eb69-4e6b-80c5-0ba617619f90
+    type: regular
+    task:
+      id: 9a6b0bbd-eb69-4e6b-80c5-0ba617619f90
+      version: -1
+      name: Multiple url submission(rate limit test)
+      description: Submit a url to scan
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: "3"
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.demisto.com
+      wait:
+        simple: "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 94ed5525-a0ac-45f4-8f7b-335672cd9cf0
+    type: regular
+    task:
+      id: 94ed5525-a0ac-45f4-8f7b-335672cd9cf0
+      version: -1
+      name: url
+      description: Submit a url to scan
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: "2"
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.ebay.com
+      wait:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 1e6c0239-8211-4c5b-8dc7-1fbab2c4dfbb
+    type: regular
+    task:
+      id: 1e6c0239-8211-4c5b-8dc7-1fbab2c4dfbb
+      version: -1
+      name: url
+      description: Submit a url to scan
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: "2"
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.paloaltonetworks.com
+      wait:
+        simple: "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 892,
-        "width": 937,
-        "x": 450,
-        "y": -232
+        "height": 1930,
+        "width": 380,
+        "x": 50,
+        "y": 50
       }
     }
   }

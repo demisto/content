@@ -200,6 +200,5 @@ outputs:
 - contextPath: Endpoint.HostName
   description: The host of the endpoint
   type: string
-releaseNotes: "Added outputs"
 tests:
 - No test

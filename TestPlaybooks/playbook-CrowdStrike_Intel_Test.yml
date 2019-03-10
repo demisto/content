@@ -249,7 +249,7 @@ tasks:
       id: 15f74464-483b-4658-89d2-d6db36f31702
       version: -1
       name: Some value was not found
-      scriptName: ThrowException
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -480,7 +480,7 @@ tasks:
       id: 6d121368-aa22-4120-86a1-05dccdfbfe09
       version: -1
       name: Some value was not found
-      scriptName: ThrowException
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""

@@ -830,4 +830,3 @@ script:
     description: deletes an issue
   isfetch: true
   runonce: false
-releaseNotes: new authentication method, and some functionality updates

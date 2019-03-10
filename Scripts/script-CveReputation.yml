@@ -3,8 +3,19 @@ commonfields:
   version: 45
 name: cveReputation
 script: |
-  var resCmd = executeCommand('cve-search', {'cveId': args.input});
-  var data = resCmd[0].Contents;
+  var resCmd = executeCommand('cve-search', {'cveId': args.input})[0];
+  var maxTries = 5;
+  var counter = 0;
+  while (isError(resCmd) && counter < maxTries) {
+      resCmd = executeCommand('cve-search', {'cveId': args.input})[0];
+      counter++;
+  }
+
+  if (isError(resCmd)) {
+      throw resCmd.Contents;
+  }
+
+  var data = resCmd.Contents;
   var cvss = (data.cvss) ? parseInt(data.cvss) : -1;
 
   if (cvss === -1) {
@@ -21,7 +32,7 @@ tags:
 - cve
 - reputation
 comment: Provides  severity of CVE based on CVSS score where available
-system: true
+enabled: true
 args:
 - name: input
   required: true
@@ -31,4 +42,4 @@ scripttarget: 0
 dependson:
   must:
   - cve-search
-timeout: 0s
+runonce: false

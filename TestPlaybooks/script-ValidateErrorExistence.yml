@@ -22,5 +22,3 @@ script: |-
   demisto.results(res)
 type: python
 tags: []
-releaseNotes: "Added script to check error existence"
-

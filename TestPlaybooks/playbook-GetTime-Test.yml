@@ -756,7 +756,7 @@ tasks:
       flags: {}
       group: {}
       regex:
-        simple: ^[0-1][0-9]$
+        simple: ^[0-1]{0,1}[0-9]$
     separatecontext: false
     view: |-
       {
