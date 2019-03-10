@@ -5,30 +5,33 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 38d3a420-d501-4afe-8da4-e47626d3bd3c
+    taskid: 383c2b00-fa66-4cbe-8547-6dde49d9bd55
     type: start
     task:
-      id: 38d3a420-d501-4afe-8da4-e47626d3bd3c
+      id: 383c2b00-fa66-4cbe-8547-6dde49d9bd55
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -120
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 369f2840-45e6-417e-8db3-df70751d625c
+    taskid: f504d547-a230-4c77-8113-d85c7cf46b8f
     type: regular
     task:
-      id: 369f2840-45e6-417e-8db3-df70751d625c
+      id: f504d547-a230-4c77-8113-d85c7cf46b8f
       version: -1
       name: mar-collectors-list
       description: Returns a list of all collectors and their outputs
@@ -39,6 +42,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -46,12 +50,14 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 5ac8dc77-a237-4539-8eaa-6cf9812a53b7
+    taskid: c8d110a2-bc74-45b3-8dd6-6decdedd80f8
     type: regular
     task:
-      id: 5ac8dc77-a237-4539-8eaa-6cf9812a53b7
+      id: c8d110a2-bc74-45b3-8dd6-6decdedd80f8
       version: -1
       name: mar-search
       description: Search endpoint data
@@ -63,11 +69,13 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      collector: HostInfo
-      filter-by: ""
-      filter-operator: ""
-      filter-value: ""
-      outputs: ""
+      collector:
+        simple: HostInfo
+      filter-by: {}
+      filter-operator: {}
+      filter-value: {}
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -75,12 +83,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 2c8251e8-bdf3-4342-8a34-2a3203aec867
+    taskid: 9dbfa549-9ece-492e-8d88-d70aeab9840a
     type: regular
     task:
-      id: 2c8251e8-bdf3-4342-8a34-2a3203aec867
+      id: 9dbfa549-9ece-492e-8d88-d70aeab9840a
       version: -1
       name: VerifyContext mar-search
       description: |-
@@ -97,9 +107,12 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      expectedValue: ""
-      fields: os,created_at,hostname,ip_address
-      path: MAR.HostInfo
+      expectedValue: {}
+      fields:
+        simple: os,created_at,hostname,ip_address
+      path:
+        simple: MAR.HostInfo
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -107,12 +120,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: dcc1497c-1bc2-4f3e-84ab-49c93aad67d8
+    taskid: 37da63cf-c285-4793-88db-b7e8baee04ac
     type: regular
     task:
-      id: dcc1497c-1bc2-4f3e-84ab-49c93aad67d8
+      id: 37da63cf-c285-4793-88db-b7e8baee04ac
       version: -1
       name: mar-search with filter
       description: '!mar-search collector=Processes filter-by=name filter-operator=Equals
@@ -125,11 +140,17 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      collector: Processes
-      filter-by: name
-      filter-operator: Equals
-      filter-value: SYSTEM
-      outputs: user_id,name,uptime
+      collector:
+        simple: Processes
+      filter-by:
+        simple: name
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: SYSTEM
+      outputs:
+        simple: user_id,name,uptime
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -137,12 +158,14 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: e1c37161-0e74-4211-8cda-4939ca486df3
+    taskid: 55011276-cd95-4732-83c6-78c34a2f0c4a
     type: regular
     task:
-      id: e1c37161-0e74-4211-8cda-4939ca486df3
+      id: 55011276-cd95-4732-83c6-78c34a2f0c4a
       version: -1
       name: VerifyContext mar-search with filter
       description: |-
@@ -159,9 +182,12 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      expectedValue: ""
-      fields: user_id,name,uptime
-      path: MAR.Processes
+      expectedValue: {}
+      fields:
+        simple: user_id,name,uptime
+      path:
+        simple: MAR.Processes
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -169,12 +195,14 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: b386cdf3-cd6e-45a6-80ce-28bafa69d029
+    taskid: fa73b2c9-2813-4fa4-82a5-16b457d65d05
     type: regular
     task:
-      id: b386cdf3-cd6e-45a6-80ce-28bafa69d029
+      id: fa73b2c9-2813-4fa4-82a5-16b457d65d05
       version: -1
       name: mar-search-multiple
       description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo
@@ -185,13 +213,15 @@ tasks:
       brand: McAfee Active Response
     nexttasks:
       '#none#':
-      - "7"
+      - "8"
     scriptarguments:
-      collectors: HostInfo
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ADMIN-PC
-      filter_collector: HostInfo
+      collectors:
+        simple: HostInfo
+      filter-by: {}
+      filter-operator: {}
+      filter-value: {}
+      filter_collector: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -199,45 +229,112 @@ tasks:
           "y": 1070
         }
       }
-  "7":
-    id: "7"
-    taskid: 183420b9-734d-4136-8f07-4c860072099d
-    type: regular
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 11941a95-0a2a-46a6-8226-917ee997d4e0
+    type: condition
     task:
-      id: 183420b9-734d-4136-8f07-4c860072099d
+      id: 11941a95-0a2a-46a6-8226-917ee997d4e0
       version: -1
-      name: VerifyContext mar-search-multiple
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      name: Check search multiple
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue: ""
-      fields: ""
-      path: MAR.SearchMultiple
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MAR
+                accessor: SearchMultiple
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1260
         }
       }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: dfadcb24-11ee-4142-84cd-5230375dc9cc
+    type: regular
+    task:
+      id: dfadcb24-11ee-4142-84cd-5230375dc9cc
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: c1a381b3-9371-4b7b-8bba-ffab18950c86
+    type: title
+    task:
+      id: c1a381b3-9371-4b7b-8bba-ffab18950c86
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1615,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -120
       }
     }
   }
 inputs: []
+outputs: []
