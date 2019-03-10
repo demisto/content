@@ -18,6 +18,7 @@ jobs:
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
+              sudo pip install mock
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -26,6 +27,7 @@ jobs:
           name: Infrastucture testing
           command: |
             pytest ./Tests/scripts/hook_validations/tests/ -v
+            pytest ./Tests/scripts/infrastructure_tests/ -v
       - run:
           name: Create ID Set
           command: |
@@ -77,7 +79,8 @@ jobs:
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/create_instance.sh instance.json
+                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY
 
               else
                 ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
@@ -87,23 +90,60 @@ jobs:
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_installer_on_instance.sh
+                python ./Tests/scripts/run_content_installation.py
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
             fi
-
-            ./Tests/scripts/wait_until_server_ready.sh
       - run:
-          name: Run Tests
+          name: Run Tests - Latest GA
           shell: /bin/bash
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh
+                ./Tests/scripts/run_tests.sh "Demisto GA"
 
               else
                 ./Tests/lastest_server_build_scripts/run_tests.sh
+            fi
+      - run:
+          name: Run Tests - One Before GA
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto one before GA"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Two Before GA
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto two before GA"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Server Master
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Server Master"
+
+              else
+                echo "Not AMI run, can't run on this version"
             fi
       - run:
           name: Slack Notifier
@@ -116,7 +156,7 @@ jobs:
           when: always
       - run:
           name: Destroy Instances
-          command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
+          command: python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
           when: always
       - store_artifacts:
           path: artifacts
