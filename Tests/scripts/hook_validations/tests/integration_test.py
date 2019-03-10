@@ -456,29 +456,115 @@ def test_not_requires_arg_in_command_in_integration():
 def test_not_changed_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test"
+                        }
+                    ]
+                }
+            ]
+        }
     }
     validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test"
+                        }
+                    ]
+                }
+            ]
+        }
     }
 
     assert validator.is_changed_command_name_or_arg() is False, "The script validator found a backward compatibility " \
         "issue although the commands haven't changed"
+
+
+def test_no_duplicate_params():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "test"
+            },
+            {
+                "name": "tes1",
+            }
+        ]
+    }
+
+    assert validator.is_there_duplicate_params() is False, \
+        "The integration validator found duplicated params although there are none"
+
+
+def test_duplicated_params():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "test"
+            },
+            {
+                "name": "test",
+            }
+        ]
+    }
+
+    assert validator.is_there_duplicate_params(), \
+        "The integration validator did not find duplicated params although there are duplicates"
+
+
+def test_no_duplicate_args():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "testing",
+                    "arguments": [
+                        {
+                            "name": "test1"
+                        },
+                        {
+                            "name": "test2"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    assert validator.is_there_duplicate_args() is False, \
+        "The integration validator found duplicated args although there are none"
+
+
+def test_duplicated_argss():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "testing",
+                    "arguments": [
+                        {
+                            "name": "test"
+                        },
+                        {
+                            "name": "test"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    assert validator.is_there_duplicate_args(), \
+        "The integration validator did not find duplicated args although there are duplicates"
