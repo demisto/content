@@ -4,7 +4,7 @@
   "name": "Active Incidents by Role",
   "dataType": "incidents",
   "widgetType": "bar",
-  "query": "-status:closed",
+  "query": "-category:job and status:active",
   "size": 10,
   "isPredefined": true,
   "dateRange": {

@@ -5,7 +5,7 @@
   "name": "Active Incidents Assigned by User",
   "dataType": "incidents",
   "widgetType": "bar",
-  "query": "-status:archived and -status:closed",
+  "query": "-category:job and -status:archived and -status:closed",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
