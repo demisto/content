@@ -3,7 +3,7 @@ import re
 import json
 from distutils.version import LooseVersion
 
-from Tests.test_utils import get_script_or_integration_id, collect_ids, print_error
+from Tests.test_utils import get_json, get_script_or_integration_id, collect_ids, print_error
 from Tests.scripts.constants import INTEGRATION_REGEX, TEST_PLAYBOOK_REGEX, SCRIPT_JS_REGEX, \
     SCRIPT_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_YML_REGEX, PLAYBOOK_REGEX, SCRIPT_YML_REGEX, SCRIPT_PY_REGEX
 from Tests.scripts.update_id_set import get_script_data, get_playbook_data, \
@@ -184,6 +184,7 @@ class IDSetValidator(object):
             bool. Whether the ID of the given file already exist in the system or not.
         """
         is_used = False
+        is_json_file = False
         if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 obj_type = self.TEST_PLAYBOOK_SECTION
@@ -218,7 +219,10 @@ class IDSetValidator(object):
                 obj_type = self.SCRIPTS_SECTION
                 obj_id = get_script_or_integration_id(yml_path)
 
-            if obj_id:
+            else:  # In case of a json file
+                is_json_file = True
+
+            if not is_json_file:
                 is_used = self.is_id_duplicated(obj_id, obj_data, obj_type)
 
         return is_used
