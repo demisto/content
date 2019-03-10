@@ -5,11 +5,13 @@ from CommonServerUserPython import *
 """ IMPORTS """
 from datetime import datetime
 import requests
+import base64
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS """
+MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
 BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 HEADERS = {
@@ -44,11 +46,28 @@ if not demisto.params().get("proxy", False):
 
 
 @logger
-def int_to_ip(num):
-    """ IP stored as an int within the ArcSight DB. This function transform it into IPv4 format """
-    if num and isinstance(num, int):
-        return "{}.{}.{}.{}".format((num >> 24) & 255, (num >> 16) & 255, (num >> 8) & 255, num & 255)
-    return num
+def decode_ip(address_by_bytes):
+    """ Decodes the enigmatic way IPs are stored in ArcSight DB into IPv4/6 format """
+    if isinstance(address_by_bytes, int):
+        return "{}.{}.{}.{}".format((address_by_bytes >> 24) & 255, (address_by_bytes >> 16) & 255,
+                                    (address_by_bytes >> 8) & 255, address_by_bytes & 255)
+
+    # if it's not an int, it should be Base64 encoded string
+    decoded_string = base64.b64decode(address_by_bytes).encode('hex')
+    try:
+        if len(address_by_bytes) >= 20:
+            # split the IPv6 address into 8 chunks of 4
+            decoded_string = [decoded_string[i:i + 4] for i in range(0, len(decoded_string), 4)]
+            return "{}:{}:{}:{}:{}:{}:{}:{}".format(*decoded_string)
+        elif len(address_by_bytes) >= 6:
+            return "{}.{}.{}.{}".format((address_by_bytes >> 24) & 255, (address_by_bytes >> 16) & 255,
+                                        (address_by_bytes >> 8) & 255, address_by_bytes & 255)
+        else:
+            return address_by_bytes
+
+    except Exception as ex:
+        demisto.debug(str(ex))
+        return address_by_bytes
 
 
 @logger
@@ -65,12 +84,12 @@ def parse_timestamp_to_datestring(timestamp):
 
 
 @logger
-def beautifully_json(d, depth=0):
+def beautifully_json(d, depth=0, remove_nones=True):
     """ Converts some of the values from ArcSight DB into a more useful & readable format """
     # arcsight stores some None values as follows
-    NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648]
+    NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648, 5e-324]
     # arcsight stores IP addresses as int, in the following keys
-    IP_FIELDS = ['address', 'Destination Address', 'Source Address']
+    IP_FIELDS = ['address', 'addressAsBytes', 'Destination Address', 'Source Address']
     # arcsight stores Dates as timeStamps in the following keys, need to format them into Date
     TIMESTAMP_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                         'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
@@ -82,9 +101,14 @@ def beautifully_json(d, depth=0):
                 if isinstance(value, dict):
                     beautifully_json(value, depth + 1)
                 elif value in NONE_VALUES:
-                    d.pop(key, None)
-                elif key in IP_FIELDS and isinstance(value, int):
-                    d[key] = int_to_ip(value)
+                    if remove_nones:
+                        d.pop(key, None)
+                    else:
+                        d[key] = 'None'
+
+                elif key in IP_FIELDS:
+                    key = 'decodedAddress' if key == 'addressAsBytes' else key
+                    d[key] = decode_ip(value)
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
                     d[key] = parse_timestamp_to_datestring(value)
@@ -333,7 +357,7 @@ def fetch():
             }
 
             incidents.append(incident)
-            if len(already_fetched) > 1000:
+            if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
 
@@ -379,8 +403,8 @@ def get_case(resource_id, fetch_base_events=False):
             # if eventIDs is single id then convert to list
             case['eventIDs'] = [case['eventIDs']]
 
-            if fetch_base_events:
-                case['events'] = get_security_events(case['eventIDs'])
+        if case.get('eventIDs') and fetch_base_events:
+            case['events'] = beautifully_json(get_security_events(case['eventIDs']), remove_nones=False)
 
         return case
 
@@ -442,8 +466,8 @@ def get_security_events_command():
             event = {
                 'Event ID': raw_event.get('eventId'),
                 'Time': timestamp_to_datestring(raw_event.get('endTime'), '%Y-%m-%d, %H:%M:%S'),
-                'Source Address': int_to_ip(demisto.get(raw_event, 'source.address')),
-                'Destination Address': int_to_ip(demisto.get(raw_event, 'destination.address')),
+                'Source Address': decode_ip(demisto.get(raw_event, 'source.address')),
+                'Destination Address': decode_ip(demisto.get(raw_event, 'destination.address')),
                 'Name': raw_event.get('name'),
                 'Source Port': demisto.get(raw_event, 'source.port'),
                 'Base Event IDs': raw_event.get('baseEventIds')
@@ -550,9 +574,18 @@ def update_case(case_id, stage, severity):
 
 
 @logger
+def get_correlated_events_ids(event_ids):
+    related_ids = set(event_ids)
+    for raw_event in get_security_events(event_ids):
+        related_ids.add(raw_event.get('baseEventIds'))
+
+    return list(related_ids)
+
+
+@logger
 def get_case_event_ids_command():
     case_id = demisto.args().get('caseId')
-
+    with_correlated_events = demisto.args().get('withCorrelatedEvents') == 'true'
     query_path = 'www/manager-service/rest/CaseService/getCaseEventIDs'
     params = {
         'authToken': AUTH_TOKEN,
@@ -569,6 +602,9 @@ def get_case_event_ids_command():
         event_ids = res_json.get('cas.getCaseEventIDsResponse').get('cas.return')
         if not isinstance(event_ids, list):
             event_ids = [event_ids]
+
+        if with_correlated_events:
+            event_ids = get_correlated_events_ids(event_ids)
 
         contents = beautifully_json(res_json)
         human_readable = tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
