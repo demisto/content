@@ -46,8 +46,52 @@ class IntegrationValidator(object):
         self.is_docker_image_changed()
         self.is_added_required_fields()
         self.is_changed_command_name_or_arg()
+        self.is_there_duplicate_args()
+        self.is_there_duplicate_params()
 
         return self._is_valid
+
+    def is_there_duplicate_args(self):
+        """Check if a command has the same arg more than once
+
+        Returns:
+            bool. True if there are duplicates, False otherwise.
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            arg_list = []
+            for arg in command['arguments']:
+                if arg in arg_list:
+                    self._is_valid = False
+                    print_error("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
+                                "please remove one of its appearances "
+                                "as we do not allow duplicates".format(arg, command['name'],
+                                                                       self.current_integration.get('name')))
+                else:
+                    arg_list.append(arg)
+
+        return not self._is_valid
+
+    def is_there_duplicate_params(self):
+        """Check if the integration has the same param more than once
+
+        Returns:
+            bool. True if there are duplicates, False otherwise.
+        """
+        configurations = self.current_integration.get('configuration', [])
+        param_list = []
+        for configuration_param in configurations:
+            param_name = configuration_param['name']
+            if param_name in param_list:
+                self._is_valid = False
+                print_error("The parameter '{}' of the "
+                            "integration '{}' is duplicated, please remove one of its appearances as we do not "
+                            "allow duplicated parameters".format(param_name,
+                                                                 self.current_integration.get('name')))
+            else:
+                param_list.append(param_name)
+
+        return not self._is_valid
 
     def _get_command_to_args(self, integration_json):
         """Get a dictionary command name to it's arguments.
