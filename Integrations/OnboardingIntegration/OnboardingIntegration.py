@@ -7,6 +7,7 @@ from faker.providers import internet, misc, lorem, user_agent
 from datetime import datetime
 import json
 import random
+import math
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -22,6 +23,7 @@ PARAMS = demisto.params()
 INCIDENT_TYPE = PARAMS.get('incident_type', 'PhishingDemo')
 INCIDENTS_PER_MINUTE = int(PARAMS.get('incidents_per_minute', '5'))
 MAX_NUM_OF_INCIDENTS = int(PARAMS.get('max_num_of_incidents', '10'))
+HOW_OFTEN = PARAMS.get('how_often')
 INDICATORS_PER_INCIDENT = 5
 INDICATORS_TO_INCLUDE = ['ipv4_private', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
 EMAIL_PROTOCOLS = ['POP3', 'IMAP', 'SMTP', 'ESMTP', 'HTTP', 'HTTPS']
@@ -238,12 +240,16 @@ def update_parameters():
     params = demisto.params()
     incidents_per_minute = int(params.get('incidents_per_minute', '5'))
     max_num_of_incidents = int(params.get('max_num_of_incidents', '10'))
+    how_often = int(params.get('how_often')) if params.get('how_often') else None
     global INCIDENTS_PER_MINUTE
     if INCIDENTS_PER_MINUTE != incidents_per_minute:
         INCIDENTS_PER_MINUTE = incidents_per_minute
     global MAX_NUM_OF_INCIDENTS
     if MAX_NUM_OF_INCIDENTS != max_num_of_incidents:
         MAX_NUM_OF_INCIDENTS = max_num_of_incidents
+    global HOW_OFTEN
+    if HOW_OFTEN != how_often:
+        HOW_OFTEN = how_often
 
 
 def generate_dbot_score(indicator):
@@ -304,7 +310,7 @@ def inject_content_into_template(plaintext):
         The html template populated with the randomly generated content
     """
     # Choose random email html template
-    choice = random.randint(0, 2)
+    choice = random.randint(0, len(EMAIL_TEMPLATES) - 1)
     chosen_template = ''.join(EMAIL_TEMPLATES[choice])
     html = chosen_template.format(plaintext)
     return html
@@ -351,42 +357,102 @@ def create_email():
     return msg, email_object
 
 
+def generate_incidents(last_run):
+    """
+    Determines how many incidents to create and generates them
+
+    parameter: (number) last_run
+        The number of incidents generated in the last fetch
+
+    returns:
+        The number of incidents generated in the current call to fetch_incidents and the incidents themselves
+    """
+    if last_run > 0 and last_run > MAX_NUM_OF_INCIDENTS:
+        demisto.info('last_run is greater than MAX_NUM_OF_INCIDENTS')
+        return 0, []
+
+    incidents = []
+    num_of_incidents_left_to_create = MAX_NUM_OF_INCIDENTS - last_run
+
+    if num_of_incidents_left_to_create > INCIDENTS_PER_MINUTE:
+        num_of_incident_to_create = INCIDENTS_PER_MINUTE
+    else:
+        num_of_incident_to_create = num_of_incidents_left_to_create
+
+    for _ in range(num_of_incident_to_create):
+        email, email_object = create_email()
+        incidents.append({
+            'name': email_object.get('Subject'),
+            'details': email.as_string(),
+            'occurred': email_object.get('Date'),
+            'type': INCIDENT_TYPE,
+            'rawJSON': json.dumps(email_object)
+        })
+    return num_of_incident_to_create, incidents
+
+
 '''MAIN FUNCTIONS'''
 
 
 def fetch_incidents():
+    # Assumes that fetch-incidents is called once a minute
     try:
         update_parameters()
-        last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
+        if not HOW_OFTEN:  # Run once
+            last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
 
-        if last_run > 0 and last_run > MAX_NUM_OF_INCIDENTS:
+            num_of_incidents_created, incidents = generate_incidents(last_run)
+
+            demisto.incidents(incidents)
+            demisto.info('****************************')
+            demisto.info('last_run: {}'.format(last_run))
+            demisto.info('incidents created: {}'.format(num_of_incidents_created))
+            # demisto.info('incidents left to create: {}'.format(MAX_NUM_OF_INCIDENTS - num_of_incidents_created))
+            demisto.setLastRun({'numOfIncidentsCreated': last_run + num_of_incidents_created})
             return
-
-        incidents = []
-        num_of_incidents_left_to_create = MAX_NUM_OF_INCIDENTS - last_run
-
-        if num_of_incidents_left_to_create > INCIDENTS_PER_MINUTE:
-            num_of_incident_to_create = INCIDENTS_PER_MINUTE
         else:
-            num_of_incident_to_create = num_of_incidents_left_to_create
+            minutes_of_generation = MAX_NUM_OF_INCIDENTS / float(INCIDENTS_PER_MINUTE)
+            if minutes_of_generation > HOW_OFTEN:
+                err_msg = 'The maximum number of incidents divided by the incidents to generate per minute'
+                err_msg += ' exceeds every how often incidents should be generated. Please increase the value'
+                err_msg += ' entered for how often the integration should generate incidents.'
+                raise Exception(err_msg)
+            run_counter = 0 if not demisto.getLastRun() else demisto.getLastRun().get('run_count', 0)
+            last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
+            demisto.info('run_counter: {}'.format(run_counter))
+            demisto.info('HOW_OFTEN: {}'.format(HOW_OFTEN))
+            should_run = run_counter % HOW_OFTEN
+            demisto.info('should_run: {}'.format(should_run))
+            demisto.info('math.ceil(minutes_of_generation): {}'.format(math.ceil(minutes_of_generation)))
+            if should_run < math.ceil(minutes_of_generation):  # then should run
+                if should_run == 0:
+                    last_run = 0
+                demisto.info('last_run: {}'.format(last_run))
 
-        for _ in range(num_of_incident_to_create):
-            email, email_object = create_email()
-            incidents.append({
-                'name': email_object.get('Subject'),
-                'details': email.as_string(),
-                'occurred': email_object.get('Date'),
-                'type': INCIDENT_TYPE,
-                'rawJSON': json.dumps(email_object)
-            })
+                num_of_incidents_created, incidents = generate_incidents(last_run)
+                demisto.info('num_of_incidents_created: {}'.format(num_of_incidents_created))
 
-        demisto.incidents(incidents)
-        # demisto.info("****************************")
-        # demisto.info(last_run)
-        # demisto.info(num_of_incidents_left_to_create)
-        # demisto.info(num_of_incident_to_create)
-        demisto.setLastRun({'numOfIncidentsCreated': last_run + num_of_incident_to_create})
-        return
+                # if num_of_incidents_created > 0:
+                demisto.incidents(incidents)
+                demisto.info('****************************')
+                demisto.info('last_run: {}'.format(last_run))
+                demisto.info('incidents created: {}'.format(num_of_incidents_created))
+                # demisto.info('incidents left to create: {}'.format(MAX_NUM_OF_INCIDENTS - num_of_incidents_created))
+
+                total_incidents_created = last_run + num_of_incidents_created
+                updated_run_count = run_counter + 1
+                demisto.setLastRun({
+                    'numOfIncidentsCreated': total_incidents_created,
+                    'run_count': updated_run_count
+                })
+                return
+            else:
+                updated_run_count = run_counter + 1
+                demisto.setLastRun({
+                    'numOfIncidentsCreated': last_run,
+                    'run_count': updated_run_count
+                })
+                demisto.incidents([])
     except Exception:
         raise
 
