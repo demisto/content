@@ -184,6 +184,9 @@ class IDSetValidator(object):
             bool. Whether the ID of the given file already exist in the system or not.
         """
         is_used = False
+        obj_id = None
+        obj_data = None
+        obj_type = None
         if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 obj_type = self.TEST_PLAYBOOK_SECTION
