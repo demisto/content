@@ -218,6 +218,7 @@ class IDSetValidator(object):
                 obj_type = self.SCRIPTS_SECTION
                 obj_id = get_script_or_integration_id(yml_path)
 
-            is_used = self.is_id_duplicated(obj_id, obj_data, obj_type)
+            if obj_id:
+                is_used = self.is_id_duplicated(obj_id, obj_data, obj_type)
 
         return is_used
