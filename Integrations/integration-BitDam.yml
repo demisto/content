@@ -42,6 +42,7 @@ script:
     API_TOKEN = demisto.params().get('apitoken')
     URL_BASE = demisto.params().get('url')
     USE_PROXY = demisto.params().get('proxy', False)
+    UNSECURE = demisto.params().get('insecure', False)
 
     '''CONSTANTS'''
     READ_BINARY_MODE = 'rb'
@@ -68,7 +69,6 @@ script:
 
 
     '''HELPER FUNCTIONS'''
-
     def get_file_bytes(entry_id):
         get_file_path_res = demisto.getFilePath(entry_id)
         file_path = get_file_path_res["path"]
@@ -137,7 +137,7 @@ script:
         auth_headers = get_auth_headers()
 
         # Send the HTTP request
-        response = requests.post(url, data=raw_json, headers=auth_headers)
+        response = requests.post(url, data=raw_json, headers=auth_headers, verify=not UNSECURE)
         return response
 
 
@@ -213,7 +213,7 @@ script:
         auth_headers = get_auth_headers()
         url = "{}{}".format(get_url_base_with_trailing_slash(), scan_file_relative_url_formatted)
         # Send the request
-        response = requests.get(url, headers=auth_headers)
+        response = requests.get(url, headers=auth_headers, verify=not UNSECURE)
         return response
 
 
@@ -241,8 +241,9 @@ script:
     arguments:
     - name: entryId
       required: true
-      description: File's entry ID from war room. Supported types are doc, dot, docx, docm, dotx,
-        dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
+      description: File's entry ID from war room. Supported types are doc, dot, docx,
+        docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
+        csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
     outputs:
     - contextPath: BitDam.FileScan.SHA1
       description: SHA 1

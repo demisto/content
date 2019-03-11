@@ -1246,6 +1246,7 @@
         "Cymon": "Checking",
         "SplunkPy": "Checking",
         "Symantec Advanced Threat Protection": "Checking",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Palo Alto Minemeld": "Pending bugfix - disable integration instances after test playbook is finished running."
     }
 }
