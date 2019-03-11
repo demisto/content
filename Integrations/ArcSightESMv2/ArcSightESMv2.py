@@ -688,7 +688,14 @@ def get_entries_command():
                 filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
 
         contents = beautifully_json(filtered)
-        outputs = {'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents}
+        ActiveListContext = {
+            'ResourceID': resource_id,
+            'Entries': contents,
+        }
+        outputs = {
+            'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents,
+            'ArcSightESM.ActiveList(val.ResourceID===obj.ResourceID)': ActiveListContext
+        }
         human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
                                          removeNull=True)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
