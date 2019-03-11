@@ -50,13 +50,13 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: 'Version: (one of 10.0, 10.1, 10.2)'
+- display: 'Version: (one of 10.0, 10.1, 10.2, 10.3)'
   name: version
   defaultvalue: "10.2"
   type: 0
   required: true
-- display: ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select "auto-discovery" to extract
-    the format automatically.
+- display: ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select "auto-discovery" to attempt
+    to determine the format automatically.
   name: time_format
   defaultvalue: auto-discovery
   type: 0
@@ -1253,22 +1253,31 @@ script:
     outputs:
     - contextPath: Alarm.ID
       description: Alarm ID
+      type: number
     - contextPath: Alarm.summary
       description: Alarm summary
+      type: string
     - contextPath: Alarm.assignee
       description: Alarm assignee
+      type: string
     - contextPath: Alarm.severity
       description: Alarm severity
+      type: number
     - contextPath: Alarm.triggeredDate
       description: Alarm triggered date
+      type: date
     - contextPath: Alarm.acknowledgedDate
       description: Alarm acknowledged date
+      type: date
     - contextPath: Alarm.acknowledgedUsername
       description: Alarm acknowledged username
+      type: string
     - contextPath: Alarm.alarmName
       description: Alarm name
+      type: string
     - contextPath: Alarm.conditionType
       description: Alarm condition type
+      type: number
     description: Retrieves a list of alarms that have been triggered
   - name: esm-get-case-list
     arguments:
@@ -1278,18 +1287,25 @@ script:
     outputs:
     - contextPath: Case.ID
       description: The ID of the case
+      type: number
     - contextPath: Case.Summary
       description: The summary of the case
+      type: string
     - contextPath: Case.Status
       description: The status of the case
+      type: string
     - contextPath: Case.OpenTime
       description: The open time of the case
+      type: date
     - contextPath: Case.Severity
       description: The severity of the case
+      type: number
     - contextPath: Case.Assignee
       description: The Assignee of the case
+      type: string
     - contextPath: Case.Organization
       description: The organization of the case
+      type: string
     - contextPath: Case.EventList
       description: List of case's events
     - contextPath: Case.Notes
@@ -1317,18 +1333,25 @@ script:
     outputs:
     - contextPath: Case.ID
       description: The ID of the case
+      type: number
     - contextPath: Case.Summary
       description: The summary of the case
+      type: string
     - contextPath: Case.Status
       description: The status of the case
+      type: string
     - contextPath: Case.OpenTime
       description: The open time of the case
+      type: date
     - contextPath: Case.Severity
       description: The severity of the case
+      type: number
     - contextPath: Case.Assignee
       description: The Assignee of the case
+      type: string
     - contextPath: Case.Organization
       description: The organization of the case
+      type: string
     - contextPath: Case.EventList
       description: List of case's events
     - contextPath: Case.Notes
@@ -1355,18 +1378,25 @@ script:
     outputs:
     - contextPath: Case.ID
       description: The ID of the case
+      type: number
     - contextPath: Case.Summary
       description: The summary of the case
+      type: string
     - contextPath: Case.Status
       description: The status of the case
+      type: string
     - contextPath: Case.OpenTime
       description: The open time of the case
+      type: date
     - contextPath: Case.Severity
       description: The severity of the case
+      type: number
     - contextPath: Case.Assignee
       description: The Assignee of the case
+      type: string
     - contextPath: Case.Organization
       description: The organization of the case
+      type: string
     - contextPath: Case.EventList
       description: List of case's events
     - contextPath: Case.Notes
@@ -1400,18 +1430,25 @@ script:
     outputs:
     - contextPath: Case.ID
       description: The ID of the case
+      type: number
     - contextPath: Case.Summary
       description: The summary of the case
+      type: string
     - contextPath: Case.Status
       description: The status of the case
+      type: string
     - contextPath: Case.OpenTime
       description: The open time of the case
+      type: date
     - contextPath: Case.Severity
       description: The severity of the case
+      type: number
     - contextPath: Case.Assignee
       description: The Assignee of the case
+      type: string
     - contextPath: Case.Organization
       description: The organization of the case
+      type: string
     - contextPath: Case.EventList
       description: List of case's events
     - contextPath: Case.Notes
@@ -1425,10 +1462,13 @@ script:
     outputs:
     - contextPath: CaseEvents.ID
       description: The ID of the event
+      type: string
     - contextPath: CaseEvents.LastTime
       description: The last updated time of the event
+      type: date
     - contextPath: CaseEvents.Message
       description: The massage of the event
+      type: string
     description: Get case events details
   - name: esm-add-case-status
     arguments:
@@ -1453,22 +1493,35 @@ script:
     description: Delete a case status
   - name: esm-get-organization-list
     arguments: []
+    outputs:
+    - contextPath: Organizations.ID
+      description: Organization ID
+      type: number
+    - contextPath: Organizations.Name
+      description: Organization Name
+      type: string
     description: Get case organization
   - name: esm-get-user-list
     arguments: []
     outputs:
     - contextPath: EsmUser.ID
       description: the ID of the user
+      type: number
     - contextPath: EsmUser.Name
       description: the esm user name
+      type: string
     - contextPath: EsmUser.Email
       description: the e-mail of the user
+      type: string
     - contextPath: EsmUser.SMS
       description: the SMS details of the user
+      type: string
     - contextPath: EsmUser.IsMaster
       description: whether the user is a master user
+      type: boolean
     - contextPath: EsmUser.IsAdmin
       description: whether the user is an admin
+      type: boolean
     description: Get a list of all users.
   - name: esm-acknowledge-alarms
     arguments:
@@ -1501,7 +1554,7 @@ script:
     - name: eventId
       required: true
       default: true
-      description: The event to get the details for. the ID can be taken from esm-get-alarm-event.
+      description: The event to get the details for. the ID can be taken from esm-list-alarm-events.
     outputs:
     - contextPath: EsmAlarmEvent.ID
       description: Event ID
