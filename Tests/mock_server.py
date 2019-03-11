@@ -256,9 +256,10 @@ class MITMProxy:
         self.record = record
         path = path or self.current_folder
 
+        # Create mock files directory
         silence_output(self.ami.call, ['mkdir', os.path.join(path, get_folder_path(playbook_id))], stderr='null')
 
-        # Configure and run MITMProxy
+        # Configure proxy server
         actions = '--server-replay-kill-extra --server-replay' if not record else '--save-stream-file'
         command = "mitmdump --ssl-insecure --verbose --listen-port {} {}".format(self.PROXY_PORT, actions).split()
         command.append(os.path.join(path, get_mock_file_path(playbook_id)))
@@ -267,8 +268,10 @@ class MITMProxy:
         if self.debug:
             stdout = stderr = PIPE
         else:
-            self.log = open(os.path.join(path, get_log_file_path(self.last_playbook_id, self.record)))
+            self.log = open(os.path.join(path, get_log_file_path(self.last_playbook_id, self.record)), 'w+')
             stdout = stderr = self.log
+
+        # Start proxy server
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=stdout, stderr=stderr)
         self.process.poll()
         if self.process.returncode is not None:
@@ -281,9 +284,10 @@ class MITMProxy:
             raise Exception("Cannot stop proxy - not running.")
 
         self.__configure_proxy_in_demisto('')  # Clear proxy configuration in demisto server
-        self.process.send_signal(signal.SIGINT)
-        self.ami.call(["rm", "-rf", "/tmp/_MEI*"])
+        self.process.send_signal(signal.SIGINT)  # Terminate proxy process
+        self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
 
+        # Handle logs
         if self.debug:
             print "proxy outputs:"
             print self.process.stdout.read()
