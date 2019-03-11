@@ -156,8 +156,6 @@ class MITMProxy:
         current_folder (string): the current folder to use for mock/log files.
         ami (AMIConnection): Wrapper for AMI communication.
         process (Popen): object representation of the Proxy process (used to track the proxy process status).
-        last_playbook_id (string): ID of the currently running / most recently run playbook.
-        record (bool): Proxy mode (playback/record).
         empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
         rerecorded_tests (list): List of playbook ids that failed on mock playback but succeeded on new recording.
         log (string): Path to proxy log file.
@@ -179,8 +177,6 @@ class MITMProxy:
         self.ami = AMIConnection(self.public_ip)
 
         self.process = None
-        self.last_playbook_id = None
-        self.record = None
         self.empty_files = []
         self.rerecorded_tests = []
         self.log = None
@@ -252,8 +248,6 @@ class MITMProxy:
         if self.process:
             raise Exception("Cannot start proxy - already running.")
 
-        self.last_playbook_id = playbook_id
-        self.record = record
         path = path or self.current_folder
 
         # Create mock files directory
@@ -268,7 +262,7 @@ class MITMProxy:
         if self.debug:
             stdout = stderr = PIPE
         else:
-            self.log = open(os.path.join(path, get_log_file_path(self.last_playbook_id, self.record)), 'w+')
+            self.log = open(os.path.join(path, get_log_file_path(playbook_id, record)), 'w+')
             stdout = stderr = self.log
 
         # Start proxy server
