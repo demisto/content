@@ -1,0 +1,35 @@
+commonfields:
+  id: CheckDockerImageAvailable
+  version: -1
+name: CheckDockerImageAvailable
+script: file:CheckDockerImageAvailable.py
+type: python
+tags: []
+comment: Check if a docker image is available for performing docker pull. Script simulates
+  the docker pull flow but doesn't actually pull the image. Returns an entry with
+  'ok' if all is good otherwise will return an error.
+enabled: true
+args:
+- name: input
+  required: true
+  description: 'Docker image full name with version: For example: demisto/python:2.7.15.155' # disable-secrets-detection
+- name: use_system_proxy
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Use system proxy settings
+  defaultValue: "yes"
+- name: trust_any_certificate
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Trust any certificate (not secure)
+  defaultValue: "no"
+scripttarget: 0
+runonce: false
+releaseNotes: Script to check if a docker image is accessible to for 'pull' command 
+tests:
+  - CheckDockerImageAvailableTest
+runas: DBotWeakRole
