@@ -577,8 +577,9 @@ def update_case(case_id, stage, severity):
 @logger
 def get_correlated_events_ids(event_ids):
     related_ids = set(event_ids)
-    for raw_event in get_security_events(event_ids):
-        related_ids.add(raw_event.get('baseEventIds'))
+    for raw_event in beautifully_json(get_security_events(event_ids)):
+        if raw_event.get('baseEventIds'):
+            related_ids.add(raw_event.get('baseEventIds'))
 
     return list(related_ids)
 
