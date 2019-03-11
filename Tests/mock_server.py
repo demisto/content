@@ -262,6 +262,10 @@ class MITMProxy:
         command.append(os.path.join(path, get_mock_file_path(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
+        self.process.poll()
+        if self.process.returncode is not None:
+            raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
+                            .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
         self.__configure_proxy_in_demisto(self.ami.docker_ip + ':' + self.PROXY_PORT)
 
     def stop(self):
