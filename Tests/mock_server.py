@@ -158,7 +158,6 @@ class MITMProxy:
         process (Popen): object representation of the Proxy process (used to track the proxy process status).
         empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
         rerecorded_tests (list): List of playbook ids that failed on mock playback but succeeded on new recording.
-        log (string): Path to proxy log file.
         debug (bool): enable debug prints - redirect.
     """
 
@@ -179,7 +178,6 @@ class MITMProxy:
         self.process = None
         self.empty_files = []
         self.rerecorded_tests = []
-        self.log = None
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
@@ -259,14 +257,12 @@ class MITMProxy:
         command.append(os.path.join(path, get_mock_file_path(playbook_id)))
 
         # Handle proxy log output
-        if self.debug:
-            stdout = stderr = PIPE
-        else:
-            self.log = open(os.path.join(path, get_log_file_path(playbook_id, record)), 'w+')
-            stdout = stderr = self.log
+        if not self.debug:
+            log_file = os.path.join(path, get_log_file_path(playbook_id, record))
+            command.extend(['>{}'.format(log_file), '2>&1'])
 
         # Start proxy server
-        self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=stdout, stderr=stderr)
+        self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.process.poll()
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
@@ -286,8 +282,5 @@ class MITMProxy:
             print "proxy outputs:"
             print self.process.stdout.read()
             print self.process.stderr.read()
-        else:
-            self.log.close()
-            self.log = None
 
         self.process = None
