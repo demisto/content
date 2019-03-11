@@ -268,7 +268,7 @@ class MITMProxy:
             stdout = stderr = PIPE
         else:
             self.log = open(os.path.join(self.current_folder, get_log_file_path(self.last_playbook_id, self.record)))
-            stdout = stderr =
+            stdout = stderr = self.log
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=stdout, stderr=stderr)
         self.process.poll()
         if self.process.returncode is not None:
@@ -289,17 +289,7 @@ class MITMProxy:
             print self.process.stdout.read()
             print self.process.stderr.read()
         else:
-            local_log_filepath = os.path.join(
-                '/tmp', os.path.basename(get_log_file_path(self.last_playbook_id, self.record)))
-            remote_log_filepath = os.path.join(
-                self.current_folder, get_log_file_path(self.last_playbook_id, self.record))
-
-            with open(local_log_filepath, 'w+') as log:
-                log.write('STDOUT:\n')
-                log.write(self.process.stdout.read())
-                log.write('\nSTDERR:\n')
-                log.write(self.process.stderr.read())
-
-            self.ami.copy_file(local_log_filepath, remote_log_filepath)
+            self.log.close()
+            self.log = None
 
         self.process = None
