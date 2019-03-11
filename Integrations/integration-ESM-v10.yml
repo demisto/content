@@ -114,16 +114,14 @@ script:
             r'\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}': '%Y/%m/%d %H:%M:%S',  # '2018-12-31 16:54:32'
             r'\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}': '%d/%m/%Y %H:%M:%S',  # '31-12-2018 16:54:32'
         }
-        integration_context = demisto.getIntegrationContext()
 
-        if integration_context.get('time_format') is None:
-            for regex, time_format in regex_to_format.items():
-                if re.match(regex, time_str):
-                    integration_context['time_format'] = time_format
-                    break
+        selected_format = '%Y/%m/%d %H:%M:%S'
+        for regex, time_format in regex_to_format.items():
+            if re.match(regex, time_str):
+                selected_format = time_format
+                break
 
-        demisto.setIntegrationContext(integration_context)
-        return integration_context['time_format']
+        return selected_format
 
 
     @logger
