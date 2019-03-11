@@ -23,7 +23,7 @@ configuration:
   required: true
 - display: Trust any certificate
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use proxy settings
