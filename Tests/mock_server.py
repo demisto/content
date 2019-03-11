@@ -267,7 +267,7 @@ class MITMProxy:
         if self.debug:
             stdout = stderr = PIPE
         else:
-            self.log = open(os.path.join(self.current_folder, get_log_file_path(self.last_playbook_id, self.record)))
+            self.log = open(os.path.join(path, get_log_file_path(self.last_playbook_id, self.record)))
             stdout = stderr = self.log
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=stdout, stderr=stderr)
         self.process.poll()
