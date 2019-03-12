@@ -52,3 +52,4 @@ runas: DBotWeakRole
 releaseNotes: Update script to accept array input
 tests:
   - ExtractDomainFromEmailTest
+  - ExtractDomainFromUrlAndEmail-Test
