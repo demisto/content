@@ -7,29 +7,34 @@ script: |-
   from validate_email import validate_email
   import re
 
+  def extract_domain(the_input):
+      is_email = validate_email(the_input)
+      if is_email:
+          domain = re.search('@[\w.]+', the_input)
+          if len(domain.group()) > 0:
+              return(domain.group()[1:])
+      else:
+          domain = get_tld(the_input, fail_silently=True)
+          if not domain:
+              the_input_with_http = 'https://' + the_input
+              domain = get_tld(the_input_with_http, fail_silently=True)
+              if domain:
+                  return(domain)
+              else:
+                 return('')
+          else:
+              return(domain)
 
-  inp = demisto.args()['input']
-  is_url = None
-  domain_from_mail = None
-  is_email = validate_email(inp)
+  domains = []
+  the_input = demisto.args().get('input')
 
-  if is_email:
-      # Take the entire part after the @ of the email
-      domain_from_mail = inp.split('@')[1]
-  else:
-      # Test if URL, else proceed as domain
-      is_url = domain = get_tld(inp, fail_silently=True)
+  if isinstance(the_input, str):
+      the_input = argToList(the_input)
 
-  # Extract domain itself from a potential subdomain
-  if domain_from_mail or not is_url:
-      full_domain = 'https://'
-      full_domain +=  domain_from_mail if domain_from_mail else inp
-      # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-      domain = get_tld(full_domain, fail_silently=True)
-
-  # convert None to empty string if needed
-  domain = '' if not domain else domain
-  demisto.results(domain)
+  # Otherwise assumes it's an array
+  for item in the_input:
+      domains.append(extract_domain(item))
+  demisto.results(domains)
 type: python
 tags:
 - indicator-format
@@ -39,10 +44,11 @@ args:
 - name: input
   required: true
   default: true
-  description: The URL or Email to process
+  description: The URL(s) or Email(s) to process
 scripttarget: 0
 runonce: false
 dockerimage: demisto/tld
 runas: DBotWeakRole
+releaseNotes: Update script to accept array input
 tests:
   - ExtractDomainFromEmailTest
