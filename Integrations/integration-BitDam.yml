@@ -38,6 +38,9 @@ script:
     import base64
     import json
 
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
     '''INTEGRATION PARAMS'''
     API_TOKEN = demisto.params().get('apitoken')
     URL_BASE = demisto.params().get('url')

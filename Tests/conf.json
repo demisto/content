@@ -1247,7 +1247,6 @@
         "SplunkPy": "Checking",
         "Symantec Advanced Threat Protection": "Checking",
         "Whois": "Integration socks proxy on tcp connection not http/s",
-        "Palo Alto Minemeld": "Pending bugfix - disable integration instances after test playbook is finished running.",
-        "BitDam": "Certificate error on !bitdam-upload-file even though unsecure is checked (and passed to the request correctly)."
+        "Palo Alto Minemeld": "Pending bugfix - disable integration instances after test playbook is finished running."
     }
 }
