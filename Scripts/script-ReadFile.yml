@@ -16,7 +16,7 @@ script: |-
       except UnicodeDecodeError:
           pass  # Passing in a case we have \U or \N in the file
 
-      data = data.encode('utf-8')
+      data = data.encode(demisto.args().get("encoding"))
 
   if data:
       message = 'Read %d bytes from file.' % (len(data))
@@ -43,6 +43,9 @@ args:
   required: false
   default: false
   description: Maximal file size to load, in bytes. Default is 1MB.
+- name: encoding
+  description: The encoding type you want for your file
+  defaultValue: utf-8
 outputs:
 - contextPath: FileData
   description: Data read from war room file
