@@ -136,7 +136,6 @@ if __name__ == "__main__":
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip().split(":") for line in instance_ips]
 
-        server_version = options.serverVersion
         for ami_instance_name, ami_instance_ip in instance_ips:
             if ami_instance_name == "Demisto GA":
                 server = SERVER_URL.format(ami_instance_ip)
