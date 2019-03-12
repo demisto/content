@@ -405,7 +405,8 @@ def get_case(resource_id, fetch_base_events=False):
             case['eventIDs'] = [case['eventIDs']]
 
         if case.get('eventIDs') and fetch_base_events:
-            case['events'] = beautifully_json(get_security_events(case['eventIDs']), remove_nones=False)
+            case['events'] = beautifully_json(get_security_events(case['eventIDs'], ignore_empty=True),
+                                              remove_nones=False)
 
         return case
 
@@ -484,7 +485,7 @@ def get_security_events_command():
 
 
 @logger
-def get_security_events(event_ids, last_date_range=None):
+def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
     start_time, end_time = -1, -1
     if last_date_range:
         # Must of format 'number date_range_unit'
@@ -517,7 +518,9 @@ def get_security_events(event_ids, last_date_range=None):
         events = res_json.get('sev.getSecurityEventsResponse').get('sev.return')
         return events if isinstance(events, list) else [events]
 
-    return_error('Events are empty for some reason. Response Body: {}'.format(res.text))
+    demisto.debug(res.text)
+    if not ignore_empty:
+        demisto.results('No events found')
 
 
 @logger
@@ -577,9 +580,9 @@ def update_case(case_id, stage, severity):
 @logger
 def get_correlated_events_ids(event_ids):
     related_ids = set(event_ids)
-    for raw_event in beautifully_json(get_security_events(event_ids)):
+    for raw_event in beautifully_json(get_security_events(event_ids, ignore_empty=True)):
         if raw_event.get('baseEventIds'):
-            related_ids.add(raw_event.get('baseEventIds'))
+            related_ids.update(raw_event.get('baseEventIds'))
 
     return list(related_ids)
 
