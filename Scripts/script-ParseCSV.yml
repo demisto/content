@@ -273,7 +273,7 @@ args:
   defaultValue: "yes"
 - name: codec
   description: The codec type used to parse the file (some character sets are not
-    utf-8 supported)
+    UTF-8 supported)
   defaultValue: utf-8
 outputs:
 - contextPath: IP.Address
