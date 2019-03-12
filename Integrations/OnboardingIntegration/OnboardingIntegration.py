@@ -404,10 +404,6 @@ def fetch_incidents():
             num_of_incidents_created, incidents = generate_incidents(last_run)
 
             demisto.incidents(incidents)
-            demisto.info('****************************')
-            demisto.info('last_run: {}'.format(last_run))
-            demisto.info('incidents created: {}'.format(num_of_incidents_created))
-            # demisto.info('incidents left to create: {}'.format(MAX_NUM_OF_INCIDENTS - num_of_incidents_created))
             demisto.setLastRun({'numOfIncidentsCreated': last_run + num_of_incidents_created})
             return
         else:
@@ -419,25 +415,13 @@ def fetch_incidents():
                 raise Exception(err_msg)
             run_counter = 0 if not demisto.getLastRun() else demisto.getLastRun().get('run_count', 0)
             last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
-            demisto.info('run_counter: {}'.format(run_counter))
-            demisto.info('HOW_OFTEN: {}'.format(HOW_OFTEN))
             should_run = run_counter % HOW_OFTEN
-            demisto.info('should_run: {}'.format(should_run))
-            demisto.info('math.ceil(minutes_of_generation): {}'.format(math.ceil(minutes_of_generation)))
             if should_run < math.ceil(minutes_of_generation):  # then should run
                 if should_run == 0:
                     last_run = 0
-                demisto.info('last_run: {}'.format(last_run))
 
                 num_of_incidents_created, incidents = generate_incidents(last_run)
-                demisto.info('num_of_incidents_created: {}'.format(num_of_incidents_created))
-
-                # if num_of_incidents_created > 0:
                 demisto.incidents(incidents)
-                demisto.info('****************************')
-                demisto.info('last_run: {}'.format(last_run))
-                demisto.info('incidents created: {}'.format(num_of_incidents_created))
-                # demisto.info('incidents left to create: {}'.format(MAX_NUM_OF_INCIDENTS - num_of_incidents_created))
 
                 total_incidents_created = last_run + num_of_incidents_created
                 updated_run_count = run_counter + 1
