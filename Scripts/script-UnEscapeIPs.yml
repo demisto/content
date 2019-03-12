@@ -39,3 +39,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 releaseNotes: Update script to accept array input
+tests:
+  - UnEscapeIPs-Test
