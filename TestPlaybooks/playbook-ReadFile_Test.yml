@@ -1,22 +1,21 @@
-id: ReadPDFFile-Test
+id: ReadFile test
 version: -1
-name: ReadPDFFile-Test
-description: Creates a text file and tests ReadFile script
+name: ReadFile test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 586a5318-debb-45a7-82a8-c1985ab18b62
+    taskid: 5902b582-857d-4803-8964-29ba93a7c232
     type: start
     task:
-      id: 586a5318-debb-45a7-82a8-c1985ab18b62
+      id: 5902b582-857d-4803-8964-29ba93a7c232
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -26,14 +25,163 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: e63e3873-1f29-47eb-862c-545aa25ed903
+    taskid: 8169ac87-0db7-43c2-8f34-026a084a43aa
     type: regular
     task:
-      id: e63e3873-1f29-47eb-862c-545aa25ed903
+      id: 8169ac87-0db7-43c2-8f34-026a084a43aa
       version: -1
-      name: 'Get corrupted file '
+      name: Upload txt file with Hebrew letters
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/hebrew_file.txt
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 99345e1c-0dbc-4551-8233-51ef2812623d
+    type: regular
+    task:
+      id: 99345e1c-0dbc-4551-8233-51ef2812623d
+      version: -1
+      name: Try to read a file
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: dbd0cfe2-ab12-4c89-8511-5ef17fa3871f
+    type: regular
+    task:
+      id: dbd0cfe2-ab12-4c89-8511-5ef17fa3871f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 4ebc7f25-a95d-4c15-8e89-2c5ae1558d8b
+    type: regular
+    task:
+      id: 4ebc7f25-a95d-4c15-8e89-2c5ae1558d8b
+      version: -1
+      name: Upload file with escape chars
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/file_with_escape_chars.txt
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 0f5ce556-084d-4174-8cb2-821169c3ec54
+    type: regular
+    task:
+      id: 0f5ce556-084d-4174-8cb2-821169c3ec54
+      version: -1
+      name: Upload regular txt file
+      description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
       iscommand: false
@@ -54,27 +202,29 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/regular_english_file.txt
       username: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1595
         }
       }
     note: false
-  "2":
-    id: "2"
-    taskid: 165976c6-44ec-47d6-8f69-a9bea47fa9e8
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 49e91ef1-93a6-401e-8836-f223974e37f6
     type: regular
     task:
-      id: 165976c6-44ec-47d6-8f69-a9bea47fa9e8
+      id: 49e91ef1-93a6-401e-8836-f223974e37f6
       version: -1
-      name: Read PDF
-      description: Load the contents and metadata of a PDF file into context.
-      scriptName: ReadPDFFile
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
@@ -82,6 +232,42 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 79fef5f8-f0ea-48a1-8b5a-20d6e09bab0c
+    type: regular
+    task:
+      id: 79fef5f8-f0ea-48a1-8b5a-20d6e09bab0c
+      version: -1
+      name: Try to read Hebrew file with bad encoding
+      description: Load the contents of a file into context.
+      scriptName: ReadFile_copy
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      encoding:
+        simple: big5
       entryID:
         simple: ${File.EntryID}
       maxFileSize: {}
@@ -95,14 +281,17 @@ tasks:
         }
       }
     note: false
-  "3":
-    id: "3"
-    taskid: ea19f72c-1533-4e8a-8385-dc02b7317f61
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 485b9cd0-c215-4160-8464-3a2d4380696f
     type: regular
     task:
-      id: ea19f72c-1533-4e8a-8385-dc02b7317f61
+      id: 485b9cd0-c215-4160-8464-3a2d4380696f
       version: -1
       name: Delete Context
+      description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -126,32 +315,31 @@ tasks:
         }
       }
     note: false
-  "5":
-    id: "5"
-    taskid: 4c65c439-9683-4512-881b-be7b63cdb09a
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: dc9eb5ea-31fb-4221-8f11-179be4165e25
     type: condition
     task:
-      id: 4c65c439-9683-4512-881b-be7b63cdb09a
+      id: dc9eb5ea-31fb-4221-8f11-179be4165e25
       version: -1
-      name: 'Check if PSEOF '
+      name: Validate no Context added
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotExists
           left:
             value:
-              simple: DBotScore.Score
+              simple: ${FileData}
             iscontext: true
-          right:
-            value:
-              simple: "2"
     view: |-
       {
         "position": {
@@ -160,95 +348,30 @@ tasks:
         }
       }
     note: false
-  "6":
-    id: "6"
-    taskid: 6a9b6099-03b0-40df-8686-76872ee24fed
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 3e6faebe-3a90-49b7-8a8f-add97b38f90f
     type: regular
     task:
-      id: 6a9b6099-03b0-40df-8686-76872ee24fed
+      id: 3e6faebe-3a90-49b7-8a8f-add97b38f90f
       version: -1
-      name: Delete Context
-      scriptName: DeleteContext
+      name: Try to read file
+      description: Load the contents of a file into context.
+      scriptName: ReadFile_copy
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "6"
     scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: bc5080b9-3d95-48b9-8a0a-f64e7643b286
-    type: regular
-    task:
-      id: bc5080b9-3d95-48b9-8a0a-f64e7643b286
-      version: -1
-      name: Get working PDF
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
-      method:
-        simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile:
-        simple: "yes"
-      unsecure: {}
-      url:
-        simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 0c08d722-da68-469f-849d-ef42e2a14891
-    type: regular
-    task:
-      id: 0c08d722-da68-469f-849d-ef42e2a14891
-      version: -1
-      name: Read PDF
-      scriptName: ReadPDFFile
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
+      encoding: {}
       entryID:
         simple: ${File.EntryID}
       maxFileSize: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -258,32 +381,14 @@ tasks:
         }
       }
     note: false
-  "9":
-    id: "9"
-    taskid: 0a92fee5-d9fb-446f-8de6-bd0b2eb4d366
-    type: title
-    task:
-      id: 0a92fee5-d9fb-446f-8de6-bd0b2eb4d366
-      version: -1
-      name: End of test
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1815,
         "width": 380,
         "x": 50,
         "y": 50
