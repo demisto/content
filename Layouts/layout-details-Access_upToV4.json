@@ -2,7 +2,7 @@
 	"typeId": "Access",
 	"kind": "details",
 	"releaseNotes": "-",
-	"toversion": "4.0.0",
+	"toVersion": "4.0.0",
 	"layout": {
 		"id": "Access",
 		"version": -1,
