@@ -145,8 +145,6 @@ class StructureValidator(object):
                     reputations_valid = self.validate_reputations_file(json_dict)
                 else:
                     version_number = json_dict.get('version')
-            if not version_number:
-                version_number = -1
 
         if version_number != -1 or not reputations_valid:
             print_error("The version for our files should always be -1, "
