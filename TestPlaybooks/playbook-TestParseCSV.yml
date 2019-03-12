@@ -134,7 +134,7 @@ tasks:
       name: ParseCSV tata.csv file
       description: This script will parse a CSV file and place the unique IPs, Domains
         and Hashes into the context.
-      scriptName: ParseCSV_copy_1
+      scriptName: ParseCSV
       type: regular
       iscommand: false
       brand: ""
@@ -303,7 +303,7 @@ tasks:
       name: ParseCSV iso.csv file
       description: This script will parse a CSV file and place the unique IPs, Domains
         and Hashes into the context.
-      scriptName: ParseCSV_copy_1
+      scriptName: ParseCSV
       type: regular
       iscommand: false
       brand: ""
