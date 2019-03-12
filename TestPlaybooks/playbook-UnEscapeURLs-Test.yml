@@ -1,6 +1,6 @@
-id: UnEscapeURLs-Test
+id: UnEscapeURL-Test
 version: -1
-name: UnEscapeURLs-Test
+name: UnEscapeURL-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -20,12 +20,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 9628f06e-6df0-4379-8205-c8ab212d9447
@@ -46,6 +47,7 @@ tasks:
       - "9"
       - "10"
       - "15"
+      - "17"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,12 +59,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 4444d21b-2c87-4584-8d1b-9b2686fa7005
@@ -81,7 +84,7 @@ tasks:
     scriptarguments:
       input:
         simple: |
-          https://urldefense.proofpoint.com/v2/url?u=https-3A__lm.ddiworld.com-3FUsername-3Dtest-40this.com&d=DwIGaQ&c=9mghv0deYPYDGP-W745IEdQLV1kHpn4XJRvR6xMRXtA&r=bRg5MeHudfXJkMCCQ9leeXPGHZSmGzvAyeeit1tjdqg&m=z6asDUSCvgNHDLRBTXAM6q9qDNKFuuA02LnXZ3po3dI&s=p-83liNM0XOyprpHW99TO-DowLW6lpvHZAc2y-7kQRQ&e=
+          https://urldefense.proofpoint.com/v2/url?u=https-3A__lm.ddiworld.com-3FUsername-3Dyasmine.hafez-40danaher.com&d=DwIGaQ&c=9mghv0deYPYDGP-W745IEdQLV1kHpn4XJRvR6xMRXtA&r=bRg5MeHudfXJkMCCQ9leeXPGHZSmGzvAyeeit1tjdqg&m=z6asDUSCvgNHDLRBTXAM6q9qDNKFuuA02LnXZ3po3dI&s=p-83liNM0XOyprpHW99TO-DowLW6lpvHZAc2y-7kQRQ&e= # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -92,6 +95,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 2c6b763e-c7c7-413b-800a-28298fc072cc
@@ -120,6 +124,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 465c3d29-eddd-4838-84d4-5d1c4784e4a7
@@ -148,6 +153,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: e379744d-5cb2-414c-80f1-1a06e5708873
@@ -178,6 +184,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 52b25bc3-1961-482b-822a-13852f23a360
@@ -199,6 +206,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 7512b644-8704-4185-8f8b-7d9f77e6c44c
@@ -218,7 +226,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: https://lm.ddiworld.com?Username=test@this.com
+        simple: https://lm.ddiworld.com?Username=yasmine.hafez@danaher.com # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -229,6 +237,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 7d6288a4-f20b-42cc-83cf-714dfb160e56
@@ -259,6 +268,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 9f065f91-5af1-487f-888d-d2f25af1a19c
@@ -267,7 +277,7 @@ tasks:
       id: 9f065f91-5af1-487f-888d-d2f25af1a19c
       version: -1
       name: UnEscapeURL - ATP Safelink
-      scriptName: UnEscapeURLs
+      scriptName: UnEscapeURLs_copy
       type: regular
       iscommand: false
       brand: ""
@@ -276,7 +286,7 @@ tasks:
       - "12"
     scriptarguments:
       input:
-        simple: na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com
+        simple: na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -287,6 +297,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: 55926cf1-c9d1-4cbd-833d-9fb85aa2e49a
@@ -295,7 +306,7 @@ tasks:
       id: 55926cf1-c9d1-4cbd-833d-9fb85aa2e49a
       version: -1
       name: UnEscapeURL - ATP Safelink
-      scriptName: UnEscapeURLs
+      scriptName: UnEscapeURLs_copy
       type: regular
       iscommand: false
       brand: ""
@@ -315,6 +326,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: a3d94779-c273-4c54-8c40-c00be9926dcb
@@ -345,6 +357,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: a1464036-6807-42d3-876f-fcedeaa3a293
@@ -375,6 +388,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: b5ac93ea-c625-4e44-862a-df43ebc242ea
@@ -403,6 +417,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: 327f6b8e-e17a-4a6d-80e5-805f4cf37314
@@ -433,13 +448,124 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: dfcbb9df-c53c-4825-8916-ac60fe1c27ec
+    type: regular
+    task:
+      id: dfcbb9df-c53c-4825-8916-ac60fe1c27ec
+      version: -1
+      name: UnEscapeURLs an Array of urls
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+    scriptarguments:
+      input:
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.facebook.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=rSVqfaVO2V23rdg6L7rly%2BbWdn4WmvUk1T5YQ8%2BACbk%3D&reserved=0%3E,https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=,hxxps://www[.]demisto[.]com,https://google.com,www.spotify.com # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2845,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: ece52ac4-174e-44fe-8473-013ec9d95050
+    type: regular
+    task:
+      id: ece52ac4-174e-44fe-8473-013ec9d95050
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "2"
+      substring:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 4375a691-2ab7-4900-8a9c-7d2b6956bc07
+    type: regular
+    task:
+      id: 4375a691-2ab7-4900-8a9c-7d2b6956bc07
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: https://www.facebook.com/PhilipsBeLux
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 2530,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
