@@ -35,14 +35,15 @@ def create_instance(ami_name):
 
 def main():
     instance_ids = []
-    if not is_nightly_build():
-        instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[SERVER_GA], create_instance(SERVER_GA)))
-
-    else:
-        for ami_name in AMI_LIST:
-            if ami_name == SERVER_TWO_BEFORE_GA:  # Skipping this version until new Server version will be released.
-                continue
-            instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[ami_name], create_instance(ami_name)))
+    instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[SERVER_GA], create_instance(SERVER_GA)))
+    # if not is_nightly_build():
+    #     instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[SERVER_GA], create_instance(SERVER_GA)))
+    #
+    # else:
+    #     for ami_name in AMI_LIST:
+    #         if ami_name == SERVER_TWO_BEFORE_GA:  # Skipping this version until new Server version will be released.
+    #             continue
+    #         instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[ami_name], create_instance(ami_name)))
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
