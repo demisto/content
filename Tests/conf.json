@@ -1147,7 +1147,6 @@
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
     },
     "skipped_integrations": {
-        "Cuckoo Sandbox": "Instance issues (issue 16009)",
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
@@ -1185,7 +1184,6 @@
         "Joe Security": "Pending check: https://github.com/demisto/etc/issues/16072",
         "GRR": "Pending check: https://github.com/demisto/etc/issues/16072",
         "PageDuty": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "Archer": "Pending check: https://github.com/demisto/etc/issues/16072",
         "carbonblackliveresponse": "Pending check: https://github.com/demisto/etc/issues/16072",
         "RecordedFuture": "Pending check: https://github.com/demisto/etc/issues/16072",
         "AbuseIPDB": "Pending check: https://github.com/demisto/etc/issues/16072",
