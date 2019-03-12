@@ -362,3 +362,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
+releaseNotes: "-"
