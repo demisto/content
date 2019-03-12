@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2befe023-cd13-46c3-8ba0-4237f164505d
+    taskid: 020d024c-480e-492d-8470-f995b88b103b
     type: start
     task:
-      id: 2befe023-cd13-46c3-8ba0-4237f164505d
+      id: 020d024c-480e-492d-8470-f995b88b103b
       version: -1
       name: ""
       iscommand: false
@@ -20,17 +20,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 76903ae0-c856-47e3-87f1-5ed626f3e692
+    taskid: 3201a582-9aa6-4b6a-88db-598f550b6312
     type: regular
     task:
-      id: 76903ae0-c856-47e3-87f1-5ed626f3e692
+      id: 3201a582-9aa6-4b6a-88db-598f550b6312
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,7 +42,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
+      - "12"
     scriptarguments:
       all:
         simple: "yes"
@@ -49,17 +52,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 9e875b9e-bfac-4f35-8e15-39ecd2739c40
+    taskid: f7291e84-722e-4fe1-8d76-65dda21e0374
     type: regular
     task:
-      id: 9e875b9e-bfac-4f35-8e15-39ecd2739c40
+      id: f7291e84-722e-4fe1-8d76-65dda21e0374
       version: -1
       name: Set array in context so we could export it to csv file
       description: Sets a value into the context with the given context key
@@ -80,17 +85,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 480,
+          "y": 515
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: f5174967-f6c4-4876-88fd-802b37737582
+    taskid: c261893e-a75f-4233-8827-4f6772b6e9ef
     type: regular
     task:
-      id: f5174967-f6c4-4876-88fd-802b37737582
+      id: c261893e-a75f-4233-8827-4f6772b6e9ef
       version: -1
       name: ExportToCSV to tata.csv
       description: Export given array to csv file
@@ -110,22 +117,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 480,
+          "y": 690
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 7cb82eab-f88e-4602-8dae-9a590de588f1
+    taskid: a5bc2877-0009-4dcf-8006-8d83e5a22c7c
     type: regular
     task:
-      id: 7cb82eab-f88e-4602-8dae-9a590de588f1
+      id: a5bc2877-0009-4dcf-8006-8d83e5a22c7c
       version: -1
       name: ParseCSV tata.csv file
       description: This script will parse a CSV file and place the unique IPs, Domains
         and Hashes into the context.
-      scriptName: ParseCSV
+      scriptName: ParseCSV_copy_1
       type: regular
       iscommand: false
       brand: ""
@@ -133,7 +142,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      codec: {}
       domains: {}
+      entryID: {}
       file:
         simple: tata.csv
       hashes: {}
@@ -145,17 +156,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 723
+          "x": 480,
+          "y": 865
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 498d1de9-9ac9-4a06-8651-b4b7cf5645e4
+    taskid: 80d6ba59-212a-4bbe-811d-70570a6653cf
     type: regular
     task:
-      id: 498d1de9-9ac9-4a06-8651-b4b7cf5645e4
+      id: 80d6ba59-212a-4bbe-811d-70570a6653cf
       version: -1
       name: VerifyContext
       description: |-
@@ -168,6 +181,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -177,18 +193,242 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 480,
+          "y": 1040
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 8cc7b64b-5239-4ddd-842a-5b46eb5e2189
+    type: title
+    task:
+      id: 8cc7b64b-5239-4ddd-842a-5b46eb5e2189
+      version: -1
+      name: Non UTF-8 Test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ce036ee3-c399-4e25-8852-fb58f3e955b2
+    type: regular
+    task:
+      id: ce036ee3-c399-4e25-8852-fb58f3e955b2
+      version: -1
+      name: Set array in context so we could export it to csv file
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: isodata
+      value:
+        simple: '[{"sourceIP":"1.1.1.1","count":0, "name": "blob itÁyii jochman"},{"sourceIP":"2.2.2.2","count":1,
+          "name": "y¸a˛rd E¸N"},{"sourceIP":"3.3.3.3","count":2, "name": "Sˆhelly
+          g"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 8600ea94-a02b-4f1c-8d2e-a271b253f414
+    type: regular
+    task:
+      id: 8600ea94-a02b-4f1c-8d2e-a271b253f414
+      version: -1
+      name: ExportToCSV to iso.csv
+      description: Export given array to csv file
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      csvArray:
+        simple: ${isodata}
+      fileName:
+        simple: iso.csv
+      headers: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: c6e4fa56-b7d3-4e9e-8578-b97310d6ddba
+    type: regular
+    task:
+      id: c6e4fa56-b7d3-4e9e-8578-b97310d6ddba
+      version: -1
+      name: ParseCSV iso.csv file
+      description: This script will parse a CSV file and place the unique IPs, Domains
+        and Hashes into the context.
+      scriptName: ParseCSV_copy_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      codec:
+        simple: iso-8859-9
+      domains: {}
+      entryID: {}
+      file:
+        simple: iso.csv
+      hashes: {}
+      ips:
+        simple: "1"
+      parseAll:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 6d77176e-83e2-48ae-8246-e2bc3d3a6a2a
+    type: condition
+    task:
+      id: 6d77176e-83e2-48ae-8246-e2bc3d3a6a2a
+      version: -1
+      name: Verify Name Exists Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV.name
+            iscontext: true
+          right:
+            value:
+              simple: "blob itÃ\x81yiï£¿i jochman"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: f8b9bb79-cdc4-4136-87ed-1c6d271f0857
+    type: title
+    task:
+      id: f8b9bb79-cdc4-4136-87ed-1c6d271f0857
+      version: -1
+      name: CSVs parsed successfully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 01e16aa4-3610-405e-8df8-7067b8c4ba32
+    type: title
+    task:
+      id: 01e16aa4-3610-405e-8df8-7067b8c4ba32
+      version: -1
+      name: UTF-8 Test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
-        "width": 380,
+        "height": 1230,
+        "width": 810,
         "x": 50,
         "y": 50
       }
