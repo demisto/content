@@ -10,12 +10,14 @@ from test_integration import __create_integration_instance, __delete_integration
 from Tests.test_utils import str2bool, run_command, print_color, print_error, LOG_COLORS
 
 
+SERVER_URL = "https://{}"
+
+
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
-    parser.add_argument('-c', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('-b', '--buildUrl', help='The url for the build', required=True)
@@ -130,6 +132,15 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.slack, options.secret, options.server, options.user, options.password, options.buildUrl)
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ips = [line.strip().split(":") for line in instance_ips]
+
+        server_version = options.serverVersion
+        for ami_instance_name, ami_instance_ip in instance_ips:
+            if ami_instance_name == "Demisto GA":
+                server = SERVER_URL.format(ami_instance_ip)
+
+        slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
         print_color("Not nightly build, stopping Slack Notifications about instances", LOG_COLORS.RED)
