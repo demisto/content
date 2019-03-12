@@ -906,6 +906,9 @@
             "playbookID": "Centreon-Test-Playbook"
         },
         {
+            "playbookID": "ReadFile test"
+        },
+        {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
         },
