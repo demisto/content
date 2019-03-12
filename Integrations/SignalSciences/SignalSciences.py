@@ -156,10 +156,12 @@ def is_legal_interval_for_alert(interval):
         return False
     return True
 
+
 def validate_list_description_length(description):
     if description is not None:
         if len(description) > 140:
             return_error("Error: Description given is too long. Description must be 140 characters or shorter")
+
 
 def validate_update_list_args(method, description):
     if not (method == "Add" or method == "Remove"):
@@ -173,6 +175,7 @@ def validate_create_list_args(list_type, description):
                      "Country or Wildcard".format(list_type))
     validate_list_description_length(description)
 
+
 def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action):
     if not represents_int(threshold):
         return_error("Error: {0} is not a valid threshold value. Threshold must be an integer".format(threshold))
@@ -184,7 +187,6 @@ def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enab
         return_error("Error: Illegal value for 'enabled' argument - value must be 'True' or 'False'")
     if not (action == 'info' or action == 'flagged'):
         return_error("Error: Illegal value for 'action' argument - value must be 'info' or 'flagged'")
-
 
 
 def validate_fetch_events_args(from_time, until_time, sort, since_id, max_id,
@@ -230,7 +232,7 @@ def gen_fetch_event_data_from_args(from_time, until_time, sort, since_id, max_id
         fetch_events_request_data['ip'] = ip
     if status is not None:
         fetch_events_request_data['status'] = status
-    return fetch_events_request_data;
+    return fetch_events_request_data
 
 
 def event_entry_context_from_response(response_data):
@@ -424,7 +426,7 @@ def create_corp_list(list_name, list_type, entries_list, description=None):
 def create_corp_list_command():
     args = demisto.args()
     response_data = create_corp_list(args['list_name'], args['list_type'], args['entries_list'],
-                                             args.get('description', None))
+                                     args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     TITLE = "Signal Sciences - creating a new corp list \n\n The list has been succesfully created"
     human_readable = tableToMarkdown(TITLE, entry_context)
@@ -500,7 +502,7 @@ def update_corp_list(list_id, method, entries_list, description=None):
 def update_corp_list_command():
     args = demisto.args()
     response_data = update_corp_list(args['list_id'], args['method'], args['entries_list'],
-                                             args.get('description', None))
+                                     args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context)
     demisto.results({
@@ -529,7 +531,7 @@ def get_all_corp_lists_command():
     for corp_list_data in list_of_corp_lists:
         cur_corp_list_context = list_entry_context_from_response(corp_list_data)
         corp_lists_contexts.append(cur_corp_list_context)
-        
+
     sidedata = "Number of corp lists in corp: {0}".format(len(list_of_corp_lists))
 
     demisto.results({
@@ -559,19 +561,17 @@ def fetch_events(siteName, from_time=None, until_time=None, sort=None,
 
 def fetch_events_command():
     args = demisto.args()
-    response_data = fetch_events(args['siteName'], args.get('from_time', None),
-                                         args.get('until_time', None), args.get('sort', None),
-                                         args.get('since_id', None),
-                                         args.get('max_id', None), args.get('limit', None), args.get('page', None),
-                                         args.get('action', None), args.get('tag', None), args.get('ip', None),
-                                         args.get('status', None))
+    response_data = fetch_events(args['siteName'], args.get('from_time', None), args.get('until_time', None),
+                                 args.get('sort', None), args.get('since_id', None), args.get('max_id', None),
+                                 args.get('limit', None), args.get('page', None), args.get('action', None),
+                                 args.get('tag', None), args.get('ip', None), args.get('status', None))
 
     list_of_events = response_data.get('data', [])
     events_contexts = []
     for event_data in list_of_events:
         cur_event_context = event_entry_context_from_response(event_data)
         events_contexts.append(cur_event_context)
-        
+
     sidedata = "Number of events in site: {0}".format(len(list_of_events))
 
     demisto.results({
@@ -641,7 +641,7 @@ def get_requests(siteName, page, limit, query):
         data_for_request['limit'] = limit
     if query is not None:
         data_for_request['q'] = query
-        
+
     requests_data_response = http_request('GET', url, data=data_for_request)
     return requests_data_response
 
@@ -649,7 +649,7 @@ def get_requests(siteName, page, limit, query):
 def get_requests_command():
     args = demisto.args()
     response_data = get_requests(args['siteName'], args.get('page', None), args.get('limit', None),
-                                         args.get('query', None))
+                                 args.get('query', None))
     list_of_requests = response_data.get('data', [])
     requests_contexts = []
     for request_data in list_of_requests:
@@ -705,7 +705,7 @@ def create_site_list(siteName, list_name, list_type, entries_list, description=N
     }
     if description is not None:
         data_for_request['description'] = description
-        
+
     new_list_data = http_request('POST', url, data=data_for_request)
     return new_list_data
 
@@ -713,7 +713,7 @@ def create_site_list(siteName, list_name, list_type, entries_list, description=N
 def create_site_list_command():
     args = demisto.args()
     response_data = create_site_list(args['siteName'], args['list_name'],
-                                             args['list_type'], args['entries_list'], args.get('description', None))
+                                     args['list_type'], args['entries_list'], args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     TITLE = "Signal Sciences - creating a new site list \n\n The list has been succesfully created"
     human_readable = tableToMarkdown(TITLE, entry_context)
@@ -775,7 +775,7 @@ def delete_site_list_command():
 
 def update_site_list(siteName, list_id, method, entries_list, description=None):
     validate_update_list_args(method, description)
-    
+
     entries_in_update_format = gen_entries_data_for_update_list_request(entries_list, method)
     url = SERVER_URL + SITE_ACCESS_LIST_SUFFIX.format(CORPNAME, siteName, list_id)
     data_for_request = {
@@ -790,7 +790,7 @@ def update_site_list(siteName, list_id, method, entries_list, description=None):
 def update_site_list_command():
     args = demisto.args()
     response_data = update_site_list(args['siteName'], args['list_id'],
-                                             args['method'], args['entries_list'], args.get('description', None))
+                                     args['method'], args['entries_list'], args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context)
     demisto.results({
@@ -820,7 +820,7 @@ def get_all_site_lists_command():
     for site_list_data in list_of_site_lists:
         cur_site_context = list_entry_context_from_response(site_list_data)
         site_lists_contexts.append(cur_site_context)
-        
+
     sidedata = "Number of site lists in site: {0}".format(len(list_of_site_lists))
 
     demisto.results({
@@ -854,7 +854,7 @@ def add_alert(siteName, long_name, tag_name, interval, threshold, enabled, actio
 def add_alert_command():
     args = demisto.args()
     response_data = add_alert(args['siteName'], args['long_name'], args['tag_name'],
-                                      args['interval'], args['threshold'], args['enabled'], args['action'])
+                              args['interval'], args['threshold'], args['enabled'], args['action'])
     entry_context = alert_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(ADD_ALERT_TITLE, entry_context)
     demisto.results({
@@ -933,7 +933,7 @@ def update_alert(siteName, alert_id, tag_name, long_name, interval, threshold, e
 def update_alert_command():
     args = demisto.args()
     response_data = update_alert(args['siteName'], args['alert_id'], args['tag_name'], args['long_name'],
-                                         args['interval'], args['threshold'], args['enabled'], args['action'])
+                                 args['interval'], args['threshold'], args['enabled'], args['action'])
     TITLE = "Updated alert {0}. new values:".format(args['alert_id'])
     entry_context = alert_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(TITLE, entry_context)
@@ -963,7 +963,7 @@ def get_all_alerts_command():
     for alert_data in alerts_list:
         cur_alert_context = alert_entry_context_from_response(alert_data)
         alerts_contexts.append(cur_alert_context)
-        
+
     sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
     demisto.results({
         'Type': entryTypes['note'],
@@ -989,7 +989,7 @@ def get_whitelist_command():
     site_whitelist = get_whitelist(args['siteName'])
     data = site_whitelist.get('data', [])
     whitelist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
-        
+
     sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
     demisto.results({
         'Type': entryTypes['note'],
