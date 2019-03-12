@@ -28,7 +28,7 @@ script: |-
   domains = []
   the_input = demisto.args().get('input')
 
-  if isinstance(the_input, str):
+  if isinstance(the_input, str) or isinstance(the_input, unicode):
       the_input = argToList(the_input)
 
   # Otherwise assumes it's an array
