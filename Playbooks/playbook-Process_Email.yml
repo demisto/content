@@ -2,7 +2,8 @@ id: Process Email
 version: -1
 name: Process Email
 fromversion: 2.5.0
-description: Add email details into the relevant context entities and handle the case
+description: Deprecated - We recommend using Process Email - Generic playbook instead.
+  Add email details into the relevant context entities and handle the case
   where you have attached original emails.
 starttaskid: "0"
 tasks:
@@ -123,3 +124,5 @@ view: |-
     }
   }
 inputs: []
+tests:
+  - No tests - Deprecated playbook
