@@ -54,3 +54,118 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
+      - run:
+          name: Download Artifacts
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                echo "Using AMI - Not downloading artifacts"
+
+              else
+                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+            fi
+      - run:
+          name: Download Configuration
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/download_demisto_conf.sh
+
+              else
+                ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
+            fi
+      - run:
+          name: Create Instance
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY
+
+              else
+                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+            fi
+      - run:
+          name: Setup Instance
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                python ./Tests/scripts/run_content_installation.py
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+
+              else
+                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
+            fi
+      - run:
+          name: Run Tests - Latest GA
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto GA"
+
+              else
+                ./Tests/lastest_server_build_scripts/run_tests.sh
+            fi
+      - run:
+          name: Run Tests - One Before GA
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto one before GA"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Two Before GA
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto two before GA"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Server Master
+          shell: /bin/bash
+          when: always
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Server Master"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Instance Test
+          command: ./Tests/scripts/instance_test.sh
+          when: always
+      - run:
+          name: Destroy Instances
+          command: python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
+          when: always
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
+
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
