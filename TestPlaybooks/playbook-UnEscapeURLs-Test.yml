@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 50
         }
       }
@@ -41,7 +41,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
       - "3"
       - "4"
       - "9"
@@ -59,38 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 4444d21b-2c87-4584-8d1b-9b2686fa7005
-    type: regular
-    task:
-      id: 4444d21b-2c87-4584-8d1b-9b2686fa7005
-      version: -1
-      name: UnEscapeUrl
-      scriptName: UnEscapeURLs
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      input:
-        simple: |
-          https://urldefense.proofpoint.com/v2/url?u=https-3A__lm.ddiworld.com-3FUsername-3Dyasmine.hafez-40danaher.com&d=DwIGaQ&c=9mghv0deYPYDGP-W745IEdQLV1kHpn4XJRvR6xMRXtA&r=bRg5MeHudfXJkMCCQ9leeXPGHZSmGzvAyeeit1tjdqg&m=z6asDUSCvgNHDLRBTXAM6q9qDNKFuuA02LnXZ3po3dI&s=p-83liNM0XOyprpHW99TO-DowLW6lpvHZAc2y-7kQRQ&e= # disable-secrets-detection
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
         }
       }
     note: false
@@ -113,7 +82,7 @@ tasks:
       - "5"
     scriptarguments:
       input:
-        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e= # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -142,12 +111,12 @@ tasks:
       - "8"
     scriptarguments:
       input:
-        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__maokvo.eu&d=DwMFAg&c=o6x-uYg5urBaLMPPRuq64I5b6ZOFWaPdobkZ8TbBW7M&r=0dtZ_EttZY1gHOgGdV-z-dFmoGOY7zdlOVi7L2EIj14&m=xskGZ0jNEJDRYL6ypuSoCj4YX6FMH8DqJ2l2jNxFL6I&s=KqZlmY1ZrCNVyIId8ADYgiCYNpzbB7-qmlmzv-KqYMs&e=
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__maokvo.eu&d=DwMFAg&c=o6x-uYg5urBaLMPPRuq64I5b6ZOFWaPdobkZ8TbBW7M&r=0dtZ_EttZY1gHOgGdV-z-dFmoGOY7zdlOVi7L2EIj14&m=xskGZ0jNEJDRYL6ypuSoCj4YX6FMH8DqJ2l2jNxFL6I&s=KqZlmY1ZrCNVyIId8ADYgiCYNpzbB7-qmlmzv-KqYMs&e= # disable-secrets-detection
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 370
         }
       }
@@ -173,7 +142,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://go.getpostman.com/y4wULsdG0h0DDMY0Dv00100
+        simple: http://go.getpostman.com/y4wULsdG0h0DDMY0Dv00100 # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -200,39 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 7512b644-8704-4185-8f8b-7d9f77e6c44c
-    type: regular
-    task:
-      id: 7512b644-8704-4185-8f8b-7d9f77e6c44c
-      version: -1
-      name: Check Url
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      humanReadableEntryId:
-        simple: ${lastCompletedTaskEntries}
-      substring:
-        simple: https://lm.ddiworld.com?Username=yasmine.hafez@danaher.com # disable-secrets-detection
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
         }
       }
     note: false
@@ -257,12 +195,12 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://maokvo.eu
+        simple: http://maokvo.eu # disable-secrets-detection
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 545
         }
       }
@@ -271,13 +209,13 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 9f065f91-5af1-487f-888d-d2f25af1a19c
+    taskid: 62da15b5-019a-400f-8262-ae4a983037e6
     type: regular
     task:
-      id: 9f065f91-5af1-487f-888d-d2f25af1a19c
+      id: 62da15b5-019a-400f-8262-ae4a983037e6
       version: -1
       name: UnEscapeURL - ATP Safelink
-      scriptName: UnEscapeURLs_copy
+      scriptName: UnEscapeURLs
       type: regular
       iscommand: false
       brand: ""
@@ -291,7 +229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 910,
           "y": 370
         }
       }
@@ -300,13 +238,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 55926cf1-c9d1-4cbd-833d-9fb85aa2e49a
+    taskid: 82510bf8-3a95-45d1-8109-6e0179245389
     type: regular
     task:
-      id: 55926cf1-c9d1-4cbd-833d-9fb85aa2e49a
+      id: 82510bf8-3a95-45d1-8109-6e0179245389
       version: -1
       name: UnEscapeURL - ATP Safelink
-      scriptName: UnEscapeURLs_copy
+      scriptName: UnEscapeURLs
       type: regular
       iscommand: false
       brand: ""
@@ -320,7 +258,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1340,
           "y": 370
         }
       }
@@ -351,7 +289,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 910,
           "y": 545
         }
       }
@@ -382,7 +320,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1340,
           "y": 545
         }
       }
@@ -411,7 +349,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 1770,
           "y": 370
         }
       }
@@ -442,7 +380,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 1770,
           "y": 545
         }
       }
@@ -476,7 +414,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2845,
+          "x": 2415,
           "y": 370
         }
       }
@@ -514,7 +452,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 2200,
           "y": 545
         }
       }
@@ -547,12 +485,12 @@ tasks:
                 value:
                   simple: "0"
       substring:
-        simple: https://www.facebook.com/PhilipsBeLux
+        simple: https://www.facebook.com/PhilipsBeLux # disable-secrets-detection
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 2630,
           "y": 545
         }
       }
@@ -565,7 +503,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 3390,
+        "width": 2960,
         "x": 50,
         "y": 50
       }
