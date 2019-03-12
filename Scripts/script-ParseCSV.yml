@@ -23,7 +23,7 @@ script: |+
       return s.replace(u'\ufeff', '').replace(u'\u200f', '')
 
 
-  def unicode_dict_reader(utf8_data, **kwargs):
+  def unicode_dict_reader(csv_data, **kwargs):
       """
       reads from csv file each row and converts to array of dictionaries.
       in case there are extra fields in a row and they have no column, then we will create NO_NAME_COLUMN_{NUMBER}
@@ -48,7 +48,7 @@ script: |+
           }
       ]
       """
-      csv_reader = csv.DictReader((line.replace('\0', '') for line in utf8_data), **kwargs)
+      csv_reader = csv.DictReader((line.replace('\0', '') for line in csv_data), **kwargs)
       arr = []
       no_name_columns_counter = 0
       for row in csv_reader:
