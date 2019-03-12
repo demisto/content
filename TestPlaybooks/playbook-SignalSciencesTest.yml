@@ -1,5 +1,5 @@
 id: SignalSciences Test
-version: 57
+version: 69
 name: SignalSciences Test
 starttaskid: "0"
 tasks:
@@ -222,6 +222,7 @@ tasks:
       - "16"
       - "17"
       - "18"
+      - "44"
     scriptarguments:
       all:
         simple: "yes"
@@ -241,10 +242,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 87477bdd-f200-4d8d-8ade-581a0b98533a
+    taskid: be2ec320-9fde-45f5-8994-f11722bbaa3f
     type: regular
     task:
-      id: 87477bdd-f200-4d8d-8ade-581a0b98533a
+      id: be2ec320-9fde-45f5-8994-f11722bbaa3f
       version: -1
       name: Add alert
       script: '|||sigsci-add-alert'
@@ -266,7 +267,7 @@ tasks:
       siteName:
         simple: test
       tag_name:
-        simple: tag-test
+        simple: USERAGENT
       threshold:
         simple: "100"
     separatecontext: false
@@ -311,10 +312,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 55e8cf24-5625-4485-8405-932b9c41b39e
+    taskid: 2e764605-187c-4023-8d98-2bf0f60ff104
     type: regular
     task:
-      id: 55e8cf24-5625-4485-8405-932b9c41b39e
+      id: 2e764605-187c-4023-8d98-2bf0f60ff104
       version: -1
       name: Update alert
       script: '|||sigsci-update-alert'
@@ -338,7 +339,7 @@ tasks:
       siteName:
         simple: test
       tag_name:
-        simple: demisto-test-tag-2
+        simple: USERAGENT
       threshold:
         simple: "50"
     separatecontext: false
@@ -1221,13 +1222,249 @@ tasks:
       }
     note: false
     timertriggers: []
+  "44":
+    id: "44"
+    taskid: dbcb881c-6a65-4404-854a-8cf93c36a55b
+    type: title
+    task:
+      id: dbcb881c-6a65-4404-854a-8cf93c36a55b
+      version: -1
+      name: Test requests / events
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+  "45":
+    id: "45"
+    taskid: 81f68468-f141-4f70-89cd-162528a1fbae
+    type: title
+    task:
+      id: 81f68468-f141-4f70-89cd-162528a1fbae
+      version: -1
+      name: Test requests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+  "46":
+    id: "46"
+    taskid: 3574f80e-be7f-432c-8610-a40ef17ac74d
+    type: regular
+    task:
+      id: 3574f80e-be7f-432c-8610-a40ef17ac74d
+      version: -1
+      name: Get requests
+      script: '|||sigsci-get-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      limit: {}
+      page: {}
+      q:
+        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d
+          tag:sqli tag:xss tag:cmdexe tag:traversal"'
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+  "47":
+    id: "47"
+    taskid: 04584b97-0a0f-491d-8b11-b030fd6c4953
+    type: regular
+    task:
+      id: 04584b97-0a0f-491d-8b11-b030fd6c4953
+      version: -1
+      name: Get request by ID
+      script: '|||sigsci-get-request-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      request_id:
+        simple: 5c82c5d0b62acc0007d8eb03
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "48":
+    id: "48"
+    taskid: 533b02d1-c5c6-41ea-8b22-cdcbf302c3ea
+    type: title
+    task:
+      id: 533b02d1-c5c6-41ea-8b22-cdcbf302c3ea
+      version: -1
+      name: Test events
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "49":
+    id: "49"
+    taskid: c98332f2-727b-4fc8-87a1-47a5a956bc6a
+    type: regular
+    task:
+      id: c98332f2-727b-4fc8-87a1-47a5a956bc6a
+      version: -1
+      name: Fetch events
+      script: '|||sigsci-fetch-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      action: {}
+      from_time: {}
+      ip: {}
+      limit: {}
+      max_id: {}
+      page: {}
+      since_id: {}
+      siteName:
+        simple: demisto
+      sort: {}
+      status: {}
+      tag: {}
+      until_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+  "50":
+    id: "50"
+    taskid: 354ba54e-82bb-4dcc-8d22-ebb9a25e591e
+    type: condition
+    task:
+      id: 354ba54e-82bb-4dcc-8d22-ebb9a25e591e
+      version: -1
+      name: Verify events were fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Events.ID
+            iscontext: true
+          right:
+            value:
+              simple: 5c82c52ec9a3db111b430b98
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "51":
+    id: "51"
+    taskid: 89d7a1ea-bed1-4a33-88c0-a9bfeb82eedd
+    type: regular
+    task:
+      id: 89d7a1ea-bed1-4a33-88c0-a9bfeb82eedd
+      version: -1
+      name: Get event by ID
+      script: '|||sigsci-get-event-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      event_id:
+        simple: 5c82c52ec9a3db111b430b98
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 4030,
-        "width": 1490,
+        "width": 1990,
         "x": -320,
         "y": 50
       }
