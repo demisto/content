@@ -24,6 +24,15 @@ jobs:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
                - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
+          name: Infrastucture testing
+          command: |
+            pytest ./Tests/scripts/hook_validations/tests/ -v
+            pytest ./Tests/scripts/infrastructure_tests/ -v
+      - run:
+          name: Create ID Set
+          command: |
+            python ./Tests/scripts/update_id_set.py -r
+      - run:
           name: Configure Test Filter
           command: |
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
