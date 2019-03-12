@@ -144,9 +144,6 @@ class IDSetValidator(object):
             bool. Whether the ID already exist in the system or not.
         """
 
-        if not obj_id or not obj_data or not obj_type:
-            return False
-
         is_duplicated = False
         dict_value = obj_data.values()[0]
         obj_toversion = dict_value.get('toversion', '99.99.99')
@@ -188,9 +185,6 @@ class IDSetValidator(object):
             bool. Whether the ID of the given file already exist in the system or not.
         """
         is_used = False
-        obj_id = None
-        obj_data = None
-        obj_type = None
         if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 obj_type = self.TEST_PLAYBOOK_SECTION
