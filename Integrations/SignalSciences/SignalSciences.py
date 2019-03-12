@@ -14,8 +14,6 @@ CORPNAME = demisto.params()['corpName']
 
 SERVER_URL = 'https://dashboard.signalsciences.net/api/v0/'
 
-TAG_NAME_TEMPORARY_GLOBAL = 'USERAGENT'
-
 '''SUFFIX ENDPOINTS'''
 GET_SITES_SUFFIX = 'corps/{0}/sites'
 WHITELIST_SUFFIX = 'corps/{0}/sites/{1}/whitelist'
@@ -28,6 +26,11 @@ SITE_CREATE_ALERT_SUFFIX = 'corps/{0}/sites/{1}/alerts'
 SITE_ACCESS_ALERT_SUFFIX = 'corps/{0}/sites/{1}/alerts/{2}'
 CREATE_CORP_LIST_SUFFIX = 'corps/{0}/lists'
 ACCESS_CORP_LIST_SUFFIX = 'corps/{0}/lists/{1}'
+GET_EVENTS_SUFFIX = '/corps/{0}/sites/{1}/events'
+ACCESS_EVENT_SUFFIX = '/corps/{0}/sites/{1}/events/{2}'
+EXPIRE_EVENT_SUFFIX = '/corps/{0}/sites/{1}/events/{2}/expire'
+GET_REQUESTS_SUFFIX = '/corps/{0}/sites/{1}/requests'
+ACCESS_REQUEST_SUFFIX = '/corps/{0}/sites/{1}/requests/{2}'
 
 '''TABLE TITLES'''
 WHITELIST_TITLE = 'Signal Sciences - Whitelist'
@@ -42,56 +45,23 @@ UPDATE_LIST_TITLE = 'Signal Sciences - Updating a list'
 ALERT_LIST_TITLE = 'Signal Sciences - Alert list'
 LIST_OF_SITE_LISTS_TITLE = 'Signal Sciences - list of site lists'
 LIST_OF_CORP_LISTS_TITLE = 'Signal Sciences - list of corp lists'
-
+LIST_OF_EVENTS_TITLE = 'Signal Sciences - list of events'
+LIST_OF_REQUESTS_TITLE = 'Signal Sciences - list of requests'
 
 '''TABLE HEADERS'''
 ADD_IP_HEADERS = ['Source', 'Note', 'Expiration data']
 WHITELIST_HEADERS = ['ID', 'Source', 'ExpiryDate', 'Note', 'CreatedDate', 'CreatedBy']
 SITE_LIST_HEADERS = ['Name', 'Type', 'Entries', 'ID', 'Description', 'CreatedBy', 'CreatedDate', 'UpdatedDate']
 
-
 '''List Types dict'''
-list_type_dict = {
-    'ip': True,
-    'country': True,
-    'string': True,
-    'wildcard': True
+
+LEGAL_SIGSCI_LIST_TYPES = {
+    'ip',
+    'country',
+    'string',
+    'wildcard'
 }
 
-'''Valid Alert Tags dict'''
-valid_alert_tags_dict = {
-    'Attack Tooling': True,
-    'Backdoor': True,
-    'Command Execution': True,
-    'Cross Site Scripting': True,
-    'Directory Traversal': True,
-    'SQL Injection': True,
-    'Blocked Requests': True,
-    'Code Injection': True,
-    'Datacenter Traffic': True,
-    'Double Encoding': True,
-    'Forceful Browsing': True,
-    'HTTP 403 Errors': True,
-    'HTTP 404 Errors': True,
-    'HTTP 429 Errors': True,
-    'HTTP 4XX Errors': True,
-    'HTTP 500 Errors': True,
-    'HTTP 503 Errors': True,
-    'HTTP 5XX Errors': True,
-    'HTTP Response Splitting': True,
-    'Invalid Encoding': True,
-    'Malformed Data in the request body': True,
-    'Malicious IP Traffic': True,
-    'Missing "Content-Type" request header': True,
-    'No User Agent': True,
-    'Null Byte': True,
-    'Private Files': True,
-    'Scanner': True,
-    'SearchBot Impostors': True,
-    'SigSci Malicious IPs': True,
-    'Tor Traffic': True,
-    'Weak TLS': True
-}
 
 ''' HELPER FUNCTIONS '''
 
@@ -116,7 +86,7 @@ def return_error_message(results_json):
     return_error("Error: {0}".format(error_message))
 
 
-def http_request(method, url, params_dict=None, data=None):
+def http_request(method, url, params_dict=None, data=None, use_format_instead_of_raw=False):
     LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
 
     headers = {
@@ -126,12 +96,20 @@ def http_request(method, url, params_dict=None, data=None):
     }
 
     try:
-        res = requests.request(method,
-                               url,
-                               verify=USE_SSL,
-                               params=params_dict,
-                               headers=headers,
-                               json=data)
+        if use_format_instead_of_raw:
+            res = requests.request(method,
+                                   url,
+                                   verify=USE_SSL,
+                                   params=params_dict,
+                                   headers=headers,
+                                   data=json.dumps(data))
+        else:
+            res = requests.request(method,
+                                   url,
+                                   verify=USE_SSL,
+                                   params=params_dict,
+                                   headers=headers,
+                                   json=data)
 
         if is_error_status(res.status_code):
             return_error_message(res.json())
@@ -148,11 +126,11 @@ def http_request(method, url, params_dict=None, data=None):
 
     except Exception, e:
         LOG(e)
-        raise(e)
+        raise (e)
 
 
 def is_legal_list_type(list_type):
-    return list_type.lower() in list_type_dict
+    return list_type.lower() in LEGAL_SIGSCI_LIST_TYPES
 
 
 def is_legal_ip_list(list_of_ips):
@@ -160,10 +138,6 @@ def is_legal_ip_list(list_of_ips):
         if not is_ip_valid(ip_addr):
             return False
     return True
-
-
-def is_valid_alert_tag(alert_tag):
-    return alert_tag in valid_alert_tags_dict
 
 
 def represents_int(string_var):
@@ -182,8 +156,23 @@ def is_legal_interval_for_alert(interval):
         return False
     return True
 
+def validate_list_description_length(description):
+    if description is not None:
+        if len(description) > 140:
+            return_error("Error: Description given is too long. Description must be 140 characters or shorter")
 
-# the validity of the tagName argument is currently unchecked, until further information is provided
+def validate_update_list_args(method, description):
+    if not (method == "Add" or method == "Remove"):
+        return_error("Error: Method given is illegal. Method must be 'Add' or 'Remove'")
+    validate_list_description_length(description)
+
+
+def validate_create_list_args(list_type, description):
+    if not is_legal_list_type(list_type):
+        return_error("Error: {0} is not a legal type for a list. Legal types are IP, String, "
+                     "Country or Wildcard".format(list_type))
+    validate_list_description_length(description)
+
 def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action):
     if not represents_int(threshold):
         return_error("Error: {0} is not a valid threshold value. Threshold must be an integer".format(threshold))
@@ -195,6 +184,103 @@ def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enab
         return_error("Error: Illegal value for 'enabled' argument - value must be 'True' or 'False'")
     if not (action == 'info' or action == 'flagged'):
         return_error("Error: Illegal value for 'action' argument - value must be 'info' or 'flagged'")
+
+
+
+def validate_fetch_events_args(from_time, until_time, sort, since_id, max_id,
+                               limit, page, action, tag, ip, status):
+    if from_time is not None and not represents_int(from_time):
+        return_error("Error: from_time must be an integer.")
+    if until_time is not None and not represents_int(until_time):
+        return_error("Error: until_time must be an integer.")
+    if sort is not None and not (sort == "asc" or sort == "desc"):
+        return_error("Error: sort value must be 'asc' or 'desc'.")
+    if limit is not None and (not represents_int(limit) or int(limit) < 0 or int(limit) > 1000):
+        return_error("Error: limit must be an integer, larger than 0 and at most 1000")
+    if action is not None and not (action == "flagged" or action == "info"):
+        return_error("Error: action value must be 'flagged' or 'info'")
+    if ip is not None and not is_ip_valid(ip):
+        return_error("Error: illegal value for 'ip' argument. Must be a valid ip address")
+    if status is not None and not (status == 'active' or status == 'expired'):
+        return_error("Error: status value must be 'active' or 'expired'")
+
+
+def gen_fetch_event_data_from_args(from_time, until_time, sort, since_id, max_id,
+                                   limit, page, action, tag, ip, status):
+    fetch_events_request_data = {}
+    if from_time is not None:
+        fetch_events_request_data['from'] = int(from_time)
+    if until_time is not None:
+        fetch_events_request_data['until'] = int(until_time)
+    if sort is not None:
+        fetch_events_request_data['sort'] = sort
+    if since_id is not None:
+        fetch_events_request_data['since_id'] = since_id
+    if max_id is not None:
+        fetch_events_request_data['max_id'] = max_id
+    if limit is not None:
+        fetch_events_request_data['limit'] = int(limit)
+    if page is not None:
+        fetch_events_request_data['page'] = int(page)
+    if action is not None:
+        fetch_events_request_data['action'] = action
+    if tag is not None:
+        fetch_events_request_data['tag'] = tag
+    if ip is not None:
+        fetch_events_request_data['ip'] = ip
+    if status is not None:
+        fetch_events_request_data['status'] = status
+    return fetch_events_request_data;
+
+
+def event_entry_context_from_response(response_data):
+    entry_context = {
+        'ID': response_data.get('id', ''),
+        'Timestamp': response_data.get('timestamp', ''),
+        'Source': response_data.get('source', ''),
+        'RemoteCountryCode': response_data.get('remoteCountryCode', ''),
+        'RemoteHostname': response_data.get('remoteHostname', ''),
+        'UserAgents': response_data.get('userAgents', ''),
+        'Action': response_data.get('action', ''),
+        'Reasons': response_data.get('reasons', ''),
+        'RequestCount': response_data.get('requestCount', ''),
+        'TagCount': response_data.get('tagCount', ''),
+        'Window': response_data.get('window', ''),
+        'DateExpires': response_data.get('expires', ''),
+        'ExpiredBy': response_data.get('expiredBy', ''),
+    }
+    return entry_context
+
+
+def validate_fetch_requests_args(page, limit):
+    if limit is not None and (not represents_int(limit) or int(limit) < 0 or int(limit) > 1000):
+        return_error("Error: limit must be an integer, larger than 0 and at most 1000")
+    if page is not None and not represents_int(page):
+        return_error("Error: page must be an integer")
+
+
+# should translate inner keys within the records in the tags array?
+def request_entry_context_from_response(response_data):
+    entry_context = {
+        'ID': response_data.get('id', ''),
+        'ServerHostName': response_data.get('serverHostName', ''),
+        'RemoteIP': response_data.get('remoteIP', ''),
+        'RemoteHostName': response_data.get('remoteHostName', ''),
+        'RemoteCountryCode': response_data.get('remoteCountryCode', ''),
+        'UserAgent': response_data.get('userAgent', ''),
+        'Timestamp': response_data.get('timestamp', ''),
+        'Method': response_data.get('method', ''),
+        'ServerName': response_data.get('serverName', ''),
+        'Protocol': response_data.get('protocol', ''),
+        'Path': response_data.get('path', ''),
+        'URI': response_data.get('uri', ''),
+        'ResponseCode': response_data.get('responseCode', ''),
+        'ResponseSize': response_data.get('responseSize', ''),
+        'ResponseMillis': response_data.get('responseMillis', ''),
+        'AgentResponseCode': response_data.get('agentResponseCode', ''),
+        'Tags': response_data.get('tags', ''),
+    }
+    return entry_context
 
 
 def list_entry_context_from_response(response_data):
@@ -234,7 +320,16 @@ def check_ip_is_valid(ip):
         return_error("Error: IP argument is invalid. Please enter a valid IP address")
 
 
-def format_update_list_entries(entries_list, method):
+def gen_entries_data_for_update_list_request(entries_list, method):
+    """
+    Args:
+        entries_list: an array of IP addresses
+        method: a string, either 'Add' or 'Remove'.
+            States if the IPs should be added or removed to the site/corp list.
+
+    Returns:
+        An 'entries' dict, in the expected format by the SigSciences API
+    """
     entries = {
         "additions": [],
         "deletions": []
@@ -245,6 +340,51 @@ def format_update_list_entries(entries_list, method):
     else:
         entries["deletions"] = entries_list_in_list_format
     return entries
+
+
+def generate_whitelist_or_blacklist_ip_context(response_data):
+    ips_contexts = []
+    for item in response_data:
+        output = {}
+        output['ID'] = item.get('id', '')
+        output['Source'] = item.get('source', '')
+        output['ExpiryDate'] = item.get('expires', '')
+        output['Note'] = item.get('note', '')
+        output['CreatedDate'] = item.get('created', '')
+        output['CreatedBy'] = item.get('createdBy', '')
+        ips_contexts.append(output)
+    return ips_contexts
+
+
+def gen_human_readable_for_add_to_whitelist_or_blacklist(ip_context):
+    human_readable = {}
+    human_readable['Note'] = ip_context['Note']
+    human_readable['Source'] = ip_context['Source']
+    human_readable['Expiration data'] = ip_context['ExpiryDate'] if ip_context['ExpiryDate'] else "Not Set"
+    return human_readable
+
+
+def gen_context_for_add_to_whitelist_or_blacklist(response_data):
+    ip_context = {}
+    ip_context['ID'] = response_data.get('id', '')
+    ip_context['Note'] = response_data.get('note', '')
+    ip_context['Source'] = response_data.get('source', '')
+    ip_context['CreatedBy'] = response_data.get('createdBy', '')
+    ip_context['CreatedDate'] = response_data.get('created', '')
+    ip_context['ExpiryDate'] = response_data.get('expires', '')
+    return ip_context
+
+
+def add_ip_to_whitelist_or_blacklist(url, ip, note, expires=None):
+    check_ip_is_valid(ip)
+    data = {
+        'source': ip,
+        'note': note
+    }
+    if expires is not None:
+        data['expires'] = expires
+    res = http_request('PUT', url, data=data)
+    return res
 
 
 '''COMMANDS'''
@@ -260,11 +400,14 @@ def test_module():
     demisto.results('ok')
 
 
-# list entries that don't match the type will return a 404, and will be handled at the http_request method
 def create_corp_list(list_name, list_type, entries_list, description=None):
-    if not is_legal_list_type(list_type):
-        return_error("Error: {0} is not a legal type for a list. Legal types are IP, String, "
-                     "Country or Wildcard".format(list_type))
+    """
+    Note:
+        Illegal entries (not compatible with the type) will result in a 404.
+        They will be handled by the http_request function.
+    """
+    validate_create_list_args(list_type, description)
+
     url = SERVER_URL + CREATE_CORP_LIST_SUFFIX.format(CORPNAME)
     entries_list_in_list_format = entries_list.split(',')
     data_for_request = {
@@ -280,14 +423,14 @@ def create_corp_list(list_name, list_type, entries_list, description=None):
 
 def create_corp_list_command():
     args = demisto.args()
-    request_response_data = create_corp_list(args['list_name'], args['list_type'], args['entries_list'],
+    response_data = create_corp_list(args['list_name'], args['list_type'], args['entries_list'],
                                              args.get('description', None))
-    entry_context = list_entry_context_from_response(request_response_data)
-    title = "Signal Sciences - creating a new corp list \n\n The list has been succesfully created"
-    human_readable = tableToMarkdown(title, entry_context)
+    entry_context = list_entry_context_from_response(response_data)
+    TITLE = "Signal Sciences - creating a new corp list \n\n The list has been succesfully created"
+    human_readable = tableToMarkdown(TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -305,13 +448,13 @@ def get_corp_list(list_id):
 
 def get_corp_list_command():
     args = demisto.args()
-    request_response_data = get_corp_list(args['list_id'])
-    entry_context = list_entry_context_from_response(request_response_data)
-    title = "Found data about list with ID: {0}".format(args['list_id'])
-    human_readable = tableToMarkdown(title, entry_context)
+    response_data = get_corp_list(args['list_id'])
+    entry_context = list_entry_context_from_response(response_data)
+    TITLE = "Found data about list with ID: {0}".format(args['list_id'])
+    human_readable = tableToMarkdown(TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -329,25 +472,21 @@ def delete_corp_list(list_id):
 
 def delete_corp_list_command():
     args = demisto.args()
-    request_response_data = delete_corp_list(args['list_id'])
-    human_readable = "### Signal Sciences - deleting corp list \n\n The list has been succesfully removed"
+    response_data = delete_corp_list(args['list_id'])
+    HUMAN_READABLE = "### Signal Sciences - deleting corp list \n\n The list has been succesfully removed"
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable
+        'HumanReadable': HUMAN_READABLE
     })
 
 
 # currently not handling IPv6 and will return error
 def update_corp_list(list_id, method, entries_list, description=None):
-    if not (method == "Add" or method == "Remove"):
-        return_error("Error: Method given is illegal. Method must be 'Add' or 'Remove'")
-    if description is not None:
-        if len(description) > 140:
-            return_error("Error: Description given is too long. Description must be 140 characters or shorter")
-    entries_in_update_format = format_update_list_entries(entries_list, method)
+    validate_update_list_args(method, description)
+    entries_in_update_format = gen_entries_data_for_update_list_request(entries_list, method)
     url = SERVER_URL + ACCESS_CORP_LIST_SUFFIX.format(CORPNAME, list_id)
     data_for_request = {
         'entries': entries_in_update_format
@@ -360,13 +499,13 @@ def update_corp_list(list_id, method, entries_list, description=None):
 
 def update_corp_list_command():
     args = demisto.args()
-    request_response_data = update_corp_list(args['list_id'], args['method'], args['entries_list'],
+    response_data = update_corp_list(args['list_id'], args['method'], args['entries_list'],
                                              args.get('description', None))
-    entry_context = list_entry_context_from_response(request_response_data)
+    entry_context = list_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -383,18 +522,19 @@ def get_all_corp_lists():
 
 
 def get_all_corp_lists_command():
-    request_response_data = get_all_corp_lists()
-    list_of_corp_lists = request_response_data.get('data', [])
+    response_data = get_all_corp_lists()
+    list_of_corp_lists = response_data.get('data', [])
 
     corp_lists_contexts = []
     for corp_list_data in list_of_corp_lists:
         cur_corp_list_context = list_entry_context_from_response(corp_list_data)
         corp_lists_contexts.append(cur_corp_list_context)
+        
     sidedata = "Number of corp lists in corp: {0}".format(len(list_of_corp_lists))
 
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(LIST_OF_CORP_LISTS_TITLE, corp_lists_contexts, metadata=sidedata),
@@ -404,10 +544,158 @@ def get_all_corp_lists_command():
     })
 
 
+# check if should add the use_format_instead_of_raw to the http request
+def fetch_events(siteName, from_time=None, until_time=None, sort=None,
+                 since_id=None, max_id=None, limit=None, page=None, action=None,
+                 tag=None, ip=None, status=None):
+    validate_fetch_events_args(from_time, until_time, sort, since_id, max_id,
+                               limit, page, action, tag, ip, status)
+    url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
+    data_for_request = gen_fetch_event_data_from_args(from_time, until_time, sort, since_id, max_id,
+                                                      limit, page, action, tag, ip, status)
+    events_data_response = http_request('GET', url, data=data_for_request)
+    return events_data_response
+
+
+def fetch_events_command():
+    args = demisto.args()
+    response_data = fetch_events(args['siteName'], args.get('from_time', None),
+                                         args.get('until_time', None), args.get('sort', None),
+                                         args.get('since_id', None),
+                                         args.get('max_id', None), args.get('limit', None), args.get('page', None),
+                                         args.get('action', None), args.get('tag', None), args.get('ip', None),
+                                         args.get('status', None))
+
+    list_of_events = response_data.get('data', [])
+    events_contexts = []
+    for event_data in list_of_events:
+        cur_event_context = event_entry_context_from_response(event_data)
+        events_contexts.append(cur_event_context)
+        
+    sidedata = "Number of events in site: {0}".format(len(list_of_events))
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response_data,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(LIST_OF_EVENTS_TITLE, events_contexts, metadata=sidedata),
+        'EntryContext': {
+            'SigSciences.Events(val.ID==obj.ID)': events_contexts,
+        }
+    })
+
+
+def get_event_by_id(siteName, event_id):
+    url = SERVER_URL + ACCESS_EVENT_SUFFIX.format(CORPNAME, siteName, event_id)
+    event_data_response = http_request('GET', url)
+    return event_data_response
+
+
+def get_event_by_id_command():
+    args = demisto.args()
+    response_data = get_event_by_id(args['siteName'], args['event_id'])
+    entry_context = event_entry_context_from_response(response_data)
+    TITLE = "Found data about event with ID: {0}".format(args['event_id'])
+    human_readable = tableToMarkdown(TITLE, entry_context)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response_data,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'SigSciences.Events(val.ID==obj.ID)': entry_context,
+        }
+    })
+
+
+def expire_event(siteName, event_id):
+    url = SERVER_URL + EXPIRE_EVENT_SUFFIX.format(CORPNAME, siteName, event_id)
+    event_data_response = http_request('POST', url)
+    return event_data_response
+
+
+def expire_event_command():
+    args = demisto.args()
+    response_data = expire_event(args['siteName'], args['event_id'])
+    HUMAN_READABLE = "### Signal Sciences - expiring event \n\n The event has been succesfully expired"
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response_data,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': HUMAN_READABLE
+    })
+
+
+# check what happens if no arg is sent, is sending empty dict as data ok?
+# check if should add the use_format_instead_of_raw to the http request
+def get_requests(siteName, page, limit, query):
+    url = SERVER_URL + GET_REQUESTS_SUFFIX.format(CORPNAME, siteName)
+    validate_fetch_requests_args(page, limit)
+    data_for_request = {}
+    if page is not None:
+        data_for_request['page'] = page
+    if limit is not None:
+        data_for_request['limit'] = limit
+    if query is not None:
+        data_for_request['q'] = query
+        
+    requests_data_response = http_request('GET', url, data=data_for_request)
+    return requests_data_response
+
+
+def get_requests_command():
+    args = demisto.args()
+    response_data = get_requests(args['siteName'], args.get('page', None), args.get('limit', None),
+                                         args.get('query', None))
+    list_of_requests = response_data.get('data', [])
+    requests_contexts = []
+    for request_data in list_of_requests:
+        cur_request_context = request_entry_context_from_response(request_data)
+        requests_contexts.append(cur_request_context)
+
+    sidedata = "Number of requests in site: {0}".format(len(list_of_requests))
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response_data,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(LIST_OF_REQUESTS_TITLE, requests_contexts, metadata=sidedata),
+        'EntryContext': {
+            'SigSciences.Requests(val.ID==obj.ID)': requests_contexts,
+        }
+    })
+
+
+def get_request_by_id(siteName, request_id):
+    url = SERVER_URL + ACCESS_REQUEST_SUFFIX.format(CORPNAME, siteName, request_id)
+    request_data_response = http_request('GET', url)
+    return request_data_response
+
+
+def get_request_by_id_command():
+    args = demisto.args()
+    response_data = get_request_by_id(args['siteName'], args['request_id'])
+    entry_context = request_entry_context_from_response(response_data)
+    TITLE = "Found data about request with ID: {0}".format(args['request_id'])
+    human_readable = tableToMarkdown(TITLE, entry_context)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response_data,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'SigSciences.Requests(val.ID==obj.ID)': entry_context,
+        }
+    })
+
+
 def create_site_list(siteName, list_name, list_type, entries_list, description=None):
-    if not is_legal_list_type(list_type):
-        return_error("Error: {0} is not a legal type for a list. Legal types are IP, String, "
-                     "Country or Wildcard".format(list_type))
+    validate_create_list_args(list_type, description)
     url = SERVER_URL + SITE_CREATE_LIST_SUFFIX.format(CORPNAME, siteName)
     entries_list_in_list_format = entries_list.split(',')
     data_for_request = {
@@ -417,20 +705,21 @@ def create_site_list(siteName, list_name, list_type, entries_list, description=N
     }
     if description is not None:
         data_for_request['description'] = description
+        
     new_list_data = http_request('POST', url, data=data_for_request)
     return new_list_data
 
 
 def create_site_list_command():
     args = demisto.args()
-    request_response_data = create_site_list(args['siteName'], args['list_name'],
+    response_data = create_site_list(args['siteName'], args['list_name'],
                                              args['list_type'], args['entries_list'], args.get('description', None))
-    entry_context = list_entry_context_from_response(request_response_data)
-    title = "Signal Sciences - creating a new site list \n\n The list has been succesfully created"
-    human_readable = tableToMarkdown(title, entry_context)
+    entry_context = list_entry_context_from_response(response_data)
+    TITLE = "Signal Sciences - creating a new site list \n\n The list has been succesfully created"
+    human_readable = tableToMarkdown(TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -448,13 +737,13 @@ def get_site_list(siteName, list_id):
 
 def get_site_list_command():
     args = demisto.args()
-    request_response_data = get_site_list(args['siteName'], args['list_id'])
-    entry_context = list_entry_context_from_response(request_response_data)
-    title = "Found data about list with ID: {0}".format(args['list_id'])
-    human_readable = tableToMarkdown(title, entry_context, SITE_LIST_HEADERS)
+    response_data = get_site_list(args['siteName'], args['list_id'])
+    entry_context = list_entry_context_from_response(response_data)
+    TITLE = "Found data about list with ID: {0}".format(args['list_id'])
+    human_readable = tableToMarkdown(TITLE, entry_context, SITE_LIST_HEADERS)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -473,24 +762,21 @@ def delete_site_list(siteName, list_id):
 
 def delete_site_list_command():
     args = demisto.args()
-    request_response_data = delete_site_list(args['siteName'], args['list_id'])
-    human_readable = "### Signal Sciences - deleting site list \n\n The list has been succesfully removed"
+    response_data = delete_site_list(args['siteName'], args['list_id'])
+    HUMAN_READABLE = "### Signal Sciences - deleting site list \n\n The list has been succesfully removed"
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable
+        'HumanReadable': HUMAN_READABLE
     })
 
 
 def update_site_list(siteName, list_id, method, entries_list, description=None):
-    if not (method == "Add" or method == "Remove"):
-        return_error("Error: Method given is illegal. Method must be 'Add' or 'Remove'")
-    if description is not None:
-        if len(description) > 140:
-            return_error("Error: Description given is too long. Description must be 140 characters or shorter")
-    entries_in_update_format = format_update_list_entries(entries_list, method)
+    validate_update_list_args(method, description)
+    
+    entries_in_update_format = gen_entries_data_for_update_list_request(entries_list, method)
     url = SERVER_URL + SITE_ACCESS_LIST_SUFFIX.format(CORPNAME, siteName, list_id)
     data_for_request = {
         'entries': entries_in_update_format
@@ -503,13 +789,13 @@ def update_site_list(siteName, list_id, method, entries_list, description=None):
 
 def update_site_list_command():
     args = demisto.args()
-    request_response_data = update_site_list(args['siteName'], args['list_id'],
+    response_data = update_site_list(args['siteName'], args['list_id'],
                                              args['method'], args['entries_list'], args.get('description', None))
-    entry_context = list_entry_context_from_response(request_response_data)
+    entry_context = list_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -527,18 +813,19 @@ def get_all_site_lists(siteName):
 
 def get_all_site_lists_command():
     args = demisto.args()
-    request_response_data = get_all_site_lists(args['siteName'])
-    list_of_site_lists = request_response_data.get('data', [])
+    response_data = get_all_site_lists(args['siteName'])
+    list_of_site_lists = response_data.get('data', [])
 
     site_lists_contexts = []
     for site_list_data in list_of_site_lists:
         cur_site_context = list_entry_context_from_response(site_list_data)
         site_lists_contexts.append(cur_site_context)
+        
     sidedata = "Number of site lists in site: {0}".format(len(list_of_site_lists))
 
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(LIST_OF_SITE_LISTS_TITLE, site_lists_contexts, metadata=sidedata),
@@ -553,30 +840,26 @@ def add_alert(siteName, long_name, tag_name, interval, threshold, enabled, actio
     validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action)
     url = SERVER_URL + SITE_CREATE_ALERT_SUFFIX.format(CORPNAME, siteName)
     data_for_request = {
-        'tagName': TAG_NAME_TEMPORARY_GLOBAL,
+        'tagName': tag_name,
         'longName': long_name,
         'interval': int(interval),
         'threshold': int(threshold),
-        'enabled': enabled,
+        'enabled': bool(enabled),
         'action': action
     }
-    if enabled == "True":
-        data_for_request['enabled'] = True
-    else:
-        data_for_request['enabled'] = False
     response_data = http_request('POST', url, data=data_for_request)
     return response_data
 
 
 def add_alert_command():
     args = demisto.args()
-    request_response_data = add_alert(args['siteName'], args['long_name'], args['tag_name'],
+    response_data = add_alert(args['siteName'], args['long_name'], args['tag_name'],
                                       args['interval'], args['threshold'], args['enabled'], args['action'])
-    entry_context = alert_entry_context_from_response(request_response_data)
+    entry_context = alert_entry_context_from_response(response_data)
     human_readable = tableToMarkdown(ADD_ALERT_TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -594,13 +877,13 @@ def get_alert(siteName, alert_id):
 
 def get_alert_command():
     args = demisto.args()
-    request_response_data = get_alert(args['siteName'], args['alert_id'])
-    entry_context = alert_entry_context_from_response(request_response_data)
-    get_alert_title = "Data found for alert id: {0}".format(args['alert_id'])
-    human_readable = tableToMarkdown(get_alert_title, entry_context)
+    response_data = get_alert(args['siteName'], args['alert_id'])
+    entry_context = alert_entry_context_from_response(response_data)
+    TITLE = "Data found for alert id: {0}".format(args['alert_id'])
+    human_readable = tableToMarkdown(TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -618,14 +901,14 @@ def delete_alert(siteName, alert_id):
 
 def delete_alert_command():
     args = demisto.args()
-    request_response_data = delete_alert(args['siteName'], args['alert_id'])
-    human_readable = "Alert {0} deleted succesfully".format(args['alert_id'])
+    response_data = delete_alert(args['siteName'], args['alert_id'])
+    HUMAN_READABLE = "Alert {0} deleted succesfully".format(args['alert_id'])
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable
+        'HumanReadable': HUMAN_READABLE
     })
 
 
@@ -633,7 +916,7 @@ def update_alert(siteName, alert_id, tag_name, long_name, interval, threshold, e
     validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action)
     url = SERVER_URL + SITE_ACCESS_ALERT_SUFFIX.format(CORPNAME, siteName, alert_id)
     data_for_request = {
-        'tagName': TAG_NAME_TEMPORARY_GLOBAL,
+        'tagName': tag_name,
         'longName': long_name,
         'interval': int(interval),
         'threshold': int(threshold),
@@ -649,14 +932,14 @@ def update_alert(siteName, alert_id, tag_name, long_name, interval, threshold, e
 
 def update_alert_command():
     args = demisto.args()
-    request_response_data = update_alert(args['siteName'], args['alert_id'], args['tag_name'], args['long_name'],
+    response_data = update_alert(args['siteName'], args['alert_id'], args['tag_name'], args['long_name'],
                                          args['interval'], args['threshold'], args['enabled'], args['action'])
-    update_alert_title = "Updated alert {0}. new values:".format(args['alert_id'])
-    entry_context = alert_entry_context_from_response(request_response_data)
-    human_readable = tableToMarkdown(update_alert_title, entry_context)
+    TITLE = "Updated alert {0}. new values:".format(args['alert_id'])
+    entry_context = alert_entry_context_from_response(response_data)
+    human_readable = tableToMarkdown(TITLE, entry_context)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -674,16 +957,17 @@ def get_all_alerts(siteName):
 
 def get_all_alerts_command():
     args = demisto.args()
-    request_response_data = get_all_alerts(args['siteName'])
-    alerts_list = request_response_data.get('data', [])
+    response_data = get_all_alerts(args['siteName'])
+    alerts_list = response_data.get('data', [])
     alerts_contexts = []
     for alert_data in alerts_list:
         cur_alert_context = alert_entry_context_from_response(alert_data)
         alerts_contexts.append(cur_alert_context)
+        
     sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': request_response_data,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(ALERT_LIST_TITLE, alerts_contexts, metadata=sidedata),
@@ -704,25 +988,17 @@ def get_whitelist_command():
     args = demisto.args()
     site_whitelist = get_whitelist(args['siteName'])
     data = site_whitelist.get('data', [])
-    outputs = []
-    for item in data:
-        output = {}
-        output['ID'] = item.get('id', '')
-        output['Source'] = item.get('source', '')
-        output['ExpiryDate'] = item.get('expires', '')
-        output['Note'] = item.get('note', '')
-        output['CreatedDate'] = item.get('created', '')
-        output['CreatedBy'] = item.get('createdBy', '')
-        outputs.append(output)
+    whitelist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
+        
     sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': site_whitelist,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(WHITELIST_TITLE, outputs, WHITELIST_HEADERS, metadata=sidedata),
+        'HumanReadable': tableToMarkdown(WHITELIST_TITLE, whitelist_ips_contexts, WHITELIST_HEADERS, metadata=sidedata),
         'EntryContext': {
-            'SigSciences.Whitelist(val.ID==obj.ID)': outputs,
+            'SigSciences.Whitelist(val.ID==obj.ID)': whitelist_ips_contexts,
         }
     })
 
@@ -738,178 +1014,134 @@ def get_blacklist_command():
     args = demisto.args()
     site_blacklist = get_blacklist(args['siteName'])
     data = site_blacklist.get('data', [])
-    outputs = []
-    for item in data:
-        output = {}
-        output['ID'] = item.get('id', '')
-        output['Source'] = item.get('source', '')
-        output['ExpiryDate'] = item.get('expires', '')
-        output['Note'] = item.get('note', '')
-        output['CreatedDate'] = item.get('created', '')
-        output['CreatedBy'] = item.get('createdBy', '')
+    blacklist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
 
-        outputs.append(output)
     sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': site_blacklist,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS, metadata=sidedata),
+        'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, blacklist_ips_contexts, WHITELIST_HEADERS, metadata=sidedata),
         'EntryContext': {
-            'SigSciences.Blacklist(val.ID==obj.ID)': outputs,
+            'SigSciences.Blacklist(val.ID==obj.ID)': blacklist_ips_contexts,
         }
     })
 
 
 def add_ip_to_whitelist(siteName, ip, note, expires=None):
-    check_ip_is_valid(ip)
     url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
-    data = {
-        'source': ip,
-        'note': note
-    }
-    if expires is not None:
-        data['expires'] = expires
-    res = http_request('PUT', url, data=data)
+    res = add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
     return res
 
 
 def add_ip_to_whitelist_command():
     """Add an ip to the whitelist"""
     args = demisto.args()
-    res = add_ip_to_whitelist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
-    output = {}
-    human_readable = {}
-    output['ID'] = res.get('id', '')
-    output['Note'] = res.get('note', '')
-    output['Source'] = res.get('source', '')
-    output['CreatedBy'] = res.get('createdBy', '')
-    output['CreatedDate'] = res.get('created', '')
-    output['ExpiryDate'] = res.get('expires', '')
-    human_readable['Note'] = output['Note']
-    human_readable['Source'] = output['Source']
-    human_readable['Expiration data'] = output['ExpiryDate'] if output['ExpiryDate'] else "Not Set"
+    response_data = add_ip_to_whitelist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
+    whitelist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
+    human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(whitelist_ip_context)
+
     sidedata = "The IP has been successfully added to whitelist."
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, ADD_IP_HEADERS, metadata=sidedata),
         'EntryContext': {
-            'SigSciences.Whitelist(val.ID==obj.ID)': output,
+            'SigSciences.Whitelist(val.ID==obj.ID)': whitelist_ip_context,
         }
     })
 
 
 def add_ip_to_blacklist(siteName, ip, note, expires=None):
-    check_ip_is_valid(ip)
     url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
-    data = {
-        'source': ip,
-        'note': note
-    }
-    if expires is not None:
-        data['expires'] = expires
-
-    res = http_request('PUT', url, data=data)
+    res = add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
     return res
 
 
 def add_ip_to_blacklist_command():
     """Add an ip to the blacklist"""
     args = demisto.args()
-    res = add_ip_to_blacklist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
-    output = {}
-    human_readable = {}
-    output['ID'] = res.get('id', '')
-    output['Note'] = res.get('note', '')
-    output['Source'] = res.get('source', '')
-    output['CreatedBy'] = res.get('createdBy', '')
-    output['CreatedDate'] = res.get('created', '')
-    output['ExpiryDate'] = res.get('expires', '')
-    human_readable['Note'] = output['Note']
-    human_readable['Source'] = output['Source']
-    human_readable['Expiration data'] = output['ExpiryDate'] if output['ExpiryDate'] else "Not Set"
+    response_data = add_ip_to_blacklist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
+    blacklist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
+    human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(blacklist_ip_context)
+
     sidedata = "The IP has been successfully added to blacklist."
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable, ADD_IP_HEADERS, metadata=sidedata),
         'EntryContext': {
-            'SigSciences.Blacklist(val.ID==obj.ID)': output,
+            'SigSciences.Blacklist(val.ID==obj.ID)': blacklist_ip_context,
         }
     })
 
 
-def whitelist_remove_ip(siteName, IP):
-    check_ip_is_valid(IP)
-    url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
-    site_whitelist = http_request('GET', url)
+def whitelist_remove_ip(siteName, ip):
+    check_ip_is_valid(ip)
+    site_whitelist = get_whitelist(siteName)
+    data = site_whitelist.get('data', [])
+    for item in data:
+        if item.get('source', '') == ip:
+            url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
+            res = http_request('DELETE', url)
+
+    if 'res' not in locals():
+        raise Exception("The IP {0} was not found on the Whitelist".format(ip))
+
     return site_whitelist
 
 
 def whitelist_remove_ip_command():
     """Remove an ip from the whitelist"""
     args = demisto.args()
-    site_whitelist = whitelist_remove_ip(args['siteName'], args['IP'])
-    data = site_whitelist.get('data', [])
-    IP = args['IP']
-    for item in data:
-        if item.get('source', '') == IP:
-            url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, args['siteName'], item.get('id', ''))
-            res = http_request('DELETE', url)
+    response_data = whitelist_remove_ip(args['siteName'], args['IP'])
 
-    if 'res' not in locals():
-        raise Exception("The IP {0} was not found on the WhiteList".format(IP))
-
-    else:
-        human_readable = '### Signal Sciences - Removing an IP from Whitelist \n\n ' \
-                         'The IP has been successfully removed from Whitelist.'
+    HUMAN_READABLE = '### Signal Sciences - Removing an IP from Whitelist \n\n '\
+                     'The IP has been successfully removed from Whitelist.'
 
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
+        'HumanReadable': HUMAN_READABLE,
     })
 
 
-def blacklist_remove_ip(siteName, IP):
-    check_ip_is_valid(IP)
-    url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
-    site_blacklist = http_request('GET', url)
+def blacklist_remove_ip(siteName, ip):
+    check_ip_is_valid(ip)
+    site_blacklist = get_blacklist(siteName)
+    data = site_blacklist.get('data', [])
+    for item in data:
+        if item.get('source', '') == ip:
+            url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
+            res = http_request('DELETE', url)
+
+    if 'res' not in locals():
+        raise Exception("The IP {0} was not found on the Blacklist".format(ip))
+
     return site_blacklist
 
 
 def blacklist_remove_ip_command():
     """Remove an ip from the blacklist"""
     args = demisto.args()
-    site_blacklist = blacklist_remove_ip(args['siteName'], args['IP'])
-    data = site_blacklist.get('data', [])
-    IP = args['IP']
-    for item in data:
-        if item.get('source', '') == IP:
-            url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, args['siteName'], item.get('id', ''))
-            res = http_request('DELETE', url)
+    response_data = blacklist_remove_ip(args['siteName'], args['IP'])
 
-    if 'res' not in locals():
-        raise Exception("The IP {0} was not found on the BlackList".format(IP))
-
-    else:
-        human_readable = '### Signal Sciences - Removing an IP from Blacklist \n\n ' \
-                         'The IP has been successfully removed from Blacklist.'
+    HUMAN_READABLE = '### Signal Sciences - Removing an IP from Blacklist \n\n ' \
+                     'The IP has been successfully removed from Blacklist.'
 
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': response_data,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
+        'HumanReadable': HUMAN_READABLE,
     })
 
 
@@ -946,7 +1178,7 @@ def get_sites_command():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 
 try:
     if demisto.command() == 'test-module':
@@ -995,7 +1227,17 @@ try:
         update_alert_command()
     elif demisto.command() == 'sigsci-get-all-alerts':
         get_all_alerts_command()
+    elif demisto.command() == 'sigsci-fetch-events':
+        fetch_events_command()
+    elif demisto.command() == 'sigsci-expire-event':
+        expire_event_command()
+    elif demisto.command() == 'sigsci-get-event-by-id':
+        get_event_by_id_command()
+    elif demisto.command() == 'sigsci-get-requests':
+        get_requests_command()
+    elif demisto.command() == 'sigsci-get-request-by-id':
+        get_request_by_id_command()
 
 
-except Exception, e:
+except Exception as e:
     return_error(e.message)
