@@ -181,17 +181,26 @@ script:
 
         data = line.get("Data")
         if not data:
-            raise Exception("not data")
+            raise Exception("no data")
 
-        tenant, rule_name,rule_sevirity = data.get('rule_name').split("##")
+        tenant, rule_name, rule_severity = data.get('rule_name').split("##")[:3]
         alert_time = data.get('alert_time', datetime.datetime.now().isoformat())
 
         return {
             'type': 'Luminate',
             'name':  rule_name,
             'occurred': alert_time.split(".")[0]+"Z",
+            'severity': severity_to_level(rule_severity),
             'rawJSON': json.dumps(data),
         }
+
+    def severity_to_level(severity):
+        if severity.lower() == "high":
+            return 3
+        elif severity.lower() == "medium":
+            return 2
+        else:
+            return 1
 
     def fetch_incidents():
         last_run = demisto.getLastRun()
@@ -352,5 +361,6 @@ script:
   isfetch: true
   runonce: false
 fromversion: 0.0.0
+releaseNotes: add severity to fetched incidents.
 tests:
   - Luminate-TestPlaybook
