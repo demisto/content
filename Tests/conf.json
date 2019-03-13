@@ -1126,6 +1126,9 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
     "skipped_tests": {
