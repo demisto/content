@@ -6,6 +6,10 @@
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
             "playbookID": "test_similar_incidents"
         },
         {
@@ -375,10 +379,6 @@
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "VirusTotal",
