@@ -9,6 +9,10 @@ script: |
       demisto.results(lst)
       sys.exit(0)
 
+  if not lst[0]["Contents"]:
+      demisto.results('The list ' + demisto.args()["listname"] + ' is empty')
+      sys.exit(0)
+
   lst = lst[0]["Contents"].split(",")
   items = demisto.args().get("values", "")
 
@@ -69,3 +73,4 @@ scripttarget: 0
 runonce: false
 tests:
   - FilterByList - Test
+releaseNotes: "fix FilterByList bug when the list is empty"
