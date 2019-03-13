@@ -81,5 +81,6 @@ cp .hooks/* .git/hooks
 | [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |
 | [Docker](https://github.com/demisto/content/blob/master/docs/docker/README.MD) | How to use Docker |
 | [Fetching Incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) | How to Fetch Incidents |
+| [Fetching Credentials](https://github.com/demisto/content/blob/master/docs/fetching_credentials/README.md) | How to Fetch Credentials |
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
 | [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |
