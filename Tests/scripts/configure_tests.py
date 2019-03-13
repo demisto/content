@@ -14,7 +14,6 @@ from Tests.test_utils import get_json, str2bool, get_from_version, get_to_versio
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color
 
 # Search Keyword for the changed file
-RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
@@ -49,8 +48,8 @@ def get_modified_files(files_string):
     modified_tests_list = []
     all_files = files_string.split('\n')
 
-    for file in all_files:
-        file_data = file.split()
+    for _file in all_files:
+        file_data = _file.split()
         if not file_data:
             continue
 
@@ -224,12 +223,12 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
             if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-                    id = get_script_or_integration_id(file_path)
+                    _id = get_script_or_integration_id(file_path)
 
                 else:
-                    id = get_name(file_path)
+                    _id = get_name(file_path)
 
-                missing_ids = missing_ids - set([id])
+                missing_ids = missing_ids - {_id}
                 tests.add(test)
 
             else:
@@ -255,9 +254,9 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            id = get_script_or_integration_id(file_path)
-            integration_ids.add(id)
-            integration_to_version[id] = (get_from_version(file_path), get_to_version(file_path))
+            _id = get_script_or_integration_id(file_path)
+            integration_ids.add(_id)
+            integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -440,12 +439,12 @@ def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
     change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
-    added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
+    added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
             changed.add(group[1])
 
-    deleted_groups = re.findall('(\-[ ]+")(.*)(":)', change_string)
+    deleted_groups = re.findall(r'(-[ ]+")(.*)(":)', change_string)
     if deleted_groups:
         for group in deleted_groups:
             changed.add(group[1])
@@ -511,7 +510,7 @@ def create_test_file(is_nightly):
     tests_string = ''
     if not is_nightly:
         branches = run_command("git branch")
-        branch_name_reg = re.search("\* (.*)", branches)
+        branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
