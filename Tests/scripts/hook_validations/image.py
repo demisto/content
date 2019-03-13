@@ -20,10 +20,18 @@ class ImageValidator(object):
             self.file_path = file_path
         else:
             if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                self.file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.png'))[0]
+                try:
+                    self.file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.png'))[0]
+                except IndexError:
+                    self._is_valid = False
+                    print_error("You've created/modified a package but failed to provide an image as a .png file, "
+                                "please add an image in order to proceed.")
 
     def is_valid(self):
         """Validate that the image exists and that it is in the permitted size limits."""
+        if self._is_valid is False:  # In case we encountered an IndexError in the init - we don't have an image
+            return self._is_valid
+
         self.oversize_image()
         if '.png' not in self.file_path:
             self.is_existing_image()

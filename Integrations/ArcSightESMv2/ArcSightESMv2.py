@@ -323,10 +323,12 @@ def fetch():
             create_time_epoch = int(result.get('Start Time') or result.get('Create Time'))
             result['Create Time'] = parse_timestamp_to_datestring(create_time_epoch)
             incident_name = result.get('Name') or 'New {} from arcsight at {}'.format(type_of_incident, datetime.now())
+            labels = [{'type': key.encode('utf-8'), 'value': value.encode('utf-8') if value else value} for key, value
+                      in result.items()]
             incident = {
                 'name': incident_name,
                 'occurred': result['Create Time'],
-                'labels': [{'type': key, 'value': str(value)} for key, value in result.items()],
+                'labels': labels,
                 'rawJSON': json.dumps(result)
             }
 

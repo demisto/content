@@ -109,6 +109,13 @@ script:
       description: Maximum number of records to return
     - name: time-limit
       description: Maximum time to pull records (in seconds)
+    outputs:
+    - contextPath: 'ActiveDirectory.Search.dn'
+      description: The distinguished names that match the query.
+      type: string
+    - contextPath: 'ActiveDirectory.Search'
+      description: Result of the search.
+      type: unknown
     description: Runs Active Directory queries.
   - name: ad-add-to-group
     arguments:
@@ -378,4 +385,4 @@ script:
   dockerimage: demisto/ldap:1.0.0.75
 tests:
   - Active Directory Test
-releaseNotes: "-"
+releaseNotes: "Added output paths for ad-search command."

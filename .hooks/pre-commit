@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # validating that each modified file has a valid schema, release notes, proper prefix & suffix
-echo "Validating files"
-python Tests/scripts/validate_files.py
+echo "Validating files..."
+PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py
 
 if [[ $? -ne 0 ]]
   then

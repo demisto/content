@@ -103,7 +103,7 @@ class StructureValidator(object):
                     c.validate(raise_exception=True)
                 except Exception as err:
                     print_error('Failed: %s failed' % (self.file_path,))
-                    print_error(err)
+                    print_error(str(err))
                     self._is_valid = False
             else:
                 print(self.file_path + " doesn't match any of the known supported file prefix/suffix,"

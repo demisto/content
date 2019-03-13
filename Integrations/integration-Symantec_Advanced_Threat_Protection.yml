@@ -32,6 +32,8 @@ configuration:
 script:
   script: |
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
+    var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
 
     var getAccessToken = function(clientID, secret) {
         var res = http(serverUrl + 'atpapi/oauth2/tokens', {
@@ -212,6 +214,11 @@ script:
     };
 
     var getFiles = function(hash) {
+
+        if (!MD5_REGEX.test(hash) && !SHA256_REGEX.test(hash)){
+            throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+        }
+
         var p = {};
         if (hash.length === 32) { // MD5 hash
             p.hash_type = 'md5';
@@ -220,7 +227,8 @@ script:
 
         // If ATP has not seen the file hash before, then the API will return a blank response with HTTP 200 code.
         if(res.body === '{}'){
-            throw 'ATP has not seen the file ' + hash + ' before';
+            return 'ATP has not seen the file ' + hash + ' before';
+
         }
 
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
@@ -236,6 +244,7 @@ script:
                 return file;
             })}
         };
+
     };
 
     // The command input arg holds the command sent from the user.
@@ -842,3 +851,4 @@ script:
     - contextPath: ATPIncidents.Result.uuid
       description: The GUID assigned for this incident
     description: Query incidents from ATP
+releaseNotes: "Fix satp-files command output when ATP has not seen the file before"
