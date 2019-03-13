@@ -1,5 +1,5 @@
 id: ReadFile test
-version: -1
+version: 11
 name: ReadFile test
 starttaskid: "0"
 tasks:
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -251,10 +251,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 79fef5f8-f0ea-48a1-8b5a-20d6e09bab0c
+    taskid: eb64441f-139f-4fd5-8392-d47d10d4c1fe
     type: regular
     task:
-      id: 79fef5f8-f0ea-48a1-8b5a-20d6e09bab0c
+      id: eb64441f-139f-4fd5-8392-d47d10d4c1fe
       version: -1
       name: Try to read Hebrew file with bad encoding
       description: Load the contents of a file into context.
@@ -266,6 +266,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      decode_type:
+        simple: big5
       encoding:
         simple: big5
       entryID:
@@ -276,7 +278,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -310,7 +312,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -329,6 +331,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "11"
       "yes":
       - "3"
     separatecontext: false
@@ -343,7 +347,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -383,13 +387,40 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "11":
+    id: "11"
+    taskid: f2cf4242-7d03-4019-8807-2a4067f06392
+    type: regular
+    task:
+      id: f2cf4242-7d03-4019-8807-2a4067f06392
+      version: -1
+      name: Failed to not parse Hebrew
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Wrong Codec successfully parsed Hebrew although it shouldn't
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1815,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }

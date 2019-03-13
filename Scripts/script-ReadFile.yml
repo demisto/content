@@ -11,12 +11,8 @@ script: |-
   res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
   with open(res[0]['Contents']['path'], 'r') as f:
       data = f.read(maxFileSize)
-      try:
-          data = data.decode('unicode_escape')
-      except UnicodeDecodeError:
-          pass  # Passing in a case we have \U or \N in the file
-
-      data = data.encode(demisto.args().get("encoding"))
+      data = data.decode(demisto.args().get("decode_type"))
+      data = data.encode('utf-8')
 
   if data:
       message = 'Read %d bytes from file.' % (len(data))
@@ -43,8 +39,8 @@ args:
   required: false
   default: false
   description: Maximal file size to load, in bytes. Default is 1MB.
-- name: encoding
-  description: The encoding type you want for your file
+- name: decode_type
+  description: The decoding type of the file
   defaultValue: utf-8
 outputs:
 - contextPath: FileData
