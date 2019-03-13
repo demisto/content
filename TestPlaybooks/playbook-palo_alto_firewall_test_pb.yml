@@ -12,7 +12,6 @@ tasks:
       id: 66224c2a-99b1-4999-83c8-e8fc3d9afd13
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -801,31 +800,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7945
-        }
-      }
-    note: false
-    timertriggers: []
-  "51":
-    id: "51"
-    taskid: da9e5b2c-54c8-434c-82c7-9f0c455a919e
-    type: title
-    task:
-      id: da9e5b2c-54c8-434c-82c7-9f0c455a919e
-      version: -1
-      name: Security Rules Managing
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "53"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5440
+          "y": 6925
         }
       }
     note: false
@@ -854,126 +829,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "53":
-    id: "53"
-    taskid: fa779f08-492a-487b-8dcf-a9c0f52759af
-    type: regular
-    task:
-      id: fa779f08-492a-487b-8dcf-a9c0f52759af
-      version: -1
-      name: panorama-move-rule bottom
-      script: '|||panorama-move-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "54"
-    scriptarguments:
-      dst: {}
-      pre_post: {}
-      rulename:
-        simple: test_rule3-to
-      where:
-        simple: bottom
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5585
-        }
-      }
-    note: false
-    timertriggers: []
-  "54":
-    id: "54"
-    taskid: 1854b3a9-2f7c-4086-8009-3aca0a322436
-    type: regular
-    task:
-      id: 1854b3a9-2f7c-4086-8009-3aca0a322436
-      version: -1
-      name: sleep 14 seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "55"
-    scriptarguments:
-      seconds:
-        simple: "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5760
-        }
-      }
-    note: false
-    timertriggers: []
-  "55":
-    id: "55"
-    taskid: 17c8ba79-3d07-4a70-899d-7df24655bb0b
-    type: regular
-    task:
-      id: 17c8ba79-3d07-4a70-899d-7df24655bb0b
-      version: -1
-      name: panorama-move-rule top
-      script: '|||panorama-move-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "56"
-    scriptarguments:
-      dst: {}
-      pre_post: {}
-      rulename:
-        simple: test_rule3-to
-      where:
-        simple: top
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5935
-        }
-      }
-    note: false
-    timertriggers: []
-  "56":
-    id: "56"
-    taskid: 8a94018d-c4fd-467c-84b9-b585fd117d3e
-    type: regular
-    task:
-      id: 8a94018d-c4fd-467c-84b9-b585fd117d3e
-      version: -1
-      name: sleep 5 seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "79"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6110
-        }
-      }
-    note: false
-    timertriggers: []
   "60":
     id: "60"
     taskid: 0d9a1add-6737-483e-8bd1-c3881d305bea
@@ -993,7 +848,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6460
+          "y": 5440
         }
       }
     note: false
@@ -1084,7 +939,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6605
+          "y": 5585
         }
       }
     note: false
@@ -1120,7 +975,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6955
+          "y": 5935
         }
       }
     note: false
@@ -1152,7 +1007,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7130
+          "y": 6110
         }
       }
     note: false
@@ -1178,7 +1033,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7450
+          "y": 6430
         }
       }
     note: false
@@ -1202,7 +1057,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7305
+          "y": 6285
         }
       }
     note: false
@@ -1222,7 +1077,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "60"
     scriptarguments:
       name:
         simple: fw_test_pb_dont_delete
@@ -1341,40 +1196,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6780
-        }
-      }
-    note: false
-    timertriggers: []
-  "79":
-    id: "79"
-    taskid: 19f6d5fe-4150-4a8e-8c71-5d67e4857ae8
-    type: regular
-    task:
-      id: 19f6d5fe-4150-4a8e-8c71-5d67e4857ae8
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "60"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6285
+          "y": 5760
         }
       }
     note: false
@@ -1398,7 +1220,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7625
+          "y": 6605
         }
       }
     note: false
@@ -1434,7 +1256,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7770
+          "y": 6750
         }
       }
     note: false
@@ -1446,7 +1268,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7960,
+        "height": 6940,
         "width": 380,
         "x": 50,
         "y": 50
