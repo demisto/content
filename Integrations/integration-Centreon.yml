@@ -36,7 +36,7 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    if not demisto.params().get('proxy', False) or demisto.params()['proxy'] == 'false':
+    if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
@@ -323,5 +323,6 @@ script:
       description: Service state
     description: All the monitoring information regarding services
   runonce: false
+releaseNotes: "-"
 tests:
     - Centreon-Test-Playbook
