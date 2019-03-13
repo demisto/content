@@ -118,7 +118,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     test_succeed = __test_integration_instance(client, module_instance)
 
     if not test_succeed:
-        __disable_integrations_instances(client, module_instance)
+        __disable_integrations_instances(client, [module_instance])
         return None
 
     return module_instance
