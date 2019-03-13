@@ -1222,7 +1222,6 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
-        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
