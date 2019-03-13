@@ -1126,6 +1126,10 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
+        },
+        {
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid"
         }
     ],
     "skipped_tests": {
@@ -1144,7 +1148,8 @@
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "SalesforceTestPlaybook": "User and password expired (issue 15901)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
-        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
+        "Test-Detonate URL - ThreatGrid": "Outdated test"
     },
     "skipped_integrations": {
         "RSA Archer": "Server not responding (issue 16085)",
