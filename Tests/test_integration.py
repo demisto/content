@@ -73,7 +73,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
         'category': configuration['category'],
         'configuration': configuration,
         'data': [],
-        'enabled': True,
+        'enabled': "true",
         'engine': '',
         'id': '',
         'isIntegrationScript': is_byoi,
@@ -125,7 +125,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
 
 def __disable_integrations_instances(client, module_instances):
     for module_instance in module_instances:
-        module_instance['enable'] = False
+        module_instance['enable'] = "false"
         res = client.req('PUT', '/settings/integration', module_instance)
 
         if res.status_code != 200:
