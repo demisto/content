@@ -316,7 +316,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': domain,
-            'Type': 'Domain',
+            'Type': 'domain',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -394,7 +394,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': url,
-            'Type': 'URL',
+            'Type': 'url',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -472,7 +472,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': file,
-            'Type': 'Hash',
+            'Type': 'hash',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -550,7 +550,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': ip,
-            'Type': 'IP',
+            'Type': 'ip',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
