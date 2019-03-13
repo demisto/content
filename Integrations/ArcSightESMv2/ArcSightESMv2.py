@@ -46,11 +46,15 @@ if not demisto.params().get("proxy", False):
 
 
 @logger
+def int_to_ip(num):
+    return "{}.{}.{}.{}".format((num >> 24) & 255, (num >> 16) & 255, (num >> 8) & 255, num & 255)
+
+
+@logger
 def decode_ip(address_by_bytes):
-    """ Decodes the enigmatic way IPs are stored in ArcSight DB into IPv4/6 format """
+    """ Decodes the enigmatic ways IPs are stored in ArcSight DB into IPv4/6 format """
     if isinstance(address_by_bytes, int):
-        return "{}.{}.{}.{}".format((address_by_bytes >> 24) & 255, (address_by_bytes >> 16) & 255,
-                                    (address_by_bytes >> 8) & 255, address_by_bytes & 255)
+        return int_to_ip(address_by_bytes)
 
     try:
         # if it's not an int, it should be Base64 encoded string
@@ -61,12 +65,13 @@ def decode_ip(address_by_bytes):
             return "{}:{}:{}:{}:{}:{}:{}:{}".format(*decoded_string)
         elif len(address_by_bytes) >= 6:
             decoded_string = int(decoded_string, 16)
-            return "{}.{}.{}.{}".format((decoded_string >> 24) & 255, (decoded_string >> 16) & 255,
-                                        (decoded_string >> 8) & 255, decoded_string & 255)
+            return int_to_ip(decoded_string)
         else:
             return address_by_bytes
 
     except Exception as ex:
+        # sometimes ArcSight would not encode IPs, that will cause the decoder to
+        # throw an exception, and in turn, we will return the input in its original form.
         demisto.debug(str(ex))
         return address_by_bytes
 
@@ -77,7 +82,7 @@ def parse_timestamp_to_datestring(timestamp):
         try:
             return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.000Z")
         except (ValueError, TypeError) as e:
-            LOG(e.message)
+            demisto.debug(str(e))
             if timestamp == '31 Dec 1969 19:00:00 EST':
                 # Unix epoch 00:00:00 UTC
                 return 'None'
@@ -87,11 +92,11 @@ def parse_timestamp_to_datestring(timestamp):
 @logger
 def beautifully_json(d, depth=0, remove_nones=True):
     """ Converts some of the values from ArcSight DB into a more useful & readable format """
-    # arcsight stores some None values as follows
+    # ArcSight stores some None values as follows
     NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648, 5e-324]
-    # arcsight stores IP addresses as int, in the following keys
+    # ArcSight stores IP addresses as int, in the following keys
     IP_FIELDS = ['address', 'addressAsBytes', 'Destination Address', 'Source Address']
-    # arcsight stores Dates as timeStamps in the following keys, need to format them into Date
+    # ArcSight stores Dates as timeStamps in the following keys, -> reformat into Date
     TIMESTAMP_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                         'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
     if depth < 10:
@@ -520,7 +525,7 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
 
     demisto.debug(res.text)
     if not ignore_empty:
-        demisto.results('No events found')
+        demisto.results('No events were found')
 
 
 @logger
@@ -580,9 +585,18 @@ def update_case(case_id, stage, severity):
 @logger
 def get_correlated_events_ids(event_ids):
     related_ids = set(event_ids)
-    for raw_event in beautifully_json(get_security_events(event_ids, ignore_empty=True)):
+    correlated_events = beautifully_json(get_security_events(event_ids, ignore_empty=True))
+
+    for raw_event in correlated_events:
         if raw_event.get('baseEventIds'):
-            related_ids.update(raw_event.get('baseEventIds'))
+            try:
+                related_ids.add(raw_event.get('baseEventIds'))
+            except Exception as ex:
+                try:
+                    related_ids.update(raw_event.get('baseEventIds'))
+                except Exception as ex2:
+                    demisto.debug("couldn't update the set:\n{}\n{}".format(str(ex), str(ex2)))
+                    return event_ids
 
     return list(related_ids)
 
