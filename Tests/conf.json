@@ -308,11 +308,15 @@
             "timeout": 500
         },
         {
-            "playbookID": "TransformersTestPlaybook"
+            "playbookID": "CutTransformerTest"
         },
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "ProtectWise",
+            "playbookID": "Protectwise-Test"
         },
         {
             "integrations": "WhatsMyBrowser",
@@ -919,6 +923,7 @@
             "nightly": true
         },
         {
+            "integrations": "Whois",
             "playbookID": "whois_test"
         },
         {
@@ -1029,7 +1034,7 @@
         },
         {
             "playbookID": "Phishing test - attachment",
-            "timeout": 600,
+            "timeout": 700,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1040,7 +1045,7 @@
         },
         {
             "playbookID": "Phishing test - Inline",
-            "timeout": 500,
+            "timeout": 700,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1118,6 +1123,9 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "playbookID": "CheckDockerImageAvailableTest"
         }
     ],
     "skipped_tests": {
@@ -1170,5 +1178,91 @@
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
-    ]
+    ],
+    "unmockable_integrations": {
+        "RTIR": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "Joe Security": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "GRR": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "PageDuty": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "carbonblackliveresponse": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "RecordedFuture": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "AbuseIPDB": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "FireEye HX": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
+        "EWS v2": "Inconsistent test (playback fails, record succeeds)",
+        "Alexa Rank Indicator": "Integration should never use proxy",
+        "Pwned": "Integration has no proxy checkbox",
+        "Luminate": "Integration has no proxy checkbox",
+        "dnstwist": "Integration has no proxy checkbox",
+        "PagerDuty v2": "Integration has no proxy checkbox",
+        "CVE Search": "Integration has no proxy checkbox",
+        "Shodan": "Integration has no proxy checkbox",
+        "Gmail": "Integration has no proxy checkbox",
+        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "PhishTank": "Pending merge of branch proxy-unsecure-checks",
+        "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
+        "epo": "Pending merge of branch proxy-unsecure-checks",
+        "FalconIntel": "Pending merge of branch proxy-unsecure-checks",
+        "ipinfo": "Pending merge of branch proxy-unsecure-checks",
+        "RSA NetWitness Packets and Logs": "Pending merge of branch proxy-unsecure-checks",
+        "SNDBOX": "Pending merge of branch proxy-unsecure-checks",
+        "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
+        "BigFix": "Pending merge of branch proxy-unsecure-checks",
+        "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
+        "InfoArmor VigilanteATI": "Pending merge of branch proxy-unsecure-checks",
+        "Rapid7 Nexpose": "Pending merge of branch proxy-unsecure-checks",
+        "urlscan.io": "Pending merge of branch proxy-unsecure-checks",
+        "Threat Grid": "Pending merge of branch proxy-unsecure-checks",
+        "OTRS": "Pending merge of branch proxy-unsecure-checks",
+        "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
+        "Preempt": "Insecure has a non empty default value, will require fixing and merging",
+        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
+        "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
+        "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
+        "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
+        "HashiCorp Vault": "Test fails with mock - need to test without mock",
+        "google": "'unsecure' parameter not working",
+        "Check Point Sandblast": "Test fails with mock - need to test without mock",
+        "Anomali ThreatStream": "'proxy' parameter not working",
+        "Active Directory Query v2": "Checking",
+        "MaxMind GeoIP2": "Checking",
+        "AlphaSOC Wisdom": "Checking",
+        "Phish.AI": "Checking",
+        "jira": "Checking",
+        "ArcSight ESM v2": "Checking",
+        "Cylance Protect": "Checking",
+        "ReversingLabs A1000": "Checking",
+        "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
+        "Cylance Protect v2": "Checking",
+        "SafeBreach": "Checking",
+        "Symantec Endpoint Protection V2": "Checking",
+        "McAfee ESM-v10": "Checking",
+        "Salesforce": "Checking",
+        "okta": "Checking",
+        "WildFire": "Checking",
+        "WhatsMyBrowser": "Checking",
+        "Check Point": "Checking",
+        "Awake Security": "Checking",
+        "CIRCL": "Checking",
+        "Thinkst Canary": "Checking",
+        "Cymon": "Checking",
+        "SplunkPy": "Checking",
+        "Symantec Advanced Threat Protection": "Checking",
+        "ProtectWise": "Nightly - Checking",
+        "Tenable.io": "Nightly - Checking",
+        "google-vault": "Nightly - Checking",
+        "Intezer": "Nightly - Checking",
+        "Archer": "Nightly - Checking",
+        "McAfee NSM": "Nightly - Checking",
+        "Forcepoint": "Nightly - Checking",
+        "RedCanary": "Nightly - Checking",
+        "McAfee Active Response": "Nightly - Checking",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
+    }
 }

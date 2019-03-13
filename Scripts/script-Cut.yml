@@ -14,7 +14,6 @@ script: |-
   data = value.split(delim)
   fields = [int(_) for _ in fields.split(",")]
 
-  demisto.log(str(max(fields)))
   max_index = max(fields)
   if len(data) < max_index:
       return_error("Invalid field index {}, should be between 1 to {}.".format(max_index, len(data)))
@@ -50,4 +49,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - TransformersTestPlaybook
+  - CutTransformerTest
+releaseNotes: "-"
