@@ -6,6 +6,7 @@ fromversion: 4.1.0
 script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
+  from pdfminer.pdfdocument import PDFEncryptionError
   import sys
   reload(sys)
   sys.setdefaultencoding("utf-8")
@@ -55,6 +56,9 @@ script: |-
               pdf = pdfx.PDFx(path)
           except PSEOF:
               mark_suspicious()
+              sys.exit(0)
+          except PDFEncryptionError as err:
+              return_error("Encountered a possible encrypted file, was not able to parse it.\nThe error message was:\n{}".format(err.message))
               sys.exit(0)
 
           if not pdf:
@@ -170,5 +174,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
+releaseNotes: "Adding proper error msg for failing on reading encrypted files"
 tests:
   - Extract Indicators From File - test
