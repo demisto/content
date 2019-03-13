@@ -128,11 +128,11 @@ def __create_integration_instance(client, integration_name, integration_params, 
 def __disable_integrations_instances(client, module_instances):
     for configured_instance in module_instances:
         module_instance = {
-            key: configured_instance[key] for key in ['id', 'brand', 'data', 'name', 'isIntegrationScript', ]
+            key: configured_instance[key] for key in ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
         }
         module_instance['enable'] = "false"
         module_instance['version'] = -1
-        print('instance properties are {}'.format(module_instance))
+
         res = client.req('PUT', '/settings/integration', module_instance)
 
         if res.status_code != 200:
