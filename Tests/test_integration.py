@@ -79,7 +79,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
         'isIntegrationScript': is_byoi,
         'name': instance_name,
         'passwordProtected': False,
-        'version': 0
+        'version': -1
     }
 
     # set module params
