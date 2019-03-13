@@ -1147,6 +1147,7 @@
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
     },
     "skipped_integrations": {
+        "RSA Archer": "Server not responding (issue 16085)",
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
@@ -1180,6 +1181,14 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "RTIR": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "Joe Security": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "GRR": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "PageDuty": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "carbonblackliveresponse": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "RecordedFuture": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "AbuseIPDB": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "FireEye HX": "Pending check: https://github.com/demisto/etc/issues/16072",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "EWS v2": "Inconsistent test (playback fails, record succeeds)",
         "Alexa Rank Indicator": "Integration should never use proxy",
@@ -1202,9 +1211,8 @@
         "epo": "Pending merge of branch proxy-unsecure-checks",
         "FalconIntel": "Pending merge of branch proxy-unsecure-checks",
         "ipinfo": "Pending merge of branch proxy-unsecure-checks",
-        "RSA NetWitness Packets": "Pending merge of branch proxy-unsecure-checks",
+        "RSA NetWitness Packets and Logs": "Pending merge of branch proxy-unsecure-checks",
         "SNDBOX": "Pending merge of branch proxy-unsecure-checks",
-        "BitDam": "Pending merge of branch proxy-unsecure-checks",
         "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
         "BigFix": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
@@ -1213,7 +1221,6 @@
         "urlscan.io": "Pending merge of branch proxy-unsecure-checks",
         "Threat Grid": "Pending merge of branch proxy-unsecure-checks",
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
-        "Palo Alto Minemeld": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
         "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",

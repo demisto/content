@@ -12,7 +12,7 @@ script: |+
 
   reload(sys)
   sys.setdefaultencoding('utf8')
-
+  codec_type = demisto.args().get('codec')
 
   def remove_non_printable_chars(s):
       """
@@ -23,7 +23,7 @@ script: |+
       return s.replace(u'\ufeff', '').replace(u'\u200f', '')
 
 
-  def unicode_dict_reader(utf8_data, **kwargs):
+  def unicode_dict_reader(csv_data, **kwargs):
       """
       reads from csv file each row and converts to array of dictionaries.
       in case there are extra fields in a row and they have no column, then we will create NO_NAME_COLUMN_{NUMBER}
@@ -48,7 +48,7 @@ script: |+
           }
       ]
       """
-      csv_reader = csv.DictReader((line.replace('\0', '') for line in utf8_data), **kwargs)
+      csv_reader = csv.DictReader((line.replace('\0', '') for line in csv_data), **kwargs)
       arr = []
       no_name_columns_counter = 0
       for row in csv_reader:
@@ -64,17 +64,17 @@ script: |+
                   counter = 0
                   for val in value:
                       col_name = 'NO_NAME_COLUMN_{}'.format(counter)
-                      row_dict[col_name] = unicode(val, 'utf-8')
+                      row_dict[col_name] = unicode(val, codec_type)
                       counter+=1
 
                   if no_name_columns_counter < counter:
                       no_name_columns_counter = counter
 
               elif value is not None:
-                  col_name = remove_non_printable_chars(unicode(key, 'utf-8'))
-                  row_dict[col_name] = unicode(value, 'utf-8')
+                  col_name = remove_non_printable_chars(unicode(key, codec_type))
+                  row_dict[col_name] = unicode(value, codec_type)
               else:
-                  col_name = remove_non_printable_chars(unicode(key, 'utf-8'))
+                  col_name = remove_non_printable_chars(unicode(key, codec_type))
                   row_dict[col_name] = None
 
           arr.append(row_dict)
@@ -271,6 +271,10 @@ args:
   - "no"
   description: parses and converts all the rows in csv into json and puts into context.
   defaultValue: "yes"
+- name: codec
+  description: The codec type used to parse the file (some character sets are not
+    UTF-8 supported)
+  defaultValue: utf-8
 outputs:
 - contextPath: IP.Address
   description: IP address found in parsed file
@@ -287,3 +291,6 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+tests:
+  - TestParseCSV
+releaseNotes: "Added non utf-8 codec support."

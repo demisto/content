@@ -156,8 +156,6 @@ class MITMProxy:
         current_folder (string): the current folder to use for mock/log files.
         ami (AMIConnection): Wrapper for AMI communication.
         process (Popen): object representation of the Proxy process (used to track the proxy process status).
-        last_playbook_id (string): ID of the currently running / most recently run playbook.
-        record (bool): Proxy mode (playback/record).
         empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
         rerecorded_tests (list): List of playbook ids that failed on mock playback but succeeded on new recording.
         debug (bool): enable debug prints - redirect.
@@ -178,8 +176,6 @@ class MITMProxy:
         self.ami = AMIConnection(self.public_ip)
 
         self.process = None
-        self.last_playbook_id = None
-        self.record = None
         self.empty_files = []
         self.rerecorded_tests = []
 
@@ -250,18 +246,27 @@ class MITMProxy:
         if self.process:
             raise Exception("Cannot start proxy - already running.")
 
-        self.last_playbook_id = playbook_id
-        self.record = record
         path = path or self.current_folder
 
+        # Create mock files directory
         silence_output(self.ami.call, ['mkdir', os.path.join(path, get_folder_path(playbook_id))], stderr='null')
 
-        # Configure and run MITMProxy
+        # Configure proxy server
         actions = '--server-replay-kill-extra --server-replay' if not record else '--save-stream-file'
         command = "mitmdump --ssl-insecure --verbose --listen-port {} {}".format(self.PROXY_PORT, actions).split()
         command.append(os.path.join(path, get_mock_file_path(playbook_id)))
 
+        # Handle proxy log output
+        if not self.debug:
+            log_file = os.path.join(path, get_log_file_path(playbook_id, record))
+            command.extend(['>{}'.format(log_file), '2>&1'])
+
+        # Start proxy server
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
+        self.process.poll()
+        if self.process.returncode is not None:
+            raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
+                            .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
         self.__configure_proxy_in_demisto(self.ami.docker_ip + ':' + self.PROXY_PORT)
 
     def stop(self):
@@ -269,25 +274,13 @@ class MITMProxy:
             raise Exception("Cannot stop proxy - not running.")
 
         self.__configure_proxy_in_demisto('')  # Clear proxy configuration in demisto server
-        self.process.send_signal(signal.SIGINT)
-        self.ami.call(["rm", "-rf", "/tmp/_MEI*"])
+        self.process.send_signal(signal.SIGINT)  # Terminate proxy process
+        self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
 
+        # Handle logs
         if self.debug:
             print "proxy outputs:"
             print self.process.stdout.read()
             print self.process.stderr.read()
-        else:
-            local_log_filepath = os.path.join(
-                '/tmp', os.path.basename(get_log_file_path(self.last_playbook_id, self.record)))
-            remote_log_filepath = os.path.join(
-                self.current_folder, get_log_file_path(self.last_playbook_id, self.record))
-
-            with open(local_log_filepath, 'w+') as log:
-                log.write('STDOUT:\n')
-                log.write(self.process.stdout.read())
-                log.write('\nSTDERR:\n')
-                log.write(self.process.stderr.read())
-
-            self.ami.copy_file(local_log_filepath, remote_log_filepath)
 
         self.process = None
