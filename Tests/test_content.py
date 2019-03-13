@@ -349,11 +349,6 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def organize_tests(tests):
-    # TODO: implement this
-    return tests
-
-
 def execute_testing(server):
     options = options_handler()
     username = options.user
@@ -409,9 +404,6 @@ def execute_testing(server):
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
-
-    # move all mock tests to the top of the list
-    tests = organize_tests(tests)
 
     for t in tests:
         playbook_id = t['playbookID']

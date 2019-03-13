@@ -1,4 +1,3 @@
-requests
 Google-Search-API
 pyping
 threatconnect
