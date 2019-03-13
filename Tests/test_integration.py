@@ -280,7 +280,6 @@ def test_integration(client, integrations, playbook_id, options=None):
             print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
         i = i + 1
 
-    print('disabling instance {}'.format(module_instances))
     __disable_integrations_instances(client, module_instances)
 
     test_pass = playbook_state == PB_Status.COMPLETED
