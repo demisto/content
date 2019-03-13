@@ -127,6 +127,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
 
 def __disable_integrations_instances(client, module_instances):
     for configured_instance in module_instances:
+        # tested with POSTMAN, this is the minimum required fields for the request.
         module_instance = {
             key: configured_instance[key] for key in ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
         }
