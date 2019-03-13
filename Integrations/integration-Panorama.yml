@@ -147,6 +147,10 @@ script:
         if result.status_code < 200 or result.status_code >= 300:
             return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
+        # if pcap download
+        if params['type'] == 'export':
+            return result
+
         jresult = json.loads(xml2json(result.text))
 
         if jresult['response']['@status'] != 'success':
@@ -2196,7 +2200,7 @@ script:
 
     @logger
     def panorama_get_pcaps_command():
-        ''' Get pcaps '''
+        ''' Get pcap file '''
         params = {
             'type': 'export',
             'key': API_KEY,
@@ -2229,14 +2233,7 @@ script:
 
         result = http_request(URL, 'GET', params = params)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Get pcap successfully',
-        })
-
+        demisto.results(fileResult(fromm + ".pcap", result.content))
 
     ''' EXECUTION '''
     LOG('command is %s' % (demisto.command(), ))
@@ -2370,8 +2367,8 @@ script:
         elif demisto.command() == 'panorama-list-applications':
             panorama_list_applications_command()
 
-        # elif demisto.command() == 'panorama-get-pcaps':
-        #     panorama_get_pcaps_command()
+        elif demisto.command() == 'panorama-get-pcaps':
+            panorama_get_pcaps_command()
 
     except Exception, e:
         LOG(e.message)
@@ -2416,8 +2413,6 @@ script:
       description: From parameter (used in specifying time and when cloning an object)
     - name: key
       description: Sets a key value
-    - name: log-type
-      description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: where
       description: Specifies the type of a move operation (e.g. where=after, where=before,
         where=top, where=bottom)
@@ -3357,7 +3352,63 @@ script:
       description: Job ID details
       type: string
     description: Get push status for a configuration
+  - name: panorama-get-pcaps
+    arguments:
+    - name: pcapType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - threat-pcap
+      - dlp-pcap
+      description: Type of Packet Capture
+    - name: from
+      description: '"From" value for the rule'
+    - name: to
+      description: '"To" value for the rule'
+    - name: serialNo
+      description: Serial number for the request. For further information, see the
+        Panorama XML API Documentation.
+    - name: searchTime
+      description: Search time for the request. For further information, see the Panorama
+        XML API Documentation.
+    - name: pcapID
+      description: ID of the Pcap for the request. For further information, see the
+        Panorama XML API Documentation.
+    - name: password
+      description: Password for Panorama.
+    outputs:
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.Info
+      description: File info
+      type: string
+    - contextPath: File.Extenstion
+      description: File extenstion
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    description: Get panorama pcaps
   runonce: false
+releaseNotes: added panorama-get-pcaps command
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
