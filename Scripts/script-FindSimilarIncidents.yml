@@ -142,7 +142,7 @@ script: |-
       condition_string = ' %s ' % applied_condition.lower()
       similar_keys_query = condition_string.join(map(lambda t: '%s:"%s"' % (t[0], escape_special_query_chars(t[1])), similar_incident_keys.items()))
       incident_time = parse_datetime(incident_time)
-      max_date = incident_time + timedelta(hours=hours_back)
+      max_date = incident_time
       min_date = incident_time - timedelta(hours=hours_back)
       hours_back_query = '{0}:>="{1}" and {0}:<="{2}"'.format(TIME_FIELD, min_date.isoformat(), max_date.isoformat())
 
@@ -433,3 +433,4 @@ timeout: 300ns
 runonce: false
 tests:
   - No test
+releaseNotes: "Ignore future incidents"
