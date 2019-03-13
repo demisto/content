@@ -127,6 +127,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
 def __disable_integrations_instances(client, module_instances):
     for module_instance in module_instances:
         module_instance['enable'] = "false"
+        print('instance properties are {}'.format(module_instance))
         res = client.req('PUT', '/settings/integration', module_instance)
 
         if res.status_code != 200:
