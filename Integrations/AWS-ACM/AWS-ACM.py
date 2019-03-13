@@ -67,7 +67,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
 
 def parse_tag_field(tags_str):
     tags = []
-    regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
@@ -83,7 +83,7 @@ def parse_tag_field(tags_str):
 
 def parse_subnet_mappings(subnets_str):
     subnets = []
-    regex = re.compile(r'subnetid=([\w\d_:.-]+),allocationid=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(r"subnetid=([\w\d_:.-]+),allocationid=([ /\w\d@_,.*-]+)", flags=re.I)
     for f in subnets_str.split(';'):
         match = regex.match(f)
         if match is None:
