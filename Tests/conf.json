@@ -34,6 +34,10 @@
             "playbookID": "Fidelis-Test"
         },
         {
+            "integrations": "AWS - ACM",
+            "playbookID": "ACM-Test"
+        },
+        {
             "integrations": "Thinkst Canary",
             "playbookID": "CanaryTools Test"
         },
