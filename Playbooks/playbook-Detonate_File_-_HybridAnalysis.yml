@@ -22,7 +22,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-      - "6"
     separatecontext: false
     view: |-
       {
@@ -381,5 +380,6 @@ outputs:
 - contextPath: HybridAnalysis.Submit.EnvironmentID
   description: The environmentID of the submission
   type: unknown
+releaseNotes: "Fixing issue - ignoring check for enabled integration"
 tests:
   - "Detonate File - HybridAnalysis - Test"
