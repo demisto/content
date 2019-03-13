@@ -1,10 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-''' IMPORTS '''
+'''IMPORTS'''
+import re
 import boto3
 import datetime
+import json
 
 '''GLOBAL VARIABLES'''
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']

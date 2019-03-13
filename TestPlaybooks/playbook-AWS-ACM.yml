@@ -1,0 +1,461 @@
+id: dad3f9cd-e6b1-4673-8ea9-59588b728dd9
+version: -1
+name: ACM-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d116c67-5ca8-4ec0-8026-590fb5260179
+    type: start
+    task:
+      id: 5d116c67-5ca8-4ec0-8026-590fb5260179
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: e7836897-a59e-4ec1-8a54-ea9528e23e7d
+    type: regular
+    task:
+      id: e7836897-a59e-4ec1-8a54-ea9528e23e7d
+      version: -1
+      name: aws-acm-list-certificates
+      description: Retrieves a list of certificate ARNs and domain names. You can
+        request that only certificates that match a specific status be listed. You
+        can also filter by specific attributes of the certificate.
+      script: AWS - ACM|||aws-acm-list-certificates
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      certificateStatuses: {}
+      extendedKeyUsage: {}
+      keyTypes: {}
+      keyUsage: {}
+      region:
+        simple: us-west-2
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: cac424d0-d64b-42f0-830a-614a90486478
+    type: condition
+    task:
+      id: cac424d0-d64b-42f0-830a-614a90486478
+      version: -1
+      name: Verify cert returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.ACM.Certificates.CertificateArn
+            iscontext: true
+          right:
+            value:
+              simple: arn:aws:acm:us-west-2:120785635586:certificate/3bf72596-237e-47a6-853b-75bb915697e6
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 1b8279b3-e7fc-4a3a-8126-926c4579edb2
+    type: regular
+    task:
+      id: 1b8279b3-e7fc-4a3a-8126-926c4579edb2
+      version: -1
+      name: aws-acm-get-certificate
+      description: Retrieves a certificate specified by an ARN and its certificate
+        chain . The chain is an ordered list of certificates that contains the end
+        entity certificate, intermediate certificates of subordinate CAs, and the
+        root certificate in that order. The certificate and certificate chain are
+        base64 encoded. If you want to decode the certificate to see the individual
+        fields, you can use OpenSSL.
+      script: AWS - ACM|||aws-acm-get-certificate
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      certificateArn:
+        simple: arn:aws:acm:us-west-2:120785635586:certificate/3bf72596-237e-47a6-853b-75bb915697e6
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: cf758c07-08c4-435b-88e5-e70b6cbed802
+    type: condition
+    task:
+      id: cf758c07-08c4-435b-88e5-e70b6cbed802
+      version: -1
+      name: Verify Cert
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.ACM.Certificates.[1].Certificate
+            iscontext: true
+          right:
+            value:
+              simple: '-----BEGIN CERTIFICATE-----'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: f5470739-b426-4842-8b36-10a24e518d7b
+    type: regular
+    task:
+      id: f5470739-b426-4842-8b36-10a24e518d7b
+      version: -1
+      name: aws-acm-add-tags-to-certificate
+      description: Adds one or more tags to an ACM certificate.
+      script: AWS - ACM|||aws-acm-add-tags-to-certificate
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      certificateArn:
+        simple: arn:aws:acm:us-west-2:120785635586:certificate/3bf72596-237e-47a6-853b-75bb915697e6
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tags:
+        simple: Key=TestKey,Value=TestValue
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: f3fc4af5-616a-4a60-8a2f-2e03dae95647
+    type: regular
+    task:
+      id: f3fc4af5-616a-4a60-8a2f-2e03dae95647
+      version: -1
+      name: aws-acm-list-tags-for-certificate
+      description: Lists the tags that have been applied to the ACM certificate. Use
+        the certificate's Amazon Resource Name (ARN) to specify the certificate.
+      script: AWS - ACM|||aws-acm-list-tags-for-certificate
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      certificateArn:
+        simple: arn:aws:acm:us-west-2:120785635586:certificate/3bf72596-237e-47a6-853b-75bb915697e6
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: c7a47869-9c8c-42d4-8291-e96ff69d5d99
+    type: condition
+    task:
+      id: c7a47869-9c8c-42d4-8291-e96ff69d5d99
+      version: -1
+      name: Check Tags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.ACM.Certificates.[1].Tags.Test
+            iscontext: true
+          right:
+            value:
+              simple: TestValue
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 7c389f95-3491-4a82-84aa-4ca9cc8a7ccb
+    type: regular
+    task:
+      id: 7c389f95-3491-4a82-84aa-4ca9cc8a7ccb
+      version: -1
+      name: aws-acm-remove-tags-from-certificate
+      description: Remove one or more tags from an ACM certificate.
+      script: AWS - ACM|||aws-acm-remove-tags-from-certificate
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      certificateArn:
+        simple: arn:aws:acm:us-west-2:120785635586:certificate/3bf72596-237e-47a6-853b-75bb915697e6
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tags:
+        simple: Key=TestKey,Value=TestValue
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: fa446446-eaba-4f24-82cf-2fd0634fc62d
+    type: regular
+    task:
+      id: fa446446-eaba-4f24-82cf-2fd0634fc62d
+      version: -1
+      name: aws-acm-describe-certificate
+      description: Returns detailed metadata about the specified ACM certificate.
+      script: AWS - ACM|||aws-acm-describe-certificate
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      certificateArn:
+        simple: arn:aws:acm:us-west-2:120785635586:certificate/3bf72596-237e-47a6-853b-75bb915697e6
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 354d1a50-23b3-439e-8689-d125f7afc4e3
+    type: condition
+    task:
+      id: 354d1a50-23b3-439e-8689-d125f7afc4e3
+      version: -1
+      name: Check Tag deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: AWS.ACM.Certificates.Tags
+            iscontext: true
+          right:
+            value:
+              simple: TestKey
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: a03ec657-ebe9-488a-8087-f100894c0410
+    type: condition
+    task:
+      id: a03ec657-ebe9-488a-8087-f100894c0410
+      version: -1
+      name: Check Description
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.ACM.Certificates.[1].DomainValidationOptions.[0].ResourceRecord.Name
+            iscontext: true
+          right:
+            value:
+              simple: _57a3420f6f1889f0330df71cf207e7d0.xn--butt-843b.ws.
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: d4dc7061-1fb6-4629-85a9-66bc2a953e64
+    type: regular
+    task:
+      id: d4dc7061-1fb6-4629-85a9-66bc2a953e64
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2215,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

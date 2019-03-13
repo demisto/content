@@ -28,9 +28,11 @@ configuration:
   required: false
 script:
   script: |-
-    ''' IMPORTS '''
+    '''IMPORTS'''
+    import re
     import boto3
     import datetime
+    import json
 
     '''GLOBAL VARIABLES'''
     AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
@@ -671,4 +673,4 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 tests:
-  - No test
+  - ACM-Test
