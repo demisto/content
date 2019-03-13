@@ -123,13 +123,14 @@ def __create_integration_instance(client, integration_name, integration_params, 
     return module_instance
 
 
-def __disable_integrations_instances(client, module_instance):
-    module_instance['enable'] = False
-    res = client.req('PUT', '/settings/integration', module_instance)
+def __disable_integrations_instances(client, module_instances):
+    for module_instance in module_instances:
+        module_instance['enable'] = False
+        res = client.req('PUT', '/settings/integration', module_instance)
 
-    if res.status_code != 200:
-        print_error('disable instance failed with status code ' + str(res.status_code))
-        print_error(pformat(res.json()))
+        if res.status_code != 200:
+            print_error('disable instance failed with status code ' + str(res.status_code))
+            print_error(pformat(res.json()))
 
 
 # create incident with given name & playbook, and then fetch & return the incident
