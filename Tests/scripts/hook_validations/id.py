@@ -143,7 +143,6 @@ class IDSetValidator(object):
         Returns:
             bool. Whether the ID already exist in the system or not.
         """
-
         is_duplicated = False
         dict_value = obj_data.values()[0]
         obj_toversion = dict_value.get('toversion', '99.99.99')
