@@ -587,15 +587,16 @@ def get_correlated_events_ids(event_ids):
     related_ids = set(event_ids)
     correlated_events = decode_arcsight_output(get_security_events(event_ids, ignore_empty=True))
 
-    for raw_event in correlated_events:
-        base_event_ids = raw_event.get('baseEventIds')
-        if base_event_ids:
-            if isinstance(base_event_ids, list):
-                related_ids.update(base_event_ids)
-            else:
-                related_ids.add(base_event_ids)
+    if correlated_events:
+        for raw_event in correlated_events:
+            base_event_ids = raw_event.get('baseEventIds')
+            if base_event_ids:
+                if isinstance(base_event_ids, list):
+                    related_ids.update(base_event_ids)
+                else:
+                    related_ids.add(base_event_ids)
 
-    return related_ids
+    return list(related_ids)
 
 
 @logger
