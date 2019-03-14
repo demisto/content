@@ -36,7 +36,7 @@ configuration:
   required: false
 - display: Use system proxy
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -64,7 +64,7 @@ script:
     SERVER_URL = demisto.params()['url']
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    USE_PROXY = demisto.params()['proxy']
+    USE_PROXY = demisto.params().get('proxy', False)
     WHITELISTS = []
     BLACKLISTS = []
     WHITELISTS = argToList(demisto.params().get('whitelist'))
