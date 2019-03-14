@@ -1184,6 +1184,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Panorama": "due to https://github.com/demisto/etc/issues/16122",
         "RTIR": "Pending check: https://github.com/demisto/etc/issues/16072",
         "Joe Security": "Pending check: https://github.com/demisto/etc/issues/16072",
         "GRR": "Pending check: https://github.com/demisto/etc/issues/16072",

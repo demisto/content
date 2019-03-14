@@ -2235,6 +2235,7 @@ script:
 
         demisto.results(fileResult(fromm + ".pcap", result.content))
 
+
     ''' EXECUTION '''
     LOG('command is %s' % (demisto.command(), ))
     try:
@@ -2413,6 +2414,8 @@ script:
       description: From parameter (used in specifying time and when cloning an object)
     - name: key
       description: Sets a key value
+    - name: log-type
+      description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: where
       description: Specifies the type of a move operation (e.g. where=after, where=before,
         where=top, where=bottom)
@@ -2428,8 +2431,6 @@ script:
       description: Choose dynamic, predefined or custom report
     - name: reportname
       description: The report name
-    - name: log-type
-      description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: type
       description: The request type (e.g. export, import, log, config)
       defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
@@ -3364,9 +3365,10 @@ script:
       - dlp-pcap
       description: Type of Packet Capture
     - name: from
-      description: '"From" value for the rule'
+      description: Filename for dlp-pcap, filters-pcap, application-pcap. <yyyymmdd>
+        for application-pcap as well
     - name: to
-      description: '"To" value for the rule'
+      description: Localfile for the pcap to download
     - name: serialNo
       description: Serial number for the request. For further information, see the
         Panorama XML API Documentation.
@@ -3377,7 +3379,7 @@ script:
       description: ID of the Pcap for the request. For further information, see the
         Panorama XML API Documentation.
     - name: password
-      description: Password for Panorama.
+      description: Password for Panorama, needed for dlp-pcap only.
     outputs:
     - contextPath: File.Size
       description: File size
@@ -3391,8 +3393,8 @@ script:
     - contextPath: File.Info
       description: File info
       type: string
-    - contextPath: File.Extension
-      description: File extension
+    - contextPath: File.Extenstion
+      description: File extenstion
       type: string
     - contextPath: File.EntryID
       description: FIle entryID
