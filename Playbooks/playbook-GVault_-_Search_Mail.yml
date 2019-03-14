@@ -522,6 +522,5 @@ outputs:
 - contextPath: GoogleVault.Matter
   description: Matter object
   type: unknown
-releaseNotes: "Created new playbook for performing search and get results on Google vault"
 tests:
   - Google_Vault-Search_And_Display_Results_test

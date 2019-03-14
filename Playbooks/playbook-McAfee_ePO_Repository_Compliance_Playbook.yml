@@ -352,3 +352,5 @@ view: |-
       }
     }
   }
+tests:
+- Test Playbook McAfee ePO

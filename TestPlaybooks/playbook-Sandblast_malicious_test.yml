@@ -1,107 +1,116 @@
-id: d8628445-ff86-40f9-857d-50b3f1d295a6
-version: 7
-name: Sandblast malicious test
+id: Sandblast_malicious_test
+version: -1
+name: Sandblast_malicious_test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b138b8e5-9143-4e09-84d0-f1c1c932a529
+    taskid: d4fa9100-fb70-47b9-856b-20e03012889c
     type: start
     task:
-      id: b138b8e5-9143-4e09-84d0-f1c1c932a529
+      id: d4fa9100-fb70-47b9-856b-20e03012889c
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -300
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: f2df9c64-81c8-46d1-8701-34a404f312e7
+    taskid: 1008e4d4-41f5-480a-8069-bd3cc22506a7
     type: regular
     task:
-      id: f2df9c64-81c8-46d1-8701-34a404f312e7
+      id: 1008e4d4-41f5-480a-8069-bd3cc22506a7
       version: -1
       name: sandblast-upload
       description: Use the Upload API to have a client application request that Check
         Point Threat Prevention modules scan and analyze a file. When you upload a
         file to the service, the file is encrypted. It is un-encrypted during analysis,
         and then deleted
-      script: Check Point Sandblast 2|||sandblast-upload
+      script: '|||sandblast-upload'
       type: regular
       iscommand: true
-      brand: Check Point Sandblast 2
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      benign_reports: ""
-      features: ""
-      file_id: ${File.EntryID}
-      file_name: ${File.Name}
-      file_type: ""
-      images: ""
-      md5: ""
-      reports: ""
-      sha1: ""
-      sha256: ""
+      benign_reports: {}
+      features: {}
+      file_id:
+        simple: ${File.EntryID}
+      file_name:
+        simple: ${File.Name}
+      file_type: {}
+      images: {}
+      md5: {}
+      reports: {}
+      sha1: {}
+      sha256: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 155
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: aa07fb77-8883-40ec-81df-f1416501c35f
+    taskid: 8d41e3a8-fdfc-4226-88f6-84105601df22
     type: regular
     task:
-      id: aa07fb77-8883-40ec-81df-f1416501c35f
+      id: 8d41e3a8-fdfc-4226-88f6-84105601df22
       version: -1
       name: sandblast-query
       description: Use the Query API to have a client application look for either
         the analysis report of a specific file on the Check Point Threat Prevention
         service databases or the status of a file, uploaded for analysis
-      script: Check Point Sandblast 2|||sandblast-query
+      script: Check Point Sandblast|||sandblast-query
       type: regular
       iscommand: true
-      brand: Check Point Sandblast 2
+      brand: Check Point Sandblast
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      benign_reports: ""
-      features: ""
-      file_name: ""
-      file_type: ""
-      images: ""
-      md5: ${File.MD5}
-      quota: ""
-      reports: ""
-      sha1: ""
-      sha256: ""
+      benign_reports: {}
+      features: {}
+      file_name: {}
+      file_type: {}
+      images: {}
+      md5:
+        simple: ${File.MD5}
+      quota: {}
+      reports: {}
+      sha1: {}
+      sha256: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 510
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: f93c0a4a-0705-49d1-81f2-36e52c05271b
+    taskid: f30d2083-6cae-4a8b-8a0f-ad5ccbf733f5
     type: condition
     task:
-      id: f93c0a4a-0705-49d1-81f2-36e52c05271b
+      id: f30d2083-6cae-4a8b-8a0f-ad5ccbf733f5
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -112,22 +121,54 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "2"
     scriptarguments:
-      value: File.Malicious
+      value:
+        simple: File.Malicious
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 320
         }
       }
-  "5":
-    id: "5"
-    taskid: 5e3f2f33-aec2-4daa-8f5a-ee40593f3b79
+    note: false
+  "6":
+    id: "6"
+    taskid: 42626316-95fa-4483-8d15-cbe2a12faea4
+    type: condition
+    task:
+      id: 42626316-95fa-4483-8d15-cbe2a12faea4
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        simple: File.Malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 675
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 01b6224a-9dd0-4e88-8648-de2bef70f104
     type: regular
     task:
-      id: 5e3f2f33-aec2-4daa-8f5a-ee40593f3b79
+      id: 01b6224a-9dd0-4e88-8648-de2bef70f104
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -137,79 +178,107 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "9"
     scriptarguments:
-      all: ""
-      key: File.Malicious
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": -180
         }
       }
-  "6":
-    id: "6"
-    taskid: e0275f46-63f6-4861-89e2-37e03d9d632d
-    type: condition
-    task:
-      id: e0275f46-63f6-4861-89e2-37e03d9d632d
-      version: -1
-      name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    scriptarguments:
-      value: File.Malicious
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "7":
-    id: "7"
-    taskid: d9f13fb6-3519-4dfd-83f8-8fa4a019a43f
+    note: false
+  "9":
+    id: "9"
+    taskid: 0c868ff7-1f1f-4e93-8e93-3d2a0495f5b3
     type: regular
     task:
-      id: d9f13fb6-3519-4dfd-83f8-8fa4a019a43f
+      id: 0c868ff7-1f1f-4e93-8e93-3d2a0495f5b3
       version: -1
-      name: echo
-      scriptName: echo
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
     scriptarguments:
-      input: Done
+      body: {}
+      filename:
+        simple: test.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+      username: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 0
         }
       }
+    note: false
+  "11":
+    id: "11"
+    taskid: b4192539-6ab9-4c75-86e0-71b56bfc18de
+    type: regular
+    task:
+      id: b4192539-6ab9-4c75-86e0-71b56bfc18de
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 840
+        }
+      }
+    note: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "4_5_yes": 0.44
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 1235,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -300
       }
     }
   }
 inputs:
 - key: Malicious
-  value: "true"
+  value:
+    simple: "true"
+  required: false
   description: ""
+outputs: []

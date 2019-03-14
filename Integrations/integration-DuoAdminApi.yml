@@ -1,0 +1,372 @@
+commonfields:
+  id: DUO Admin
+  version: -1
+name: DUO Admin
+display: DUO Admin
+category: Authentication
+image: data:image/png;base64,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
+description: |-
+  DUO for admins.
+  Must have access to the admin api in order to use this
+detaileddescription: |+
+  DUO admin api provides programmatic access to the administrative functionality of Duo Security's two-factor authentication platform.
+
+  To set up an instance you will need:
+  API hostname: admin api hostname provided by duo (e.g. api-XXXXXXXX.duosecurity.com)
+  Integration key: your integration key provided by duo
+  Secret key: your secret key/password provided by duo
+
+  Notice that duo admin api requires different credentials from your regular duo account (i.e. another set of api hostname, integration key and secret key)
+
+  For more information please check out the documentation at [https://duo.com/docs/adminapi](https://duo.com/docs/adminapi) #disable-secrets-detection
+
+configuration:
+- display: API Hostname
+  name: hostname
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Integration Key
+  name: integration_key
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Secret Key
+  name: secret_key
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: |-
+    #imports
+    import requests
+    import base64
+    import email
+    import hmac
+    import hashlib
+    import urllib
+    import binascii
+    import json
+    import datetime
+    import calendar
+    import duo_client
+
+    #Setup
+
+    HOST = demisto.getParam('hostname')
+    INTEGRATION_KEY = demisto.getParam('integration_key')
+    SECRET_KEY = demisto.getParam('secret_key')
+
+    #The duo client returns a signature error upon bad secret
+    #Convert it to a more informative message using this
+    INVALID_SECRET_ERROR_STRING = 'Invalid signature in request credentials'
+
+    admin_api = duo_client.Admin(
+        ikey=INTEGRATION_KEY,
+        skey=SECRET_KEY,
+        host=HOST)
+
+    #Maps
+
+    OPTIONS_TO_TIME = {
+        '10_seconds_ago' : datetime.datetime.now() - datetime.timedelta(seconds = 10),
+        '1_minutes_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 1),
+        '10_minutes_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 10),
+        '1_hour_ago' : datetime.datetime.now() - datetime.timedelta(hours = 1),
+        '10_hours_ago' : datetime.datetime.now() - datetime.timedelta(hours = 10),
+        '1_day_ago' : datetime.datetime.now() - datetime.timedelta(days = 1),
+        '1_week_ago' : datetime.datetime.now() - datetime.timedelta(days = 7),
+        '1_month_ago' : datetime.datetime.now() - datetime.timedelta(days = 30),
+        '1_year_ago' : datetime.datetime.now() - datetime.timedelta(days = 365),
+        '5_years_ago' : datetime.datetime.now() - datetime.timedelta(days = 1825),
+        '10_years_ago' : datetime.datetime.now() - datetime.timedelta(days = 3650)
+
+    }
+
+    #Utility Methods
+
+    def time_to_timestamp_milliseconds(time):
+        return str(calendar.timegm(time.utctimetuple()) * 1000)
+
+    # Generic function that receives a result json, and turns it into an entryObject
+    def get_entry_for_object(title, obj, contents, context, headers=None, humanReadable=None):
+        if len(obj) == 0:
+            return {
+                'Type': entryTypes['note'],
+                'Contents': contents,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': "There is no output result",
+                'EntryContext': context
+                }
+        if headers:
+            if isinstance(headers, basestring):
+                headers = headers.split(',')
+            if isinstance(obj, dict):
+                headers = list(set(headers).intersection(set(obj.keys())))
+        return {
+            'Type': entryTypes['note'],
+            'Contents': obj,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable':  tableToMarkdown(title, obj, headers, lambda h: h.title().replace("_"," ").replace(".",":")),
+            'EntryContext': context
+        }
+
+    def get_user_id(username):
+        res = admin_api.get_users_by_name(username)
+        if len(res) == 0:
+            return_error("No users found with the given username")
+
+        return res[0]['user_id']
+
+    #Methods
+
+    #Duo client return 2 different known structures of error messages
+    def test_instance():
+        try:
+            res = admin_api.get_info_summary()
+            demisto.results('ok')
+        except Exception as e:
+            if(hasattr(e,'data')):
+                #error data for 40103 is not informative enough so we write our own
+                if(e.data['code'] == 40103):
+                    demisto.results('Invalid secret key in request credentials')
+                else:
+                    demisto.results(e.data['message'])
+            elif(hasattr(e,'strerror')):
+                demisto.results(e.strerror)
+            else:
+                demisto.results('Unknown error: ' + str(e))
+
+    def get_all_users():
+        res = admin_api.get_users()
+        entry = get_entry_for_object('Users',res,res,
+            {'DuoAdmin.UserDetails(val.username==obj.username)' : res},headers = ['username','user_id'])
+        demisto.results(entry)
+
+    def get_authentication_logs_by_user(username,mintime):
+        res = admin_api.get_authentication_log(2,
+                                                username=username,
+                                                mintime=time_to_timestamp_milliseconds(OPTIONS_TO_TIME[mintime]),
+                                                maxtime=time_to_timestamp_milliseconds(datetime.datetime.now()),
+                                                limit='50')
+
+        raw_logs = res['authlogs']
+        for log in raw_logs:
+            log['timestamp'] = formatEpochDate(log['timestamp'])
+        entry = get_entry_for_object('Authentication logs for ' + username, raw_logs, raw_logs,
+                {'DuoAdmin.UserDetails(val.username && val.username == obj.username)':{ 'username': username,'auth_logs': raw_logs}},
+        headers = ['access_device','event_type','result','reason','application','factor','timestamp','auth_device'])
+        demisto.results(entry)
+
+    def get_devices_by_user(username):
+        user_id = get_user_id(username)
+        res = admin_api.get_user_phones(user_id)
+        entry = get_entry_for_object('Devices for ' + username, res, res,
+                {'DuoAdmin.UserDetails(val.username && val.username == obj.username)':{ 'username': username,'phones' : res}})
+        demisto.results(entry)
+
+    def get_all_devices():
+        res = admin_api.get_phones()
+        entry = get_entry_for_object('Devices',res,res,
+            {'DuoAdmin.Phones(val.phone_id==obj.phone_id)' : res})
+        demisto.results(entry)
+
+    def dissociate_device_by_user(username, device_id):
+        user_id = get_user_id(username)
+        res = admin_api.delete_user_phone(user_id,device_id)
+        demisto.results('Phone with ID ' + device_id + 'was dissociated from user ' + username)
+
+    def associate_device_to_user(username,device_id):
+        user_id = get_user_id(username)
+        res = admin_api.add_user_phone(user_id ,device_id)
+        demisto.results('Phone with ID ' + device_id + 'was associated to user ' + username)
+
+    def get_u2f_tokens_by_user(username):
+        user_id = get_user_id(username)
+        res = admin_api.get_user_u2ftokens(user_id)
+        for token in res:
+            token['date_added'] = formatEpochDate(token['date_added'])
+        entry = get_entry_for_object('U2F Tokens for ' + username, res, res,
+                {'DuoAdmin.UserDetails(val.username && val.username == obj.username)':{ 'username': username,'u2ftokens' : res}})
+        demisto.results(entry)
+
+    def delete_u2f_token(token_id):
+        res = admin_api.delete_u2ftoken(token_id)
+        demisto.results('Token with ID ' + token_id + ' deleted successfully')
+
+    #Execution
+    try:
+        if demisto.command() == 'test-module':
+            test_instance()
+        if demisto.command() == 'duoadmin-get-users':
+            get_all_users()
+        if demisto.command() == 'duoadmin-get-authentication-logs-by-user':
+            get_authentication_logs_by_user(demisto.getArg('username'),demisto.getArg('from'))
+        if demisto.command() == 'duoadmin-get-devices':
+            get_all_devices()
+        if demisto.command() == 'duoadmin-get-devices-by-user':
+            get_devices_by_user(demisto.getArg('username'))
+        if demisto.command() == 'duoadmin-associate-device-to-user':
+            associate_device_to_user(demisto.getArg('username'),demisto.getArg('device_id'))
+        if demisto.command() == 'duoadmin-dissociate-device-from-user':
+            dissociate_device_by_user(demisto.getArg('username'), demisto.getArg('device_id'))
+        if demisto.command() == 'duoadmin-get-u2f-tokens-by-user':
+            get_u2f_tokens_by_user(demisto.getArg('username'))
+        if demisto.command() == 'duoadmin-delete-u2f-token':
+            delete_u2f_token(demisto.getArg('token_id'))
+    except Exception, e:
+        return_error(e.message)
+    sys.exit(0)
+  type: python
+  commands:
+  - name: duoadmin-get-authentication-logs-by-user
+    arguments:
+    - name: username
+      required: true
+      description: The user associated with the logs
+    - name: from
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 10_seconds_ago
+      - 1_minutes_ago
+      - 10_minutes_ago
+      - 1_hour_ago
+      - 10_hours_ago
+      - 1_day_ago
+      - 1_week_ago
+      - 1_month_ago
+      - 1_year_ago
+      - 5_years_ago
+      - 10_years_ago
+      description: Fetch logs from this time until now
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.auth_logs.result
+      description: Result of the authentication attempt
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.event_type
+      description: Type of activity logged
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.reason
+      description: Reason for the authentication attempt result
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.ip
+      description: The GeoIP location of the access device. IP field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.hostname
+      description: The GeoIP location of the access device. Hostname field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.city
+      description: The GeoIP location of the access device. City field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.state
+      description: The GeoIP location of the access device. State field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.country
+      description: The GeoIP location of the access device. Country field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.ip
+      description: The GeoIP location of the authentication device. IP field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.hostname
+      description: The GeoIP location of the authentication device. Hostname field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.city
+      description: The GeoIP location of the authentication device. City field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.state
+      description: The GeoIP location of the authentication device. State field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.country
+      description: The GeoIP location of the authentication device. Country field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.timestamp
+      description: Timestamp of the event
+      type: date
+    - contextPath: DuoAdmin.UserDetails.auth_logs.application.name
+      description: Name of the application accessed
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.factor
+      description: The authentication factor
+      type: string
+    description: Returns authentication logs associated with a user. Limited to 30
+      at a time
+  - name: duoadmin-dissociate-device-from-user
+    arguments:
+    - name: username
+      required: true
+      description: user to dissociate a device from
+    - name: device_id
+      required: true
+      description: the device id to dissociate
+    description: Dissociates a device from a user
+  - name: duoadmin-delete-u2f-token
+    arguments:
+    - name: token_id
+      required: true
+      description: the id of the token to delete
+    description: Delete a u2f token
+  - name: duoadmin-get-users
+    arguments: []
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.username
+      description: Username
+    - contextPath: DuoAdmin.UserDetails.user_id
+      description: 'User Id '
+    description: Return usernames and their user id
+  - name: duoadmin-get-devices-by-user
+    arguments:
+    - name: username
+      required: true
+      description: Username
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.phones.phone_id
+      description: Device Id
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones.number
+      description: Device number
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones.platform
+      description: Device platform
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones.last_seen
+      description: Last time the device was used
+      type: date
+    description: Return devices associated with a user
+  - name: duoadmin-get-u2f-tokens-by-user
+    arguments:
+    - name: username
+      required: true
+      description: username
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.u2ftokens
+      description: The list of  tokens
+    description: Returns a list of U2F tokens associated with the given username
+  - name: duoadmin-get-devices
+    arguments: []
+    outputs:
+    - contextPath: DuoAdmin.Phones.phone_id
+      description: Device Id
+    - contextPath: DuoAdmin.Phones.number
+      description: Device number
+    - contextPath: DuoAdmin.Phones.platform
+      description: Device platform
+    - contextPath: DuoAdmin.Phones.last_seen
+      description: Last time the device was used
+    - contextPath: DuoAdmin.Phones.users
+      description: Users associated with this device
+    description: Returns all existing devices
+  - name: duoadmin-associate-device-to-user
+    arguments:
+    - name: username
+      required: true
+      description: Username
+    - name: device_id
+      required: true
+      description: Device Id
+    description: Associates a device to a user
+  dockerimage: demisto/duoadmin:1.0.0.147 #disable-secrets-detection
+  runonce: false
+tests:
+  - DuoAdmin API test playbook

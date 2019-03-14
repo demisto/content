@@ -393,3 +393,5 @@ view: |-
       }
     }
   }
+tests:
+ - No test

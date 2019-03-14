@@ -43,4 +43,3 @@ dependson:
   must:
   - cve-search
 runonce: false
-releaseNotes: "Added fixed number of retries to execute cve-search command in case it returns a 404"

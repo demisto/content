@@ -1,0 +1,145 @@
+commonfields:
+  id: ReadPDFFile
+  version: -1
+name: ReadPDFFile
+fromversion: 3.6.0
+toversion: 4.0.9
+script: |-
+  import pdfx
+  from pdfminer.psparser import PSEOF
+  import sys
+  reload(sys)
+  sys.setdefaultencoding('utf-8')
+
+  entryID = demisto.args()['entryID']
+
+  def mark_suspicious():
+      """Missing EOF, file may be corrupted or suspicious file"""
+
+      dbot = {
+          'DBotScore(val.Indicator == obj.Indicator)':
+          {
+              'Indicator': entryID,
+              'Type': 'file',
+              'Vendor': 'PDFx',
+              'Score': 2
+          }
+      }
+      demisto.results({
+          'EntryContext': dbot,
+          'Type': entryTypes["error"],
+          'ContentsFormat': formats["text"],
+          'Contents': "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entryID),
+          })
+
+
+  #File entity
+  pdfFile = {
+      "EntryID" : entryID
+  }
+
+  #URLS
+  URLs = []
+
+  maxFileSize = demisto.get(demisto.args(), 'maxFileSize')
+  if maxFileSize:
+      maxFileSize = int(maxFileSize)
+  else:
+      maxFileSize = 1024**2
+  res = demisto.executeCommand('getFilePath', {'id': entryID})
+  if isError(res[0]):
+      demisto.results(res)
+  else:
+      path = demisto.get(res[0],'Contents.path')
+      if path:
+          try:
+              pdf = pdfx.PDFx(path)
+          except PSEOF:
+              mark_suspicious()
+              sys.exit(0)
+
+          if not pdf:
+              demisto.results({
+                  "Type": entryTypes["error"],
+                  "ContentsFormat": formats["text"],
+                  "Contents" : "Could not load pdf file in EntryID {0}".format(entryID)
+              })
+              sys.exit(0)
+
+          metadata = pdf.get_metadata()
+          references_dict = pdf.get_references_as_dict()
+          text = pdf.get_text()
+
+          #Add Text to file entity
+          pdfFile["Text"] = text
+
+          #Add Metadata to file entity
+          for k in metadata.keys():
+              pdfFile[k] = metadata[k]
+
+          #Add URLs
+          if "url" in references_dict.keys():
+              for url in references_dict['url']:
+                  URLs.append({'Data':url})
+
+          md = "### Metadata\n"
+          md += "* " if metadata else ""
+          md += "\n* ".join(["{0}: {1}".format(k,v) for k,v in metadata.iteritems()])
+
+          md += "\n### URLs\n"
+          md += "* " if URLs else ""
+          md += "\n* ".join(["{0}".format(str(k["Data"])) for k in URLs])
+
+          md += "\n### Text"
+          md += "\n{0}".format(text)
+
+          demisto.results({"Type" : entryTypes["note"],
+                          "ContentsFormat" : formats["markdown"],
+                          "Contents" : md,
+                          "HumanReadable": md,
+                          "EntryContext": {"File(val.EntryID == obj.EntryID)" : pdfFile, "URL" : URLs}
+                          })
+
+      else:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "EntryID {0} path could not be found".format(entryID) } )
+type: python
+tags:
+- Utility
+- ingestion
+comment: Load the contents and metadata of a PDF file into context.
+enabled: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: War room entryID of the file to read.
+- name: maxFileSize
+  description: Maximal file size to load, in bytes. Default is 1MB.
+outputs:
+- contextPath: URL.Data
+  description: List of URLs that were extracted from the PDF file
+- contextPath: File.Text
+  description: The PDF File extracted text
+- contextPath: File.Producer
+  description: The PDF File producer
+- contextPath: File.Title
+  description: The PDF File Title
+- contextPath: File.xap
+  description: The PDF File xap
+- contextPath: File.Author
+  description: The PDF File Author
+- contextPath: File.dc
+  description: The PDF File dc
+- contextPath: File.xapmm
+  description: The PDF File xapmm
+- contextPath: File.ModDate
+  description: The PDF File ModDate
+- contextPath: File.CreationDate
+  description: The PDF File CreationDate
+- contextPath: File.Pages
+  description: Number of pages in PDF file
+scripttarget: 0
+runonce: false
+dockerimage: demisto/pdfx
+tests:
+  - ReadPDFFile-Test

@@ -1,0 +1,359 @@
+id: Symantec ATP Test
+version: -1
+name: Symantec ATP Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 206c9190-2a2e-4ebc-8090-b4513012229a
+    type: start
+    task:
+      id: 206c9190-2a2e-4ebc-8090-b4513012229a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 44a675db-fb35-4f53-801c-417660dab0de
+    type: regular
+    task:
+      id: 44a675db-fb35-4f53-801c-417660dab0de
+      version: -1
+      name: Get appliances
+      script: '|||satp-appliances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 6c4a68be-7e98-4e11-8105-dbd2b2a97025
+    type: condition
+    task:
+      id: 6c4a68be-7e98-4e11-8105-dbd2b2a97025
+      version: -1
+      name: Verify appliances context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ATPAppliance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ATPAppliance
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 7e27fb46-55d6-400d-8cb9-c80c740142ec
+    type: title
+    task:
+      id: 7e27fb46-55d6-400d-8cb9-c80c740142ec
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: fc1d820f-6107-4dfc-89e5-aa32d30f6384
+    type: regular
+    task:
+      id: fc1d820f-6107-4dfc-89e5-aa32d30f6384
+      version: -1
+      name: Get file
+      script: '|||satp-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hash:
+        simple: 09068bc7c18af175ecc13e41ad72da56337be7f3fdb1acf793156f98d565bb64
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 4ef51de1-505b-4f76-8e8d-5350a18e0d7c
+    type: condition
+    task:
+      id: 4ef51de1-505b-4f76-8e8d-5350a18e0d7c
+      version: -1
+      name: Verify file context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 707f4df7-107e-4030-81e5-b0b9032bce24
+    type: regular
+    task:
+      id: 707f4df7-107e-4030-81e5-b0b9032bce24
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 0b18eb68-7e8c-4fbf-8ff4-752c44172a6b
+    type: regular
+    task:
+      id: 0b18eb68-7e8c-4fbf-8ff4-752c44172a6b
+      version: -1
+      name: Get events
+      script: '|||satp-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      end_time: {}
+      limit: {}
+      next: {}
+      query: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: b32fe96d-0ab6-4f8f-8235-b2cb32b5d3f6
+    type: condition
+    task:
+      id: b32fe96d-0ab6-4f8f-8235-b2cb32b5d3f6
+      version: -1
+      name: Verify file context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ATPEvents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ATPEvents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: bdcba0ae-873e-447e-8365-13e33665731a
+    type: regular
+    task:
+      id: bdcba0ae-873e-447e-8365-13e33665731a
+      version: -1
+      name: Get incidents
+      script: '|||satp-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      end_time: {}
+      limit: {}
+      next: {}
+      query: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: a006ab3a-cd27-4dbd-8d39-8eff39ddd87f
+    type: condition
+    task:
+      id: a006ab3a-cd27-4dbd-8d39-8eff39ddd87f
+      version: -1
+      name: Verify file context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1945,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "add Symantec ATP Test playbook"

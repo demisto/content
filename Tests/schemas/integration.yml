@@ -161,6 +161,8 @@ schema;argument_schema:
       type: bool
     defaultValue:
       type: any
+    secret:
+      type: bool
     deprecated:
       type: bool
 

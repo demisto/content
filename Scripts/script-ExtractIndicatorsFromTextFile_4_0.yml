@@ -1,0 +1,93 @@
+commonfields:
+  id: ExtractIndicatorsFromTextFile
+  version: -1
+name: ExtractIndicatorsFromTextFile
+fromversion: 3.6.0
+toversion: 4.0.9
+script: |-
+  try:
+      maxFileSize = int(demisto.args().get('maxFileSize'))
+  except:
+      maxFileSize = 1024**2
+
+  res = demisto.executeCommand('getFilePath', {
+      'id': demisto.args()['entryID']
+  })
+
+
+  try:
+      filePath = res[0]['Contents']['path']
+  except:
+      return_error("File was not found")
+
+  with open(filePath, mode='r') as f:
+      data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
+
+      # Extract Email
+      demisto.results(demisto.executeCommand("ExtractEmail", {
+          'text': data
+      }))
+
+      # Extract Domain
+      demisto.results(demisto.executeCommand("ExtractDomain", {
+          'text': data,
+          'calcReputation':'false'
+      }))
+
+      # Extract Hash
+      demisto.results(demisto.executeCommand("ExtractHash", {
+          'text': data
+      }))
+
+      # Extract IP
+      demisto.results(demisto.executeCommand("ExtractIP", {
+          'text': data
+      }))
+
+      # Extract URL
+      demisto.results(demisto.executeCommand("ExtractURL", {
+          'text': data
+      }))
+type: python
+tags: []
+comment: |-
+  Extract indicators from a text-based file.
+  Indicators that can be extracted:
+  * IP
+  * Domain
+  * URL
+  * File Hash
+  * Email Address
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: War Room entryID of the file to read.
+- name: maxFileSize
+  description: Maximal file size to load, in bytes. Default is 1000000 (1MB).
+outputs:
+- contextPath: Domain.Name
+  description: Extracted domains
+  type: string
+- contextPath: Account.Email.Address
+  description: Extracted emails
+  type: string
+- contextPath: File.MD5
+  description: Extracted MD5
+  type: string
+- contextPath: File.SHA1
+  description: Extracted SHA1
+  type: string
+- contextPath: File.SHA256
+  description: Extracted SHA256
+  type: string
+- contextPath: IP.Address
+  description: Extracted IPs
+  type: string
+- contextPath: URL.Data
+  description: Extracted URLs
+  type: string
+scripttarget: 0
+runonce: false
+tests:
+  - Extract Indicators From File - test

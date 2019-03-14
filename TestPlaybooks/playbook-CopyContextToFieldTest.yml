@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -40,7 +40,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     scriptarguments:
       append: {}
       key:
@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 355
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 750
         }
       }
     note: false
@@ -122,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 925
         }
       }
     note: false
@@ -143,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 735
+          "y": 1115
         }
       }
     note: false
@@ -168,7 +168,67 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 7824f0a1-e985-4fed-8741-8e96556efc3e
+    type: regular
+    task:
+      id: 7824f0a1-e985-4fed-8741-8e96556efc3e
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: d02366c4-46e5-4e01-81c7-87c085e6978b
+    type: regular
+    task:
+      id: d02366c4-46e5-4e01-81c7-87c085e6978b
+      version: -1
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 550
         }
       }
     note: false
@@ -178,7 +238,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 1145,
         "width": 810,
         "x": 50,
         "y": 50

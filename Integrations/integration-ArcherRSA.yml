@@ -70,7 +70,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     var server = params.server.replace(/\/+$/, "");
 
     var commands = {
@@ -95,6 +95,7 @@ script:
       addToDetailedAnalysis: 'archer-add-to-detailed-analysis',
       getUserId: 'archer-get-user-id',
       getSubformId: 'archer-get-subform-id',
+      getValueList: 'archer-get-valuelist'
     };
 
     var urlDictionary = {};
@@ -160,9 +161,48 @@ script:
             fullurl += queryParams;
         }
         var body = JSON.stringify(bodyContent);
-        var currentToken = getAuthToken();
+        var currentToken;
 
-        for(i = 0; i<5; i++){
+        var cache = getIntegrationContext();
+        // if we don't have token
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+            // there is a lock in place
+            var locked = true;
+            var total = 0;
+            while (Object.keys(cache).indexOf("lock") > -1 && (cache["lock"] === true || cache["lock"] === "true") && locked && cache["valid"]){
+                logInfo("Waiting for lock to end");
+                total += 2000;
+                sleep(2000);
+                cache = getIntegrationContext();
+                if (cache["lock"] !== true || total > 60000){
+                    // breaking lock after 1 minute
+                    locked = false;
+                }
+            }
+            // no lock
+            if (!(Object.keys(cache).indexOf("lock") > -1) || cache["valid"] !== false){
+                currentToken = cache["token"];
+                logInfo("Taking token " + currentToken + " from cache")
+            } else {
+                currentToken = getAuthToken();
+                var dic = {};
+                dic["token"] = currentToken;
+                dic["lock"] = true;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+                logInfo("Token wasn't found in cache, created token: " + currentToken + " and putting it in the cache")
+            }
+        } else {
+            currentToken = getAuthToken();
+            var dic = {};
+            dic["token"] = currentToken;
+            dic["lock"] = true;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+            logInfo("Token wasn't found in cache, created token: " + currentToken + " and putting it in the cache")
+        }
+
+        for(i = 0; i<15; i++){
             if (currentToken) {
                 headers.Authorization = ['Archer session-id=' + currentToken];
             }
@@ -179,16 +219,56 @@ script:
             );
 
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
-                if (result.StatusCode === 500 || result.StatusCode === 401 || result.StatusCode === -1){ // unauthorized, try again
-                    currentToken = reLogin(currentToken);
-                    continue;
+                logInfo('Bad status code from Archer: ' + result.StatusCode + ' with session token: ' + headers.Authorization + ' for request to path: ' + fullurl);
+                logInfo('Result from Archer: ' + result.Body + ' request body was: ' + body);
+                // check if we are locked and if there is a new token in place already
+                cache = getIntegrationContext();
+                var locked = false;
+                var total = 0;
+
+                while (Object.keys(cache).indexOf("lock") > -1 && (cache["lock"] === true) && locked){
+                    logInfo("Waiting for lock to end");
+                    sleep(2000);
+                    cache = getIntegrationContext();
+                    total += 2000;
+
+                    if (cache["lock"] !== true || total > 60000){
+                        // breaking the lock after 1 minute
+                        locked = false;
+                    }
                 }
-                throw 'Request to RSA Archer ' + fullurl + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
+                if (Object.keys(cache).indexOf("valid") > -1 && cache["valid"] === true && cache["token"] !== currentToken){
+                    currentToken = cache["token"];
+                } else {
+                    currentToken = getAuthToken();
+                }
+
+                var dic = {};
+                dic["token"] = currentToken;
+                dic["lock"] = true;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+                logInfo("Putting a newly token in cache which was generated after an error, token is: " + currentToken);
+
+                if (i==14){
+                    var dic = {};
+                    dic["valid"] = false;
+                    dic["lock"] = false;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                    throw 'Request to RSA Archer ' + fullurl + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
+                }
+                continue;
             }
-            destroyAuthToken(currentToken);
+            logInfo('Successful request to RSA Archer ' + fullurl + ' with session token: ' + currentToken);
+            var dic = {};
+            dic["token"] = currentToken;
+            dic["valid"] = true;
+            dic["lock"] = false;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
             return JSON.parse(result.Body);
         }
-        destroyAuthToken(currentToken);
     }
 
     function soapRequestSender(cmd, bodyContent, SOAPAction) {
@@ -235,7 +315,18 @@ script:
     }
 
     function getRecordSendSoapRequest(cmd, applicationId, contentId) {
-        var currentToken = getAuthToken();
+        var currentToken;
+        var cache = getIntegrationContext();
+        // if we don't have token
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+            currentToken = cache["token"];
+        } else {
+            currentToken = getAuthToken();
+            var dic = {};
+            dic["token"] = currentToken;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+        }
 
         for(var i = 0; i<5; i++){
             var soap = getContentSoapRequest(currentToken, applicationId, contentId);
@@ -243,15 +334,17 @@ script:
             var result = soapRequestSender(cmd, soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 500 || result.StatusCode === -1 || result.StatusCode === 401){ // unauthorized, try again
-                    currentToken = reLogin(currentToken);
+                    currentToken = getAuthToken();
+                    var dic = {};
+                    dic["token"] = currentToken;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
                     continue;
                 }
                 throw 'Request to RSA Archer failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
             }
-            destroyAuthToken(currentToken);
             return result.Body;
         }
-        destroyAuthToken(currentToken);
     }
 
     function searchSendSoapRequest(
@@ -263,9 +356,48 @@ script:
       fieldNameToSearchOn,
       searchValue,
       sortByFieldId, isDescending, numericOperator, dateOperator, pageNumber, fetchFilter) {
-        var currentToken = getAuthToken();
+        var currentToken;
 
-        for(var i = 0; i<5; i++){
+        var cache = getIntegrationContext();
+        // if we don't have token
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+            // there is a lock in place
+            var locked = true;
+            var total = 0;
+            while (Object.keys(cache).indexOf("lock") > -1 && (cache["lock"] === true || cache["lock"] === "true") && locked && cache["valid"]){
+                logInfo("Waiting for lock to end");
+                total += 2000;
+                sleep(2000);
+                cache = getIntegrationContext();
+                if (cache["lock"] !== true || total > 60000){
+                    // breaking lock after 1 minute
+                    locked = false;
+                }
+            }
+            // no lock
+            if (!(Object.keys(cache).indexOf("lock") > -1) || cache["valid"] !== false){
+                currentToken = cache["token"];
+                logInfo("Taking token " + currentToken + " from cache")
+            } else {
+                currentToken = getAuthToken();
+                var dic = {};
+                dic["token"] = currentToken;
+                dic["lock"] = true;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+                logInfo("Token wasn't found in cache, created token: " + currentToken + " and putting it in the cache")
+            }
+        } else {
+            currentToken = getAuthToken();
+            var dic = {};
+            dic["token"] = currentToken;
+            dic["lock"] = true;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+            logInfo("Token wasn't found in cache, created token: " + currentToken + " and putting it in the cache")
+        }
+
+        for(var i = 0; i<15; i++){
             var soap = getContentsByAppIdRequest(
                     currentToken,
                     appId,
@@ -284,36 +416,92 @@ script:
             var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
             var result = soapRequestSender(cmd, soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
-                if (result.StatusCode === 500|| result.StatusCode === 401 || result.StatusCode === -1){ // unauthorized, try again
-                    currentToken = reLogin(currentToken);
+                if (result.StatusCode === 500 || result.StatusCode === 401 || result.StatusCode === -1){ // unauthorized, try again
+                    // check if we are locked and if there is a new token in place already
+                    cache = getIntegrationContext();
+                    var locked = false;
+                    var total = 0;
+
+                    while (Object.keys(cache).indexOf("lock") > -1 && (cache["lock"] === true) && locked){
+                        logInfo("Waiting for lock to end");
+                        sleep(2000);
+                        cache = getIntegrationContext();
+                        total += 2000;
+
+                        if (cache["lock"] !== true || total > 60000){
+                            // breaking the lock after 1 minute
+                            locked = false;
+                        }
+                    }
+                    if (Object.keys(cache).indexOf("valid") > -1 && cache["valid"] === true && cache["token"] !== currentToken){
+                        currentToken = cache["token"];
+                    } else {
+                        currentToken = getAuthToken();
+                    }
+
+                    var dic = {};
+                    dic["token"] = currentToken;
+                    dic["lock"] = true;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                    logInfo("Putting a newly token in cache which was generated after an error, token is: " + currentToken);
+
+                    if (i==14){
+                        var dic = {};
+                        dic["valid"] = false;
+                        dic["lock"] = false;
+                        var updatedCache = mergeOptions(cache, dic);
+                        setIntegrationContext(updatedCache);
+                        throw 'Request to RSA Archer ' + soap + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
+                    }
                     continue;
                 }
                 throw 'Request to RSA Archer ' + soap + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
+
             }
-            destroyAuthToken(currentToken);
+            logInfo('Successful search records request to RSA Archer with session token: ' + currentToken);
+            var dic = {};
+            dic["token"] = currentToken;
+            dic["valid"] = true;
+            dic["lock"] = false;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+
             return result.Body;
         }
-        destroyAuthToken(currentToken);
     }
 
     function downloadFileSendSoapRequest(cmd, fileId) {
-        var currentToken = getAuthToken();
+        var currentToken;
+        var cache = getIntegrationContext();
+        // if we don't have token
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+            currentToken = cache["token"];
+        } else {
+            currentToken = getAuthToken();
+            var dic = {};
+            dic["token"] = currentToken;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+        }
 
         for(var i = 0; i<5; i++){
             var soap = getAttachmentFileSoapRequest(currentToken, fileId);
             var SOAPAction = 'http://archer-tech.com/webservices/GetAttachmentFile';
             var result = soapRequestSender(cmd, soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
-                if (result.StatusCode === 500 || result.StatusCode === 401 || result.StatusCode === -1){ // unauthorized, try again
-                    currentToken = reLogin(currentToken);
+                if (result.StatusCode === 500 || result.StatusCode === -1 || result.StatusCode === 401){ // unauthorized, try again
+                    currentToken = getAuthToken();
+                    var dic = {};
+                    dic["token"] = currentToken;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
                     continue;
                 }
                 throw 'Request to RSA Archer ' + url + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
             }
-            destroyAuthToken(currentToken);
             return result.Body;
         }
-        destroyAuthToken(currentToken);
     }
 
     function getContentIdsByIncIdsSendSoapRequest(appId, displayFields, incidentIds, levelId, displayId) {
@@ -325,15 +513,13 @@ script:
             var result = soapRequestSender('archer-search-records', soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 500|| result.StatusCode === 401 || result.StatusCode === -1){ // unauthorized, try again
-                    currentToken = reLogin(currentToken);
+                    currentToken = getAuthToken();
                     continue;
                 }
                 throw 'Request to RSA Archer ' + soap + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
             }
-            destroyAuthToken(currentToken);
             return result.Body;
         }
-        destroyAuthToken(currentToken);
     }
 
     function getAuthToken() {
@@ -342,10 +528,12 @@ script:
                                                             params.credentials.password);
         var SOAPAction = 'http://archer-tech.com/webservices/CreateUserSessionFromInstance';
         var rawResponse;
+        var result;
+        var url;
         for (var i = 0; i<5; i++){
             result = soapRequestSender('login', soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
-                if (result.StatusCode === 500 || result.StatusCode === -1){ // unauthorized, try again
+                if (result.StatusCode === 500 || result.StatusCode === -1 || result.StatusCode === 401){ // unauthorized, try again
                     continue;
                 }
                 throw 'Request to RSA Archer ' + url + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
@@ -390,6 +578,27 @@ script:
         }
     }
 
+    /**
+     * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
+     * @param obj1
+     * @param obj2
+     * @returns obj3 a new object based on obj1 and obj2
+     */
+    function mergeOptions(obj1,obj2){
+        var obj3 = {};
+        for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+        for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+        return obj3;
+    }
+
+    function sleep(ms) {
+        var start = new Date().getTime();
+        var expire = start + ms;
+        while (new Date().getTime() < expire) {
+            /*Do nothing*/
+        }
+        return;
+    }
 
     // SOAP templates creators
 
@@ -744,16 +953,65 @@ script:
         return getAuthToken();
     }
 
-    function getValueListForField(command, dataArgs){
+    function getValueListJustForField(dataArgs) {
+        // used to get a list of values corresponding to a specific field id
+        var result = getValueListResult(commands.valueListForField, dataArgs);
+
+        result = JSON.parse(x2j(result));
+        results = {}
+        results['valueList'] = result
+        return results
+    }
+
+    function getValueListResult(command, dataArgs){
         // used to get a list of values corresponding to a specific field id
         var SOAPAction = 'http://archer-tech.com/webservices/GetValueListForField';
         var fieldID = dataArgs.fieldID;
-        var token = getAuthToken();
-        var soap = getValueListForFieldSoapRequest(token, fieldID);
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
-        destroyAuthToken(token);
-        var result = dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
+
+        var token;
+        var response;
+        for (var i=0; i<15; i++){
+            var cache = getIntegrationContext();
+            // if we don't have token
+            if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+                token = cache["token"];
+            } else {
+                token = getAuthToken();
+                var dic = {};
+                dic["token"] = token;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+            }
+            var soap = getValueListForFieldSoapRequest(token, fieldID);
+            try {
+                response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+                break;
+            } catch (err) {
+                if (i==14){
+                    throw "Archer didn't create a new record. We received the following response " + JSON.stringify(response);
+                }
+                token = getAuthToken();
+                var dic = {};
+                dic["token"] = token;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+            }
+        }
+        return dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
+    }
+
+    function getValueListForField(command, dataArgs){
+        var result = getValueListResult(command, dataArgs);
         result = dq(JSON.parse(x2j(result)), 'SelectDef.SelectDefValues.SelectDefValue(true)={Name: val.Name, Id : val.Id}');
+
+        if (typeof result === 'object' && result.constructor === Array)
+        {
+
+        }
+        else
+        {
+            result = [result];
+        }
         var ret = {};
         for (var key in result){
             ret[result[key]['Name']] = result[key]['Id'];
@@ -1389,7 +1647,7 @@ script:
                 if (field.Record) { // handling the nested Record field (inner record)
                     var innerRecords = verifyOrMakeArray(field.Record);
                     if (field['-id'] && !(GLOBAL_MAPPING[field['-id']])){ // checking if we need to bring more mappings
-                        var sonLevelId = findSonLevelId(innerRecords, applicationId, contentId);;
+                        var sonLevelId = findSonLevelId(innerRecords, applicationId, contentId);
                         if (sonLevelId !== null){
                             extendMappingFieldIdToName(sonLevelId);
                         }
@@ -2012,10 +2270,35 @@ script:
         } else {
             // use the SOAP API
             var SOAPAction = 'http://archer-tech.com/webservices/CreateSubformRecord';
-            var token = getAuthToken();
-            var soap = getContentSubFormSoapRequest(token, applicationId, fieldId, fieldValues);
-            var response = JSON.parse(x2j(sendSoapRequest(commands.getRecord, soap, SOAPAction)));
-            destroyAuthToken(token);
+            var token;
+            var response;
+            for (var i=0; i<15; i++){
+                var cache = getIntegrationContext();
+                // if we don't have token
+                if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+                    token = cache["token"];
+                } else {
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                }
+                var soap = getContentSubFormSoapRequest(token, applicationId, fieldId, fieldValues);
+                try {
+                    response = JSON.parse(x2j(sendSoapRequest(commands.getRecord, soap, SOAPAction)));
+                    break;
+                } catch (err) {
+                    if (i==14){
+                        throw "Archer didn't create a new record. We received the following response " + JSON.stringify(response);
+                    }
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                }
+            }
             result = dq(response, 'Envelope.Body.CreateSubformRecordResponse.CreateSubformRecordResult');
         }
         return result;
@@ -2026,17 +2309,32 @@ script:
     function createRecord(command, dataArgs) {
         // corresponds to 'archer-create-record' command. Creates a new record in Archer
         var contentId;
+        var levels;
+        var createRecordMapping;
         var appId = dataArgs.applicationId;
         var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
         }
 
-        var levels = getLevelsByApplicationId(appId);
-        var createRecordMapping = createMappingNameToFieldId(levels);
+        var cache = getIntegrationContext();
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+            levels = cache[appId]["levels"];
+            createRecordMapping = cache[appId]["mapping"];
+        } else {
+            levels = getLevelsByApplicationId(appId);
+            createRecordMapping = createMappingNameToFieldId(levels);
+            var dic = {};
+            var innerDic = {};
+            innerDic["levels"] = levels;
+            innerDic["mapping"] = createRecordMapping;
+            dic[appId] = innerDic;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+        }
 
         if (params.useRest){
-        // in case that the user wants to use the REST API
+            // in case that the user wants to use the REST API
             var content = {
                 "Content": {
                     "LevelId": levels[0],
@@ -2052,13 +2350,39 @@ script:
             }
 
         } else {
-        // use the SOAP API
+            // use the SOAP API
+            var token;
             var fields = inputToXML(fieldsToValue, createRecordMapping);
-            var token = getAuthToken();
-            var soap = createContentSoapRequest(token, appId, fields);
-            var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
-            var rawResponse = sendSoapRequest(command, soap, SOAPAction);
-            destroyAuthToken(token);
+            var rawResponse;
+
+            for (var i=0; i<15; i++){
+                var cache = getIntegrationContext();
+                // if we don't have token
+                if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+                    token = cache["token"];
+                } else {
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                }
+                var soap = createContentSoapRequest(token, appId, fields);
+                var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
+                try {
+                    rawResponse = sendSoapRequest(command, soap, SOAPAction);
+                    break;
+                } catch (err) {
+                    if (i==14){
+                        throw "Archer didn't create a new record. We received the following response " + JSON.stringify(rawResponse);
+                    }
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                }
+            }
             var response = JSON.parse(x2j(rawResponse));
 
             if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
@@ -2100,6 +2424,7 @@ script:
         // corresponds to 'archer-update-record' command. Updates the field/s of a record in Archer
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
+        var fieldsToValue;
         if (typeof dataArgs.fieldsToValue === 'object'){
             fieldsToValue = dataArgs.fieldsToValue;
         } else {
@@ -2113,11 +2438,25 @@ script:
             throw 'Invalid Argument fieldToValue';
         }
 
-        var levels = getLevelsByApplicationId(appId);
-        var updateRecordMapping = createMappingNameToFieldId(levels);
+        var cache = getIntegrationContext();
+        var updateRecordMapping;
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+            levels = cache[appId]["levels"];
+            updateRecordMapping = cache[appId]["mapping"];
+        } else {
+            levels = getLevelsByApplicationId(appId);
+            updateRecordMapping = createMappingNameToFieldId(levels);
+            var dic = {};
+            var innerDic = {};
+            innerDic["levels"] = levels;
+            innerDic["mapping"] = updateRecordMapping;
+            dic[appId] = innerDic;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+        }
 
         if (params.useRest){
-        // in case that the user wants to use the REST API
+            // in case that the user wants to use the REST API
             var content = {
                 "Content": {
                     "Id": contentId,
@@ -2135,13 +2474,40 @@ script:
             }
 
         } else {
-        // use the SOAP API
+            // use the SOAP API
+            var token;
+            var rawResponse;
             var fields = inputToXML(fieldsToValue, updateRecordMapping);
-            var token = getAuthToken();
-            var soap = updateContentSoapRequest(token, appId, contentId, fields);
-            var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
-            var rawResponse = sendSoapRequest(command, soap, SOAPAction);
-            destroyAuthToken(token);
+
+            for (var i=0; i<15; i++){
+                var cache = getIntegrationContext();
+                // if we don't have token
+                if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+                    token = cache["token"];
+                } else {
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                }
+                var soap = updateContentSoapRequest(token, appId, contentId, fields);
+                var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
+                try {
+                    rawResponse = sendSoapRequest(command, soap, SOAPAction);
+                    break;
+                } catch (err) {
+                    if (i==14){
+                        throw "Archer didn't update the record. We received the following response " + JSON.stringify(rawResponse);
+                    }
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                }
+            }
+
             var response = JSON.parse(x2j(rawResponse));
             if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
                 throw "Error in response. Request = " + soap + " Response = " + rawResponse;
@@ -2152,7 +2518,7 @@ script:
                 return {
                     ContentsFormat: formats["markdown"],
                     Type: entryTypes["error"],
-                    Contents: "Recived an error" + JSON.stringify(response)
+                    Contents: "Received an error" + JSON.stringify(response)
                 };
             }
         }
@@ -2307,8 +2673,22 @@ script:
         var getInnerRecords = dataArgs.getInnerRecords === 'true';
         var fullData = dataArgs.fullData === 'true';
 
-        var levels = getLevelsByApplicationId(appId);
-        var nameToFieldMapping = createMappingNameToFieldId(levels);
+        var cache = getIntegrationContext();
+        var nameToFieldMapping;
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+            levels = cache[appId]["levels"];
+            nameToFieldMapping = cache[appId]["mapping"];
+        } else {
+            levels = getLevelsByApplicationId(appId);
+            nameToFieldMapping = createMappingNameToFieldId(levels);
+            var dic = {};
+            var innerDic = {};
+            innerDic["levels"] = levels;
+            innerDic["mapping"] = nameToFieldMapping;
+            dic[appId] = innerDic;
+            var updatedCache = mergeOptions(cache, dic);
+            setIntegrationContext(updatedCache);
+        }
         // fills the global mapping
         extendMappingFieldIdToName(levels);
 
@@ -2426,7 +2806,6 @@ script:
         var soap =  deleteContentSoapRequest(token, appId, contentId);
         var SOAPAction = 'http://archer-tech.com/webservices/DeleteRecord';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
-        destroyAuthToken(token);
         var response = JSON.parse(x2j(rawResponse));
 
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
@@ -2717,6 +3096,8 @@ script:
         var contentId = args.contentId;
         var incidentId = args.incidentId;
         var entryId = args.entryId;
+        var associatedField = args.associatedField;
+
         if (incidentId){
             contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId);
             if (contentIdsFromInc.length > 0){
@@ -2748,12 +3129,14 @@ script:
         for (var i=1; i<currentRecord.length; i++){
             currentFiles.push(parseInt(currentRecord[i]['ArcherFileId']));
         }
+        fieldsToValueObj = {};
+        fieldsToValueObj[associatedField] = currentFiles;
         var args = {
             "applicationId": applicationId,
             "contentId": contentId,
-            "fieldsToValue": {"Supporting Documentation":currentFiles},
+            "fieldsToValue": fieldsToValueObj,
             "incidentId": incidentId
-            }
+        }
         updateRecord(commands.updateRecord, args);
         return "File uploaded successfully";
     }
@@ -2807,16 +3190,108 @@ script:
         var userDomain = userInfo[0];
         var userName = userInfo[1].toLowerCase();
 
-        var token = getAuthToken();
-        var soap = getUserIdSoapRequest(token, userName, userDomain);
-        var SOAPAction = 'http://archer-tech.com/webservices/LookupDomainUserId';
-        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var token;
+        var rawResponse;
+        var cache;
+        for (var i=0; i<15; i++){
+            cache = getIntegrationContext();
+            // if we don't have token
+            if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf("token") > -1) {
+                // there is a lock in place
+                var locked = true;
+                var total = 0;
+                while (Object.keys(cache).indexOf("lock") > -1 && (cache["lock"] === true || cache["lock"] === "true") && locked && cache["valid"]){
+                    logInfo("Waiting for lock to end");
+                    total += 2000;
+                    sleep(2000);
+                    cache = getIntegrationContext();
+                    if (cache["lock"] !== true || total > 60000){
+                        // breaking lock after 1 minute
+                        locked = false;
+                    }
+                }
+                // no lock
+                if (!(Object.keys(cache).indexOf("lock") > -1) || cache["valid"] !== false){
+                    token = cache["token"];
+                    logInfo("Taking token " + token + " from cache")
+                } else {
+                    token = getAuthToken();
+                    var dic = {};
+                    dic["token"] = token;
+                    dic["lock"] = true;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                    logInfo("Token wasn't found in cache, created token: " + token + " and putting it in the cache")
+                }
+            } else {
+                token = getAuthToken();
+                var dic = {};
+                dic["token"] = token;
+                dic["lock"] = true;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+                logInfo("Token wasn't found in cache, created token: " + token + " and putting it in the cache")
+            }
+            var soap = getUserIdSoapRequest(token, userName, userDomain);
+            var SOAPAction = 'http://archer-tech.com/webservices/LookupDomainUserId';
+            try {
+                rawResponse = sendSoapRequest(command, soap, SOAPAction);
+                break;
+            } catch (err) {
+                logInfo('Bad Result from Archer: ' + err + ' request body was: ' + soap);
+                // check if we are locked and if there is a new token in place already
+                cache = getIntegrationContext();
+                var locked = false;
+                var total = 0;
 
-        destroyAuthToken(token);
-        var response = JSON.parse(x2j(rawResponse));
-        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
-            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+                while (Object.keys(cache).indexOf("lock") > -1 && (cache["lock"] === true) && locked){
+                    logInfo("Waiting for lock to end");
+                    sleep(2000);
+                    cache = getIntegrationContext();
+                    total += 2000;
+
+                    if (cache["lock"] !== true || total > 60000){
+                        // breaking the lock after 1 minute
+                        locked = false;
+                    }
+                }
+                if (Object.keys(cache).indexOf("valid") > -1 && cache["valid"] === true && cache["token"] !== token){
+                    token = cache["token"];
+                } else {
+                    token = getAuthToken();
+                }
+
+                var dic = {};
+                dic["token"] = token;
+                dic["lock"] = true;
+                var updatedCache = mergeOptions(cache, dic);
+                setIntegrationContext(updatedCache);
+                logInfo("Putting a newly token in cache which was generated after an error, token is: " + token);
+
+                if (i==14){
+                    var dic = {};
+                    dic["valid"] = false;
+                    dic["lock"] = false;
+                    var updatedCache = mergeOptions(cache, dic);
+                    setIntegrationContext(updatedCache);
+                    throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+                }
+                continue;
+            }
         }
+
+        var response = JSON.parse(x2j(rawResponse));
+        logInfo('Successful get user id request to RSA Archer with session token: ' + token);
+        var dic = {};
+        dic["token"] = token;
+        dic["valid"] = true;
+        dic["lock"] = false;
+        var updatedCache = mergeOptions(cache, dic);
+        setIntegrationContext(updatedCache);
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request was: " + soap + " Response was: " + rawResponse;
+        }
+
         var userId = response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult;
 
         return {
@@ -2833,6 +3308,10 @@ script:
         };
     }
 
+    function resetIntegrationCache(){
+        setIntegrationContext({});
+    }
+
     function test() {
         var isFetch = params.isFetch;
         if (isFetch && !params.fetchApplicationId && !params.fieldsToDisplay) {
@@ -2844,17 +3323,46 @@ script:
         return 'ok';
     }
 
-    try { // it's ok if this fails, the client might not have this module
-        extendAppIdMapping(411); /* current workaround for known missing mapping. If this issue appears again
-                                it would be better to put missing application ids (such as 411) as integration params.*/
-    } catch (e) {
+    try {
+         /*
+         current workaround for known missing mapping. If this issue appears again
+         it would be better to put missing application ids (such as 411) as integration params.
+         it's ok if this fails, the client might not have this module.
+         */
+        var cache = getIntegrationContext();
+        var appId = "411";
+        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+            newMapping = cache[appId]["mapping"];
+            for (var attrname in newMapping) {
+                GLOBAL_MAPPING[attrname] = newMapping[attrname];
+            }
+        } else {
+            var levels = getLevelsByApplicationId(appId);
+            var newMapping = createMappingFieldIdToName(levels);
+            for (var attrname in newMapping) {
+                GLOBAL_MAPPING[attrname] = newMapping[attrname];
+            }
+            var dic = {};
+            var innerDic = {};
+            innerDic["levels"] = levels;
+            innerDic["mapping"] = newMapping;
+            dic[appId] = innerDic;
+            var updatedCache = mergeOptions(cache, dic);
 
+            setIntegrationContext(updatedCache);
+            // todo add new levels to the cache
+        }
+    } catch (e) {
     }
+
+
     switch (command) {
         case 'test-module':
             return test();
         case commands.createRecord:
             return createRecord(command, args);
+        case commands.getValueList:
+            return getValueListJustForField(args);
         case commands.valueListForField:
             return getValueObjectForFieldId(args);
         case commands.updateRecord:
@@ -2891,6 +3399,8 @@ script:
             return addToDetailedAnalysis(args);
         case commands.getUserId:
             return getUserId(args);
+        case 'archer-reset-cache':
+            return resetIntegrationCache();
         case 'fetch-incidents':
             return fetchIncidents(args);
         default:
@@ -3144,6 +3654,10 @@ script:
       description: 'The incident id of the record. For example: id=12345 for INC-12345'
     - name: entryId
       description: The entry id of the file in Demisto's context
+    - name: associatedField
+      description: 'Archer field name to associate the file with. Initial value is:
+        "Supporting Documentation"'
+      defaultValue: Supporting Documentation
     description: Uploads a file to Archer and adds its id to the context attached
       files
   - name: archer-add-to-detailed-analysis
@@ -3169,5 +3683,17 @@ script:
     - contextPath: Archer.User.UserId
       description: The user id of the Archer user
     description: Get the user id of an Archer user
+  - name: archer-get-valuelist
+    arguments:
+    - name: fieldID
+      required: true
+      description: Field Id
+    description: Returns a list of values for a specified field, e.g., fieldID=16114.
+      This command only works for value list fields (type 4).
+  - name: archer-reset-cache
+    arguments: []
+    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
   runonce: false
+tests:
+  - Archer-Test-Playbook

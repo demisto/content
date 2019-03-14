@@ -42,7 +42,6 @@ args:
   description: If set, it will return all samples from events that have a match for
     the hash provided above
 scripttarget: 0
-releaseNotes: 'Script is deprecated, use misp-download-sample in MISP V2 integration instead'
 tests:
 - MISP V2 Test
 deprecated: true

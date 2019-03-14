@@ -586,6 +586,5 @@ outputs:
 - contextPath: GoogleVault.Matter.Export
   description: Export object
   type: unknown
-releaseNotes: "Created new playbook for queuing and displaying vault search result"
 tests:
   - Google_Vault-Search_And_Display_Results_test

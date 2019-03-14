@@ -502,4 +502,4 @@ outputs:
   description: The size of the submission
   type: number
 tests:
-- Wildfire Test
+  - Wildfire Test
