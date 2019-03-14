@@ -488,7 +488,7 @@ tasks:
       - "18"
     scriptarguments:
       caseId:
-        simple: 7eFVLV2kBABCUZExF9udWgw
+        simple: 7eFVLV2kBABCUZExF9udWgw==
       withCorrelatedEvents:
         simple: "true"
     separatecontext: false
