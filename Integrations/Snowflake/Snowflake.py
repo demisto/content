@@ -8,6 +8,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import dsa
 from cryptography.hazmat.primitives import serialization
+from datetime import date, time
+from decimal import Decimal
 
 '''SETUP'''
 
@@ -19,22 +21,22 @@ if not demisto.getParam('proxy'):
 
 '''GLOBAL VARS'''
 
+PARAMS = demisto.params()
+CREDENTIALS = PARAMS.get('credentials')
+USER = CREDENTIALS.get('identifier')
+PASSWORD = CREDENTIALS.get('password')
+CERTIFICATE = CREDENTIALS.get('credentials', {}).get('sshkey')
+ACCOUNT = PARAMS.get('account')
+AUTHENTICATOR = PARAMS.get('authenticator')
+REGION = PARAMS.get('region')
+WAREHOUSE = PARAMS.get('warehouse')
+DATABASE = PARAMS.get('database')
+SCHEMA = PARAMS.get('schema')
+ROLE = PARAMS.get('role')
 MAX_ROWS = 10000
 
 
 '''HELPER FUNCTIONS'''
-
-
-def return_error(data):
-    """
-    Return error as result and exit
-    """
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': data
-    })
-    sys.exit(0)
 
 
 def set_provided(params, key, val1, val2=None):
@@ -47,26 +49,92 @@ def set_provided(params, key, val1, val2=None):
         params[key] = val2
 
 
-def get_connection():
+def check_and_update_parameters():
+    """
+    Update integration instance parameters if they have changed
+    """
+    pass
+
+
+def format_to_json_serializable(cursor, results):
+    """
+    Screen and reformat any data in 'results' argument that is
+    not json serializable, and return 'results'
+
+    parameter: (Cursor) cursor
+        The database cursor that was used for the execute or
+        fetch operation that returned the 'results' argument
+
+    parameter: (list) results
+        What was returned by the cursor object's execute or fetch operation
+
+    returns:
+        Reformatted 'results' list
+    """
+    name = 0
+    type_code = 1
+
+    checks = {}
+    column_descriptions = cursor.description
+    # Screen by type_code
+    for col in column_descriptions:
+        if col[type_code] == 0:
+            # Then need to check that column's data to see if its data type is Decimal
+            checks.setdefault('isDecimal', []).append(col[name])
+        elif col[type_code] == 3:
+            # Then need to check that column's data to see if its data type is date
+            checks.setdefault('isDate', []).append(col[name])
+        elif col[type_code] in {7, 8}:
+            # Then need to check that column's data to see if its data type is datetime
+            checks.setdefault('isDatetime', []).append(col[name])
+        elif col[type_code] == 12:
+            # Then need to check that column's data to see if its data type is time
+            checks.setdefault('isTime', []).append(col[name])
+
+    # Check candidates and reformat if necessary
+    for row in results:
+        for column_name, val in row.items():
+            if column_name in checks.get('isDecimal', []):
+                # Then check the value and reformat it if necessary
+                if type(val) == Decimal:
+                    row[column_name] = str(val)
+            elif column_name in checks.get('isDate', []):
+                # Then check the value and reformat it if necessary
+                if type(val) == date:
+                    row[column_name] = val.strftime('%Y-%m-%d')
+            elif column_name in checks.get('isDatetime', []):
+                # Then check the value and reformat it if necessary
+                if type(val) == datetime:
+                    row[column_name] = val.strftime('%Y-%m-%d %H:%M:%S.%f %z')
+            elif column_name in checks.get('isTime', []):
+                # Then check the value and reformat it if necessary
+                if type(val) == time:
+                    row[column_name] = val.strftime('%H:%M:%S.%f')
+    return results
+
+
+def get_connection(args):
     """
     Build the connection based on parameters
+
+    parameter: (dict) args
+        The command arguments of the command function calling this helper function
+
+    returns:
+        Snowflake connection
     """
-    creds = demisto.getParam('credentials')
-    u = creds.get('identifier')
-    p = creds.get('password')
-    cert = creds.get('credentials', {}).get('sshkey')
     params = {}
-    set_provided(params, 'user', u)
-    set_provided(params, 'password', p)
-    set_provided(params, 'account', demisto.getParam('account'))
-    set_provided(params, 'authenticator', demisto.getParam('authenticator'))
-    set_provided(params, 'region', demisto.getParam('region'))
-    set_provided(params, 'warehouse', demisto.getArg('warehouse'), demisto.getParam('warehouse'))
-    set_provided(params, 'database', demisto.getArg('database'), demisto.getParam('database'))
-    set_provided(params, 'schema', demisto.getArg('schema'), demisto.getParam('schema'))
-    set_provided(params, 'role', demisto.getArg('role'), demisto.getParam('role'))
-    if cert:
-        p_key= serialization.load_pem_private_key(cert, backend=default_backend())
+    set_provided(params, 'user', USER)
+    set_provided(params, 'password', PASSWORD)
+    set_provided(params, 'account', ACCOUNT)
+    set_provided(params, 'authenticator', AUTHENTICATOR)
+    set_provided(params, 'region', REGION)
+    set_provided(params, 'warehouse', args.get('warehouse'), WAREHOUSE)
+    set_provided(params, 'database', args.get('database'), DATABASE)
+    set_provided(params, 'schema', args.get('schema'), SCHEMA)
+    set_provided(params, 'role', args.get('role'), ROLE)
+    if CERTIFICATE:
+        p_key = serialization.load_pem_private_key(CERTIFICATE, backend=default_backend())
         pkb = p_key.private_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PrivateFormat.PKCS8,
@@ -85,7 +153,7 @@ def test_module():
     returns:
         An 'ok' message if valid, otherwise an error message
     """
-    conn = get_connection()
+    conn = get_connection({})
     demisto.results('ok')
     conn.close()
 
@@ -102,29 +170,42 @@ def fetch_incidents():
     demisto.setLastRun({'time': 'now'})
     # lastRun is a dictionary, with value "now" for key "time".
     # JSON of the incident type created by this integration
-    demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
+    demisto.incidents([{'Name': 'Incident #1'}, {'Name': 'Incident #2'}])
 
 
 def snowflake_query_command():
-    conn = get_connection()
+    args = demisto.args()
+    conn = get_connection(args)
     if conn:
         try:
-            query = demisto.getArg('query')
+            query = args.get('query')
             cur = conn.cursor(snowflake.connector.DictCursor)
             cur.execute(query)
-            rows = demisto.getArg('rows')
+            rows = args.get('rows')
             if rows:
                 rows = int(rows)
             if rows and rows > MAX_ROWS:
                 rows = MAX_ROWS
             results = cur.fetchmany(rows)
             if results:
+                results = format_to_json_serializable(cur, results)
+
+                entry_context = {
+                    'Query': query,
+                    'Result': results
+                }
+                columns = argToList(args.get('columns'))
+                human_readable = tableToMarkdown(query, results, columns)
+
                 demisto.results({
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
                     'Contents': results,
-                    'EntryContext': {'Snowflake': {'Query': query, 'Results': results}},
-                    'HumanReadable': tableToMarkdown(query, results, argToList(demisto.getArg('columns')))
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': human_readable,
+                    'EntryContext': {
+                        'Snowflake(val.Query && val.Query === obj.Query)': entry_context
+                    }
                 })
             else:
                 demisto.results('No data found matching the query')
@@ -139,7 +220,22 @@ def snowflake_query_command():
 
 
 def snowflake_update_command():
-    pass
+    args = demisto.args()
+    connection = get_connection(args)
+    if connection:
+        try:
+            db_operation = args.get('db_operation')
+            cursor = connection.cursor()
+            cursor.execute(db_operation)
+            demisto.results('Operation executed successfully.')
+        except snowflake.connector.errors.ProgrammingError as e:
+            return_error(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            connection.close()
+    else:
+        return_error('Unable to connect')
 
 
 '''COMMAND SWITCHBOARD'''
@@ -159,49 +255,3 @@ try:
         commands[demisto.command()]()
 except Exception as e:
     return_error(e.message)
-
-# CMD = demisto.command()
-# if CMD == 'test-module':
-#     conn = get_connection()
-#     demisto.results('ok')
-#     conn.close()
-# elif CMD == 'snowflake-query':
-#     conn = get_connection()
-#     if conn:
-#         try:
-#             query = demisto.getArg('query')
-#             cur = conn.cursor(snowflake.connector.DictCursor)
-#             cur.execute(query)
-#             rows = demisto.getArg('rows')
-#             if rows:
-#                 rows = int(rows)
-#             if rows and rows > MAX_ROWS:
-#                 rows = MAX_ROWS
-#             results = cur.fetchmany(rows)
-#             if results:
-#                 demisto.results({
-#                     'Type': entryTypes['note'],
-#                     'ContentsFormat': formats['json'],
-#                     'Contents': results,
-#                     'EntryContext': {'Snowflake': {'Query': query, 'Results': results}},
-#                     'HumanReadable': tableToMarkdown(query, results, argToList(demisto.getArg('columns')))
-#                 })
-#             else:
-#                 demisto.results('No data found matching the query')
-#         except snowflake.connector.errors.ProgrammingError as e:
-#             return_error(str(e))
-#         finally:
-#             if cur:
-#                 cur.close()
-#             conn.close()
-#     else:
-#         return_error('Unable to connect')
-# elif CMD == 'fetch-incidents':
-#     lastRun = demisto.getLastRun()
-#     # You can store the last run time...
-#     demisto.setLastRun({'time': 'now'})
-#     # lastRun is a dictionary, with value "now" for key "time".
-#     # JSON of the incident type created by this integration
-#     demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
-# else:
-#     return_error('Unknown command: ' + CMD)
