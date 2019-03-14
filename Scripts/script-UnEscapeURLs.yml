@@ -78,8 +78,15 @@ script: |
       // Assumed alternative is that args.input is a string
       var unformatted_urls = argToList(args.input);
       urls = format_url_list(unformatted_urls);
+      if (urls.length === 1) {
+          return urls[0];
+      }
   }
-  return urls
+  return({
+      Type: entryTypes.note,
+      ContentsFormat: formats.json,
+      Contents: urls
+  });
 type: javascript
 tags: []
 comment: |-
@@ -90,6 +97,7 @@ enabled: true
 args:
 - name: input
   description: The URL(s) to process
+  isArray: true
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
