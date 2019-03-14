@@ -127,14 +127,14 @@
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourceBrand",
+						"fieldId": "incident_sourcebrand",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourceInstance",
+						"fieldId": "incident_sourceinstance",
 						"isVisible": true
 					},
 					{
