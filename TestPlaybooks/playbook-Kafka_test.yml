@@ -1,0 +1,282 @@
+id: Kafka Test
+version: -1
+name: Kafka Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d4c9d6f-0f8a-4a52-8625-ba32e8e77f53
+    type: start
+    task:
+      id: 5d4c9d6f-0f8a-4a52-8625-ba32e8e77f53
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 97343b54-cda2-46dc-8002-a78b57312099
+    type: regular
+    task:
+      id: 97343b54-cda2-46dc-8002-a78b57312099
+      version: -1
+      name: kafka-print-topics
+      description: Print all partitions for a topic
+      script: Kafka V2|||kafka-print-topics
+      type: regular
+      iscommand: true
+      brand: Kafka V2
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 2548767a-ccaa-42af-8e4c-c7d6eadebfb9
+    type: regular
+    task:
+      id: 2548767a-ccaa-42af-8e4c-c7d6eadebfb9
+      version: -1
+      name: kafka-publish-msg
+      description: Publish a message to Kafka
+      script: Kafka V2|||kafka-publish-msg
+      type: regular
+      iscommand: true
+      brand: Kafka V2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      partitioning-key: {}
+      partitioning_key: {}
+      topic:
+        simple: ido2
+      value:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 98205ee8-b8e0-42d8-85af-4d31be408b45
+    type: regular
+    task:
+      id: 98205ee8-b8e0-42d8-85af-4d31be408b45
+      version: -1
+      name: kafka-fetch-partitions
+      description: Print all partitions for a topic
+      script: Kafka V2|||kafka-fetch-partitions
+      type: regular
+      iscommand: true
+      brand: Kafka V2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      topic:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: d3fa0c4a-a7e7-4501-888f-1ea2e676a116
+    type: regular
+    task:
+      id: d3fa0c4a-a7e7-4501-888f-1ea2e676a116
+      version: -1
+      name: kafka-consume-msg
+      description: Consume a single kafka message
+      script: Kafka V2|||kafka-consume-msg
+      type: regular
+      iscommand: true
+      brand: Kafka V2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      offset:
+        simple: latest
+      partition: {}
+      topic:
+        simple: ido2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 6c236550-b25a-4020-84a5-0426091be65b
+    type: condition
+    task:
+      id: 6c236550-b25a-4020-84a5-0426091be65b
+      version: -1
+      name: VerifyContext
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Kafka.Topic.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: f99fe66a-9569-4b7b-8f65-b180b6fbdc30
+    type: condition
+    task:
+      id: f99fe66a-9569-4b7b-8f65-b180b6fbdc30
+      version: -1
+      name: VerifyContext
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Kafka.Topic.Partition
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: ace05d0d-2fad-44be-8b88-f9563bff7755
+    type: condition
+    task:
+      id: ace05d0d-2fad-44be-8b88-f9563bff7755
+      version: -1
+      name: Is message consumed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kafka.Topic.Message.Value
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 52f9ac4b-fa48-4e42-83cc-5d8ecb26f9f1
+    type: title
+    task:
+      id: 52f9ac4b-fa48-4e42-83cc-5d8ecb26f9f1
+      version: -1
+      name: Test ends
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

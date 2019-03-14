@@ -3,7 +3,7 @@
     "fromVersion": "4.1.0",
     "cliName": "remediationsla", 
     "neverSetAsRequired": false, 
-    "threshold": 72, 
+    "threshold": 0, 
     "id": "incident_remediationsla", 
     "group": 0, 
     "script": "", 
@@ -32,6 +32,5 @@
     "fieldCalcScript": "", 
     "selectValues": [], 
     "validationRegex": "", 
-    "sla": 7200,
-    "releaseNotes": "Added Remediation SLA field"
+    "sla": 7200
   }

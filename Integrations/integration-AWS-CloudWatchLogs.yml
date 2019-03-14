@@ -128,6 +128,7 @@ script:
     def create_log_group(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -147,6 +148,7 @@ script:
     def create_log_stream(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -165,6 +167,7 @@ script:
     def delete_log_stream(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -183,6 +186,7 @@ script:
     def delete_log_group(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -198,6 +202,7 @@ script:
     def filter_log_events(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -238,6 +243,7 @@ script:
     def describe_log_groups(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -270,6 +276,7 @@ script:
     def describe_log_streams(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -306,6 +313,7 @@ script:
     def put_retention_policy(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -325,6 +333,7 @@ script:
     def delete_retention_policy(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -339,6 +348,7 @@ script:
     def put_log_events(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -366,6 +376,7 @@ script:
     def put_metric_filter(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -390,6 +401,7 @@ script:
     def delete_metric_filter(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -410,6 +422,7 @@ script:
     def describe_metric_filters(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -920,7 +933,8 @@ script:
         the metricNamespace parameter.
     - name: metricNamespace
       description: Filters results to include only those in the specified namespace.
-        If you include this parameter in your request, you must also include the metricName parameter.
+        If you include this parameter in your request, you must also include the metricName
+        parameter.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -967,4 +981,4 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 tests:
-  - No test
+  - No Tests

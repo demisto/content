@@ -40,3 +40,5 @@ dependson:
   must:
   - cs-device-ran-on
 timeout: 0s
+tests:
+  - No Test

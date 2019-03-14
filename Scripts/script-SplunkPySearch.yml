@@ -2,6 +2,7 @@ commonfields:
   id: SplunkPySearch
   version: -1
 name: SplunkPySearch
+deprecated: true
 script: |-
   query = demisto.args()['query']
   rows = demisto.args()['rows']
@@ -39,4 +40,3 @@ scripttarget: 0
 dependson:
   must:
   - splunk-search
-releaseNotes: "Fixed 'Missing headers param' bug & added Error check for the command result"

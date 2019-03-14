@@ -1,0 +1,471 @@
+id: ThreatMiner-Test
+version: -1
+name: ThreatMiner - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aeeb6964-95a7-41df-89ba-191bfd7a164c
+    type: start
+    task:
+      id: aeeb6964-95a7-41df-89ba-191bfd7a164c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 8cfc374e-496d-47fc-8c37-2584f6962d95
+    type: regular
+    task:
+      id: 8cfc374e-496d-47fc-8c37-2584f6962d95
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 7a6879f9-5217-4c58-8910-6a83809e13e9
+    type: regular
+    task:
+      id: 7a6879f9-5217-4c58-8910-6a83809e13e9
+      version: -1
+      name: ip
+      description: Retrieve data from ThreatMiner about a specified IP address.
+      script: ThreatMiner|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatMiner
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 2eab30ce-c645-4e7d-81cf-cf5ea3758ac5
+    type: condition
+    task:
+      id: 2eab30ce-c645-4e7d-81cf-cf5ea3758ac5
+      version: -1
+      name: Verify ip results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatMiner.IP.Whois.Org
+            iscontext: true
+          right:
+            value:
+              simple: Google Inc.
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.IP.PassiveDNS
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.IP.URI
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.IP.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.IP.SSL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 3e6de61c-8f79-43e5-889c-ea27a2fd3811
+    type: title
+    task:
+      id: 3e6de61c-8f79-43e5-889c-ea27a2fd3811
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: ec31ad7d-4a1c-4be4-80f5-a8703e190729
+    type: regular
+    task:
+      id: ec31ad7d-4a1c-4be4-80f5-a8703e190729
+      version: -1
+      name: domain command
+      description: Retrieve data from ThreatMiner about a specified IP address.
+      script: ThreatMiner|||domain
+      type: regular
+      iscommand: true
+      brand: ThreatMiner
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 5ec3499f-32ff-4cd2-84e8-724a284ad8e2
+    type: regular
+    task:
+      id: 5ec3499f-32ff-4cd2-84e8-724a284ad8e2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 400f4eaa-9535-4695-8ddf-5d72bbf2b272
+    type: condition
+    task:
+      id: 400f4eaa-9535-4695-8ddf-5d72bbf2b272
+      version: -1
+      name: Verify domain results
+      description: |2+
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.Domain.PassiveDNS
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.Domain.URI
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.Domain.Whois
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 938683af-7da1-4989-8430-e37364e35d42
+    type: title
+    task:
+      id: 938683af-7da1-4989-8430-e37364e35d42
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 2799400c-51bc-47e7-8506-9c2fd1ed801e
+    type: regular
+    task:
+      id: 2799400c-51bc-47e7-8506-9c2fd1ed801e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 02608ad1-8e2e-4a77-8845-33732447ad3c
+    type: regular
+    task:
+      id: 02608ad1-8e2e-4a77-8845-33732447ad3c
+      version: -1
+      name: file
+      description: Retrieve data from ThreatMiner about a specified file.
+      script: ThreatMiner|||file
+      type: regular
+      iscommand: true
+      brand: ThreatMiner
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file:
+        simple: e6ff1bf0821f00384cdd25efb9b1cc09
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 544d1b37-0ff4-4ab2-810b-45b9aa7631ef
+    type: condition
+    task:
+      id: 544d1b37-0ff4-4ab2-810b-45b9aa7631ef
+      version: -1
+      name: Verify File(Samples)
+      description: Verify File(Sample) Metadata, HTTP Traffic, Hosts, Mutants
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatMiner.File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: e6ff1bf0821f00384cdd25efb9b1cc09
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.File.HTTP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.File.Mutants
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatMiner.File.Domains
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: e6ff1bf0821f00384cdd25efb9b1cc09
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: bfa02101-7f31-4b4a-84a7-aa86c907216d
+    type: title
+    task:
+      id: bfa02101-7f31-4b4a-84a7-aa86c907216d
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2255,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -360,6 +360,5 @@ script:
       description: Entry Position in table
     description: Delete an entry from a list
   runonce: false
-releaseNotes: "-"
 tests:
   - McAfeeWebGatewayTest

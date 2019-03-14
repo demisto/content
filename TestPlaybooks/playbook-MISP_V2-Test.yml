@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: de67d448-8f3b-48d8-8daf-20fb251547b7
+    taskid: d7745d08-2749-4a30-8106-a5bfeee720cb
     type: start
     task:
-      id: de67d448-8f3b-48d8-8daf-20fb251547b7
+      id: d7745d08-2749-4a30-8106-a5bfeee720cb
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 6a64fe33-1ca0-4300-865b-773a5712dbb3
+    taskid: 32b4cc36-31ab-483d-8b87-cfbc84a79d88
     type: regular
     task:
-      id: 6a64fe33-1ca0-4300-865b-773a5712dbb3
+      id: 32b4cc36-31ab-483d-8b87-cfbc84a79d88
       version: -1
       name: Get file
       scriptName: http
@@ -69,10 +69,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 653e3cbd-3b90-4cb3-8baf-034a2c33ac0c
+    taskid: 44d6d733-6661-431f-89f5-fc50106d482f
     type: condition
     task:
-      id: 653e3cbd-3b90-4cb3-8baf-034a2c33ac0c
+      id: 44d6d733-6661-431f-89f5-fc50106d482f
       version: -1
       name: is any dbotscore from misp?
       type: condition
@@ -109,10 +109,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 47e09105-6f16-4bc8-8cac-efe253b240b1
+    taskid: b403a865-1347-4375-8a09-63f2f0d3d868
     type: title
     task:
-      id: 47e09105-6f16-4bc8-8cac-efe253b240b1
+      id: b403a865-1347-4375-8a09-63f2f0d3d868
       version: -1
       name: End of test
       type: title
@@ -130,10 +130,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 94324b80-3b17-4ae6-8792-56d019dafae2
+    taskid: 5d914019-8073-4eb7-8442-d26cba11b518
     type: regular
     task:
-      id: 94324b80-3b17-4ae6-8792-56d019dafae2
+      id: 5d914019-8073-4eb7-8442-d26cba11b518
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -162,10 +162,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 8ec1866e-b7a5-4f96-8d46-1b4cc55ae78f
+    taskid: 22434ee7-bbcd-4b53-8039-2342f0d2748c
     type: regular
     task:
-      id: 8ec1866e-b7a5-4f96-8d46-1b4cc55ae78f
+      id: 22434ee7-bbcd-4b53-8039-2342f0d2748c
       version: -1
       name: Create event
       script: MISP V2|||misp-create-event
@@ -199,10 +199,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: e1400e84-63a8-446c-82a9-92b0275334e3
+    taskid: 72b0b1b7-6d32-47f4-843b-dd65a72799b5
     type: regular
     task:
-      id: e1400e84-63a8-446c-82a9-92b0275334e3
+      id: 72b0b1b7-6d32-47f4-843b-dd65a72799b5
       version: -1
       name: Upload sample
       script: MISP V2|||misp-upload-sample
@@ -236,10 +236,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 5141f7e5-9868-4bad-8edd-1bf2f2cde032
+    taskid: 64bbd9d7-9f77-4889-8300-434c7227524d
     type: regular
     task:
-      id: 5141f7e5-9868-4bad-8edd-1bf2f2cde032
+      id: 64bbd9d7-9f77-4889-8300-434c7227524d
       version: -1
       name: Search for event
       script: MISP V2|||misp-search
@@ -274,10 +274,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: fd366686-fc45-4073-8c12-722f08f8a78f
+    taskid: d3af10c5-6fa6-4cf2-8f46-b4837c809131
     type: regular
     task:
-      id: fd366686-fc45-4073-8c12-722f08f8a78f
+      id: d3af10c5-6fa6-4cf2-8f46-b4837c809131
       version: -1
       name: Download sample
       script: MISP V2|||misp-download-sample
@@ -306,10 +306,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 3e165fc5-149e-4cf0-806c-4bd3352e0bc2
+    taskid: d5ac9c34-2298-48aa-810a-a0498e2bb113
     type: regular
     task:
-      id: 3e165fc5-149e-4cf0-806c-4bd3352e0bc2
+      id: d5ac9c34-2298-48aa-810a-a0498e2bb113
       version: -1
       name: Delete event
       script: MISP V2|||misp-delete-event
@@ -334,10 +334,10 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: 2c80fe30-6938-45ce-8152-55f1e5f064c9
+    taskid: 05dd6cc9-ad04-44f4-8a91-3a3ce048d5d6
     type: regular
     task:
-      id: 2c80fe30-6938-45ce-8152-55f1e5f064c9
+      id: 05dd6cc9-ad04-44f4-8a91-3a3ce048d5d6
       version: -1
       name: Check file hash
       script: MISP V2|||file
@@ -362,10 +362,10 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: 815d4e90-e277-42fb-827a-d8e9b4e5911a
+    taskid: 477db974-998e-4946-8980-fc92a08fb621
     type: regular
     task:
-      id: 815d4e90-e277-42fb-827a-d8e9b4e5911a
+      id: 477db974-998e-4946-8980-fc92a08fb621
       version: -1
       name: Check URL
       script: MISP V2|||url
@@ -374,7 +374,7 @@ tasks:
       brand: MISP V2
     nexttasks:
       '#none#':
-      - "19"
+      - "22"
     scriptarguments:
       long: {}
       threshold: {}
@@ -392,10 +392,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: 51522bbf-30cf-431f-8c0f-6896913978d2
+    taskid: df89695b-1a08-4951-8c7a-a4e748d61b2d
     type: regular
     task:
-      id: 51522bbf-30cf-431f-8c0f-6896913978d2
+      id: df89695b-1a08-4951-8c7a-a4e748d61b2d
       version: -1
       name: Check IP
       script: MISP V2|||ip
@@ -422,10 +422,10 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: 6db39044-403e-454e-84fe-5a53cc39e66e
+    taskid: dafcc0d8-8093-4b88-829c-7c37ab26829c
     type: regular
     task:
-      id: 6db39044-403e-454e-84fe-5a53cc39e66e
+      id: dafcc0d8-8093-4b88-829c-7c37ab26829c
       version: -1
       name: Add IP attribute
       script: MISP V2|||misp-add-attribute
@@ -460,10 +460,10 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: a8bda30e-e9c6-464b-86c2-76a462ab3d83
+    taskid: 3d435e98-73be-4c31-89cc-1fe172514ae2
     type: regular
     task:
-      id: a8bda30e-e9c6-464b-86c2-76a462ab3d83
+      id: 3d435e98-73be-4c31-89cc-1fe172514ae2
       version: -1
       name: Add URL attribute
       script: MISP V2|||misp-add-attribute
@@ -498,10 +498,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 147f042a-bc39-4107-87c6-e7089e3312cc
+    taskid: fc77bdea-16c9-4c19-88ea-8ecbad035c96
     type: condition
     task:
-      id: 147f042a-bc39-4107-87c6-e7089e3312cc
+      id: fc77bdea-16c9-4c19-88ea-8ecbad035c96
       version: -1
       name: is any dbotscore from misp?
       type: condition
@@ -541,10 +541,10 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: 5800cc41-0523-4bce-8e0a-952675aba20f
+    taskid: ca95bdea-bfa2-456f-8e64-fdea285656c1
     type: condition
     task:
-      id: 5800cc41-0523-4bce-8e0a-952675aba20f
+      id: ca95bdea-bfa2-456f-8e64-fdea285656c1
       version: -1
       name: is any dbotscore from misp?
       type: condition
@@ -585,10 +585,10 @@ tasks:
     timertriggers: []
   "20":
     id: "20"
-    taskid: d17a714d-8746-4066-8447-09fd5aae7c5e
+    taskid: c6a2b94a-86db-42b3-8549-b852c21d2bb2
     type: regular
     task:
-      id: d17a714d-8746-4066-8447-09fd5aae7c5e
+      id: c6a2b94a-86db-42b3-8549-b852c21d2bb2
       version: -1
       name: Download sample (deprecated script)
       scriptName: misp_download_sample
@@ -616,10 +616,10 @@ tasks:
     timertriggers: []
   "21":
     id: "21"
-    taskid: 21a45e48-06a4-4ece-8fb7-045f8acd1c1c
+    taskid: 3dae19cf-5b93-4a81-8277-6d884e0570d7
     type: regular
     task:
-      id: 21a45e48-06a4-4ece-8fb7-045f8acd1c1c
+      id: 3dae19cf-5b93-4a81-8277-6d884e0570d7
       version: -1
       name: Upload sample (deprecated script)
       scriptName: misp_upload_sample
@@ -649,14 +649,45 @@ tasks:
       }
     note: false
     timertriggers: []
+  "22":
+    id: "22"
+    taskid: a46f4c12-a656-4b58-8e85-26404dd6986d
+    type: regular
+    task:
+      id: a46f4c12-a656-4b58-8e85-26404dd6986d
+      version: -1
+      name: Add sighting
+      script: '|||misp-add-sighting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        simple: ${MISP.Event.Attribute.ID}
+      type:
+        simple: sighting
+      uuid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2835,
-        "width": 810,
-        "x": 50,
+        "width": 1110,
+        "x": -250,
         "y": 50
       }
     }

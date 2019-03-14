@@ -1,0 +1,229 @@
+id: Gmail Convert Html Test
+version: -1
+name: Gmail Convert Html Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c9203936-01e5-4282-838b-106bd31cbdd3
+    type: start
+    task:
+      id: c9203936-01e5-4282-838b-106bd31cbdd3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: b6ec96d3-467f-4175-84b3-1cde56a868ab
+    type: regular
+    task:
+      id: b6ec96d3-467f-4175-84b3-1cde56a868ab
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: c30e0f88-e32c-442a-88c1-c5225b323f3f
+    type: regular
+    task:
+      id: c30e0f88-e32c-442a-88c1-c5225b323f3f
+      version: -1
+      name: gmail-search for html email
+      description: Search for messages in the user's mailbox.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from:
+        simple: kayak
+      has-attachments: {}
+      in: {}
+      include-spam-trash: {}
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: shai@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 8dbf04c8-5154-41a7-8964-422f7c96e9ff
+    type: condition
+    task:
+      id: 8dbf04c8-5154-41a7-8964-422f7c96e9ff
+      version: -1
+      name: Check Body is Text
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Body
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: <div>
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Body
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: <span>
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.Format
+            iscontext: true
+          right:
+            value:
+              simple: text/html
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 4821f2d5-9f8f-43d5-872a-a42b58c8fcd0
+    type: regular
+    task:
+      id: 4821f2d5-9f8f-43d5-872a-a42b58c8fcd0
+      version: -1
+      name: All is good
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: c1f8bd02-e031-49f1-8a29-5f7fa864aca3
+    type: regular
+    task:
+      id: c1f8bd02-e031-49f1-8a29-5f7fa864aca3
+      version: -1
+      name: Failed Text validation
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Body contains html
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 875,
+        "width": 800,
+        "x": 220,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

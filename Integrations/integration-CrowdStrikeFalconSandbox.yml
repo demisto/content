@@ -277,7 +277,7 @@ script:
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
         if (version === 'v1' && body.response_code !== 0) {
-            return entryError(res.response_code, res.response.error);
+            return entryError(body.response_code, body.response.error);
         }
         var response = version === 'v1' ? body.response: body;
 
@@ -771,8 +771,12 @@ script:
             return tableFromEnvironments(response);
         case 'vx-submit-sample': // Deprecated
         case 'crowdstrike-submit-sample':
-            var file = submitFile(args.entryId, args.environmentID);
-            return submitFileEntry(file);
+            var entry = submitFile(args.entryId, args.environmentID);
+            // return entry if type is error
+            if ('Type' in entry && entry['Type'] === entryTypes.error) {
+                return entry;
+            }
+            return submitFileEntry(entry);
         case 'vx-search': // Deprecated
         case 'crowdstrike-search':
             return searchQuery();
@@ -1427,4 +1431,3 @@ script:
 tests:
 - VxStream Test
 - detonate_file_-_generic_test
-- detonate_url_-_generic_test

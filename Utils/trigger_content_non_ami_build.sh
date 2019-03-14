@@ -5,7 +5,7 @@ _circle_token=$2
 
 trigger_build_url=https://circleci.com/api/v1/project/demisto/content/tree/${_branch}?circle-token=${_circle_token}
 
-if [ -z "$3"]
+if [ -z "$3" ]
   then
     post_data=$(cat <<EOF
     {
@@ -20,7 +20,7 @@ if [ -z "$3"]
     {
       "build_parameters": {
         "NON_AMI_RUN": "true",
-        "SERVER_BRANCH_NAME": $3
+        "SERVER_BRANCH_NAME": "$3"
       }
     }
     EOF)

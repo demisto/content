@@ -6,13 +6,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0c43151f-f3ae-48f6-8d80-5684a8f1fae6
+    taskid: b4e8ef9f-c463-45d5-8798-facca14978c6
     type: start
     task:
-      id: 0c43151f-f3ae-48f6-8d80-5684a8f1fae6
+      id: b4e8ef9f-c463-45d5-8798-facca14978c6
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -26,51 +25,16 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 7972736f-e381-40f7-8c2f-8a1eafb6b4b7
-    type: playbook
-    task:
-      id: 7972736f-e381-40f7-8c2f-8a1eafb6b4b7
-      version: -1
-      name: Get File Sample By Hash - Cylance Protect
-      description: |-
-        Returns to the war-room a file sample correlating to SHA256 hashes in the context using Cylance Protect integration
-
-        * SHA256 context path - ${File.SHA256}
-      playbookName: Get File Sample By Hash - Cylance Protect
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      SHA256:
-        simple: ${test.SHA256}
-      ZipPassword:
-        simple: infected
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: db735076-5e5b-4ba2-8953-a67cc80a48c3
+    taskid: c72ea6b4-a3e1-4d28-8271-5777873b1a85
     type: regular
     task:
-      id: db735076-5e5b-4ba2-8953-a67cc80a48c3
+      id: c72ea6b4-a3e1-4d28-8271-5777873b1a85
       version: -1
       name: Verify output
-      description: ""
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -88,15 +52,16 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 7d55e110-6f1b-4694-8a7f-c67cca0e6019
+    taskid: 5b021f07-65f4-4734-89e3-121ec397cb83
     type: regular
     task:
-      id: 7d55e110-6f1b-4694-8a7f-c67cca0e6019
+      id: 5b021f07-65f4-4734-89e3-121ec397cb83
       version: -1
       name: Clear Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -116,15 +81,16 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 5fcfcc24-3e33-43e9-8e34-db500dfc9676
+    taskid: 901737e8-d0da-4864-8ed7-abedebd837cc
     type: regular
     task:
-      id: 5fcfcc24-3e33-43e9-8e34-db500dfc9676
+      id: 901737e8-d0da-4864-8ed7-abedebd837cc
       version: -1
       name: add hash to context
-      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -135,7 +101,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: test.SHA256
+        simple: File.SHA256
       value:
         simple: 5da547e87d6ef12349fb4dbba9cf3146a358e284f72361dd07bbabfc95b0bac3
     separatecontext: false
@@ -146,27 +112,28 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 786ea155-d7ec-4a58-85d1-fad1461e3944
+    taskid: 319cc4d2-b0f5-4b3f-87cd-4dad905a1fba
     type: regular
     task:
-      id: 786ea155-d7ec-4a58-85d1-fad1461e3944
+      id: 319cc4d2-b0f5-4b3f-87cd-4dad905a1fba
       version: -1
       name: add hash to context
-      description: ""
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     scriptarguments:
       append:
         simple: "true"
       key:
-        simple: test.SHA256
+        simple: File.SHA256
       value:
         simple: ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa
     separatecontext: false
@@ -177,6 +144,44 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 09206cc7-b59b-451a-8f10-776e4416d7a5
+    type: playbook
+    task:
+      id: 09206cc7-b59b-451a-8f10-776e4416d7a5
+      version: -1
+      name: Get File Sample By Hash - Cylance Protect
+      description: Returns to the war-room a file sample correlating to SHA256 hashes
+        in the inputs using Cylance Protect integration
+      playbookName: Get File Sample By Hash - Cylance Protect
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      SHA256:
+        simple: ${File.SHA256}
+      ZipPassword:
+        simple: infected
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},

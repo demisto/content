@@ -1,0 +1,1065 @@
+category: IT Services
+commonfields: {id: Google Resource Manager, version: -1}
+configuration:
+- defaultvalue: ''
+  display: Project ID
+  name: project_id
+  options: []
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: Private Key ID
+  name: private_key_id
+  options: []
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Private Key
+  name: private_key
+  options: []
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Client Email
+  name: client_email
+  options: []
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: Client ID
+  name: client_id
+  options: []
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Client X509 Cert URL
+  name: client_x509_cert_url
+  options: []
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  options: []
+  required: false
+  type: 8
+description: Google Cloud Platform Resource Manager
+detaileddescription: "1. **Create a Service Account**  \nFollow the instructions [here](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount)\
+  \ in the \"Creating a Service Account\" section.\n---\n2. **Delegate Domain Wide\
+  \ Authority and Authorize API Access**  \nIf you wish the Service Account to have\
+  \ authorized access to all Google Cloud Platform resources on behalf of all users\
+  \ for the associated G Suite domain then follow the instructions [here](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority)\
+  \ to Delegate Domain Wide Authority.\n---\n3. **Enable Access to the Google Resource\
+  \ Manager API**   \nIn Google Cloud Platform console Dashboard page for the project\
+  \ in which you created the Service Account scroll to the Getting Started section\
+  \ and click on \"Explore and enable APIs\". Alternatively you can click the Navigation\
+  \ Menu button in the top left and in the navigation menu click the \"APIs & Services\"\
+  \ button. Towards the top of the page click the button that says \"+ ENABLE APIS\
+  \ AND SERVICES\". Search \"google resource manager\" in the search bar and enable\
+  \ the API.\n---\n4. **Grant Permissions**  \nIn order for the Service Account to\
+  \ carry out certain Google Resource Manager API commands, it is required that you\
+  \ grant the Service Account roles with the necessary permissions. To give the Service\
+  \ Account Organization-wide permissions, navigate to your organization's page. You\
+  \ can do this by clicking the Navigation Menu in the top left of the page, hover\
+  \ over \"IAM & admin\" and click \"Identity & Organization\" in the resulting popout\
+  \ menu. It will direct you to a page that will tell you that the page is not viewable\
+  \ for projects and ask you to select an organization. Select your organization.\
+  \ Select \"IAM\" from the menu on the left. Click the \"ADD\" button towards the\
+  \ top of the page and add your Service Account by entering the Client Email associated\
+  \ with the Service Account. To grant your Service Account the ability to create\
+  \ new project assign your Service Account the roles of Owner and Project Creator.\
+  \ To grant your Service Account the ability to update projects, assign your Service\
+  \ Account the addional roles of Editor and Project Mover.\n---\n5. **Setup Integration\
+  \ Instance**  \nAll the integration parameters to set up an instance are in the\
+  \ Service Account Credentials File that was downloaded to your machine in step 1\
+  \ when you created a Service Account. Copy each value to its matching integration\
+  \ parameter without its surrounding quotes."
+display: Google Resource Manager
+name: Google Resource Manager
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        The unique, user-assigned ID of the Project. It must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter. Trailing hyphens are prohibited.
+        Example: tokyo-rain-123
+      isArray: false
+      name: project_id
+      predefined: ['']
+      required: true
+    - default: false
+      defaultValue: ''
+      description: The ID of the parent resource. Organizations' Name output is in
+        the format "organizations/12345" where the numbers after the forward slash
+        are the ID of the organization. To find Organization IDs available to assign
+        as a parent resource try running the grm-search-organization command.
+      isArray: false
+      name: parent_id
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: |-
+        The label keys associated with this Project.
+        Label keys must be between 1 and 63 characters long and conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
+        You can associate a maximum of 256 labels with a given resource.
+      isArray: true
+      name: label_keys
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: |-
+        The user-assigned display name of the Project. It must be 4 to 30 characters. Supported characters: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
+        Example: My Project
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: 'Represents the resource type the parent_id is for. Valid resource
+        types: "organization" and "folder".'
+      isArray: false
+      name: parent_type
+      predefined: [organization, folder]
+      required: true
+    - default: false
+      defaultValue: ''
+      description: |-
+        The label values associated with this Project.
+        Label values must be between 0 and 63 characters long and conform to the following regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
+        You can associate a maximum of 256 labels with a given resource.
+      isArray: true
+      name: label_values
+      predefined: []
+      required: false
+    description: Request that new Project resource be created with the user-specified
+      values passed as command arguments.
+    execution: false
+    name: grm-create-project
+    outputs:
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
+      type: String}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
+      type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: The unique ID of the Project to fetch, e.g., tokyo-rain-123.
+      isArray: false
+      name: project_id
+      predefined: []
+      required: true
+    description: Retrieves the Project by the specified project_id, e.g., my-project-123.
+    execution: false
+    name: grm-get-project
+    outputs:
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
+      type: String}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
+      type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        An expression for filtering the results of the request. Filter rules are case insensitive. The fields eligible for filtering are:
+        name
+        id
+        labels.key    where key is the name of a label
+        Some examples:
+        name:how*                 The project's name starts with "how".
+        name:Howl                 The project's name is Howl or howl.
+        name:HOWL                 Equivalent to above.
+        NAME:howl                 Equivalent to above.
+        labels.color:*            The project has the label color.
+        labels.color:red          The project's label color has the value red.
+        labels.color:red labels.size:big    The project's label color has the value red and its label size has the value big.
+      isArray: false
+      name: filter
+      predefined: []
+      required: false
+    description: Lists projects that are visible to the user and satisfies the specified
+      filter. Projects are returned in an unspecified order.
+    execution: false
+    name: grm-list-projects
+    outputs:
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.CreateTime, description: The time the resource was
+        created, type: Date}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
+      type: String}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
+      type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        The unique ID of the Project to update.
+        Example: tokyo-rain-123
+      isArray: false
+      name: project_id
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: |-
+        The string to update the Project name with. It must be 4 to 30 characters. Supported characters are: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
+        Example: My Project
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: The ID of the parent resource. Organizations' Name output is in
+        the format `organizations/12345` where the numbers after the forward slash
+        are the ID of the organization. To find Organization IDs available to assign
+        as a parent resource try running the grm-search-organization command.
+      isArray: false
+      name: parent_id
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: 'The resource type the parent_id is for. Valid resource types:
+        "organization" and "folder".'
+      isArray: false
+      name: parent_type
+      predefined: [organization, folder]
+      required: true
+    - default: false
+      defaultValue: ''
+      description: |-
+        The label keys to associate with this Project.
+        Label keys must be between 1 and 63 characters long and conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
+        You can associate a maximum of 256 labels with a given resource.
+      isArray: true
+      name: label_keys
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: |-
+        The label values to associate with this Project.
+        Label values must be between 0 and 63 characters long and conform to the following regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
+        You can associate a maximum of 256 labels with a given resource.
+      isArray: true
+      name: label_values
+      predefined: []
+      required: false
+    description: Updates the attributes of the Project identified by the specified
+      project_id. Currently the only fields that can be updated are the project name
+      and labels.
+    execution: false
+    name: grm-update-project
+    outputs:
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.CreateTime, description: The time the resource was
+        created, type: Date}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
+      type: String}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
+      type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        number
+        The maximum number of Organizations to return in the response.
+      isArray: false
+      name: page_size
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: A pagination token returned from a previous call to "organizations.search"
+        that indicates from where listing should continue.
+      isArray: false
+      name: page_token
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: "An expression for filtering the Organizations returned in the\
+        \ results. Filter rules are case-insensitive.\n\nOrganizations may be filtered\
+        \ by 'owner.directoryCustomerId' or by 'domain', where the domain is a G Suite\
+        \ domain, for example:\n\nowner.directorycustomerid:123456789\tOrganizations\
+        \ with owner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
+        Organizations corresponding to the domain google.com."
+      isArray: false
+      name: filter
+      predefined: []
+      required: false
+    description: Searches Organization resources that are visible to the user and
+      satisfies the specified filter. Organizations are returned in an unspecified
+      order. New Organizations do not necessarily appear at the end of the results.
+    execution: false
+    name: grm-search-organizations
+    outputs:
+    - {contextPath: GRM.Organization.Name, description: 'The resource name of the
+        organization. This is the organization''s relative path in the API. Its format
+        is "organizations/[organization_id]" e.g. "organizations/1234".', type: String}
+    - {contextPath: GRM.Organization.State, description: The organization's current
+        lifecycle state., type: String}
+    - {contextPath: GRM.Organization.CreateTime, description: The time the organization
+        resource was created, type: Date}
+    - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
+        ID used in the Directory API., type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: The resource name of the Organization to fetch, e.g., "organizations/1234".
+      isArray: false
+      name: name
+      predefined: []
+      required: true
+    description: Fetches an Organization resource identified by the specified resource
+      name.
+    execution: false
+    name: grm-get-organization
+    outputs:
+    - {contextPath: GRM.Organization.Name, description: 'The resource name of the
+        organization. This is the organization''s relative path in the API. Its format
+        is "organizations/[organization_id]" e.g. "organizations/1234".', type: String}
+    - {contextPath: GRM.Organization.State, description: The organization's current
+        lifecycle state., type: String}
+    - {contextPath: GRM.Organization.CreateTime, description: The time the organization
+        resource was created, type: Date}
+    - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
+        ID used in the Directory API., type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        The unique ID of the Project to delete.
+        Example: tokyo-rain-123
+      isArray: false
+      name: project_id
+      predefined: []
+      required: true
+    description: Marks the Project identified by the specified project_id to be deleted,
+      e.g., my-project-123.
+    execution: true
+    name: grm-delete-project
+    outputs:
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
+      type: String}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
+      type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        The unique ID of the Project to restore.
+        Example: tokyo-rain-123
+      isArray: false
+      name: project_id
+      predefined: []
+      required: true
+    description: Restores the Project identified by the specified project_id, e.g.,
+      my-project-123.
+    execution: false
+    name: grm-undelete-project
+    outputs:
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.CreateTime, description: The time the resource was
+        created, type: Date}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
+      type: String}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
+      type: String}
+  dockerimage: demisto/gvault
+  isfetch: false
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+    from googleapiclient import discovery
+    import googleapiclient
+    from google.oauth2 import service_account
+    import json
+    import time
+
+    ''' GLOBALS/PARAMS '''
+
+    # Params for assembling object of the Service Account Credentials File Contents
+    SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id').encode('utf-8')
+    PRIVATE_KEY_ID = demisto.params().get('private_key_id').encode('utf-8')
+    PRIVATE_KEY = demisto.params().get('private_key').encode('utf-8')
+    CLIENT_EMAIL = demisto.params().get('client_email').encode('utf-8')
+    CLIENT_ID = demisto.params().get('client_id').encode('utf-8')
+    CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url').encode('utf-8')
+
+    AUTH_JSON = {
+        'type': 'service_account',  # guardrails-disable-line
+        'project_id': SERVICE_ACT_PROJECT_ID,
+        'private_key_id': PRIVATE_KEY_ID,
+        'private_key': PRIVATE_KEY,
+        'client_email': CLIENT_EMAIL,
+        'client_id': CLIENT_ID,
+        'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+        'token_uri': 'https://oauth2.googleapis.com/token',
+        'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
+        'client_x509_cert_url': CLIENT_X509_CERT_URL
+    }
+
+    # Params for constructing googleapiclient service object
+    API_VERSION = 'v1'
+    GRM = 'cloudresourcemanager'
+    SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
+    SERVICE = None      # variable set by build_and_authenticate() function
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def build_and_authenticate():
+        """
+        Return a service object via which can call GRM API.
+
+        Use the service_account credential file generated in the Google Cloud
+        Platform to build the Google Resource Manager API Service object.
+
+        returns: service
+            Google Resource Manager API Service object via which commands in the
+            integration will make API calls
+        """
+        auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace("\\\\", "\\")
+        service_account_info = json.loads(auth_json_string)
+        service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+        service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
+        return service
+
+
+    def make_project_body(project_body):
+        """
+        Create and return the project body argument used when calling the GRM API
+        to create or update a project.
+
+        returns: (dict) body
+            dict object formatted to be used in the create or update API call
+        """
+        keys = project_body.keys()
+        body = {}
+        if 'project_id' in keys:
+            body['projectId'] = project_body['project_id']
+        if 'parent_type' in keys and 'parent_id' in keys:
+            body['parent'] = {
+                'type': project_body['parent_type'],
+                'id': project_body['parent_id']
+            }
+        if 'name' in keys:
+            body['name'] = project_body['name']
+        if 'label_keys' in keys and 'label_values' in keys:
+            label_keys = argToList(project_body['label_keys'])
+            label_values = argToList(project_body['label_values'])
+            if len(label_keys) != len(label_values):
+                err_msg = 'Label attrs array and Label values array do not match'\
+                    ' in length.\nThese arrays need to match in length because '\
+                    'each string in label_keys is assigned the value of the '\
+                    'string in the corresponding index in the label_values array.'
+                return_error(err_msg)
+            else:
+                body['labels'] = {}
+                for lbl_key, lbl_val in zip(label_keys, label_values):
+                    body['labels'][lbl_key] = lbl_val
+        return body
+
+
+    def poll_operation(operation):
+        """
+        Query status of long running operation and return results if completed.
+
+        parameter: (Operation) operation
+            operation object returned from calls to the API that have a long
+            execution time
+
+        raises: Exception
+            if long executing operation results in an error then raises an
+            Exception that the operation was unsuccessful
+
+        returns: (Project) response
+            dict object representation of a Project Resource
+        """
+        name = operation.get('name')
+        while not operation.get('done'):
+            # delay 1 second and then retry and see if the operation finished
+            time.sleep(1)
+            service = build_and_authenticate()
+            # get the latest state of the long-running operation
+            operation = service.operations().get(name=name).execute()
+        if not operation.get('error'):
+            return operation.get('response')
+        else:
+            ex = operation.get('error')
+            err_code = ex.get('code')
+            err_msg = ex.get('message')
+            full_err_msg = "error code: {}\nerror message: {}".format(err_code, err_msg)
+            return_error(full_err_msg)
+
+
+    ''' MAIN FUNCTIONS '''
+
+
+    def test_module():
+        """If the list_projects_command executes successfully then the test completed and returns 'ok'"""
+        build_and_authenticate()
+        demisto.results('ok')
+
+
+    def create_project(project_body):
+        """Build service object and return the result of calling the API 'create' function for the projects resource."""
+        body = make_project_body(project_body)
+        operation = SERVICE.projects().create(body=body).execute()
+        # Get back result of long-running operation
+        response = poll_operation(operation)
+        return response
+
+
+    def create_project_command():
+        """
+        Create a project in the Google Cloud Platform.
+
+        demisto parameter: (string) project_id
+            The unique ID of the Project to create
+
+        demisto parameter: (string) name
+            The name to give the new Project
+
+        demisto parameter: (string) parent_id
+            The id of the parent resource
+
+        demisto parameter: (string) parent_type
+            The resource type the parent_id is for
+
+        demisto parameter: (list) label_keys
+            The label keys to associate with the new Project
+
+        demisto parameter: (list) label_values
+            The label values to associate with the new Project. The values are
+            assigned to their corresponding indexed key in label_keys
+
+        returns:
+            The new Project resource object
+        """
+        args = demisto.args()
+        response = create_project(args)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'ID': response.get('projectId'),
+            'Number': response.get('projectNumber'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('createTime'),
+            'Parent': {
+                'ID': response.get('parent').get('id'),
+                'Type': response.get('parent').get('type')
+            },
+            'Label': response.get('labels')
+        }
+        md = tableToMarkdown('Google Cloud Project Successfully Created', context)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID && val.ID === obj.ID)': context
+            }
+        })
+
+
+    def delete_project(project_id):
+        """Build service object and return the result of calling the API 'delete' function for the projects resource."""
+        operation = SERVICE.projects().delete(projectId=project_id).execute()
+        return operation
+
+
+    def delete_project_command():
+        """
+        Deletes the specified project.
+
+        Set the lifcycleState attribute of a specified project to DELETE_REQUESTED.
+
+        demisto parameter: (string) project_id
+            The unique ID of the Project to restore
+
+        returns:
+            Deleted project resource object
+        """
+        project_id = demisto.args()['project_id']
+        response = delete_project(project_id)
+        if not response:
+            response = get_project(project_id)
+            # Parse response into context
+            context = {
+                'Name': response.get('name'),
+                'ID': response.get('projectId'),
+                'Number': response.get('projectNumber'),
+                'State': response.get('lifecycleState'),
+                'CreateTime': response.get('createTime'),
+                'Parent': {
+                    'ID': response.get('parent').get('id'),
+                    'Type': response.get('parent').get('type')
+                },
+                'Label': response.get('labels')
+            }
+            md = tableToMarkdown('Project State Successfully Set To DELETE_REQUESTED', context)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': {
+                    'GRM.Project(val.ID && val.ID === obj.ID)': context
+                }
+            })
+        else:
+            return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+
+
+    def undelete_project(project_id):
+        """Build service object and return the result of calling the API 'undelete' function for the projects resource."""
+        operation = SERVICE.projects().undelete(projectId=project_id).execute()
+        return operation
+
+
+    def undelete_project_command():
+        """
+        Restores the specified project.
+
+        Sets the lifcycleState attribute of a specified project back to ACTIVE.
+
+        demisto parameter: (string) project_id
+            The unique ID of the Project to restore
+
+        returns:
+            Restored project resource object
+        """
+        project_id = demisto.args()['project_id']
+        response = undelete_project(project_id)
+        if not response:
+            response = get_project(project_id)
+            # Parse response into context
+            context = {
+                'Name': response.get('name'),
+                'ID': response.get('projectId'),
+                'Number': response.get('projectNumber'),
+                'State': response.get('lifecycleState'),
+                'CreateTime': response.get('createTime'),
+                'Parent': {
+                    'ID': response.get('parent').get('id'),
+                    'Type': response.get('parent').get('type')
+                },
+                'Label': response.get('labels')
+            }
+            md = tableToMarkdown('Project State Successfully Set To ACTIVE', context)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': {
+                    'GRM.Project(val.ID && val.ID === obj.ID)': context
+                }
+            })
+        else:
+            return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+
+
+    def get_project(project_id):
+        """Build service object and return the result of calling the API 'get' function for the projects resource."""
+        operation = SERVICE.projects().get(projectId=project_id).execute()
+        return operation
+
+
+    def get_project_command():
+        """
+        Retrieves the Project identified by the specified project_id.
+
+        demisto parameter: (string) project_id
+            The unique ID of the Project to fetch
+
+        returns:
+            The project resource object specified by the project_id
+        """
+        project_id = demisto.args().get('project_id')
+        response = get_project(project_id)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'ID': response.get('projectId'),
+            'Number': response.get('projectNumber'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('createTime'),
+            'Parent': {
+                'ID': response.get('parent').get('id'),
+                'Type': response.get('parent').get('type')
+            },
+            'Label': response.get('labels')
+        }
+        md = tableToMarkdown('Details of Fetched Google Cloud Project', context)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID && val.ID === obj.ID)': context
+            }
+        })
+
+
+    def list_projects(filter_list):
+        """Build service object and return the result of calling the API 'list' function for the projects resource."""
+        operation = SERVICE.projects().list(filter=filter_list).execute()
+        return operation
+
+
+    def list_projects_command():
+        """
+        Lists Projects that are visible to the user and satisfy the specified
+        filter if one is provided.
+
+        demisto parameter: (string) filter -- optional
+            An expression for filtering the results of the request
+
+        returns:
+            Project resource objects that are visible to the user and satisfy the specified filter
+        """
+        filter_list = demisto.args().get('filter') if 'filter' in demisto.args() else None
+        response = list_projects(filter_list)
+        contexts = []
+        for project in response.get('projects', []):
+            # Parse project into context
+            context = {
+                'Name': project.get('name'),
+                'ID': project.get('projectId'),
+                'Number': project.get('projectNumber'),
+                'State': project.get('lifecycleState'),
+                'CreateTime': project.get('createTime'),
+                'Parent': {
+                    'ID': project.get('parent').get('id'),
+                    'Type': project.get('parent').get('type')
+                },
+                'Label': project.get('labels')
+            }
+            contexts.append(context)
+        title = "Projects Filtered by '{}'".format(filter_list) if filter_list else "All Projects"
+        md = tableToMarkdown(title, contexts)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID && val.ID === obj.ID)': contexts
+            }
+        }
+        demisto.results(entry)
+
+
+    def update_project(project_id, project_body):
+        """Build service object and return the result of calling the API 'update' function for the projects resource."""
+        operation = SERVICE.projects().update(projectId=project_id, body=project_body).execute()
+        return operation
+
+
+    def update_project_command():
+        """
+        Updates the attributes of the Project identified by the specified project_id.
+
+        demisto parameter: (string) project_id
+            The unique ID of the Project to update
+
+        demisto parameter: (string) name
+            The string to update the Project name with
+
+        demisto parameter: (string) parent_id
+            The id of the parent resource
+
+        demisto parameter: (string) parent_type
+            The resource type the parent_id is for
+
+        demisto parameter: (list) label_keys
+            The label keys to associate with this Project
+
+        demisto parameter: (list) label_values
+            The label values to associate with this Project. The values are
+            assigned to their corresponding indexed key in label_keys
+
+        returns:
+            The updated Project resource object
+        """
+        project_id = demisto.args().get('project_id')
+        project_body = demisto.args()
+        project_body = make_project_body(project_body)
+        response = update_project(project_id, project_body)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'ID': response.get('projectId'),
+            'Number': response.get('projectNumber'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('createTime'),
+            'Parent': {
+                'ID': response.get('parent').get('id'),
+                'Type': response.get('parent').get('type')
+            },
+            'Label': response.get('labels')
+        }
+        md = tableToMarkdown('Details of Updated Google Cloud Project', context)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID && val.ID === obj.ID)': context
+            }
+        })
+
+
+    def search_organizations(req_body):
+        """
+        Build service object and return the result of calling the API 'search' function for the organizations resource.
+        """
+        operation = SERVICE.organizations().search(body=req_body).execute()
+        return operation
+
+
+    def search_organizations_command():
+        """
+        Searches Organization resources that are visible to the user and satisfy
+        the specified filter (if provided).
+
+        demisto parameter: (number) pageSize -- optional
+            The maximum number of Organizations to return in the response
+
+        demisto parameter: (string) pageToken -- optional
+            A pagination token returned from a previous call to organizations.search()
+            that indicates from where listing should continue
+
+        demisto parameter: (string) filter -- optional
+            Used to filter the Organizations to return in the response
+
+        returns:
+            List of Organization resource objects that are visible to the user and satisfy the specified filter
+        """
+        args = demisto.args()
+        # make request body
+        req_body = {
+            'pageSize': args.get('page_size') if 'page_size' in args else None,
+            'pageToken': args.get('page_token') if 'page_token' in args else None,
+            'filter': args.get('filter') if 'filter' in args else None
+        }
+
+        contexts = []
+        contents = []
+        next_page = True
+        # continue calling the API with the appropriate pageToken argument while there are still results to be received
+        # from the search organizations API call - this is useful in the case that a pageSize argument was given in this
+        # command that was less than the total amount of results returned from the original call to the API
+        while next_page:
+            response = search_organizations(req_body)
+            contents.append(response)
+            for organization in response.get('organizations', []):
+                # Parse organization into context
+                context = {
+                    'Name': organization.get('name'),
+                    'State': organization.get('lifecycleState'),
+                    'CreateTime': organization.get('creationTime'),
+                    'Owner': {
+                        'CustomerID': organization.get('owner').get('directoryCustomerId')
+                    },
+                }
+                contexts.append(context)
+            if 'nextPageToken' not in response:
+                next_page = False
+            else:
+                req_body['pageToken'] = response['nextPageToken']
+        md = tableToMarkdown("Organizations", contexts)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Organization(val.Name && val.Name === obj.Name)': contexts
+            }
+        }
+        demisto.results(entry)
+
+
+    def get_organization(name):
+        """
+        Build service object and return the result of calling the API 'get' function for the organizations resource.
+
+        parameter: (string) name
+            name of the Organization in format <type/number> e.g. 'organizations/1245345444'
+
+        returns: (Organization) operation
+            The response from calling the API that takes the form of a Organization object
+        """
+        operation = SERVICE.organizations().get(name=name).execute()
+        return operation
+
+
+    def get_organization_command():
+        """
+        Fetches an Organization resource identified by the specified resource name.
+
+        demisto parameter: (string) name
+            name of the Organization in format <type/number> e.g. 'organizations/1245345444'
+
+        returns:
+            The organization object with its associated fields
+        """
+        name = demisto.args().get('name')
+        response = get_organization(name)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('creationTime'),
+            'Owner': {
+                'CustomerID': response.get('owner').get('directoryCustomerId')
+            },
+        }
+        md = tableToMarkdown("Details of Fetched Organization", context)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Organization(val.Name && val.Name === obj.Name)': context
+            }
+        })
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    # Command Switch Panel
+    commands = {
+        "grm-create-project": create_project_command,
+        "grm-delete-project": delete_project_command,
+        "grm-get-project": get_project_command,
+        "grm-list-projects": list_projects_command,
+        "grm-update-project": update_project_command,
+        "grm-search-organizations": search_organizations_command,
+        "grm-get-organization": get_organization_command,
+        "grm-undelete-project": undelete_project_command,
+    }
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+        elif demisto.command() in commands.keys():
+            SERVICE = build_and_authenticate()
+            commands[demisto.command()]()
+
+    except Exception as e:
+        # Output HttpError errors from googleapiclient to the warroom nicely
+        if type(e) is googleapiclient.errors.HttpError:
+            if e.resp.get('content-type').startswith('application/json'):
+                err_json = json.loads((e.content).decode('utf-8'))
+                error_code = (err_json.get('error').get('code'))
+                error_msg = (err_json.get('error').get('message'))
+                error_reason = (err_json.get('error').get('errors')[0].get('reason'))
+                error_status = (err_json.get('error').get('status'))
+                full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
+                                                                                   error_reason, error_status)
+                return_error(full_err_msg)
+        # If there is an Exception message return it to the warroom
+        elif hasattr(e, 'message'):
+            return_error(e.message)
+        # Otherwise output the exception itself to the warroom
+        else:
+            return_error(str(e))
+  type: python
+image: data:image/png;base64,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
+tests: [GoogleResourceManager-Test]

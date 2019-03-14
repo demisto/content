@@ -433,10 +433,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: 7da1e8de-9a78-4ad3-8f7c-a746dcf1b1d4
+    taskid: 3bee11cb-a3a4-4fce-8874-87e9a3deca7e
     type: regular
     task:
-      id: 7da1e8de-9a78-4ad3-8f7c-a746dcf1b1d4
+      id: 3bee11cb-a3a4-4fce-8874-87e9a3deca7e
       version: -1
       name: Update Indicator (1)
       script: '|||tc-update-indicator'
@@ -450,11 +450,18 @@ tasks:
       confidence:
         simple: "10"
       dnsActive: {}
+      falsePositive: {}
       indicator:
         simple: 9.9.4.4
+      observations:
+        simple: "12"
       rating:
         simple: "0"
+      securityLabel:
+        simple: TLP:GREEN
       size: {}
+      threatAssessConfidence: {}
+      threatAssessRating: {}
       updatedValues: {}
       whoisActive: {}
     separatecontext: false

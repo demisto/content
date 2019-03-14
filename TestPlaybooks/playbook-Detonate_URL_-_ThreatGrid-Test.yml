@@ -1,0 +1,83 @@
+id: Test-Detonate URL - ThreatGrid
+version: -1
+name: Test-Detonate URL - ThreatGrid
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0e004152-20aa-40d4-8be1-2f11031e176a
+    type: start
+    task:
+      id: 0e004152-20aa-40d4-8be1-2f11031e176a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 2ebf7435-ceb3-4644-8a0c-52da8d7f830f
+    type: playbook
+    task:
+      id: 2ebf7435-ceb3-4644-8a0c-52da8d7f830f
+      version: -1
+      name: Detonate URL - ThreatGrid
+      playbookName: Detonate URL - ThreatGrid
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      FileName:
+        simple: file-detonated-via-demisto
+      Interval:
+        simple: "1"
+      Playbook:
+        simple: default
+      Private: {}
+      Source: {}
+      Tags: {}
+      Timeout:
+        simple: "15"
+      URL:
+        simple: www.google.com
+      VM: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

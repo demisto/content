@@ -281,51 +281,55 @@ script:
     def get_device():
         device_id = demisto.args()['id']
         device = get_device_request(device_id)
-        device_context = {
-            'IPAddress': device['ip_addresses'],
-            'MACAdress': device['mac_addresses'],
-            'Hostname': device['host_name'],
-            'OSVersion': device['os_version'],
-            'UpdateAvailable': device['update_available'],
-            'BackgroundDetection': device['background_detection'],
-            'DateFirstRegistered': device['date_first_registered'],
-            'DateLastModified': device['date_last_modified'],
-            'DateOffline': device['date_offline'],
-            'IsSafe': device['is_safe'],
-            'LastLoggedInUser': device['last_logged_in_user'],
-            'State': device['state'],
-            'ID': device['id'],
-            'Name': device['name']
-        }
-        if device['update_type']:
-            device_context['UpdateType'] = device['update_type']
-        if device['policy']:
-            policy = {}
-            if device['policy']['id']:
-                policy['ID'] = device['policy']['id']
-            if device['policy']['name']:
-                policy['Name'] = device['policy']['name']
-            if policy:
-                device_context['Policy'] = policy
-        endpoint_context = {
-            'IPAddress': device['ip_addresses'],
-            'MACAdress': device['mac_addresses'],
-            'Hostname': device['host_name'],
-            'OSVersion': device['os_version']
-        }
-        ec = {
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context,
-            'CylanceProtect.Device(val.ID && val.ID === obj.ID)': device_context
-        }
-
         hr = []
-        current_device = dict(device)
-        current_device['ip_addresses'] = ', '.join(current_device['ip_addresses'])
-        current_device['mac_addresses'] = ', '.join(current_device['mac_addresses'])
-        current_device['policy'] = current_device['policy']['name']
-        hr.append(current_device)
+        ec = {}
+        if device:
+            device_context = {
+                'IPAddress': device['ip_addresses'],
+                'MACAdress': device['mac_addresses'],
+                'Hostname': device['host_name'],
+                'OSVersion': device['os_version'],
+                'UpdateAvailable': device['update_available'],
+                'BackgroundDetection': device['background_detection'],
+                'DateFirstRegistered': device['date_first_registered'],
+                'DateLastModified': device['date_last_modified'],
+                'DateOffline': device['date_offline'],
+                'IsSafe': device['is_safe'],
+                'LastLoggedInUser': device['last_logged_in_user'],
+                'State': device['state'],
+                'ID': device['id'],
+                'Name': device['name']
+            }
+            if device['update_type']:
+                device_context['UpdateType'] = device['update_type']
+            if device['policy']:
+                policy = {}
+                if device['policy']['id']:
+                    policy['ID'] = device['policy']['id']
+                if device['policy']['name']:
+                    policy['Name'] = device['policy']['name']
+                if policy:
+                    device_context['Policy'] = policy
+            endpoint_context = {
+                'IPAddress': device['ip_addresses'],
+                'MACAdress': device['mac_addresses'],
+                'Hostname': device['host_name'],
+                'OSVersion': device['os_version']
+            }
+            ec = {
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context,
+                'CylanceProtect.Device(val.ID && val.ID === obj.ID)': device_context
+            }
+
+
+            current_device = dict(device)
+            current_device['ip_addresses'] = ', '.join(current_device['ip_addresses'])
+            current_device['mac_addresses'] = ', '.join(current_device['mac_addresses'])
+            current_device['policy'] = current_device['policy']['name']
+            hr.append(current_device)
 
         title = 'Cylance Protect Device ' + device_id
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': device,

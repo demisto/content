@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f428eca7-bafd-4c77-8bb6-1240a00e7a17
+    taskid: 42e0edf4-e9d1-4bb5-8a5f-3d58d63e2356
     type: start
     task:
-      id: f428eca7-bafd-4c77-8bb6-1240a00e7a17
+      id: 42e0edf4-e9d1-4bb5-8a5f-3d58d63e2356
       version: -1
       name: ""
       iscommand: false
@@ -20,16 +20,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 6b48cd2b-4143-478e-8fc5-5f26091dc26d
+    taskid: 866765ba-f9c0-4f85-8518-d01fc655ebfe
     type: regular
     task:
-      id: 6b48cd2b-4143-478e-8fc5-5f26091dc26d
+      id: 866765ba-f9c0-4f85-8518-d01fc655ebfe
       version: -1
       name: Create good indicator
       description: Modify indicator reputation
@@ -61,16 +63,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 13d271d3-0f5d-4b7f-85e2-e9f2f0f272d3
+    taskid: c57ef545-7f2b-47e2-8fc7-a70d4801f8a1
     type: condition
     task:
-      id: 13d271d3-0f5d-4b7f-85e2-e9f2f0f272d3
+      id: c57ef545-7f2b-47e2-8fc7-a70d4801f8a1
       version: -1
       name: IsMaliciuosFound
       scriptName: IsMaliciousIndicatorFound
@@ -80,55 +84,24 @@ tasks:
     nexttasks:
       "no":
       - "7"
-      "yes":
-      - "3"
     scriptarguments:
       includeSuspicious: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 250,
           "y": 370
         }
       }
-  "3":
-    id: "3"
-    taskid: f21a18b1-ed40-4922-8553-36764fdefe59
-    type: regular
-    task:
-      id: f21a18b1-ed40-4922-8553-36764fdefe59
-      version: -1
-      name: Fail
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: Found Mal indicator on good indicator only in incident
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 22c1d7fb-cb9c-4881-8da9-6cbedd4544f0
+    taskid: d009cfd6-90be-4a56-883b-c752702edf74
     type: regular
     task:
-      id: 22c1d7fb-cb9c-4881-8da9-6cbedd4544f0
+      id: d009cfd6-90be-4a56-883b-c752702edf74
       version: -1
       name: Create Bad indicator
       script: Builtin|||createNewIndicator
@@ -159,47 +132,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 50,
+          "y": 1595
         }
       }
-  "5":
-    id: "5"
-    taskid: 80f5df01-09db-45a4-8255-576540296108
-    type: regular
-    task:
-      id: 80f5df01-09db-45a4-8255-576540296108
-      version: -1
-      name: Fail
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: Did not Found bad indicator that appeared in incident
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 19c80f4f-8bef-4e6d-87da-9b678872b7c4
+    taskid: 408a28ff-a4d2-47b9-82d3-55601d39d702
     type: condition
     task:
-      id: 19c80f4f-8bef-4e6d-87da-9b678872b7c4
+      id: 408a28ff-a4d2-47b9-82d3-55601d39d702
       version: -1
       name: IsMaliciuosFound
       scriptName: IsMaliciousIndicatorFound
@@ -207,26 +151,26 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "5"
       "yes":
-      - "13"
+      - "20"
     scriptarguments:
       includeSuspicious: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 240,
+          "y": 1945
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 3668462e-a0c9-4494-881f-4b540a54b495
+    taskid: e0d7c288-b8b6-4fcd-8d5d-3ff762aeb1ab
     type: regular
     task:
-      id: 3668462e-a0c9-4494-881f-4b540a54b495
+      id: e0d7c288-b8b6-4fcd-8d5d-3ff762aeb1ab
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -257,16 +201,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: eb074259-f3c6-46a8-8859-557d680803da
+    taskid: f84df226-83ad-4682-8a91-85c2e0e68f79
     type: condition
     task:
-      id: eb074259-f3c6-46a8-8859-557d680803da
+      id: f84df226-83ad-4682-8a91-85c2e0e68f79
       version: -1
       name: IsMaliciuosFound-no-suspicious
       scriptName: IsMaliciousIndicatorFound
@@ -275,134 +221,25 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "11"
-      "yes":
-      - "10"
+      - "16"
     scriptarguments:
       includeSuspicious: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 240,
+          "y": 910
         }
       }
-  "10":
-    id: "10"
-    taskid: f4dc9858-9c28-4d64-8d50-1eb273dbdb7a
-    type: regular
-    task:
-      id: f4dc9858-9c28-4d64-8d50-1eb273dbdb7a
-      version: -1
-      name: Fail
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: Found suspicious indicator but did not used suspicious check arg
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-  "11":
-    id: "11"
-    taskid: c2d65971-9607-4c7d-8870-29c0af45ed98
-    type: condition
-    task:
-      id: c2d65971-9607-4c7d-8870-29c0af45ed98
-      version: -1
-      name: IsMaliciuosFound-with-suspicious
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "12"
-      "yes":
-      - "4"
-    scriptarguments:
-      includeSuspicious:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1070
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 5e616020-f0a7-4151-8b01-46d799f9354b
-    type: regular
-    task:
-      id: 5e616020-f0a7-4151-8b01-46d799f9354b
-      version: -1
-      name: Fail
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: Did not Found suspicious indicator that appeared in incident
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1245
-        }
-      }
-  "13":
-    id: "13"
-    taskid: c5e54bde-3e05-481d-86f7-20b0ecad2aa8
-    type: title
-    task:
-      id: c5e54bde-3e05-481d-86f7-20b0ecad2aa8
-      version: -1
-      name: All GOOD!!!
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1785
-        }
-      }
+    note: false
+    timertriggers: []
   "14":
     id: "14"
-    taskid: 0ffaa540-6008-4f6b-867f-b4a5ed15b5a0
+    taskid: 6779d5dc-45b7-4033-8c7c-d0d9f2679c3f
     type: regular
     task:
-      id: 0ffaa540-6008-4f6b-867f-b4a5ed15b5a0
+      id: 6779d5dc-45b7-4033-8c7c-d0d9f2679c3f
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -420,16 +257,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 50,
+          "y": 1770
         }
       }
+    note: false
+    timertriggers: []
   "15":
     id: "15"
-    taskid: 38cc0ebc-1b97-4bfd-87a6-7b43f6bd2c27
+    taskid: eda1d742-5215-451e-848d-01a19c41d3d1
     type: regular
     task:
-      id: 38cc0ebc-1b97-4bfd-87a6-7b43f6bd2c27
+      id: eda1d742-5215-451e-848d-01a19c41d3d1
       version: -1
       name: sleep 1 sec
       scriptName: Sleep
@@ -446,17 +285,131 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: ebb38caa-8b84-4722-8055-7ab188d49277
+    type: regular
+    task:
+      id: ebb38caa-8b84-4722-8055-7ab188d49277
+      version: -1
+      name: Set Domain.Malicious to True
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Domain.Malicious
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 4965fd9b-8efe-496c-8379-64d9e10ded8a
+    type: condition
+    task:
+      id: 4965fd9b-8efe-496c-8379-64d9e10ded8a
+      version: -1
+      name: IsMaliciuosFound
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    scriptarguments:
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+    type: title
+    task:
+      id: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+      version: -1
+      name: Done!!!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+    type: regular
+    task:
+      id: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 1240,
+        "height": 2135,
+        "width": 580,
         "x": 50,
         "y": 50
       }
