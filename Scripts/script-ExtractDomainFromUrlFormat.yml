@@ -34,6 +34,12 @@ script: |-
           domains.append(extract_domain(item))
       if len(domains) == 1:
           demisto.results(domains[0])
+      else:
+          demisto.results({
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['json'],
+              'Contents': domains
+          })
   else:
       # Otherwise assumes the input is an array
       for item in the_input:
@@ -41,8 +47,8 @@ script: |-
       demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': domains,
-    })
+        'Contents': domains
+      })
 type: python
 tags:
 - indicator-format
