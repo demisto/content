@@ -368,7 +368,7 @@ script:
         for (var i = 0; i < alarmList.length; i++) {
             logDebug("Got alarm from LR",JSON.stringify(alarmList[i]));
             inc = {
-                name: alarmList[i].AlarmRuleName,
+                name: 'LogRhythm alarm ' + alarmList[i].AlarmID,
                 occurred: getOccurredTime(alarmList[i]),
                 created: new Date(),
                 details: prepareDetailsString(alarmList[i]),
@@ -444,7 +444,7 @@ script:
 
         var ec= {};
         ec["LogRhythm.Alarm(val.ID && val.ID == " + args['alarm-id'] + ")"] = {'ID' : args['alarm-id']};
-        ec["LogRhythm.Alarm(val.ID && val.ID == " + args['alarm-id'] + ").Comments"] = [args['comments']];
+        ec["LogRhythm.Alarm(val.ID && val.ID == " + args['alarm-id'] + ").Comment"] = [args['comments']];
 
         return {
             Type: entryTypes.note,
@@ -653,18 +653,21 @@ script:
 
         var timeFrame = dataArgs['time_frame'];
 
+
         var start = new Date();
         var end = new Date();
         end.setDate(start.getDate()+1);
 
         switch(timeFrame){
+        case 'Today':
+            break;
         case 'Last2Days':
             start.setDate(start.getDate()-2);
             break;
-        case 'Last7Days':
+        case 'LastWeek':
             start.setDate(start.getDate()-7);
             break;
-        case 'Last30Days':
+        case 'LastMonth':
             start.setDate(start.getDate()-30);
             break;
         case 'Custom':
@@ -790,7 +793,7 @@ script:
       required: true
       description: The alarm comments
     outputs:
-    - contextPath: LogRhythm.Alarm.Comments
+    - contextPath: LogRhythm.Alarm.Comment
       description: The alarm comment.
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
@@ -962,8 +965,8 @@ script:
       predefined:
       - Today
       - Last2Days
-      - Last7Days
-      - Last30Days
+      - LastWeek
+      - LastMonth
       - Custom
       defaultValue: Custom
       description: If time_frame is Custom, specify the start time for the time range.
