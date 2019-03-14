@@ -1,0 +1,19 @@
+commonfields:
+  id: StixExporter2
+  version: 12
+name: StixExporter2
+script: |-
+from stix2 import Indicator
+
+indicator = Indicator(name="File hash for malware variant",
+                      labels=["malicious-activity"],
+                      pattern="[file:hashes.md5 = 'd41d8cd98f00b204e9800998ecf8427e']")
+print(indicator)
+print(demisto.args().get('ids','no ids'))
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/stix
+runas: DBotWeakRole
