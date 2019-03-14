@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f5d49ac0-e1b6-4e73-8ce8-7ee29c854f3c
+    taskid: a387c2cb-8f1b-424d-8461-6238f4e90d79
     type: start
     task:
-      id: f5d49ac0-e1b6-4e73-8ce8-7ee29c854f3c
+      id: a387c2cb-8f1b-424d-8461-6238f4e90d79
       version: -1
       name: ""
       iscommand: false
@@ -28,13 +28,13 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: c1c206a4-951d-445b-849f-f77e6b79b65f
+    taskid: 3ff2c6ef-d766-4a08-8a28-ec72dbf7d6c6
     type: regular
     task:
-      id: c1c206a4-951d-445b-849f-f77e6b79b65f
+      id: 3ff2c6ef-d766-4a08-8a28-ec72dbf7d6c6
       version: -1
       name: Add new user named jack
-      script: '|||ad-create-user'
+      script: Active Directory Query v2|||ad-create-user
       type: regular
       iscommand: true
       brand: ""
@@ -60,20 +60,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 515
+          "y": 1010
         }
       }
     note: false
     timertriggers: []
   "2":
     id: "2"
-    taskid: 6b33b327-c628-4189-89b9-69137ee7295c
+    taskid: aa3a4d33-f53f-4a81-83e5-366322256218
     type: regular
     task:
-      id: 6b33b327-c628-4189-89b9-69137ee7295c
+      id: aa3a4d33-f53f-4a81-83e5-366322256218
       version: -1
       name: Add user to group 'Users'
-      script: '|||ad-add-to-group'
+      script: Active Directory Query v2|||ad-add-to-group
       type: regular
       iscommand: true
       brand: ""
@@ -93,20 +93,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1360
+          "y": 1855
         }
       }
     note: false
     timertriggers: []
   "4":
     id: "4"
-    taskid: 0667848e-9b3b-43e3-8c8b-5bdf9f76f138
+    taskid: 8fb3963a-fefe-4f92-8bc6-0e417f0504e3
     type: regular
     task:
-      id: 0667848e-9b3b-43e3-8c8b-5bdf9f76f138
+      id: 8fb3963a-fefe-4f92-8bc6-0e417f0504e3
       version: -1
       name: Update the user's display name
-      script: '|||ad-update-contact'
+      script: Active Directory Query v2|||ad-update-contact
       type: regular
       iscommand: true
       brand: ""
@@ -125,20 +125,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1185
+          "y": 1680
         }
       }
     note: false
     timertriggers: []
   "5":
     id: "5"
-    taskid: e29d1eba-d173-4bbf-867c-1fcb6de98ca3
+    taskid: e36c3fb1-41b8-43cb-89d7-b438e98499d7
     type: regular
     task:
-      id: e29d1eba-d173-4bbf-867c-1fcb6de98ca3
+      id: e36c3fb1-41b8-43cb-89d7-b438e98499d7
       version: -1
       name: Get information on the new user
-      script: '|||ad-get-user'
+      script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
       brand: ""
@@ -161,17 +161,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 690
+          "y": 1185
         }
       }
     note: false
     timertriggers: []
   "6":
     id: "6"
-    taskid: eed05585-eb55-4dee-8daa-8e86e7bf3d67
+    taskid: ae1f82df-ba0a-4bb1-8f8b-8c8e0ff41846
     type: condition
     task:
-      id: eed05585-eb55-4dee-8daa-8e86e7bf3d67
+      id: ae1f82df-ba0a-4bb1-8f8b-8c8e0ff41846
       version: -1
       name: Verify new user display name is as set in 'ad-create-user'
       type: condition
@@ -196,20 +196,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 1360
         }
       }
     note: false
     timertriggers: []
   "7":
     id: "7"
-    taskid: 7ca8381e-b66c-4868-80ff-972b546b2957
+    taskid: eae2403a-e14a-4e7e-8af3-10ef46ff6920
     type: regular
     task:
-      id: 7ca8381e-b66c-4868-80ff-972b546b2957
+      id: eae2403a-e14a-4e7e-8af3-10ef46ff6920
       version: -1
       name: Get information on the new user
-      script: '|||ad-get-user'
+      script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
       brand: ""
@@ -231,18 +231,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2235
+          "x": 480,
+          "y": 2730
         }
       }
     note: false
     timertriggers: []
   "9":
     id: "9"
-    taskid: f40ccb7c-7c83-4aea-8ba8-3d515c24fc84
+    taskid: 57eb0ba9-62a6-4d13-8d71-ad0b5469bea3
     type: title
     task:
-      id: f40ccb7c-7c83-4aea-8ba8-3d515c24fc84
+      id: 57eb0ba9-62a6-4d13-8d71-ad0b5469bea3
       version: -1
       name: Create a new Active Directory user
       type: title
@@ -256,17 +256,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 865
         }
       }
     note: false
     timertriggers: []
   "10":
     id: "10"
-    taskid: 28897cda-9f59-48b3-8f69-f6deff42d34e
+    taskid: 5e103551-5b37-453a-86f5-959069cf55cb
     type: title
     task:
-      id: 28897cda-9f59-48b3-8f69-f6deff42d34e
+      id: 5e103551-5b37-453a-86f5-959069cf55cb
       version: -1
       name: Modify user attributes
       type: title
@@ -280,20 +280,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1040
+          "y": 1535
         }
       }
     note: false
     timertriggers: []
   "12":
     id: "12"
-    taskid: e3d7db74-dc47-4122-8f18-c504c6ddb19a
+    taskid: 6f5cdced-41d9-4095-83b4-0b1ee1c3b605
     type: regular
     task:
-      id: e3d7db74-dc47-4122-8f18-c504c6ddb19a
+      id: 6f5cdced-41d9-4095-83b4-0b1ee1c3b605
       version: -1
       name: Get group 'Users' members
-      script: '|||ad-get-group-members'
+      script: Active Directory Query v2|||ad-get-group-members
       type: regular
       iscommand: true
       brand: ""
@@ -310,18 +310,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1535
+          "x": 50,
+          "y": 2030
         }
       }
     note: false
     timertriggers: []
   "13":
     id: "13"
-    taskid: 6312ae08-5b14-4ea5-8389-3777bd8f9aa1
+    taskid: 0dff096e-0efd-46fb-8564-0631eae2d99e
     type: condition
     task:
-      id: 6312ae08-5b14-4ea5-8389-3777bd8f9aa1
+      id: 0dff096e-0efd-46fb-8564-0631eae2d99e
       version: -1
       name: Verify 'jack' is listed as a member
       type: condition
@@ -353,21 +353,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1710
+          "x": 50,
+          "y": 2205
         }
       }
     note: false
     timertriggers: []
   "14":
     id: "14"
-    taskid: ff55946f-44b9-4369-8686-e85ec8a1afaf
+    taskid: 3b5672e9-81d1-4c64-88f0-79048ef0fbfb
     type: regular
     task:
-      id: ff55946f-44b9-4369-8686-e85ec8a1afaf
+      id: 3b5672e9-81d1-4c64-88f0-79048ef0fbfb
       version: -1
       name: Remove jack from 'Users' group
-      script: '|||ad-remove-from-group'
+      script: Active Directory Query v2|||ad-remove-from-group
       type: regular
       iscommand: true
       brand: ""
@@ -385,18 +385,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1885
+          "x": 50,
+          "y": 2380
         }
       }
     note: false
     timertriggers: []
   "15":
     id: "15"
-    taskid: 02888212-1459-45a0-8ba1-ea64ca5a1ee0
+    taskid: 9e2100ba-67ea-4d0f-8ee9-e84cb19d59dd
     type: condition
     task:
-      id: 02888212-1459-45a0-8ba1-ea64ca5a1ee0
+      id: 9e2100ba-67ea-4d0f-8ee9-e84cb19d59dd
       version: -1
       name: Verify 'jack' is not listed as a member
       type: condition
@@ -428,21 +428,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2410
+          "x": 50,
+          "y": 2905
         }
       }
     note: false
     timertriggers: []
   "16":
     id: "16"
-    taskid: 6c69d29b-e05c-47eb-8c50-0df3d84c93e3
+    taskid: f34e6c2a-78f1-4334-8483-ac4cc038fdf0
     type: regular
     task:
-      id: 6c69d29b-e05c-47eb-8c50-0df3d84c93e3
+      id: f34e6c2a-78f1-4334-8483-ac4cc038fdf0
       version: -1
       name: Delete jack
-      script: '|||ad-delete-user'
+      script: Active Directory Query v2|||ad-delete-user
       type: regular
       iscommand: true
       brand: ""
@@ -454,17 +454,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3080
+          "y": 3575
         }
       }
     note: false
     timertriggers: []
   "17":
     id: "17"
-    taskid: f9f580d2-6433-4525-826f-90608a26f2eb
+    taskid: 3600cb03-8c85-4c22-8dc5-25644f4b0d4e
     type: regular
     task:
-      id: f9f580d2-6433-4525-826f-90608a26f2eb
+      id: 3600cb03-8c85-4c22-8dc5-25644f4b0d4e
       version: -1
       name: Delete all context
       scriptName: DeleteContext
@@ -473,7 +473,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "25"
     scriptarguments:
       all:
         simple: "yes"
@@ -493,10 +493,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 32ace587-53fd-445a-8d60-57b5014f6a2e
+    taskid: 638e3ad6-2151-4163-8f17-807fb6ed9860
     type: condition
     task:
-      id: 32ace587-53fd-445a-8d60-57b5014f6a2e
+      id: 638e3ad6-2151-4163-8f17-807fb6ed9860
       version: -1
       name: Verify the user diaplay name was updated
       type: condition
@@ -520,18 +520,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2410
+          "x": 480,
+          "y": 2905
         }
       }
     note: false
     timertriggers: []
   "19":
     id: "19"
-    taskid: 926939e4-7cc6-40f4-8ddb-e5c658781fb9
+    taskid: 1ae0381c-4fb5-4474-8820-020d300900c5
     type: regular
     task:
-      id: 926939e4-7cc6-40f4-8ddb-e5c658781fb9
+      id: 1ae0381c-4fb5-4474-8820-020d300900c5
       version: -1
       name: Delete 'Groups' context
       scriptName: DeleteContext
@@ -552,21 +552,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2060
+          "x": 50,
+          "y": 2555
         }
       }
     note: false
     timertriggers: []
   "20":
     id: "20"
-    taskid: 24fe6012-ec78-4904-8e1f-e661e0ddb8bc
+    taskid: 05c8886d-f48d-4c24-805b-8b684d3979e8
     type: regular
     task:
-      id: 24fe6012-ec78-4904-8e1f-e661e0ddb8bc
+      id: 05c8886d-f48d-4c24-805b-8b684d3979e8
       version: -1
       name: Get group 'Users' members
-      script: '|||ad-get-group-members'
+      script: Active Directory Query v2|||ad-get-group-members
       type: regular
       iscommand: true
       brand: ""
@@ -583,18 +583,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2235
+          "x": 50,
+          "y": 2730
         }
       }
     note: false
     timertriggers: []
   "21":
     id: "21"
-    taskid: 0bd3a7fc-5e5b-4544-8192-ddfad05b6e96
+    taskid: bf85ac95-91a4-4113-8a6f-70c1d0a0248a
     type: title
     task:
-      id: 0bd3a7fc-5e5b-4544-8192-ddfad05b6e96
+      id: bf85ac95-91a4-4113-8a6f-70c1d0a0248a
       version: -1
       name: Test enable\disable user account - tests for command success only
       type: title
@@ -608,20 +608,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2585
+          "y": 3080
         }
       }
     note: false
     timertriggers: []
   "22":
     id: "22"
-    taskid: fd302e4a-44c2-4774-85fa-c1843d241876
+    taskid: 6a774f8d-9abc-4786-8d50-faa34edf7a57
     type: regular
     task:
-      id: fd302e4a-44c2-4774-85fa-c1843d241876
+      id: 6a774f8d-9abc-4786-8d50-faa34edf7a57
       version: -1
       name: Disable new user account
-      script: '|||ad-disable-account'
+      script: Active Directory Query v2|||ad-disable-account
       type: regular
       iscommand: true
       brand: ""
@@ -637,20 +637,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2730
+          "y": 3225
         }
       }
     note: false
     timertriggers: []
   "23":
     id: "23"
-    taskid: f73e39fb-7498-4d83-814c-76bdb58bab83
+    taskid: e3221d71-677d-4c04-85ea-4d08ccd93254
     type: regular
     task:
-      id: f73e39fb-7498-4d83-814c-76bdb58bab83
+      id: e3221d71-677d-4c04-85ea-4d08ccd93254
       version: -1
       name: Enable account
-      script: '|||ad-enable-account'
+      script: Active Directory Query v2|||ad-enable-account
       type: regular
       iscommand: true
       brand: ""
@@ -666,7 +666,108 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2905
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 2c09034e-5816-40d0-8be8-8b8e3faf46f5
+    type: regular
+    task:
+      id: 2c09034e-5816-40d0-8be8-8b8e3faf46f5
+      version: -1
+      name: Run search command
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      attributes: {}
+      base-dn: {}
+      filter:
+        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+      size-limit:
+        simple: "5"
+      time-limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 77f06e08-528f-4cf4-82b0-db46b45a9df7
+    type: title
+    task:
+      id: 77f06e08-528f-4cf4-82b0-db46b45a9df7
+      version: -1
+      name: Search in Active Directory
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: e7ea0cbd-9c44-490e-8d58-ef070f984b62
+    type: condition
+    task:
+      id: e7ea0cbd-9c44-490e-8d58-ef070f984b62
+      version: -1
+      name: Verify results from search exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search.dn
+            iscontext: true
+          right:
+            value:
+              simple: CN=demistoadmin,CN=Users,DC=demisto,DC=int
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
         }
       }
     note: false
@@ -676,7 +777,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3125,
+        "height": 3620,
         "width": 810,
         "x": 50,
         "y": 50
