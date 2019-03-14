@@ -310,7 +310,8 @@ inputs:
   description: Enable internet access (boolean). True= internet access (default),
     False= no internet access.
 - key: ReportFileType
-  value: {}
+  value:
+    simple: "html"
   required: false
   description: 'The resource type to download. Default is html. Supported values are:
     html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml,
@@ -361,3 +362,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
+releaseNotes: "-"
