@@ -1,4 +1,3 @@
-import os
 import sys
 import json
 import string
@@ -8,28 +7,28 @@ import requests
 
 import demisto
 from slackclient import SlackClient
+
 from test_integration import test_integration
-from test_utils import print_color, print_error, print_warning, LOG_COLORS
+from mock_server import MITMProxy, AMIConnection
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
+from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT
 
 
-RUN_ALL_TESTS = "Run all tests"
+SERVER_URL = "https://{}"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+                            "instance_name argument in conf.json. The options are:\n{}"
+
+AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
 
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
-    parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
+    parser.add_argument('-s', '--server', help='The server URL to connect to')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
@@ -37,19 +36,44 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
+    parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
+    parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
+                                                      'tests on(Valid only when using AMI)')
     options = parser.parse_args()
 
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration):
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
+                       unmocklable_integrations, proxy):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
+    rerecorded_count = len(proxy.rerecorded_tests)
+    empty_mocks_count = len(proxy.empty_files)
+    unmocklable_integrations_count = len(unmocklable_integrations)
 
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
+
+    if failed_count > 0:
+        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
+        for playbook_id in failed_playbooks:
+            print_error('\t - ' + playbook_id)
+
+    if rerecorded_count > 0:
+        print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
+        for playbook_id in proxy.rerecorded_tests:
+            print_warning('\t - ' + playbook_id)
+
+    if empty_mocks_count > 0:
+        print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
+        print '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+              '\t Investigate the playbook and the integrations.\n' \
+              '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
+        for playbook_id in proxy.empty_files:
+            print('\t - ' + playbook_id)
 
     if len(skipped_integration) > 0:
         print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
@@ -61,10 +85,10 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         for playbook_id in skipped_tests:
             print_warning('\t - ' + playbook_id)
 
-    if failed_count > 0:
-        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
-        for playbook_id in failed_playbooks:
-            print_error('\t - ' + playbook_id)
+    if unmocklable_integrations_count > 0:
+        print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
+        for playbook_id, reason in unmocklable_integrations.iteritems():
+            print_warning('\t - ' + playbook_id + ' - ' + reason)
 
 
 def update_test_msg(integrations, test_message):
@@ -77,21 +101,101 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
-    print '------ Test %s start ------' % (test_message,)
-    # run test
+def has_unmockable_integration(integrations, unmockable_integrations):
+    return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.iterkeys()))
+
+
+# Configure integrations to work with mock
+def configure_proxy_unsecure(integrations):
+    """Set proxy and unscure integration parameters to true.
+
+    Args:
+        integrations: list of integrations to configure.
+    """
+    for elem in integrations:
+        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
+            elem['params'][param] = True
+
+
+def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+                   circle_ci, build_number, server_url, build_name, bypass_mock=False):
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
-    # use results
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
     else:
         print 'Failed: %s failed' % (test_message,)
-        failed_playbooks.append(playbook_id)
-        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+        playbook_id_with_mock = playbook_id
+        if bypass_mock:
+            playbook_id_with_mock += " (Mock Disabled)"
+        failed_playbooks.append(playbook_id_with_mock)
+        notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+    return succeed
 
+
+# run the test using a real instance, record traffic.
+def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name):
+    proxy.set_tmp_folder()
+    proxy.start(playbook_id, record=True)
+    succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                             test_options, slack, circle_ci, build_number, server_url, build_name)
+    proxy.stop()
+    if succeed:
+        proxy.move_mock_file_to_repo(playbook_id)
+
+    proxy.set_repo_folder()
+    return succeed
+
+
+def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message):
+    rerecord = False
+
+    configure_proxy_unsecure(integrations)
+    if proxy.has_mock_file(playbook_id):
+        print start_message + ' (Mock: Playback)'
+        proxy.start(playbook_id)
+        # run test
+        succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+        # use results
+        proxy.stop()
+        if succeed:
+            print 'PASS: %s succeed' % (test_message,)
+            succeed_playbooks.append(playbook_id)
+            print '------ Test %s end ------' % (test_message,)
+
+            return
+
+        else:
+            print "Test failed with mock, recording new mock file."
+            rerecord = True
+    else:
+        print start_message + ' (Mock: Recording)'
+
+    # Mock recording - no mock file or playback failure.
+    succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name)
+
+    if rerecord and succeed:
+        proxy.rerecorded_tests.append(playbook_id)
     print '------ Test %s end ------' % (test_message,)
+
+
+def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name):
+    start_message = '------ Test %s start ------' % (test_message,)
+
+    if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
+        print start_message + ' (Mock: Disabled)'
+        run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
+                       slack, circle_ci, build_number, server_url, build_name, bypass_mock=True)
+        print '------ Test %s end ------' % (test_message,)
+
+        return
+
+    mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message)
 
 
 def http_request(url, params_dict=None):
@@ -110,19 +214,21 @@ def http_request(url, params_dict=None):
 
 
 def get_user_name_from_circle(circleci_token, build_number):
-    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
+    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number,
+                                                                                                     circleci_token)
     res = http_request(url)
 
     user_details = res.get('user', {})
     return user_details.get('name', '')
 
 
-def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url, build_name):
-    circle_user_name = get_user_name_from_circle(CircleCI, build_number)
+def notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name):
+    circle_user_name = get_user_name_from_circle(circle_ci, build_number)
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
 
-    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
+    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 \
+        else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
 
     if user_id:
         sc.api_call(
@@ -171,11 +277,11 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
                         found_matching_instance = True
 
                 if not found_matching_instance:
-                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in integration_params]
-                    print_error("{} Failed to run\n, There are {} instances of {},"
-                                "please select of them by using the instance_name "
-                                "argument in conf.json the options are:\n{}".format(playbook_id, len(integration_params),
-                                                                                  integration['name'], '\n'.join(optional_instance_names)))
+                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in
+                                               integration_params]
+                    print_error(FAILED_MATCH_INSTANCE_MSG.format(playbook_id, len(integration_params),
+                                                                 integration['name'],
+                                                                 '\n'.join(optional_instance_names)))
                     return False
 
             integration['params'] = matched_integration_params.get('params', {})
@@ -213,12 +319,12 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
 def extract_filtered_tests():
     with open(FILTER_CONF, 'r') as filter_file:
-        filterd_tests = filter_file.readlines()
-        filterd_tests = [line.strip('\n') for line in filterd_tests]
-        is_filter_configured = True if filterd_tests else False
-        run_all = True if RUN_ALL_TESTS in filterd_tests else False
+        filtered_tests = filter_file.readlines()
+        filtered_tests = [line.strip('\n') for line in filtered_tests]
+        is_filter_configured = True if filtered_tests else False
+        run_all = True if RUN_ALL_TESTS_FORMAT in filtered_tests else False
 
-    return filterd_tests, is_filter_configured, run_all
+    return filtered_tests, is_filter_configured, run_all
 
 
 def generate_demisto_api_key(c):
@@ -243,17 +349,16 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def main():
+def execute_testing(server):
     options = options_handler()
     username = options.user
     password = options.password
-    server = options.server
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
     slack = options.slack
-    CircleCI = options.circleci
-    buildNumber = options.buildNumber
+    circle_ci = options.circleci
+    build_number = options.buildNumber
     build_name = options.buildName
 
     if not (username and password and server):
@@ -262,7 +367,7 @@ def main():
 
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
@@ -276,21 +381,30 @@ def main():
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nigthly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
+    unmockable_integrations = conf['unmockable_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filterd_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
-    if not tests or len(tests) is 0:
+    if not tests or len(tests) == 0:
         print('no integrations are configured for test')
         return
+
+    with open('public_ip', 'rb') as f:
+        public_ip = f.read().strip()
+
+    ami = AMIConnection(public_ip)
+    ami.clone_mock_data()
+    proxy = MITMProxy(c, public_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+
     for t in tests:
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
@@ -324,7 +438,7 @@ def main():
 
         if not run_all_tests:
             # Skip filtered test
-            if is_filter_configured and playbook_id not in filterd_tests:
+            if is_filter_configured and playbook_id not in filtered_tests:
                 continue
 
         # Skip bad test
@@ -336,27 +450,55 @@ def main():
         if has_skipped_integration:
             continue
 
-        are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf, playbook_id)
+        are_params_set = set_integration_params(demisto_api_key, integrations,
+                                                secret_params, instance_names_conf, playbook_id)
         if not are_params_set:
             failed_playbooks.append(playbook_id)
             continue
 
         test_message = update_test_msg(integrations, test_message)
 
-        run_test(c, failed_playbooks, integrations, playbook_id,
-                 succeed_playbooks, test_message, test_options, slack, CircleCI,
-                 buildNumber, server, build_name)
+        run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
+                 succeed_playbooks, test_message, test_options, slack, circle_ci,
+                 build_number, server, build_name)
 
-    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
+    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
+                       proxy)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
-    os.remove(FILTER_CONF)
+
+    if build_name == 'master':
+        print "Pushing new/updated mock files to mock git repo."
+        ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
         with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
+
+
+def main():
+    options = options_handler()
+    server = options.server
+    is_ami = options.isAMI
+
+    if is_ami:  # Run tests in AMI configuration
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+
+        server_version = options.serverVersion
+        for ami_instance_name, ami_instance_ip in instance_ips:
+            if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
+                # TODO: remove the and condition once version 4.5 is out
+                print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+                print("Starts tests with server url - https://{}".format(ami_instance_ip))
+                server = SERVER_URL.format(ami_instance_ip)
+                execute_testing(server)
+
+    else:  # Run tests in Server build configuration
+        execute_testing(server)
 
 
 if __name__ == '__main__':

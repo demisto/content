@@ -1,404 +1,268 @@
 id: CheckpointFW-test
 version: -1
 name: CheckpointFW-test
+description: Check Point FW Test PB
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a6ee9208-3c12-483c-83a8-3a0b53554860
+    taskid: e3d35158-80b4-479d-8818-f21a0bec14b1
     type: start
     task:
-      id: a6ee9208-3c12-483c-83a8-3a0b53554860
+      id: e3d35158-80b4-479d-8818-f21a0bec14b1
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "19"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -174
+          "x": 50,
+          "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: d9a3bf75-a0f4-4d4f-8de8-df5fbb8627c2
+    taskid: e2186dc6-1834-4f1d-87f0-bd6d0627af76
     type: regular
     task:
-      id: d9a3bf75-a0f4-4d4f-8de8-df5fbb8627c2
+      id: e2186dc6-1834-4f1d-87f0-bd6d0627af76
       version: -1
       name: checkpoint-show-access-rule-base
       description: Show items in an access rulebase configured in Checkpoint FW.
-      script: Check Point|||checkpoint-show-access-rule-base
+      script: '|||checkpoint-show-access-rule-base'
       type: regular
       iscommand: true
-      brand: Check Point
+      brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
-      name: Network
-      uid: ""
+      name:
+        simple: Network
+      uid: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 1025
+          "x": 50,
+          "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 2bc9a245-9d4f-461c-8c29-03e42f0fc0cc
+    taskid: e4f7d667-9428-4fb2-84d2-9a32ae2138f4
     type: regular
     task:
-      id: 2bc9a245-9d4f-461c-8c29-03e42f0fc0cc
+      id: e4f7d667-9428-4fb2-84d2-9a32ae2138f4
       version: -1
       name: checkpoint-set-rule
       description: Set attributes of an access rule object configured in Checkpoint
         FW.
-      script: Check Point|||checkpoint-set-rule
+      script: '|||checkpoint-set-rule'
       type: regular
       iscommand: true
-      brand: Check Point
+      brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "1"
     scriptarguments:
-      enabled: ""
-      layer: Network
-      name: ${CheckpointFWRule.Name}
-      rule_number: ""
-      uid: ""
+      enabled: {}
+      layer:
+        simple: 8a5e96fb-c793-457f-b78f-c667074223a5
+      name:
+        simple: bar-from-6.6.6.5
+      rule_number: {}
+      uid: {}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 521
+          "x": 50,
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: d07bf93b-cb34-421a-8776-4635fe64a431
+    taskid: 21584eab-4e80-492e-87f6-168bebe034a8
     type: regular
     task:
-      id: d07bf93b-cb34-421a-8776-4635fe64a431
+      id: 21584eab-4e80-492e-87f6-168bebe034a8
       version: -1
       name: checkpoint-show-hosts
       description: Show host objects configured in Checkpoint FW.
-      script: Check Point|||checkpoint-show-hosts
+      script: '|||checkpoint-show-hosts'
       type: regular
       iscommand: true
-      brand: Check Point
+      brand: ""
     nexttasks:
       '#none#':
-      - "13"
-      - "5"
+      - "18"
     scriptarguments:
-      limit: ""
-      offset: ""
-      order: ""
+      limit: {}
+      offset: {}
+      order: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -47
+          "x": 50,
+          "y": 370
         }
       }
-  "5":
-    id: "5"
-    taskid: c454e598-5425-4c5d-8ca2-339577cc6128
-    type: regular
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 2a854811-c614-4175-8491-b43c322f50ce
+    type: condition
     task:
-      id: c454e598-5425-4c5d-8ca2-339577cc6128
+      id: 2a854811-c614-4175-8491-b43c322f50ce
       version: -1
-      name: checkpoint-block-ip
-      description: Block one or more IP addresses using Checkpoint Firewall.
-      script: Check Point|||checkpoint-block-ip
-      type: regular
-      iscommand: true
-      brand: Check Point
+      name: check checkpoint-show-access-rule-base
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
-      - "15"
-      - "19"
-    scriptarguments:
-      direction: to
-      ip: 1.1.1.22
-      ipname: CP-PB-test
-      rulename: TestRule
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 130
-        }
-      }
-  "7":
-    id: "7"
-    taskid: ef0aadb7-65ef-4507-8354-5a273a187765
-    type: regular
-    task:
-      id: ef0aadb7-65ef-4507-8354-5a273a187765
-      version: -1
-      name: checkpoint-delete-rule
-      script: Check Point|||checkpoint-delete-rule
-      type: regular
-      iscommand: true
-      brand: Check Point
-    nexttasks:
-      '#none#':
+      "yes":
       - "17"
-      - "14"
-    scriptarguments:
-      layer: Network
-      name: ${CheckpointFWRule.Name}
-      uid: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckpointFWRule
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: bar-from-6.6.6.5
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 678
+          "x": 50,
+          "y": 1070
         }
       }
-  "12":
-    id: "12"
-    taskid: da1518a5-66e3-459a-826e-bd23d4727034
-    type: regular
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 4ddeef2e-763e-4e0b-8b8e-78fae1da0db0
+    type: title
     task:
-      id: da1518a5-66e3-459a-826e-bd23d4727034
+      id: 4ddeef2e-763e-4e0b-8b8e-78fae1da0db0
       version: -1
-      name: VerifyContextFields
-      scriptName: VerifyContextFields
-      type: regular
+      name: Done
+      description: ""
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      field1: CheckpointFWRule
-      field2: ""
-      field3: ""
-      field4: ""
-      value1: ""
-      value2: ""
-      value3: ""
-      value4: ""
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 1196
+          "x": 50,
+          "y": 1245
         }
       }
-  "13":
-    id: "13"
-    taskid: 85dade34-1133-43ba-8e54-a98cdd1b6336
-    type: regular
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: a5266082-b999-4366-8c5a-0f2516003010
+    type: condition
     task:
-      id: 85dade34-1133-43ba-8e54-a98cdd1b6336
+      id: a5266082-b999-4366-8c5a-0f2516003010
       version: -1
-      name: VerifyContextFields
-      scriptName: VerifyContextFields
-      type: regular
+      name: check checkpoint-show-hosts
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      field1: Endpoint
-      field2: ""
-      field3: ""
-      field4: ""
-      value1: ""
-      value2: ""
-      value3: ""
-      value4: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: Hostname
+            iscontext: true
+          right:
+            value:
+              simple: 10.10.10.10
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 130
+          "x": 50,
+          "y": 545
         }
       }
-  "14":
-    id: "14"
-    taskid: 8d06ba0d-9b9e-45ec-8956-8ce7c2bcb151
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 93e5e638-23f1-4157-82dc-00ef58e016e3
     type: regular
     task:
-      id: 8d06ba0d-9b9e-45ec-8956-8ce7c2bcb151
+      id: 93e5e638-23f1-4157-82dc-00ef58e016e3
       version: -1
-      name: DeleteContext
-      description: Delete field from context
+      name: Delete Context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     scriptarguments:
-      all: ""
-      key: CheckpointFWRule
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 859
+          "x": 50,
+          "y": 195
         }
       }
-  "15":
-    id: "15"
-    taskid: f554f1d7-61ad-4bf4-8ede-1df3c90034dc
-    type: regular
-    task:
-      id: f554f1d7-61ad-4bf4-8ede-1df3c90034dc
-      version: -1
-      name: VerifyContextFields
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      field1: CheckpointFWRule
-      field2: ""
-      field3: ""
-      field4: ""
-      value1: ""
-      value2: ""
-      value3: ""
-      value4: ""
-    view: |-
-      {
-        "position": {
-          "x": -20,
-          "y": 328
-        }
-      }
-  "16":
-    id: "16"
-    taskid: CheckpointFWBackupStatus
-    type: regular
-    task:
-      id: CheckpointFWBackupStatus
-      version: -1
-      name: CheckpointFWBackupStatus
-      description: Connect to a checkpoint firewall appliance using SSH and retrieve
-        status for backup tasks. The user account being used to access the device
-        must be set to use the SSH shell and not the built in Checkpoint CLI. Consult
-        the Checkpoint documentation for instructions on how to do this.
-      scriptName: CheckpointFWBackupStatus
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      devices: checkpoint
-      waittimeout: ""
-    results:
-    - CheckpointBackup
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1025
-        }
-      }
-  "17":
-    id: "17"
-    taskid: da147e76-11fc-4cd2-877d-36d08b508822
-    type: regular
-    task:
-      id: da147e76-11fc-4cd2-877d-36d08b508822
-      version: -1
-      name: CheckpointFWCreateBackup
-      description: Connect to a checkpoint firewall appliance using SSH and trigger
-        a task to create a configuration backup of the device. The user account being
-        used to access the device must be set to use the SSH shell and not the built
-        in Checkpoint CLI. Consult the Checkpoint documentation for instructions on
-        how to do this.
-      scriptName: CheckpointFWCreateBackup
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      devices: checkpoint
-    results:
-    - CheckpointBackup
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 859
-        }
-      }
-  "18":
-    id: "18"
-    taskid: ec798a1f-625f-49ce-860c-2498527ed152
-    type: regular
-    task:
-      id: ec798a1f-625f-49ce-860c-2498527ed152
-      version: -1
-      name: VerifyContextFields
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      field1: CheckpointBackup
-      field2: ""
-      field3: ""
-      field4: ""
-      value1: ""
-      value2: ""
-      value3: ""
-      value4: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1196
-        }
-      }
-  "19":
-    id: "19"
-    taskid: 2f186c25-a93e-40b6-8d5b-7b6f693f21db
-    type: regular
-    task:
-      id: 2f186c25-a93e-40b6-8d5b-7b6f693f21db
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds: "2"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 328
-        }
-      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 850,
-        "x": -20,
-        "y": -174
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs: []
+outputs: []

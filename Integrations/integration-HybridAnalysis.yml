@@ -1,13 +1,13 @@
 commonfields:
   id: Hybrid Analysis
   version: -1
+defaultEnabled: false
+fromversion: 3.6.1
 name: Hybrid Analysis
 display: Hybrid Analysis
 category: Forensics & Malware Analysis
 image: data:image/png;base64,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
 description: Fully automated malware analysis with unique Hybrid Analysis.
-defaultEnabled: true
-fromversion: 3.6.1
 configuration:
 - display: Server URL (e.g. https://216.3.128.82)
   name: serverUrl
@@ -203,24 +203,19 @@ script:
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
 
-        var response = body;
-        var resMessage = '';
-        if (response.sha256) {
-            resMessage = resMessage + '\nsha256 - ' + response.sha256;
-        }
-        if (response['job_id']) {
-            resMessage = resMessage + '\nJob ID - ' + response['job_id'];
-        }
-        if (response['environment_id']) {
-            resMessage = resMessage + '\nEnvironment ID - ' + response['environment_id'];
-        }
-
-        return resMessage;
+        return body;
     }
 
-    function submitFileMsg(hash) {
-        var resMessage = "File submitted successfully" + hash;
-        return resMessage;
+    function submitFileMsg(response) {
+        var result = {
+            'JobID':  response.job_id,
+            'SHA256': response.sha256,
+            'EnvironmentID': response.environment_id
+        };
+        var context = {
+            'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': result
+        };
+        return createTableEntry('Submited file information:', result, result, context);
     }
 
     function searchQuery(query) {
@@ -277,7 +272,49 @@ script:
 
         return createTableEntry('Search results:', result, table, context);
     }
+    //Return the state of the submission
+    function reportState(){
 
+        var jobID = args.jobID;
+        var sha256 = args.sha256;
+        var environmentID = args.environmentID;
+
+        var hybridAnalysisID = '';
+
+        if (jobID) {
+            hybridAnalysisID = jobID;
+        } else if (sha256 && environmentID) {
+            hybridAnalysisID = '{0}:{1}'.format(sha256, environmentID);
+        } else {
+            throw 'Job ID or SHA-256 and environment ID must be provided.'
+        }
+
+        var commandURL = '/api/v2/report/{0}/state'.format(hybridAnalysisID);
+
+        var response = sendRequest('GET', commandURL);
+
+        var state = response.state
+
+        var output = 'Submission state: ' + state;
+
+        var context = {
+            'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': {
+                State: state,
+                SHA256: sha256,
+                JobID: jobID,
+                EnvironmentID: environmentID
+            }
+        };
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: response,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: output,
+            EntryContext: context
+        };
+    }
     function detonateFile(entryId, delay, timeout) {
         var environmentId;
         if (args.environmentID) {
@@ -297,7 +334,7 @@ script:
             }
         }
         var file = submitFile(entryId, environmentId.toString());
-        var hash = file.substring(10,75);
+        var hash = file.sha256;
 
         delayTime = parseInt(delay);
         timeOut = parseInt(timeout);
@@ -328,157 +365,219 @@ script:
             var res = scan(args.file);
             return scanToEntry(res);
         case 'hybrid-analysis-submit-sample':
-            var hash = submitFile(args.entryId, args.environmentID);
-            return submitFileMsg(hash);
+            var response = submitFile(args.entryId, args.environmentID);
+            return submitFileMsg(response);
         case 'hybrid-analysis-search':
             return searchQuery(args.query);
         case 'hybrid-analysis-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
+        case 'hybrid-analysis-get-report-status':
+            return reportState();
     }
 
   type: javascript
   commands:
-  - name: hybrid-analysis-scan
-    arguments:
-    - name: file
-      required: true
-      default: true
-      description: File hash (MD5, SHA1 or SHA256)
-    outputs:
-    - contextPath: File.SHA256
-      description: SHA256 of the file
-    - contextPath: File.SHA1
-      description: SHA1 of the file
-    - contextPath: File.MD5
-      description: MD5 of the file
-    - contextPath: File.environmentId
-      description: 'Environment id of the file '
-    - contextPath: File.analysis_start_time
-      description: Analysis start time of the file
-    - contextPath: File.submitname
-      description: Submission name of the file
-    - contextPath: File.classification_tags
-      description: List of classification tags of the file
-    - contextPath: File.vxfamily
-      description: Family classification of the file
-    - contextPath: File.total_network_connections
-      description: Total network connections of the file
-    - contextPath: File.total_processes
-      description: Total processes count of the file
-    - contextPath: File.total_signatures
-      description: Total signatures count if the file
-    - contextPath: File.hosts
-      description: List of file's hosts
-    - contextPath: File.isinteresting
-      description: If server found this file interesting
-    - contextPath: File.domains
-      description: List of file's related domains
-    - contextPath: File.isurlanalysis
-      description: If file analyzed by url
-    - contextPath: File.Malicious.Vendor
-      description: or malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
-    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
-      reports generated for any environment ID
-  - name: hybrid-analysis-submit-sample
-    arguments:
-    - name: entryId
-      required: true
-      default: true
-      description: War-room entry ID of sample file
-    - name: environmentID
-      required: true
-      description: Environment ID to submit file to (get all IDs via vx-get-environments)
-    description: Submit a file from investigation to analysis server  (NOTE - minimum
-      required authorization is `default`)
-  - name: hybrid-analysis-search
-    arguments:
-    - name: query
-      description: Hybrid Analysis query syntax (see `<server url>/faq#advanced-search-options`
-        for more details). examples -  url:google, host:95.181.53.78
-    - name: filename
-      description: Filename e.g. invoice.exe
-    - name: filetype
-      description: Filetype e.g. docx
-    - name: filetype_desc
-      description: Filetype description e.g. PE32 executable
-    - name: env_id
-      description: Environment Id
-    - name: country
-      description: Country (3 digit ISO) e.g. swe
-    - name: verdict
-      description: 'Verdict e.g. 1 (available: 1 ''whitelisted’, 2 ''no verdict’,
+    - name: hybrid-analysis-scan
+      arguments:
+        - name: file
+          required: true
+          default: true
+          description: File hash (MD5, SHA1 or SHA256)
+      outputs:
+        - contextPath: File.SHA256
+          description: SHA256 of the file
+          type: string
+        - contextPath: File.SHA1
+          description: SHA1 of the file
+          type: string
+        - contextPath: File.MD5
+          description: MD5 of the file
+          type: string
+        - contextPath: File.environmentId
+          description: 'Environment id of the file '
+          type: string
+        - contextPath: File.analysis_start_time
+          description: Analysis start time of the file
+          type: string
+        - contextPath: File.submitname
+          description: Submission name of the file
+          type: string
+        - contextPath: File.classification_tags
+          description: List of classification tags of the file
+          type: string
+        - contextPath: File.vxfamily
+          description: Family classification of the file
+          type: string
+        - contextPath: File.total_network_connections
+          description: Total network connections of the file
+          type: string
+        - contextPath: File.total_processes
+          description: Total processes count of the file
+          type: string
+        - contextPath: File.total_signatures
+          description: Total signatures count if the file
+          type: string
+        - contextPath: File.hosts
+          description: List of file's hosts
+          type: string
+        - contextPath: File.isinteresting
+          description: If server found this file interesting
+          type: string
+        - contextPath: File.domains
+          description: List of file's related domains
+          type: string
+        - contextPath: File.isurlanalysis
+          description: If file analyzed by url
+          type: string
+        - contextPath: File.Malicious.Vendor
+          description: or malicious files, the vendor that made the decision
+          type: string
+        - contextPath: File.Malicious.Description
+          description: For malicious files, the reason for the vendor to make the decision
+          type: string
+      description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+        reports generated for any environment ID
+    - name: hybrid-analysis-submit-sample
+      arguments:
+        - name: entryId
+          required: true
+          default: true
+          description: War-room entry ID of sample file
+        - name: environmentID
+          required: true
+          description: Environment ID to submit file to (get all IDs via vx-get-environments)
+      outputs:
+        - contextPath: HybridAnalysis.Submit.JobID
+          description: JobID of the submission
+          type: string
+        - contextPath: HybridAnalysis.Submit.SHA256
+          description: 'SHA of the submission '
+          type: string
+        - contextPath: HybridAnalysis.Submit.EnvironmentID
+          description: 'EnvironmentID of the submission '
+          type: string
+      description: Submit a file from investigation to analysis server  (NOTE - minimum
+        required authorization is `default`)
+    - name: hybrid-analysis-search
+      arguments:
+        - name: query
+          description: Hybrid Analysis query syntax (see `<server url>/faq#advanced-search-options`
+            for more details). examples -  url:google, host:95.181.53.78
+        - name: filename
+          description: Filename e.g. invoice.exe
+        - name: filetype
+          description: Filetype e.g. docx
+        - name: filetype_desc
+          description: Filetype description e.g. PE32 executable
+        - name: env_id
+          description: Environment Id
+        - name: country
+          description: Country (3 digit ISO) e.g. swe
+        - name: verdict
+          description: 'Verdict e.g. 1 (available: 1 ''whitelisted’, 2 ''no verdict’,
         3 ''no specific threat’, 4 ''suspicious’, 5 ‘malicious’)'
-    - name: av_detect
-      description: AV Multiscan range e.g. 50-70 (min 0, max 100)
-    - name: vx_family
-      description: AV Family Substring e.g. nemucod
-    - name: tag
-      description: Hashtag e.g. ransomware
-    - name: port
-      description: Port e.g. 8080
-    - name: host
-      description: Host e.g. 192.168.0.1
-    - name: domain
-      description: Domain e.g. checkip.dyndns.org
-    - name: url
-      description: HTTP Request Substring e.g. google
-    - name: similar_to
-      description: Similar Samples e.g. <sha256>
-    - name: context
-      description: Sample Context e.g. <sha256>
-    - name: imp_hash
-      description: Import Hash
-    - name: ssdeep
-      description: SSDeep
-    - name: authentihash
-      description: Authentication Hash
-    outputs:
-    - contextPath: HybridAnalysis.Search.SHA256
-      description: SHA256 of search result
-    - contextPath: HybridAnalysis.Search.SHA1
-      description: SHA1of search result
-    - contextPath: HybridAnalysis.Search.MD5
-      description: MD5 of search result
-    - contextPath: HybridAnalysis.Search.environmentId
-      description: Environment Id of search result
-    - contextPath: HybridAnalysis.Search.start_time
-      description: Start time of search result
-    - contextPath: HybridAnalysis.Search.threatscore
-      description: Threat score of search result by server
-    - contextPath: HybridAnalysis.Search.verdict
-      description: Verdict of search result
-    - contextPath: HybridAnalysis.Search.environmentDescription
-      description: Environment description of search result
-    - contextPath: HybridAnalysis.Search.submitname
-      description: Submission name of search result
-    - contextPath: HybridAnalysis.Search.vxfamily
-      description: Family of search result
-    - contextPath: HybridAnalysis.Search.threatscore
-      description: Threat score of search result
-    - contextPath: HybridAnalysis.Search.type_short
-      description: type of search result (url, host, etc.)
-    - contextPath: HybridAnalysis.Search.size
-      description: Size of search result
-    - contextPath: File.Malicious.Vendor
-      description: or malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
-    description: Search the database using the Hybrid Analysis search syntax
-  - name: hybrid-analysis-detonate-file
-    arguments:
-    - name: entryId
-      required: true
-      description: War-room entry ID of sample file
-    - name: environmentID
-      description: environment ID to submit file to(get all via vx-get-environments).
-        Default is 100, or other WINDOWS ID
-    - name: delay
-      description: Delay wait time between calls (in seconds)
-      defaultValue: "3"
-    - name: timeout
-      description: Total wait time (in seconds)
-      defaultValue: "60"
-    description: Detonate file through Hybrid Analysis
+        - name: av_detect
+          description: AV Multiscan range e.g. 50-70 (min 0, max 100)
+        - name: vx_family
+          description: AV Family Substring e.g. nemucod
+        - name: tag
+          description: Hashtag e.g. ransomware
+        - name: port
+          description: Port e.g. 8080
+        - name: host
+          description: Host e.g. 192.168.0.1
+        - name: domain
+          description: Domain e.g. checkip.dyndns.org
+        - name: url
+          description: HTTP Request Substring e.g. google
+        - name: similar_to
+          description: Similar Samples e.g. <sha256>
+        - name: context
+          description: Sample Context e.g. <sha256>
+        - name: imp_hash
+          description: Import Hash
+        - name: ssdeep
+          description: SSDeep
+        - name: authentihash
+          description: Authentication Hash
+      outputs:
+        - contextPath: HybridAnalysis.Search.SHA256
+          description: SHA256 of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.SHA1
+          description: SHA1of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.MD5
+          description: MD5 of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.environmentId
+          description: Environment Id of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.start_time
+          description: Start time of search result
+          type: date
+        - contextPath: HybridAnalysis.Search.threatscore
+          description: Threat score of search result by server
+          type: string
+        - contextPath: HybridAnalysis.Search.verdict
+          description: Verdict of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.environmentDescription
+          description: Environment description of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.submitname
+          description: Submission name of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.vxfamily
+          description: Family of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.threatscore
+          description: Threat score of search result
+          type: string
+        - contextPath: HybridAnalysis.Search.type_short
+          description: type of search result (url, host, etc.)
+          type: string
+        - contextPath: HybridAnalysis.Search.size
+          description: Size of search result
+          type: number
+        - contextPath: File.Malicious.Vendor
+          description: or malicious files, the vendor that made the decision
+          type: string
+        - contextPath: File.Malicious.Description
+          description: For malicious files, the reason for the vendor to make the decision
+          type: string
+      description: Search the database using the Hybrid Analysis search syntax
+    - name: hybrid-analysis-detonate-file
+      arguments:
+        - name: entryId
+          required: true
+          description: War-room entry ID of sample file
+        - name: environmentID
+          description: environment ID to submit file to(get all via vx-get-environments).
+            Default is 100, or other WINDOWS ID
+        - name: delay
+          description: Delay wait time between calls (in seconds)
+          defaultValue: "3"
+        - name: timeout
+          description: Total wait time (in seconds)
+          defaultValue: "60"
+      description: Detonate file through Hybrid Analysis
+    - name: hybrid-analysis-get-report-status
+      arguments: []
+      outputs:
+        - contextPath: HybridAnalysis.Submit.State
+          description: The state of the process
+          type: string
+        - contextPath: HybridAnalysis.Submit.SHA256
+          description: The submission SHA256
+          type: string
+        - contextPath: HybridAnalysis.Submit.JobID
+          description: The JobID of the submission
+          type: string
+        - contextPath: HybridAnalysis.Submit.EnvironmentID
+          description: The environmentID of the submission
+          type: string
+      description: Get the state of the file submission
   runonce: false
+tests:
+- "Detonate File - HybridAnalysis - Test"

@@ -1,0 +1,494 @@
+id: Test Playbook McAfee ATD Upload File
+version: 10
+name: Test Playbook McAfee ATD Upload File
+description: This is a test to check that URL parsing is done correctly (issue - https://github.com/demisto/etc/issues/15551)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b3bc2f0-838d-4d20-8462-5e950db9bcb8
+    type: start
+    task:
+      id: 8b3bc2f0-838d-4d20-8462-5e950db9bcb8
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: c77e5f05-9a7c-4501-82e5-29850c6511a9
+    type: title
+    task:
+      id: c77e5f05-9a7c-4501-82e5-29850c6511a9
+      version: -1
+      name: Test Playbook McAfee ATD
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 213ae79b-ee30-412e-803b-7e853f62444b
+    type: title
+    task:
+      id: 213ae79b-ee30-412e-803b-7e853f62444b
+      version: -1
+      name: Done
+      description: finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: a8e1be4c-738e-4008-85cd-b59e89e3bf24
+    type: regular
+    task:
+      id: a8e1be4c-738e-4008-85cd-b59e89e3bf24
+      version: -1
+      name: file upload (url)
+      description: This is a test to check that URL parsing is done correctly (issue
+        - https://github.com/demisto/etc/issues/15551)
+      script: '|||atd-file-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID: {}
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "1"
+      url:
+        simple: https://google.com
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 03c10829-dc0a-4798-8e94-9362b4c986c7
+    type: condition
+    task:
+      id: 03c10829-dc0a-4798-8e94-9362b4c986c7
+      version: -1
+      name: Check returned URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ATD.Task.url
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 79504193-673a-4e7b-8787-f38e46c2b27c
+    type: regular
+    task:
+      id: 79504193-673a-4e7b-8787-f38e46c2b27c
+      version: -1
+      name: file upload (url)
+      description: This is a test to check that URL parsing is done correctly (issue
+        - https://github.com/demisto/etc/issues/15551)
+      script: '|||atd-file-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID: {}
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "1"
+      url:
+        simple: https://www.google.com
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: c6e91612-dd26-43a2-8925-30792739031d
+    type: condition
+    task:
+      id: c6e91612-dd26-43a2-8925-30792739031d
+      version: -1
+      name: Check returned URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ATD.Task.url
+            iscontext: true
+          right:
+            value:
+              simple: https://www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 5ef00fec-a712-4ff6-88ac-e188c964dba8
+    type: regular
+    task:
+      id: 5ef00fec-a712-4ff6-88ac-e188c964dba8
+      version: -1
+      name: file upload (url)
+      description: This is a test to check that URL parsing is done correctly (issue
+        - https://github.com/demisto/etc/issues/15551)
+      script: '|||atd-file-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID: {}
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "1"
+      url:
+        simple: www.google.com
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: e10a516a-b568-4b14-8658-1f74a7ba9666
+    type: condition
+    task:
+      id: e10a516a-b568-4b14-8658-1f74a7ba9666
+      version: -1
+      name: Check returned URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ATD.Task.url
+            iscontext: true
+          right:
+            value:
+              simple: http://www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 7a72924b-e208-4694-8150-eb3a5cfa1db7
+    type: regular
+    task:
+      id: 7a72924b-e208-4694-8150-eb3a5cfa1db7
+      version: -1
+      name: file upload (url)
+      description: This is a test to check that URL parsing is done correctly (issue
+        - https://github.com/demisto/etc/issues/15551)
+      script: '|||atd-file-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID: {}
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "1"
+      url:
+        simple: google.com
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 84a6d855-a4a5-4201-89e1-187251662bf3
+    type: condition
+    task:
+      id: 84a6d855-a4a5-4201-89e1-187251662bf3
+      version: -1
+      name: Check returned URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ATD.Task.url
+            iscontext: true
+          right:
+            value:
+              simple: http://www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2045
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: 57d93cfb-e9f2-4d7d-8e60-88d3065b7cb2
+    type: regular
+    task:
+      id: 57d93cfb-e9f2-4d7d-8e60-88d3065b7cb2
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: ada21729-4536-401b-8c98-1d85dd35109f
+    type: regular
+    task:
+      id: ada21729-4536-401b-8c98-1d85dd35109f
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: ae3dcb22-23c8-45da-8ae9-bf518b3fdb3d
+    type: regular
+    task:
+      id: ae3dcb22-23c8-45da-8ae9-bf518b3fdb3d
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2235,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -9,6 +9,9 @@ DEFAULT_TIMEOUT = 60
 DEFAULT_INTERVAL = 20
 ENTRY_TYPE_ERROR = 4
 
+INC_CREATION_ERR = 'Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and ' \
+                   'the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.'
+
 
 class PB_Status:
     COMPLETED = 'completed'
@@ -54,6 +57,7 @@ def __test_integration_instance(client, module_instance):
 
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_params, is_byoi):
+    print('Configuring instance for {}'.format(integration_name))
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
@@ -98,7 +102,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
             param_conf['value'] = param_value
             param_conf['hasvalue'] = True
         elif param_conf['defaultValue']:
-            # param is required - take default falue
+            # param is required - take default value
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
     res = client.req('PUT', '/settings/integration', module_instance)
@@ -115,26 +119,42 @@ def __create_integration_instance(client, integration_name, integration_params, 
     test_succeed = __test_integration_instance(client, module_instance)
 
     if not test_succeed:
-        return
+        __disable_integrations_instances(client, [module_instance])
+        return None
 
-    return module_instance['id']
+    return module_instance
+
+
+def __disable_integrations_instances(client, module_instances):
+    for configured_instance in module_instances:
+        # tested with POSTMAN, this is the minimum required fields for the request.
+        module_instance = {
+            key: configured_instance[key] for key in ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
+        }
+        module_instance['enable'] = "false"
+        module_instance['version'] = -1
+
+        res = client.req('PUT', '/settings/integration', module_instance)
+
+        if res.status_code != 200:
+            print_error('disable instance failed with status code ' + str(res.status_code))
+            print_error(pformat(res.json()))
 
 
 # create incident with given name & playbook, and then fetch & return the incident
 def __create_incident_with_playbook(client, name, playbook_id):
     # create incident
     kwargs = {'createInvestigation': True, 'playbookId': playbook_id}
+    response_json = {}
     try:
-        r = client.CreateIncident(name, None, None, None, None,
-                         None, None, **kwargs)
+        r = client.CreateIncident(name, None, None, None, None, None, None, **kwargs)
+        response_json = r.json()
     except RuntimeError as err:
         print_error(str(err))
 
-    response_json = r.json()
-    inc_id = response_json['id']
-
+    inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
-        print_error('Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
+        print_error(INC_CREATION_ERR)
         return False, -1
 
     # get incident
@@ -145,7 +165,8 @@ def __create_incident_with_playbook(client, name, playbook_id):
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
-            print_error('Got timeout for searching incident with id {}, got {} incidents in the search'.format(inc_id, incidents['total']))
+            print_error('Got timeout for searching incident with id {}, '
+                        'got {} incidents in the search'.format(inc_id, incidents['total']))
             return False, -1
 
         time.sleep(1)
@@ -169,7 +190,7 @@ def __delete_incident(client, incident):
         'all': False
     })
 
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error('delete incident failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
         return False
@@ -180,7 +201,7 @@ def __delete_incident(client, incident):
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
     res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error('delete integration instance failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
         return False
@@ -188,10 +209,10 @@ def __delete_integration_instance(client, instance_id):
 
 
 # delete all integration instances, return True if all succeed delete all
-def __delete_integrations_instances(client, instance_ids):
+def __delete_integrations_instances(client, module_instances):
     succeed = True
-    for instance_id in instance_ids:
-        succeed = __delete_integration_instance(client, instance_id) and succeed
+    for module_instance in module_instances:
+        succeed = __delete_integration_instance(client, module_instance['id']) and succeed
     return succeed
 
 
@@ -212,21 +233,22 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integrations, playbook_id, options={}):
+def test_integration(client, integrations, playbook_id, options=None):
+    options = options if options is not None else {}
     # create integrations instances
-    instance_ids = []
+    module_instances = []
     for integration in integrations:
         integration_name = integration.get('name', None)
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
 
-        instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
-        if not instance_id:
+        module_instance = __create_integration_instance(client, integration_name, integration_params, is_byoi)
+        if module_instance is None:
             print_error('Failed to create instance')
-            __delete_integrations_instances(client, instance_ids)
+            __delete_integrations_instances(client, module_instances)
             return False, -1
 
-        instance_ids.append(instance_id)
+        module_instances.append(module_instance)
         print('Create integration %s succeed' % (integration_name, ))
 
     # create incident with playbook
@@ -266,12 +288,14 @@ def test_integration(client, integrations, playbook_id, options={}):
             print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
         i = i + 1
 
+    __disable_integrations_instances(client, module_instances)
+
     test_pass = playbook_state == PB_Status.COMPLETED
     if test_pass:
         # delete incident
         __delete_incident(client, incident)
 
         # delete integration instance
-        __delete_integrations_instances(client, instance_ids)
+        __delete_integrations_instances(client, module_instances)
 
     return test_pass, inc_id

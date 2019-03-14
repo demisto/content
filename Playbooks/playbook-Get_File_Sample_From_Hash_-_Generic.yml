@@ -9,39 +9,43 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+    taskid: 38a19f0d-fa42-4db5-8bd8-e787836d6a64
     type: start
     task:
-      id: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+      id: 38a19f0d-fa42-4db5-8bd8-e787836d6a64
       version: -1
-      description: ""
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 270,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 0b7870df-59a1-4498-8517-e0e47cc2ab42
+    taskid: 2b67ca26-e093-4dca-8aed-c0d490b74b91
     type: playbook
     task:
-      id: 0b7870df-59a1-4498-8517-e0e47cc2ab42
+      id: 2b67ca26-e093-4dca-8aed-c0d490b74b91
       version: -1
-      description: ""
       name: ""
+      description: ""
       playbookName: Get File Sample From Hash - Carbon Black Enterprise Response
       type: playbook
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,12 +53,14 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 32e791fc-de85-4053-807a-9c7251e0f3f3
+    taskid: a986e95e-6e50-454b-8667-f3995523b3e4
     type: playbook
     task:
-      id: 32e791fc-de85-4053-807a-9c7251e0f3f3
+      id: a986e95e-6e50-454b-8667-f3995523b3e4
       version: -1
       description: ""
       name: ""
@@ -62,23 +68,46 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    scriptarguments:
+      SHA256:
+        simple: ${inputs.SHA256}
+      ZipPassword:
+        simple: infected
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 470,
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 240,
-        "width": 810,
+        "width": 800,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: SHA256
+  value:
+    simple: ${File.SHA256}
+  required: false
+  description: Get file sample from SHA256 input
+- key: MD5
+  value:
+    simple: ${File.MD5}
+  required: false
+  description: Get file sample from MD5 input
+outputs: []

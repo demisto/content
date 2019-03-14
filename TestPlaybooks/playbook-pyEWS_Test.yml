@@ -23,10 +23,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
     taskid: a3ce0f7c-bcd0-497d-8b79-5a524b8416ca
@@ -48,6 +50,7 @@ tasks:
       - "4"
       - "15"
       - "17"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"
@@ -56,10 +59,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: db2fb4dd-8220-4fd0-8787-585465815897
@@ -72,6 +77,7 @@ tasks:
       script: "|||ews-get-searchable-mailboxes"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -83,6 +89,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: d3f59864-0b8f-4fc9-8d2e-36fc7c27aee0
@@ -110,6 +118,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: 744f2aff-0e90-4227-84c1-13ae64a4f1e5
@@ -122,6 +132,7 @@ tasks:
       script: "|||ews-search-mailboxes"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -137,6 +148,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: 52b55155-7b88-4329-8bce-aadc24aff5f0
@@ -168,6 +181,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: 25a6919e-5106-4024-8837-2f97d93b449a
@@ -180,6 +195,7 @@ tasks:
       script: "|||ews-get-contacts"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -196,6 +212,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 6e186da2-3a1a-4e08-81a0-e06f7f34a401
@@ -223,6 +241,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: 817fbc68-c466-4073-8708-c7e505c782a2
@@ -235,6 +255,7 @@ tasks:
       script: "|||ews-get-attachment"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -251,6 +272,8 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "9":
     id: "9"
     taskid: ef5e845e-5b39-47c0-823f-9c618ceb9048
@@ -278,6 +301,8 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: cd09ad8e-7075-473a-875c-dff12db7f8d3
@@ -290,6 +315,7 @@ tasks:
       script: "|||ews-get-attachment"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -307,6 +333,8 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: be9301a9-cae2-491a-8825-7025950b219f
@@ -337,6 +365,8 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 84773ced-dadf-47ce-8427-f00e1050b4cf
@@ -364,6 +394,8 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 12579a4f-2924-4e93-805e-cb9dc54fb471
@@ -376,6 +408,7 @@ tasks:
       script: "|||ews-get-out-of-office"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -390,6 +423,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: 437889e1-48eb-4a23-8cc7-5f6e6b863522
@@ -417,6 +452,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "15":
     id: "15"
     taskid: 78e81be8-812f-42e1-89f9-c8df92084434
@@ -429,6 +466,7 @@ tasks:
       script: "|||ews-find-folders"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -442,6 +480,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "16":
     id: "16"
     taskid: 27bad126-6323-44f2-8633-f472b7259ae6
@@ -469,6 +509,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "17":
     id: "17"
     taskid: 28342353-39d3-4ac6-8534-24365bb13cdd
@@ -481,6 +523,7 @@ tasks:
       script: "|||ews-get-items"
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -496,6 +539,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "18":
     id: "18"
     taskid: 86bd116d-111b-470f-8cad-a3d473031949
@@ -532,6 +577,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "19":
     id: "19"
     taskid: 2be90127-1d13-458a-8645-edfcdedeeac6
@@ -553,6 +600,8 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "20":
     id: "20"
     taskid: d5f56aba-f8a4-4d5f-8f1d-03f5cfa34297
@@ -573,13 +622,70 @@ tasks:
           "y": 735
         }
       }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 265e2323-6421-4f3d-8fab-9232baee4245
+    type: regular
+    task:
+      id: 265e2323-6421-4f3d-8fab-9232baee4245
+      version: -1
+      name: Get expanded group
+      script: '|||ews-expand-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      email-address:
+        simple: DL1@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: af8cd07c-81fd-46fa-8b99-f46456066c16
+    type: regular
+    task:
+      id: af8cd07c-81fd-46fa-8b99-f46456066c16
+      version: -1
+      name: Verify Expanded Group members
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: EWS.ExpandGroup.members
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1115,
-        "width": 2745,
+        "width": 2960,
         "x": 50,
         "y": 50
       }

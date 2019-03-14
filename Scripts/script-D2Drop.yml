@@ -16,7 +16,7 @@ script: |-
 
   var filesRes = files( tempDir, true, false, args.files );
   if ( filesRes && filesRes.length > 0 ) {
-      if ( 1 != copy( filesRes[0].Path, args.destpath ) )
+      if ( 1 != copy( filesRes[0].Path, args.destpath, args.force === 'true') )
           throw "Error copying file " + filesRes[0].Path + " to " + filesRes[0].destpath + ".";
       else
           pack("File copied successfully.");
@@ -30,6 +30,7 @@ tags:
 comment: |-
   Drop a file to a target system by providing its path on the server. Use CopyFileD2 instead in most cases.
   This is a utility agent script to be used inside server scripts. See CopyFileD2 for an example.
+enabled: true
 system: true
 args:
 - name: destpath
@@ -38,4 +39,14 @@ args:
 - name: files
   required: true
   description: Source file name
+- name: force
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Overwrite file
 scripttarget: 1
+runonce: false
+runas: DBotWeakRole
+tests:
+  - No test - D2 tests are not supported yet in content tests

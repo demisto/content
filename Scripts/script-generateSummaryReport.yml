@@ -28,4 +28,5 @@ outputs:
   description: File ID of the report
   type: string
 scripttarget: 0
-
+tests:
+  - No test - No need

@@ -14,3 +14,4 @@ lxml
 langdetect
 pyVim
 pyVmomi
+pytest
