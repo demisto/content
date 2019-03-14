@@ -267,7 +267,7 @@ def free_search(default_base_dn, page_size):
     time_limit = int(args.get('time-limit', '0'))
     search_base = args.get('base-dn') or default_base_dn
     attributes = args.get('attributes')
-    context_output = args.get('context-ouptut')
+    context_output = args.get('context-output')
 
     # if ALL was specified - get all the object's attributes, else expect a string of comma separated values
     if attributes:
