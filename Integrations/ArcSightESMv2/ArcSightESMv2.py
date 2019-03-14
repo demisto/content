@@ -70,7 +70,7 @@ def decode_ip(address_by_bytes):
             return address_by_bytes
 
     except Exception as ex:
-        # sometimes ArcSight would not encode IPs, that will cause the decoder to
+        # sometimes ArcSight would not encode IPs, this will cause the decoder to
         # throw an exception, and in turn, we will return the input in its original form.
         demisto.debug(str(ex))
         return address_by_bytes
@@ -90,7 +90,7 @@ def parse_timestamp_to_datestring(timestamp):
 
 
 @logger
-def beautifully_json(d, depth=0, remove_nones=True):
+def decode_arcsight_output(d, depth=0, remove_nones=True):
     """ Converts some of the values from ArcSight DB into a more useful & readable format """
     # ArcSight stores some None values as follows
     NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648, 5e-324]
@@ -101,11 +101,11 @@ def beautifully_json(d, depth=0, remove_nones=True):
                         'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
     if depth < 10:
         if isinstance(d, list):
-            return [beautifully_json(d_, depth + 1) for d_ in d]
+            return [decode_arcsight_output(d_, depth + 1) for d_ in d]
         if isinstance(d, dict):
             for key, value in d.items():
                 if isinstance(value, dict):
-                    beautifully_json(value, depth + 1)
+                    decode_arcsight_output(value, depth + 1)
                 elif value in NONE_VALUES:
                     if remove_nones:
                         d.pop(key, None)
@@ -143,7 +143,7 @@ def login():
         if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
             auth_token = res_json.get('log.loginResponse').get('log.return')
             if demisto.command() not in ['test-module', 'fetch-incidents']:
-                # this is done to bypass setting integration context with commands outside of the cli
+                # this is done to bypass setting integration context outside of the cli
                 demisto.setIntegrationContext({'auth_token': auth_token})
             return auth_token
 
@@ -371,7 +371,7 @@ def fetch():
         'already_fetched': already_fetched,
     }
     demisto.setLastRun({'value': json.dumps(last_run)})
-    beautifully_json(incidents)
+    decode_arcsight_output(incidents)
 
     if demisto.command() == 'as-fetch-incidents':
         contents = {
@@ -410,8 +410,8 @@ def get_case(resource_id, fetch_base_events=False):
             case['eventIDs'] = [case['eventIDs']]
 
         if case.get('eventIDs') and fetch_base_events:
-            case['events'] = beautifully_json(get_security_events(case['eventIDs'], ignore_empty=True),
-                                              remove_nones=False)
+            case['events'] = decode_arcsight_output(get_security_events(case['eventIDs'], ignore_empty=True),
+                                                    remove_nones=False)
 
         return case
 
@@ -436,7 +436,7 @@ def get_case_command():
     if with_base_events:
         case['events'] = raw_case.get('events')
 
-    contents = beautifully_json(raw_case)
+    contents = decode_arcsight_output(raw_case)
     human_readable = tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -469,7 +469,7 @@ def get_security_events_command():
     raw_events = get_security_events(ids, last_date_range)
     if raw_events:
         events = []
-        contents = beautifully_json(raw_events)
+        contents = decode_arcsight_output(raw_events)
         for raw_event in contents:
             event = {
                 'Event ID': raw_event.get('eventId'),
@@ -544,7 +544,7 @@ def update_case_command():
         'Severity': raw_updated_case.get('consequenceSeverity'),
         'CreatedTime': epochToTimestamp(raw_updated_case.get('createdTimestamp'))
     }
-    contents = beautifully_json(raw_updated_case)
+    contents = decode_arcsight_output(raw_updated_case)
     human_readable = tableToMarkdown(name='Case {}'.format(case_id), t=updated_case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -585,20 +585,17 @@ def update_case(case_id, stage, severity):
 @logger
 def get_correlated_events_ids(event_ids):
     related_ids = set(event_ids)
-    correlated_events = beautifully_json(get_security_events(event_ids, ignore_empty=True))
+    correlated_events = decode_arcsight_output(get_security_events(event_ids, ignore_empty=True))
 
     for raw_event in correlated_events:
-        if raw_event.get('baseEventIds'):
-            try:
-                related_ids.add(raw_event.get('baseEventIds'))
-            except Exception as ex:
-                try:
-                    related_ids.update(raw_event.get('baseEventIds'))
-                except Exception as ex2:
-                    demisto.debug("couldn't update the set:\n{}\n{}".format(str(ex), str(ex2)))
-                    return event_ids
+        base_event_ids = raw_event.get('baseEventIds')
+        if base_event_ids:
+            if isinstance(base_event_ids, list):
+                related_ids.update(base_event_ids)
+            else:
+                related_ids.add(base_event_ids)
 
-    return list(related_ids)
+    return related_ids
 
 
 @logger
@@ -625,7 +622,7 @@ def get_case_event_ids_command():
         if with_correlated_events:
             event_ids = get_correlated_events_ids(event_ids)
 
-        contents = beautifully_json(res_json)
+        contents = decode_arcsight_output(res_json)
         human_readable = tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
                                          removeNull=True)
         outputs = {'ArcSightESM.CaseEvents': event_ids}
@@ -705,7 +702,7 @@ def get_entries_command():
                 k, v = f.split(':')
                 filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
 
-        contents = beautifully_json(filtered)
+        contents = decode_arcsight_output(filtered)
         ActiveListContext = {
             'ResourceID': resource_id,
             'Entries': contents,
@@ -787,7 +784,7 @@ def get_all_query_viewers_command():
     if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
         query_viewers = res_json.get('qvs.findAllIdsResponse').get('qvs.return')
 
-        contents = beautifully_json(query_viewers)
+        contents = decode_arcsight_output(query_viewers)
         outputs = {'ArcSightESM.AllQueryViewers': contents}
         human_readable = tableToMarkdown(name='', t=query_viewers, headers='Query Viewers', removeNull=True)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
