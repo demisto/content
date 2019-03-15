@@ -175,7 +175,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     entries = []
     entries_left_to_fetch = size_limit
     while True:
-        if entries_left_to_fetch and entries_left_to_fetch < page_size:
+        if 0 < entries_left_to_fetch < page_size:
             page_size = entries_left_to_fetch
 
         conn.search(
