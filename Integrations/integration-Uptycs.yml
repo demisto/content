@@ -115,30 +115,28 @@ script:
         header['Authorization']=authorization
         return header
 
-    def restcall(method, api, post_data_file):
+    def restcall(method, api, **kwargs):
 
         header=generate_headers('' , KEY , SECRET)
 
         url=("https://%s.uptycs.io/public/api/customers/%s%s" %
                 (DOMAIN,CUSTOMER_ID,api))
 
-        if method == 'GET':
-            response = requests.get(url, headers=header, verify=VERIFY_CERT )
+        try:
+            request_func = getattr(requests, method)
+        except AttributeError:
+            return_error("Invalid method: {0}".format(method))
 
-        if method == 'POST':
-            post_data = post_data_file
-            response = requests.post(url, headers=header,
-                    json=post_data, verify=VERIFY_CERT )
+        try:
+            response = request_func(
+                            url,
+                            headers=header,
+                            verify=VERIFY_CERT,
+                            **kwargs)
+        except Exception as e:
+            return_error("Error Connecting to server. Details: {0}".format(str(e)))
 
-        if method == 'PUT':
-            post_data = post_data_file
-            response = requests.put(url, headers=header,
-                    json=post_data, verify=VERIFY_CERT )
-
-        if method != 'GET' and method != 'POST' and method != 'PUT':
-            return 0
-        else:
-            return response.json()
+        return response.json()
 
     def severity_to_int(level_string):
         level_int = 0
@@ -260,7 +258,7 @@ script:
 
     def uptycs_run_query():
         '''return results of posted query'''
-        http_method = 'POST'
+        http_method = 'post'
         query = demisto.args().get('query')
         if(demisto.args().get('query_type')=='global'):
             api_call = '/query'
@@ -303,7 +301,7 @@ script:
 
                         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_run_query_command():
         query_results = uptycs_run_query()
@@ -324,7 +322,7 @@ script:
 
     def uptycs_get_assets():
         '''return list of assets enrolled in Uptycs'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = "/query"
         query = 'SELECT * FROM upt_assets'
         limit = demisto.args().get('limit')
@@ -354,7 +352,7 @@ script:
                     "queryType":queryType
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_assets_command():
         query_results = uptycs_get_assets()
@@ -382,7 +380,7 @@ script:
 
     def uptycs_get_alerts():
         '''return list of alerts'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = "/query"
         query = 'SELECT a.*, u.host_name FROM upt_alerts a JOIN upt_assets u ON a.upt_asset_id=u.id'
         limit = demisto.args().get('limit')
@@ -426,7 +424,7 @@ script:
                     "queryType":queryType
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_alerts_command():
         query_results = uptycs_get_alerts()
@@ -465,7 +463,7 @@ script:
 
     def uptycs_get_events():
         '''return list of events'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = "/query"
         query = 'SELECT a.*, u.host_name FROM upt_events a JOIN upt_assets u ON a.upt_asset_id=u.id'
         limit = demisto.args().get('limit')
@@ -500,7 +498,7 @@ script:
                     "queryType":queryType
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_events_command():
         query_results = uptycs_get_events()
@@ -527,15 +525,14 @@ script:
 
     def uptycs_get_alert_rules():
         '''return list of alert rules'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = "/alertRules"
-        post_data = {}
         limit = demisto.args().get('limit')
 
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_alert_rules_command():
         query_results = uptycs_get_alert_rules()
@@ -553,15 +550,14 @@ script:
 
     def uptycs_get_event_rules():
         '''return list of event rules'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = "/eventRules"
-        post_data = {}
         limit = demisto.args().get('limit')
 
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_event_rules_command():
         query_results = uptycs_get_event_rules()
@@ -579,7 +575,7 @@ script:
 
     def uptycs_get_process_open_files():
         '''return information for processes which opened a file'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
         query = "select * from process_open_files"
         limit = demisto.args().get('limit')
@@ -616,7 +612,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_process_open_files_command():
         query_results = uptycs_get_process_open_files()
@@ -643,7 +639,7 @@ script:
 
     def uptycs_get_process_open_sockets():
         '''return information for processes which opened a socket'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
         time = demisto.args().get('time')
         query = "select * from process_open_sockets"
@@ -681,7 +677,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_process_open_sockets_command():
         query_results = uptycs_get_process_open_sockets()
@@ -704,7 +700,7 @@ script:
 
     def uptycs_get_socket_events():
         '''return information for processes which opened a socket'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
         time = demisto.args().get('time')
         query = "select * from socket_events"
@@ -742,7 +738,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_socket_events_command():
         query_results = uptycs_get_socket_events()
@@ -763,9 +759,53 @@ script:
 
         return entry
 
+    def uptycs_get_socket_event_information():
+        '''return process event information'''
+        http_method = 'post'
+        api_call = '/query'
+
+        query=("SELECT * FROM socket_events WHERE remote_address='%s' AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
+            (demisto.args().get('ip'), demisto.args().get('time')))
+
+        equal_cuts = {
+            "upt_asset_id":demisto.args().get('asset_id'),
+            "upt_hostname":demisto.args().get('host_name_is')
+            }
+
+        query = apply_equals_cuts(query, equal_cuts)
+
+        query = ("%s ORDER BY upt_time DESC" % query)
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, json = post_data)
+
+    def uptycs_get_socket_event_information_command():
+        query_results = uptycs_get_socket_event_information()
+        human_readable = tableToMarkdown('Socket event information',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'local_address', 'remote_address',
+                'upt_time', 'local_port', 'action'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ProcEvent': context
+                    }
+                }
+
+        return entry
+
     def uptycs_get_processes():
         '''return process which are running or have run on a registered Uptycs asset'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
         time = demisto.args().get('time')
         query = "select * from processes"
@@ -802,7 +842,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_processes_command():
         query_results = uptycs_get_processes()
@@ -825,7 +865,7 @@ script:
 
     def uptycs_get_process_events():
         '''return process events which have executed on a registered Uptycs asset'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
         time = demisto.args().get('time')
         query = "select * from process_events"
@@ -864,7 +904,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_process_events_command():
         query_results = uptycs_get_process_events()
@@ -887,7 +927,7 @@ script:
 
     def uptycs_get_process_information():
         '''return process information'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
 
         query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
@@ -914,7 +954,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_process_information_command():
         query_results = uptycs_get_process_information()
@@ -936,7 +976,7 @@ script:
 
     def uptycs_get_process_event_information():
         '''return process event information'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
 
         query=("SELECT * FROM process_events WHERE pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
@@ -957,7 +997,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_process_event_information_command():
         query_results = uptycs_get_process_event_information()
@@ -979,7 +1019,7 @@ script:
 
     def uptycs_get_parent_information():
         '''return parent process information'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
 
         query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
@@ -1006,7 +1046,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_parent_information_command():
         query_results = uptycs_get_parent_information()
@@ -1028,7 +1068,7 @@ script:
 
     def uptycs_get_parent_event_information():
         '''return process event information'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
 
         query=("SELECT * FROM process_events WHERE pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
@@ -1049,7 +1089,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_parent_event_information_command():
         query_results = uptycs_get_parent_event_information()
@@ -1071,7 +1111,7 @@ script:
 
     def uptycs_get_process_child_processes():
         '''return child processes for a given parent process'''
-        http_method = 'POST'
+        http_method = 'post'
         api_call = '/query'
         parent = demisto.args().get('parent')
         limit = demisto.args().get('limit')
@@ -1100,7 +1140,7 @@ script:
             'queryType': query_type
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_get_process_child_processes_command():
         query_results = uptycs_get_process_child_processes()
@@ -1122,14 +1162,14 @@ script:
 
     def uptycs_set_alert_status():
         '''set the status of an alert'''
-        http_method = 'PUT'
+        http_method = 'put'
         api_call = ('/alerts/%s' % demisto.args().get('alert_id'))
 
         post_data = {
             'status': demisto.args().get('status')
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_set_alert_status_command():
         query_results = uptycs_set_alert_status()
@@ -1158,18 +1198,18 @@ script:
 
     def uptycs_set_asset_tag():
         '''set a tag on an asset'''
-        http_method='GET'
+        http_method='get'
         api_call = ('/assets/%s' % demisto.args().get('asset_id'))
         post_data={}
-        tags = restcall(http_method, api_call, post_data).get('tags')
+        tags = restcall(http_method, api_call).get('tags')
         tags.append(demisto.args().get('tag_key')+'='+demisto.args().get('tag_value'))
 
-        http_method = 'PUT'
+        http_method = 'put'
         post_data = {
             'tags': tags
         }
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call, json = post_data)
 
     def uptycs_set_asset_tag_command():
         query_results = uptycs_set_asset_tag()
@@ -1195,15 +1235,14 @@ script:
 
     def uptycs_get_users():
         '''return a list of uptycs users'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/users'
-        post_data = {}
         limit = demisto.args().get('limit')
 
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_users_command():
         query_results = uptycs_get_users()
@@ -1227,11 +1266,10 @@ script:
 
     def uptycs_get_user_information():
         '''return information about a specfic Uptycs user'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/users/%s' % demisto.args().get('user_id')
-        post_data = {}
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_user_information_command():
         query_results = uptycs_get_user_information()
@@ -1262,11 +1300,10 @@ script:
 
     def uptycs_get_user_asset_groups():
         '''return a list of users in a particular asset group'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/users'
-        post_data = {}
 
-        users = restcall(http_method, api_call, post_data).get('items')
+        users = restcall(http_method, api_call).get('items')
         user_ids = []
         for index in range(len(users)):
             user_ids.append(users[index].get('id'))
@@ -1274,10 +1311,9 @@ script:
         asset_group_id = demisto.args().get('asset_group_id')
         users_in_group = {}
         for user_id in user_ids:
-            http_method = 'GET'
+            http_method = 'get'
             api_call = '/users/%s' % user_id
-            post_data = {}
-            user_info = restcall(http_method, api_call, post_data)
+            user_info = restcall(http_method, api_call)
             obj_groups = user_info.get('userObjectGroups')
             for obj_group in obj_groups:
                 if obj_group.get('objectGroupId') == asset_group_id:
@@ -1308,15 +1344,14 @@ script:
 
     def uptycs_get_asset_groups():
         '''return a list of asset groups'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/objectGroups'
-        post_data = {}
         limit = demisto.args().get('limit')
 
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_asset_groups_command():
         query_results = uptycs_get_asset_groups()
@@ -1340,9 +1375,8 @@ script:
 
     def uptycs_get_threat_indicators():
         '''return a list of threat indcicators'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/threatIndicators'
-        post_data = {}
         limit = demisto.args().get('limit')
 
         if limit != -1 and limit != None:
@@ -1352,7 +1386,7 @@ script:
         if indicator!=None:
             api_call = '%s?filters={"indicator":{"like":"%s"}}' % (api_call, indicator)
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_threat_indicators_command():
         query_results = uptycs_get_threat_indicators()
@@ -1376,11 +1410,10 @@ script:
 
     def uptycs_get_threat_indicator():
         '''return information about a particular threat indicator'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/threatIndicators/%s' % demisto.args().get('indicator_id')
-        post_data = {}
 
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_threat_indicator_command():
         query_results = uptycs_get_threat_indicator()
@@ -1410,16 +1443,14 @@ script:
 
     def uptycs_get_threat_sources():
         '''return a list of threat sources'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/threatSources'
         limit = demisto.args().get('limit')
 
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
-        post_data = {}
-
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_threat_sources_command():
         query_results = uptycs_get_threat_sources()
@@ -1443,16 +1474,14 @@ script:
 
     def uptycs_get_threat_source():
         '''return information about a particular threat source'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/threatSources'
 
         threat_source_id = demisto.args().get('threat_source_id')
         if threat_source_id!=None:
             api_call = '%s/%s' % (api_call, threat_source_id)
 
-        post_data = {}
-
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_threat_source_command():
         query_results = uptycs_get_threat_source()
@@ -1478,7 +1507,7 @@ script:
 
     def uptycs_get_threat_vendors():
         '''return a list of threat vendors'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/threatVendors'
         limit = demisto.args().get('limit')
 
@@ -1489,9 +1518,7 @@ script:
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
-        post_data = {}
-
-        return restcall(http_method, api_call, post_data)
+        return restcall(http_method, api_call)
 
     def uptycs_get_threat_vendors_command():
         query_results = uptycs_get_threat_vendors()
@@ -1549,11 +1576,10 @@ script:
 
     def uptycs_test_module():
         '''check whether Uptycs API responds correctly'''
-        http_method = 'GET'
+        http_method = 'get'
         api_call = '/assets?limit=1'
-        post_data = {}
 
-        query_results = restcall(http_method, api_call, post_data)
+        query_results = restcall(http_method, api_call)
 
         if query_results == 0:
             return False
@@ -1569,12 +1595,11 @@ script:
         else:
             last_run = demisto.getLastRun()['time']
 
-        http_method = 'GET'
+        http_method = 'get'
         api_call = ('/alerts?filters={"alertTime":{"between":["%s","%s"]}}' \
             % (last_run, this_run))
-        post_data = {}
 
-        query_results = restcall(http_method, api_call, post_data)
+        query_results = restcall(http_method, api_call)
 
         incidents = []
         if len(query_results.get('items')) == 0:
@@ -1639,6 +1664,9 @@ script:
 
     if demisto.command() == 'uptycs-get-socket-events':
         demisto.results(uptycs_get_socket_events_command())
+
+    if demisto.command() == 'uptycs-get-socket-event-information':
+        demisto.results(uptycs_get_socket_event_information_command())
 
     if demisto.command() == 'uptycs-get-process-open-sockets':
         demisto.results(uptycs_get_process_open_sockets_command())
@@ -2522,10 +2550,6 @@ script:
     - contextPath: Uptycs.SocketEvents.upt_asset_id
       description: asset id for asset which ran the specified process
       type: string
-    - contextPath: Uptycs.SocketEvents.parent
-      description: pid for the parent process which spawned the process which opened
-        the connection
-      type: number
     description: find processes which opened a socket
   - name: uptycs-get-parent-event-information
     arguments:
@@ -2560,6 +2584,48 @@ script:
       type: date
     description: find information for parent process events which are running or have
       run on a registered Uptycs assert
+  - name: uptycs-get-socket-event-information
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+    - name: host_name_is
+      description: Hostname for asset which spawned the specified process.
+    - name: ip
+      required: true
+      description: IP address which process opened a socket to.
+    - name: time
+      required: true
+      description: Time that the specified connection was opened.
+    outputs:
+    - contextPath: Uptycs.SocketEvents.pid
+      description: pid of process which opened a connection to a specified IP
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_hostname
+      description: hostname of the asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.upt_time
+      description: time at which the connection was opened
+      type: date
+    - contextPath: Uptycs.SocketEvents.path
+      description: file path to the process being run
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_address
+      description: local IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.remote_address
+      description: remote IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_port
+      description: local port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.remote_port
+      description: remote port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_asset_id
+      description: asset id for asset which ran the specified process
+      type: string
+    description: get information for a particular socket event
   dockerimage: bkschmolluptycs/demisto_uptycs:latest
   isfetch: true
   runonce: true
