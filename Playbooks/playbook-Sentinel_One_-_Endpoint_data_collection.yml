@@ -284,5 +284,3 @@ inputs:
 outputs: []
 tests:
   - No test
-releaseNotes: Fix sentinelOne integration name to SentinelOne
-              Add task validation to the playbook to check if SentinelOne enabled

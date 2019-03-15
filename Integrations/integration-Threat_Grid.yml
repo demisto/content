@@ -2268,4 +2268,3 @@ script:
   runonce: false
 tests:
   - ThreatGridTest
-releaseNotes: "The command threat-grid-upload-sample now works properly with file names that contain new line characters."

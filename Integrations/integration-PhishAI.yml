@@ -19,7 +19,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2
+  script: |
     var DONT_CHECK_CERTIFICATE = false;
 
     function checkStatus(url, apiKey){
@@ -78,13 +78,14 @@ script:
     }
 
 
-    function analayzeResult(report, url) {
+    function analayzeResult(report, url, scanId) {
         delete report.user_email;
         var DBotScore = {
             Indicator: url,
             Score: 0,
             Type: 'url',
-            Vendor: 'Phish.AI'
+            Vendor: 'Phish.AI',
+            ScanID: scanId
         };
         if (report.verdict == 'malicious') {
             DBotScore.Score = 3;
@@ -105,7 +106,7 @@ script:
             delete report.url;
 
         }
-        md = tableToMarkdown('Phish.AI Scan report ' + url, report);
+        md = tableToMarkdown('Phish.AI Scan report ' + url + '. Scan ID: ' + scanId, report);
         return {
             Type: entryTypes.note,
             Contents: report,
@@ -169,7 +170,40 @@ script:
 
         var report = JSON.parse(res.Body);
 
-        return analayzeResult(report, url)
+        return analayzeResult(report, url, scanId);
+    }
+
+
+    function phishAiDispute(scan_id, apiKey) {
+        var res = http(
+            'https://app.phish.ai/api/url/dispute?scan_id=' + scan_id,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Accept': ['application/json'],
+                    'Authorization': [apiKey]
+                }
+            },
+            DONT_CHECK_CERTIFICATE,
+            params.proxy
+        );
+
+        if (res.StatusCode !== 200) {
+            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scan_id + '. Response error: ' + res.Body;
+        }
+
+        textRes = JSON.parse(res.Body);
+        if (textRes == 'OK') {
+            return {
+                Type: entryTypes.note,
+                Contents: textRes,
+                ContentsFormat: formats.text,
+                HumanReadable: 'Scan ID: ' + scan_id + ' was disputed'
+            };
+        }
+        else {
+            throw 'Failed to dispute url ' + url + ', Scan ID: ' + scan_id + '. Response error: ' + textRes;
+        }
     }
 
     switch (command) {
@@ -181,10 +215,16 @@ script:
                 return 'error';
             }
             break;
+
         case 'phish-ai-scan-url':
             return phishAiScan(args.url, params.apiKey);
+
         case 'phish-ai-check-status':
             return checkStatus(args.url, params.apiKey);
+
+        case 'phish-ai-dispute-url':
+            return phishAiDispute(args.scan_id, params.apiKey);
+
         default:
             break;
     }
@@ -207,18 +247,24 @@ script:
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
+      type: string
     - contextPath: DBotScore.Type
       description: The type of the indicator
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
       type: string
     - contextPath: DBotScore.Score
       description: The actual score
+      type: number
     - contextPath: IP.Address
       description: IP address of the url
       type: string
     - contextPath: IP.Geo.Country
       description: Geo location of the url
+      type: string
+    - contextPath: DBotScore.ScanID
+      description: Phish AI scan ID
       type: string
     description: Check if url is phishing and get details about the brand that is
       being phished
@@ -232,6 +278,13 @@ script:
     - contextPath: URL.Status
       description: URL's Status
     description: Checks on url's status, e.g. completed/in progress
+  - name: phish-ai-dispute-url
+    arguments:
+    - name: scan_id
+      required: true
+      description: Scan ID of the URL to dispute
+    description: DIspute the result of the scan
   runonce: false
+releaseNotes: "Add dispute url command"
 tests:
-  - PhishAi-Test
+- PhishAi-Test

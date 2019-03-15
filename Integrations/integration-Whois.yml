@@ -192,6 +192,6 @@ script:
   dockerimage: demisto/ippysocks
   runonce: false
 fromversion: 4.1.0
-releaseNotes: Integration is no longer enabled by default
+releaseNotes: Removed from default
 tests:
   - whois_test

@@ -546,6 +546,5 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
-releaseNotes: Fixes in supported file types and detonating only file with size greater than 0
 tests:
 - Detonate File - Generic Test

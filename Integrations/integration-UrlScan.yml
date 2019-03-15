@@ -749,6 +749,5 @@ script:
       type: string
     description: Submit a url to scan
   runonce: false
-releaseNotes: "Add rate limit arguments to !url command: wait, retries"
 tests:
   - urlscan_malicious_Test

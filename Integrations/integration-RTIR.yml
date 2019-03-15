@@ -975,6 +975,5 @@ script:
   dockerimage: demisto/rt-ir
   isfetch: true
   runonce: false
-releaseNotes: Fixed certification verification error
 tests:
   - RTIR Test

@@ -139,6 +139,5 @@ view: |-
     }
   }
 inputs: []
-releaseNotes: "Deprecated"
 tests:
   - No tests - Deprecated

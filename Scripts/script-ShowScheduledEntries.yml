@@ -96,4 +96,3 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
-releaseNotes: Do not return tasks with completed schedules

@@ -147,6 +147,5 @@ script:
     - contextPath: CVE.Description
       description: The CVE description
     description: Get latest updated CVEs
-releaseNotes: Integration is no longer enabled by default
 tests:
   - No test

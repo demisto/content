@@ -1359,6 +1359,5 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-releaseNotes: "Fixed issue with netwitness-update-incident where it ignored the assignee argument"
 tests:
   - RSA NetWitness Test

@@ -466,6 +466,5 @@ inputs:
   value: ""
   description: If you have SentinelOne, what is the incident type for SentinelOne
     incidents
-releaseNotes: "Deprecated playbook"
 tests:
   - No tests - Deprecated playbook

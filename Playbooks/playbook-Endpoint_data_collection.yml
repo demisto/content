@@ -241,6 +241,5 @@ inputs:
   required: false
   description: ""
 outputs: []
-releaseNotes: "-"
 tests:
   - No tests - Need to add

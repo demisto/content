@@ -1,0 +1,281 @@
+category: Analytics & SIEM
+commonfields:
+  id: Azure Security Center
+  version: -1
+configuration:
+- defaultvalue: https://management.azure.com
+  display: Microsoft Azure Management URL
+  name: server_url
+  required: false
+  type: 0
+- display: Tenant ID (received from the admin consent - see Detailed Instructions
+    (?) section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see detailed instructions (?))
+  name: token
+  required: true
+  type: 4
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Unified security management and advanced threat protection across hybrid
+  cloud workloads.
+detaileddescription: |-
+  To grant access to Microsoft Security Center, an admin needs to approve Demisto using an admin consent flow. To start the admin consent flow, click [here](https://demistobot.demisto.com/azuresc-sub).
+  After authorizing the Demisto app, you'll receive a tenant ID, which you should enter in the integration instance settings.
+display: Azure Security Center
+name: Azure Security Center
+script:
+  script: ''
+  type: python
+  commands:
+  - arguments:
+    - default: false
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    - default: false
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-location-list' command to get the ascLocation.
+        This command requires the resourceGroupName argument.
+      isArray: false
+      name: asc_location
+      required: false
+      secret: false
+    - default: false
+      description: OData filter
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: OData select
+      isArray: false
+      name: select
+      required: false
+      secret: false
+    - default: false
+      description: OData expand
+      isArray: false
+      name: expand
+      required: false
+      secret: false
+    description: Lists alerts for the subscription according to the specified filters.
+    execution: false
+    name: azure-sc-list-alert
+    outputs:
+    - contextPath: AzureSecurityCenter.Alert.AlertDisplayName
+      description: Alert display name
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.CompromisedEntity
+      description: The entity on which the incident occurred
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.DetectedTimeUtc
+      description: Time the vendor detected the incident
+      type: date
+    - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
+      description: Estimated severity of this alert
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.State
+      description: Alert state (Active, Dismissed, etc.)
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.ID
+      description: Alert ID
+      type: string
+  - arguments:
+    - default: false
+      description: Resource group name
+      isArray: false
+      name: resource_group_name
+      required: true
+      secret: false
+    - default: true
+      defaultValue: current
+      description: Name of the Advanced Threat Detection setting, default is 'current'.
+      isArray: false
+      name: setting_name
+      required: false
+      secret: false
+    - default: false
+      description: Storage name in your Azure account
+      isArray: false
+      name: storage_account
+      required: true
+      secret: false
+    - default: false
+      description: Indicates whether Advanced Threat Protection is enabled.
+      isArray: false
+      name: is_enabled
+      required: true
+      secret: false
+    description: Updates Advanced Threat Detection settings.
+    execution: false
+    name: azure-sc-update-atp
+    outputs:
+    - contextPath: AzureSecurityCenter.AdvancedThreatProtection.ID
+      description: Resource ID
+      type: string
+    - contextPath: AzureSecurityCenter.AdvancedThreatProtection.Name
+      description: Resource Name
+      type: string
+    - contextPath: AzureSecurityCenter.AdvancedThreatProtection.IsEnabled
+      description: Indicates whether Advanced Threat Protection is enabled
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the resource group.
+      isArray: false
+      name: resource_group_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: current
+      description: Name of Advanced Threat Detection setting, default setting's name
+        is 'current'.
+      isArray: false
+      name: setting_name
+      required: false
+      secret: false
+    - default: false
+      description: Name of a storage in your azure account.
+      isArray: false
+      name: storage_account
+      required: true
+      secret: false
+    description: Returns the Advanced Threat Protection setting.
+    execution: false
+    name: azure-sc-get-atp
+    outputs:
+    - contextPath: AzureSecurityCenter.AdvancedThreatProtection.ID
+      description: Resource ID
+      type: string
+    - contextPath: AzureSecurityCenter.AdvancedThreatProtection.Name
+      description: Resource name
+      type: string
+    - contextPath: AzureSecurityCenter.AdvancedThreatProtection.IsEnabled
+      description: Indicates whether Advanced Threat Protection is enabled
+      type: string
+  - arguments:
+    - default: true
+      defaultValue: default
+      description: Name of the auto provisioning setting, default setting's name is
+        'default'
+      isArray: false
+      name: setting_name
+      required: true
+      secret: false
+    - default: false
+      description: Describes the type of security agent provisioning action to take
+        (On or Off)
+      isArray: false
+      name: auto_provision
+      required: true
+      secret: false
+    description: Updates a specific auto provisioning setting.
+    execution: false
+    name: azure-sc-update-aps
+    outputs:
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
+      description: Setting display name
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
+      description: Display the type of security agent provisioning action to take
+        (On or Off)
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
+      description: Setting resource ID
+      type: string
+  - arguments:
+    - default: false
+      defaultValue: default
+      description: Name of the auto provisioning setting
+      isArray: false
+      name: setting_name
+      required: true
+      secret: false
+    description: Returns details of a specific auto provisioning setting.
+    execution: false
+    name: azure-sc-get-aps
+    outputs:
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
+      description: Setting display name
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
+      description: Display the type of security agent provisioning action to take
+        (On or Off)
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
+      description: Set resource ID
+      type: string
+  - description: Lists auto provisioning settings in the subscription.
+    execution: false
+    name: azure-sc-list-aps
+    outputs:
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
+      description: Setting display name
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
+      description: Display the type of security agent provisioning action to take
+        (On or Off)
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
+      description: Setting resource ID
+      type: string
+  - arguments:
+    - default: false
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-list-location' command to get the asc_location.
+      isArray: false
+      name: asc_location
+      required: false
+      secret: false
+    - default: false
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Lists all policies for protecting resources using Just-in-Time access
+      control.
+    execution: false
+    name: azure-sc-list-jit
+    outputs:
+    - contextPath: AzureSecurityCenter.JITPolicy.Name
+      description: Poliyc display name
+      type: string
+    - contextPath: AzureSecurityCenter.JITPolicy.Rules
+      description: 'CSV list of access rules for Microsoft.Compute/virtualMachines
+        resource, in the format (VMName: allowPort1,...)'
+      type: string
+    - contextPath: AzureSecurityCenter.JITPolicy.Location
+      description: Location where the resource is stored
+      type: string
+    - contextPath: AzureSecurityCenter.JITPolicy.Kind
+      description: Policy resource type
+      type: string
+  - description: Lists all the storage accounts available under the subscription.
+    execution: false
+    name: azure-sc-list-storage
+    outputs:
+    - contextPath: AzureSecurityCenter.Storage.Name
+      description: Name of the storage account
+      type: string
+    - contextPath: AzureSecurityCenter.Storage.ResourceGroupName
+      description: Names of the attached resource group
+      type: string
+    - contextPath: AzureSecurityCenter.Storage.Location
+      description: The geo-location where the resource resides
+      type: string
+  isfetch: false
+  runonce: false
