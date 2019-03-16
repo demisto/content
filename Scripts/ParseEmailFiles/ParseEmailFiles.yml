@@ -20,6 +20,13 @@ args:
   required: true
   default: true
   description: Entry ID with the Email as a file in msg or eml format
+- name: parse_only_headers
+  description: Will parse only the headers and return headers table
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
 outputs:
 - contextPath: Email.To
   description: Email 'to' addresses
@@ -81,9 +88,9 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "
-Fix - support email files with type 'SMTP Mail'
-eml contains eml - inner eml will be extracted
-eml parsed recursively"
+releaseNotes: 'Fix - support email files with type ''SMTP Mail'' eml contains eml
+  - inner eml will be extracted eml parsed recursively
+  - support parsing only email headers
+  '
 tests:
-  - "ParseEmailFiles-test"
+- ParseEmailFiles-test
