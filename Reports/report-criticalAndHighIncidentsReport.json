@@ -1,6 +1,7 @@
 {
   "id": "criticalAndHighIncidentsReport",
   "name": "Critical and High incidents",
+  "releaseNotes": "changed occurred time format in decoder",
   "description": "All critical and high severity incidents that may need the analyst attention.",
   "fromVersion": "3.5.0",
   "tags": [],
