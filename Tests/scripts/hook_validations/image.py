@@ -62,13 +62,12 @@ class ImageValidator(object):
 
         if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
             package_path = os.path.dirname(self.file_path)
+            if is_image_in_yml:
+                print_error("You have added an image in the yml "
+                            "file, please update the package {}".format(package_path))
+                return False
             image_path = glob.glob(package_path + '/*.png')
             if image_path:
-                if is_image_in_yml:
-                    print_error("You have added an image both in the package and in the yml "
-                                "file, please update the package {}".format(package_path))
-                    return False
-
                 is_image_in_package = True
 
         if not (is_image_in_package or is_image_in_yml):
