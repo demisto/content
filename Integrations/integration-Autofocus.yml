@@ -330,34 +330,49 @@ script:
     outputs:
     - contextPath: Autofocus.Cookie
       description: The cookie for the results
+      type: string
     - contextPath: Autofocus.Samples.id
       description: ID of sample
+      type: string
     - contextPath: Autofocus.Samples.md5
       description: MD5 of the sample
+      type: string
     - contextPath: Autofocus.Samples.sha1
       description: SHA1 of the sample
+      type: string
     - contextPath: Autofocus.Samples.sha256
       description: SHA256 of the sample
+      type: string
     - contextPath: Autofocus.Samples.app_name
       description: Application name (if exists)
+      type: string
     - contextPath: Autofocus.Samples.size
       description: The size of the sample
+      type: number
     - contextPath: Autofocus.Samples.ssdeep
       description: SSDeep of the sample
+      type: string
     - contextPath: Autofocus.Samples.create_date
       description: The create date for the sample
+      type: string
     - contextPath: Autofocus.Samples.finish_date
       description: The finish date for the sample
+      type: string
     - contextPath: Autofocus.Samples.malware
       description: A flag (0/1) if this is malware
+      type: string
     - contextPath: Autofocus.Samples.app_packagename
       description: The sample package name (if exists)
+      type: string
     - contextPath: Autofocus.Samples.filetype
       description: The sample type
+      type: string
     - contextPath: Autofocus.Samples.region
       description: Where have we seen this sample
+      type: number
     - contextPath: Autofocus.Samples.tag
       description: Sample tags
+      type: string
     description: Search for samples on Autofocus
   - name: autofocus-search-sessions
     arguments:
@@ -410,20 +425,28 @@ script:
     outputs:
     - contextPath: Autofocus.Cookie
       description: The cookie for the results
+      type: string
     - contextPath: Autofocus.Sessions.id
       description: ID of the session
+      type: string
     - contextPath: Autofocus.Sessions.device_industry
       description: Device industry
+      type: string
     - contextPath: Autofocus.Sessions.filename
       description: The name of the file
+      type: string
     - contextPath: Autofocus.Sessions.region
       description: Region for the session
+      type: string
     - contextPath: Autofocus.Sessions.sha256
       description: SHA256 of the file
+      type: string
     - contextPath: Autofocus.Sessions.tstamp
       description: Timestamp for session
+      type: string
     - contextPath: Autofocus.Sessions.upload_src
       description: Where did we get the file
+      type: string
     description: Search for sessions on Autofocus
   - name: autofocus-session
     arguments:
@@ -434,18 +457,25 @@ script:
     outputs:
     - contextPath: Autofocus.Sessions.id
       description: ID of the session
+      type: string
     - contextPath: Autofocus.Sessions.device_industry
       description: Device industry
+      type: string
     - contextPath: Autofocus.Sessions.filename
       description: The name of the file
+      type: string
     - contextPath: Autofocus.Sessions.region
       description: Region for the session
+      type: string
     - contextPath: Autofocus.Sessions.sha256
       description: SHA256 of the file
+      type: string
     - contextPath: Autofocus.Sessions.tstamp
       description: Timestamp for session
+      type: string
     - contextPath: Autofocus.Sessions.upload_src
       description: Where did we get the file
+      type: string
     description: Get details of a specific session
   - name: autofocus-sample-analysis
     arguments:
@@ -484,24 +514,34 @@ script:
     outputs:
     - contextPath: File.MD5
       description: File MD5 hash
+      type: string
     - contextPath: File.SHA1
       description: File SHA1 hash
+      type: string
     - contextPath: File.SHA256
       description: File SHA256 hash
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
+      type: string
     - contextPath: DBotScore.Type
       description: The type of the indicator
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the Score
+      type: string
     - contextPath: DBotScore.Score
       description: The actual score
+      type: number
     - contextPath: DBotScore.Description
       description: The reason for the score (if any)
+      type: string
     description: Check file reputation of the given hash
   runonce: false
 releaseNotes: Entry table fixes
