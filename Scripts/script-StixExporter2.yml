@@ -1,19 +1,53 @@
 commonfields:
   id: StixExporter2
-  version: 12
+  version: 7
 name: StixExporter2
 script: |-
-from stix2 import Indicator
+from stix2 import Indicator, Bundle
 
-indicator = Indicator(name="File hash for malware variant",
-                      labels=["malicious-activity"],
-                      pattern="[file:hashes.md5 = 'd41d8cd98f00b204e9800998ecf8427e']")
-print(indicator)
-print(demisto.args().get('ids','no ids'))
+demisto_indicator_type = demisto.args().get('indicator_type','')
+value = demisto.args().get('value','')
+source_System = demisto.args().get('source','')
+demisto_Score = demisto.args().get('score','')
+first_seen = demisto.args().get('firstSeen','')
+demisto_created = demisto.args().get('timestamp','')
+last_seen = demisto.args().get('lastSeen','')
+
+stix_type_and_value = ""
+
+if demisto_indicator_type == "File MD5":
+    stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
+if demisto_indicator_type == "File SHA1":
+    stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
+# pattern="[file:hashes.md5 = '" + value + "']",
+indicator = Indicator(labels=demisto_indicator_type,
+                      pattern=stix_type_and_value,
+                      source=source_System,
+                      created=demisto_created,  # created - timestamp
+                      modified=last_seen,  # modified - lastSeen
+                      firstSeen=first_seen,  # first_seen - firstSeen
+                      score=demisto_Score,  # Reputation
+                      allow_custom=True)
+bundle = Bundle(indicator)
+print(bundle)
 type: python
 tags: []
 enabled: true
+args:
+- name: indicator_type
+  required: true
+  description: Type of indicator
+- name: value
+  required: true
+  description: Indicator value
+- name: source
+  description: Indicator source system
+- name: score
+  description: DBot score
+- name: firstSeen
+  description: 'first time the indicator have been seen '
+- name: timestamp
+- name: lastSeen
 scripttarget: 0
 runonce: false
-dockerimage: demisto/stix
 runas: DBotWeakRole
