@@ -73,6 +73,7 @@ script:
     def whois_command():
         try:
             whois_result = whois.whois(DOMAIN)
+            demisto.debug(str(whois_result))
             md = {}
             for key in whois_result:
                 value = whois_result[key]
