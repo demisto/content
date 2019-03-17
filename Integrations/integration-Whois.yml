@@ -40,7 +40,6 @@ script:
             uri = urlparse(proxy_url)
             socks.set_default_proxy(socks.PROXY_TYPE_HTTP, uri.hostname, uri.port)
             socket.socket = socks.socksocket
-    DOMAIN = demisto.args().get('query')
 
 
     ''' HELPER FUNCTIONS '''
@@ -71,8 +70,9 @@ script:
 
     '''COMMANDS'''
     def whois_command():
+        query = demisto.args().get('query')
         try:
-            whois_result = whois.whois(DOMAIN)
+            whois_result = whois.whois(query)
             demisto.debug(str(whois_result))
             md = {}
             for key in whois_result:
@@ -112,7 +112,7 @@ script:
                 'EntryContext': createContext(ec, removeNull=True)
                 })
         except:
-            demisto.results('No result found for {}'.format(DOMAIN))
+            demisto.results('No result found for {}'.format(query))
 
 
     def test_command():
