@@ -546,4 +546,4 @@ script:
   runonce: false
 releaseNotes: Entry table fixes
 tests:
-- autofocus_test
+- Autofocus_test
