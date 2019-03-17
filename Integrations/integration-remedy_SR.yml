@@ -496,6 +496,6 @@ script:
       type: string
     description: Create a ticket
   runonce: false
-releaseNotes: "new integration"
+releaseNotes: "new integration."
 tests:
   - No Test
