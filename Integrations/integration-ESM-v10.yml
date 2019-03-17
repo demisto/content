@@ -81,7 +81,6 @@ script:
     from distutils.util import strtobool
 
     # global for ignoring errors in fetch incident
-    SHOULD_STOP_ON_ERROR = True
     MAX_CASES_PER_FETCH = 30
 
     # by default filters only "Closed" cases
@@ -96,13 +95,6 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     ESM_DATE_FORMAT = demisto.params()['time_format']
     TIMEZONE = float(demisto.params().get('timezone'))
-
-    def throw_error(error_str):
-        if SHOULD_STOP_ON_ERROR:
-            demisto.results({'Type': entryTypes['error'], 'ContentsFormat': 'text', 'Contents': error_str})
-            sys.exit(0)
-        else:
-            demisto.error(error_str)
 
 
     @logger
@@ -207,7 +199,7 @@ script:
             try:
                 self.params_json = json.dumps(self.params)
             except TypeError as te_ex:
-                throw_error("Invalid parameters: {}".format(self.params))
+                return_error("Invalid parameters: {}".format(self.params))
 
         def login(self):
             try:
@@ -222,7 +214,7 @@ script:
                     self.jwttoken = re.search('(^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)',
                                               self.cookie).group(1)
                 except TypeError as te_ex:
-                    throw_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(self.login_url,
+                    return_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(self.login_url,
                                                                                                      self.login_response.status_code,
                                                                                                      self.login_response.text))
                 self.xsrf_token = self.login_response.headers.get('Xsrf-Token')
@@ -234,7 +226,7 @@ script:
                     'session_headers': self.session_headers
                 })
             except KeyError as e:
-                throw_error("Failed login\n error: {}".format(e))
+                return_error("Failed login\n error: {}".format(e))
 
         def logout(self):
             if self.is_logged_in:
@@ -262,7 +254,7 @@ script:
             if not no_validation:
                 if no_answer:
                     if self.result.status_code != 200:
-                        throw_error(
+                        return_error(
                             'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code,
                                                                                                  self.result.text))
                 else:
@@ -272,14 +264,14 @@ script:
                             res = res['return']
                         return res
                     except:
-                        throw_error(
+                        return_error(
                             'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code,
                                                                                                  self.result.text))
 
         @logger
         def execute_query(self, time_range, custom_start, custom_end, filters, fields, query_type):
             if time_range == 'CUSTOM' and (not custom_start or not custom_end):
-                throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
+                return_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
             cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if IS_V2_API else '', query_type,)
 
@@ -325,7 +317,7 @@ script:
                 else:
                     time.sleep(60)
 
-            throw_error('Waited more {} min for query results : {}'.format(max_wait, resultID))
+            return_error('Waited more {} min for query results : {}'.format(max_wait, resultID))
 
         @logger
         def fetch_results(self, resultID):
@@ -379,7 +371,7 @@ script:
         @logger
         def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
             if time_range == 'CUSTOM' and (not custom_start or not custom_end):
-                throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
+                return_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
             cmd = 'alarmGetTriggeredAlarmsPaged?pageSize=500&pageNumber=1&triggeredTimeRange=' + time_range
             if time_range == 'CUSTOM':
@@ -1310,6 +1302,7 @@ script:
       description: List of case's events
     - contextPath: Case.Notes
       description: List of case's notes
+      type: unknown
     description: Get a list of cases from the system
   - name: esm-add-case
     arguments:
