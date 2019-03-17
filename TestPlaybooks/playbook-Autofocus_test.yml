@@ -186,10 +186,10 @@ tasks:
       version: -1
       name: file
       description: Check file reputation of the given hash
-      script: Autofocus_fixes|||file
+      script: Autofocus|||file
       type: regular
       iscommand: true
-      brand: Autofocus_fixes
+      brand: Autofocus
     nexttasks:
       '#none#':
       - "6"
