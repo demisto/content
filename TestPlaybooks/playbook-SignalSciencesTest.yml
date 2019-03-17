@@ -104,7 +104,7 @@ tasks:
       - "54"
     scriptarguments:
       IP:
-        simple: ${SigSciences.Blacklist.Source}
+        simple: ${SigSciences.Corp.Site.Blacklist.Source}
       siteName:
         simple: demisto
     separatecontext: false
@@ -195,7 +195,7 @@ tasks:
       - "57"
     scriptarguments:
       IP:
-        simple: ${SigSciences.Whitelist.Source}
+        simple: ${SigSciences.Corp.Site.Whitelist.Source}
       siteName:
         simple: demisto
     separatecontext: false
@@ -1485,7 +1485,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: SigSciences.Blacklist.Source
+              simple: SigSciences.Corp.Site.Blacklist.Source
             iscontext: true
           right:
             value:
@@ -1547,7 +1547,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: SigSciences.Blacklist
+        simple: SigSciences.Corp.Site.Blacklist
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -1581,7 +1581,7 @@ tasks:
       - - operator: isNotExists
           left:
             value:
-              simple: SigSciences.Blacklist.Source
+              simple: SigSciences.Corp.Site.Blacklist.Source
             iscontext: true
     view: |-
       {
@@ -1612,7 +1612,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: SigSciences.Whitelist
+        simple: SigSciences.Corp.Site.Whitelist
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -1695,7 +1695,7 @@ tasks:
       - - operator: isNotExists
           left:
             value:
-              simple: SigSciences.Whitelist.Source
+              simple: SigSciences.Corp.Site.Whitelist.Source
             iscontext: true
     view: |-
       {
@@ -1727,7 +1727,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: SigSciences.Whitelist.Source
+              simple: SigSciences.Corp.Site.Whitelist.Source
             iscontext: true
           right:
             value:
