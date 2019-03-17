@@ -23,7 +23,7 @@ PARAMS = demisto.params()
 INCIDENT_TYPE = PARAMS.get('incidentType', 'PhishingDemo')
 INCIDENTS_PER_MINUTE = int(PARAMS.get('incidents_per_minute', '5'))
 MAX_NUM_OF_INCIDENTS = int(PARAMS.get('max_num_of_incidents', '10'))
-HOW_OFTEN = PARAMS.get('how_often')
+FREQUENCY = PARAMS.get('frequency')
 INDICATORS_PER_INCIDENT = 5
 INDICATORS_TO_INCLUDE = ['ipv4_private', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
 EMAIL_PROTOCOLS = ['POP3', 'IMAP', 'SMTP', 'ESMTP', 'HTTP', 'HTTPS']
@@ -240,16 +240,16 @@ def update_parameters():
     params = demisto.params()
     incidents_per_minute = int(params.get('incidents_per_minute', '5'))
     max_num_of_incidents = int(params.get('max_num_of_incidents', '10'))
-    how_often = int(params.get('how_often')) if params.get('how_often') else None
+    frequency = int(params.get('frequency')) if params.get('frequency') else None
     global INCIDENTS_PER_MINUTE
     if INCIDENTS_PER_MINUTE != incidents_per_minute:
         INCIDENTS_PER_MINUTE = incidents_per_minute
     global MAX_NUM_OF_INCIDENTS
     if MAX_NUM_OF_INCIDENTS != max_num_of_incidents:
         MAX_NUM_OF_INCIDENTS = max_num_of_incidents
-    global HOW_OFTEN
-    if HOW_OFTEN != how_often:
-        HOW_OFTEN = how_often
+    global FREQUENCY
+    if FREQUENCY != frequency:
+        FREQUENCY = frequency
 
 
 def generate_dbot_score(indicator):
@@ -408,7 +408,7 @@ def fetch_incidents():
     """
     try:
         update_parameters()
-        if not HOW_OFTEN:  # Run once
+        if not FREQUENCY:  # Run once
             last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
 
             num_of_incidents_created, incidents = generate_incidents(last_run)
@@ -418,14 +418,14 @@ def fetch_incidents():
             return
         else:
             minutes_of_generation = MAX_NUM_OF_INCIDENTS / float(INCIDENTS_PER_MINUTE)
-            if minutes_of_generation > HOW_OFTEN:
+            if minutes_of_generation > FREQUENCY:
                 err_msg = 'The maximum number of incidents divided by the incidents to generate per minute'
                 err_msg += ' exceeds every how often incidents should be generated. Please increase the value'
                 err_msg += ' entered for how often the integration should generate incidents.'
                 raise Exception(err_msg)
             run_counter = 0 if not demisto.getLastRun() else demisto.getLastRun().get('run_count', 0)
             last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
-            should_run = run_counter % HOW_OFTEN
+            should_run = run_counter % FREQUENCY
             if should_run < math.ceil(minutes_of_generation):  # then should run
                 if should_run == 0:
                     last_run = 0
