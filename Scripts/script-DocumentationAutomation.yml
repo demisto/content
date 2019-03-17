@@ -40,7 +40,7 @@ script: |-
 
 
   def find_cmd_example(command_examples, cmd):
-      regex = re.compile('!?{} .*'.format(cmd))
+      regex = re.compile('^!?{}( .*)?$'.format(cmd))
       valid_examples = [example for example in command_examples if regex.match(example) is not None]
 
       example = valid_examples[0] if len(valid_examples) > 0 else ''
@@ -226,7 +226,7 @@ script: |-
       cmd_example = find_cmd_example(command_examples, cmd['name'])
       errors = []
       section = [
-          '### {}'.format(cmd['name']),
+          '### {}. {}'.format(index + 1, cmd['name']),
           '---',
           cmd.get('description', ' '),
           '##### Base Command',
@@ -374,5 +374,6 @@ args:
     be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
 tests:
   - DocumentationTest

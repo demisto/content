@@ -6,6 +6,10 @@
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
             "playbookID": "test_similar_incidents"
         },
         {
@@ -308,7 +312,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "TransformersTestPlaybook"
+            "playbookID": "CutTransformerTest"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -375,10 +379,6 @@
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "VirusTotal",
@@ -923,6 +923,7 @@
             "nightly": true
         },
         {
+            "integrations": "Whois",
             "playbookID": "whois_test"
         },
         {
@@ -1122,6 +1123,12 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "playbookID": "CheckDockerImageAvailableTest"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
     "skipped_tests": {
@@ -1140,9 +1147,11 @@
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "SalesforceTestPlaybook": "User and password expired (issue 15901)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
-        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
+        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
     },
     "skipped_integrations": {
+        "RSA Archer": "Server not responding (issue 16085)",
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
@@ -1176,6 +1185,14 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "RTIR": "Pending check: issue 16072",
+        "Joe Security": "Pending check: issue 16072",
+        "GRR": "Pending check: issue 16072",
+        "PageDuty": "Pending check: issue 16072",
+        "carbonblackliveresponse": "Pending check: issue 16072",
+        "RecordedFuture": "Pending check: issue 16072",
+        "AbuseIPDB": "Pending check: issue 16072",
+        "FireEye HX": "Pending check: issue 16072",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "EWS v2": "Inconsistent test (playback fails, record succeeds)",
         "Alexa Rank Indicator": "Integration should never use proxy",
@@ -1186,21 +1203,20 @@
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
-        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
-        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "OpenPhish": "JS integration, problem listed in issue 15544",
+        "VxStream": "JS integration, problem listed in issue 15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in issue 15544",
+        "wildfire": "JS integration, problem listed in issue 15544",
+        "FalconHost": "JS integration, problem listed in issue 15544",
+        "VirusTotal": "JS integration, problem listed in issue 15544",
+        "carbonblack-v2": "JS integration, problem listed in issue 15544",
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
         "epo": "Pending merge of branch proxy-unsecure-checks",
         "FalconIntel": "Pending merge of branch proxy-unsecure-checks",
         "ipinfo": "Pending merge of branch proxy-unsecure-checks",
-        "RSA NetWitness Packets": "Pending merge of branch proxy-unsecure-checks",
+        "RSA NetWitness Packets and Logs": "Pending merge of branch proxy-unsecure-checks",
         "SNDBOX": "Pending merge of branch proxy-unsecure-checks",
-        "BitDam": "Pending merge of branch proxy-unsecure-checks",
         "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
         "BigFix": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
@@ -1209,7 +1225,6 @@
         "urlscan.io": "Pending merge of branch proxy-unsecure-checks",
         "Threat Grid": "Pending merge of branch proxy-unsecure-checks",
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
-        "Palo Alto Minemeld": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
         "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
@@ -1243,6 +1258,16 @@
         "Thinkst Canary": "Checking",
         "Cymon": "Checking",
         "SplunkPy": "Checking",
-        "Symantec Advanced Threat Protection": "Checking"
+        "Symantec Advanced Threat Protection": "Checking",
+        "ProtectWise": "Nightly - Checking",
+        "Tenable.io": "Nightly - Checking",
+        "google-vault": "Nightly - Checking",
+        "Intezer": "Nightly - Checking",
+        "Archer": "Nightly - Checking",
+        "McAfee NSM": "Nightly - Checking",
+        "Forcepoint": "Nightly - Checking",
+        "RedCanary": "Nightly - Checking",
+        "McAfee Active Response": "Nightly - Checking",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
     }
 }

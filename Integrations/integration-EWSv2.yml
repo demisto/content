@@ -224,6 +224,10 @@ script:
         return Build(*build_params)
 
 
+    def get_endpoint_autodiscover(context_dict):
+        return context_dict["service_endpoint"]
+
+
     def get_version(version_str):
         if version_str not in VERSIONS:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
@@ -241,7 +245,7 @@ script:
 
     def prepare_context(credentials):
         context_dict = demisto.getIntegrationContext()
-        global SERVER_BUILD
+        global SERVER_BUILD, EWS_SERVER
         if not context_dict:
             try:
                 account = Account(
@@ -255,6 +259,7 @@ script:
                 return_error("Auto discovery failed. Check credentials or configure manually")
         else:
             SERVER_BUILD = get_build_autodiscover(context_dict)
+            EWS_SERVER = get_endpoint_autodiscover(context_dict)
 
 
     def prepare():
@@ -2431,6 +2436,7 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
