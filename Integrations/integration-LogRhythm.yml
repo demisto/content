@@ -682,8 +682,8 @@ script:
 
 
         if(timeFrame == 'Custom'){
-            startDate = new Date(dataArgs['start-date']).toISOString();
-            endDate = new Date(dataArgs['end-date']).toISOString();
+            startDate = new Date(dataArgs['start-date']).toISOString().slice(0,10);
+            endDate = new Date(dataArgs['end-date']).toISOString().slice(0,10);
         }
         else{
             startDate = start.toISOString().slice(0,10);
