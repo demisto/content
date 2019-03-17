@@ -1,11 +1,11 @@
 {
-  "id": "active-incidents-by-severity",
+  "id": "closed-incidents-by-role",
   "version": -1,
-  "fromVersion": "3.5.0",
-  "name": "Active Incidents by Severity",
+  "name": "Closed Incidents by Role",
   "dataType": "incidents",
-  "widgetType": "pie",
-  "query": "-category:job and -status:archived and -status:closed",
+  "widgetType": "bar",
+  "query": "status:closed",
+  "size": 10,
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -21,8 +21,9 @@
   },
   "params": {
     "groupBy": [
-      "severity"
+      "roles"
     ]
   },
-  "description": ""
+  "description": "",
+  "releaseNotes": "query and name fix"
 }
