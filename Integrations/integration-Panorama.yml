@@ -34,7 +34,7 @@ configuration:
   required: true
 - display: Port (e.g 443)
   name: port
-  defaultvalue: ""
+  defaultvalue: "443"
   type: 0
   required: false
 - display: API Key
@@ -156,11 +156,15 @@ script:
         if jresult['response']['@status'] != 'success':
             if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
                 if jresult['response']['msg']['line'] == 'No such node':
-                    return_error('Object was not found, verify that the name is correct and that the instnace was committed.')
+                    return_error('Object was not found, verify that the name is correct and that the instance was committed.')
+                    # s.find("is") == -1:
+                elif isinstance(jresult['response']['msg']['line'], str) and jresult['response']['msg']['line'].find('job') != -1 and jresult['response']['msg']['line'].find('not found') != -1:
+                    return_error('Invalid Job ID error: ' + jresult['response']['msg']['line'])
             if '@code' in jresult['response']:
-                return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
+                return_error('Request Failed.\nStatus code: ' + str(jresult['response']['@code']) + '\nWith message: ' + str(jresult['response']['msg']['line']))
             else:
-                return_error('Request Failed.\n' + jresult['response'])
+                return_error('Request Failed.\n' + str(jresult['response']))
+
 
         return jresult
 
@@ -2169,7 +2173,7 @@ script:
     def panorama_list_applications():
         params = {
             'type': 'op',
-            'command': '<show><objects></objects></show>',
+            'cmd': '<show><objects></objects></show>',
             'key': API_KEY
         }
         result = http_request(
@@ -3410,7 +3414,7 @@ script:
       type: string
     description: Get panorama pcaps
   runonce: false
-releaseNotes: added panorama-get-pcaps command
+releaseNotes: added panorama-get-pcaps command, refactor error messages and handle of invalid inputs.
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
