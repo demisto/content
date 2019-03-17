@@ -1,6 +1,6 @@
 commonfields:
   id: StixExporter2
-  version: 7
+  version: 40
 name: StixExporter2
 script: |-
 from stix2 import Indicator, Bundle
@@ -15,11 +15,11 @@ last_seen = demisto.args().get('lastSeen','')
 
 stix_type_and_value = ""
 
-if demisto_indicator_type == "File MD5":
+if demisto_indicator_type.lower() == "File MD5".lower():
     stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
-if demisto_indicator_type == "File SHA1":
+if demisto_indicator_type.lower() == "File SHA1".lower():
     stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
-# pattern="[file:hashes.md5 = '" + value + "']",
+
 indicator = Indicator(labels=demisto_indicator_type,
                       pattern=stix_type_and_value,
                       source=source_System,
@@ -38,7 +38,6 @@ args:
   required: true
   description: Type of indicator
 - name: value
-  required: true
   description: Indicator value
 - name: source
   description: Indicator source system
