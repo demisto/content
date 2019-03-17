@@ -320,7 +320,7 @@ script:
         dataObj.MaxResultsPerPage = pageSize;
         var envelope = fixTemplate(tmplGetFirstPageAlarmsByAlarmStatus, dataObj);
         return doBatch(envelope, soapActionURIGetFirstPageAlarmsByAlarmStatus, count, pageSize);
-    };
+    }
 
     var prepareDetailsString = function(al) {
         return JSON.stringify(
