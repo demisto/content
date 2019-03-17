@@ -3371,8 +3371,8 @@ script:
     - name: from
       description: Filename for dlp-pcap, filters-pcap, application-pcap. <yyyymmdd>
         for application-pcap as well
-    - name: to
-      description: Localfile for the pcap to download
+    - name: localName
+      description: The new name for the PCAP file after downloading. If this argument is not specified, the file name will be the PCAP file name that was set in the firewall.
     - name: serialNo
       description: Serial number for the request. For further information, see the
         Panorama XML API Documentation.
