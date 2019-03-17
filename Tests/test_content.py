@@ -336,6 +336,18 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
+def organize_tests(tests, unmockable_integrations):
+    mock_tests, mockless_tests = [], []
+    for test in tests:
+        if any(integration in unmockable_integrations for integration in test.get('integrations', [])):
+            mockless_tests.append(test)
+        else:
+            mock_tests.append(test)
+
+    # first run the mock tests to avoid mockless side effects in container
+    return mock_tests + mockless_tests
+
+
 def execute_testing(server):
     options = options_handler()
     username = options.user
@@ -391,6 +403,9 @@ def execute_testing(server):
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+
+    # move all mock tests to the top of the list
+    tests = organize_tests(tests, unmockable_integrations)
 
     for t in tests:
         playbook_id = t['playbookID']
