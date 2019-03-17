@@ -34,6 +34,9 @@ script:
     import time
     import warnings
     from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
+    import logging
+    logging.getLogger("pymisp").setLevel(logging.ERROR)
+
 
     def warn(*args, **kwargs):
         """

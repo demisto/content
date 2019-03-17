@@ -1,4 +1,3 @@
-versionedfields: {}
 commonfields:
   id: Cybereason
   version: -1
@@ -663,19 +662,36 @@ script:
     def malop_processes_command():
 
         malop_guids = demisto.args().get('malopGuids')
+        machine_name = demisto.args().get('machineName')
+
         if isinstance(malop_guids, unicode):
             malop_guids = malop_guids.split(',')
         elif not isinstance(malop_guids, list):
             return_error('malopGuids must be array of strings')
 
-        # aggregate_processes = demisto.args().get('aggregateProcesses') - ASK ANAR
+        machine_name_list = [machine.lower() for machine in argToList(machine_name)]
+
         response = malop_processes(malop_guids)
         elements = response['data']['resultIdToElementDataMap']
         outputs = []
+
         for element in elements:
 
             simple_values = elements[element]['simpleValues']
             element_values = elements[element]['elementValues']
+
+            if machine_name_list:
+                owner_machine = element_values.get('ownerMachine', {})
+                machine_list = owner_machine.get('elementValues', [])
+                wanted_machine = False
+                for machine in machine_list:
+                    current_machine_name = machine.get('name', '').lower()
+                    if current_machine_name in machine_name_list:
+                        wanted_machine = True
+                        break
+
+                if not wanted_machine:
+                    continue
 
             output = {}
             for i in range(len(PROCESS_INFO)):
@@ -1699,6 +1715,9 @@ script:
       required: true
       description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved
         with the command cybereason-query-malops command)
+    - name: machineName
+      description: Machine names which were affected by malop. Comma separated values
+        supported (e.g., machine1,machine2)
     outputs:
     - contextPath: Process.Name
       description: The process name
@@ -1937,3 +1956,4 @@ script:
   runonce: false
 tests:
   - Cybereason Test
+releaseNotes: "add machinename argument to malop processes command"

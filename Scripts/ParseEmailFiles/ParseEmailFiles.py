@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from email import message_from_string
 from email.header import decode_header
 from base64 import b64decode
@@ -8,6 +9,8 @@ import sys
 import email.utils
 from email.parser import HeaderParser
 import traceback
+import tempfile
+
 
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
@@ -2675,18 +2678,21 @@ class Message(object):
 
             return ""
 
+        cc = None
         if self.cc is not None:
-            cc = join([extract_address(cc) for cc in self.cc])
+            cc = join([extract_address(cc) for cc in self.cc])  # noqa: F812
 
+        bcc = None
         if self.bcc is not None:
-            bcc = join([extract_address(bcc) for bcc in self.bcc])
+            bcc = join([extract_address(bcc) for bcc in self.bcc])  # noqa
 
         recipients = None
         if self.to is not None:
-            recipients = join([extract_address(recipient.EmailAddress) for recipient in self.recipients])
+            recipients = join([extract_address(recipient.EmailAddress) for recipient in self.recipients])  # noqa
 
+        sender = None
         if self.sender is not None:
-            sender = join([extract_address(sender) for sender in self.sender])
+            sender = join([extract_address(sender) for sender in self.sender])  # noqa
 
         html = self.html
         if not html:
@@ -3151,8 +3157,13 @@ def extract_address(s):
         return s
 
 
-def data_to_md(email_data):
+def data_to_md(email_data, email_file_name=None, parent_email_file=None):
     md = "### Results:\n"
+    if email_file_name:
+        md = "### {}\n".format(email_file_name)
+
+    if parent_email_file:
+        md += "### Parent email: {}\n".format(parent_email_file)
 
     md += "* {0}:\t{1}\n".format('From', email_data['From'] or "")
     md += "* {0}:\t{1}\n".format('To', email_data['To'] or "")
@@ -3170,10 +3181,26 @@ def data_to_md(email_data):
     return md
 
 
-def save_attachments(attachments):
+def save_attachments(attachments, root_email_file_name):
+    attached_emls = []
     for attachment in attachments:
         if attachment.data is not None:
             demisto.results(fileResult(attachment.DisplayName, attachment.data))
+
+            if attachment.DisplayName.endswith(".eml"):
+                tf = tempfile.NamedTemporaryFile(delete=False)
+
+                try:
+                    tf.write(attachment.data)
+                    tf.close()
+
+                    inner_eml = handle_eml(tf.name, file_name=root_email_file_name)
+                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name))
+                    attached_emls.append(inner_eml)
+                finally:
+                    os.remove(tf.name)
+
+    return attached_emls
 
 
 def get_utf_string(text, field):
@@ -3209,7 +3236,7 @@ def convert_to_unicode(s):
     except Exception:
         for file_data in ENCODINGS_TYPES:
             try:
-                s = s.decode(encoding).encode('utf-8').strip()
+                s = s.decode(encoding).encode(file_data).strip()
                 break
             except:     # noqa: E722
                 pass
@@ -3217,39 +3244,32 @@ def convert_to_unicode(s):
     return s
 
 
-def handle_msg(file_path):
+def handle_msg(file_path, file_name):
     msg = MsOxMessage(file_path)
     if not msg:
         raise Exception("Could not parse msg file!")
 
-    save_attachments(msg.get_all_attachments())
+    attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name)
 
     email_data = msg.as_dict()
-    demisto.results({
-        'ContentsFormat': formats['markdown'],
-        'Type': entryTypes['note'],
-        'Contents': data_to_md(email_data),
-        'EntryContext': {
-            'Email': email_data
-        }
-    })
 
-    attached_emails = msg.get_attached_emails_hierarchy()
-    for attached_email in attached_emails:
-        demisto.results({
-            'ContentsFormat': formats['markdown'],
-            'Type': entryTypes['note'],
-            'Contents': data_to_md(attached_email)
-        })
-    return
+    # add eml attached emails
+    email_data["AttachedEmails"].extend(attached_emails_emls)
+
+    attached_emails_msg = msg.get_attached_emails_hierarchy()
+    for attached_email in attached_emails_msg:
+        return_outputs(readable_output=data_to_md(attached_email, None, file_name), outputs=None)
+
+    return email_data
 
 
-def handle_eml(file_path, b64=False):
+def handle_eml(file_path, b64=False, file_name=None):
     global ENCODINGS_TYPES
+
     with open(file_path, 'rb') as emlFile:
+
         file_data = emlFile.read()
         if b64:
-            demisto.results('b64')
             file_data = b64decode(file_data)
 
         parser = HeaderParser()
@@ -3270,20 +3290,68 @@ def handle_eml(file_path, b64=False):
 
         html = ''
         text = ''
-        attachments = []
+        attachment_names = []
 
+        attached_emails = []
         parts = [eml]
+
         while parts:
             part = parts.pop()
-            if part.is_multipart() or part.get_content_type().startswith('multipart'):
+            if (part.is_multipart() or part.get_content_type().startswith('multipart')) \
+                    and "attachment" not in part.get("Content-Disposition", ""):
                 parts += part.get_payload()
 
-            elif part.get_filename():
-                file_name = convert_to_unicode(part.get_filename())
-                attachments.append(file_name)
+            elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
 
-                demisto.setContext('AttachmentName', file_name)
-                demisto.results(fileResult(file_name, part.get_payload(decode=True)))
+                attachment_file_name = convert_to_unicode(part.get_filename())
+                if attachment_file_name is None and part.get('filename'):
+                    attachment_file_name = os.path.normpath(part.get('filename'))
+                    if os.path.isabs(attachment_file_name):
+                        attachment_file_name = os.path.basename(attachment_file_name)
+
+                if "message/rfc822" in part.get("Content-Type", ""):
+                    # .eml files
+                    file_content = None
+                    if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
+                        if attachment_file_name is None or attachment_file_name == "":
+                            # in case there is no filename for the eml
+                            # we will try to use mail subject as file name
+                            # Subject will be in the email headers
+                            attachment_file_name = part.get_payload()[0]\
+                                                       .get('Subject', "no_name_mail_attachment") + ".eml"
+
+                        file_content = part.get_payload()[0].as_string()
+                    else:
+                        demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
+
+                    demisto.results(fileResult(attachment_file_name, file_content))
+                    f = tempfile.NamedTemporaryFile(delete=False)
+                    f.write(file_content)
+                    f.close()
+                    inner_eml = handle_eml(file_path=f.name, file_name=attachment_file_name)
+                    attached_emails.append(inner_eml)
+                    os.remove(f.name)
+                    return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name), outputs=None)
+                else:
+                    # .msg and other files (png, jpeg)
+                    file_content = part.get_payload(decode=True)
+                    demisto.results(fileResult(attachment_file_name, file_content))
+
+                    if attachment_file_name.endswith(".msg"):
+                        f = tempfile.NamedTemporaryFile(delete=False)
+                        f.write(file_content)
+                        f.close()
+                        inner_msg = handle_msg(f.name, attachment_file_name)
+                        attached_emails.append(inner_msg)
+                        os.remove(f.name)
+
+                        # will output the inner email to the UI
+                        return_outputs(
+                            readable_output=data_to_md(inner_msg, attachment_file_name, file_name),
+                            outputs=None)
+
+                attachment_names.append(attachment_file_name)
+                demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
                 html = get_utf_string(part.get_payload(decode=True), 'HTML')
@@ -3299,19 +3367,12 @@ def handle_eml(file_path, b64=False):
             'HTML': convert_to_unicode(html),
             'Text': convert_to_unicode(text),
             'Headers': header_list,
-            'Attachments': '' if not attachments else ','.join(attachments),
-            'Format': eml.get_content_type()
+            'Attachments': ','.join(attachment_names) if attachment_names else '',
+            'Format': eml.get_content_type(),
+            'AttachedEmails': attached_emails
         }
 
-        demisto.results({
-            'ContentsFormat': formats['markdown'],
-            'Type': entryTypes['note'],
-            'Contents': data_to_md(email_data),
-            'EntryContext': {
-                'Email': email_data
-            }
-        })
-        return
+        return email_data
 
 
 def main():
@@ -3323,12 +3384,14 @@ def main():
             return_error(get_error(result))
 
         file_path = result[0]['Contents']['path']
+        file_name = result[0]['Contents']['name']
 
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))
 
         file_type = result[0]['FileMetadata']['info']
+
     except Exception, ex:
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id,
                      str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex)))
@@ -3337,11 +3400,25 @@ def main():
         file_type_lower = file_type.lower()
         if 'composite document file v2 document' in file_type_lower \
                 or 'cdfv2 microsoft outlook message' in file_type_lower:
-            handle_msg(file_path)
+            email_data = handle_msg(file_path, file_name)
+            return_outputs(
+                readable_output=data_to_md(email_data, file_name),
+                outputs={
+                    'Email': email_data
+                },
+                raw_response=email_data
+            )
             return
 
         elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower:
-            handle_eml(file_path)
+            email_data = handle_eml(file_path, False, file_name)
+            return_outputs(
+                readable_output=data_to_md(email_data, file_name),
+                outputs={
+                    'Email': email_data
+                },
+                raw_response=email_data
+            )
             return
 
         elif 'ascii text' in file_type_lower:
@@ -3351,13 +3428,27 @@ def main():
                     file_contents = f.read()
 
                 if 'Content-Type:'.lower() in file_contents.lower():
-                    handle_eml(file_path, b64=False)
+                    email_data = handle_eml(file_path, b64=False, file_name=file_name)
+                    return_outputs(
+                        readable_output=data_to_md(email_data, file_name),
+                        outputs={
+                            'Email': email_data
+                        },
+                        raw_response=email_data
+                    )
                     return
                 else:
                     # Try a base64 decode
                     b64decode(file_contents)
                     if 'Content-Type:'.lower() in file_contents.lower():
-                        handle_eml(file_path, b64=True)
+                        email_data = handle_eml(file_path, b64=True, file_name=file_name)
+                        return_outputs(
+                            readable_output=data_to_md(email_data, file_name),
+                            outputs={
+                                'Email': email_data
+                            },
+                            raw_response=email_data
+                        )
                         return
                     else:
                         return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
@@ -3368,8 +3459,12 @@ def main():
             return_error("Unknown file format: " + file_type)
 
     except Exception, ex:
-        return_error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
+        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
+        return_error(ex.message)
 
 
 if __name__ == "__builtin__":
+    main()
+
+if __name__ == '__main__':
     main()

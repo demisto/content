@@ -1,0 +1,545 @@
+id: TestDedupIncidentsPlaybook
+version: -1
+name: TestDedupIncidentsPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e3c5db64-4c12-4cfa-8b7e-7bd202b74a37
+    type: start
+    task:
+      id: e3c5db64-4c12-4cfa-8b7e-7bd202b74a37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 3610001c-691f-468c-81cd-823925579179
+    type: regular
+    task:
+      id: 3610001c-691f-468c-81cd-823925579179
+      version: -1
+      name: Add labels
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      1longtexttest: {}
+      aaaa: {}
+      addLabels:
+        simple: '[{"Email/subject":"This is a subject"},{"Email/from":"test@demisto.com"}]'
+      amarkdownsection: {}
+      anothernumberpleasejusttomakesure: {}
+      app: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attach: {}
+      attachamenthash: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bbb: {}
+      blah: {}
+      bool1: {}
+      bool2: {}
+      booleansummary: {}
+      boolfield: {}
+      booltest: {}
+      bugtraq: {}
+      ccc: {}
+      ccipaddress: {}
+      compliance: {}
+      constvalue: {}
+      customFields: {}
+      customfield: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      department: {}
+      departmentadmin: {}
+      dest: {}
+      destntdomain: {}
+      details:
+        simple: fdslkjflks sldkfj lsdfklsd flsdkfj sldkfjlsdfj lskdfj lsd flksd fsdlkfj
+          sdlfj slkdfj lsdkfjlsdf sdlkfjsldfj sldkfj sldf sdlkfjsldfjslkdf sldkfjlsdkfj
+          lsdfjlksdf jlsdfj lsdkfj dlskf jldskfjdskldlskf jsdlkfjsd lfskdf
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      escalationdate: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hjhj: {}
+      host: {}
+      htmltypefield: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      itaytestfield: {}
+      labels: {}
+      longtextone: {}
+      longtexttoo: {}
+      mailbody: {}
+      malwarefamily: {}
+      multilinetext: {}
+      name: {}
+      newmarkdownfield: {}
+      newtextfield: {}
+      numberplease: {}
+      occurred: {}
+      one: {}
+      owner: {}
+      phase: {}
+      relatedincidentssummary: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      sourceip1: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      subcat: {}
+      subcategory: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      test111: {}
+      testfield: {}
+      testhtml: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      tldr: {}
+      tttttt: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: b703c012-dea4-43ca-8fef-530330d2bde1
+    type: regular
+    task:
+      id: b703c012-dea4-43ca-8fef-530330d2bde1
+      version: -1
+      name: Create duplicate incident
+      scriptName: CreateDuplicateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: fce3305c-93e9-44d8-882a-addcd377544d
+    type: title
+    task:
+      id: fce3305c-93e9-44d8-882a-addcd377544d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: d8e9b5aa-4d75-495f-8a41-a93cb5c51ad1
+    type: regular
+    task:
+      id: d8e9b5aa-4d75-495f-8a41-a93cb5c51ad1
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 02406255-50d6-4081-8aab-a6cd322b56ac
+    type: regular
+    task:
+      id: 02406255-50d6-4081-8aab-a6cd322b56ac
+      version: -1
+      name: FindSimilarIncidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys:
+        simple: name
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 75cff374-ae9b-4ab3-8887-764d4f9ff34f
+    type: regular
+    task:
+      id: 75cff374-ae9b-4ab3-8887-764d4f9ff34f
+      version: -1
+      name: set dedup playbook to the similar incident
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      incidentId:
+        simple: ${similarIncident.rawId}
+      name:
+        simple: TestDedupIncidentsByName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: b6475090-5acd-4f0d-8aff-b0e09e0f4998
+    type: regular
+    task:
+      id: b6475090-5acd-4f0d-8aff-b0e09e0f4998
+      version: -1
+      name: Wait so the playbook of the similar incident get executed and close
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 8c8f4b9a-3bae-4963-8956-1f742887e7aa
+    type: regular
+    task:
+      id: 8c8f4b9a-3bae-4963-8956-1f742887e7aa
+      version: -1
+      name: FindSimilarIncidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys:
+        simple: name
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 91d03c01-34fe-4b8c-88e2-3014b90fedc2
+    type: regular
+    task:
+      id: 91d03c01-34fe-4b8c-88e2-3014b90fedc2
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 7c35460b-47d2-4359-8ac8-c6bc27d3dcb5
+    type: condition
+    task:
+      id: 7c35460b-47d2-4359-8ac8-c6bc27d3dcb5
+      version: -1
+      name: Ensure there are no similar incident, similar incidents should be closed
+        (dedup)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 9aa41975-86fa-49a4-86cf-98fa148bb7e3
+    type: condition
+    task:
+      id: 9aa41975-86fa-49a4-86cf-98fa148bb7e3
+      version: -1
+      name: make sure we found similar incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 25f40783-e095-4e0f-867f-04a7bc262cdd
+    type: regular
+    task:
+      id: 25f40783-e095-4e0f-867f-04a7bc262cdd
+      version: -1
+      name: Wait till the incident will be created
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      seconds:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

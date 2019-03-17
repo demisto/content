@@ -198,6 +198,5 @@ script:
       type: string
     description: Parses a User Agent string
   runonce: false
-releaseNotes: Removed conjugation of "What" and "Is" to match brand.
 tests:
   - WhatsMyBrowser-Test

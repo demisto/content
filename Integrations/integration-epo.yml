@@ -946,6 +946,5 @@ script:
       type: string
     description: Gets the ePO version. This requires global admin permissions.
   runonce: false
-releaseNotes: "-"
 tests:
 - Test Playbook McAfee ePO

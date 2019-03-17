@@ -81,7 +81,7 @@ tasks:
     scriptarguments:
       input:
         simple: |
-          https://urldefense.proofpoint.com/v2/url?u=https-3A__lm.ddiworld.com-3FUsername-3Dyasmine.hafez-40danaher.com&d=DwIGaQ&c=9mghv0deYPYDGP-W745IEdQLV1kHpn4XJRvR6xMRXtA&r=bRg5MeHudfXJkMCCQ9leeXPGHZSmGzvAyeeit1tjdqg&m=z6asDUSCvgNHDLRBTXAM6q9qDNKFuuA02LnXZ3po3dI&s=p-83liNM0XOyprpHW99TO-DowLW6lpvHZAc2y-7kQRQ&e=
+          https://urldefense.proofpoint.com/v2/url?u=https-3A__lm.ddiworld.com-3FUsername-3Dtest-40this.com&d=DwIGaQ&c=9mghv0deYPYDGP-W745IEdQLV1kHpn4XJRvR6xMRXtA&r=bRg5MeHudfXJkMCCQ9leeXPGHZSmGzvAyeeit1tjdqg&m=z6asDUSCvgNHDLRBTXAM6q9qDNKFuuA02LnXZ3po3dI&s=p-83liNM0XOyprpHW99TO-DowLW6lpvHZAc2y-7kQRQ&e=
     separatecontext: false
     view: |-
       {
@@ -218,7 +218,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: https://lm.ddiworld.com?Username=yasmine.hafez@danaher.com
+        simple: https://lm.ddiworld.com?Username=test@this.com
     separatecontext: false
     view: |-
       {
