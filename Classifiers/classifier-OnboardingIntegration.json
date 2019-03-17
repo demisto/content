@@ -1,0 +1,113 @@
+{
+	"id": "c966ad3a-7733-4892-851f-f0abffdc7772",
+	"version": -1,
+	"modified": "2019-03-10T09:28:33.379888+02:00",
+	"defaultIncidentType": "PhishingDemo",
+	"mapping": {
+		"PhishingDemo": {
+			"internalMapping": {
+				"Email BCC": {
+					"simple": "BCC",
+					"complex": null
+				},
+				"Email Body": {
+					"simple": "Text",
+					"complex": null
+				},
+				"Email CC": {
+					"simple": "CC",
+					"complex": null
+				},
+				"Email From": {
+					"simple": "From",
+					"complex": null
+				},
+				"Email Message ID": {
+					"simple": "Message-ID",
+					"complex": null
+				},
+				"Email Reply To": {
+					"simple": "From",
+					"complex": null
+				},
+				"Email Sender IP": {
+					"simple": "",
+					"complex": {
+						"root": "Received",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "substringFrom",
+								"args": {
+									"from": {
+										"value": {
+											"simple": "(",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "substringTo",
+								"args": {
+									"to": {
+										"value": {
+											"simple": ")",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Subject": {
+					"simple": "Subject",
+					"complex": null
+				},
+				"Email To": {
+					"simple": "To",
+					"complex": null
+				},
+				"Email To Count": {
+					"simple": "",
+					"complex": {
+						"root": "To",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "splitAndTrim",
+								"args": {
+									"delimiter": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "count",
+								"args": {}
+							}
+						]
+					}
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"unclassifiedCases": {},
+	"custom": true,
+	"transformer": {
+		"simple": "",
+		"complex": null
+	},
+	"keyTypeMap": {},
+	"brandName": "OnboardingIntegration"
+}
