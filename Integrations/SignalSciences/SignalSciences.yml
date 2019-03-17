@@ -6,12 +6,12 @@ display: Signal Sciences WAF
 category: Network Security
 description: Protect your web application using Signal Sciences
 configuration:
-- display: Email
+- display: Email - the email address connected to your account
   name: Email
   defaultvalue: ""
   type: 0
   required: true
-- display: Token
+- display: Token - your authentication token
   name: Token
   defaultvalue: ""
   type: 4
@@ -31,7 +31,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Fetch Interval (the default time to fetch, given in minutes)
+- display: Fetch Interval (the default time to fetch in the first fetch, given in minutes). Must be less than one week (10080 minutes)
   name: fetch_interval
   defaultvalue: "720"
   type: 0
@@ -755,7 +755,7 @@ script:
     - contextPath: SigSciences.Corp.List.UpdatedDate
       description: The last update date of the list
     description: Get data about all the corp's lists
-  - name: sigsci-fetch-events
+  - name: sigsci-get-events
     arguments:
     - name: siteName
       required: true
@@ -903,7 +903,7 @@ script:
       description: Server hostname
     - contextPath: SigSciences.Corp.Site.Request.RemoteIP
       description: Remote IP address
-    - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
+    - contextPath: SigSciences.Corp.Site.Request.RemoteHostname
       description: Remote hostname
     - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
       description: Remote country code
@@ -947,7 +947,7 @@ script:
       description: ' Server hostname'
     - contextPath: SigSciences.Corp.Site.Request.RemoteIP
       description: ' Remote IP address'
-    - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
+    - contextPath: SigSciences.Corp.Site.Request.RemoteHostname
       description: ' Remote hostname'
     - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
       description: Remote country code
