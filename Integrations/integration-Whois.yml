@@ -73,7 +73,7 @@ script:
         query = demisto.args().get('query')
         try:
             whois_result = whois.whois(query)
-            demisto.debug(str(whois_result))
+            demisto.debug("Whois query result - "+str(whois_result))
             md = {}
             for key in whois_result:
                 value = whois_result[key]
