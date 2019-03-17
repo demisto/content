@@ -32,6 +32,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -47,6 +52,7 @@ script:
     BASE_URL = urljoin(demisto.params().get('url'), 'api/')
     USE_SSL = not demisto.params().get('insecure', False)
     MAX_POLLS = int(demisto.params().get('maxpolls', 300))
+    USE_PROXY = demisto.params().get('proxy', True)
 
     nothing_to_analyze_message = 'We found nothing to analyze in your uploaded email (possibly all elements where whitelisted, check Input filtering in your Settings).'
     nothing_to_analyze_output = {
@@ -55,6 +61,12 @@ script:
                     'Contents' : 'We found nothing to analyze in your uploaded email',
                     'HumanReadable' : 'We found nothing to analyze in your uploaded email'
                     }
+
+    if not USE_PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     ''' HELPER FUNCTIONS '''
     def http_post(url_suffix, data=None, files=None, parse_json=True):
