@@ -10,7 +10,7 @@ import random
 import argparse
 
 from Tests.scripts.constants import *
-from Tests.test_utils import get_json, str2bool, get_from_version, get_to_version, \
+from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color
 
 # Search Keyword for the changed file
@@ -69,7 +69,8 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
-            elif file_status.lower() == 'm' and ('id_set.json' not in file_path or SECRETS_WHITE_LIST not in file_path):
+            elif file_status.lower() == 'm' and \
+                    'id_set.json' not in file_path and SECRETS_WHITE_LIST not in file_path:
                 if re.match("Tests/.*.py", file_path) or re.match("Tests/.*.sh", file_path) or \
                         file_path == ".hooks/pre-commit":
                     infra_tests = True
@@ -80,7 +81,7 @@ def get_modified_files(files_string):
 
 
 def get_name(file_path):
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         return data_dictionary.get('name', '-')
@@ -88,7 +89,7 @@ def get_name(file_path):
 
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     # inject no tests to whitelist so adding values to white list will not force all tests
     if data_dictionary:
         return data_dictionary.get('tests', [])
