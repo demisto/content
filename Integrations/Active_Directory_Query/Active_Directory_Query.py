@@ -173,10 +173,10 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     start = datetime.now()
 
     entries = []
-
+    entries_left_to_fetch = size_limit
     while True:
-        if size_limit and size_limit < page_size:
-            page_size = size_limit
+        if 0 < entries_left_to_fetch < page_size:
+            page_size = entries_left_to_fetch
 
         conn.search(
             search_base,
@@ -187,6 +187,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
             paged_cookie=cookie
         )
 
+        entries_left_to_fetch -= len(conn.entries)
         total_entries += len(conn.entries)
         cookie = conn.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
         time_diff = (start - datetime.now()).seconds
@@ -194,7 +195,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         entries.extend(conn.entries)
 
         # stop when: 1.reached size limit 2.reached time limit 3. no cookie
-        if (size_limit and size_limit >= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
+        if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
             break
 
     # keep the raw entry for raw content (backward compatability)
@@ -266,6 +267,7 @@ def free_search(default_base_dn, page_size):
     time_limit = int(args.get('time-limit', '0'))
     search_base = args.get('base-dn') or default_base_dn
     attributes = args.get('attributes')
+    context_output = args.get('context-output')
 
     # if ALL was specified - get all the object's attributes, else expect a string of comma separated values
     if attributes:
@@ -280,15 +282,14 @@ def free_search(default_base_dn, page_size):
         page_size=page_size
     )
 
+    ec = {} if context_output == 'no' else {'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat']}
     demisto_entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': entries['raw'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown("Active Directory Search", entries['flat']),
-        'EntryContext': {
-            'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat']
-        }
+        'EntryContext': ec
     }
     demisto.results(demisto_entry)
 
