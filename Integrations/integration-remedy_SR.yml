@@ -54,7 +54,7 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
-    VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+    VERIFY_CERTIFICATE = not demisto.params().get('insecure', False)
     URL = demisto.params()['server']
     XML_NS = demisto.params()['xml_ns']
     USERNAME = demisto.params()['username']
@@ -431,7 +431,6 @@ script:
       required: true
       description: User Street
     description: Create a ticket
-  dockerimage: demisto/zeep:1.0.0.78
   runonce: false
 releaseNotes: "new integration"
 tests:
