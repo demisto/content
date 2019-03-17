@@ -295,7 +295,8 @@ tasks:
         simple: name
       similarLabelsKeys: {}
       skipMissingValues: {}
-      timeField: {}
+      timeField:
+        simple: occurred
     separatecontext: false
     view: |-
       {

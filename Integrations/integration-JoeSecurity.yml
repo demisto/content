@@ -60,9 +60,9 @@ script:
     def http_post(url_suffix, data=None, files=None, parse_json=True):
         data = {} if data is None else data
 
-        data.setdefault('apikey', demisto.params()['api_key'])
         LOG('running request with url=%s\n\tdata=%s\n\tfiles=%s' % (BASE_URL + url_suffix,
             data, files, ))
+        data.setdefault('apikey', demisto.params()['api_key'])
 
         res = requests.post(BASE_URL + url_suffix,
             verify=USE_SSL,
@@ -996,6 +996,7 @@ script:
     description: Download the sample file of an analysis. for security reasons, the
       extension will be "dontrun"
   runonce: false
+releaseNotes: "-"
 tests:
   - JoeSecurityTestPlaybook
   - JoeSecurityTestDetonation
