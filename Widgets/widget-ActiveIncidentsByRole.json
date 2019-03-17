@@ -1,11 +1,11 @@
 {
-  "id": "mean-time-to-resolution",
+  "id": "incidents-by-role",
   "version": -1,
-  "fromVersion": "3.5.0",
-  "name": "Mean Time to Resolution",
+  "name": "Active Incidents by Role",
   "dataType": "incidents",
-  "widgetType": "duration",
-  "query": "-category:job and status:closed",
+  "widgetType": "bar",
+  "query": "-category:job and status:active",
+  "size": 10,
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -16,12 +16,12 @@
       "toValue": null,
       "fromValue": 7,
       "field": ""
-    }
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
   },
   "params": {
-    "keys": [
-      "avg|openDuration",
-      "count|1"
+    "groupBy": [
+      "roles"
     ]
   },
   "description": ""
