@@ -228,7 +228,7 @@ script:
     MAX_NUM_OF_INCIDENTS = int(PARAMS.get('max_num_of_incidents', '10'))
     FREQUENCY = PARAMS.get('frequency')
     INDICATORS_PER_INCIDENT = 5
-    INDICATORS_TO_INCLUDE = ['ipv4_private', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
+    INDICATORS_TO_INCLUDE = ['ipv4_public', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
     EMAIL_PROTOCOLS = ['POP3', 'IMAP', 'SMTP', 'ESMTP', 'HTTP', 'HTTPS']
     # About the drop some mean regex right now disable-secrets-detection-start
     TEMPLATE_1 = [
