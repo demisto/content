@@ -1189,7 +1189,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
-        "AutoFocus": "JS integration, problem listed in issue 15544",
+        "Autofocus": "JS integration, problem listed in issue 15544",
         "RTIR": "Pending check: issue 16072",
         "Joe Security": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
