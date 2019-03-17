@@ -105,28 +105,16 @@ def has_unmockable_integration(integrations, unmockable_integrations):
     return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.iterkeys()))
 
 
-# Configure integrations to work with mock
-def configure_proxy_unsecure(integrations):
-    """Set proxy and unscure integration parameters to true.
-
-    Args:
-        integrations: list of integrations to configure.
-    """
-    for elem in integrations:
-        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
-            elem['params'][param] = True
-
-
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
-                   circle_ci, build_number, server_url, build_name, bypass_mock=False):
-    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+                   circle_ci, build_number, server_url, build_name, is_mock_run=False):
+    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
     else:
         print 'Failed: %s failed' % (test_message,)
         playbook_id_with_mock = playbook_id
-        if bypass_mock:
+        if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
         notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
@@ -139,7 +127,7 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True)
     succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
-                             test_options, slack, circle_ci, build_number, server_url, build_name)
+                             test_options, slack, circle_ci, build_number, server_url, build_name, is_mock_run=True)
     proxy.stop()
     if succeed:
         proxy.move_mock_file_to_repo(playbook_id)
@@ -152,12 +140,11 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message):
     rerecord = False
 
-    configure_proxy_unsecure(integrations)
     if proxy.has_mock_file(playbook_id):
         print start_message + ' (Mock: Playback)'
         proxy.start(playbook_id)
         # run test
-        succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+        succeed, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True)
         # use results
         proxy.stop()
         if succeed:
@@ -189,7 +176,7 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
     if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
         print start_message + ' (Mock: Disabled)'
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
-                       slack, circle_ci, build_number, server_url, build_name, bypass_mock=True)
+                       slack, circle_ci, build_number, server_url, build_name)
         print '------ Test %s end ------' % (test_message,)
 
         return

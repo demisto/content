@@ -1,11 +1,11 @@
 {
-  "id": "incidents-by-role",
+  "id": "unassigned-pending-incidents",
   "version": -1,
-  "name": "Incidents by Role",
+  "fromVersion": "3.5.0",
+  "name": "Unassigned Pending Incidents",
   "dataType": "incidents",
-  "widgetType": "bar",
-  "query": "-category:job",
-  "size": 10,
+  "widgetType": "list",
+  "query": "-category:job and status:pending and owner:\"\"",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -20,8 +20,17 @@
     "fromDateLicense": "0001-01-01T00:00:00Z"
   },
   "params": {
-    "groupBy": [
-      "roles"
+    "tableColumns": [
+      {
+        "displayed": true,
+        "isDefault": true,
+        "key": "name"
+      },
+      {
+        "displayed": true,
+        "isDefault": true,
+        "key": "severity"
+      }
     ]
   },
   "description": "",
