@@ -1034,7 +1034,7 @@
         },
         {
             "playbookID": "Phishing test - attachment",
-            "timeout": 700,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1045,7 +1045,7 @@
         },
         {
             "playbookID": "Phishing test - Inline",
-            "timeout": 700,
+            "timeout": 500,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1126,6 +1126,9 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
     "skipped_tests": {
@@ -1144,7 +1147,8 @@
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "SalesforceTestPlaybook": "User and password expired (issue 15901)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
-        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
+        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
     },
     "skipped_integrations": {
         "RSA Archer": "Server not responding (issue 16085)",
@@ -1181,14 +1185,14 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
-        "RTIR": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "Joe Security": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "GRR": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "PageDuty": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "carbonblackliveresponse": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "RecordedFuture": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "AbuseIPDB": "Pending check: https://github.com/demisto/etc/issues/16072",
-        "FireEye HX": "Pending check: https://github.com/demisto/etc/issues/16072",
+        "RTIR": "Pending check: issue 16072",
+        "Joe Security": "Pending check: issue 16072",
+        "GRR": "Pending check: issue 16072",
+        "PageDuty": "Pending check: issue 16072",
+        "carbonblackliveresponse": "Pending check: issue 16072",
+        "RecordedFuture": "Pending check: issue 16072",
+        "AbuseIPDB": "Pending check: issue 16072",
+        "FireEye HX": "Pending check: issue 16072",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "EWS v2": "Inconsistent test (playback fails, record succeeds)",
         "Alexa Rank Indicator": "Integration should never use proxy",
@@ -1199,13 +1203,13 @@
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
-        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
-        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
-        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "OpenPhish": "JS integration, problem listed in issue 15544",
+        "VxStream": "JS integration, problem listed in issue 15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in issue 15544",
+        "wildfire": "JS integration, problem listed in issue 15544",
+        "FalconHost": "JS integration, problem listed in issue 15544",
+        "VirusTotal": "JS integration, problem listed in issue 15544",
+        "carbonblack-v2": "JS integration, problem listed in issue 15544",
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
         "epo": "Pending merge of branch proxy-unsecure-checks",
@@ -1223,7 +1227,6 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
-        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
