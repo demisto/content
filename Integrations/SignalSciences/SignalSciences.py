@@ -283,7 +283,7 @@ def validate_get_events_args(from_time, until_time, sort, limit, page, action, i
 
 
 def gen_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
-                                   limit, page, action, tag, ip, status):
+                                 limit, page, action, tag, ip, status):
     get_events_request_data = {}
     if from_time is not None:
         get_events_request_data['from'] = int(from_time)
@@ -572,7 +572,7 @@ def get_corp_list_command():
     entry_context = list_entry_context_from_response(response_data)
     title = "Found data about list with ID: {0}".format(args['list_id'])
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
-    human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS,  removeNull=True)
+    human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
         readable_output=human_readable,
@@ -616,7 +616,8 @@ def update_corp_list_command():
                                      args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
-    human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
+    human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces,
+                                     headers=LIST_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
         readable_output=human_readable,
@@ -655,9 +656,8 @@ def get_all_corp_lists_command():
     )
 
 
-def get_events(siteName, from_time=None, until_time=None, sort=None,
-                 since_id=None, max_id=None, limit=None, page=None, action=None,
-                 tag=None, ip=None, status=None):
+def get_events(siteName, from_time=None, until_time=None, sort=None, since_id=None, max_id=None, limit=None, page=None,
+               action=None, tag=None, ip=None, status=None):
 
     validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status)
     url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
@@ -671,10 +671,11 @@ def get_events(siteName, from_time=None, until_time=None, sort=None,
 def get_events_command():
     args = demisto.args()
     response_data = get_events(args['siteName'], args.get('from_time', None),
-                                 args.get('until_time', None), args.get('sort', None),
-                                 args.get('since_id', None), args.get('max_id', None),
-                                 args.get('limit', None), args.get('page', None), args.get('action', None),
-                                 args.get('tag', None), args.get('ip', None), args.get('status', None))
+                               args.get('until_time', None), args.get('sort', None),
+                               args.get('since_id', None), args.get('max_id', None),
+                               args.get('limit', None), args.get('page', None),
+                               args.get('action', None), args.get('tag', None),
+                               args.get('ip', None), args.get('status', None))
 
     list_of_events = response_data.get('data', [])
     events_contexts = []
@@ -686,7 +687,7 @@ def get_events_command():
 
     sidedata = "Number of events in site: {0}".format(len(list_of_events))
     human_readable = tableToMarkdown(LIST_OF_EVENTS_TITLE, events_contexts_with_spaces, removeNull=True,
-                                     headers=EVENT_HEADERS,  metadata=sidedata)
+                                     headers=EVENT_HEADERS, metadata=sidedata)
     return_outputs(
         raw_response=response_data,
         readable_output=human_readable,
@@ -844,7 +845,7 @@ def get_site_list_command():
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
 
     title = "Found data about list with ID: {0}".format(args['list_id'])
-    human_readable = tableToMarkdown(title, entry_context_with_spaces,  headers=LIST_HEADERS, removeNull=True)
+    human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
         readable_output=human_readable,
@@ -889,7 +890,8 @@ def update_site_list_command():
                                      args['method'], args['entries_list'], args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
-    human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
+    human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces,
+                                     headers=LIST_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
         readable_output=human_readable,
@@ -1065,7 +1067,8 @@ def get_all_alerts_command():
     sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
     return_outputs(
         raw_response=response_data,
-        readable_output=tableToMarkdown(ALERT_LIST_TITLE, alerts_contexts_with_spaces, headers=ALERT_HEADERS, removeNull=True, metadata=sidedata),
+        readable_output=tableToMarkdown(ALERT_LIST_TITLE, alerts_contexts_with_spaces,
+                                        headers=ALERT_HEADERS, removeNull=True, metadata=sidedata),
         outputs={
             'SigSciences.Corp.Site.Alert(val.ID==obj.ID)': alerts_contexts,
         }
@@ -1137,8 +1140,8 @@ def add_ip_to_whitelist_command():
 
     return_outputs(
         raw_response=response_data,
-        readable_output=tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, headers=ADD_IP_HEADERS, removeNull=True,
-                                        metadata=IP_ADDED_TO_WHITELIST_TITLE.format(args['ip'])),
+        readable_output=tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, headers=ADD_IP_HEADERS,
+                                        removeNull=True, metadata=IP_ADDED_TO_WHITELIST_TITLE.format(args['ip'])),
         outputs={
             'SigSciences.Corp.Site.Whitelist(val.ID==obj.ID)': whitelist_ip_context,
         }
@@ -1244,7 +1247,8 @@ def get_sites_command():
 
     return_outputs(
         raw_response=res,
-        readable_output=tableToMarkdown(SITES_LIST_TITLE, outputs_with_spaces, headers=GET_SITE_HEADERS, removeNull=True),
+        readable_output=tableToMarkdown(SITES_LIST_TITLE, outputs_with_spaces, headers=GET_SITE_HEADERS,
+                                        removeNull=True),
         outputs={
             'SigSciences.Sites(val.Name==obj.Name)': outputs,
         }
