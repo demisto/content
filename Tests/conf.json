@@ -12,6 +12,10 @@
         {
             "playbookID": "test_similar_incidents"
         },
+                {
+            "playbookID": "Autofocus_test",
+            "integrations": "Autofocus"
+        },
         {
             "playbookID": "CheckpointFW-test",
             "integrations": "Check Point"
