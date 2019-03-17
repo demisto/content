@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
@@ -90,48 +90,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 66a52e64-75d7-4fc4-88e9-df17c47c4135
-    type: condition
-    task:
-      id: 66a52e64-75d7-4fc4-88e9-df17c47c4135
-      version: -1
-      name: Check if there was a malicious indicator.
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
         }
       }
     note: false
@@ -151,7 +111,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       addLabels: {}
       app: {}
@@ -241,7 +201,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1595
         }
       }
@@ -249,41 +209,16 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 3ebff382-4431-4838-87ae-38ecf01bf6f6
+    taskid: 7159b854-7dc5-4a75-8dd2-1f4a5f02939f
     type: regular
     task:
-      id: 3ebff382-4431-4838-87ae-38ecf01bf6f6
+      id: 7159b854-7dc5-4a75-8dd2-1f4a5f02939f
       version: -1
-      name: Investigate the malicious indicators?
+      name: Investigate the incident
       description: ""
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 6c2be411-689f-4d62-8c24-8356d697e460
-    type: regular
-    task:
-      id: 6c2be411-689f-4d62-8c24-8356d697e460
-      version: -1
-      name: Manually close the investigation.
-      description: Close the current incident.
-      type: regular
-      iscommand: false
-      brand: Builtin
     nexttasks:
       '#none#':
       - "14"
@@ -291,8 +226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 480,
+          "y": 1770
         }
       }
     note: false
@@ -327,8 +262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 2120
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -358,7 +293,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -389,7 +324,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 720
         }
       }
@@ -420,7 +355,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
         }
       }
@@ -451,7 +386,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1070
         }
       }
@@ -482,7 +417,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1245
         }
       }
@@ -513,7 +448,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1420
         }
       }
@@ -536,7 +471,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -546,8 +481,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 820,
+        "height": 1960,
+        "width": 810,
         "x": 50,
         "y": 50
       }
