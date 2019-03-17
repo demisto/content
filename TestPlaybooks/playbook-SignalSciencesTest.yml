@@ -1,5 +1,5 @@
 id: SignalSciences Test
-version: 69
+version: 89
 name: SignalSciences Test
 starttaskid: "0"
 tasks:
@@ -73,7 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "52"
     scriptarguments:
       siteName:
         simple: demisto
@@ -101,7 +101,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "54"
     scriptarguments:
       IP:
         simple: ${SigSciences.Blacklist.Source}
@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 1045
+          "y": 1260
         }
       }
     note: false
@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 1260
+          "y": 1975
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "63"
     scriptarguments:
       siteName:
         simple: demisto
@@ -173,23 +173,26 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 1440
+          "y": 2160
         }
       }
     note: false
     timertriggers: []
   "8":
     id: "8"
-    taskid: 9a987cb8-4f3f-406e-8975-9da91aad50fc
+    taskid: d55dacf9-cdc8-4347-8ee5-796899e1465d
     type: regular
     task:
-      id: 9a987cb8-4f3f-406e-8975-9da91aad50fc
+      id: d55dacf9-cdc8-4347-8ee5-796899e1465d
       version: -1
       name: Remove IP from whitelist
       script: '|||sigsci-whitelist-remove-ip'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
     scriptarguments:
       IP:
         simple: ${SigSciences.Whitelist.Source}
@@ -200,7 +203,7 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 1640
+          "y": 2510
         }
       }
     note: false
@@ -757,10 +760,10 @@ tasks:
     timertriggers: []
   "26":
     id: "26"
-    taskid: 30f60418-c34f-4ce8-80fc-fc3576be0eba
+    taskid: a0dc8c2a-bbf7-48e8-8396-8827b48b3beb
     type: regular
     task:
-      id: 30f60418-c34f-4ce8-80fc-fc3576be0eba
+      id: a0dc8c2a-bbf7-48e8-8396-8827b48b3beb
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -772,9 +775,10 @@ tasks:
       - "24"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: "no"
       index: {}
-      key: {}
+      key:
+        simple: SigSciences.Alerts
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -810,10 +814,10 @@ tasks:
     timertriggers: []
   "28":
     id: "28"
-    taskid: e91e9883-9c06-49f7-8245-7b58b8bf397f
+    taskid: 66be7d92-c276-47be-8429-b2c80f8a81b2
     type: regular
     task:
-      id: e91e9883-9c06-49f7-8245-7b58b8bf397f
+      id: 66be7d92-c276-47be-8429-b2c80f8a81b2
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -825,9 +829,10 @@ tasks:
       - "29"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: "no"
       index: {}
-      key: {}
+      key:
+        simple: ${SigSciences.SiteLists}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -1111,10 +1116,10 @@ tasks:
     timertriggers: []
   "40":
     id: "40"
-    taskid: 1d604558-0512-4ac7-8ac9-76babe311e1d
+    taskid: aaec5c2d-52b3-47d6-8360-523042308529
     type: regular
     task:
-      id: 1d604558-0512-4ac7-8ac9-76babe311e1d
+      id: aaec5c2d-52b3-47d6-8360-523042308529
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -1126,9 +1131,10 @@ tasks:
       - "41"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: "no"
       index: {}
-      key: {}
+      key:
+        simple: SigSciences.CorpLists
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -1454,6 +1460,283 @@ tasks:
         "position": {
           "x": 1290,
           "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+  "52":
+    id: "52"
+    taskid: b1c7bab0-a4c2-42df-8bce-d0c46cfc1e40
+    type: condition
+    task:
+      id: b1c7bab0-a4c2-42df-8bce-d0c46cfc1e40
+      version: -1
+      name: Verify IP was added to blacklist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Blacklist.Source
+            iscontext: true
+          right:
+            value:
+              simple: 8.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "53":
+    id: "53"
+    taskid: bdd4a749-a3a2-4193-888c-b992a60523e8
+    type: regular
+    task:
+      id: bdd4a749-a3a2-4193-888c-b992a60523e8
+      version: -1
+      name: Get blacklist
+      script: '|||sigsci-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "54":
+    id: "54"
+    taskid: e4c13e56-6b49-440c-8a87-f16822e26385
+    type: regular
+    task:
+      id: e4c13e56-6b49-440c-8a87-f16822e26385
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: SigSciences.Blacklist
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+  "55":
+    id: "55"
+    taskid: 4bacdceb-894b-47f3-88d7-52eae88ba5bd
+    type: condition
+    task:
+      id: 4bacdceb-894b-47f3-88d7-52eae88ba5bd
+      version: -1
+      name: Verify IP was deleted from blacklist (blacklist is empty)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: SigSciences.Blacklist.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+  "57":
+    id: "57"
+    taskid: 0ab4367b-e7ec-4b08-8c70-413190dfc748
+    type: regular
+    task:
+      id: 0ab4367b-e7ec-4b08-8c70-413190dfc748
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: SigSciences.Whitelist
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+  "59":
+    id: "59"
+    taskid: 2651613e-83ea-47b9-8f36-457f08a521bb
+    type: regular
+    task:
+      id: 2651613e-83ea-47b9-8f36-457f08a521bb
+      version: -1
+      name: Get whitelist
+      script: '|||sigsci-get-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+  "60":
+    id: "60"
+    taskid: 54988beb-acd9-455e-8a57-c1e2948ce15e
+    type: title
+    task:
+      id: 54988beb-acd9-455e-8a57-c1e2948ce15e
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3295
+        }
+      }
+    note: false
+    timertriggers: []
+  "62":
+    id: "62"
+    taskid: 1d3d54a3-3a19-4763-88c9-b63b874e0b5e
+    type: condition
+    task:
+      id: 1d3d54a3-3a19-4763-88c9-b63b874e0b5e
+      version: -1
+      name: Verify IP was deleted from whitelist (whitelist is empty)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: SigSciences.Whitelist.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+  "63":
+    id: "63"
+    taskid: e26d68f3-66bd-4f25-8b9e-444b43dcc3d4
+    type: condition
+    task:
+      id: e26d68f3-66bd-4f25-8b9e-444b43dcc3d4
+      version: -1
+      name: Verify IP was added to whitelist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Whitelist.Source
+            iscontext: true
+          right:
+            value:
+              simple: 8.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2325
         }
       }
     note: false
