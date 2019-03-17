@@ -2173,7 +2173,7 @@ script:
     def panorama_list_applications():
         params = {
             'type': 'op',
-            'cmd': '<show><objects></objects></show>',
+            'command': '<show><objects></objects></show>',
             'key': API_KEY
         }
         result = http_request(
