@@ -123,18 +123,21 @@ def main(circle_artifacts):
     # e.i. any yml with "fromversion" of <version_num> or more will be only on post bundle
     version_num = "3.5"
 
+    '''
     print 'creating dir for bundles ...'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(b)
         add_tools_to_bundle(b)
 
     convert_incident_fields_to_array()
+    '''
 
     for d in DIR_TO_PREFIX.keys():
         scanned_packages = glob.glob(os.path.join(d, '*/'))
         for package in scanned_packages:
             merge_script_package_to_yml(package, d)
 
+    '''
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)
         copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
@@ -159,6 +162,7 @@ def main(circle_artifacts):
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
+    '''
 
     print 'finished create content artifact at %s' % (circle_artifacts, )
 
