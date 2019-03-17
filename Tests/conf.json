@@ -6,6 +6,10 @@
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
+            "integrations": "remedy_sr",
+            "playbookID": "remedy_sr_test_pb"
+        },
+        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
@@ -1150,6 +1154,7 @@
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
     },
     "skipped_integrations": {
+        "remedy_sr": "We do not have an instance",
         "RSA Archer": "Server not responding (issue 16085)",
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
