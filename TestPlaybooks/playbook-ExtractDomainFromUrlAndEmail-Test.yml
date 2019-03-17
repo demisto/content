@@ -148,10 +148,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 83112962-cf22-4c3c-859d-fbce865eb4ef
+    taskid: fc4a2bf9-d302-43e5-8ea9-0323fb9b7221
     type: regular
     task:
-      id: 83112962-cf22-4c3c-859d-fbce865eb4ef
+      id: fc4a2bf9-d302-43e5-8ea9-0323fb9b7221
       version: -1
       name: ExtractDomainFromUrlAndEmail - test multiple input
       description: Extract Domain from a URL or Email
@@ -179,10 +179,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 5ad94d37-1c36-4a73-8712-cb08d4ac1e11
+    taskid: 02d914b6-7c46-4173-8189-d39453a7ff72
     type: regular
     task:
-      id: 5ad94d37-1c36-4a73-8712-cb08d4ac1e11
+      id: 02d914b6-7c46-4173-8189-d39453a7ff72
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -197,12 +197,6 @@ tasks:
       humanReadableEntryId:
         complex:
           root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
       substring:
         simple: typora.io # disable-secrets-detection
     separatecontext: false
@@ -218,10 +212,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: ae88e9c4-1922-45b7-8a70-323acc35eaad
+    taskid: 5106c22f-e3d1-41ea-8a3f-ad9e896ccbd0
     type: regular
     task:
-      id: ae88e9c4-1922-45b7-8a70-323acc35eaad
+      id: 5106c22f-e3d1-41ea-8a3f-ad9e896ccbd0
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -236,12 +230,6 @@ tasks:
       humanReadableEntryId:
         complex:
           root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
       substring:
         simple: macmillan.com # disable-secrets-detection
     separatecontext: false
