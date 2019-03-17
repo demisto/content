@@ -558,7 +558,7 @@ script:
         threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10);
         short_format = args.get('shortFormat', None) == 'true'
         full_response = args.get('fullResponse', None) == 'true'
-        retries_left = int(args.get('retries', 2)
+        retries_left = int(args.get('retries', 2))
         if (full_response):
             max_len = 1000
         else:
