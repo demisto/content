@@ -332,7 +332,7 @@ tasks:
       id: f5b78bed-a379-4375-8486-600d57fa1979
       version: -1
       name: Run FilterByList on empty list
-      scriptName: FilterByList_copy_1
+      scriptName: FilterByList
       type: regular
       iscommand: false
       brand: ""
