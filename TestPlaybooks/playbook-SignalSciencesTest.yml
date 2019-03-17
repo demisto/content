@@ -300,7 +300,7 @@ tasks:
       - "12"
     scriptarguments:
       alert_id:
-        simple: ${SigSciences.Alerts.ID}
+        simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
         simple: test
     separatecontext: false
@@ -332,7 +332,7 @@ tasks:
       action:
         simple: flagged
       alert_id:
-        simple: ${SigSciences.Alerts.ID}
+        simple: ${SigSciences.Corp.Site.Alert.ID}
       enabled:
         simple: "True"
       interval:
@@ -372,7 +372,7 @@ tasks:
       - "14"
     scriptarguments:
       alert_id:
-        simple: ${SigSciences.Alerts.ID}
+        simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
         simple: test
     separatecontext: false
@@ -406,7 +406,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: SigSciences.Alerts.Threshold
+              simple: SigSciences.Corp.Site.Alert.Threshold
             iscontext: true
           right:
             value:
@@ -437,7 +437,7 @@ tasks:
       - "26"
     scriptarguments:
       alert_id:
-        simple: ${SigSciences.Alerts.ID}
+        simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
         simple: test
     separatecontext: false
@@ -574,7 +574,7 @@ tasks:
       - "21"
     scriptarguments:
       list_id:
-        simple: ${SigSciences.SiteLists.ID}
+        simple: ${SigSciences.Site.List.ID}
       siteName:
         simple: test
     separatecontext: false
@@ -615,7 +615,7 @@ tasks:
                 value:
                   simple: "0"
       list_id:
-        simple: ${SigSciences.SiteLists.ID}
+        simple: ${SigSciences.Site.List.ID}
       method:
         simple: Remove
       siteName:
@@ -651,7 +651,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: SigSciences.SiteLists.Entries
+              simple: SigSciences.Site.List.Entries
             iscontext: true
           right:
             value:
@@ -682,7 +682,7 @@ tasks:
       - "28"
     scriptarguments:
       list_id:
-        simple: ${SigSciences.SiteLists.ID}
+        simple: ${SigSciences.Site.List.ID}
       siteName:
         simple: test
     separatecontext: false
@@ -744,7 +744,7 @@ tasks:
       - - operator: isNotEqualString
           left:
             value:
-              simple: SigSciences.Alerts.LongName
+              simple: SigSciences.Corp.Site.Alert.LongName
             iscontext: true
           right:
             value:
@@ -778,7 +778,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: SigSciences.Alerts
+        simple: SigSciences.Corp.Site.Alert
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -832,7 +832,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: ${SigSciences.SiteLists}
+        simple: ${SigSciences.Site.List}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -894,7 +894,7 @@ tasks:
       - - operator: isNotEqualString
           left:
             value:
-              simple: SigSciences.SiteLists.Name
+              simple: SigSciences.Site.List.Name
             iscontext: true
           right:
             value:
@@ -1007,7 +1007,7 @@ tasks:
       - "35"
     scriptarguments:
       list_id:
-        simple: ${SigSciences.CorpLists.ID}
+        simple: ${SigSciences.Corp.List.ID}
     separatecontext: false
     view: |-
       {
@@ -1038,7 +1038,7 @@ tasks:
       entries_list:
         simple: 3.3.3.3,4.4.4.4,5.5.5.5
       list_id:
-        simple: ${SigSciences.CorpLists.ID}
+        simple: ${SigSciences.Corp.List.ID}
       method:
         simple: Add
     separatecontext: false
@@ -1072,7 +1072,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: SigSciences.CorpLists.Entries
+              simple: SigSciences.Corp.List.Entries
             iscontext: true
           right:
             value:
@@ -1103,7 +1103,7 @@ tasks:
       - "40"
     scriptarguments:
       list_id:
-        simple: ${SigSciences.CorpLists.ID}
+        simple: ${SigSciences.Corp.List.ID}
     separatecontext: false
     view: |-
       {
@@ -1134,7 +1134,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: SigSciences.CorpLists
+        simple: SigSciences.Corp.List
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -1193,7 +1193,7 @@ tasks:
       - - operator: isNotEqualString
           left:
             value:
-              simple: SigSciences.CorpLists.Name
+              simple: SigSciences.Corp.List.Name
             iscontext: true
           right:
             value:
@@ -1423,7 +1423,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: SigSciences.Events.ID
+              simple: SigSciences.Corp.Site.Event.ID
             iscontext: true
           right:
             value:
