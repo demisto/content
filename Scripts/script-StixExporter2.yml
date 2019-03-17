@@ -1,6 +1,6 @@
 commonfields:
   id: StixExporter2
-  version: 43
+  version: 45
 name: StixExporter2
 script: |-
 from stix2 import Indicator, Bundle
@@ -30,7 +30,7 @@ indicator = Indicator(labels=demisto_indicator_type,
                       score=demisto_Score,  # Reputation
                       allow_custom=True)
 
-if createBundle:
+if createBundle.lower() == "True".lower():
     bundle = Bundle(indicator)
     print(bundle)
 else:
