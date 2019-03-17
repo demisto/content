@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1010
+          "y": 1535
         }
       }
     note: false
@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1855
+          "y": 2380
         }
       }
     note: false
@@ -125,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1680
+          "y": 2205
         }
       }
     note: false
@@ -161,7 +161,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1185
+          "y": 1710
         }
       }
     note: false
@@ -196,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1360
+          "y": 1885
         }
       }
     note: false
@@ -232,7 +232,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2730
+          "y": 3255
         }
       }
     note: false
@@ -256,7 +256,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 1390
         }
       }
     note: false
@@ -280,7 +280,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1535
+          "y": 2060
         }
       }
     note: false
@@ -311,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2030
+          "y": 2555
         }
       }
     note: false
@@ -354,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2205
+          "y": 2730
         }
       }
     note: false
@@ -386,7 +386,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2380
+          "y": 2905
         }
       }
     note: false
@@ -429,7 +429,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 3430
         }
       }
     note: false
@@ -454,7 +454,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3575
+          "y": 4100
         }
       }
     note: false
@@ -521,7 +521,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2905
+          "y": 3430
         }
       }
     note: false
@@ -553,7 +553,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2555
+          "y": 3080
         }
       }
     note: false
@@ -584,7 +584,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 3255
         }
       }
     note: false
@@ -608,7 +608,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3080
+          "y": 3605
         }
       }
     note: false
@@ -637,7 +637,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3225
+          "y": 3750
         }
       }
     note: false
@@ -666,17 +666,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3400
+          "y": 3925
         }
       }
     note: false
     timertriggers: []
   "24":
     id: "24"
-    taskid: 2c09034e-5816-40d0-8be8-8b8e3faf46f5
+    taskid: 2b2c0f3e-a572-4f17-83ec-32337f76e828
     type: regular
     task:
-      id: 2c09034e-5816-40d0-8be8-8b8e3faf46f5
+      id: 2b2c0f3e-a572-4f17-83ec-32337f76e828
       version: -1
       name: Run search command
       script: '|||ad-search'
@@ -689,10 +689,12 @@ tasks:
     scriptarguments:
       attributes: {}
       base-dn: {}
+      context-ouptut: {}
+      context-output: {}
       filter:
         simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
       size-limit:
-        simple: "5"
+        simple: "603"
       time-limit: {}
     separatecontext: false
     view: |-
@@ -730,10 +732,10 @@ tasks:
     timertriggers: []
   "26":
     id: "26"
-    taskid: e7ea0cbd-9c44-490e-8d58-ef070f984b62
+    taskid: 4559242d-e220-45c9-8f4d-845aba377e65
     type: condition
     task:
-      id: e7ea0cbd-9c44-490e-8d58-ef070f984b62
+      id: 4559242d-e220-45c9-8f4d-845aba377e65
       version: -1
       name: Verify results from search exist
       type: condition
@@ -741,7 +743,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -753,16 +755,18 @@ tasks:
                 root: ActiveDirectory
                 accessor: Search
             iscontext: true
-      - - operator: isEqualString
+      - - operator: isEqualNumber
           left:
             value:
               complex:
                 root: ActiveDirectory
                 accessor: Search.dn
+                transformers:
+                - operator: count
             iscontext: true
           right:
             value:
-              simple: CN=demistoadmin,CN=Users,DC=demisto,DC=int
+              simple: "603"
     view: |-
       {
         "position": {
@@ -772,12 +776,115 @@ tasks:
       }
     note: false
     timertriggers: []
+  "27":
+    id: "27"
+    taskid: fbcf5b88-499d-4186-88bf-bd9a506a0eb2
+    type: regular
+    task:
+      id: fbcf5b88-499d-4186-88bf-bd9a506a0eb2
+      version: -1
+      name: Run search command with no output
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      attributes: {}
+      base-dn: {}
+      context-ouptut:
+        simple: "no"
+      context-output:
+        simple: "no"
+      filter:
+        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+      size-limit:
+        simple: "5"
+      time-limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: ec1741d2-ffdf-4fb7-8a10-e1c1d5a2fde0
+    type: regular
+    task:
+      id: ec1741d2-ffdf-4fb7-8a10-e1c1d5a2fde0
+      version: -1
+      name: Delete all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: be4c26f2-b938-449a-811a-16d97bf33fd0
+    type: condition
+    task:
+      id: be4c26f2-b938-449a-811a-16d97bf33fd0
+      version: -1
+      name: Verify results from search don't exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3620,
+        "height": 4145,
         "width": 810,
         "x": 50,
         "y": 50
