@@ -20,6 +20,7 @@ from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
 from Tests.scripts.hook_validations.secrets import get_secrets
 from Tests.scripts.hook_validations.image import ImageValidator
+from Tests.scripts.hook_validations.description import DescriptionValidator
 from Tests.scripts.update_id_set import get_script_package_data
 from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
@@ -209,6 +210,9 @@ class FilesValidator(object):
 
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
+                    self._is_valid = False
+                description_validator = DescriptionValidator(file_path)
+                if not description_validator.is_valid():
                     self._is_valid = False
 
     def validate_no_secrets_found(self, branch_name):
