@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: f0543dbd-902b-4fab-86c6-9af6cb5768b2
+    taskid: 65a9d9cb-8426-443a-8453-befdfd81174b
     type: regular
     task:
-      id: f0543dbd-902b-4fab-86c6-9af6cb5768b2
+      id: 65a9d9cb-8426-443a-8453-befdfd81174b
       version: -1
       name: UnEscapeIPs - test multiple IPs input
       description: |-
@@ -97,10 +97,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: cfb80284-6476-4279-8e83-f99aa97019ae
+    taskid: 8e31fabe-abd4-4eb1-8c70-c6758670e3c3
     type: regular
     task:
-      id: cfb80284-6476-4279-8e83-f99aa97019ae
+      id: 8e31fabe-abd4-4eb1-8c70-c6758670e3c3
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -115,12 +115,6 @@ tasks:
       humanReadableEntryId:
         complex:
           root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
       substring:
         simple: 123.222.1.2 # disable-secrets-detection
     separatecontext: false
@@ -136,10 +130,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: bb04d1d6-6c8f-4835-868a-a428cf73eb06
+    taskid: 98481efd-7b05-41a0-8b71-a084ed30be4f
     type: regular
     task:
-      id: bb04d1d6-6c8f-4835-868a-a428cf73eb06
+      id: 98481efd-7b05-41a0-8b71-a084ed30be4f
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -154,12 +148,6 @@ tasks:
       humanReadableEntryId:
         complex:
           root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
       substring:
         simple: 200.200.200.200 # disable-secrets-detection
     separatecontext: false
