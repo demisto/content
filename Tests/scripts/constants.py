@@ -62,3 +62,6 @@ TYPE_TO_EXTENSION = {
     'python': '.py',
     'javascript': '.js'
 }
+
+# Run all test signal
+RUN_ALL_TESTS_FORMAT = "Run all tests"
