@@ -36,6 +36,8 @@ script: |
   for item in items:
       found = ''
       for list_item in lst:
+          if not list_item:
+              continue
           if re.search(list_item, item):
               found = item
               break
