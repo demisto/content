@@ -66,6 +66,7 @@ script:
   script: |-
     ''' IMPORTS '''
     import string
+    from datetime import datetime
     import requests
     import json
     import re
@@ -2153,7 +2154,6 @@ script:
         })
 
 
-    # ------------------------------------------------------------------------ #
     def prettify_applications_arr(applications_arr):
         pretty_application_arr = []
         for i in range (len(applications_arr)):
@@ -2222,22 +2222,29 @@ script:
             return_error('can not provide threat-pcap without pcap-id')
 
         fromm = demisto.args().get('from')
-        to = demisto.args().get('to')
+        localName = demisto.args().get('localName')
         serialno = demisto.args().get('serialNo')
         search_time = demisto.args().get('searchTime')
 
+        file_name = None
         if (fromm):
             params['from'] = fromm
-        if (to):
-            params['to'] = to
+            file_name = fromm
+        if (localName):
+            params['to'] = localName
+            file_name = localName
         if (serialno):
             params['serialno'] = serialno
         if (search_time):
             params['search-time'] = search_time
 
+        # set file name to the current time if from/to were not specified
+        if not file_name:
+            file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
+
         result = http_request(URL, 'GET', params = params)
 
-        demisto.results(fileResult(fromm + ".pcap", result.content))
+        demisto.results(fileResult(file_name + ".pcap", result.content))
 
 
     ''' EXECUTION '''
@@ -3372,7 +3379,9 @@ script:
       description: Filename for dlp-pcap, filters-pcap, application-pcap. <yyyymmdd>
         for application-pcap as well
     - name: localName
-      description: The new name for the PCAP file after downloading. If this argument is not specified, the file name will be the PCAP file name that was set in the firewall.
+      description: The new name for the PCAP file after downloading. If this argument
+        is not specified, the file name will be the PCAP file name that was set in
+        the firewall.
     - name: serialNo
       description: Serial number for the request. For further information, see the
         Panorama XML API Documentation.
