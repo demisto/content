@@ -115,7 +115,7 @@ script: |-
                    })
 
   # Returning all parsed data:
-  demisto.results(parser.all_data)
+  demisto.results(parser.all_data.encode('utf-8'))
 
   # Returning error:
   if parser.res:  # If there was an error:
@@ -143,5 +143,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/office-utils:1.0.0.91
 runas: DBotWeakRole
+releaseNotes: "Fixing encoding bug, added encoding to utf-8 when displaying the data"
 tests:
   - Extract Indicators From File - test
