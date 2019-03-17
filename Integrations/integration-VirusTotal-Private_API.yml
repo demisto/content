@@ -558,6 +558,7 @@ script:
         threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10);
         short_format = args.get('shortFormat', None) == 'true'
         full_response = args.get('fullResponse', None) == 'true'
+        retries_left = int(args.get('retries', 2)
         if (full_response):
             max_len = 1000
         else:
@@ -581,7 +582,8 @@ script:
                 })
                 completed_responses.append(response)
 
-        if non_completed_urls:
+        while non_completed_urls and retries_left:
+            retries_left -= 1
             # In case there were url scans that have not finished: try again after giving them enough time to finish
             time.sleep(SCAN_FINISH_TIME_IN_SECONDS)
             for url in non_completed_urls:
@@ -1272,6 +1274,9 @@ script:
         to retrieve the most recent report. You may also specify a scan_id (sha256-timestamp
         as returned by the URL submission API) to access a specific report
       isArray: true
+    - name: retries
+      description: Number of times the command will try to get url report if the report was not ready on the first try.
+      defaultValue: "2"
     - name: allInfo
       auto: PREDEFINED
       predefined:
