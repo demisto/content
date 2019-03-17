@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -330
         }
       }
     note: false
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "10"
     scriptarguments:
       alarm-id:
         simple: "100"
@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 380
+          "y": -30
         }
       }
     note: false
@@ -83,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 200
+          "y": -190
         }
       }
     note: false
@@ -102,7 +102,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "11"
     scriptarguments:
       alarm-id:
         simple: "100"
@@ -113,7 +113,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 560
+          "y": 310
         }
       }
     note: false
@@ -132,7 +132,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "12"
     scriptarguments:
       alarm-id:
         simple: "100"
@@ -142,39 +142,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 2689b1f7-c65b-4fe0-8df3-e795fec79184
-    type: regular
-    task:
-      id: 2689b1f7-c65b-4fe0-8df3-e795fec79184
-      version: -1
-      name: Get alarm history
-      script: '|||lr-get-alarm-history-by-id'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      alarm-id:
-        simple: "100"
-      include-comments:
-        simple: "true"
-      include-notifications:
-        simple: "true"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 920
+          "y": 650
         }
       }
     note: false
@@ -193,7 +161,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "14"
     scriptarguments:
       all-users:
         simple: "true"
@@ -209,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1100
+          "y": 1010
         }
       }
     note: false
@@ -228,7 +196,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "15"
     scriptarguments:
       alarm-id:
         simple: "100"
@@ -240,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1280
+          "y": 1390
         }
       }
     note: false
@@ -259,7 +227,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "16"
     scriptarguments:
       alarm-id:
         simple: "100"
@@ -271,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1460
+          "y": 1740
         }
       }
     note: false
@@ -292,7 +260,224 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1670
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: d4fc0fef-2a3d-40cb-8c78-698acf896b63
+    type: condition
+    task:
+      id: d4fc0fef-2a3d-40cb-8c78-698acf896b63
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 296193f4-f306-484f-8585-2d8ca259b3ff
+    type: condition
+    task:
+      id: 296193f4-f306-484f-8585-2d8ca259b3ff
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.Comment
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 6daf4a92-c30b-47f5-82e4-2aabdff6ca65
+    type: condition
+    task:
+      id: 6daf4a92-c30b-47f5-82e4-2aabdff6ca65
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.Event.Severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.Event.Command
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 8efb5f5c-ebbf-4d95-8053-6da40d7c910a
+    type: condition
+    task:
+      id: 8efb5f5c-ebbf-4d95-8053-6da40d7c910a
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 2b9fd75d-2589-41dd-820a-159d49351594
+    type: condition
+    task:
+      id: 2b9fd75d-2589-41dd-820a-159d49351594
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.Status
+            iscontext: true
+          right:
+            value:
+              simple: New
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 05effc0f-6fc1-451a-88ad-282627696fae
+    type: condition
+    task:
+      id: 05effc0f-6fc1-451a-88ad-282627696fae
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.Status
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1910
         }
       }
     note: false
@@ -302,10 +487,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1685,
+        "height": 2495,
         "width": 380,
         "x": 450,
-        "y": 50
+        "y": -330
       }
     }
   }
