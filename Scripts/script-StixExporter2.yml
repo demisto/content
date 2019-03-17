@@ -1,6 +1,6 @@
 commonfields:
   id: StixExporter2
-  version: 40
+  version: 43
 name: StixExporter2
 script: |-
 from stix2 import Indicator, Bundle
@@ -12,6 +12,7 @@ demisto_Score = demisto.args().get('score','')
 first_seen = demisto.args().get('firstSeen','')
 demisto_created = demisto.args().get('timestamp','')
 last_seen = demisto.args().get('lastSeen','')
+createBundle = demisto.args().get('createBundle','False')
 
 stix_type_and_value = ""
 
@@ -28,8 +29,12 @@ indicator = Indicator(labels=demisto_indicator_type,
                       firstSeen=first_seen,  # first_seen - firstSeen
                       score=demisto_Score,  # Reputation
                       allow_custom=True)
-bundle = Bundle(indicator)
-print(bundle)
+
+if createBundle:
+    bundle = Bundle(indicator)
+    print(bundle)
+else:
+    print(indicator)
 type: python
 tags: []
 enabled: true
@@ -47,6 +52,9 @@ args:
   description: 'first time the indicator have been seen '
 - name: timestamp
 - name: lastSeen
+- name: createBundle
+  default: true
+  defaultValue: "False"
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
