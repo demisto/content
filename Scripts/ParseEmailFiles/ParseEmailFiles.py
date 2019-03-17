@@ -3448,7 +3448,8 @@ def main():
                     file_contents = f.read()
 
                 if 'Content-Type:'.lower() in file_contents.lower():
-                    email_data = handle_eml(file_path, b64=False, file_name=file_name, parse_only_headers=parse_only_headers)
+                    email_data = handle_eml(file_path, b64=False, file_name=file_name,
+                                            parse_only_headers=parse_only_headers)
                     return_outputs(
                         readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
                         outputs={
@@ -3461,7 +3462,8 @@ def main():
                     # Try a base64 decode
                     b64decode(file_contents)
                     if 'Content-Type:'.lower() in file_contents.lower():
-                        email_data = handle_eml(file_path, b64=True, file_name=file_name, parse_only_headers=parse_only_headers)
+                        email_data = handle_eml(file_path, b64=True, file_name=file_name,
+                                                parse_only_headers=parse_only_headers)
                         return_outputs(
                             readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
                             outputs={

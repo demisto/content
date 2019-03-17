@@ -47,7 +47,7 @@ script: |-
 type: python
 tags:
 - email
-comment: This automation parses headers from an email file.
+comment: Deprecated - use `ParseEmailFiles parse_only_headers=true`. This automation parses headers from an email file.
 enabled: true
 args:
 - name: entryId
@@ -85,4 +85,5 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+deprecated: true
 releaseNotes: support eml and msg headers parsing - using ParseEmailFiles internally

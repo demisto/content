@@ -29,13 +29,13 @@ args:
   defaultValue: "false"
 outputs:
 - contextPath: Email.To
-  description: Email 'to' addresses
+  description: This shows to whom the message was addressed, but may not contain the recipient's address.
   type: string
 - contextPath: Email.CC
   description: Email 'cc' addresses
   type: string
 - contextPath: Email.From
-  description: Email 'from' sender
+  description: This displays who the message is from, however, this can be easily forged and can be the least reliable.
   type: string
 - contextPath: Email.Subject
   description: Email subject
@@ -47,7 +47,7 @@ outputs:
   description: Email 'text' body if exists
   type: string
 - contextPath: Email.Headers
-  description: The full email headers as a single string
+  description: Deprecated - use Email.HeadersMap output instead. The full email headers as a single string
   type: string
 - contextPath: Email.HeadersMap
   description: The full email headers json
