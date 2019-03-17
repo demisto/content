@@ -12,8 +12,8 @@
         {
             "playbookID": "test_similar_incidents"
         },
-                {
-            "playbookID": "Autofocus_test",
+        {
+            "playbookID": "autofocus_test",
             "integrations": "Autofocus"
         },
         {
