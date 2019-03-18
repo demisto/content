@@ -41,7 +41,7 @@ def checked_type(file_path, regex_list):
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
-    infra_tests = False
+    run_sample_tests = False
 
     all_tests = []
     modified_files_list = []
@@ -83,14 +83,10 @@ def get_modified_files(files_string):
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
 
-            elif file_status.lower() == 'm' and SECRETS_WHITE_LIST not in file_path:
-                # infrastructure files (changes only)
-                if re.match("Tests/.*.(py|sh)", file_path):
-                    infra_tests = True
-                else:
-                    all_tests.append(file_path)
+            elif SECRETS_WHITE_LIST not in file_path:
+                run_sample_tests = True
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json, infra_tests
+    return modified_files_list, modified_tests_list, all_tests, is_conf_json, run_sample_tests
 
 
 def get_name(file_path):
@@ -489,7 +485,7 @@ def get_test_from_conf(branch_name):
 
 def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
-    modified_files, modified_tests_list, all_tests, is_conf_json, infra_tests = get_modified_files(files_string)
+    modified_files, modified_tests_list, all_tests, is_conf_json, run_sample_tests = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
@@ -507,15 +503,19 @@ def get_test_list(files_string, branch_name):
         print_warning('Running all tests due to: {}'.format(','.join(all_tests)))
         tests.add("Run all tests")
 
-    if infra_tests:  # Choosing 3 random tests for infrastructure testing
+    if run_sample_tests:  # Choosing 3 random tests for infrastructure testing
         test_ids = get_test_ids(check_nightly_status=True)
         for _ in range(3):
-            tests.add(test_ids[random.randint(0, len(test_ids))])
+            tests.add(random.choice(test_ids))
 
-    if not tests and (modified_files or modified_tests_list or all_tests):
-        print_color("There are no tests that check the changes you've done, please make sure you write one",
-                    LOG_COLORS.RED)
-        sys.exit(1)
+    if not tests:
+        if modified_files or modified_tests_list or all_tests:
+            print_error("There are no tests that check the changes you've done, please make sure you write one")
+            sys.exit(1)
+        else:
+            print_warning("Running Sanity cehck only")
+            tests.add('DocumentationTest')  # test with integration configured
+            tests.add('TestCommonPython')  # test with no integration configured
 
     return tests
 
