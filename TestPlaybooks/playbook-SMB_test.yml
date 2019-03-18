@@ -36,10 +36,9 @@ tasks:
       version: -1
       name: smb-download
       description: Download a file from the SMB server
-      script: Server Message Block (SMB)1|||smb-download
+      script: "|||smb-download"
       type: regular
       iscommand: true
-      brand: Server Message Block (SMB)1
     scriptarguments:
       download_and_attach: {}
       file_path:
@@ -63,10 +62,9 @@ tasks:
       version: -1
       name: smb-upload
       description: Upload a file to the SMB server
-      script: Server Message Block (SMB)1|||smb-upload
+      script: "|||smb-upload"
       type: regular
       iscommand: true
-      brand: Server Message Block (SMB)1
     scriptarguments:
       content:
         simple: "123"
