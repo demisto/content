@@ -56,25 +56,36 @@ def get_modified_files(files_string):
         file_path = file_data[1]
         file_status = file_data[0]
 
+        # ignoring renamed and deleted files.
+        # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
             if checked_type(file_path, CODE_FILES_REGEX):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
+            # Common scripts (globally used so must run all tests)
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
-            elif re.match(DOCS_REGEX, file_path):
+
+            # docs does not influence tests
+            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] == '.md':
                 continue
+
+            # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
+
+            # tests
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 modified_tests_list.append(file_path)
+
+            # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
-            elif file_status.lower() == 'm' and \
-                    'id_set.json' not in file_path and SECRETS_WHITE_LIST not in file_path:
-                if re.match("Tests/.*.py", file_path) or re.match("Tests/.*.sh", file_path) or \
-                        file_path == ".hooks/pre-commit":
+
+            elif file_status.lower() == 'm' and SECRETS_WHITE_LIST not in file_path:
+                # infrastructure files (changes only)
+                if re.match("Tests/.*.(py|sh)", file_path):
                     infra_tests = True
                 else:
                     all_tests.append(file_path)
