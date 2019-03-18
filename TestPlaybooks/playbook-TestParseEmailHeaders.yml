@@ -112,10 +112,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 628764b5-e41d-492b-8dfc-7c9e78256eda
+    taskid: bd8abf89-f58a-4758-8a4c-8c3bb1605411
     type: condition
     task:
-      id: 628764b5-e41d-492b-8dfc-7c9e78256eda
+      id: bd8abf89-f58a-4758-8a4c-8c3bb1605411
       version: -1
       name: Validate Headers outputs
       type: condition
@@ -147,7 +147,14 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Email.Headers.Received
+              complex:
+                root: Email.Headers.Received
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
             iscontext: true
           right:
             value:
@@ -247,10 +254,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 81bb52c7-3a03-45a0-847d-c0994cea6542
+    taskid: ffebbd9c-076c-449e-82e0-f5cd1c9fd6a5
     type: condition
     task:
-      id: 81bb52c7-3a03-45a0-847d-c0994cea6542
+      id: ffebbd9c-076c-449e-82e0-f5cd1c9fd6a5
       version: -1
       name: Validate outputs
       type: condition
@@ -267,13 +274,17 @@ tasks:
           left:
             value:
               complex:
-                root: Email.Headers.Received
-                transformers:
-                - operator: atIndex
-                  args:
-                    index:
+                root: Email.Headers
+                filters:
+                - - operator: isEqualString
+                    left:
                       value:
-                        simple: "1"
+                        simple: Email.Headers.Message-ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+                accessor: Received
             iscontext: true
           right:
             value:
@@ -282,13 +293,17 @@ tasks:
           left:
             value:
               complex:
-                root: Email.Headers.Subject
-                transformers:
-                - operator: atIndex
-                  args:
-                    index:
+                root: Email.Headers
+                filters:
+                - - operator: isEqualString
+                    left:
                       value:
-                        simple: "1"
+                        simple: Email.Headers.Message-ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+                accessor: Subject
             iscontext: true
           right:
             value:
@@ -298,7 +313,17 @@ tasks:
           left:
             value:
               complex:
-                root: Email.Headers.X-MS-TrafficTypeDiagnostic
+                root: Email.Headers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Email.Headers.Message-ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+                accessor: X-MS-TrafficTypeDiagnostic
             iscontext: true
           right:
             value:
