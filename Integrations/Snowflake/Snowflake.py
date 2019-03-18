@@ -33,6 +33,8 @@ WAREHOUSE = PARAMS.get('warehouse')
 DATABASE = PARAMS.get('database')
 SCHEMA = PARAMS.get('schema')
 ROLE = PARAMS.get('role')
+# How much time before the first fetch to retrieve incidents
+FETCH_TIME = PARAMS.get('fetch_time')
 MAX_ROWS = 10000
 
 
@@ -165,12 +167,30 @@ def fetch_incidents():
     returns:
         Demisto incidents
     """
-    lastRun = demisto.getLastRun()
-    # You can store the last run time...
-    demisto.setLastRun({'time': 'now'})
-    # lastRun is a dictionary, with value "now" for key "time".
-    # JSON of the incident type created by this integration
-    demisto.incidents([{'Name': 'Incident #1'}, {'Name': 'Incident #2'}])
+    # demisto.getLastRun() will returns an obj with the previous run in it.
+    last_run = demisto.getLastRun()
+    # Get the last fetch time, if exists
+    last_fetch = last_run.get('last_fetched_data_timestamp')
+
+    # Handle first time fetch, fetch incidents retroactively
+    if not last_fetch:
+        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+    updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
+    args = {'updated_since': updated_since, 'order_type': 'asc'}
+
+    tickets = search_tickets(args)
+    # convert the ticket/events to demisto incidents
+    incidents = []
+    for ticket in tickets:
+        incident = ticket_to_incident(ticket)
+        incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
+        # Update last run and add incident if the incident is newer than last fetch
+        if incident_date > last_fetch:
+            last_fetch = incident_date
+            incidents.append(incident)
+
+    demisto.setLastRun({'last_fetched_data_timestamp': last_fetch})
+    demisto.incidents(incidents)
 
 
 def snowflake_query_command():
