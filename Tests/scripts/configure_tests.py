@@ -63,8 +63,8 @@ def get_modified_files(files_string):
 
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
-            # elif re.match(DOCS_REGEX, file_path):
-            #     continue
+            elif re.match(DOCS_REGEX, file_path):
+                continue
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
