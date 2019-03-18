@@ -78,18 +78,10 @@ script: |
       // Assumed alternative is that args.input is a string
       var unformatted_urls = argToList(args.input);
       urls = format_url_list(unformatted_urls);
-      if (urls.length === 1) {
-          return urls[0];
-      }
   }
-  return({
-      Type: entryTypes.note,
-      ContentsFormat: formats.json,
-      Contents: urls
-  });
+  return urls
 type: javascript
-tags:
-- indicator-format
+tags: []
 comment: |-
   Extract URLs redirected by security tools like Proofpoint.
   Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
@@ -98,7 +90,6 @@ enabled: true
 args:
 - name: input
   description: The URL(s) to process
-  isArray: true
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole

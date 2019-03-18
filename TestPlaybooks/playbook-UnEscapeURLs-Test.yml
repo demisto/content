@@ -389,10 +389,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: f8597d94-4ec8-491c-8052-321c5f460679
+    taskid: dfcbb9df-c53c-4825-8916-ac60fe1c27ec
     type: regular
     task:
-      id: f8597d94-4ec8-491c-8052-321c5f460679
+      id: dfcbb9df-c53c-4825-8916-ac60fe1c27ec
       version: -1
       name: UnEscapeURLs an Array of urls
       description: |-
@@ -423,10 +423,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: c9a2ede7-981b-4f41-81b1-ef2842e39bf6
+    taskid: ece52ac4-174e-44fe-8473-013ec9d95050
     type: regular
     task:
-      id: c9a2ede7-981b-4f41-81b1-ef2842e39bf6
+      id: ece52ac4-174e-44fe-8473-013ec9d95050
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -440,6 +440,12 @@ tasks:
       humanReadableEntryId:
         complex:
           root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "2"
       substring:
         simple: https://www.demisto.com
     separatecontext: false
@@ -455,10 +461,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 2bd92473-62f2-420f-805c-c13f208011e6
+    taskid: 4375a691-2ab7-4900-8a9c-7d2b6956bc07
     type: regular
     task:
-      id: 2bd92473-62f2-420f-805c-c13f208011e6
+      id: 4375a691-2ab7-4900-8a9c-7d2b6956bc07
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -472,6 +478,12 @@ tasks:
       humanReadableEntryId:
         complex:
           root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       substring:
         simple: https://www.facebook.com/PhilipsBeLux # disable-secrets-detection
     separatecontext: false
