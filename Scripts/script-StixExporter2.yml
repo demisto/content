@@ -1,6 +1,6 @@
 commonfields:
   id: StixExporter2
-  version: 50
+  version: 60
 name: StixExporter2
 script: |-
 from stix2 import Indicator, Bundle
@@ -26,7 +26,7 @@ if demisto_indicator_type.lower() == "IP".lower():
     stix_type_and_value = "[ipv4-addr:value = '" + value + "']"
 if demisto_indicator_type.lower() == "URL".lower():
     stix_type_and_value = "[url:value = '" + value + "']"
-else #any other type will keep Demisto type
+else:
     stix_type_and_value = "[" + demisto_indicator_type.lower() +":value = '" + value + "']"
 
 indicator = Indicator(labels=demisto_indicator_type,
@@ -36,9 +36,9 @@ indicator = Indicator(labels=demisto_indicator_type,
                       modified=last_seen,
                       firstSeen=first_seen,
                       score=demisto_Score,
-                      allow_custom=True
+                      allow_custom=True)
 
-if createBundle.lower() == "True".lower():
+if createBundle.lower() == "true":
     bundle = Bundle(indicator)
     print(bundle)
 else:
