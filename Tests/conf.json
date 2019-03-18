@@ -1178,7 +1178,8 @@
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
         "Kafka V2": "Can not connect to instance from remote",
-        "Check Point Sandblast": "No access (issue 15948)"
+        "Check Point Sandblast": "No access (issue 15948)",
+        "wWhois": "Host periodically bans connection"
     },
     "nigthly_integrations": [
         "Lastline",
