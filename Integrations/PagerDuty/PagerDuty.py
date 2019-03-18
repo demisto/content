@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 # PagerDuty API works only with secured communication.
 USE_SSL = True
 
+USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
@@ -21,6 +22,13 @@ DEFAULT_HEADERS = {
     'Authorization': 'Token token=' + API_KEY,
     'Accept': 'application/vnd.pagerduty+json;version=2'
 }
+
+'''HANDLE PROXY'''
+if not USE_PROXY:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 '''PARAMS'''
 UTC_PARAM = '&time_zone=UTC'
