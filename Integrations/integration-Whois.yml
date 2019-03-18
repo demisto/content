@@ -71,48 +71,45 @@ script:
     '''COMMANDS'''
     def whois_command():
         query = demisto.args().get('query')
-        try:
-            whois_result = whois.whois(query)
-            demisto.debug("Whois query result - "+str(whois_result))
-            md = {}
-            for key in whois_result:
-                value = whois_result[key]
-                value = my_converter(value)
-                key = string_to_table_header(key)
-                md.update({key: value})
-            ec = {}
-            ec.update({
-                'Domain': {
-                    'Name': str(list_tool(whois_result.domain_name, list, 0)),
-                    'Whois': {
-                        'Domain': str(list_tool(whois_result.domain_name, list, 0)),
-                        'DomainStatus': whois_result.status,
-                        'DNSSec': str(whois_result.dnssec),
-                        'Raw': str(whois_result),
-                        'NameServers': whois_result.name_servers,
-                        'CreationDate': str(time_list_tool(whois_result.creation_date)),
-                        'UpdatedDate': str(time_list_tool(whois_result.updated_date)),
-                        'ExpirationDate': str(time_list_tool(whois_result.expiration_date)),
-                        'Registrar': {
-                            'Name': str(whois_result.registrar),
-                            'AbuseEmail': str(list_tool(whois_result.emails, list, 0))
-                        },
-                        'Registrant': {
-                            'Name': str(whois_result.get('name')),
-                            'Email': str(list_tool(whois_result.emails, list, 1))
-                        }
+        whois_result = whois.whois(query)
+        demisto.debug("Whois query result - "+str(whois_result))
+        md = {}
+        for key in whois_result:
+            value = whois_result[key]
+            value = my_converter(value)
+            key = string_to_table_header(key)
+            md.update({key: value})
+        ec = {}
+        ec.update({
+            'Domain': {
+                'Name': str(list_tool(whois_result.domain_name, list, 0)),
+                'Whois': {
+                    'Domain': str(list_tool(whois_result.domain_name, list, 0)),
+                    'DomainStatus': whois_result.status,
+                    'DNSSec': str(whois_result.dnssec),
+                    'Raw': str(whois_result),
+                    'NameServers': whois_result.name_servers,
+                    'CreationDate': str(time_list_tool(whois_result.creation_date)),
+                    'UpdatedDate': str(time_list_tool(whois_result.updated_date)),
+                    'ExpirationDate': str(time_list_tool(whois_result.expiration_date)),
+                    'Registrar': {
+                        'Name': str(whois_result.registrar),
+                        'AbuseEmail': str(list_tool(whois_result.emails, list, 0))
+                    },
+                    'Registrant': {
+                        'Name': str(whois_result.get('name')),
+                        'Email': str(list_tool(whois_result.emails, list, 1))
                     }
                 }
+            }
+        })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md, removeNull=True),
+            'EntryContext': createContext(ec, removeNull=True)
             })
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'Contents': str(whois_result),
-                'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md, removeNull=True),
-                'EntryContext': createContext(ec, removeNull=True)
-                })
-        except:
-            demisto.results('No result found for {}'.format(query))
 
 
     def test_command():
@@ -129,16 +126,12 @@ script:
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
-    try:
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_command()
-        elif demisto.command() == 'whois':
-            whois_command()
-    except Exception as e:
-        LOG(e)
-        LOG.print_log(False)
-        return_error(e.message)
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test_command()
+    elif demisto.command() == 'whois':
+        whois_command()
+
   type: python
   commands:
   - name: whois
