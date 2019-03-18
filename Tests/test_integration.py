@@ -1,3 +1,4 @@
+import copy
 import time
 from pprint import pformat
 import uuid
@@ -230,15 +231,18 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 
 # Configure integrations to work with mock
 def configure_proxy_unsecure(integration_params):
-    """Set proxy and unscure integration parameters to true.
+    """Copies the intgeration parameters dictionary.
+        Set proxy and unscure integration parameters to true.
 
     Args:
         integration_params: dict of the integration parameters.
     """
-    if not integration_params:
-        integration_params = {}
-    for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
-        integration_params[param] = True
+    integration_params_copy = copy.deepcopy(integration_params)
+    if integration_params_copy:
+        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
+            integration_params[param] = True
+
+    return integration_params_copy
 
 
 # 1. create integrations instances
