@@ -1,4 +1,4 @@
-# Welcome!
+# Welcome! 
 First and foremost, welcome to Demisto! There are some things to know when it comes to the Demisto platform and the outline below should help you get started on the right foot.
 
 If you have *ANY* questions, just ask. We will be more than happy to help you!
