@@ -35,6 +35,7 @@ SCHEMA = PARAMS.get('schema')
 ROLE = PARAMS.get('role')
 # How much time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time')
+FETCH_QUERY = PARAMS.get('fetch_query')
 MAX_ROWS = 10000
 
 
@@ -58,14 +59,13 @@ def check_and_update_parameters():
     pass
 
 
-def format_to_json_serializable(cursor, results):
+def format_to_json_serializable(column_descriptions, results):
     """
     Screen and reformat any data in 'results' argument that is
     not json serializable, and return 'results'
 
-    parameter: (Cursor) cursor
-        The database cursor that was used for the execute or
-        fetch operation that returned the 'results' argument
+    parameter: (list) column_descriptions
+        The metadata that describes data for each column in the 'results' argument
 
     parameter: (list) results
         What was returned by the cursor object's execute or fetch operation
@@ -77,7 +77,6 @@ def format_to_json_serializable(cursor, results):
     type_code = 1
 
     checks = {}
-    column_descriptions = cursor.description
     # Screen by type_code
     for col in column_descriptions:
         if col[type_code] == 0:
@@ -176,12 +175,13 @@ def fetch_incidents():
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
-    args = {'updated_since': updated_since, 'order_type': 'asc'}
+    # args = {'updated_since': updated_since, 'order_type': 'asc'}
+    args = {'rows': MAX_ROWS, 'query': FETCH_QUERY}
 
-    tickets = search_tickets(args)
-    # convert the ticket/events to demisto incidents
+    _, data = snowflake_query(args)
+    # convert the data/events to demisto incidents
     incidents = []
-    for ticket in tickets:
+    for row in data:
         incident = ticket_to_incident(ticket)
         incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
         # Update last run and add incident if the incident is newer than last fetch
@@ -193,13 +193,12 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def snowflake_query_command():
-    args = demisto.args()
-    conn = get_connection(args)
-    if conn:
+def snowflake_query(args):
+    connection = get_connection(args)
+    if connection:
         try:
             query = args.get('query')
-            cur = conn.cursor(snowflake.connector.DictCursor)
+            cur = connection.cursor(snowflake.connector.DictCursor)
             cur.execute(query)
             rows = args.get('rows')
             if rows:
@@ -208,35 +207,42 @@ def snowflake_query_command():
                 rows = MAX_ROWS
             results = cur.fetchmany(rows)
             if results:
-                results = format_to_json_serializable(cur, results)
-
-                entry_context = {
-                    'Query': query,
-                    'Result': results
-                }
-                columns = argToList(args.get('columns'))
-                human_readable = tableToMarkdown(query, results, columns)
-
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': results,
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': human_readable,
-                    'EntryContext': {
-                        'Snowflake(val.Query && val.Query === obj.Query)': entry_context
-                    }
-                })
+                return cur.description, results
             else:
-                demisto.results('No data found matching the query')
+                return_error('No data found matching the query')
         except snowflake.connector.errors.ProgrammingError as e:
             return_error(str(e))
         finally:
             if cur:
                 cur.close()
-            conn.close()
+            connection.close()
     else:
         return_error('Unable to connect')
+
+
+def snowflake_query_command():
+    args = demisto.args()
+    query = args.get('query')
+    col_descriptions, results = snowflake_query(args)
+    results = format_to_json_serializable(col_descriptions, results)
+
+    entry_context = {
+        'Query': query,
+        'Result': results
+    }
+    columns = argToList(args.get('columns'))
+    human_readable = tableToMarkdown(query, results, columns)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': results,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Snowflake(val.Query && val.Query === obj.Query)': entry_context
+        }
+    })
 
 
 def snowflake_update_command():
