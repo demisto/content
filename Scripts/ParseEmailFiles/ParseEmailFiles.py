@@ -3294,7 +3294,17 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False):
             header_list.append(item_dict)
 
             # new way to map headers - dictionary
-            headers_map[item[0]] = convert_to_unicode(item[1])
+            if item[0] in headers_map:
+                # in case there is already such header
+                # then add that header value to value array
+                if not isinstance(headers_map[item[0]], list):
+                    # convert the existing value to array
+                    headers_map[item[0]] = [headers_map[item[0]]]
+
+                # add the new value to the value array
+                headers_map[item[0]].append(convert_to_unicode(item[1]))
+            else:
+                headers_map[item[0]] = convert_to_unicode(item[1])
 
         if parse_only_headers:
             return {
