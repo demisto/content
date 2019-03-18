@@ -329,6 +329,12 @@ def event_entry_context_from_response(response_data):
     return entry_context
 
 
+def adjust_event_human_readable(entry_context_with_spaces, entry_context):
+    """Change keys in human readable data to match the headers.
+    """
+    entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+
+
 def validate_fetch_requests_args(page, limit):
     if limit is not None and (not represents_int(limit) or int(limit) < 0 or int(limit) > 1000):
         return_error("Error: limit must be an integer, larger than 0 and at most 1000")
@@ -359,6 +365,14 @@ def request_entry_context_from_response(response_data):
     return entry_context
 
 
+def adjust_request_human_readable(entry_context_with_spaces, entry_context):
+    """Change keys in human readable data to match the headers.
+    """
+    entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+    entry_context_with_spaces["URI"] = entry_context.get("URI", "")
+    entry_context_with_spaces["Remote IP"] = entry_context.get("RemoteIP", "")
+
+
 def list_entry_context_from_response(response_data):
     entry_context = {
         'ID': response_data.get('id', ''),
@@ -371,6 +385,12 @@ def list_entry_context_from_response(response_data):
         'UpdatedDate': response_data.get('updated', '')
     }
     return entry_context
+
+
+def adjust_list_human_readable(entry_context_with_spaces, entry_context):
+    """Change keys in human readable data to match the headers.
+    """
+    entry_context_with_spaces["ID"] = entry_context.get("ID", "")
 
 
 def alert_entry_context_from_response(response_data):
@@ -388,6 +408,14 @@ def alert_entry_context_from_response(response_data):
         'CreatedDate': response_data.get('created', ''),
     }
     return entry_context
+
+
+def adjust_alert_human_readable(entry_context_with_spaces, entry_context):
+    """Change keys in human readable data to match the headers.
+    """
+    entry_context_with_spaces["Interval (In Minutes)"] = entry_context_with_spaces.get("Interval", "")
+    entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+    entry_context_with_spaces["Site ID"] = entry_context.get("siteID", "")
 
 
 def check_ip_is_valid(ip):
@@ -551,6 +579,9 @@ def create_corp_list_command():
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
     human_readable = tableToMarkdown(CREATE_CORP_LIST_TITLE.format(args['list_name']), entry_context_with_spaces,
                                      headers=LIST_HEADERS, removeNull=True)
+
+    adjust_list_human_readable(entry_context_with_spaces, entry_context)
+
     return_outputs(
         raw_response=response_data,
         readable_output=human_readable,
@@ -572,6 +603,7 @@ def get_corp_list_command():
     entry_context = list_entry_context_from_response(response_data)
     title = "Found data about list with ID: {0}".format(args['list_id'])
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_list_human_readable(entry_context_with_spaces, entry_context)
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
@@ -618,6 +650,7 @@ def update_corp_list_command():
                                      args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_list_human_readable(entry_context_with_spaces, entry_context)
     human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces,
                                      headers=LIST_HEADERS, removeNull=True)
     return_outputs(
@@ -646,6 +679,9 @@ def get_all_corp_lists_command():
 
     sidedata = "Number of corp lists in corp: {0}".format(len(list_of_corp_lists))
     corp_lists_contexts_with_spaces = return_list_of_dicts_with_spaces(corp_lists_contexts)
+
+    for i in range(len(corp_lists_contexts)):
+        adjust_list_human_readable(corp_lists_contexts_with_spaces[i], corp_lists_contexts[i])
 
     human_readable = tableToMarkdown(LIST_OF_CORP_LISTS_TITLE, corp_lists_contexts_with_spaces, headers=LIST_HEADERS,
                                      removeNull=True, metadata=sidedata)
@@ -687,6 +723,9 @@ def get_events_command():
 
     events_contexts_with_spaces = return_list_of_dicts_with_spaces(events_contexts)
 
+    for i in range(len(events_contexts)):
+        adjust_list_human_readable(events_contexts_with_spaces[i], events_contexts[i])
+
     sidedata = "Number of events in site: {0}".format(len(list_of_events))
     human_readable = tableToMarkdown(LIST_OF_EVENTS_TITLE, events_contexts_with_spaces, removeNull=True,
                                      headers=EVENT_HEADERS, metadata=sidedata)
@@ -712,6 +751,8 @@ def get_event_by_id_command():
     title = "Found data about event with ID: {0}".format(args['event_id'])
 
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_event_human_readable(entry_context_with_spaces, entry_context)
+
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=EVENT_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
@@ -766,6 +807,9 @@ def get_requests_command():
 
     requests_contexts_with_spaces = return_list_of_dicts_with_spaces(requests_contexts)
 
+    for i in range(len(requests_contexts)):
+        adjust_list_human_readable(requests_contexts_with_spaces[i], requests_contexts[i])
+
     sidedata = "Number of requests in site: {0}".format(len(list_of_requests))
     human_readable = tableToMarkdown(LIST_OF_REQUESTS_TITLE, requests_contexts_with_spaces, headers=REQUEST_HEADER,
                                      removeNull=True, metadata=sidedata)
@@ -791,6 +835,7 @@ def get_request_by_id_command():
     title = "Found data about request with ID: {0}".format(args['request_id'])
 
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_request_human_readable(entry_context_with_spaces, entry_context)
 
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=REQUEST_HEADER, removeNull=True)
     return_outputs(
@@ -824,6 +869,7 @@ def create_site_list_command():
                                      args['list_type'], args['entries_list'], args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_list_human_readable(entry_context_with_spaces, entry_context)
 
     human_readable = tableToMarkdown(CREATE_SITE_LIST_TITLE.format(args['list_name']), entry_context_with_spaces,
                                      headers=LIST_HEADERS, removeNull=True)
@@ -847,6 +893,7 @@ def get_site_list_command():
     response_data = get_site_list(args['siteName'], args['list_id'])
     entry_context = list_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_list_human_readable(entry_context_with_spaces, entry_context)
 
     title = "Found data about list with ID: {0}".format(args['list_id'])
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
@@ -896,6 +943,8 @@ def update_site_list_command():
                                      args['method'], args['entries_list'], args.get('description', None))
     entry_context = list_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+    adjust_list_human_readable(entry_context_with_spaces, entry_context)
+
     human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces,
                                      headers=LIST_HEADERS, removeNull=True)
     return_outputs(
@@ -924,6 +973,10 @@ def get_all_site_lists_command():
         site_lists_contexts.append(cur_site_context)
 
     site_lists_contexts_with_spaces = return_list_of_dicts_with_spaces(site_lists_contexts)
+
+    for i in range(len(site_lists_contexts)):
+        adjust_list_human_readable(site_lists_contexts_with_spaces[i], site_lists_contexts[i])
+
     sidedata = "Number of site lists in site: {0}".format(len(list_of_site_lists))
     human_readable = tableToMarkdown(LIST_OF_SITE_LISTS_TITLE, site_lists_contexts_with_spaces, headers=LIST_HEADERS,
                                      removeNull=True, metadata=sidedata)
@@ -959,7 +1012,7 @@ def add_alert_command():
     entry_context = alert_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
     # changing key of Interval to Interval (In Minutes) for human readable
-    entry_context_with_spaces["Interval (In Minutes)"] = entry_context_with_spaces.get("Interval", "")
+    adjust_alert_human_readable(entry_context_with_spaces, entry_context)
 
     human_readable = tableToMarkdown(ADD_ALERT_TITLE, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
     return_outputs(
@@ -984,7 +1037,7 @@ def get_alert_command():
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
 
     # changing key of Interval to Interval (In Minutes) for human readable
-    entry_context_with_spaces["Interval (In Minutes)"] = entry_context_with_spaces.get("Interval", "")
+    adjust_alert_human_readable(entry_context_with_spaces, entry_context)
 
     title = "Data found for alert id: {0}".format(args['alert_id'])
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
@@ -1039,7 +1092,7 @@ def update_alert_command():
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
 
     # changing key of Interval to Interval (In Minutes) for human readable
-    entry_context_with_spaces["Interval (In Minutes)"] = entry_context_with_spaces.get("Interval", "")
+    adjust_alert_human_readable(entry_context_with_spaces, entry_context)
 
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
     return_outputs(
@@ -1069,8 +1122,8 @@ def get_all_alerts_command():
     alerts_contexts_with_spaces = return_list_of_dicts_with_spaces(alerts_contexts)
 
     # changing key of Interval to Interval (In Minutes) for human readable in all alert contexts
-    for alert_context in alerts_contexts_with_spaces:
-        alert_context["Interval (In Minutes)"] = alert_context.get("Interval", "")
+    for i in range(len(alerts_contexts)):
+        adjust_alert_human_readable(alerts_contexts_with_spaces[i], alerts_contexts[i])
 
     sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
     return_outputs(
