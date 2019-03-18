@@ -1155,7 +1155,7 @@
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "palo_alto_firewall_test_pb": "Task 53 fails due to instance misconfiguration (issue 16110)",
         "Tenable.io Scan Test": "Scan time increases over time, causing long test times (issue 16115)",
-        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
+        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
     },
     "skipped_integrations": {
         "RSA Archer": "Server not responding (issue 16085)",
