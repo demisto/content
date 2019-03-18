@@ -67,3 +67,4 @@ TYPE_TO_EXTENSION = {
 
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
+FILTER_CONF = "./Tests/filter_file.txt"
