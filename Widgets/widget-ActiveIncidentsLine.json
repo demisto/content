@@ -1,10 +1,10 @@
 {
-  "id": "incidents-assigned-by-user",
+  "id": "active-incidents-by-type",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Incidents Assigned by User",
+  "name": "Active Incidents - Line chart",
   "dataType": "incidents",
-  "widgetType": "bar",
+  "widgetType": "line",
   "query": "-category:job and -status:archived and -status:closed",
   "isPredefined": true,
   "dateRange": {
@@ -21,7 +21,8 @@
   },
   "params": {
     "groupBy": [
-      "owner"
+      "occurred(d)",
+      "type"
     ]
   },
   "description": ""

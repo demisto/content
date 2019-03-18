@@ -76,6 +76,7 @@ script:
         del os.environ["http_proxy"]
         del os.environ["https_proxy"]
         os.environ['NO_PROXY'] = SERVER_URL
+
     if not isinstance(WHITELISTS, (list)) or not isinstance(BLACKLISTS, (list)):
         return_error('Either blacklist or whitelist params were misconfigured - expecting comma seperated list, ex: miner_a,miner_b,miner_c')
 
