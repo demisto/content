@@ -574,8 +574,10 @@ script:
                 outputPaths['url']: [],
             }
         for url, res in responses_dict.iteritems():
-            url_md, url_ec = create_url_report_output(url, res, ec, threshold, max_len, short_format)
+            url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
             md += url_md
+            ec['DBotScore'].append(dbot_score)
+            ec[outputPaths['url']].append(url_ec)
         if not md:
             md = "No scans were completed in the elapsed time. Please run the command again in a few seconds."
 
@@ -610,7 +612,7 @@ script:
 
         urls_scanned_count = len(requests_responses_dict)
         urls_count = len(urls)
-        while urls_count != urls_scanned_count and retries_left:
+        while urls_count > urls_scanned_count and retries_left > 0:
             retries_left -= 1
             # In case there were url scans that have not finished: try again after giving them enough time to finish
             time.sleep(scan_finish_time_in_seconds)
@@ -628,11 +630,12 @@ script:
         return bool(res.get('total'))
 
 
-    def create_url_report_output(url, response, ec, threshold, max_len, short_format):
+    def create_url_report_output(url, response, threshold, max_len, short_format):
         """
-        Returns 2 results:
+        Returns 3 results:
         1. human readable string.
-        2. entry context.
+        2. url entry context.
+        3. dbot entry context.
         """
         positives = demisto.get(response, 'positives')
         md = ''
@@ -658,7 +661,12 @@ script:
         else:
             dbotScore = 1
 
-        ec['DBotScore'].append({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+        ec_dbot = {
+            'Indicator': url,
+            'Type': 'url',
+            'Vendor': 'VirusTotal - Private API',
+            'Score': dbotScore
+        }
         if (dbotScore < 3):
             ec_url.update({'Data': url})
 
@@ -690,8 +698,7 @@ script:
             }
         md += scans_table_md
 
-        ec[outputPaths['url']].append(ec_url)
-        return md, ec
+        return md, ec_url, ec_dbot
 
 
     def get_ip_report(ip):
