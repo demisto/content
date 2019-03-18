@@ -31,20 +31,21 @@ script: |-
   if isinstance(the_input, str) or isinstance(the_input, unicode):
       the_input = argToList(the_input)
 
-  # Otherwise assumes it's an array
+  # Otherwise assumes it's already an array
   for item in the_input:
       domains.append(extract_domain(item))
   demisto.results(domains)
 type: python
 tags:
 - indicator-format
-comment: Extract Domain from a URL or Email
+comment: Extract Domain from URL(s) and/or Email(s)
 enabled: true
 args:
 - name: input
   required: true
   default: true
   description: The URL(s) or Email(s) to process
+  isArray: true
 scripttarget: 0
 runonce: false
 dockerimage: demisto/tld

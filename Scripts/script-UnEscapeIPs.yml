@@ -23,6 +23,9 @@ script: |-
       // Assumed alternative is that args.input is a string
       var unformatted_ips = argToList(args.input);
       ips = format_ip_list(unformatted_ips);
+      if (ips.length === 1) {
+          return ips[0];
+      }
   }
   return ips
 type: javascript
@@ -35,9 +38,10 @@ enabled: true
 args:
 - name: input
   description: ip(s) to unescape
+  isArray: true
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 releaseNotes: Update script to accept array input
 tests:
-  - UnEscapeIPs-Test
+  - UnEscapeIPs-Test 
