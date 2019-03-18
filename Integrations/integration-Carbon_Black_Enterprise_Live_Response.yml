@@ -7,13 +7,14 @@ category: Endpoint
 image: data:image/png;base64,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
 description: Collect information and take action on remote endpoints in real time
   with Carbon Black Enterprise Live Response.
-detaileddescription: "Use Live Response for Cb Defense or Cb Response.\n\nFor Cb Defense:\nProvide
-  server URL,  'Live Response' API key and connector. \n\nFor Cb Response:\nProvide
-  server URL and API Token.\n\n\nWhen running Live Response commands (e.g. 'cb-process-kill'),
-  it is possible to pass 'wait-timeout' argument to determine the number of seconds
-  to wait for the command to be executed on Live Response side. Once the command has
-  been executed or wait-time has expired - the command information will be returned
-  to the war room. \nDefault 'wait-time' is 20 seconds.\n"
+detaileddescription: "Carbon Black Live Response Integration is configurable with
+  both Carbon black Response (Cb Response) and Carbon Black Defense (Cb Defense).\n\nFor
+  Cb Defense:\nProvide server URL,  'Live Response' API key and connector. \n\nFor
+  Cb Response:\nProvide server URL and API Token.\n\nUsing Cb Live Response:\nYou
+  can either establish a new session with the sensor and execute multiple actions
+  on the endpoint over the same session, or execute actions without session management
+  - in that case each action will be executed within a new session.\nNote - only one
+  active session can be established with a sensor at a given time."
 configuration:
 - display: Server URL
   name: serverurl
@@ -1694,10 +1695,10 @@ script:
     arguments:
     - name: session
       required: true
-      description: Session ID of command to cancel
+      description: Session ID used to execute the command.
     - name: command
       required: true
-      description: Command ID to cancel
+      description: Command ID to cancel, as returned from the command execution info.
     outputs:
     - contextPath: CbLiveResponse.Commands.Status
       description: The Command Status
@@ -1729,11 +1730,12 @@ script:
     arguments:
     - name: session
       required: true
-      description: Session ID of the command
+      description: The ID of the session used for the command execution.
     - name: command
       required: true
-      description: Command ID
-    description: Display information on command
+      description: The command ID, as specified on the command data returned from
+        the execution.
+    description: Inquire for command status (when using session management option)
   - name: cb-file-delete
     arguments:
     - name: session
@@ -1764,7 +1766,9 @@ script:
     - name: file-id
       required: true
       description: File ID
-    description: Download a file from Cb server in a given session. Use cb-command-create with name=get-file to push the file from a path on the endpint to Cb server before executing cb-file-get.
+    description: Download a file from Cb server in a given session. Use cb-command-create
+      with name=get-file to push the file from a path on the endpint to Cb server
+      before executing cb-file-get.
   - name: cb-file-info
     arguments:
     - name: session
@@ -1805,7 +1809,8 @@ script:
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
       description: Whether the file was deleted or not
-    description: Uploads the file to the Cb server. Use cb-command-create with name=put-file to push the file from Cb server to a path on the endpoint.
+    description: Uploads the file to the Cb server. Use cb-command-create with name=put-file
+      to push the file from Cb server to a path on the endpoint.
   - name: cb-keepalive
     arguments:
     - name: session
@@ -1911,7 +1916,9 @@ script:
       description: Session Timeout
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
-    description: Create a new CarbonBlack session for a given sensor
+    description: Create a new active session for a given sensor. In the data returned
+      you can find the session ID. This ID will be used to execute Live Response commands
+      on the sensor and retrieve session and command status if needed.
   - name: cb-session-create-and-wait
     arguments:
     - name: sensor
@@ -2280,23 +2287,28 @@ script:
   - name: cb-file-delete-from-endpoint
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The source path of the object to delete.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Cancel the command if still 'pending' after timeout.
+      description: Cancel the action if the status is still 'pending' after timeout.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2313,23 +2325,28 @@ script:
   - name: cb-registry-get-values
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The path of the key to query
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Cancel the command if still 'pending' after timeout.
+      description: Cancel the action if the status is still 'pending' after timeout.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2354,23 +2371,28 @@ script:
   - name: cb-registry-query-value
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The path of the key + the path of the value (e.g. HKEY_LOCAL_MACHINE\blah\key\value).
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Cancel the command if still 'pending' after timeout.
+      description: Cancel the action if the status is still 'pending' after timeout.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2395,23 +2417,28 @@ script:
   - name: cb-registry-create-key
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The key path to create.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Cancel the command if still 'pending' after timeout.
+      description: Cancel the action if the status is still 'pending' after timeout.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2461,10 +2488,15 @@ script:
   - name: cb-registry-delete-value
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The path of the key + the path of the value.
@@ -2494,10 +2526,15 @@ script:
   - name: cb-registry-set-value
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The path of the key + the path of the value.
@@ -2518,8 +2555,8 @@ script:
       description: An optional parameter to specify whether to overwrite the value
         if it already exists (default value is ’no’).
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2543,20 +2580,25 @@ script:
   - name: cb-process-list
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Cancel the command if still 'pending' after timeout.
+      description: Cancel the action if the status is still 'pending' after timeout.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2587,16 +2629,21 @@ script:
   - name: cb-get-file-from-endpoint
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: path
       required: true
       description: The source path of the file.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
@@ -2636,16 +2683,21 @@ script:
   - name: cb-push-file-to-endpoint
     arguments:
     - name: session
-      description: The session ID.
+      description: 'Optional. Specify the session ID to execute the action over an
+        active session (use ‘cb-session-create’ in order to establish a new session
+        and retrieve the ID from the data returned). If omitted, you must specify
+        the sensor ID. '
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: Optional. Specify the sensor ID to avoid session management with
+        the sensor. A new session will be established automatically with the sensor,
+        and will be closed after successful execution of the action. If omitted, you
+        must specify the session ID.
     - name: entry-id
       required: true
-      description: The file entry ID.
+      description: The entry ID of the file uploaded.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Maximum seconds to wait for the action to change status from ‘pending’
+        to ‘in-progress'/'complete'  before returning the command information.
       defaultValue: "20"
     - name: path
       required: true
@@ -2665,5 +2717,6 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
+releaseNotes: 'Updated arguments descriptions'
 tests:
   - CarbonBlackLiveResponseTest
