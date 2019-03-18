@@ -121,7 +121,7 @@ def dict_keys_from_camelcase_to_spaces(dict_with_camelcase_keys):
     for key in dict_with_camelcase_keys:
         key_with_spaces = camel_case_to_spaces(key)
         dict_with_spaces_in_keys[key_with_spaces] = dict_with_camelcase_keys[key]
-    return dict_keys_from_camelcase_to_spaces
+    return dict_with_spaces_in_keys
 
 
 def return_list_of_dicts_with_spaces(list_of_camelcase_dicts):
@@ -591,10 +591,12 @@ def delete_corp_list(list_id):
 def delete_corp_list_command():
     args = demisto.args()
     response_data = delete_corp_list(args['list_id'])
-    return_outputs(
-        raw_response=response_data,
-        readable_output=DELETE_CORP_LIST_TITLE.format(args['list_id'])
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response_data,
+        'HumanReadable': DELETE_CORP_LIST_TITLE.format(args['list_id'])
+    })
 
 
 def update_corp_list(list_id, method, entries_list, description=None):
@@ -729,10 +731,12 @@ def expire_event(siteName, event_id):
 def expire_event_command():
     args = demisto.args()
     response_data = expire_event(args['siteName'], args['event_id'])
-    return_outputs(
-        raw_response=response_data,
-        readable_output=EXPIRE_EVENT_TITLE.format(args['event_id'])
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response_data,
+        'HumanReadable': EXPIRE_EVENT_TITLE.format(args['event_id'])
+    })
 
 
 def get_requests(siteName, page, limit, query):
@@ -864,10 +868,12 @@ def delete_site_list(siteName, list_id):
 def delete_site_list_command():
     args = demisto.args()
     response_data = delete_site_list(args['siteName'], args['list_id'])
-    return_outputs(
-        raw_response=response_data,
-        readable_output=DELETE_SITE_LIST_TITLE.format(args['list_id'])
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response_data,
+        'HumanReadable': DELETE_SITE_LIST_TITLE.format(args['list_id'])
+    })
 
 
 def update_site_list(siteName, list_id, method, entries_list, description=None):
@@ -949,9 +955,9 @@ def add_alert_command():
     args = demisto.args()
     response_data = add_alert(args['siteName'], args['long_name'], args['tag_name'],
                               args['interval'], args['threshold'], args['enabled'], args['action'])
+
     entry_context = alert_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
-
     # changing key of Interval to Interval (In Minutes) for human readable
     entry_context_with_spaces["Interval (In Minutes)"] = entry_context_with_spaces.get("Interval", "")
 
@@ -1001,10 +1007,12 @@ def delete_alert_command():
     args = demisto.args()
     response_data = delete_alert(args['siteName'], args['alert_id'])
     title = "Alert {0} deleted succesfully".format(args['alert_id'])
-    return_outputs(
-        raw_response=response_data,
-        readable_output=title
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response_data,
+        'HumanReadable': title
+    })
 
 
 def update_alert(siteName, alert_id, tag_name, long_name, interval, threshold, enabled, action):
@@ -1192,10 +1200,12 @@ def whitelist_remove_ip_command():
     args = demisto.args()
     response_data = whitelist_remove_ip(args['siteName'], args['IP'])
 
-    return_outputs(
-        raw_response=response_data,
-        readable_output=WHITELIST_REMOVE_IP_TITLE.format(args['IP']),
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response_data,
+        'HumanReadable': WHITELIST_REMOVE_IP_TITLE.format(args['IP']),
+    })
 
 
 def blacklist_remove_ip(siteName, ip):
@@ -1218,10 +1228,12 @@ def blacklist_remove_ip_command():
     args = demisto.args()
     response_data = blacklist_remove_ip(args['siteName'], args['IP'])
 
-    return_outputs(
-        raw_response=response_data,
-        readable_output=BLACKLIST_REMOVE_IP_TITLE.format(args['IP']),
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response_data,
+        'HumanReadable': BLACKLIST_REMOVE_IP_TITLE.format(args['IP']),
+    })
 
 
 def get_sites():
