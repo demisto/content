@@ -647,7 +647,7 @@ tasks:
       - "28"
     scriptarguments:
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
     continueonerror: true
     separatecontext: false
     view: |-
@@ -678,7 +678,7 @@ tasks:
       element_type:
         simple: DATE
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
       time_to_live: {}
       timeout_type: {}
     separatecontext: false
@@ -709,7 +709,7 @@ tasks:
       date_value:
         simple: "True"
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
       source:
         simple: test
       value:
@@ -744,7 +744,7 @@ tasks:
         simple: "True"
       headers: {}
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
     separatecontext: false
     view: |-
       {
@@ -808,7 +808,7 @@ tasks:
       date_value:
         simple: "True"
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
       value:
         simple: 2018-11-06T08:56:31.000000Z
     separatecontext: false
@@ -839,7 +839,7 @@ tasks:
       date_value: {}
       headers: {}
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
     separatecontext: false
     view: |-
       {
@@ -856,8 +856,8 @@ tasks:
     task:
       id: 2217aac6-c13d-4d16-887d-bbfd05cccb0a
       version: -1
-      name: Validate test_playbook reference set is empty
-      description: Validates test_playbook reference set is empty
+      name: Validate test_playbookk reference set is empty
+      description: Validates test_playbookk reference set is empty
       type: condition
       iscommand: false
       brand: ""
@@ -902,7 +902,7 @@ tasks:
       - "36"
     scriptarguments:
       ref_name:
-        simple: test_playbook
+        simple: test_playbookk
     separatecontext: false
     view: |-
       {
