@@ -16,6 +16,7 @@ BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 # file types regexes
 PIPFILE_REGEX = r".*\Pipfile"
 TEST_DATA_REGEX = r".*test_data.*"
+DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
 CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
@@ -31,6 +32,7 @@ INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r"{}.(?!playbook).*-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
+
 
 WIDGETS_REGEX = r"{}.*widget-.*\.json$".format(WIDGETS_DIR)
 DASHBOARD_REGEX = r"{}.*dashboard-.*\.json$".format(DASHBOARDS_DIR)

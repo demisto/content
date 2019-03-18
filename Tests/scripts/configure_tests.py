@@ -11,7 +11,7 @@ import argparse
 
 from Tests.scripts.constants import *
 from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -63,6 +63,8 @@ def get_modified_files(files_string):
 
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
+            # elif re.match(DOCS_REGEX, file_path):
+            #     continue
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
@@ -491,6 +493,7 @@ def get_test_list(files_string, branch_name):
         tests = tests.union(get_test_from_conf(branch_name))
 
     if all_tests:
+        print_warning('Running all tests due to: {}'.format(','.join(all_tests)))
         tests.add("Run all tests")
 
     if infra_tests:  # Choosing 3 random tests for infrastructure testing
