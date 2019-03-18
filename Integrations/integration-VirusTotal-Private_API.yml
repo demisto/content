@@ -556,13 +556,15 @@ script:
         """
         corresponds to 'vt-get-url-report' command. Retrieves a report about a url
         """
+        global SCAN_FINISH_TIME_IN_SECONDS
         args = demisto.args()
         urls = argToList(args.get('resource'))
         all_info = 1 if args.get('allInfo', None) == 'true' else 0
         short_format = args.get('shortFormat', None) == 'true'
         retries = int(args.get('retries', 2))
         full_response = args.get('fullResponse', None) == 'true'
-        threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10);
+        threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
+        SCAN_FINISH_TIME_IN_SECONDS = int(args.get('retry_time', SCAN_FINISH_TIME_IN_SECONDS))
         if (full_response):
             max_len = 1000
         else:
@@ -1297,7 +1299,7 @@ script:
       isArray: true
     - name: retries
       description: Number of times the command will try to get url report if the report
-        was not ready on the first try.
+        was not ready on the first try
       defaultValue: "2"
     - name: allInfo
       auto: PREDEFINED
@@ -1325,6 +1327,9 @@ script:
       description: Return all of the results, note that it can be thousands of results.
         Prefer not to use in playbooks. The default value is "false"
       defaultValue: "false"
+    - name: retry_time
+      description: The amount of time the integration will wait before retrying to
+        get a url report for URLs whose scans have not finished
     outputs:
     - contextPath: URL.Data
       description: Url address
