@@ -62,7 +62,7 @@ script:
     ''' HELPER FUNCTIONS '''
     def split_path(path):
         share = ''
-        delim = '/' if '/' in path else ['\\']
+        delim = '/' if '/' in path else '\\'
         while path and not share:
             share, path = path.split(delim, 1)
         return share, path
@@ -104,7 +104,7 @@ script:
             file_obj.write(content)
             file_obj.seek(0)
             file_bytes_transfered = conn.storeFile(share, path, file_obj)
-            demisto.results("Transfered " + file_bytes_transfered + " bytes of data.")
+            demisto.results("Transfered {} bytes of data.".format(file_bytes_transfered))
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
@@ -129,9 +129,9 @@ script:
     arguments:
     - name: file_path
       required: true
+      default: true
       description: The path to the file, starting from the share. (e.g. Share/Folder/File)
     - name: download_and_attach
-      default: true
       auto: PREDEFINED
       predefined:
       - "yes"
@@ -151,3 +151,6 @@ script:
     description: Upload a file to the SMB server
   dockerimage: demisto/pysmb
   runonce: false
+releaseNotes: "Added command to upload a file. Added option to print out the contents of a file instead of downloading it."
+tests:
+  - No test
