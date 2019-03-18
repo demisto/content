@@ -1,0 +1,99 @@
+id: SMB test
+version: -1
+name: SMB test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7d00ae67-5175-4418-8e8a-d09ee6681135
+    type: start
+    task:
+      id: 7d00ae67-5175-4418-8e8a-d09ee6681135
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1318b929-317a-4aca-8826-817a73394ccb
+    type: regular
+    task:
+      id: 1318b929-317a-4aca-8826-817a73394ccb
+      version: -1
+      name: smb-download
+      description: Download a file from the SMB server
+      script: Server Message Block (SMB)1|||smb-download
+      type: regular
+      iscommand: true
+      brand: Server Message Block (SMB)1
+    scriptarguments:
+      download_and_attach: {}
+      file_path:
+        simple: Shared/asd.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 9a4f14b7-5df9-460b-8268-d292925c51a9
+    type: regular
+    task:
+      id: 9a4f14b7-5df9-460b-8268-d292925c51a9
+      version: -1
+      name: smb-upload
+      description: Upload a file to the SMB server
+      script: Server Message Block (SMB)1|||smb-upload
+      type: regular
+      iscommand: true
+      brand: Server Message Block (SMB)1
+    scriptarguments:
+      content:
+        simple: "123"
+      entryID: {}
+      file_path:
+        simple: Shared/zxc.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
