@@ -49,7 +49,7 @@ script:
     from zeep import helpers
     from zeep.cache import SqliteCache
     import random
-    import datetime
+    from datetime import datetime
     import json
     import requests
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -88,7 +88,7 @@ script:
 
     def  get_incident_id(dtobj):
 
-        if type(dtobj) is datetime.datetime:
+        if type(dtobj) is datetime:
             return client.service.incidentList(savedReportId=SAVED_REPORT_ID, incidentCreationDateLaterThan=dtobj)
         else:
             return_error('excpected datetime object')
@@ -98,10 +98,16 @@ script:
     def incidentDetail(_id):
 
         return client.service.incidentDetail(incidentId=_id,includeViolations=True,includeHistory=True)
-        
+
+
+    def incidentBinaries(args):
+
+        return client.service.incidentBinaries(**args)
+
+
     def myconverter(o):
-        if isinstance(o, datetime.datetime):
-            return o.__str__()        
+        if isinstance(o, datetime):
+            return o.__str__()
 
 
     def fetchincidents():
@@ -110,7 +116,7 @@ script:
             fetch_time,_ = parse_date_range(FETCH_TIME)
             last_run['lt_time'] = fetch_time
         else:
-            last_run['lt_time']= datetime.datetime.strptime(last_run['lt_time'],'%d/%m/%Y %H:%M:%S.%f')
+            last_run['lt_time']= datetime.strptime(last_run['lt_time'],'%d/%m/%Y %H:%M:%S.%f')
 
         incidentids=get_incident_id(last_run['lt_time'])
         incidents=[]
@@ -118,11 +124,10 @@ script:
             for incident1 in incidentids['incidentId']:
                 inc=incidentDetail(str(incident1))
                 serialized_obj = helpers.serialize_object(inc[0])
-                rawjson = json.dumps(serialized_obj,default = myconverter)
                 incidents.append({
-                    'name':"DLP Incident #"+str(incident1),
-                    'details':  inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated",
-                    'rawJSON': rawjson,
+                    'name':"#"+str(incident1) + " DLP "+ inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated",
+                    'details': json.dumps(serialized_obj,default = myconverter),
+                    'rawJSON': json.dumps(serialized_obj,default = myconverter),
                     'severity' : SEVERITY[inc[0]['incident']['severity']]
                 })
                 if inc[0]['incident']['incidentCreationDate'].isoformat() > last_run['lt_time'].isoformat():
@@ -142,14 +147,14 @@ script:
 
     if demisto.command() == 'fetch-incidents':
         fetchincidents()
-        
+
     elif demisto.command() =='test-module':
         try:
-            inc_list = get_incident_id(datetime.datetime.now())
+            inc_list = get_incident_id(datetime.now())
             demisto.results("ok")
         except:
             return_error("Invalid instance details")
-            
+
     elif demisto.command() == 'sdlp-incident-details':
         inc_details = incidentDetail( demisto.args()['incidentId'])
         res = helpers.serialize_object(inc_details[0])
@@ -157,11 +162,65 @@ script:
         demisto.results({'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents':json_res,
-            'EntryContext':{'SymantecDLP':{'Incident':json_res[0]['incident']}}}
+            'EntryContext':{'SymantecDLP':{'Incident':json_res}}}
         )
-        
+
     elif demisto.command() == 'sdlp-update-incident':
         demisto.results(updateIncidents())
+
+    elif demisto.command() == 'sdlp-incident-binaries':
+        args = demisto.args()
+        binaries = incidentBinaries(args)
+        if len(binaries["Component"]) > 0 :
+            for binary in binaries["Component"]:
+                demisto.results(fileResult(binary["name"],binary["content"]))
+                component={"name":binary["name"],"componentId":binary["componentId"],"componentType":binary["componentType"]}
+                demisto.results({'ContentsFormat': formats['json'],
+                                'Type': entryTypes['note'],
+                                'Contents':component,
+                                'EntryContext':{'binaries':component}
+                                }
+                            )
+
+        else:
+            demisto.results("No binaries for the incident")
+
+    elif demisto.command() == 'sdlp-incident-violations':
+        args = demisto.args()
+        violations = client.service.incidentViolations(**args)
+        if len(violations[0]["violatingComponent"]) > 0:
+            for violation in violations[0]["violatingComponent"]:
+                violation = helpers.serialize_object(violation)
+                demisto.results({'ContentsFormat': formats['json'],
+                                    'Type': entryTypes['note'],
+                                    'Contents':json.dumps(violation,),
+                                    'EntryContext':{'ViolationComponents':violation}
+                                    }
+                                )
+
+    elif demisto.command() == 'sdlp-list-incident-status':
+        statusList = client.service.listIncidentStatus()
+        demisto.results({'ContentsFormat': formats['json'],
+                                    'Type': entryTypes['note'],
+                                    'Contents':statusList,
+                                    'EntryContext':{'incidentStatusList':statusList}
+                                    }
+                                )
+
+
+    elif demisto.command() == 'sdlp-list-custom-attributes':
+        customAttributes = client.service.listCustomAttributes()
+        demisto.results({'ContentsFormat': formats['json'],
+                                    'Type': entryTypes['note'],
+                                    'Contents':customAttributes,
+                                    'EntryContext':{'customAttributes':customAttributes}
+                                    }
+                                )
+
+
+
+
+
 
   type: python
   commands:
@@ -215,6 +274,63 @@ script:
       description: 'changes the status of the incident in DLP console NOTE:  status
         attributes are defined in the DLP console. '
     description: Updates Symantec DLP incidents
+  - name: sdlp-incident-binaries
+    arguments:
+    - name: incidentId
+      required: true
+    - name: includeOriginalMessage
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: This  indicates whether the result include the original message
+        in the response document.
+    - name: includeAllComponents
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: This  indicates whether the result include all message components
+        (for example, headers and file attachments) in the response document.
+    - name: componentId
+      description: This  indicates a specific message component ID to return in the
+        response document
+    outputs:
+    - contextPath: binaries.componentId
+      description: component ID of the binay
+    - contextPath: binaries.name
+      description: Name if the binary
+    description: retrieves additional components of the message that generated an
+      incident, such as the message header, body, and binary attachments.
+  - name: sdlp-incident-violations
+    arguments:
+    - name: incidentLongId
+      required: true
+    - name: includeImageViolations
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: This  specifies whether image violations should be included in
+        the IncidentViolationsResponse
+      defaultValue: "True"
+    outputs:
+    - contextPath: ViolationComponents.id
+      description: component ID of the violation
+    - contextPath: ViolationComponents.name
+      description: component Name of the violation
+    description: returns the highlighted matches for an incident
+  - name: sdlp-list-incident-status
+    arguments: []
+    description: returns a list of the custom status values defined in the Symantec
+      Data Loss Prevention deployment.
+  - name: sdlp-list-custom-attributes
+    arguments: []
+    description: returns a list of all custom attribute names defined in the Symantec
+      Data Loss Prevention deployment.
   dockerimage: demisto/zeep:1.0.0.122
   isfetch: true
   runonce: false
