@@ -1,10 +1,14 @@
 commonfields:
   id: StixExporter2
-  version: 70
+  version: 111
 name: StixExporter2
 script: |-
+''' IMPORTS '''
+import datetime
+import time
+import requests
+import json
 from stix2 import Indicator, Bundle
-
 demisto_indicator_type = demisto.args().get('indicator_type','Unkown')
 value = demisto.args().get('value','')
 source_System = demisto.args().get('source','')
@@ -13,29 +17,25 @@ first_seen = demisto.args().get('firstSeen','1970-01-01T00:00:00+00:00')
 demisto_created = demisto.args().get('timestamp','1970-01-01T00:00:00+00:00')
 last_seen = demisto.args().get('lastSeen','1970-01-01T00:00:00+00:00')
 createBundle = demisto.args().get('createBundle','False')
-
 stix_type_and_value = ""
-
 if demisto_indicator_type.lower() == "File MD5".lower():
     stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
 elif demisto_indicator_type.lower() == "File SHA-1".lower():
     stix_type_and_value = "[file:hashes.sha-1 = '" + value + "']"
 elif demisto_indicator_type.lower() == "File SHA-256".lower():
-    stix_type_and_value = "[file:hashes.sha-256 = '" + value + "']"
+  stix_type_and_value = "[file:hashes.sha-256 = '" + value + "']"
 elif demisto_indicator_type.lower() == "IP".lower():
     stix_type_and_value = "[ipv4-addr:value = '" + value + "']"
 elif demisto_indicator_type.lower() == "URL".lower():
     stix_type_and_value = "[url:value = '" + value + "']"
 else:
     stix_type_and_value = "[" + demisto_indicator_type.lower() +":value = '" + value + "']"
-
 if demisto_Score.lower() == "bad":
     demisto_Score = "High"
 elif demisto_Score.lower() == "suspicious":
     demisto_Score = "Medium"
 else:
     demisto_Score = ""
-
 indicator = Indicator(labels=demisto_indicator_type,
                       pattern=stix_type_and_value,
                       source=source_System,
@@ -44,12 +44,32 @@ indicator = Indicator(labels=demisto_indicator_type,
                       firstSeen=first_seen,
                       score=demisto_Score,
                       allow_custom=True)
-
+# def get_dbot_score_report(should_create_bundle, indicator):
 if createBundle.lower() == "true":
     bundle = Bundle(indicator)
-    print(bundle)
+    demisto.results( bundle)
+    # return {
+    #     'StixExportedIndicators': bundle,
+    # }
+    # return demisto.results({'Type': entryTypes['note'],
+    #                  'Contents': demisto.args(),
+    #                  'HumanReadable': context,
+    #                  'EntryContext': context,
+    #                  'ContentsFormat': formats['json']})
 else:
-    print(indicator)
+    demisto.results( indicator)
+    # context = {
+    #     'StixExportedIndicators(val.Type && val.Type == obj.Type)': indicator,
+    # }
+    # return {
+    #     'StixExportedIndicators': indicator,
+    # }
+    # return demisto.results({'Type': entryTypes['note'],
+    #                  'Contents': demisto.args(),
+    #                  'HumanReadable': context,
+    #                  'EntryContext': context,
+    #                  'ContentsFormat': formats['json']})
+# get_dbot_score_report (createBundle,indicator)
 type: python
 tags: []
 enabled: true
@@ -69,6 +89,17 @@ args:
 - name: createBundle
   default: true
   defaultValue: "False"
+outputs:
+- contextPath: StixExportedIndicators.created
+  type: string
+- contextPath: StixExportedIndicators.firstSeen
+  type: string
+- contextPath: StixExportedIndicators.source
+  type: string
+- contextPath: StixExportedIndicators.type
+  type: string
+- contextPath: StixExportedIndicators.pattern
+  type: string
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
