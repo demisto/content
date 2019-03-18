@@ -1,17 +1,17 @@
 commonfields:
   id: StixExporter2
-  version: 67
+  version: 70
 name: StixExporter2
 script: |-
 from stix2 import Indicator, Bundle
 
-demisto_indicator_type = demisto.args().get('indicator_type','')
+demisto_indicator_type = demisto.args().get('indicator_type','Unkown')
 value = demisto.args().get('value','')
 source_System = demisto.args().get('source','')
 demisto_Score = demisto.args().get('score','')
-first_seen = demisto.args().get('firstSeen','')
-demisto_created = demisto.args().get('timestamp','')
-last_seen = demisto.args().get('lastSeen','')
+first_seen = demisto.args().get('firstSeen','1970-01-01T00:00:00+00:00')
+demisto_created = demisto.args().get('timestamp','1970-01-01T00:00:00+00:00')
+last_seen = demisto.args().get('lastSeen','1970-01-01T00:00:00+00:00')
 createBundle = demisto.args().get('createBundle','False')
 
 stix_type_and_value = ""
@@ -55,7 +55,6 @@ tags: []
 enabled: true
 args:
 - name: indicator_type
-  required: true
   description: Type of indicator
 - name: value
   description: Indicator value
