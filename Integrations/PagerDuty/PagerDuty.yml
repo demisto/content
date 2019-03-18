@@ -11,6 +11,11 @@ configuration:
   name: ServiceKey
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
