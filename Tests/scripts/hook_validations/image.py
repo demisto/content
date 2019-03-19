@@ -1,6 +1,6 @@
 import glob
 
-from Tests.test_utils import *
+from Tests.test_utils import re, print_error, os, get_yaml
 from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX, INTEGRATION_YML_REGEX
 
 
@@ -73,5 +73,6 @@ class ImageValidator(object):
         if not (is_image_in_package or is_image_in_yml):
             print_error("You have failed to add an image in the yml/package for {}".format(self.file_path))
             self._is_valid = False
+            return False
 
         return True
