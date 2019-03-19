@@ -1,0 +1,262 @@
+ from CommonServerPython import *
+  import tempfile
+  from stix.core import STIXPackage
+
+  IMPACT_RE = re.compile("(IMPACT:)(Low|Medium|High)")
+  DATA = list()
+
+  """ HELPER FUNCTIONS """
+
+
+  def convert_to_json(string):
+      """Will try to convert given string to json.
+
+      Args:
+          string: str of stix/json file. may be xml, then function will fail
+
+      Returns:
+          json object if succeed
+          False if failed
+      """
+      try:
+          js = json.loads(string)
+          return js
+      except ValueError:
+          return False
+
+
+  def create_indicator_entry(
+      indicator_type, value, pkg_id, ind_id, timestamp, source=None, score=None
+  ):
+      """Creating a JSON object of given args
+
+      Args:
+          indicator_type: (str) indicator type
+          value: (str) indicator value
+          pkg_id: (str) package id
+          ind_id: (str) indicator id
+          timestamp: (str)timestamp
+          source: (str) source of indicator (custom field)
+          score: (str) score of indicator (custom field)
+
+      Returns:
+          dict:
+              {
+                  "indicator_type": indicator_type,
+                  "value": value,
+                  "CustomFields": {
+                      "indicatorId": ind_id,
+                      "stixPackageId": pkg_id
+                  }
+                  "source": ind_id.split("-")[0] or source if provided
+                  "score": if source is "DBot" then score should be here.
+              }
+      """
+      entry = dict()
+      entry["indicator_type"] = indicator_type
+      entry["value"] = value
+      entry["CustomFields"] = {"indicatorId": ind_id, "stixPackageId": pkg_id}
+      entry["source"] = source if source else ind_id.split("-")[0]
+      entry["score"] = score
+      if timestamp is not None:
+          entry["timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+      return entry
+
+
+  def get_score(description):
+      """Getting score from description field in STIX2
+
+      Args:
+          description: (str)
+
+      Returns:
+          str: `IMPACT` field
+      """
+      if description and isinstance(description, str):
+          regex = re.compile("(IMPACT:)(Low|Medium|High)")
+          groups = regex.match(description)
+          return groups.group(2) if groups else None
+      return None
+
+
+  def extract_patterns(stx_obj):
+      """Extracting all pattern from stix object
+      function will take care of one bundle only.
+      Args:
+          stx_obj: json stix2 format
+      """
+      if "objects" in stx_obj:
+          results_list = list()
+          pkg_id = stx_obj.get("id")
+          objects = stx_obj.get("objects")
+          if isinstance(objects, list):
+              for obj in objects:
+                  if isinstance(obj, dict) and "pattern" in obj:
+                      ind_id = obj.get("id")
+                      timestamp = obj.get("created")
+                      pattern = obj.get("pattern")
+                      source = obj.get("source")
+                      score = (
+                          obj.get("score")
+                          if "score" in obj
+                          else get_score(obj.get("description"))
+                      )
+                      if pattern:
+                          indicators = demisto.executeCommand(
+                              "extractIndicators", {"text": pattern}
+                          )[0]["EntryContext"]
+
+                          indicators = create_indicators(indicators)
+                          for k, v in indicators.items():
+                              if isinstance(v, list):
+                                  for indicator in v:
+                                      if indicator:
+                                          result = create_indicator_entry(
+                                              indicator_type=k,
+                                              value=indicator,
+                                              pkg_id=pkg_id,
+                                              ind_id=ind_id,
+                                              timestamp=timestamp,
+                                              source=source,
+                                              score=score,
+                                          )
+                                          results_list.append(result)
+                              else:
+                                  if v:
+                                      result = create_indicator_entry(
+                                          indicator_type=k,
+                                          value=v,
+                                          pkg_id=pkg_id,
+                                          ind_id=ind_id,
+                                          timestamp=timestamp,
+                                          source=source,
+                                          score=score,
+                                      )
+                                      results_list.append(result)
+          return results_list
+      return None
+
+
+  def create_indicators(indicators):
+      """Converting indicators from ExtractIndicators script to Indicators format
+
+      Args:
+          indicators: (dict)
+
+
+      Returns:
+          dict: parsed indicators
+
+      """
+      if "ExtractedIndicators" in indicators:
+          indicators = indicators["ExtractedIndicators"]
+
+      # Remove None/empty strings
+      new_indicators = dict()
+      if "URL" in indicators:
+          new_indicators["URL"] = list(set(indicators.get("URL")))
+
+      if "Domain" in indicators:
+          new_indicators["Domain"] = list(set(indicators.get("Domain")))
+
+      new_indicators["File"] = dict()
+      if "MD5" in indicators:
+          new_indicators["File"].update(list(set(indicators.get("MD5"))))
+
+      if "SHA1" in indicators:
+          new_indicators["File"].update(list(set(indicators.get("SHA1"))))
+
+      if "SHA256" in indicators:
+          new_indicators["File"].update(list(set(indicators.get("SHA256"))))
+      return new_indicators
+
+
+  def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
+      data.append({})
+      data[i]["CustomFields"] = {"indicatorId": ind_id, "stixPackageId": pkg_id}
+      data[i]["source"] = ind_id.split(":")[0]
+      if timestamp is not None:
+          data[i]["timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+  def stix1_to_demisto(stix_package):
+      global DATA
+      i = 0
+      stix_id = stix_package.id_
+      if stix_package.indicators:
+          for ind in stix_package.indicators:
+              ind_id = ind.id_
+              for obs in ind.observables:
+                  if hasattr(obs.object_.properties, "hashes"):
+                      # File object
+                      for digest in obs.object_.properties.hashes:
+                          if hasattr(digest, "simple_hash_value"):
+                              if isinstance(digest.simple_hash_value.value, list):
+                                  for hash in digest.simple_hash_value.value:
+                                      create_new_ioc(
+                                          DATA, i, ind.timestamp, stix_id, ind_id
+                                      )
+                                      DATA[i]["indicator_type"] = "File"
+                                      DATA[i]["value"] = hash
+                                      i += 1
+                              else:
+                                  create_new_ioc(DATA, i, ind.timestamp, stix_id, ind_id)
+                                  DATA[i]["indicator_type"] = "File"
+                                  DATA[i][
+                                      "value"
+                                  ] = digest.simple_hash_value.value.strip()
+                                  i += 1
+                  elif hasattr(obs.object_.properties, "category"):
+                      # Address object
+                      category = obs.object_.properties.category
+                      if category.startswith("ip"):
+                          for ip in obs.object_.properties.address_value.values:
+                              create_new_ioc(DATA, i, ind.timestamp, stix_id, ind_id)
+                              DATA[i]["indicator_type"] = "IP"
+                              DATA[i]["value"] = ip
+                              i += 1
+                  elif hasattr(obs.object_.properties, "type_"):
+                      if obs.object_.properties.type_ == "URL":
+                          # URI object
+                          create_new_ioc(DATA, i, ind.timestamp, stix_id, ind_id)
+                          DATA[i]["indicator_type"] = "URL"
+                          DATA[i]["value"] = obs.object_.properties.value.value
+                          i += 1
+                      elif hasattr(obs.object_.properties.value, "values"):
+                          for url in obs.object_.properties.value.values:
+                              # URI object
+                              create_new_ioc(DATA, i, ind.timestamp, stix_id, ind_id)
+                              DATA[i]["indicator_type"] = "URL"
+                              DATA[i]["value"] = url
+                              i += 1
+
+
+  def stix2_to_demisto(stx_obj):
+      """Converts stix2 json to demisto object
+
+      Args:
+          stx_obj: json object
+      """
+      if isinstance(stx_obj, dict):
+          results = extract_patterns(stx_obj)
+          demisto.results(results)
+      elif isinstance(stx_obj, list):
+          for obj in stx_obj:
+              results = extract_patterns(obj)
+              demisto.results(results)
+
+
+  # Start of script
+  with tempfile.NamedTemporaryFile() as temp:
+      txt = demisto.args().get("iocXml").encode("utf-8")
+      stx = convert_to_json(txt)
+      if stx:
+          stix2_to_demisto(stx)
+      else:
+          temp.write(txt)
+          temp.flush()
+          stx = STIXPackage.from_xml(temp.name)
+          stix1_to_demisto(stx)
+
+  json_data = json.dumps(DATA)
+  demisto.results(json_data)
