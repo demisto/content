@@ -1297,13 +1297,13 @@ script:
     arguments:
     - name: resource
       required: true
-      description: A URL (single or multiple separated by a comma) for which you want
-        to retrieve the most recent report. You may also specify a scan_id (sha256-timestamp
-        as returned by the URL submission API) to access a specific report
+      description: A CSV list of one or more URLs to retrieve the most recent report for.
+        You can also specify a scan_id (sha-256 timestamp returned by the URL
+        submission API) to access a specific report.
       isArray: true
     - name: retries
-      description: Number of times the command will try to get url report if the report
-        was not ready on the first try
+      description: The number of times the command will try to get the URL report,
+        if the report was not ready on the first attempt.
       defaultValue: "2"
     - name: allInfo
       auto: PREDEFINED
@@ -1332,8 +1332,8 @@ script:
         Prefer not to use in playbooks. The default value is "false"
       defaultValue: "false"
     - name: retry_time
-      description: The amount of time the integration will wait before retrying to
-        get a url report for URLs whose scans have not finished
+      description: The amount of time (in seconds) that the integration will wait before trying
+        to get a URL report for URLS whose scans have not completed.
     outputs:
     - contextPath: URL.Data
       description: Url address
