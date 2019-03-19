@@ -775,7 +775,7 @@ script:
         ec = {
             'MicrosoftATP.User(val.AlertID === obj.AlertID && val.ID === obj.ID)': output
         }
-        hr = tableToMarkdown('Alert created:', output, removeNull=True)
+        hr = tableToMarkdown('Alert Related User:', output, removeNull=True)
 
         entry = {
             'Type': entryTypes['note'],
@@ -790,7 +790,7 @@ script:
 
 
     def get_alert_related_user(alert_id):
-        cmd_url = '/alerts/{}'.format(alert_id)
+        cmd_url = '/alerts/{}/user'.format(alert_id)
         response = http_request('GET', cmd_url)
         return response
 
@@ -1325,6 +1325,7 @@ script:
       required: true
       description: Description of the alert.
     - name: recommended_action
+      required: true
       description: Action that is recommended to be taken by security officer when
         analyzing the alert.
     - name: event_time
@@ -1334,7 +1335,6 @@ script:
       required: true
       description: The reportId, as obtained from the advanced query.
     - name: category
-      description: Category of the alert.
       auto: PREDEFINED
       predefined:
       - None
@@ -1368,6 +1368,8 @@ script:
       - NotApplicable
       - EnterprisePolicy
       - General
+      description: Category of the alert.
+      defaultValue: None
     outputs:
     - contextPath: MicrosoftATP.Alert.MachineID
       description: Alert machine ID
