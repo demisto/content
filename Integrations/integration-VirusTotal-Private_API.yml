@@ -58,7 +58,8 @@ script:
     import requests
     import json
     import os
-
+    import time
+    import sys
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -67,6 +68,10 @@ script:
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
 
     ''' GLOBAL VARS '''
     SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
@@ -549,43 +554,105 @@ script:
         """
         corresponds to 'vt-get-url-report' command. Retrieves a report about a url
         """
-
         args = demisto.args()
-        url = args.get('resource')
+        urls = argToList(args.get('resource'))
         all_info = 1 if args.get('allInfo', None) == 'true' else 0
-        threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10);
         short_format = args.get('shortFormat', None) == 'true'
+        retries = int(args.get('retries', 2))
         full_response = args.get('fullResponse', None) == 'true'
+        threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
+        scan_finish_time_in_seconds = int(args.get('retry_time', 6))
         if (full_response):
             max_len = 1000
         else:
             max_len = 50
 
-        response = get_url_report(url, all_info)
+        responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
+        md = ''
+        ec = {
+                'DBotScore': [],
+                outputPaths['url']: [],
+            }
+        for url, res in responses_dict.iteritems():
+            url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
+            md += url_md
+            ec['DBotScore'].append(dbot_score)
+            ec[outputPaths['url']].append(url_ec)
+        if not md:
+            md = "No scans were completed in the elapsed time. Please run the command again in a few seconds."
 
-        if (response.get('response_code', None) == -1):
-            return "Invalid url"
+        completed_responses = responses_dict.values()
+        if len(completed_responses) == 1:
+            # This is done for backward compatibility
+            completed_responses = completed_responses[0]
 
+        return {
+            'Type': entryTypes['note'],
+            'Contents': completed_responses,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+
+
+    def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_in_seconds):
+        """
+        Returns dict of responses, where its keys are the URL related to the response.
+        """
+        requests_responses_dict = {}
+
+        for url in urls:
+            response = get_url_report(url, all_info)
+            if (response.get('response_code', None) == -1):
+                return_error("Invalid url provided: {}.".format(url))
+
+            if is_url_response_complete(response):
+                requests_responses_dict[url] = response
+
+        urls_scanned_count = len(requests_responses_dict)
+        urls_count = len(urls)
+        while urls_count > urls_scanned_count and retries_left > 0:
+            retries_left -= 1
+            # In case there were url scans that have not finished: try again after giving them enough time to finish
+            time.sleep(scan_finish_time_in_seconds)
+            for url in urls:
+                if url not in requests_responses_dict:
+                    response = get_url_report(url, all_info)
+                    if is_url_response_complete(response):
+                        requests_responses_dict[url] = response
+                        urls_scanned_count = len(requests_responses_dict)
+
+        return requests_responses_dict
+
+
+    def is_url_response_complete(res):
+        return bool(res.get('total'))
+
+
+    def create_url_report_output(url, response, threshold, max_len, short_format):
+        """
+        Returns 3 results:
+        1. human readable string.
+        2. url entry context.
+        3. dbot entry context.
+        """
         positives = demisto.get(response, 'positives')
-
-        md = '## VirusTotal URL report for: ' + url + '\n'
+        md = ''
+        md += '## VirusTotal URL report for: ' + url + '\n'
         md += 'Scan ID: **' + str(response.get('scan_id', '')) + '**\n'
         md += 'Scan date: **' + str(response.get('scan_date', '')) + '**\n'
         md += 'Detections / Total: **' + str(positives) + '/' + str(response.get('total', '')) + '**\n'
         md += 'VT Link: [' + str(response.get('resource', '')) + '](' + str(response.get('permalink', '')) + ')\n'
 
-        ec = {}
-        ec['DBotScore'] = []
         dbotScore = 0
-
+        ec_url = {}
         if (positives >= threshold):
-            ec.update({
-                outputPaths['url']: {
-                    'Data': url,
-                    'Malicious': {
-                        'Description': 'Detections / Total: ' + str(positives) + ' / ' + str(response.get('total', '')),
-                        'Vendor': 'VirusTotal - Private API'
-                    },
+            ec_url.update({
+                'Data': url,
+                'Malicious': {
+                    'Description': 'Detections / Total: ' + str(positives) + ' / ' + str(response.get('total', '')),
+                    'Vendor': 'VirusTotal - Private API'
                 },
             })
             dbotScore = 3
@@ -594,60 +661,44 @@ script:
         else:
             dbotScore = 1
 
-        ec['DBotScore'].append({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+        ec_dbot = {
+            'Indicator': url,
+            'Type': 'url',
+            'Vendor': 'VirusTotal - Private API',
+            'Score': dbotScore
+        }
         if (dbotScore < 3):
-            ec.update({
-                outputPaths['url']: {
-                    'Data': url
-                }
-            })
+            ec_url.update({'Data': url})
 
         additional_info = response.get('additional_info', None)
         if additional_info is not None:
             resolution = additional_info.get('resolution', None)
             if resolution is not None:
                 md += 'IP address resolution for this domain is: ' + resolution + '\n'
-                if (ec.get(outputPaths['url'], False)):
-                    ec[outputPaths['url']]['VirusTotal'] = {
-                        'Resolutions': resolution[:max_len]
-                    }
-                else:
-                    ec.update({
-                        outputPaths['url']: {
-                            'VirusTotal': {'Resolutions': resolution[:max_len]},
-                            'Data': url
-                        }})
+            if (ec_url):
+                ec_url['VirusTotal'] = {
+                    'Resolutions': resolution[:max_len]
+                }
+            else:
+                ec_url.update({
+                    'VirusTotal':{'Resolutions': resolution[:max_len]},
+                    'Data': url
+                })
 
         scans = response.get('scans', None)
 
         if scans is not None and not short_format:
             scans_table = create_scans_table(scans)
             scans_table_md = tableToMarkdown('Scans', scans_table)
-            if (ec.get(outputPaths['url'], False)):
-                if (ec[outputPaths['url']].get('VirusTotal', False)):
-                    ec[outputPaths['url']]['VirusTotal']['Scans'] = scans_table
-                else:
-                    ec[outputPaths['url']]['VirusTotal'] = {
-                        'Scans': scans_table
-                    }
-            else:
-                ec.update({
-                    outputPaths['url']: {
-                        'VirusTotal': {
-                            'Scans': scans_table
-                        },
-                        'Data': url
-                    }})
-            md += scans_table_md
+        if (ec_url.get('VirusTotal',False)):
+            ec_url['VirusTotal']['Scans'] = scans_table
+        else:
+            ec_url['VirusTotal'] = {
+                'Scans': scans_table
+            }
+        md += scans_table_md
 
-        return {
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': ec
-        }
+        return md, ec_url, ec_dbot
 
 
     def get_ip_report(ip):
@@ -1246,9 +1297,14 @@ script:
     arguments:
     - name: resource
       required: true
-      description: A URL for which you want to retrieve the most recent report. You
-        may also specify a scan_id (sha256-timestamp as returned by the URL submission
-        API) to access a specific report
+      description: A CSV list of one or more URLs to retrieve the most recent report for.
+        You can also specify a scan_id (sha-256 timestamp returned by the URL
+        submission API) to access a specific report.
+      isArray: true
+    - name: retries
+      description: The number of times the command will try to get the URL report,
+        if the report was not ready on the first attempt.
+      defaultValue: "2"
     - name: allInfo
       auto: PREDEFINED
       predefined:
@@ -1275,6 +1331,9 @@ script:
       description: Return all of the results, note that it can be thousands of results.
         Prefer not to use in playbooks. The default value is "false"
       defaultValue: "false"
+    - name: retry_time
+      description: The amount of time (in seconds) that the integration will wait before trying
+        to get a URL report for URLS whose scans have not completed.
     outputs:
     - contextPath: URL.Data
       description: Url address
@@ -1465,4 +1524,5 @@ script:
       download samples that match a given set of criteria.
   runonce: false
 tests:
-    - virusTotalPrivateAPI-test-playbook
+- virusTotalPrivateAPI-test-playbook
+releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api"
