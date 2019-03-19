@@ -30,6 +30,10 @@ jobs:
             pytest ./Tests/scripts/hook_validations/tests/ -v
             pytest ./Tests/scripts/infrastructure_tests/ -v
       - run:
+          name: Create ID Set
+          command: |
+            python ./Tests/scripts/update_id_set.py -r
+      - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
       - run:
