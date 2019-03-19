@@ -855,12 +855,6 @@
             "nightly": true
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
@@ -1129,6 +1123,12 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": [
+                "VirusTotal"
+            ],
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
@@ -1178,15 +1178,17 @@
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
         "Kafka V2": "Can not connect to instance from remote",
-        "Check Point Sandblast": "No access (issue 15948)"
+        "Check Point Sandblast": "No access (issue 15948)",
+        "Whois": "Host periodically bans connection",
+        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "PagerDuty v2": "Integration requires SSL",
         "RTIR": "Pending check: issue 16072",
-        "Joe Security": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",
         "carbonblackliveresponse": "Pending check: issue 16072",
@@ -1199,7 +1201,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
-        "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
@@ -1227,7 +1228,6 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
-        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
