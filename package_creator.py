@@ -145,14 +145,13 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
 
     if dir_name == 'Scripts':
         if yml_data.get('script'):
-            if yml_data['script'] != '-':
-                print(yml_data['script'])
+            if yml_data['script'] != '-' or yml_data['script'] != '':
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
                                  .format(package_path))
 
     elif dir_name == 'Integrations':
         if yml_data.get('script', {}).get('script'):
-            if yml_data['script']['script'] != '-':
+            if yml_data['script']['script'] != '-' or yml_data['script']['script'] != '':
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
                                  .format(package_path))
     else:
