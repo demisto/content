@@ -13,10 +13,11 @@ jobs:
           name: Prepare Environment
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.local/bin:$HOME/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+              echo 'export PATH="/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV              
-              #echo 'eval "$(pyenv init -)"' >> $BASH_ENV
+              echo 'eval "$(pyenv init -)"' >> $BASH_ENV
               #echo 'eval "$(pyenv virtualenv-init -)"' >> $BASH_ENV
+              echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
