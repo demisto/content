@@ -1,5 +1,5 @@
 id: Script-TestStix2Creator
-version: 10
+version: -1
 name: Script-TestStix2Creator
 starttaskid: "0"
 tasks:
