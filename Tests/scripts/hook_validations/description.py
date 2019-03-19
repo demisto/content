@@ -1,7 +1,7 @@
 import glob
 
-from Tests.test_utils import *
-from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX, INTEGRATION_YML_REGEX
+from Tests.test_utils import re, print_error, os, get_yaml
+from Tests.scripts.constants import INTEGRATION_REGEX, INTEGRATION_YML_REGEX
 
 
 class DescriptionValidator(object):
@@ -31,6 +31,9 @@ class DescriptionValidator(object):
         if self._is_valid is False:  # In case we encountered an IndexError in the init - we don't have a description
             return self._is_valid
 
+        if '.md' not in self.file_path:
+            self.is_existing_description()
+
         return self._is_valid
 
     def is_existing_description(self):
@@ -53,5 +56,7 @@ class DescriptionValidator(object):
 
         if not (is_description_in_package or is_description_in_yml):
             print_error("You have failed to add a detailed description in the package for {}".format(self.file_path))
+            self._is_valid = False
+            return False
 
-        return is_description_in_package or is_description_in_yml
+        return True

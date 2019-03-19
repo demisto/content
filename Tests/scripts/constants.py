@@ -17,6 +17,7 @@ BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 PIPFILE_REGEX = r".*\Pipfile"
 TEST_DATA_REGEX = r".*test_data.*"
 IMAGE_REGEX = r".*\.png"
+DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
