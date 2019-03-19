@@ -29,10 +29,11 @@ args:
   description: Entry to check
   isArray: true
 outputs:
-- contextPath: "yes"
+- contextPath: yes
   description: If one or more entries is an error
-- contextPath: "no"
+- contextPath: no
   description: If none of the entries is not an error
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+releaseNotes: "Added new error output to context"
