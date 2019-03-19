@@ -49,11 +49,11 @@ class ScriptValidator(object):
 
     def is_arg_changed(self):
         """Check if the argument has been changed."""
-        deleted_args = re.findall("-([ ]+)?- name: (.*)", self.change_string)
-        added_args = re.findall("\+([ ]+)?- name: (.*)", self.change_string)
+        deleted_args = re.findall("-([ ]+)?(-)? name: (.*)", self.change_string)
+        added_args = re.findall("\+([ ]+)?(-)? name: (.*)", self.change_string)
 
-        deleted_args = [arg[1] for arg in deleted_args]
-        added_args = [arg[1] for arg in added_args]
+        deleted_args = [arg[2] for arg in deleted_args]
+        added_args = [arg[2] for arg in added_args]
 
         for added_arg in added_args:
             if added_arg in deleted_args:
