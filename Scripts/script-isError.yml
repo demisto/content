@@ -8,7 +8,8 @@ script: |-
       res = executeCommand("getEntry", {"id":entryIds[entryIdx]});
       for (var resIdx=0; resIdx < res.length; ++resIdx) {
           if (isError(res[resIdx])) {
-              return 'yes';
+              setContext("LastError", res[resIdx]["Contents"]);
+              return "yes";
           }
       }
   }
@@ -17,9 +18,9 @@ type: javascript
 tags:
 - Condition
 - Utility
-comment: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-  to check the previous task entries. If array is provided, will return yes if one
-  of the entries returned an error.
+comment: |-
+  Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+  To get the last error use ${LastError} , Each run will override the ${LastError} Entry.
 enabled: true
 args:
 - name: entryId
@@ -28,8 +29,10 @@ args:
   description: Entry to check
   isArray: true
 outputs:
-- contextPath: yes
+- contextPath: "yes"
   description: If one or more entries is an error
-- contextPath: no
+- contextPath: "no"
   description: If none of the entries is not an error
 scripttarget: 0
+runonce: false
+runas: DBotWeakRole
