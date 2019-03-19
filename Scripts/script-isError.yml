@@ -4,23 +4,32 @@ commonfields:
 name: isError
 script: |-
   entryIds = (Array.isArray(args.entryId)) ? args.entryId : [args.entryId];
+  setContext("LastError", "");
+  var errorArr = [];
+  var iserror = false
   for(var entryIdx=0; entryIdx < entryIds.length; ++entryIdx) {
       res = executeCommand("getEntry", {"id":entryIds[entryIdx]});
       for (var resIdx=0; resIdx < res.length; ++resIdx) {
           if (isError(res[resIdx])) {
-              setContext("LastError", res[resIdx]["Contents"]);
-              return "yes";
+              errorArr.push(res[resIdx]["Contents"]);
+              iserror = true;
           }
       }
   }
-  return 'no';
+  if (iserror == true){
+      setContext("LastErrors", errorArr);
+      return 'yes';
+  }
+  else{
+      return 'no';
+  }
 type: javascript
 tags:
 - Condition
 - Utility
 comment: |-
   Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
-  To get the last error use ${LastError} , Each run will override the ${LastError} Entry.
+  To get the last errors use ${LastErrors} (as a list) , Each run will override the ${LastErrors} Entry.
 enabled: true
 args:
 - name: entryId
