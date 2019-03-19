@@ -428,9 +428,6 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
-            "playbookID": "dedup_-_generic_-_test"
-        },
-        {
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
