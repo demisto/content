@@ -15,9 +15,9 @@ jobs:
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV              
-              echo 'pyenv global 2.7.15 3.6.8' >> $BASH_ENV
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
+              pyenv global 2.7.15 3.6.8
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
@@ -31,7 +31,7 @@ jobs:
               - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
           name: Infrastucture testing
-          command: |
+          command: |            
             pytest ./Tests/scripts/hook_validations/tests/ -v
             pytest ./Tests/scripts/infrastructure_tests/ -v
       - run:
