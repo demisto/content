@@ -1956,4 +1956,3 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "add machinename argument to malop processes command"
