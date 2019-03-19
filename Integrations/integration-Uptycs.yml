@@ -764,8 +764,10 @@ script:
         http_method = 'post'
         api_call = '/query'
 
-        query=("SELECT * FROM socket_events WHERE remote_address='%s' AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
-            (demisto.args().get('ip'), demisto.args().get('time')))
+        query=("WITH last_conn AS (SELECT upt_time FROM socket_events WHERE upt_time <= CAST('%s' AS TIMESTAMP) \
+        AND remote_address='%s' GROUP BY upt_time ORDER BY upt_time DESC LIMIT 1) \
+        SELECT s.* FROM socket_events s JOIN last_conn l ON s.upt_time=l.upt_time WHERE remote_address='%s'" % \
+            (demisto.args().get('time'), demisto.args().get('ip'), demisto.args().get('ip')))
 
         equal_cuts = {
             "upt_asset_id":demisto.args().get('asset_id'),
@@ -773,8 +775,6 @@ script:
             }
 
         query = apply_equals_cuts(query, equal_cuts)
-
-        query = ("%s ORDER BY upt_time DESC" % query)
 
         query_type = 'global'
         post_data = {
