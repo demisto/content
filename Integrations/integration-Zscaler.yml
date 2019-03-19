@@ -70,11 +70,14 @@ script:
     }
 
     ''' HANDLE PROXY '''
+    proxies = {}
     if not PROXY:
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+    else:
+        proxies = {'http_proxy': os.environ['http_proxy'], 'https_proxy': os.environ['https_proxy']}
 
     ''' HELPER FUNCTIONS '''
     def http_request(method, url_suffix, data=None, headers=DEFAULT_HEADERS, num_of_seconds_to_wait = 3):
