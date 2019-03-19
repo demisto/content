@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 10323888-89b4-4790-892b-5bc5c7212bbe
+    taskid: 045845dd-6b2e-4948-8ad8-89378227f041
     type: start
     task:
-      id: 10323888-89b4-4790-892b-5bc5c7212bbe
+      id: 045845dd-6b2e-4948-8ad8-89378227f041
       version: -1
       name: ""
       iscommand: false
@@ -28,19 +28,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: a59b667a-fcfd-4d0d-8878-f0732a20828a
+    taskid: 3dab52fe-52c4-490a-852c-3eb6c31fe6e9
     type: regular
     task:
-      id: a59b667a-fcfd-4d0d-8878-f0732a20828a
+      id: 3dab52fe-52c4-490a-852c-3eb6c31fe6e9
       version: -1
       name: wildfire-upload-file-remote
       description: Upload a file hosted on a website to WildFire for analysis
-      script: WildFire|||wildfire-upload-file-remote
+      script: '|||wildfire-upload-file-remote'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -56,19 +57,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: e3994bc5-a168-4c00-83d5-c1339fdce40a
+    taskid: 6bd25682-ddee-4692-88b5-0de2176f00ee
     type: regular
     task:
-      id: e3994bc5-a168-4c00-83d5-c1339fdce40a
+      id: 6bd25682-ddee-4692-88b5-0de2176f00ee
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
-      script: WildFire|||wildfire-report
+      script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -87,12 +89,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: 2ff7a5b2-f30c-4050-85d4-c3459f33172a
+    taskid: 51cc970f-a998-4289-856e-be8e9848d11b
     type: regular
     task:
-      id: 2ff7a5b2-f30c-4050-85d4-c3459f33172a
+      id: 51cc970f-a998-4289-856e-be8e9848d11b
       version: -1
       name: Verify Context
       description: Verifies context
@@ -118,12 +121,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: cc078a84-ed97-47ff-8d31-35f24789bd7b
+    taskid: 09a9e9df-64fe-4a95-8d81-f53ab89db5a4
     type: regular
     task:
-      id: cc078a84-ed97-47ff-8d31-35f24789bd7b
+      id: 09a9e9df-64fe-4a95-8d81-f53ab89db5a4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -150,19 +154,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
-    taskid: 1c9c7c4b-77dc-4dd3-88a3-607db4c3bb49
+    taskid: 18c083f5-57b6-4b8f-8b7a-7281abd85d3f
     type: regular
     task:
-      id: 1c9c7c4b-77dc-4dd3-88a3-607db4c3bb49
+      id: 18c083f5-57b6-4b8f-8b7a-7281abd85d3f
       version: -1
       name: wildfire-upload
       description: Upload file to WildFire for analysis.
-      script: WildFire|||wildfire-upload
+      script: '|||wildfire-upload'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -178,22 +183,23 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
-    taskid: dfa3596a-67f9-4140-8870-dd7fd4f001a8
+    taskid: 57c8720f-c143-41c7-81cf-48b544ca1956
     type: regular
     task:
-      id: dfa3596a-67f9-4140-8870-dd7fd4f001a8
+      id: 57c8720f-c143-41c7-81cf-48b544ca1956
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
-      script: WildFire|||wildfire-report
+      script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "20"
     scriptarguments:
       format: {}
       hash:
@@ -211,12 +217,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "17":
     id: "17"
-    taskid: 03eeec10-ddc4-4f91-8835-71e049139122
+    taskid: 2c10cfaa-77a0-4809-820c-c410f3ef879b
     type: title
     task:
-      id: 03eeec10-ddc4-4f91-8835-71e049139122
+      id: 2c10cfaa-77a0-4809-820c-c410f3ef879b
       version: -1
       name: Done
       type: title
@@ -227,16 +234,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
-    taskid: 0e828a3d-a5a5-47aa-89d6-5cbada3bff56
+    taskid: eb3c86b1-30b3-4b04-82d7-f7ddaf5d8b26
     type: condition
     task:
-      id: 0e828a3d-a5a5-47aa-89d6-5cbada3bff56
+      id: eb3c86b1-30b3-4b04-82d7-f7ddaf5d8b26
       version: -1
       name: Search for hashes for report download
       type: condition
@@ -272,22 +280,23 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "19":
     id: "19"
-    taskid: 48eeda08-a112-4424-8c81-7d64ce1e8d42
+    taskid: 50753e7f-69ae-4714-8629-ca6f541667c3
     type: regular
     task:
-      id: 48eeda08-a112-4424-8c81-7d64ce1e8d42
+      id: 50753e7f-69ae-4714-8629-ca6f541667c3
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
-      script: WildFire|||wildfire-report
+      script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "20"
     scriptarguments:
       format: {}
       hash:
@@ -311,12 +320,45 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 9fdb81be-2736-498a-8b6d-694a462d0796
+    type: regular
+    task:
+      id: 9fdb81be-2736-498a-8b6d-694a462d0796
+      version: -1
+      name: wildfire-report - no network data
+      description: Retrieve results for a file hash using WildFire
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      format: {}
+      hash:
+        simple: bf31789a028bfbc44e5c1ae05d8e412dd521bedc7f0c7ec6df3dc4078210a25e
+      md5: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 810,
         "x": 50,
         "y": 50

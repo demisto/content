@@ -2,6 +2,7 @@ import re
 import os
 import sys
 import yaml
+import json
 import argparse
 from subprocess import Popen, PIPE
 
@@ -49,7 +50,7 @@ def run_command(command, is_silenced=True):
     return output
 
 
-def get_json(file_path):
+def get_yaml(file_path):
     data_dictionary = None
     with open(os.path.expanduser(file_path), "r") as f:
         if file_path.endswith(".yaml") or file_path.endswith('.yml'):
@@ -65,8 +66,24 @@ def get_json(file_path):
         return {}
 
 
+def get_json(file_path):
+    data_dictionary = None
+    with open(os.path.expanduser(file_path), "r") as f:
+        if file_path.endswith(".json"):
+            try:
+                data_dictionary = json.load(f)
+            except Exception as e:
+                print_error(file_path + " has json structure issue. Error was: " + str(e))
+                return []
+
+    if type(data_dictionary) is dict:
+        return data_dictionary
+    else:
+        return {}
+
+
 def get_script_or_integration_id(file_path):
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         commonfields = data_dictionary.get('commonfields', {})
@@ -75,14 +92,14 @@ def get_script_or_integration_id(file_path):
 
 def collect_ids(file_path):
     """Collect id mentioned in file_path"""
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         return data_dictionary.get('id', '-')
 
 
 def get_from_version(file_path):
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         from_version = data_dictionary.get('fromversion', '0.0.0')
@@ -97,7 +114,7 @@ def get_from_version(file_path):
 
 
 def get_to_version(file_path):
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         to_version = data_dictionary.get('fromversion', '99.99.99')
