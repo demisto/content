@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import requests
-from distutils.util import strtobool
 from base64 import b64encode
 
 # Disable insecure warnings
