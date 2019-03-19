@@ -40,12 +40,19 @@ class DescriptionValidator(object):
         """Check if the integration as a description."""
         is_description_in_yml = False
         is_description_in_package = False
-        if get_yaml(self.file_path).get('detaileddescription'):
+
+        data_dictionary = get_yaml(self.file_path)
+
+        if not data_dictionary:
+            return False
+
+        if data_dictionary.get('detaileddescription'):
             is_description_in_yml = True
 
         if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
             package_path = os.path.dirname(self.file_path)
             if is_description_in_yml:
+                self._is_valid = False
                 print_error("You have added a detailed description in the yml "
                             "file, please update the package {}".format(package_path))
                 return False
