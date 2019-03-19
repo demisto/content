@@ -20,7 +20,7 @@ script: |-
       for command_result in execute_command_result:
           if command_result.get("EntryContext") is not None \
              and "Email" in command_result.get("EntryContext"):
-              parsed_email = command_result.get("EntryContext").get("Email")[0]
+              parsed_email = command_result.get("EntryContext").get("Email")
 
               if "HeadersMap" in parsed_email:
                   # msg files will have HeadersMap as dict
