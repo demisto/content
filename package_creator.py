@@ -98,6 +98,8 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'
                          ' in the package: {}'.format(package_path))
     if desc_data:
+        if not desc_data.startswith('"'):
+            desc_data = '"' + desc_data + '"'
         yml_text = "detaileddescription: " + desc_data + '\n' + yml_text
 
     return yml_text, found_desc_path
