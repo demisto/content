@@ -3525,8 +3525,8 @@ def main():
                         return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
 
             except Exception as e:
-                return_error("Exception while trying to decode email from within base64: " +
-                             str(e) + "\n\nTrace:\n" + traceback.format_exc(e))
+                return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
+                             .format(str(e), traceback.format_exc(e)))
         else:
             return_error("Unknown file format: " + file_type)
 
