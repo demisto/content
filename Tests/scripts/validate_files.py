@@ -156,10 +156,6 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-                description_validator = DescriptionValidator(file_path)
-                if not description_validator.is_valid():
-                    self._is_valid = False
-
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if not integration_validator.is_backward_compatible():
                     self._is_valid = False
@@ -182,10 +178,6 @@ class FilesValidator(object):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
                     self._is_valid = False
-
-            description_validator = DescriptionValidator(file_path)
-            if not description_validator.is_valid():
-                self._is_valid = False
 
     def validate_added_files(self, added_files):
         """Validate the added files from your branch.
@@ -218,10 +210,6 @@ class FilesValidator(object):
 
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
-                    self._is_valid = False
-
-                description_validator = DescriptionValidator(file_path)
-                if not description_validator.is_valid():
                     self._is_valid = False
 
     def validate_no_secrets_found(self, branch_name):

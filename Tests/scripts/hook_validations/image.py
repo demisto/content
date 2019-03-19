@@ -72,5 +72,6 @@ class ImageValidator(object):
 
         if not (is_image_in_package or is_image_in_yml):
             print_error("You have failed to add an image in the yml/package for {}".format(self.file_path))
+            self._is_valid = False
 
-        return is_image_in_package or is_image_in_yml
+        return True
