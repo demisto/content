@@ -309,7 +309,7 @@ script:
         ticket = jres['Envelope']['Body']['createResponse']['return']['Body']
 
         if not ticket:
-            return_error(jres['Envelope']['Body']['getResponse']['return']['Header'])
+            return_error(jres['Envelope']['Body']['createResponse']['return']['Header'])
 
         pretty_ticket = {'ServiceRequestId': ticket['ServiceRequestId']}
         pretty_ticket['RequesterPhone'] = requester_phone
