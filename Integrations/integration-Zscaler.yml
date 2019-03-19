@@ -28,6 +28,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -45,6 +50,7 @@ script:
     API_KEY=str(demisto.params()['key'])
     BASE_URL=CLOUD_NAME + '/api/v1'
     USE_SSL = not demisto.params().get('insecure', False)
+    PROXY = demisto.params().get('proxy', True)  # Default is according to checkbox default value
     DEFAULT_HEADERS = {
         'content-type': 'application/json'
     }
@@ -62,6 +68,14 @@ script:
         500: 'Unexpected error',
         503: 'Service is temporarily unavailable'
     }
+
+    ''' HANDLE PROXY '''
+    if not PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     ''' HELPER FUNCTIONS '''
     def http_request(method, url_suffix, data=None, headers=DEFAULT_HEADERS, num_of_seconds_to_wait = 3):
         data = {} if data is None else data
@@ -1023,6 +1037,6 @@ script:
       type: string
     description: Returns Zscaler default whitelist
   runonce: false
-releaseNotes: "Fixed rate limit error bug - now several requests in short interval won't fail"
+releaseNotes: "Fixed rate limit error bug - now several requests in short interval won't fail. Added option to disable proxy"
 tests:
   - Zscaler Test
