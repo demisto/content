@@ -23,8 +23,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Token (as received from the admin consent - see detailed instructions
-    (?))
+- display: Token (as received from the admin consent - see detailed instructions (?))
   name: token
   defaultvalue: ""
   type: 4
@@ -132,7 +131,9 @@ script:
             }
         )
         if r.status_code not in {200, 201}:
-            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, r.reason))
+            error = r.json().get('error')
+            msg = error['message'] if 'message' in error else r.reason
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
         if not r.text:
             return {}
         return r.json()
@@ -670,6 +671,129 @@ script:
         response = http_request('GET', cmd_url)
         return response
 
+
+    def get_advanced_hunting_command():
+        query = demisto.args().get('query')
+        response = get_advanced_hunting(query)
+        results = response.get('Results')
+        ec = {
+            'MicrosoftATP.Hunt.Result': results
+        }
+        hr = tableToMarkdown('Hunt results', results, removeNull=True)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
+
+        demisto.results(entry)
+
+
+    def get_advanced_hunting(query):
+        cmd_url = '/advancedqueries/run'
+        json = {
+            'Query': query
+        }
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+
+    def create_alert_command():
+        args = demisto.args()
+        response = create_alert(
+            args.get('machine_id'),
+            args.get('severity'),
+            args.get('title'),
+            args.get('description'),
+            args.get('event_time'),
+            args.get('report_id'),
+            args.get('recommended_action'),
+            args.get('category')
+        )
+        output = {
+            'MachineID': response.get('machineId'),
+            'RecommendedAction': response.get('recommendedAction'),
+            'Title': response.get('title'),
+            'Description': response.get('description'),
+            'Severity': response.get('severity'),
+            'Category': response.get('Category'),
+            'ReportID': response.get('reportId')
+        }
+        ec = {
+            'MicrosoftATP.Alert': output
+        }
+        hr = tableToMarkdown('Alert created:', output, removeNull=True)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
+
+        demisto.results(entry)
+
+
+    def create_alert(machine_id, severity, title, description, event_time, report_id, rec_action, category):
+        cmd_url = '/alerts/CreateAlertByReference'
+        json = {
+            'machineId': machine_id,
+            'severity': severity,
+            'title': title,
+            'description': description,
+            'eventTime': event_time,
+            'reportId': report_id
+        }
+        if rec_action:
+            json['recommendedAction'] = rec_action
+        if category:
+            json['category'] = category
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+
+    def get_alert_related_user_command():
+        alert_id = demisto.args().get('id')
+        response = get_alert_related_user(alert_id)
+        output = {
+            'ID': response.get('id'),
+            'AlertID': alert_id,
+            'FirstSeen': response.get('firstSeen'),
+            'LastSeen': response.get('lastSeen'),
+            'MostPrevalentMachineID': response.get('mostPrevalentMachineId'),
+            'LogonTypes': response.get('logonTypes'),
+            'LogonCount': response.get('logOnMachinesCount'),
+            'DomainAdmin': response.get('isDomainAdmin'),
+            'NetworkUser': response.get('isOnlyNetworkUser')
+        }
+        ec = {
+            'MicrosoftATP.User(val.AlertID === obj.AlertID && val.ID === obj.ID)': output
+        }
+        hr = tableToMarkdown('Alert created:', output, removeNull=True)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
+
+        demisto.results(entry)
+
+
+    def get_alert_related_user(alert_id):
+        cmd_url = '/alerts/{}'.format(alert_id)
+        response = http_request('GET', cmd_url)
+        return response
+
     def fetch_incidents():
 
         last_run = demisto.getLastRun()
@@ -753,6 +877,15 @@ script:
 
         elif demisto.command() == 'microsoft-atp-update-alert':
             update_alert_command()
+
+        elif demisto.command() == 'microsoft-atp-advanced-hunting':
+            get_advanced_hunting_command()
+
+        elif demisto.command() == 'microsoft-atp-create-alert':
+            create_alert_command()
+
+        elif demisto.command() == 'microsoft-atp-get-alert-related-user':
+            get_alert_related_user_command()
 
     except Exception, e:
         LOG(e.message)
@@ -1158,7 +1291,151 @@ script:
       description: Alert determination
       type: string
     description: Update the properties of an alert entity
+  - name: microsoft-atp-advanced-hunting
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The query to run.
+    outputs:
+    - contextPath: MicrosoftATP.Hunt.Result
+      description: Results of the query.
+    description: 'Allows you to run programmatic queries like in Windows Defender
+      ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
+      only run a query on data from the last 30 days, The results will include a maximum
+      of 10,000 rows, The number of executions is limited (up to 15 calls per minute,
+      15 minutes of running time every hour and 4 hours of running time a day)'
+  - name: microsoft-atp-create-alert
+    arguments:
+    - name: machine_id
+      required: true
+      description: Id of the machine on which the event was identified. Required.
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Severity of the alert.
+    - name: title
+      required: true
+      description: Title for the alert.
+    - name: description
+      required: true
+      description: Description of the alert.
+    - name: recommended_action
+      description: Action that is recommended to be taken by security officer when
+        analyzing the alert.
+    - name: event_time
+      required: true
+      description: The time of the event, as obtained from the advanced query.
+    - name: report_id
+      required: true
+      description: The reportId, as obtained from the advanced query.
+    - name: category
+      description: Category of the alert.
+      auto: PREDEFINED
+      predefined:
+      - None
+      - SuspiciousActivity
+      - Malware
+      - CredentialTheft
+      - Exploit
+      - WebExploit
+      - DocumentExploit
+      - PrivilegeEscalation
+      - Persistence
+      - RemoteAccessTool
+      - CommandAndControl
+      - SuspiciousNetworkTraffic
+      - Ransomware
+      - MalwareDownload
+      - Reconnaissance
+      - WebFingerprinting
+      - Weaponization
+      - Delivery
+      - SocialEngineering
+      - CredentialStealing
+      - Installation
+      - Backdoor
+      - Trojan
+      - TrojanDownloader
+      - LateralMovement
+      - ExplorationEnumeration
+      - NetworkPropagation
+      - Exfiltration
+      - NotApplicable
+      - EnterprisePolicy
+      - General
+    outputs:
+    - contextPath: MicrosoftATP.Alert.MachineID
+      description: Alert machine ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.RecommendedAction
+      description: Alert recommended action
+      type: string
+    - contextPath: MicrosoftATP.Alert.Title
+      description: Alert title
+      type: string
+    - contextPath: MicrosoftATP.Alert.Description
+      description: Alert description
+      type: string
+    - contextPath: MicrosoftATP.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: MicrosoftATP.Alert.Category
+      description: Alert category
+      type: string
+    - contextPath: MicrosoftATP.Alert.ReportID
+      description: Alert report ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.EventTime
+      description: Event time of the alert, as created by the user
+      type: date
+    description: Create a new alert entity using event data, as obtained from the
+      Advanced Hunting.
+  - name: microsoft-atp-get-alert-related-user
+    arguments:
+    - name: id
+      required: true
+      description: ID of the alert.
+    outputs:
+    - contextPath: MicrosoftATP.User.ID
+      description: ID of the related user.
+      type: string
+    - contextPath: MicrosoftATP.User.AlertID
+      description: ID of the alert.
+      type: string
+    - contextPath: MicrosoftATP.User.FirstSeen
+      description: First seen date of the related user.
+      type: date
+    - contextPath: MicrosoftATP.User.LastSeen
+      description: Last seen date of the related user.
+      type: date
+    - contextPath: MicrosoftATP.User.MostPrevalentMachineID
+      description: The most prevalent machine ID related to the user.
+      type: string
+    - contextPath: MicrosoftATP.User.LogonTypes
+      description: Types of logon for the related user.
+      type: string
+    - contextPath: MicrosoftATP.User.LogonCount
+      description: Log on machine count.
+      type: string
+    - contextPath: MicrosoftATP.User.DomainAdmin
+      description: Flag for user domain admin - set to true if related user is domain
+        admin.
+      type: boolean
+    - contextPath: MicrosoftATP.User.NetworkUser
+      description: Flag for network user only - set to true if related user is only
+        network user.
+      type: boolean
+    description: Retrieves the user associated to a specific alert.
   isfetch: true
   runonce: false
+releaseNotes: "Added 3 new commands:
+      - microsoft-atp-advanced-hunting - Run advanced queries like you would using ATP portal.
+      - microsoft-atp-create-alert - Create a new alert entity using event data, as obtained from the Advanced Hunting.
+      - microsoft-atp-get-alert-related-user - Retrieves the user associated to a specific alert."
 tests:
 - No test - TBD
