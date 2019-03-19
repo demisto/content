@@ -457,7 +457,7 @@ def get_test_from_conf(branch_name):
     deleted_groups = re.findall(r'(-[ ]+")(.*)(":)', change_string)
     if deleted_groups:
         for group in deleted_groups:
-            changed = changed - set(group[1])
+            changed.add(group[1])
 
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
