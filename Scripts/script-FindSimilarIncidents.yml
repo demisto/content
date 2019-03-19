@@ -427,4 +427,3 @@ timeout: 300ns
 runonce: false
 tests:
   - No test
-releaseNotes: "1. Ignore future incidents. 2.Fix escaping bug."
