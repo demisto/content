@@ -225,8 +225,8 @@ def __print_investigation_error(client, playbook_id, investigation_id):
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
                 if entry['parentContent']:
-                    print_error('\t- Command: ' + str(entry['parentContent']))
-                print_error('\t- Body: ' + str(entry['contents']))
+                    print_error('\t- Command: ' + entry['parentContent'].encode('utf-8'))
+                print_error('\t- Body: ' + entry['contents'].encode('utf-8'))
 
 
 # Configure integrations to work with mock
