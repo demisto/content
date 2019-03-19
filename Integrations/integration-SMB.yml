@@ -40,6 +40,7 @@ configuration:
 script:
   script: |-
     ''' IMPORTS '''
+    import os
     import tempfile
     from smb.SMBConnection import SMBConnection
 
@@ -61,11 +62,9 @@ script:
 
     ''' HELPER FUNCTIONS '''
     def split_path(path):
-        share = ''
         delim = '/' if '/' in path else '\\'
-        while path and not share:
-            share, path = path.split(delim, 1)
-        return share, path
+        path = path.strip(delim)
+        return path.split(delim, 1)
 
 
     def connect():
