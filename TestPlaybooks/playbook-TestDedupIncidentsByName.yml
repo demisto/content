@@ -1,0 +1,76 @@
+id: TestDedupIncidentsByName
+version: -1
+name: TestDedupIncidentsByName
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08aa683f-6c83-4ec4-8298-32dcef0495f2
+    type: start
+    task:
+      id: 08aa683f-6c83-4ec4-8298-32dcef0495f2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 9b2da2f5-4db8-43e1-8020-0def00b7f376
+    type: playbook
+    task:
+      id: 9b2da2f5-4db8-43e1-8020-0def00b7f376
+      version: -1
+      name: DeDup incidents
+      playbookName: DeDup incidents
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      hoursBack:
+        simple: "24"
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentKeys:
+        simple: name
+      similarLabels: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

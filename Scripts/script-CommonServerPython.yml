@@ -387,7 +387,7 @@ script: |-
 
 
   isError = is_error
-  
+
 
   def FormatADTimestamp(ts):
       """
@@ -1203,6 +1203,38 @@ script: |-
       return True
 
 
+  def return_outputs(readable_output, outputs, raw_response=None):
+      """
+      This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
+
+      :type readable_output: ``str``
+      :param readable_output: markdown string that will be presented in the warroom, should be human readable - (HumanReadable)
+
+      :type outputs: ``dict``
+      :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
+
+      :type raw_response: ``dict``
+      :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
+      raw response from the 3rd party service (originally Contents)
+
+      :return: None
+      :rtype: ``None``
+      """
+      return_entry = {
+          "Type": entryTypes["note"],
+          "HumanReadable": readable_output,
+          "ContentsFormat": formats["json"],
+          "Contents": raw_response,
+          "EntryContext": outputs
+      }
+
+      if outputs and raw_response is None:
+          # if raw_response was not provided but outputs were provided then set Contents as outputs
+          return_entry["Contents"] = outputs
+
+      demisto.results(return_entry)
+
+
   def return_error(message, error=''):
       """
           Returns error entry with given message and exits the script
@@ -1297,6 +1329,33 @@ script: |-
       return ''.join(x.title() for x in components)
 
 
+  def camel_case_to_underscore(s):
+      """
+         Converts a camelCase string to snake_case
+
+         :type s: ``str``
+         :param s: The string to convert (e.g. helloWorld) (required)
+
+         :return: The converted string (e.g. hello_world)
+         :rtype: ``str``
+      """
+      s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+      return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+  def snakify(src):
+      """
+          Convert all keys of a dictionary to snake_case (underscored separated)
+
+          :type src: ``dict``
+          :param src: The dictionary to convert the keys for. (required)
+
+          :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
+          :rtype: ``dict``
+      """
+      return {camel_case_to_underscore(k): v for k, v in src.items()}
+
+
   def pascalToSpace(s):
       """
          Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score", "thisIsIPAddressName" -> "This Is IP Address Name").
@@ -1356,7 +1415,7 @@ script: |-
           raise Exception('The key is not a string: {}'.format(string))
 
 
-  def parse_date_range(date_range, date_format = None, to_timestamp = False):
+  def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0):
       """
         Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
         Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
@@ -1370,6 +1429,9 @@ script: |-
         :type to_timestamp: ``bool``
         :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
 
+        :type timezone: ``int``
+        :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
+
         :return: The parsed date range.
         :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
       """
@@ -1381,8 +1443,11 @@ script: |-
       if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
           return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
 
-      end_time = datetime.now()
-      start_time = datetime.now()
+      if not isinstance(timezone, (int, float)):
+          return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
+
+      end_time = datetime.now() + timedelta(hours=timezone)
+      start_time = datetime.now() + timedelta(hours=timezone)
       unit = range_split[1]
       if 'minute' in unit:
           start_time = end_time - timedelta(minutes=number)
@@ -1450,5 +1515,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
 tests:
   - TestPYCommonServer

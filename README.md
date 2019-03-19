@@ -65,3 +65,22 @@ Copy the pre-commit hook from .hooks to .git/hooks. Run the following command fr
 ```sh
 cp .hooks/* .git/hooks
 ```
+
+# Documentation Directory
+
+| Link | Description |
+| --- | ---|
+| [Tutorial Video](https://github.com/demisto/content/blob/master/docs/tutorial-video/README.md) | A step-by-step introduction to creating an integration |
+| [Getting Started](https://github.com/demisto/content/blob/master/docs/getting_started/README.MD) | A brief explanation of the Demisto IDE |
+| [Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD) | Our Code Conventions |
+| [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) | Brief overview of Context and Outputs |
+| [Context Conventions](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD) | Conventions for the Demisto Standard Context |
+| [Contributing](https://github.com/demisto/content/blob/master/docs/contributing/README.MD) | How to contribute to the Content Repo |
+| [Creating Playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD) | How to create a Playbook |
+| [DBot Score](https://github.com/demisto/content/blob/master/docs/dbot/README.md) | How the DBot Score works |
+| [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |
+| [Docker](https://github.com/demisto/content/blob/master/docs/docker/README.MD) | How to use Docker |
+| [Fetching Incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) | How to Fetch Incidents |
+| [Fetching Credentials](https://github.com/demisto/content/blob/master/docs/fetching_credentials/README.md) | How to Fetch Credentials |
+| [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
+| [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |

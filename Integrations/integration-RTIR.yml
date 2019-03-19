@@ -587,7 +587,7 @@ script:
 
     ''' EXECUTION CODE '''
 
-    tracker = rt.Rt(BASE_URL, USERNAME, PASSWORD)
+    tracker = rt.Rt(BASE_URL, USERNAME, PASSWORD, verify_cert=USE_SSL)
     login = tracker.login()
     if login is False:
         return_error('Failed to login')

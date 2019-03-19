@@ -644,8 +644,6 @@ script:
       description: The thread ids retrieved by the vendor.
     description: Check the reputation of an email address.
   runonce: false
-releaseNotes: "Reimplemented the way dBot score is calculated, added 4 threshold parameters to instance
-      configuration, and added new output paths"
 hidden: false
 tests:
   - Test - PhishMe Intelligence

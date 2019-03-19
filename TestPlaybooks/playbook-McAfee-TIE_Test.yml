@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fac305d5-a337-46d3-843e-b5efcaf34df2
+    taskid: 48b0a26c-5ae3-46cc-86df-595550e7f6fa
     type: start
     task:
-      id: fac305d5-a337-46d3-843e-b5efcaf34df2
+      id: 48b0a26c-5ae3-46cc-86df-595550e7f6fa
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +24,14 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 4b24cf64-3bf3-45f4-8412-349ca326af95
-    type: regular
+    taskid: 635c0710-f43c-4492-82cd-145dd4ec3d99
+    type: condition
     task:
-      id: 4b24cf64-3bf3-45f4-8412-349ca326af95
+      id: 635c0710-f43c-4492-82cd-145dd4ec3d99
       version: -1
       name: Verify Context File Reputation
       description: |-
@@ -37,17 +40,24 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "3"
-    scriptarguments:
-      expectedValue: ""
-      fields: TrustLevel,SHA1
-      path: File
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.TrustLevel
+            iscontext: true
+          right:
+            value:
+              simple: "0"
     view: |-
       {
         "position": {
@@ -55,12 +65,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: fd070dd4-fc67-40b9-8a79-c375f898af48
-    type: regular
+    taskid: 1908d988-6de1-47c6-83eb-faff50494c67
+    type: condition
     task:
-      id: fd070dd4-fc67-40b9-8a79-c375f898af48
+      id: 1908d988-6de1-47c6-83eb-faff50494c67
       version: -1
       name: Verify Context DBot Score
       description: |-
@@ -69,17 +81,24 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      expectedValue: ""
-      fields: Vendor,Indicator,Score,Type
-      path: DBotScore
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
     view: |-
       {
         "position": {
@@ -87,12 +106,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 3b1665f4-cce7-4538-85cb-cc9d54536a90
+    taskid: 73f34142-9516-409e-8986-8fa3c122d89c
     type: regular
     task:
-      id: 3b1665f4-cce7-4538-85cb-cc9d54536a90
+      id: 73f34142-9516-409e-8986-8fa3c122d89c
       version: -1
       name: TIE file reputation
       description: Retrieves the reputations for the specified hash ( Supports MD5
@@ -105,7 +126,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      file: 6EAE26DB8C13182A7947982991B4321732CC3DE2
+      file:
+        simple: 6EAE26DB8C13182A7947982991B4321732CC3DE2
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -113,12 +136,14 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: c3864173-436a-44b0-839a-56a014c6a8b1
+    taskid: 2fa64b7a-e29d-4e24-81ad-801d5d6ddf89
     type: regular
     task:
-      id: c3864173-436a-44b0-839a-56a014c6a8b1
+      id: 2fa64b7a-e29d-4e24-81ad-801d5d6ddf89
       version: -1
       name: tie-file-references
       script: McAfee Threat Intelligence Exchange|||tie-file-references
@@ -129,48 +154,24 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      file: f2c7bb8acc97f92e987a2d4087d021b1
+      file:
+        simple: f2c7bb8acc97f92e987a2d4087d021b1
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
-  "7":
-    id: "7"
-    taskid: a5a6ca0d-06ff-498c-8228-9a15e512d36b
-    type: regular
-    task:
-      id: a5a6ca0d-06ff-498c-8228-9a15e512d36b
-      version: -1
-      name: tie-set-file-reputation
-      description: Sets the “Enterprise” reputation (trust level) of a specified file
-      script: McAfee Threat Intelligence Exchange|||tie-set-file-reputation
-      type: regular
-      iscommand: true
-      brand: McAfee Threat Intelligence Exchange
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      comment: ""
-      file: 7eb0139d2175739b3ccb0d1110067820be6abd29
-      filename: ""
-      trust_level: MOST_LIKELY_TRUSTED
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 310d0017-0c52-465f-88b5-34b67c9995c9
+    taskid: f664dbf3-e09d-4527-8c99-6e9e2d3caf64
     type: regular
     task:
-      id: 310d0017-0c52-465f-88b5-34b67c9995c9
+      id: f664dbf3-e09d-4527-8c99-6e9e2d3caf64
       version: -1
       name: Verify Context tie-file-references
       description: |-
@@ -183,23 +184,31 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
-      expectedValue: ""
-      fields: MD5,References
-      path: File
+      expectedValue: {}
+      fields:
+        simple: MD5,References
+      path:
+        simple: File
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
+    note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: 47b9c744-655f-4084-8418-e4d0c8dffba0
+    taskid: e8998e24-05f6-4977-82dc-7c470a5c78cf
     type: regular
     task:
-      id: 47b9c744-655f-4084-8418-e4d0c8dffba0
+      id: e8998e24-05f6-4977-82dc-7c470a5c78cf
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -211,21 +220,109 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: b134af34-476e-442f-8ced-e8c5f615cd93
+    type: regular
+    task:
+      id: b134af34-476e-442f-8ced-e8c5f615cd93
+      version: -1
+      name: TIE File reputation - Malicious
+      script: McAfee Threat Intelligence Exchange|||file
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      file:
+        simple: 5AF84A3DB5883627BFDFF909E210634E
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: d63b213c-f1bc-4fe9-842f-2dc6ccbd0482
+    type: condition
+    task:
+      id: d63b213c-f1bc-4fe9-842f-2dc6ccbd0482
+      version: -1
+      name: Verify Context DBot Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: fe037440-31c6-4d5e-8ce3-c2a6c150ebc1
+    type: title
+    task:
+      id: fe037440-31c6-4d5e-8ce3-c2a6c150ebc1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50
@@ -233,3 +330,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

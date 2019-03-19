@@ -352,6 +352,6 @@ view: |-
       }
     }
   }
-releaseNotes: "-"
 tests:
-  - No test
+- Test Playbook McAfee ePO
+releaseNotes: "-"
