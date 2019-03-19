@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build:1.0.0.159 # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:1.0.0.197 # disable-secrets-detection
     resource_class: medium+
     environment:
       CONTENT_VERSION: "19.3.0"
@@ -17,14 +17,12 @@ jobs:
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV              
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
-              pyenv global 2.7.15 3.6.8
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
               pyenv versions
               python --version
-              python3 --version
-              sudo pip install mock
+              python3 --version              
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
