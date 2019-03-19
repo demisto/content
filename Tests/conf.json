@@ -1268,6 +1268,7 @@
         "Forcepoint": "Nightly - Checking",
         "RedCanary": "Nightly - Checking",
         "McAfee Active Response": "Nightly - Checking",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Palo Alto Minemeld": "Pending check: issue 16072"
     }
 }
