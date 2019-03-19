@@ -3256,7 +3256,7 @@ def convert_to_unicode(s):
 
 def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     if max_depth == 0:
-        return None
+        return None, []
 
     msg = MsOxMessage(file_path)
     if not msg:
@@ -3267,7 +3267,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     if parse_only_headers:
         return {
             "HeadersMap": email_data.get("HeadersMap")
-        }
+        }, []
 
     attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
@@ -3283,7 +3283,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
     global ENCODINGS_TYPES
 
     if max_depth == 0:
-        return None
+        return None, []
 
     with open(file_path, 'rb') as emlFile:
 
@@ -3321,7 +3321,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         if parse_only_headers:
             return {
                 "HeadersMap": headers_map
-            }
+            }, []
 
         eml = message_from_string(file_data)
         if not eml:
