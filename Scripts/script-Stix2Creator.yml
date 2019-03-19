@@ -25,16 +25,21 @@ script: |-
   if demisto_indicator_type.lower() == "File MD5".lower():
       stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
   elif demisto_indicator_type.lower() == "File SHA-1".lower():
-      stix_type_and_value = "[file:hashes.sha-1 = '" + value + "']"
-  elif demisto_indicator_type.lower() == "File SHA-256".lower():
-      stix_type_and_value = "[file:hashes.sha-256 = '" + value + "']"
+      stix_type_and_value = "[file:hashes.sha1 = '" + value + "']"
+  elif demisto_indicator_type.lower() == "File SHA1".lower():
+      stix_type_and_value = "[file:hashes.sha1 = '" + value + "']"
+  elif demisto_indicator_type.lower() == "File SHA256".lower():
+      stix_type_and_value = "[file:hashes.sha256 = '" + value + "']"
+  elif demisto_indicator_type.lower() == "File SHA256".lower():
+      stix_type_and_value = "[file:hashes.sha256 = '" + value + "']"
   elif demisto_indicator_type.lower() == "IP".lower():
       stix_type_and_value = "[ipv4-addr:value = '" + value + "']"
   elif demisto_indicator_type.lower() == "URL".lower():
       stix_type_and_value = "[url:value = '" + value + "']"
   else:
       stix_type_and_value = "[{}:value = '{}']".format(demisto_indicator_type.lower(),value)
-      # stix_type_and_value = "[" + demisto_indicator_type.lower() +":value = '" + value + "']"
+
+  label_as_type = demisto_indicator_type.lower()
 
   if demisto_Score.lower() == "bad":
       demisto_Score = "High"
@@ -43,7 +48,7 @@ script: |-
   else:
       demisto_Score = ""
 
-  indicator = Indicator(labels=["unkown"],
+  indicator = Indicator(labels=[label_as_type],
                         pattern=stix_type_and_value,
                         source=source_System,
                         created=demisto_created,
@@ -52,10 +57,8 @@ script: |-
                         score=demisto_Score,
                         allow_custom=True)
 
-  # def get_dbot_score_report(should_create_bundle, indicator):
   if createBundle.lower() == "true":
       bundle = Bundle(indicator)
-      # demisto.results( bundle)
       context = {
           'StixExportedIndicators': json.loads(str(bundle))
       }
@@ -73,8 +76,6 @@ script: |-
                        'Contents': str(indicator),
                        'EntryContext': context,
                        'ContentsFormat': formats['json']})
-
-  # get_dbot_score_report (createBundle,indicator)
 type: python
 tags: []
 enabled: true
