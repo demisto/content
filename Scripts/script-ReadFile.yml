@@ -11,7 +11,7 @@ script: |-
   res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
   with open(res[0]['Contents']['path'], 'r') as f:
       data = f.read(maxFileSize)
-      data = data.decode(demisto.args().get("decode_type"))
+      data = data.decode(demisto.args().get("encoding"))
       data = data.encode('utf-8')
 
   if data:
@@ -39,8 +39,8 @@ args:
   required: false
   default: false
   description: Maximal file size to load, in bytes. Default is 1MB.
-- name: decode_type
-  description: The decoding type of the file
+- name: encoding
+  description: The character encoding of the file
   defaultValue: utf-8
 outputs:
 - contextPath: FileData
