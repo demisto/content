@@ -1,18 +1,8 @@
-args:
-- default: true
-  description: ioc xml in stix format
-  isArray: false
-  name: iocXml
-  required: true
-  secret: false
-comment: Parse Stix files to Demisto indicators
 commonfields:
   id: StixParser
   version: -1
-enabled: true
 name: StixParser
 script: |-
-  from CommonServerPython import *
   import tempfile
   from stix.core import STIXPackage
 
@@ -274,13 +264,20 @@ script: |-
 
   json_data = json.dumps(DATA)
   demisto.results(json_data)
-system: true
+type: python
 tags:
 - stix
 - ioc
+comment: Parse Stix files to Demisto indicators
+enabled: true
+args:
+- name: iocXml
+  required: true
+  default: true
+  description: ioc xml in stix format
+scripttarget: 0
+dependson: {}
 timeout: 0s
-type: python
 dockerimage: demisto/stix
-releaseNotes: '-'
-dependson: {
-  }
+system: true
+releaseNotes: Supports STIX2.0
