@@ -87,7 +87,7 @@ configuration:
   required: false
 script:
   script: ''
-  type: javascript
+  type: python
   commands:
   - name: jira-issue-query
     arguments:
