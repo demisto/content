@@ -1,0 +1,142 @@
+id: Script-TestStix2Creator
+version: 10
+name: Script-TestStix2Creator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f9f1d774-3ac7-4435-8c44-2b444d029d49
+    type: start
+    task:
+      id: f9f1d774-3ac7-4435-8c44-2b444d029d49
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 12440352-35a4-47e7-82ba-4af182b1f507
+    type: regular
+    task:
+      id: 12440352-35a4-47e7-82ba-4af182b1f507
+      version: -1
+      name: Stix2Creator
+      scriptName: Stix2Creator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      createBundle: {}
+      firstSeen:
+        simple: 1970-01-01T00:00:00+00:00
+      indicator_type:
+        simple: File MD5
+      lastSeen:
+        simple: 1970-01-01T00:00:00+00:00
+      score: {}
+      source:
+        simple: DBot
+      timestamp:
+        simple: 1970-01-01T00:00:00+00:00
+      value:
+        simple: d41d8cd98f00b204e9800998ecf8427e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 60b2d9c9-cbdc-411d-86bc-d276bc56f736
+    type: condition
+    task:
+      id: 60b2d9c9-cbdc-411d-86bc-d276bc56f736
+      version: -1
+      name: Check STIX Export Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: StixExportedIndicators.pattern
+            iscontext: true
+          right:
+            value:
+              simple: '[file:hashes.md5 = ''d41d8cd98f00b204e9800998ecf8427e'']'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d92eca7a-d4c9-4f3a-8137-93d8d5d71d3d
+    type: title
+    task:
+      id: d92eca7a-d4c9-4f3a-8137-93d8d5d71d3d
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 665,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
