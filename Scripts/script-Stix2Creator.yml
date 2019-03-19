@@ -1,6 +1,6 @@
 commonfields:
   id: Stix2Creator
-  version: 150
+  version: -1
 name: Stix2Creator
 script: |-
   ''' IMPORTS '''
