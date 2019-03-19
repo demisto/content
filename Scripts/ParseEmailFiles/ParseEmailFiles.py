@@ -2710,7 +2710,7 @@ class Message(object):
             'HTML': html,
             'Headers': str(self.header) if self.header is not None else None,
             'HeadersMap': self.header_dict,
-            'Depth': MAX_DEPTH_CONST-max_depth
+            'Depth': MAX_DEPTH_CONST - max_depth
         }
 
         return message_dict
@@ -2722,7 +2722,7 @@ class Message(object):
         attached_emails = []
         for embedded_message in self.embedded_messages:
             attached_emails.append(embedded_message.as_dict(max_depth))
-            attached_emails.extend(embedded_message.get_attached_emails_hierarchy(max_depth-1))
+            attached_emails.extend(embedded_message.get_attached_emails_hierarchy(max_depth - 1))
 
         return attached_emails
 
@@ -3202,7 +3202,8 @@ def save_attachments(attachments, root_email_file_name, max_depth):
                     tf.write(attachment.data)
                     tf.close()
 
-                    inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name, max_depth=max_depth)
+                    inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name,
+                                                                  max_depth=max_depth)
                     return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name))
                     attached_emls.append(inner_eml)
                     attached_emls.extend(attached_inner_emails)
@@ -3268,10 +3269,10 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
             "HeadersMap": email_data.get("HeadersMap")
         }
 
-    attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth-1)
+    attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
 
-    attached_emails_msg = msg.get_attached_emails_hierarchy(max_depth-1)
+    attached_emails_msg = msg.get_attached_emails_hierarchy(max_depth - 1)
     for attached_email in attached_emails_msg:
         return_outputs(readable_output=data_to_md(attached_email, None, file_name), outputs=None)
 
@@ -3364,7 +3365,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                     demisto.results(fileResult(attachment_file_name, file_content))
 
-                    if max_depth-1 > 0:
+                    if max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
                         try:
                             f.write(file_content)
@@ -3384,13 +3385,13 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     file_content = part.get_payload(decode=True)
                     demisto.results(fileResult(attachment_file_name, file_content))
 
-                    if attachment_file_name.endswith(".msg") and max_depth-1 > 0:
+                    if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
                         try:
                             f.write(file_content)
                             f.close()
                             inner_msg, inner_attached_emails = handle_msg(f.name, attachment_file_name, False,
-                                                                          max_depth-1)
+                                                                          max_depth - 1)
                             attached_emails.append(inner_msg)
                             attached_emails.extend(inner_attached_emails)
 
@@ -3421,7 +3422,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             'HeadersMap': headers_map,
             'Attachments': ','.join(attachment_names) if attachment_names else '',
             'Format': eml.get_content_type(),
-            'Depth': MAX_DEPTH_CONST-max_depth
+            'Depth': MAX_DEPTH_CONST - max_depth
         }
 
         return email_data, attached_emails
@@ -3524,7 +3525,8 @@ def main():
                         return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
 
             except Exception as e:
-                return_error("Exception while trying to decode email from within base64: " + str(e) + "\n\nTrace:\n" + traceback.format_exc(e))
+                return_error("Exception while trying to decode email from within base64: " +
+                             str(e) + "\n\nTrace:\n" + traceback.format_exc(e))
         else:
             return_error("Unknown file format: " + file_type)
 
