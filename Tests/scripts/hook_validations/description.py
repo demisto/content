@@ -1,7 +1,7 @@
 import glob
 
 from Tests.test_utils import re, print_error, os, get_yaml
-from Tests.scripts.constants import INTEGRATION_REGEX, INTEGRATION_YML_REGEX
+from Tests.scripts.constants import INTEGRATION_REGEX
 
 
 class DescriptionValidator(object):
