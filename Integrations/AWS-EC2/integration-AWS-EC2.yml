@@ -35,6 +35,7 @@ description: Amazon Web Services Elastic Compute Cloud (EC2)
 display: AWS - EC2
 name: AWS - EC2
 script:
+  script: ''
   commands:
   - arguments:
     - default: false
