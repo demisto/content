@@ -164,7 +164,7 @@ script: |-
           new_indicators["Domain"] = list(set(indicators.get("Domain")))
 
       new_indicators["File"] = list()
-      if "MD5" in indicators:]
+      if "MD5" in indicators:
           if not isinstance(indicators["MD5"], list):
               indicators = [indicators]
           new_indicators["File"] += (list(set(indicators.get("MD5"))))
