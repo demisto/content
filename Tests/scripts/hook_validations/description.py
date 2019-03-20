@@ -17,19 +17,6 @@ class DescriptionValidator(object):
 
         self.file_path = file_path
 
-
-        '''
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            self.file_path = file_path
-        else:
-            if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                package_path = os.path.dirname(file_path)
-                try:
-                    md_file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.md'))[0]
-                except IndexError:
-                    print_error("No description file was found in the package {}. Consider adding one.".format(package_path))
-        '''
-
     def is_valid(self):
         self.is_existing_description()
 
