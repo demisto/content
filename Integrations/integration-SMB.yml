@@ -92,13 +92,15 @@ script:
     def upload():
         share, path = split_path(demisto.getArg('file_path'))
         entryID = demisto.getArg('entryID')
+        content = demisto.getArg('content')
+        if not entryID and not content:
+            raise Exception("smb-upload requires one of the following arguments: content, entryID.")
         if entryID:
             file = demisto.getFilePath(entryID)
             filePath = file['path']
             with open(filePath, mode='rb') as f:
                 content = f.read()
-        else:
-            content = demisto.getArg('content')
+
         with tempfile.NamedTemporaryFile() as file_obj:
             file_obj.write(content)
             file_obj.seek(0)
@@ -146,7 +148,7 @@ script:
     - name: entryID
       description: EntryID to the file to send to the share
     - name: content
-      description: File content to send to the share
+      description: File content to send to the share. Ignored if EntryID argument is specified.
     description: Upload a file to the SMB server
   dockerimage: demisto/pysmb
   runonce: false
