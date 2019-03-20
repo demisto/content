@@ -18,11 +18,11 @@ class DescriptionValidator(object):
         self.file_path = file_path
 
     def is_valid(self):
-        self.is_existing_description()
+        self.is_duplicate_description()
 
         return self._is_valid
 
-    def is_existing_description(self):
+    def is_duplicate_description(self):
         """Check if the integration has a non-duplicate description ."""
         is_description_in_yml = False
         is_description_in_package = False
