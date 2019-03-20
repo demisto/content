@@ -7,7 +7,6 @@ TestData/EmailWithNonUnicodeSubject.eml
 *.pyc
 .pytest_cache
 **/*_unified
-!**/
 
 CommonServerPython.py
 CommonServerUserPython.py
