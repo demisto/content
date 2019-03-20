@@ -1270,7 +1270,7 @@ tasks:
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
-      script: '||panorama-list-pcaps'
+      script: '|||panorama-list-pcaps'
       type: regular
       iscommand: true
       brand: ""
