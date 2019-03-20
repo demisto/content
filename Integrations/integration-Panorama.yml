@@ -156,16 +156,25 @@ script:
 
         if jresult['response']['@status'] != 'success':
             if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
+
+                # catch non existing object error and display a meaningful message
                 if jresult['response']['msg']['line'] == 'No such node':
                     return_error('Object was not found, verify that the name is correct and that the instance was committed.')
-                    # s.find("is") == -1:
+
+                # catch non valid jobID errors and display a meaningful message
                 elif isinstance(jresult['response']['msg']['line'], str) and jresult['response']['msg']['line'].find('job') != -1 and jresult['response']['msg']['line'].find('not found') != -1:
                     return_error('Invalid Job ID error: ' + jresult['response']['msg']['line'])
+
+                # catch already at the top/bottom error for rules and return this as an entry.note
+                elif str(jresult['response']['msg']['line']).find('already at the') != -1:
+                    demisto.results('Rule ' + str(jresult['response']['msg']['line']))
+                    sys.exit(0)
+
             if '@code' in jresult['response']:
                 return_error('Request Failed.\nStatus code: ' + str(jresult['response']['@code']) + '\nWith message: ' + str(jresult['response']['msg']['line']))
+
             else:
                 return_error('Request Failed.\n' + str(jresult['response']))
-
 
         return jresult
 
@@ -2154,6 +2163,94 @@ script:
         })
 
 
+    ''' PCAPS '''
+    @logger
+    def panorama_list_pcaps_command():
+        ''' Get list of pcap files '''
+        params = {
+            'type': 'export',
+            'key': API_KEY,
+            'category': demisto.args()['pcapType']
+        }
+
+        if 'password' in demisto.args():
+            params['dlp-password'] = demisto.args()['password']
+        elif demisto.args()['pcapType'] == 'dlp-pcap':
+            return_error('can not provide dlp-pcap without password')
+
+
+        result = http_request(URL, 'GET', params = params)
+
+        jresult = json.loads(xml2json(result.text))['response']
+        if jresult['@status'] != 'success':
+            return_error('Request to get list of Pcaps Failed.\nStatus code: ' + str(jresult['response']['@code']) + '\nWith message: ' + str(jresult['response']['msg']['line']))
+
+        pcap_list = jresult['result']['dir-listing']['file']
+        pcap_list = [pcap[1:] for pcap in pcap_list]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': jresult,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('List of Pcaps:', pcap_list, ['Pcap name']),
+            'EntryContext': {
+                  "Panorama.Pcaps(val.Name == obj.Name)": pcap_list
+            }
+        })
+
+
+    @logger
+    def panorama_get_pcap_command():
+        ''' Get pcap file '''
+        params = {
+            'type': 'export',
+            'key': API_KEY,
+            'category': demisto.args()['pcapType']
+        }
+
+        if 'password' in demisto.args():
+            params['dlp-password'] = demisto.args()['password']
+        elif demisto.args()['pcapType'] == 'dlp-pcap':
+            return_error('can not provide dlp-pcap without password')
+
+        if 'pcapID' in demisto.args():
+            params['pcap-id'] = demisto.args()['pcapID']
+        elif demisto.args()['pcapType'] == 'threat-pcap':
+            return_error('can not provide threat-pcap without pcap-id')
+
+        pcap_name = demisto.args().get('from')
+        localName = demisto.args().get('localName')
+        serialno = demisto.args().get('serialNo')
+        search_time = demisto.args().get('searchTime')
+
+        file_name = None
+        if (pcap_name):
+            params['from'] = pcap_name
+            file_name = pcap_name
+        if (localName):
+            params['to'] = localName
+            file_name = localName
+        if (serialno):
+            params['serialno'] = serialno
+        if (search_time):
+            params['search-time'] = search_time
+
+        # set file name to the current time if from/to were not specified
+        if not file_name:
+            file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
+
+        result = http_request(URL, 'GET', params = params)
+
+        # due pcap file size limitation in the product, for more details, please see the documentation.
+        if  "<?xml version=\"1.0\"?>" in result.text:
+            return_error('Pcap download failed. probably due to File size limitation. for more information, visit the documentation.')
+
+        file = fileResult(file_name + ".pcap", result.content)
+        demisto.results(file)
+
+
+    ''' Applications '''
     def prettify_applications_arr(applications_arr):
         pretty_application_arr = []
         for i in range (len(applications_arr)):
@@ -2200,51 +2297,6 @@ script:
                   "Panorama.Applications(val.Id == obj.Id)": applications_arr_output
             }
         })
-
-
-    @logger
-    def panorama_get_pcaps_command():
-        ''' Get pcap file '''
-        params = {
-            'type': 'export',
-            'key': API_KEY,
-            'category': demisto.args()['pcapType']
-        }
-
-        if 'password' in demisto.args():
-            params['dlp-password'] = demisto.args()['password']
-        elif demisto.args()['pcapType'] == 'dlp-pcap':
-            return_error('can not provide dlp-pcap without password')
-
-        if 'pcapID' in demisto.args():
-            params['pcap-id'] = demisto.args()['pcapID']
-        elif demisto.args()['pcapType'] == 'threat-pcap':
-            return_error('can not provide threat-pcap without pcap-id')
-
-        fromm = demisto.args().get('from')
-        localName = demisto.args().get('localName')
-        serialno = demisto.args().get('serialNo')
-        search_time = demisto.args().get('searchTime')
-
-        file_name = None
-        if (fromm):
-            params['from'] = fromm
-            file_name = fromm
-        if (localName):
-            params['to'] = localName
-            file_name = localName
-        if (serialno):
-            params['serialno'] = serialno
-        if (search_time):
-            params['search-time'] = search_time
-
-        # set file name to the current time if from/to were not specified
-        if not file_name:
-            file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
-
-        result = http_request(URL, 'GET', params = params)
-
-        demisto.results(fileResult(file_name + ".pcap", result.content))
 
 
     ''' EXECUTION '''
@@ -2375,12 +2427,16 @@ script:
         elif demisto.command() == 'panorama-delete-rule':
             panorama_delete_rule_command()
 
-    # ------------------------------------------------------------------------ #
+        # Pcaps
+        elif demisto.command() == 'panorama-list-pcaps':
+            panorama_list_pcaps_command()
+
+        elif demisto.command() == 'panorama-get-pcap':
+            panorama_get_pcap_command()
+
+        # Application
         elif demisto.command() == 'panorama-list-applications':
             panorama_list_applications_command()
-
-        elif demisto.command() == 'panorama-get-pcaps':
-            panorama_get_pcaps_command()
 
     except Exception, e:
         LOG(e.message)
@@ -3364,7 +3420,7 @@ script:
       description: Job ID details
       type: string
     description: Get push status for a configuration
-  - name: panorama-get-pcaps
+  - name: panorama-get-pcap
     arguments:
     - name: pcapType
       required: true
@@ -3422,8 +3478,22 @@ script:
       description: SHA256 hash of the file
       type: string
     description: Get panorama pcaps
+  - name: panorama-list-pcaps
+    arguments:
+    - name: pcapType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - threat-pcap
+      - dlp-pcap
+      description: Type of Packet Capture
+    - name: password
+      description: Password for Panorama, needed for dlp-pcap only.
+    description: Returns a list of pcap names
   runonce: false
-releaseNotes: added panorama-get-pcaps command, refactor error messages and handle of invalid inputs.
+releaseNotes: added panorama-get-pcap, panorama-list-pcaps commands, refactor error messages, handle of invalid inputs, catch move-rule errors and display them as message.
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
