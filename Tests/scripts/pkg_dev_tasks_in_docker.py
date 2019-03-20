@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+import argparse
+import yaml
+import glob
+import subprocess
+import os
+import hashlib
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(SCRIPT_DIR + '/../..')
+from package_creator import get_code_file  # noqa: E402
+
+DEF_DOCKER = 'demisto/python:1.3-alpine'
+ENVS_DIRS_BASE = '{}/dev_envs/default_python'.format(SCRIPT_DIR)
+RUN_SH_FILE_NAME = 'run_dev_tasks.sh'
+RUN_SH_FILE = '{}/{}'.format(SCRIPT_DIR, RUN_SH_FILE_NAME)
+LOG_VERBOSE = False
+
+
+def get_docker_image(script_obj):
+    return script_obj.get('dockerimage') or DEF_DOCKER
+
+
+def print_v(msg):
+    if LOG_VERBOSE:
+        print(msg)
+
+
+def get_dev_requirements(project_dir, docker_image):
+    """
+    Get the requirements for the specified project. Will detect if python 2 or 3 is used and
+    generate requirements file based on default required dev libs.
+
+    Arguments:
+        project_dir {string} -- Directory of the project
+        docker_image {stiring} -- Docker image being used by the project
+
+    Raises:
+        ValueError -- If can't detect python version
+
+    Returns:
+        string -- requirement required for the project
+    """
+    major_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
+                                         "python", "-c", "import sys; print(sys.version_info[0])"],
+                                        universal_newlines=True).strip()
+    print_v("detected python version: [{}] for docker image: {}".format(major_ver, docker_image))
+    if major_ver not in ["2", "3"]:
+        raise ValueError("Unknown python major versoin: {}".format(major_ver))
+    env_dir = "{}{}".format(ENVS_DIRS_BASE, major_ver)
+    requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True)
+    print_v("dev requirements:\n{}".format(requirements))
+    return requirements
+
+
+def get_pylint_files(project_dir):
+    return get_code_file(project_dir, '.py')
+
+
+def docker_image_create(docker_base_image, requirements):
+    """
+    Create the docker image with dev dependencies. Will check if already existing.
+    Uses a hash of the requirements to determine the image tag
+
+    Arguments:
+        docker_base_image {string} -- docker image to use as base for installing dev deps
+        requirements {string} -- requirements doc
+
+    Returns:
+        string -- image name to use
+    """
+
+    if ':' not in docker_base_image:
+        docker_base_image += ':latest'
+    target_image = 'devtest' + docker_base_image + '-' + hashlib.md5(requirements.encode('utf-8')).hexdigest()
+    images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
+                                         '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
+    if images_ls == target_image:
+        print_v('Using already existing image: {}'.format(target_image))
+        return target_image
+    container_id = subprocess.check_output(
+        ['docker', 'create', '-i', docker_base_image, 'pip', 'install', '-r', '/dev/stdin'],
+        universal_newlines=True).strip()
+    subprocess.run(['docker', 'start', '-a', '-i', container_id], input=requirements.encode('utf-8'), check=True)
+    subprocess.check_call(['docker', 'commit', container_id, target_image])
+    subprocess.check_call(['docker', 'rm', container_id])
+    print_v('Done creating docker image: {}'.format(target_image))
+    return target_image
+
+
+def docker_run(project_dir, docker_image, no_test, no_lint):
+    workdir = '/devwork'
+    run_params = ['docker', 'create', '-v', workdir, '-w', workdir,
+                  '-e', 'PYLINT_FILES={}'.format(get_pylint_files(project_dir))]
+    run_params.append([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
+    container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
+    subprocess.check_call(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir])
+    subprocess.check_call(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir])
+    subprocess.check_call(['docker', 'start', '-a', container_id])
+    subprocess.check_call(['docker', 'rm', container_id])
+
+
+def main():
+    description = """Run pylint and/or pytest within the docker image of an integration/script.
+Meant to be used with integrations/scripts that use the folder (package) structure.
+Will lookup up what docker image to use and will setup the dev dependencies and file in the target folder. """
+    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-d", "--dir", help="Specify directory of integration/script", required=True)
+    parser.add_argument("--no-lint", help="Do NOT lint (skip pylint)", action='store_true')
+    parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
+    parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
+
+    args = parser.parse_args()
+
+    if args.no_test and args.no_lint:
+        raise ValueError("Nothing to run as both --no-lint and --no-test specified.")
+
+    global LOG_VERBOSE
+    LOG_VERBOSE = args.verbose
+
+    # load yaml
+    yml_path = glob.glob(args.dir + '/*.yml')[0]
+    print_v('Using yaml file: {}'.format(yml_path))
+    with open(yml_path, 'r') as yml_file:
+        yml_data = yaml.safe_load(yml_file)
+    script_obj = yml_data
+    if isinstance(script_obj.get('script'), dict):
+        script_obj = script_obj.get('script')
+    script_type = script_obj.get('type')
+    if script_type != 'python':
+        print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
+        return
+    docker = get_docker_image(script_obj)
+    print_v("Using docker image: {}".format(docker))
+    requirements = get_dev_requirements(args.dir, docker)
+    docker_image_created = docker_image_create(docker, requirements)
+    docker_run(args.dir, docker_image_created, args.no_test, args.no_lint)
+
+
+if __name__ == "__main__":
+    main()
