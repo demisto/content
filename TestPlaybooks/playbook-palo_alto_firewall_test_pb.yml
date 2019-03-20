@@ -800,7 +800,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6925
+          "y": 7100
         }
       }
     note: false
@@ -1214,7 +1214,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "81"
+      - "82"
     separatecontext: false
     view: |-
       {
@@ -1227,14 +1227,14 @@ tasks:
     timertriggers: []
   "81":
     id: "81"
-    taskid: 53d31b34-7951-4fb8-8c7f-5b720610bc78
+    taskid: 7fca3435-bac1-4f43-862b-410f84ef7a7e
     type: regular
     task:
-      id: 53d31b34-7951-4fb8-8c7f-5b720610bc78
+      id: 7fca3435-bac1-4f43-862b-410f84ef7a7e
       version: -1
-      name: panorama-get-pcaps
+      name: panorama-get-pcap
       description: Get panorama pcaps
-      script: '|||panorama-get-pcaps'
+      script: '|||panorama-get-pcap'
       type: regular
       iscommand: true
       brand: ""
@@ -1244,13 +1244,43 @@ tasks:
     scriptarguments:
       from:
         simple: pcap_test
+      localName: {}
       password: {}
       pcapID: {}
       pcapType:
         simple: filter-pcap
       searchTime: {}
       serialNo: {}
-      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6925
+        }
+      }
+    note: false
+    timertriggers: []
+  "82":
+    id: "82"
+    taskid: 5abb59a3-7a56-42d2-8c1c-fe3558db28a0
+    type: regular
+    task:
+      id: 5abb59a3-7a56-42d2-8c1c-fe3558db28a0
+      version: -1
+      name: panorama-list-pcaps
+      description: Returns a list of pcap names
+      script: '||panorama-list-pcaps'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      password: {}
+      pcapType:
+        simple: filter-pcap
     separatecontext: false
     view: |-
       {
@@ -1268,7 +1298,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6940,
+        "height": 7115,
         "width": 380,
         "x": 50,
         "y": 50
