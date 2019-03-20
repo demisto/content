@@ -2,7 +2,7 @@ import os
 import yaml
 from requests import get
 
-from Tests.test_utils import print_error, get_json
+from Tests.test_utils import print_error, get_yaml
 
 
 class IntegrationValidator(object):
@@ -22,7 +22,7 @@ class IntegrationValidator(object):
 
         self.file_path = file_path
         if check_git:
-            self.current_integration = get_json(file_path)
+            self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")

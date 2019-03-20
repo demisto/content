@@ -70,22 +70,23 @@ script:
     '  </env:Body>' +
     '</env:Envelope>';
 
-    var tmplGetAlarmByID = '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
-    '  <env:Header>' +
-    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
-    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
-    '       <wsse:Username>{{.Username}}</wsse:Username>' +
-    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
-    '      </wsse:UsernameToken>' +
-    '    </wsse:Security>' +
-    '  </env:Header>' +
-    '  <env:Body>' +
-    '    <tns:GetAlarmByID>' +
-    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
-    '    </tns:GetAlarmByID>' +
-    '  </env:Body>' +
-    '</env:Envelope>';
+    var tmplGetAlarmByID =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<SOAP-ENV:Envelope xmlns:ns0="http://www.logrhythm.com/webservices" xmlns:ns1="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">' +
+    ' <SOAP-ENV:Header>' +
+    '  <wsse:Security mustUnderstand="true">' +
+    '   <wsse:UsernameToken>' +
+    '    <wsse:Username>{{.Username}}</wsse:Username>' +
+    '    <wsse:Password>{{.Password}}</wsse:Password>' +
+    '   </wsse:UsernameToken>' +
+    '  </wsse:Security>' +
+    ' </SOAP-ENV:Header>' +
+    ' <ns1:Body>' +
+    "  <ns0:GetAlarmByID xmlns:ns1='http://www.logrhythm.com/webservices'>" +
+    '    <ns1:alarmID>{{.AlarmID}}</ns1:alarmID>' +
+    '  </ns0:GetAlarmByID>' +
+    ' </ns1:Body>' +
+    '</SOAP-ENV:Envelope>';
 
     var tmplGetAlarmEventsByID = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
@@ -143,26 +144,27 @@ script:
     '  </env:Body>' +
     '</env:Envelope>';
 
-    var tmplGetFirstPageAlarmsByAlarmStatus = '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
-    '  <env:Header>' +
-    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
-    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
-    '        <wsse:Username>{{.Username}}</wsse:Username>' +
-    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
-    '      </wsse:UsernameToken>' +
-    '    </wsse:Security>' +
-    '  </env:Header>' +
-    '  <env:Body>' +
-    '    <tns:GetFirstPageAlarmsByAlarmStatus>' +
-    '      <tns:startDate>{{.StartDate}}</tns:startDate>' +
-    '      <tns:endDate>{{.EndDate}}</tns:endDate>' +
-    '      <tns:status>{{.Status}}</tns:status>' +
-    '      <tns:allUsers>{{.AllUsers}}</tns:allUsers>' +
-    '      <tns:maximumResultsPerPage>{{.MaxResultsPerPage}}</tns:maximumResultsPerPage>' +
-    '    </tns:GetFirstPageAlarmsByAlarmStatus>' +
-    '  </env:Body>' +
-    '</env:Envelope>';
+    var tmplGetFirstPageAlarmsByAlarmStatus =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<SOAP-ENV:Envelope xmlns:ns0="http://www.logrhythm.com/webservices" xmlns:ns1="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">' +
+    ' <SOAP-ENV:Header>' +
+    '  <wsse:Security mustUnderstand="true">' +
+    '   <wsse:UsernameToken>' +
+    '    <wsse:Username>{{.Username}}</wsse:Username>' +
+    '    <wsse:Password>{{.Password}}</wsse:Password>' +
+    '   </wsse:UsernameToken>' +
+    '  </wsse:Security>' +
+    ' </SOAP-ENV:Header>' +
+    ' <ns1:Body>' +
+    "    <ns1:GetFirstPageAlarmsByAlarmStatus xmlns:ns1='http://www.logrhythm.com/webservices'>" +
+    '      <ns1:startDate>{{.StartDate}}</ns1:startDate>' +
+    '      <ns1:endDate>{{.EndDate}}</ns1:endDate>' +
+    '      <ns1:status>{{.Status}}</ns1:status>' +
+    '      <ns1:allUsers>{{.AllUsers}}</ns1:allUsers>' +
+    '      <ns1:maximumResultsPerPage>{{.MaxResultsPerPage}}</ns1:maximumResultsPerPage>' +
+    '    </ns1:GetFirstPageAlarmsByAlarmStatus>' +
+    ' </ns1:Body>' +
+    '</SOAP-ENV:Envelope>'
 
     var tmplGetNextPageAlarms = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
@@ -188,6 +190,7 @@ script:
     var logRhythmAPI = 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
     var defaultAlarmsPageSize = 2000;
     var defaultCount = 1000;
+    var alarmsFieldsToRemove=["EntityID","LastUpdatedID","LastUpdatedName","DateInserted","DateUpdated","EventDateFirst","EventDateLast","EventCount","RuleID"];
 
     var fixUrl = function(base) {
         res = base;
@@ -288,8 +291,26 @@ script:
             hasMorePath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.HasMoreResults';
             nextPagePath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.NextPageID';
         }
+
+        alarms.forEach(function(element) {
+            alarmsFieldsToRemove.forEach(function(field){
+                delete element[field];
+            });
+        });
+
         return alarms.length > count ? alarms.slice(0,count) : alarms;
     };
+
+    function fixDictionaryKeys(dict){
+        //remove the word 'Alarm' from dictionary keys (e.g AlarmID to ID)
+        Object.keys(dict).forEach(function(key) {
+            if(key.indexOf("Alarm") !== -1){
+                var newkey = key.replace('Alarm', '');
+                dict[newkey] = dict[key];
+                delete dict[key];
+            }
+        });
+    }
 
     function getAlarmsData(allUsers, count, pageSize, startDate, endDate, status, dataObj) {
         dataObj.StartDate = startDate;
@@ -299,7 +320,7 @@ script:
         dataObj.MaxResultsPerPage = pageSize;
         var envelope = fixTemplate(tmplGetFirstPageAlarmsByAlarmStatus, dataObj);
         return doBatch(envelope, soapActionURIGetFirstPageAlarmsByAlarmStatus, count, pageSize);
-    };
+    }
 
     var prepareDetailsString = function(al) {
         return JSON.stringify(
@@ -414,12 +435,24 @@ script:
         var envelope = fixTemplate(tmplAddAlarmComment, dataObj);
         var jsResponse = parseResponse(sendRequest(envelope, soapActionURIAddAlarmComments));
         var mdRaw = dq(jsResponse, 'Envelope.Body.AddAlarmCommentsResponse.AddAlarmCommentsResult');
-        if (mdRaw['-i']) {
-            delete mdRaw['-i'];
-        }
 
-        var md = tableToMarkdown('LogRhythm added alarm comment ' + args.comment + ' for ID: ' + args['alarm-id'],  mdRaw);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        fixDictionaryKeys(mdRaw);
+
+
+        var md = 'LogRhythm added alarm comment ' + args['comments'] + ' for ID: ' + args['alarm-id'];
+
+
+        var ec= {};
+        ec["LogRhythm.Alarm(val.ID && val.ID == " + args['alarm-id'] + ")"] = {'ID' : args['alarm-id']};
+        ec["LogRhythm.Alarm(val.ID && val.ID == " + args['alarm-id'] + ").Comment"] = [args['comments']];
+
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     }
 
     function getAlarmById(args){
@@ -438,12 +471,38 @@ script:
         if (mdRaw['-i']) {
             delete mdRaw['-i'];
         }
+
+        fixDictionaryKeys(mdRaw);
+
+        alarmsFieldsToRemove.forEach(function(field){
+            delete mdRaw[field];
+        });
+
         var md = tableToMarkdown('LogRhythm alarm for ID: ' + args['alarm-id'],  mdRaw);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+
+        var ec = {};
+        ec["LogRhythm.Alarm(val.ID && val.ID == " + mdRaw['ID'] + ")"] = mdRaw;
+
+
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     }
 
     function getAlarmEventsById(args){
         // corresponds to lr-get-alarm-events-by-id command. Get the alarm's events by a specific alarm id
+
+
+        var fieldsToRemove = ["Bytes","ClassificationID","ClassificationTypeName","CommonEventID","DirectionName","EntityID","ImpactedZone",
+        "ImpactedEntityID","ImpactedHostID","ImpactedLocation","ImpactedLocationID","ImpactedNATPort","ImpactedNetwork","ImpactedNetworkID",
+        "ImpactedPort","LogDate","LogSourceHost","LogSourceHostID","LogSourceID","LogSourceType","LogSourceTypeName","Login","MPERuleID",
+        "MPERuleName","MessageID","NormalDateMax","OriginEntityID","OriginHostID","OriginLocation","OriginLocationID","LogSourceHostName",
+        "OriginNATPort","OriginName","OriginNetwork","OriginNetworkID","OriginPort","Priority","ProcessID","ProtocolID","Direction",
+        "SequenceNumber","ServiceID","ServiceName","Count","DateInserted","OriginZone","MessageType","EntityName","ImpactedHostID"];
 
         var dataObj = {
             Username: params.Credentials.identifier,
@@ -460,8 +519,32 @@ script:
             delete mdRaw['-i'];
         }
         var processedMd = processAlarmEventsMd(mdRaw);
+
+
+        fieldsToRemove.forEach(function(field){
+            delete processedMd[field];
+        });
+
+
+
         var md = tableToMarkdown('LogRhythm alarm events for ID: ' + args['alarm-id'],  processedMd);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+
+
+        var historyRow = {};
+        historyRow['ID'] = args['alarm-id'];
+        historyRow['Event'] = processedMd;
+
+        var ec = {};
+        ec['LogRhythm.Alarm(val.ID && val.ID == ' + args['alarm-id'] + ')'] = historyRow;
+
+
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     }
 
     function getAlarmHistoryById(args){
@@ -495,7 +578,21 @@ script:
             var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Comments.AlarmCommentDataModel')
             md += tableToMarkdown('LogRhythm alarm comments history for ID: ' + args['alarm-id'],  mdRaw);
         }
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+
+        var historyRow = {};
+        historyRow['ID'] = args['alarm-id'];
+        historyRow['History'] = mdRaw;
+
+        var ec = {};
+        ec['LogRhythm.Alarm(val.ID && val.ID == ' + args['alarm-id'] + ')'] = historyRow;
+
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     }
 
     function updateAlarmStatus(args){
@@ -513,11 +610,26 @@ script:
         var envelope = fixTemplate(tmplUpdateAlarmStatus, dataObj);
         var jsResponse = parseResponse(sendRequest(envelope, soapActionURIUpdateAlarmStatus));
         var mdRaw = dq(jsResponse, 'Envelope.Body.UpdateAlarmStatusResponse.UpdateAlarmStatusResult')
-        if (mdRaw['-i']) {
-            delete mdRaw['-i'];
-        }
-        var md = tableToMarkdown('LogRhythm alarm status updated for alarm: *' + args['alarm-id']+'* status: *' + args.status +'*',  mdRaw);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+
+        fixDictionaryKeys(mdRaw);
+
+        var md = 'LogRhythm alarm status updated for alarm: *' + args['alarm-id']+'* status: *' + args.status +'*';
+
+        var status = {
+            'Status' : args['status'],
+            'ID' : args['alarm-id']
+        };
+
+        var ec= {};
+        ec["LogRhythm.Alarm(val.ID && val.ID == " + args['alarm-id'] + ")"] = status;
+
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext : ec
+        };
     }
 
     function getAlarms(dataArgs){
@@ -539,15 +651,70 @@ script:
             pageSize = count;
         }
 
-        var startDate = new Date(dataArgs['start-date']).toISOString();
-        var endDate = new Date(dataArgs['end-date']).toISOString();
+        var timeFrame = dataArgs['time_frame'];
+
+
+        var start = new Date();
+        var end = new Date();
+        end.setDate(start.getDate()+1);
+
+        switch(timeFrame){
+        case 'Today':
+            break;
+        case 'Last2Days':
+            start.setDate(start.getDate()-2);
+            break;
+        case 'LastWeek':
+            start.setDate(start.getDate()-7);
+            break;
+        case 'LastMonth':
+            start.setDate(start.getDate()-30);
+            break;
+        case 'Custom':
+            if(!dataArgs['start-date']){
+                throw 'start-date argument is missing';
+            }
+            if(!dataArgs['end-date']){
+                throw 'end-date argument is missing';
+            }
+            break;
+        }
+
+
+        if(timeFrame == 'Custom'){
+            startDate = new Date(dataArgs['start-date']).toISOString().slice(0,10);
+            endDate = new Date(dataArgs['end-date']).toISOString().slice(0,10);
+        }
+        else{
+            startDate = start.toISOString().slice(0,10);
+            endDate = end.toISOString().slice(0,10);
+        }
+
 
         var alarms = getAlarmsData(allUsers, count, pageSize, startDate, endDate, dataArgs.status, dataObj);
+
+        var ec = {};
+
+        alarms.forEach(function(alarm) {
+            fixDictionaryKeys(alarm);
+            ec['LogRhythm.Alarm(val.ID && val.ID == ' + alarm['ID'] + ')'] = alarm;
+        });
+
         if (alarms.length) {
             var md = tableToMarkdown('',  alarms);
-            return {Type: entryTypes.note, Contents: alarms, ContentsFormat: formats.json, HumanReadable: md};
+            return {
+                Type: entryTypes.note,
+                Contents: alarms,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: ec
+            };
         } else {
-            return {Type: entryTypes.note, Contents: "No results", ContentsFormat: formats.text};
+            return {
+                Type: entryTypes.note,
+                Contents: "No results",
+                ContentsFormat: formats.text
+            };
         }
     }
 
@@ -625,6 +792,11 @@ script:
     - name: comments
       required: true
       description: The alarm comments
+    outputs:
+    - contextPath: LogRhythm.Alarm.Comment
+      description: The alarm comment.
+    - contextPath: LogRhythm.Alarm.ID
+      description: The unique id of the alarm.
     description: Update alarm with comments
     execution: true
   - name: lr-get-alarm-by-id
@@ -633,6 +805,21 @@ script:
       required: true
       default: true
       description: The unique ID of the alarm
+    outputs:
+    - contextPath: LogRhythm.Alarm.RBPMax
+      description: Alarm maximum RBP(Risk Based Prioritization).
+    - contextPath: LogRhythm.Alarm.RuleName
+      description: Alarm rule name.
+    - contextPath: LogRhythm.Alarm.EntityName
+      description: entity name
+    - contextPath: LogRhythm.Alarm.Date
+      description: Alarm date.
+    - contextPath: LogRhythm.Alarm.Status
+      description: Alarm status.
+    - contextPath: LogRhythm.Alarm.RBPAvg
+      description: Alarm average RBP(Risk Based Prioritization).
+    - contextPath: LogRhythm.Alarm.ID
+      description: The unique id of the alarm.
     description: Retrieve a single alarm by the unique alarm identifier
   - name: lr-get-alarm-events-by-id
     arguments:
@@ -646,6 +833,39 @@ script:
       - "true"
       - "false"
       description: Include raw log
+    outputs:
+    - contextPath: LogRhythm.Alarm.Event.LogSourceName
+      description: Event log source.
+    - contextPath: LogRhythm.Alarm.Event.Command
+      description: Event command.
+    - contextPath: LogRhythm.Alarm.Event.Subject
+      description: Event subject.
+    - contextPath: LogRhythm.Alarm.Event.Process
+      description: Event process name.
+    - contextPath: LogRhythm.Alarm.Event.ClassificationName
+      description: Event classification.
+    - contextPath: LogRhythm.Alarm.Event.ImpactedEntityName
+      description: Event entity (Impacted).
+    - contextPath: LogRhythm.Alarm.Event.OriginEntityName
+      description: Event entity (Origin).
+    - contextPath: LogRhythm.Alarm.Event.VendorMsgID
+      description: Event vendor Message ID.
+    - contextPath: LogRhythm.Alarm.Event.NormalDate
+      description: Event date.
+    - contextPath: LogRhythm.Alarm.Event.Session
+      description: Event session.
+    - contextPath: LogRhythm.Alarm.Event.ImpactedHostName
+      description: Event hostname (Impacted).
+    - contextPath: LogRhythm.Alarm.Event.CommonEventName
+      description: Event name.
+    - contextPath: LogRhythm.Alarm.Event.ImpactedZoneName
+      description: Event zone (Impacted).
+    - contextPath: LogRhythm.Alarm.Event.OriginZoneName
+      description: Event zone (Origin).
+    - contextPath: LogRhythm.Alarm.Event.Severity
+      description: Event severity.
+    - contextPath: LogRhythm.Alarm.ID
+      description: The unique id of the alarm.
     description: Retrieve a list of events associated to this alarm
   - name: lr-get-alarm-history-by-id
     arguments:
@@ -665,6 +885,19 @@ script:
       - "true"
       - "false"
       description: Include comments history
+    outputs:
+    - contextPath: LogRhythm.Alarm.History.Comment
+      description: Alarm history comment.
+    - contextPath: LogRhythm.Alarm.History.DateInserted
+      description: Alarm history record date.
+    - contextPath: LogRhythm.Alarm.History.ID
+      description: The unique id of the history record.
+    - contextPath: LogRhythm.Alarm.History.PersonID
+      description: Alarm history person id
+    - contextPath: LogRhythm.Alarm.History.PersonName
+      description: Alarm history person name
+    - contextPath: LogRhythm.Alarm.ID
+      description: The unique id of the alarm.
     description: Retrieve a list of alarm status and comment updates
   - name: lr-update-alarm-status
     arguments:
@@ -689,15 +922,18 @@ script:
       description: The enumeration status of the alarm
     - name: comments
       description: The alarm comments
+    outputs:
+    - contextPath: LogRhythm.Alarm.Status
+      description: Alarm new status.
+    - contextPath: LogRhythm.Alarm.ID
+      description: The unique id of the alarm.
     description: Update alarm status
   - name: lr-get-alarms
     arguments:
     - name: start-date
-      required: true
-      description: 'Start date for the data query. For example: start-date="2018-03-27"'
+      description: 'Start date for the data query. For example: start-date="2018-03-27", ignore this argument when time_frame is not Custom'
     - name: end-date
-      required: true
-      description: 'End date for the data query. For example: end-date="2018-04-08"'
+      description: 'End date for the data query. For example: end-date="2018-04-08", ignore this argument when time_frame is not Custom'
     - name: all-users
       auto: PREDEFINED
       predefined:
@@ -723,9 +959,36 @@ script:
       - Closed_Reported
       - Closed_Monitor
       description: The enumeration status of the alarm
+    - name: time_frame
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - Today
+      - Last2Days
+      - LastWeek
+      - LastMonth
+      - Custom
+      defaultValue: Custom
+      description: If time_frame is Custom, specify the start time for the time range.
+    outputs:
+    - contextPath: LogRhythm.Alarm.RBPMax
+      description: Alarm maximum RBP(Risk Based Prioritization).
+    - contextPath: LogRhythm.Alarm.RuleName
+      description: Alarm rule name.
+    - contextPath: LogRhythm.Alarm.EntityName
+      description: entity name.
+    - contextPath: LogRhythm.Alarm.Date
+      description: Alarm date.
+    - contextPath: LogRhythm.Alarm.Status
+      description: Alarm status.
+    - contextPath: LogRhythm.Alarm.RBPAvg
+      description: Alarm average RBP(Risk Based Prioritization).
+    - contextPath: LogRhythm.Alarm.ID
+      description: The unique id of the alarm.
     description: Retrieve alarms in a given time period, optionally filtered by the
       alarm status or entity
   isfetch: true
   runonce: false
 tests:
 - LogRhythm-Test-Playbook
+releaseNotes: "add outputs and update context"
