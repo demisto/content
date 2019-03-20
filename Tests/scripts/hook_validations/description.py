@@ -37,9 +37,8 @@ class DescriptionValidator(object):
         return self._is_valid
 
     def is_existing_description(self):
-        """Check if the integration as a description."""
+        """Check if the integration has a non-duplicate description ."""
         is_description_in_yml = False
-        is_description_in_package = False
 
         data_dictionary = get_yaml(self.file_path)
 
@@ -50,20 +49,10 @@ class DescriptionValidator(object):
             is_description_in_yml = True
 
         if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
-            package_path = os.path.dirname(self.file_path)
             if is_description_in_yml:
                 self._is_valid = False
                 print_error("You have added a detailed description in the yml "
-                            "file, please update the package {}".format(package_path))
+                            "file, please remove it and add it as a file to the package {}".format(package_path))
                 return False
-
-            description_file = glob.glob(package_path + '/*.md')
-            if description_file:
-                is_description_in_package = True
-
-        if not (is_description_in_package or is_description_in_yml):
-            print_error("You have failed to add a detailed description in the package for {}".format(self.file_path))
-            self._is_valid = False
-            return False
 
         return True
