@@ -10,7 +10,7 @@
     },
     "incident.occurred": {
       "type": "date",
-      "value": "02 Jan 2006"
+      "value": "Mon, 02 Jan 2006 15:04:05 MST"
     },
     "incident.severity.0.5": {
       "type": "string",
@@ -781,6 +781,7 @@
   "recipients": [],
   "tags": [],
   "createdBy": "DBot",
+  "releaseNotes": "changed occurred time format in decoder",
   "type": "pdf",
   "id": "openIncidentsReport",
   "fromVersion": "3.5.0",
