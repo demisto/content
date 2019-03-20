@@ -295,14 +295,16 @@ def main():
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
+    parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
     options = parser.parse_args()
     is_circle = options.circle
+    is_backward_check = options.backwardComp
 
     logging.basicConfig(level=logging.CRITICAL)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)
-    if not files_validator.is_valid_structure(branch_name):
+    if not files_validator.is_valid_structure(branch_name) and is_backward_check:
         sys.exit(1)
 
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
