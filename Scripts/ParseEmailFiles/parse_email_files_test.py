@@ -63,7 +63,7 @@ def test_eml_smtp_type(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Test Smtp Email'
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Test Smtp Email'
 
 
 def test_eml_contains_eml(mocker):
@@ -192,8 +192,8 @@ def test_eml_contains_eml_depth(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml'
-    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments']
-    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
-    assert len(results[0]['EntryContext']['Email']) == 1
-    assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['Attachments']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['Attachments']
+    assert isinstance(results[0]['EntryContext']['Email'], dict)
+    assert results[0]['EntryContext']['Email']['Depth'] == 0
