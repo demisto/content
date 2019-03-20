@@ -175,8 +175,8 @@ script: |-
           new_indicators["File"] += (list(set(indicators.get("SHA1"))))
 
       if "SHA256" in indicators:
-        if not isinstance(indicators["SHA256"], list):
-            indicators = [indicators]
+          if not isinstance(indicators["SHA256"], list):
+              indicators = [indicators]
           new_indicators["File"] += (list(set(indicators.get("SHA256"))))
       return new_indicators
 
