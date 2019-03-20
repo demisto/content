@@ -981,6 +981,9 @@
            ]
         },
         {
+            "playbookID": "STIXParserTest"
+        },
+        {
            "playbookID": "Detonate URL - Generic Test",
            "timeout": 2000,
            "nightly": true,
