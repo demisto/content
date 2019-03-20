@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import io
 import sys
@@ -158,8 +158,8 @@ def get_package_path():
             directory_name = dir_name
 
     if not directory_name:
-        print "You have failed to provide a legal file path, a legal file path " \
-              "should contain either Integrations or Scripts directories"
+        print("You have failed to provide a legal file path, a legal file path "
+              "should contain either Integrations or Scripts directories")
         sys.exit(1)
 
     return package_path, directory_name, dest_path
