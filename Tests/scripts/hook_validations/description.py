@@ -15,45 +15,54 @@ class DescriptionValidator(object):
     def __init__(self, file_path):
         self._is_valid = True
 
+        self.file_path = file_path
+
+
+        '''
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             self.file_path = file_path
         else:
             if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                package_path = os.path.dirname(file_path)
                 try:
-                    self.file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.md'))[0]
+                    md_file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.md'))[0]
                 except IndexError:
-                    self._is_valid = False
-                    print_error("You've created/modified a package but failed to provide a description as a .md file, "
-                                "please add a detailed description in order to proceed.")
+                    print_error("No description file was found in the package {}. Consider adding one.".format(package_path))
+        '''
 
     def is_valid(self):
-        """Validate that the description exists."""
-        if self._is_valid is False:  # In case we encountered an IndexError in the init - we don't have a description
-            return self._is_valid
-
-        if '.md' not in self.file_path:
-            self.is_existing_description()
+        self.is_existing_description()
 
         return self._is_valid
 
     def is_existing_description(self):
         """Check if the integration has a non-duplicate description ."""
         is_description_in_yml = False
+        is_description_in_package = False
+        package_path = None
+        md_file_path = None
+        if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
+            package_path = os.path.dirname(self.file_path)
+            try:
+                md_file_path = glob.glob(os.path.join(os.path.dirname(self.file_path), '*.md'))[0]
+            except IndexError:
+                print_error("No description file was found in the package {}."
+                            " Consider adding one.".format(package_path))
+            if md_file_path:
+                is_description_in_package = True
 
         data_dictionary = get_yaml(self.file_path)
 
         if not data_dictionary:
-            return False
+            return is_description_in_package
 
         if data_dictionary.get('detaileddescription'):
             is_description_in_yml = True
 
-        if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
-            package_path = os.path.dirname(self.file_path)
-            if is_description_in_yml:
-                self._is_valid = False
-                print_error("You have added a detailed description in the yml "
-                            "file, please remove it and add it as a file to the package {}".format(package_path))
-                return False
+        if is_description_in_package and is_description_in_yml:
+            self._is_valid = False
+            print_error("A description was found both in the package and in the yml, "
+                        "please update the package {}.".format(package_path))
+            return False
 
         return True
