@@ -249,9 +249,12 @@ def describe_images(args):
                 'State': image['State'],
                 'Region': obj['_user_provided_options']['region_name'],
             })
-            if 'Description' in image: data[i].update({'Description': image['Description']})
-            if 'EnaSupport' in image: data[i].update({'EnaSupport': image['EnaSupport']})
-            if 'Name' in image: data[i].update({'Name': image['Name']})
+            if 'Description' in image:
+                data[i].update({'Description': image['Description']})
+            if 'EnaSupport' in image:
+                data[i].update({'EnaSupport': image['EnaSupport']})
+            if 'Name' in image:
+                data[i].update({'Name': image['Name']})
             if 'Tags' in image:
                 for tag in image['Tags']:
                     data[i].update({
@@ -297,10 +300,14 @@ def describe_addresses(args):
                 'Domain': address['Domain'],
                 'Region': obj['_user_provided_options']['region_name'],
             })
-            if 'InstanceId' in address: data[i].update({'InstanceId': address['InstanceId']})
-            if 'AssociationId' in address: data[i].update({'AssociationId': address['AssociationId']})
-            if 'NetworkInterfaceId' in address: data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
-            if 'PrivateIpAddress' in address: data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
+            if 'InstanceId' in address:
+                data[i].update({'InstanceId': address['InstanceId']})
+            if 'AssociationId' in address:
+                data[i].update({'AssociationId': address['AssociationId']})
+            if 'NetworkInterfaceId' in address:
+                data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
+            if 'PrivateIpAddress' in address:
+                data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
             if 'Tags' in address:
                 for tag in address['Tags']:
                     data[i].update({
@@ -1056,7 +1063,8 @@ def attach_volume(args):
             'State': response['State'],
             'VolumeId': response['VolumeId'],
         })
-        if 'DeleteOnTermination' in response: data.update({'DeleteOnTermination': response['DeleteOnTermination']})
+        if 'DeleteOnTermination' in response:
+            data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
         ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data}
         return create_entry('AWS EC2 Volume Attachments', data, ec)
@@ -1091,7 +1099,8 @@ def detach_volume(args):
             'State': response['State'],
             'VolumeId': response['VolumeId'],
         })
-        if 'DeleteOnTermination' in response: data.update({'DeleteOnTermination': response['DeleteOnTermination']})
+        if 'DeleteOnTermination' in response:
+            data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
         ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data}
         return create_entry('AWS EC2 Volume Attachments', data, ec)
@@ -1679,9 +1688,7 @@ def monitor_instances(args):
             roleSessionName=args.get('roleSessionName'),
             roleSessionDuration=args.get('roleSessionDuration'),
         )
-        obj = vars(client._client_config)
         data = []
-        output = []
         response = client.monitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
 
         for instance in response['InstanceMonitorings']:
@@ -1705,9 +1712,7 @@ def unmonitor_instances(args):
             roleSessionName=args.get('roleSessionName'),
             roleSessionDuration=args.get('roleSessionDuration'),
         )
-        obj = vars(client._client_config)
         data = []
-        output = []
         response = client.unmonitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
 
         for instance in response['InstanceMonitorings']:
