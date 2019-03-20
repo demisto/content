@@ -9,7 +9,8 @@ script: |-
   def main():
       execute_command_result = demisto.executeCommand("ParseEmailFiles", {
           "entryid": demisto.args().get("entryId"),
-          "parse_only_headers": "true"
+          "parse_only_headers": "true",
+          "max_depth": "1"
       })
       if is_error(execute_command_result):
           return_error(get_error(execute_command_result))
