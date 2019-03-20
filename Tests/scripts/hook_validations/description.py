@@ -49,6 +49,7 @@ class DescriptionValidator(object):
             is_description_in_yml = True
 
         if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
+            package_path = os.path.dirname(self.file_path)
             if is_description_in_yml:
                 self._is_valid = False
                 print_error("You have added a detailed description in the yml "
