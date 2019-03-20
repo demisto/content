@@ -7,10 +7,11 @@ echo "Start create_instance script"
 aws configure set region us-west-2
 
 CONFFILE=$1
+AMI_NAME=$2
 
 #Get nightly image of the server
 IMAGE_ID=$(aws ec2 describe-images \
-    --filters Name=name,Values=Demisto-Circle-CI-Content-Master* \
+    --filters Name=name,Values=$AMI_NAME \
     --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
 
 echo $IMAGE_ID > image_id.txt
@@ -59,3 +60,4 @@ fi
 
 echo "Instance ID is: $INSTANCE_ID"
 echo ${INSTANCE_ID} > instance_ids
+echo ${INSTANCE_ID} > ./Tests/instance_ids.txt

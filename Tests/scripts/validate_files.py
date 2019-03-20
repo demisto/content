@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import glob
+import logging
 import argparse
 
 from Tests.scripts.constants import *
@@ -38,6 +39,7 @@ class FilesValidator(object):
         conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
+
     def __init__(self, is_circle=False):
         self._is_valid = True
         self.is_circle = is_circle
@@ -295,9 +297,8 @@ def main():
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
-    if not is_circle:  # Take a look at the docstring for explanation
-        import logging
-        logging.basicConfig(level=logging.CRITICAL)
+
+    logging.basicConfig(level=logging.CRITICAL)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)
