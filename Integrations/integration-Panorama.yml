@@ -2243,7 +2243,7 @@ script:
         result = http_request(URL, 'GET', params = params)
 
         # due pcap file size limitation in the product, for more details, please see the documentation.
-        if  "<?xml version=\"1.0\"?>" in result.text:
+        if result.headers['Content-Type'] != 'application/octet-stream':
             return_error('Pcap download failed. probably due to File size limitation. for more information, visit the documentation.')
 
         file = fileResult(file_name + ".pcap", result.content)
