@@ -165,13 +165,13 @@ script: |-
 
       new_indicators["File"] = dict()
       if "MD5" in indicators:
-          new_indicators["File"].update(list(set(indicators.get("MD5"))))
+          new_indicators["File"].join(list(set(indicators.get("MD5"))))
 
       if "SHA1" in indicators:
-          new_indicators["File"].update(list(set(indicators.get("SHA1"))))
+          new_indicators["File"].join(list(set(indicators.get("SHA1"))))
 
       if "SHA256" in indicators:
-          new_indicators["File"].update(list(set(indicators.get("SHA256"))))
+          new_indicators["File"].join(list(set(indicators.get("SHA256"))))
       return new_indicators
 
 
@@ -247,7 +247,8 @@ script: |-
       elif isinstance(stx_obj, list):
           for obj in stx_obj:
               results = extract_patterns(obj)
-              demisto.results(results)
+              if results:
+                demisto.results(results)
 
 
   # Start of script
