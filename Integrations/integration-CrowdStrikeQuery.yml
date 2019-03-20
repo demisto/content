@@ -91,6 +91,7 @@ script:
       name: site_name
       required: false
       secret: false
+    deprecated: false
     description: Searches for a device that matches the query.
     execution: false
     name: crowdstrike-search-device
@@ -129,6 +130,7 @@ script:
       name: behavior_id
       required: true
       secret: false
+    deprecated: false
     description: Searches and fetches the behavior that matches the query.
     execution: false
     name: crowdstrike-get-behavior
@@ -185,6 +187,7 @@ script:
       name: filter
       required: false
       secret: false
+    deprecated: false
     description: Search for details of specific detections, either via a filter query
       or by providing the ids of the detections.
     execution: false
@@ -241,6 +244,7 @@ script:
     - contextPath: CrowdStrike.Detection.ProcessStartTime
       description: Start time of the process that generated the detection.
       type: Date
+  dockerimage: demisto/python3:latest
   isfetch: true
   runonce: false
   script: |-
@@ -250,8 +254,8 @@ script:
 
     import json
     import requests
+    from requests.auth import HTTPBasicAuth
     import base64
-    from distutils.util import strtobool
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -271,7 +275,7 @@ script:
     HEADERS = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
+        'Authorization': 'Basic {}'.format(requests.auth._basic_auth_str('{0}:{1}'.format(USERNAME, PASSWORD), 'utf-8'))
     }
     # Note: True life time is actually 30 mins
     TOKEN_LIFE_TIME = 28
@@ -357,7 +361,25 @@ script:
 
 
     def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
-        # A wrapper for requests lib to send our requests and handle requests and responses better
+        """
+            A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: HTTP method for the request.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The suffix of the URL (endpoint)
+
+            :type params: ``dict``
+            :param params: The URL params to be passed.
+
+            :type data: ``str``
+            :param data: The body data of the request.
+
+            :param headers:
+            :param safe:
+            :return:
+        """
         url = SERVER + url_suffix
         demisto.info("\n\n####SENDING URL: {}\n".format(url))
         res = requests.request(
@@ -370,10 +392,11 @@ script:
         )
         # Handle error responses gracefully
         demisto.info('\n\n#### Request: {}\n'.format(str(data)))
+        demisto.info('\n\n#### Response: {}\n'.format(str(res.status_code)))
         if res.status_code not in {200, 201}:
             if safe:
                 return None
-            return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
+            return_error('Error in API call [{0}] - {1}'.format(res.status_code, res.reason))
         return res.json()
 
 
@@ -390,8 +413,8 @@ script:
 
     def detection_to_incident(detection):
         incident = {
-            'name': 'Detection ID: ' + convert_to_str(detection.get('detection_id')),
-            'occurred': convert_to_str(detection.get('first_behavior')),
+            'name': 'Detection ID: ' + str(detection.get('detection_id')),
+            'occurred': str(detection.get('first_behavior')),
             'rawJSON': json.dumps(detection),
             'severity': severity_string_to_int(detection.get('max_severity_displayname'))
         }
@@ -411,7 +434,7 @@ script:
         Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
         """
         new_dict = {}
-        for k in old_dict.keys():
+        for k in list(old_dict.keys()):
             if k in transformation_dict:
                 new_dict[transformation_dict[k]] = old_dict[k]
         return new_dict
@@ -432,18 +455,6 @@ script:
             except:
                 LOG('Error with: {}'.format(trans_dict))
         return new_dict
-
-
-    def convert_to_str(obj):
-        """
-        Converts an obj to an str
-        """
-        if isinstance(obj, unicode):
-            return obj.encode('utf-8')
-        try:
-            return str(obj)
-        except:
-            return obj
 
 
     ''' COMMAND SPECIFIC FUNCTIONS '''
@@ -469,7 +480,7 @@ script:
             'client_secret': PASSWORD
         }
         headers = {
-            'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
+            'Authorization': 'Basic {}'.format(requests.auth._basic_auth_str('{0}:{1}'.format(USERNAME, PASSWORD), 'utf-8'))
         }
         token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True)
         if not token_res:
@@ -525,7 +536,7 @@ script:
         input_args['source'] = args.get('source')
         input_args['description'] = args.get('description')
 
-        payload = {k: convert_to_str(v) for k, v in input_args.iteritems() if v}
+        payload = {k: str(v) for k, v in input_args.items() if v}
         headers = {'Authorization': HEADERS['Authorization']}
         return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
 
@@ -535,16 +546,16 @@ script:
         ids = args.get('ids')
         if not ids:
             search_args = {
-                'types': convert_to_str(args.get('ioc_types', '')).split(','),
-                'values': convert_to_str(args.get('ioc_values', '')).split(','),
-                'policies': convert_to_str(args.get('policy', '')),
-                'sources': convert_to_str(args.get('sources', '')).split(','),
-                'from.expiration_timestamp': convert_to_str(args.get('expiration_from', '')),
-                'to.expiration_timestamp': convert_to_str(args.get('expiration_to', '')),
-                'limit': convert_to_str(args.get('limit', 50))
+                'types': str(args.get('ioc_types', '')).split(','),
+                'values': str(args.get('ioc_values', '')).split(','),
+                'policies': str(args.get('policy', '')),
+                'sources': str(args.get('sources', '')).split(','),
+                'from.expiration_timestamp': str(args.get('expiration_from', '')),
+                'to.expiration_timestamp': str(args.get('expiration_to', '')),
+                'limit': str(args.get('limit', 50))
             }
             payload = {}
-            for k, arg in search_args.iteritems():
+            for k, arg in search_args.items():
                 if type(arg) is list:
                     if arg[0]:
                         payload[k] = arg
@@ -554,7 +565,7 @@ script:
             if not ids:
                 return None
         else:
-            ids = convert_to_str(ids)
+            ids = str(ids)
         payload = {
             'ids': ids
         }
@@ -567,7 +578,7 @@ script:
 
 
     def delete_ioc():
-        ids = convert_to_str(demisto.args().get('ids'))
+        ids = str(demisto.args().get('ids'))
         payload = {
             'ids': ids
         }
@@ -583,7 +594,7 @@ script:
             'source': args.get('source'),
             'description': args.get('description')
         }
-        payload = {k: convert_to_str(v) for k, v in input_args.iteritems() if v}
+        payload = {k: str(v) for k, v in input_args.items() if v}
         headers = {'Authorization': HEADERS['Authorization']}
         return http_request('PATCH', '/indicators/entities/iocs/v1', params=payload, headers=headers)
 
@@ -594,14 +605,14 @@ script:
         """
         args = demisto.args()
         input_arg_dict = {
-            'device_id': convert_to_str(args.get('ids', '')).split(','),
-            'status': convert_to_str(args.get('status', '')).split(','),
-            'hostname': convert_to_str(args.get('hostname', '')).split(','),
-            'platform_name': convert_to_str(args.get('platform_name', '')).split(','),
-            'site_name': convert_to_str(args.get('site_name', '')).split(',')
+            'device_id': str(args.get('ids', '')).split(','),
+            'status': str(args.get('status', '')).split(','),
+            'hostname': str(args.get('hostname', '')).split(','),
+            'platform_name': str(args.get('platform_name', '')).split(','),
+            'site_name': str(args.get('site_name', '')).split(',')
         }
-        url_filter = ''.format(convert_to_str(args.get('filter', '')))
-        for k, arg in input_arg_dict.iteritems():
+        url_filter = ''.format(str(args.get('filter', '')))
+        for k, arg in input_arg_dict.items():
             if arg:
                 if type(arg) is list:
                     arg_filter = ''
@@ -735,7 +746,7 @@ script:
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
                 detection_entry = {}
-                for path, new_key in DETECTIONS_BASE_KEY_MAP.iteritems():
+                for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                     detection_entry[new_key] = demisto.get(detection, path)
                 behaviors = []
                 for behavior in demisto.get(detection, 'behaviors'):
@@ -749,7 +760,7 @@ script:
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG('Command being called is {}'.format(demisto.command()))
 
     TOKEN = get_token()
     demisto.info('\n\n###### TOKEN: {0}'.format(TOKEN))
