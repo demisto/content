@@ -16,6 +16,10 @@
             "playbookID": "test_similar_incidents"
         },
         {
+            "playbookID": "autofocus_test",
+            "integrations": "Autofocus"
+        },
+        {
             "playbookID": "CheckpointFW-test",
             "integrations": "Check Point"
         },
@@ -1187,6 +1191,7 @@
     ],
     "unmockable_integrations": {
         "PagerDuty v2": "Integration requires SSL",
+        "Autofocus": "JS integration, problem listed in issue 15544",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",
