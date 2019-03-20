@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -44,6 +44,7 @@ tasks:
       '#none#':
       - "2"
       - "5"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
@@ -139,7 +140,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1125,
           "y": 720
         }
       }
@@ -148,10 +149,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 83112962-cf22-4c3c-859d-fbce865eb4ef
+    taskid: a0b773c8-fb57-46cc-818d-28938280ffac
     type: regular
     task:
-      id: 83112962-cf22-4c3c-859d-fbce865eb4ef
+      id: a0b773c8-fb57-46cc-818d-28938280ffac
       version: -1
       name: ExtractDomainFromUrlAndEmail - test multiple input
       description: Extract Domain from a URL or Email
@@ -179,10 +180,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 5ad94d37-1c36-4a73-8712-cb08d4ac1e11
+    taskid: 9881f1ac-e506-4598-8536-6b4711d1e98c
     type: regular
     task:
-      id: 5ad94d37-1c36-4a73-8712-cb08d4ac1e11
+      id: 9881f1ac-e506-4598-8536-6b4711d1e98c
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -218,10 +219,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: ae88e9c4-1922-45b7-8a70-323acc35eaad
+    taskid: b333491e-82ea-4acb-8ef3-df0c54efb0de
     type: regular
     task:
-      id: ae88e9c4-1922-45b7-8a70-323acc35eaad
+      id: b333491e-82ea-4acb-8ef3-df0c54efb0de
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -255,13 +256,163 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d9da2a27-d9b7-4ed3-8a05-612dd382132c
+    type: regular
+    task:
+      id: d9da2a27-d9b7-4ed3-8a05-612dd382132c
+      version: -1
+      name: ExtractDomainFromUrlAndEmail - test with URLs that need unescaping
+      description: Extract Domain from a URL or Email
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+      - "11"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=, # disable-secrets-detection
+          hxxps://www[.]demisto[.]com, https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 5d0319d6-721f-492c-87d4-3f6ddf5d3611
+    type: regular
+    task:
+      id: 5d0319d6-721f-492c-87d4-3f6ddf5d3611
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: getpostman.com # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 9f0bca6b-09c6-4368-86be-e1ac784de764
+    type: regular
+    task:
+      id: 9f0bca6b-09c6-4368-86be-e1ac784de764
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      substring:
+        simple: demisto.com # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 766792d7-5fa6-4f17-8217-c69f98528089
+    type: regular
+    task:
+      id: 766792d7-5fa6-4f17-8217-c69f98528089
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "2"
+      substring:
+        simple: twitter.com # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 1240,
+        "width": 2530,
         "x": 50,
         "y": 50
       }
