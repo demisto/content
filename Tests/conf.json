@@ -7,6 +7,9 @@
             "playbookID": "SMB test"
         },
         {
+            "playbookID": "TestParseEmailHeaders"
+        },
+        {
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
@@ -15,6 +18,10 @@
         },
         {
             "playbookID": "test_similar_incidents"
+        },
+        {
+            "playbookID": "autofocus_test",
+            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -430,9 +437,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "playbookID": "dedup_-_generic_-_test"
         },
         {
             "playbookID": "TestDedupIncidentsPlaybook"
@@ -859,12 +863,6 @@
             "nightly": true
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
@@ -1133,6 +1131,12 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": [
+                "VirusTotal"
+            ],
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
@@ -1165,7 +1169,6 @@
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
         "iDefense": "DevOps investigation",
-        "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
@@ -1182,6 +1185,7 @@
         "Tanium": "Instance is not stable (issue 15497)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
+        "Whois": "Host periodically bans connection",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
     },
     "nigthly_integrations": [
@@ -1190,6 +1194,7 @@
     ],
     "unmockable_integrations": {
         "PagerDuty v2": "Integration requires SSL",
+        "Autofocus": "JS integration, problem listed in issue 15544",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",

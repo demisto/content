@@ -4,6 +4,7 @@ import string
 import random
 import argparse
 import requests
+from time import sleep
 
 import demisto
 from slackclient import SlackClient
@@ -11,11 +12,10 @@ from slackclient import SlackClient
 from test_integration import test_integration
 from mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
-from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT
+from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF
 
 
 SERVER_URL = "https://{}"
-FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
@@ -498,6 +498,7 @@ def main():
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
                 execute_testing(server)
+                sleep(5)
 
     else:  # Run tests in Server build configuration
         execute_testing(server)

@@ -11,3 +11,4 @@ CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
 Tests/filter_file.txt
+Tests/id_set.json
