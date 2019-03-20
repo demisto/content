@@ -430,7 +430,6 @@ script:
 
         # VT Response
         response = get_domain_report(domain)
-
         if (response.get('response_code') == -1):
             return "Invalid domain"
         elif (response.get('response_code') == 0):
@@ -451,9 +450,7 @@ script:
             }
 
         communicating_hashes = response.get('detected_communicating_samples', None)
-
         communicating_malware_hashes = []
-
         if communicating_hashes:
             for d_hash in communicating_hashes:
                 positives = d_hash.get('positives')
@@ -464,7 +461,6 @@ script:
             md += tableToMarkdown("Latest detected files that communicated with " + domain, communicating_malware_hashes)
 
         downloaded_hashes = response.get('detected_downloaded_samples', None)
-
         downloaded_malware_hashes = []
         if downloaded_hashes:
             for d_hash in downloaded_hashes:
@@ -475,7 +471,6 @@ script:
             md += tableToMarkdown("Latest detected files that were downloaded from " + domain, downloaded_malware_hashes)
 
         resolutions = response.get('resolutions', None)
-
         resolutions_list = []
         if resolutions:
             for res in resolutions:
@@ -489,10 +484,13 @@ script:
             md += whois + '\n'
 
         subdomains = response.get('subdomains', None)
-
         if subdomains is not None:
             subdomains = list(set(subdomains))[:max_len]
             md += tableToMarkdown("Observed subdomains", [{'Domain': d} for d in subdomains])
+
+        categories = response.get('categories', None)
+        if categories is not None:
+            categories = list(set(categories))[:max_len]
 
         domain_ec = {
             'DownloadedHashes': downloaded_malware_hashes,
@@ -500,6 +498,7 @@ script:
             'Resolutions': resolutions_list,
             'Whois': whois,
             'Subdomains': subdomains,
+            'Categories': categories
         }
 
         return {
@@ -1239,22 +1238,25 @@ script:
       type: string
     - contextPath: Domain.VirusTotal.DownloadedHashes
       description: Hashes of files who were downloaded from this domain
-      type: Unknown
+      type: string
     - contextPath: Domain.VirusTotal.CommunicatingHashes
       description: Hashes of files who communicated with this domain in a sandbox
-      type: Unknown
+      type: string
     - contextPath: Domain.VirusTotal.Resolutions.ip_address
       description: IPs who resolved to this domain
-      type: Unknown
+      type: string
     - contextPath: Domain.VirusTotal.Whois
       description: Whois report
-      type: Unknown
+      type: string
     - contextPath: Domain.VirusTotal.Subdomains
       description: Subdomains
-      type: Unknown
+      type: string
     - contextPath: Domain.VirusTotal.Resolutions.last_resolved
       description: Resolution date of IPs who resolved to this domain
-      type: Unknown
+      type: string
+    - contextPath: Domain.VirusTotal.Categories
+      description: Categories
+      type: string
     description: Retrieves a report on a given domain (including the information recorded
       by VirusTotal's passive DNS infrastructure). If the domain doesn't exist in
       VT's dataset you would need to use Virus Total's (Public API integration) url-scan
