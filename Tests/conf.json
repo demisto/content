@@ -1133,6 +1133,12 @@
                 "VirusTotal"
             ],
             "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
+        },
+        {
+            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
         }
     ],
     "skipped_tests": {
