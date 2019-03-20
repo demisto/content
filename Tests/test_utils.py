@@ -134,8 +134,8 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def checked_type(file_path):
-    for regex in CHECKED_TYPES_REGEXES:
+def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
+    for regex in compared_regexes:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False

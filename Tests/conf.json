@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseEmailHeaders"
+        },
+        {
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
@@ -11,6 +14,10 @@
         },
         {
             "playbookID": "test_similar_incidents"
+        },
+        {
+            "playbookID": "autofocus_test",
+            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -426,9 +433,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "playbookID": "dedup_-_generic_-_test"
         },
         {
             "playbookID": "TestDedupIncidentsPlaybook"
@@ -1161,7 +1165,6 @@
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
         "iDefense": "DevOps investigation",
-        "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
@@ -1188,6 +1191,7 @@
     ],
     "unmockable_integrations": {
         "PagerDuty v2": "Integration requires SSL",
+        "Autofocus": "JS integration, problem listed in issue 15544",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",
