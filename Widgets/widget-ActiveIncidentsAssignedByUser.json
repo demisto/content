@@ -1,10 +1,10 @@
 {
-  "id": "active-incidents-by-type",
+  "id": "incidents-assigned-by-user",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Active Incidents by Type",
+  "name": "Active Incidents Assigned by User",
   "dataType": "incidents",
-  "widgetType": "line",
+  "widgetType": "bar",
   "query": "-category:job and -status:archived and -status:closed",
   "isPredefined": true,
   "dateRange": {
@@ -21,8 +21,7 @@
   },
   "params": {
     "groupBy": [
-      "occurred(d)",
-      "type"
+      "owner"
     ]
   },
   "description": ""

@@ -69,8 +69,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      '#default#':
       - "4"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -127,29 +129,119 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: c850a5e7-d79d-41be-8340-a8877910cc02
+    taskid: 0824a18d-67c6-42c0-88fc-bae78cc3ce1e
     type: regular
     task:
-      id: c850a5e7-d79d-41be-8340-a8877910cc02
+      id: 0824a18d-67c6-42c0-88fc-bae78cc3ce1e
       version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id:
-        simple: ${incident.id}
+      seconds:
+        simple: "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 560
+          "x": 200,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 8941fa91-6e83-4908-84cd-3d8324278273
+    type: regular
+    task:
+      id: 8941fa91-6e83-4908-84cd-3d8324278273
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: ac9621d4-007d-4df7-80c0-6c42c80f4d4a
+    type: regular
+    task:
+      id: ac9621d4-007d-4df7-80c0-6c42c80f4d4a
+      version: -1
+      name: whois
+      description: Provides data enrichment for Domains, URLs, and IP addresses.
+      script: Whois|||whois
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      query:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 4d70cb1f-d583-4dbe-843b-0156491c62db
+    type: condition
+    task:
+      id: 4d70cb1f-d583-4dbe-843b-0156491c62db
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: GOOGLE.COM
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 920
         }
       }
     note: false
@@ -159,9 +251,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 450,
+        "height": 1265,
+        "width": 660,
+        "x": 200,
         "y": -80
       }
     }
