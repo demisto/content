@@ -9,23 +9,27 @@ script: |-
 
 
   inp = demisto.args()['input']
-
+  is_url = None
+  domain_from_mail = None
   is_email = validate_email(inp)
+
   if is_email:
-      domain = re.search("@([\w_%-]+)\.", inp)
-      if len(domain.group()) > 0:
-          demisto.results(domain.group()[1:-1])
+      # Take the entire part after the @ of the email
+      domain_from_mail = inp.split('@')[1]
   else:
-      domain = get_tld(inp, fail_silently=True)
-      if not domain:
-          inp_with_http = 'https://'+inp
-          domain = get_tld(inp_with_http, fail_silently=True)
-          if domain:
-              demisto.results(domain)
-          else:
-             demisto.results("")
-      else:
-          demisto.results(domain)
+      # Test if URL, else proceed as domain
+      is_url = domain = get_tld(inp, fail_silently=True)
+
+  # Extract domain itself from a potential subdomain
+  if domain_from_mail or not is_url:
+      full_domain = 'https://'
+      full_domain +=  domain_from_mail if domain_from_mail else inp
+      # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
+      domain = get_tld(full_domain, fail_silently=True)
+
+  # convert None to empty string if needed
+  domain = '' if not domain else domain
+  demisto.results(domain)
 type: python
 tags:
 - indicator-format
@@ -37,7 +41,9 @@ args:
   default: true
   description: The URL or Email to process
 scripttarget: 0
+runonce: false
 dockerimage: demisto/tld
+runas: DBotWeakRole
 tests:
   - ExtractDomainFromEmailTest
-releaseNotes: "Improved regex for extracting domains from emails"
+releaseNotes: "Fixed domain extraction when working with subdomain in email."
