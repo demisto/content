@@ -1,6 +1,7 @@
 {
   "id": "unknownIncidentsReport",
   "name": "Unknown severity incidents",
+  "releaseNotes": "changed occurred time format in decoder",
   "description": "Report about all unknown severity incidents that may need the analyst attention.",
   "fromVersion": "3.5.0",
   "modified": "2018-01-25T10:36:51.123317415Z",
@@ -331,7 +332,7 @@
     },
     "incident.occurred": {
       "type": "date",
-      "value": "02 Jan 2006"
+      "value": "Mon, 02 Jan 2006 15:04:05 MST"
     },
     "incident.openDuration": {
       "type": "duration",

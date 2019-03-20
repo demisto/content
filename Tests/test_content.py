@@ -4,6 +4,7 @@ import string
 import random
 import argparse
 import requests
+from time import sleep
 
 import demisto
 from slackclient import SlackClient
@@ -494,6 +495,7 @@ def main():
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
                 execute_testing(server, ami_instance_ip)
+                sleep(5)
 
     else:  # Run tests in Server build configuration
         with open('public_ip', 'rb') as f:
