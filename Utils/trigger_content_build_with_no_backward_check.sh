@@ -8,7 +8,7 @@ trigger_build_url=https://circleci.com/api/v1/project/demisto/content/tree/${_br
 post_data=$(cat <<EOF
 {
   "build_parameters": {
-    "BACKWARD_COMPATIBILITY": "true"
+    "BACKWARD_COMPATIBILITY": "false"
   }
 }
 EOF)
