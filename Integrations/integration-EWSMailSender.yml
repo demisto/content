@@ -318,4 +318,4 @@ script:
 releaseNotes: "-"
 tests:
   - "EWS Mail Sender Test"
-
+  - "EWS Mail Sender Test 2"
