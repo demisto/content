@@ -328,6 +328,7 @@ script:
         limit = demisto.args().get('limit')
 
         equal_cuts = {
+                    "id":demisto.args().get('asset_id'),
                     "host_name":demisto.args().get('host_name_is'),
                     "object_group_id":demisto.args().get('object_group_id')
                     }
@@ -1763,6 +1764,8 @@ script:
       - Mac OS X/Apple OS X/macOS
       - Windows
       description: Only return assets with this type of operating system.
+    - name: asset_id
+      description: Only return the asset with this unique asset id
     outputs:
     - contextPath: Uptycs.Assets.id
       description: 'Uptycs asset id '
