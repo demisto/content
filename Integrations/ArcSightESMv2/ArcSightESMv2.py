@@ -579,8 +579,9 @@ def update_case(case_id, stage, severity):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error('Failed to get security update case {}\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
-            case_id, BASE_URL + query_path, res.status_code, res.text))
+        return_error('Failed to get security update case {}. \nPlease make sure user have edit permissions,'
+                     ' or case is unlocked. \nStatus Code: {}\nResponse Body: {}'.format(case_id, res.status_code,
+                                                                                         res.text))
 
     res_json = res.json()
     if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
