@@ -38,6 +38,7 @@ class StructureValidator(object):
         TEST_DATA_REGEX,
         MISC_REGEX,
         IMAGE_REGEX,
+        DESCRIPTION_REGEX,
         PIPFILE_REGEX,
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
