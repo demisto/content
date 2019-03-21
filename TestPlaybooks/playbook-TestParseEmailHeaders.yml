@@ -112,10 +112,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: bd8abf89-f58a-4758-8a4c-8c3bb1605411
+    taskid: 597063dd-bcf3-4d81-8f55-9d15484986f4
     type: condition
     task:
-      id: bd8abf89-f58a-4758-8a4c-8c3bb1605411
+      id: 597063dd-bcf3-4d81-8f55-9d15484986f4
       version: -1
       name: Validate Headers outputs
       type: condition
@@ -144,7 +144,7 @@ tasks:
           right:
             value:
               simple: cãcao is not taçóánd taco is not à çãcao
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -254,10 +254,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: ffebbd9c-076c-449e-82e0-f5cd1c9fd6a5
+    taskid: f315b72b-72f9-4d2e-8ec2-1572c85f2221
     type: condition
     task:
-      id: ffebbd9c-076c-449e-82e0-f5cd1c9fd6a5
+      id: f315b72b-72f9-4d2e-8ec2-1572c85f2221
       version: -1
       name: Validate outputs
       type: condition
@@ -270,7 +270,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
