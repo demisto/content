@@ -1321,7 +1321,7 @@ script:
       type: string
     - contextPath: File.VirusTotal.Scans.Detected
       description: Scan detection for this hash (True,False)
-      type: string
+      type: boolean
     - contextPath: File.VirusTotal.Scans.Result
       description: Scan result for this hash - signature, etc.
       type: string
@@ -1430,7 +1430,7 @@ script:
       type: string
     - contextPath: URL.VirusTotal.Scans.Detected
       description: Scan detection for this URL (True/False)
-      type: string
+      type: boolean
     - contextPath: URL.VirusTotal.Scans.Result
       description: Scan result for this URL - signature, etc.
       type: string
@@ -1487,33 +1487,33 @@ script:
     - contextPath: IP.VirusTotal.DownloadedHashes
       description: Latest files that are detected by at least one antivirus solution
         and were downloaded by VirusTotal from the IP address
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
       description: Latest files that are not detected by any antivirus solution and
         were downloaded by VirusTotal from the IP address provided
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.DetectedURLs
       description: Latest URLs hosted in this IP address detected by at least one
         URL scanner
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.CommunicatingHashes
       description: Latest detected files that communicate with this IP address
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
       description: Latest undetected files that communicate with this IP address
       type: Unknown
     - contextPath: IP.VirusTotal.Resolutions.hostname
       description: The following domains resolved to the given IP
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.ReferrerHashes
       description: Latest detected files that embed this IP address in their strings
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
       description: Latest undetected files that embed this IP address in their strings
-      type: Unknown
+      type: string
     - contextPath: IP.VirusTotal.Resolutions.last_resolved
       description: The last time the following domains resolved to the given IP
-      type: Unknown
+      type: string
     description: Retrieves a report on a given IP address (including the information
       recorded by VirusTotal's Passive DNS infrastructure).
   - name: vt-private-search-file
@@ -1533,10 +1533,10 @@ script:
     outputs:
     - contextPath: VirusTotal.SearchResult
       description: The hashes of files that fit the query
-      type: unknown
+      type: string
     - contextPath: VirusTotal.Query
       description: Original search query
-      type: Unknown
+      type: string
     description: 'This command is equivalent to VirusTotal Intelligence advanced searches.
       A very wide variety of search modifiers are available, including: file size,
       file type, first submission date to VirusTotal, last submission date to VirusTotal,
@@ -1559,16 +1559,16 @@ script:
     outputs:
     - contextPath: File.VirusTotal.CommunicatedDomains
       description: Domains that the hash communicates with
-      type: Unknown
+      type: string
     - contextPath: File.VirusTotal.CommunicatedURLs
       description: URLs that the hash communicates with
-      type: Unknown
+      type: string
     - contextPath: File.VirusTotal.CommunicatedIPs
       description: IPs that the hash communicates with
-      type: Unknown
+      type: string
     - contextPath: File.VirusTotal.CommunicatedHosts
       description: Hosts that the hash communicates with
-      type: Unknown
+      type: string
     - contextPath: File.MD5
       description: File's MD5
       type: string
