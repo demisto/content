@@ -50,13 +50,13 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Type.toLowerCase().indexOf('smtp mail') >= 0 ||
-          val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 ||
-          val.Type.toLowerCase().indexOf('news or mail') >= 0 ||
-          (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 &&
-          val.Extension.toLowerCase() == 'msg') ||
-          (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 &&
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||  
+          val.Type.toLowerCase().indexOf('smtp mail') >= 0 || 
+          val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || 
+          val.Type.toLowerCase().indexOf('news or mail') >= 0 || 
+          (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && 
+          val.Extension.toLowerCase() == 'msg') || 
+          (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && 
           val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
     reputationcalc: 1
     separatecontext: false
@@ -120,13 +120,13 @@ tasks:
       - "13"
     scriptarguments:
       entryid:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Type.toLowerCase().indexOf('smtp mail') >= 0 ||
-          val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 ||
-          val.Type.toLowerCase().indexOf('news or mail') >= 0 ||
-          (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 &&
-          val.Extension.toLowerCase() == 'msg') ||
-          (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 &&
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||  
+          val.Type.toLowerCase().indexOf('smtp mail') >= 0 || 
+          val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || 
+          val.Type.toLowerCase().indexOf('news or mail') >= 0 || 
+          (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && 
+          val.Extension.toLowerCase() == 'msg') || 
+          (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && 
           val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
     reputationcalc: 2
     results:
@@ -826,5 +826,6 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+releaseNotes: "Improved attached email detection"
 tests:
   - No test

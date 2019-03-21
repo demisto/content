@@ -4,6 +4,7 @@ import string
 import random
 import argparse
 import requests
+from time import sleep
 
 import demisto
 from slackclient import SlackClient
@@ -11,11 +12,10 @@ from slackclient import SlackClient
 from test_integration import test_integration
 from mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
-from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT
+from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF
 
 
 SERVER_URL = "https://{}"
-FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
@@ -336,7 +336,19 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def execute_testing(server):
+def organize_tests(tests, unmockable_integrations):
+    mock_tests, mockless_tests = [], []
+    for test in tests:
+        if any(integration in unmockable_integrations for integration in test.get('integrations', [])):
+            mockless_tests.append(test)
+        else:
+            mock_tests.append(test)
+
+    # first run the mock tests to avoid mockless side effects in container
+    return mock_tests + mockless_tests
+
+
+def execute_testing(server, server_ip):
     options = options_handler()
     username = options.user
     password = options.password
@@ -380,17 +392,17 @@ def execute_testing(server):
         print('no integrations are configured for test')
         return
 
-    with open('public_ip', 'rb') as f:
-        public_ip = f.read().strip()
-
-    ami = AMIConnection(public_ip)
+    ami = AMIConnection(server_ip)
     ami.clone_mock_data()
-    proxy = MITMProxy(c, public_ip)
+    proxy = MITMProxy(c, server_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+
+    # move all mock tests to the top of the list
+    tests = organize_tests(tests, unmockable_integrations)
 
     for t in tests:
         playbook_id = t['playbookID']
@@ -482,10 +494,14 @@ def main():
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server)
+                execute_testing(server, ami_instance_ip)
+                sleep(8)
 
     else:  # Run tests in Server build configuration
-        execute_testing(server)
+        with open('public_ip', 'rb') as f:
+            public_ip = f.read().strip()
+
+        execute_testing(server, public_ip)
 
 
 if __name__ == '__main__':
