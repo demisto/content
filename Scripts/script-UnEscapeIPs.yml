@@ -17,17 +17,10 @@ script: |-
   }
 
   var ips;
-  if (Array.isArray(args.input)) {
-      ips = format_ip_list(args.input);
-  } else {
-      // Assumed alternative is that args.input is a string
-      var unformatted_ips = argToList(args.input);
-      ips = format_ip_list(unformatted_ips);
-      if (ips.length === 1) {
-          return ips[0];
-      }
-  }
-  return ips
+  // It is assumed that args.input is a string
+  var unformatted_ips = argToList(args.input);
+  ips = format_ip_list(unformatted_ips);
+  return ips;
 type: javascript
 tags:
 - indicator-format
