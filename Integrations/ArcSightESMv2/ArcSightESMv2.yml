@@ -271,7 +271,7 @@ script:
     arguments:
     - name: caseId
       required: true
-      description: Case resource ID to update.
+      description: Case resource ID to update. The case must be unlocked, and the user should have edit permissions.
     - name: stage
       auto: PREDEFINED
       predefined:
