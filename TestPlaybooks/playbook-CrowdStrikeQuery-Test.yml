@@ -42,7 +42,7 @@ tasks:
     scriptarguments:
       add_to_context: {}
       brand_name:
-        simple: Falcon Query
+        simple: FalconQuery
       expect_data: {}
       instance_name: {}
     separatecontext: false

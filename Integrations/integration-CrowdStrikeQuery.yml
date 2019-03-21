@@ -275,7 +275,7 @@ script:
     HEADERS = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Basic {}'.format(requests.auth._basic_auth_str('{0}:{1}'.format(USERNAME, PASSWORD), 'utf-8'))
+        'Authorization': 'Basic {}'.format(base64.b64encode('{0}:{1}'.format(USERNAME, PASSWORD).encode('utf-8')).decode())
     }
     # Note: True life time is actually 30 mins
     TOKEN_LIFE_TIME = 28
@@ -480,7 +480,7 @@ script:
             'client_secret': PASSWORD
         }
         headers = {
-            'Authorization': 'Basic {}'.format(requests.auth._basic_auth_str('{0}:{1}'.format(USERNAME, PASSWORD), 'utf-8'))
+            'Authorization': 'Basic {}'.format(base64.b64encode('{0}:{1}'.format(USERNAME, PASSWORD).encode('utf-8')).decode())
         }
         token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True)
         if not token_res:
@@ -489,6 +489,7 @@ script:
                 return_error(err_msg)
             raise Exception(err_msg)
         return token_res.get('access_token')
+
 
     def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         endpoint_url = '/detects/queries/detects/v1'
