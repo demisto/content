@@ -1031,12 +1031,6 @@
 
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "playbookID": "Phishing test - attachment",
             "timeout": 600,
             "nightly": true,
@@ -1133,6 +1127,12 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": [
+                "VirusTotal"
+            ],
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
