@@ -1,6 +1,7 @@
 id: File Enrichment - Generic Test
 version: -1
 name: File Enrichment - Generic Test
+starttaskid: "0"
 tasks:
   "0":
     id: "0"
@@ -10,13 +11,11 @@ tasks:
       id: 10c4378f-44df-4293-8f72-874b0495a27a
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,6 +24,8 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
     taskid: 573632f5-8257-4ae0-88c0-7fdfb169112a
@@ -33,7 +34,6 @@ tasks:
       id: 573632f5-8257-4ae0-88c0-7fdfb169112a
       version: -1
       name: Add File MD5 to context
-      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -48,7 +48,6 @@ tasks:
         simple: File.MD5
       value:
         simple: 3f066dd1f1da052248aed5abc4a0c6a1
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -57,6 +56,8 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 8035b34b-ba2c-49f9-833b-2212997f24ed
@@ -65,7 +66,6 @@ tasks:
       id: 8035b34b-ba2c-49f9-833b-2212997f24ed
       version: -1
       name: Add File SHA1 to context
-      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -80,7 +80,6 @@ tasks:
         simple: File.SHA1
       value:
         simple: 795b33795f0308fc5e83abc2daff1d7129dfa400
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -89,30 +88,30 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 44964bb9-b67c-4362-82f4-2f97a5f02d9f
+    taskid: b24632ae-ecab-4d15-8d4c-be64d7ec2bdb
     type: regular
     task:
-      id: 44964bb9-b67c-4362-82f4-2f97a5f02d9f
+      id: b24632ae-ecab-4d15-8d4c-be64d7ec2bdb
       version: -1
       name: Add File SHA256 to context
-      description: ""
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       append:
         simple: "true"
       key:
         simple: File.SHA256
       value:
-        simple: 42dfb222ce97c7517bc0b6333a1881bfa91539f457d261e6626d662995b97df5
-    reputationcalc: 0
+        simple: afd3b729cf99fb9ea441f42862a4835d1d6eeb36ee535f9b206e3a00382c972e
     separatecontext: false
     view: |-
       {
@@ -121,56 +120,48 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    id: "4"
-    taskid: fa592e8a-ae87-4e21-8faf-dc5546c1fbe5
-    type: playbook
-    task:
-      id: fa592e8a-ae87-4e21-8faf-dc5546c1fbe5
-      version: -1
-      name: File Enrichment - Generic
-      description: ""
-      playbookName: File Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: b909e9e8-301f-4e4c-8aa1-aa16d9ef165c
-    type: regular
+    taskid: dbe85baf-e6b6-430c-8ef9-718922014dab
+    type: condition
     task:
-      id: b909e9e8-301f-4e4c-8aa1-aa16d9ef165c
+      id: dbe85baf-e6b6-430c-8ef9-718922014dab
       version: -1
       name: Verify DBotScore context fields
-      description: ""
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
+      - "10"
+      "yes":
       - "8"
-    scriptarguments:
-      expectedValue: {}
-      extend-context: {}
-      fields:
-        simple: Indicator,Type,Vendor,Score
-      path:
-        simple: DBotScore
-    reputationcalc: 0
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
     view: |-
       {
         "position": {
@@ -178,6 +169,8 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: f083cfd3-28ab-4f13-8692-32ae498df885
@@ -186,26 +179,98 @@ tasks:
       id: f083cfd3-28ab-4f13-8692-32ae498df885
       version: -1
       name: Done
-      description: ""
       type: title
+      description: ""
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 144f05c5-0c6b-45a4-8c74-46e471288276
+    type: playbook
+    task:
+      id: 144f05c5-0c6b-45a4-8c74-46e471288276
+      version: -1
+      name: File Enrichment - Generic
+      playbookName: File Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: ce25dbaf-20e4-41df-8430-43901ebd7778
+    type: regular
+    task:
+      id: ce25dbaf-20e4-41df-8430-43901ebd7778
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      message:
+        simple: Not all DBotScore context fields were created.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 380,
+        "height": 1255,
+        "width": 740,
         "x": 50,
         "y": 50
       }
