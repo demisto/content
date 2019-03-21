@@ -1189,7 +1189,7 @@
     "unmockable_integrations": {
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
-        "Panorama": "due to https://github.com/demisto/etc/issues/16122",
+        "Panorama": "Pending check: issue 16122",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",
