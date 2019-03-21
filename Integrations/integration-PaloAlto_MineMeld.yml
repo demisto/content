@@ -236,15 +236,21 @@ script:
             indicators = indicators.split(',')
 
         if MineMeldClient.data_file_type == 'localdb':
+            # check that all indicators to remove are on localdb miner
+            miner_list_indicators = [o['indicator'] for o in miner_list]
+            contain_all_indicators =  all(elem in miner_list_indicators for elem in indicators)
+            if not contain_all_indicators:
+                return_error('Did not find all indicators on miner'.format(miner))
+
             for indicator in indicators:
                 request_params = {
-                    'removed': True,
                     'indicator': indicator,
                     'type': json.loads(updated_miner_list[indicator])['type'],
                     'ttl': -1
                 }
                 updated_miner_list = { indicator: json.dumps(request_params) }
         else:
+            # remove indicator from miner, if nothing was removed, indicator not on miner
             for indicator in indicators:
                 indicator_from_list = updated_miner_list.pop(indicator, None)
                 if not indicator_from_list:
@@ -1122,6 +1128,6 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added validation of deleting indictors from miners of type localDB"
 tests:
   - minemeld_test
