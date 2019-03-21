@@ -51,6 +51,9 @@ outputs:
 - contextPath: Email.Text
   description: Email 'text' body if exists
   type: string
+- contextPath: Email.Depth
+  description: The depth of the email. Depth=0 for the first level email. If email1 contains email2 contains email3. Then email1 depth is 0, email2 depth is 1, email3 depth is 2
+  type: number
 - contextPath: Email.Headers
   description: Deprecated - use Email.HeadersMap output instead. The full email headers
     as a single string
@@ -91,8 +94,5 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: 'Fix - support email files with type ''SMTP Mail'' eml contains eml
-  - inner eml will be extracted eml parsed recursively - support parsing only email
-  headers '
 tests:
 - ParseEmailFiles-test
