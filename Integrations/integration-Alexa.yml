@@ -132,6 +132,5 @@ script:
     description: Provides an Alexa ranking of the Domain in question.
   runonce: false
 fromversion: 3.5.0
-releaseNotes: '-'
 tests:
   - Alexa Test Playbook

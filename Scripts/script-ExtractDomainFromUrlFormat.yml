@@ -46,4 +46,3 @@ dockerimage: demisto/tld
 runas: DBotWeakRole
 tests:
   - ExtractDomainFromEmailTest
-releaseNotes: "Fixed domain extraction when working with subdomain in email."
