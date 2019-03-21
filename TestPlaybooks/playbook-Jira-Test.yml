@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -97,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -127,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 575
         }
       }
     note: false
@@ -233,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1100
         }
       }
     note: false
@@ -264,7 +264,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1450
         }
       }
     note: false
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1800
         }
       }
     note: false
@@ -334,7 +334,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1625
         }
       }
     note: false
@@ -366,7 +366,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1275
         }
       }
     note: false

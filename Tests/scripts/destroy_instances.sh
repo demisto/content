@@ -5,14 +5,14 @@ if [ -f ./Tests/is_build_failed.txt ]; then
     echo "Run Tests has failed, not Destroying instance"
     rm -rf ./Tests/is_build_failed.txt
 else
-   if [ -z "$2"]
+   if [ -z "$2" ]
      then
        INSTANCE_ID=$1
     else
        INSTANCE_ID=$(cat instance_ids)
    fi
 
-   if [ -z "$3"]
+   if [ -z "$3" ]
      then
        PUBLIC_IP=$3
      else

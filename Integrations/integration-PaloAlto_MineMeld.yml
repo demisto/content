@@ -36,7 +36,7 @@ configuration:
   required: false
 - display: Use system proxy
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -64,14 +64,19 @@ script:
     SERVER_URL = demisto.params()['url']
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    USE_PROXY = demisto.params()['proxy']
+    USE_PROXY = demisto.params().get('proxy', False)
     WHITELISTS = []
     BLACKLISTS = []
     WHITELISTS = argToList(demisto.params().get('whitelist'))
     BLACKLISTS = argToList(demisto.params().get('blacklist'))
 
     if not USE_PROXY:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
         os.environ['NO_PROXY'] = SERVER_URL
+
     if not isinstance(WHITELISTS, (list)) or not isinstance(BLACKLISTS, (list)):
         return_error('Either blacklist or whitelist params were misconfigured - expecting comma seperated list, ex: miner_a,miner_b,miner_c')
 
@@ -1117,5 +1122,6 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
+releaseNotes: "-"
 tests:
   - minemeld_test
