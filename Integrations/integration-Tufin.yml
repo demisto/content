@@ -38,6 +38,7 @@ script:
   script: |-
     import json
     import requests
+    import socket
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -81,6 +82,14 @@ script:
                 return res.json()
             except:
                 return res.content
+
+    def valid_ip(ipa):
+        # ipaddress module not installed by default, using this approach
+        try:
+            socket.inet_aton(ipa)
+            return True
+        except socket.error:
+            return False
 
     def path_finder(querystring):
         # Define the basic output for the function, augmenting later with TOS data
@@ -129,7 +138,8 @@ script:
             'Contents': '',
             'ContentsFormat': formats['text'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': ''
+            'HumanReadable': '',
+            'EntryContext': {}
         }
 
         try:
@@ -168,7 +178,8 @@ script:
             'Contents': '',
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': ''
+            'HumanReadable': '',
+            'EntryContext': {}
         }
 
         return_json = {'objects': []}
@@ -206,8 +217,13 @@ script:
             'count': '50',
             'exact_subnet': demisto.args()['ip']
         }
+        if not valid_ip(querystring['exact_subnet']):
+            return_error('Invalid IP Address')
+            return False
+
         e = object_lookup(querystring)
         demisto.results(e)
+
 
     def policy_search(querystring, max_rules_per_device=100):
         """ Search policy across all devices.  See docs for syntax """
@@ -217,7 +233,8 @@ script:
             'Contents': '',
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': ''
+            'HumanReadable': '',
+            'EntryContext': {}
         }
 
         matches = tos_request(u, querystring)
@@ -251,7 +268,7 @@ script:
                     })
             # Send back to Demisto
             entry['Contents'] = json.dumps(rule_return)
-            entry['HumanReadable'] = tableToMarkdown('Policy Search Results for: {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service', 'Destination', 'Destination Service', 'Action'], removeNull=True)
+            entry['HumanReadable'] = tableToMarkdown('Policy Search Results for {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service', 'Destination', 'Destination Service', 'Action'], removeNull=True)
             # Send back to Demisto inside function
             return entry
 
@@ -287,11 +304,11 @@ script:
     - name: source
       required: true
       description: Source address/addresses (may contain multiple, comma separated
-        values)
+        values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
     - name: destination
       required: true
       description: Destination address/addresses (may contain multiple, comma separated
-        values)
+        values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
     - name: service
       description: Service parameter can be a port (for example, “tcp:80”, “any”)
         or an application (for example, “Skype”, “Facebook”).
@@ -321,7 +338,7 @@ script:
     arguments:
     - name: ip
       required: true
-      description: IP Address
+      description: IP Address to Resolve to Network Object
     description: Resolve IP address to Network Object
   - name: tufin-policy-search
     arguments:
