@@ -41,7 +41,7 @@ def checked_type(file_path, regex_list):
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
-    
+
     sample_tests = []
     all_tests = []
     modified_files_list = []
