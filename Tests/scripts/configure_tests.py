@@ -68,7 +68,7 @@ def get_modified_files(files_string):
                 all_tests.append(file_path)
 
             # docs does not influence tests
-            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] == '.md':
+            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
                 continue
 
             # integrations, scripts, playbooks, test-scripts
