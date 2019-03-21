@@ -1,7 +1,7 @@
 id: CanaryTools Test
 version: -1
 name: CanaryTools Test
-fromversion: 4.1.0
+toversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -544,7 +544,6 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -562,38 +561,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-  "23":
-    id: "23"
-    taskid: 3126d80e-37f1-4556-8c2b-4da1274f4671
-    type: regular
-    task:
-      id: 3126d80e-37f1-4556-8c2b-4da1274f4671
-      version: -1
-      name: Test Fetch
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      add_to_context: {}
-      brand_name:
-        simple: Thinkst Canary
-      expect_data:
-        simple: "false"
-      instance_name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2295
         }
       }
     note: false
