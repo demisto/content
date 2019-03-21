@@ -1186,7 +1186,8 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
         "Whois": "Host periodically bans connection",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
+        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
+        "Threat Grid": "instance problem (issue 16197)"
     },
     "nigthly_integrations": [
         "Lastline",
