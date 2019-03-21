@@ -382,7 +382,13 @@ def fetch():
         }
         return_outputs(readable_output='', outputs={}, raw_response=contents)
     else:
-        demisto.incidents(incidents)
+        for chunk in chunks(incidents, chunk_size=min(100, len(incidents))):
+            demisto.incidents(chunk)
+
+
+def chunks(l, chunk_size):
+    for i in range(0, len(l), chunk_size):
+        yield l[i:i + chunk_size]
 
 
 @logger
