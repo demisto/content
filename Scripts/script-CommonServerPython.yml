@@ -34,6 +34,8 @@ script: |-
       """
           Disable routing traffic through the system proxy.
           Should usually be called at the beginning of the integration, depeding on proxy checkbox state.
+          :rtype: ``None``
+          :return: None
       """
       global SAVE_PROXIES
       for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
@@ -44,6 +46,8 @@ script: |-
       """
           Re-enable routing traffic through the system proxy (for container re-use).
           Should usually be called in a "finally" block at the bottom of the integration.
+          :rtype: ``None``
+          :return: None
       """
       global SAVE_PROXIES
       for k, v in SAVE_PROXIES.iteritems():
