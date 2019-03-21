@@ -242,9 +242,11 @@ script:
 
         if not len(search_devices):
             entry['HumanReadable'] = 'No Results Found'
+            entry['EntryContext']['Tufin.Policysearch.NumberRulesFound'] = 0
             # Send back to Demisto inside function
             return entry
         else:
+            rule_total = 0
             querystring['count'] = max_rules_per_device
             querystring['start'] = 0
             rule_return = []
@@ -258,6 +260,7 @@ script:
                 current_device = device_name(device_json, d)
 
                 for rule in rules['rules']['rule']:
+                    rule_total = rule_total + 1
                     rule_return.append({
                         'Device': current_device,
                         'Source': [d['display_name'] for d in rule['src_network']],
@@ -268,6 +271,7 @@ script:
                     })
             # Send back to Demisto
             entry['Contents'] = json.dumps(rule_return)
+            entry['EntryContext']['Tufin.Policysearch.NumberRulesFound'] = rule_total
             entry['HumanReadable'] = tableToMarkdown('Policy Search Results for {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service', 'Destination', 'Destination Service', 'Action'], removeNull=True)
             # Send back to Demisto inside function
             return entry
@@ -316,7 +320,7 @@ script:
     - contextPath: Tufin.Topology.TrafficAllowed
       description: Traffic Permitted
       type: boolean
-    - contextPath: Tufin.Tppology.TrafficDevices
+    - contextPath: Tufin.Topology.TrafficDevices
       description: List of devices in path
       type: string
     description: Search the Tufin Topology Map
@@ -347,5 +351,9 @@ script:
       description: The text format is for a field is <fieldname>:<text> for example
         source:192.168.1.1 or bareword for free text search. See the search info documentation
         in Securetrack Policy Browser page for more information.
+    outputs:
+    - contextPath: Tufin.Policysearch.NumberRulesFound
+      description: Number of rules found via search
+      type: number
     description: Search the policies of all devices managed by Tufin
   runonce: false
