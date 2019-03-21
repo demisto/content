@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS """
 MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
+FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
 BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 HEADERS = {
@@ -345,6 +346,9 @@ def fetch():
     already_fetched = last_run.get('already_fetched', [])
 
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
+    # sort query_results by creation time
+    query_results.sort(key=lambda k: int(k.get('Start Time') or k.get('Create Time')))
+
     incidents = []
     for result in query_results:
         # convert case or event to demisto incident
@@ -363,6 +367,9 @@ def fetch():
             }
 
             incidents.append(incident)
+            if len(incidents) >= FETCH_CHUNK_SIZE:
+                break
+
             if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
@@ -382,13 +389,7 @@ def fetch():
         }
         return_outputs(readable_output='', outputs={}, raw_response=contents)
     else:
-        for chunk in chunks(incidents, chunk_size=min(100, len(incidents))):
-            demisto.incidents(chunk)
-
-
-def chunks(l, chunk_size):
-    for i in range(0, len(l), chunk_size):
-        yield l[i:i + chunk_size]
+        demisto.incidents(incidents)
 
 
 @logger
