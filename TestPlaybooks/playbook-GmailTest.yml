@@ -62,10 +62,10 @@ tasks:
       id: 7820bb6b-0b10-4a56-83e9-0632c7c732e3
       version: -1
       name: List all users
-      script: Gmail|||gmail-list-users
+      script: '|||gmail-list-users'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "3"
@@ -98,10 +98,10 @@ tasks:
       id: e83862fc-822f-45af-8050-6885158dcb77
       version: -1
       name: Get specific user
-      script: Gmail|||gmail-get-user
+      script: '|||gmail-get-user'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "4"
@@ -180,10 +180,10 @@ tasks:
       id: 9a660df8-640f-4c90-8604-f537775434ff
       version: -1
       name: Create new user
-      script: Gmail|||gmail-create-user
+      script: '|||gmail-create-user'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "21"
@@ -213,10 +213,10 @@ tasks:
       id: b43589f0-7afd-4167-833b-db0dd03bfb8c
       version: -1
       name: Delete User
-      script: Gmail|||gmail-delete-user
+      script: '|||gmail-delete-user'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "13"
@@ -309,10 +309,10 @@ tasks:
       id: 785f6994-f93f-45e6-8934-3cf51d61a0da
       version: -1
       name: Search emails with attachments
-      script: Gmail|||gmail-search
+      script: '|||gmail-search'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "10"
@@ -354,10 +354,10 @@ tasks:
       id: b396d44d-543e-4d16-8900-c0ae1632dc63
       version: -1
       name: Get mail with attachment
-      script: Gmail|||gmail-get-attachments
+      script: '|||gmail-get-attachments'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     scriptarguments:
       message-id:
         complex:
@@ -394,10 +394,10 @@ tasks:
       id: 2dbed4ad-0f09-425f-8a93-34d4972dbdd2
       version: -1
       name: Get Tokens
-      script: Gmail|||gmail-get-tokens-for-user
+      script: '|||gmail-get-tokens-for-user'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "22"
@@ -421,10 +421,10 @@ tasks:
       id: 43c477ef-cc2f-46c4-8dde-a4e86580db9e
       version: -1
       name: Get Email data
-      script: Gmail|||gmail-get-mail
+      script: '|||gmail-get-mail'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     scriptarguments:
       format: {}
       message-id:
@@ -465,10 +465,10 @@ tasks:
       id: 1034be29-3cbf-4463-8301-14e6bf1636d2
       version: -1
       name: Search all mailboxes
-      script: Gmail|||gmail-search-all-mailboxes
+      script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "17"
@@ -508,10 +508,10 @@ tasks:
       id: 4c008e99-8f53-4b6a-8bf5-df38912addd0
       version: -1
       name: Get Thread
-      script: Gmail|||gmail-get-thread
+      script: '|||gmail-get-thread'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     scriptarguments:
       format: {}
       thread-id:
@@ -552,10 +552,10 @@ tasks:
       id: c974e9eb-083d-4177-8aa2-e93ab772e2ab
       version: -1
       name: Search in mailbox
-      script: Gmail|||gmail-search
+      script: '|||gmail-search'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "19"
@@ -595,10 +595,10 @@ tasks:
       id: 3d564080-a2a9-4fff-842a-c2f381d35685
       version: -1
       name: Move mail to other folder
-      script: Gmail|||gmail-move-mail
+      script: '|||gmail-move-mail'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "20"
@@ -644,10 +644,10 @@ tasks:
       id: 183ea44b-188a-4090-8d0f-4429b43b128f
       version: -1
       name: Move back to inbox
-      script: Gmail|||gmail-move-mail
+      script: '|||gmail-move-mail'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     scriptarguments:
       add-labels:
         simple: INBOX
@@ -690,10 +690,10 @@ tasks:
       id: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
       version: -1
       name: block the admin
-      script: Gmail|||gmail-add-delete-filter
+      script: '|||gmail-add-delete-filter'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ''
     nexttasks:
       '#none#':
       - "6"
