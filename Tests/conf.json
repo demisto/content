@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Server Message Block (SMB)",
+            "playbookID": "SMB test"
+        },
+        {
             "playbookID": "TestParseEmailHeaders"
         },
         {
@@ -1168,7 +1172,6 @@
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
-        "Server Message Block (SMB)": "No instance",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
