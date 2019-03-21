@@ -182,13 +182,13 @@ script: |-
       first = None
       if date1 == 'now':
           first = datetime.now(tzlocal())
-      elif isinstance(date1, basestring):
+      elif is_str_or_unicode(date1):
           first = parse(date1)
 
       second = None
       if date2 == 'now':
           second = datetime.now(tzlocal())
-      elif isinstance(date2, basestring):
+      elif is_str_or_unicode(date2):
           second = parse(date2)
       delta = first - second
 
@@ -1500,11 +1500,24 @@ script: |-
         :return: The parsed timestamp.
         :rtype: ``int``
       """
-      if isinstance(date_str_or_dt, basestring):
+      if is_str_or_unicode(date_str_or_dt):
           return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
 
       # otherwise datetime.datetime
       return int(time.mktime(date_str_or_dt.timetuple())*1000)
+
+
+  def is_str_or_unicode(s):
+      """
+        Determines whether provided s is a string or a unicode object.
+
+        :type s: ``object``
+        :param s: The object to check.
+
+        :return: Is the object str or unicode
+        :rtype: ``bool``
+      """
+      return isinstance(s, str) or (not IS_PY3 and isinstance(s, unicode))
 
 type: python
 tags:
