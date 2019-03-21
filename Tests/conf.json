@@ -487,6 +487,10 @@
             "playbookID": "EWS Mail Sender Test"
         },
         {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test 2"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {

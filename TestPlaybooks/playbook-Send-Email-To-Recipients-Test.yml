@@ -88,3 +88,5 @@ inputs:
   required: false
   description: ""
 outputs: []
+tests:
+- No test
