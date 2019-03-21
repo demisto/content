@@ -33,6 +33,11 @@ configuration:
   defaultvalue: '2000'
   type: 0
   required: false
+- display: The maximum number of incidents to fetch each time.
+  name: fetch_chunk_size
+  defaultvalue: '50'
+  type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
