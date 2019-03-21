@@ -53,7 +53,7 @@ script:
         'content-type': 'application/json'
     }
     EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-    MAX_SECONDS_TO_WAIT = 15
+    MAX_SECONDS_TO_WAIT = 30
     ERROR_CODES_DICT = {
         400: 'Invalid or bad request',
         401: 'Session is not authenticated or timed out',
