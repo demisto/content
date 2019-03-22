@@ -181,8 +181,12 @@ script:
             }
         } while(statusResult.status !== 'complete' && requiredEvents > statusResult.hit);
         // get the results
-        var events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
-
+        var events;
+        if (/top/.test(query) || /chart/.test(query)) {
+            events = getChartRequest(userSessionId, searchSessionId);
+        } else {
+            events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
+        }
         // close the session
         closeSessionRequest(userSessionId, searchSessionId);
 
@@ -313,13 +317,28 @@ script:
     }
 
     function getEvents() {
-        var events = getEventsRequest(
+        var resBody = getSearchStatusRequest(
             args.sessionId,
-            args.searchSessionId,
-            args.offset,
-            args.dir,
-            args.length,
-            args.fields);
+            args.searchSessionId);
+        var type = resBody["result_type"];
+        var events;
+        if (type == "chart"){
+            events = getChartRequest(
+                args.sessionId,
+                args.searchSessionId,
+                args.offset,
+                args.dir,
+                args.length,
+                args.fields);
+        } else {
+           events = getEventsRequest(
+                args.sessionId,
+                args.searchSessionId,
+                args.offset,
+                args.dir,
+                args.length,
+                args.fields);
+        }
         var entry = {
             Type: entryTypes.note,
             Contents: events,
@@ -355,6 +374,18 @@ script:
             bodyArgs.fields = fields.split(",");
         }
         var resBody = httpPost('server/search/events', null, bodyArgs);
+        var events = xmlObjectToJSON(resBody);
+        return events;
+    }
+
+    function getChartRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+        bodyArgs.offset = 0;
+        bodyArgs.length = 100;
+        var resBody = httpPost('/server/search/chart_data', null, bodyArgs);
         var events = xmlObjectToJSON(resBody);
         return events;
     }
@@ -601,7 +632,8 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+      description: Indicates the search is local only, and does not include peers.
+        The default value for this parameter is 'true'.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout
@@ -620,13 +652,13 @@ script:
     - name: dir
       auto: PREDEFINED
       predefined:
-      - "forward"
-      - "backward"
+      - forward
+      - backward
       description: The sort direction based on event time. forward/backward (default
         is forward).
     - name: fields
-      description: comma separated list of fields in the order to show. If not specified, all
-        fields will be used
+      description: comma separated list of fields in the order to show. If not specified,
+        all fields will be used
     description: Start a new search, wait until the search status is complete and
       then return the events. This command combine 3 commands - as-search, as-status,
       as-events
@@ -687,13 +719,13 @@ script:
     - name: dir
       auto: PREDEFINED
       predefined:
-      - "forward"
-      - "backward"
+      - forward
+      - backward
       description: The sort direction based on event time. forward/backward (default
         is forward).
     - name: fields
-      description: comma separated list of fields in the order to show. If not specified, all
-        fields will be used
+      description: comma separated list of fields in the order to show. If not specified,
+        all fields will be used
     - name: length
       description: The length or number of events to retrieve. Maximum number is 10000.
         Default is 100.
@@ -753,7 +785,8 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+      description: Indicates the search is local only, and does not include peers.
+        The default value for this parameter is 'true'.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout
@@ -768,3 +801,4 @@ script:
       search query, and returns sessionId and searchSessionId which should be used
       in other commands like as-status, as-stop, as-events, etc.
   isfetch: true
+  runonce: false
