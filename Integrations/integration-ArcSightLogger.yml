@@ -182,7 +182,7 @@ script:
         } while(statusResult.status !== 'complete' && requiredEvents > statusResult.hit);
         // get the results
         var events;
-        if (/top/.test(query) || /chart/.test(query)) {
+        if (statusResult.result_type === 'chart') {
             events = getChartRequest(userSessionId, searchSessionId);
         } else {
             events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
@@ -317,19 +317,14 @@ script:
     }
 
     function getEvents() {
-        var resBody = getSearchStatusRequest(
+        var statusResult = getSearchStatusRequest(
             args.sessionId,
             args.searchSessionId);
-        var type = resBody["result_type"];
         var events;
-        if (type == "chart"){
+        if (statusResult.result_type === 'chart'){
             events = getChartRequest(
                 args.sessionId,
-                args.searchSessionId,
-                args.offset,
-                args.dir,
-                args.length,
-                args.fields);
+                args.searchSessionId);
         } else {
            events = getEventsRequest(
                 args.sessionId,
