@@ -439,6 +439,9 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
+            "playbookID": "dedup_-_generic_-_test"
+        },
+        {
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
@@ -1131,12 +1134,6 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
-        },
-        {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
@@ -1197,6 +1194,7 @@
     "unmockable_integrations": {
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
+        "Panorama": "Pending check: issue 16122",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",
