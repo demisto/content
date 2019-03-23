@@ -70,6 +70,8 @@ script:
 
     OPTIONS_TO_TIME = {
         '10_seconds_ago' : datetime.datetime.now() - datetime.timedelta(seconds = 10),
+        #left here for backwards compatability
+        '1_minutes_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 1),
         '1_minute_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 1),
         '10_minutes_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 10),
         '1_hour_ago' : datetime.datetime.now() - datetime.timedelta(hours = 1),
