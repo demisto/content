@@ -1402,7 +1402,7 @@ script:
       - "false"
       description: Return one zipped file, or all files unzipped, default is "false" (one zipped file)
       defaultValue: "false"
-    description: Uploads a file sample to MISP.
+    description: Downloads a file sample from MISP.
     execution: true
   - name: misp-add-attribute
     arguments:
@@ -1740,3 +1740,4 @@ script:
   runonce: false
 tests:
 - MISP V2 Test
+releaseNotes: "-"
