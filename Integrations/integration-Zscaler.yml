@@ -1028,6 +1028,5 @@ script:
       type: string
     description: Returns Zscaler default whitelist
   runonce: false
-releaseNotes: "Added option to disable proxy"
 tests:
   - Zscaler Test
