@@ -11,7 +11,7 @@ script: |-
   res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
   with open(res[0]['Contents']['path'], 'r') as f:
       data = f.read(maxFileSize)
-      data = data.decode(demisto.args().get("encoding"))
+      data = data.decode(demisto.args().get("encoding"), errors="replace")
       data = data.encode('utf-8')
 
   if data:
