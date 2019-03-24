@@ -348,7 +348,7 @@ def organize_tests(tests, unmockable_integrations):
     return mock_tests + mockless_tests
 
 
-def execute_testing(server, server_ip):
+def execute_testing(server, server_ip, server_version):
     options = options_handler()
     username = options.user
     password = options.password
@@ -471,7 +471,7 @@ def execute_testing(server, server_ip):
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
+        with open("./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', '')), "w") as is_build_failed_file:
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
@@ -481,27 +481,27 @@ def main():
     options = options_handler()
     server = options.server
     is_ami = options.isAMI
+    server_version = options.serverVersion
 
     if is_ami:  # Run tests in AMI configuration
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-        server_version = options.serverVersion
         for ami_instance_name, ami_instance_ip in instance_ips:
             if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
                 # TODO: remove the and condition once version 4.5 is out
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server, ami_instance_ip)
+                execute_testing(server, ami_instance_ip, server_version)
                 sleep(8)
 
     else:  # Run tests in Server build configuration
         with open('public_ip', 'rb') as f:
             public_ip = f.read().strip()
 
-        execute_testing(server, public_ip)
+        execute_testing(server, public_ip, server_version)
 
 
 if __name__ == '__main__':
