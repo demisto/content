@@ -16,18 +16,13 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Minerva Management Console user
-  name: user
+- display: Minerva Management Console user and password
+  name: credentials
   defaultvalue: ""
-  type: 0
+  type: 9
   required: true
-- display: Minerva Management Console password
-  name: password
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Boolean value to indicate that the Minerva Management Console uses insecure
-    communication or not
+- display: Checking this indicates that the Minerva Management Console uses insecure
+    communication
   name: insecure
   defaultvalue: ""
   type: 8
@@ -53,8 +48,8 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBALS '''
-    USERNAME = demisto.params().get('user')
-    PASSWORD = demisto.params().get('password')
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
     BASE_URL = demisto.params().get('url')
     VERIFY_SSL = demisto.params().get('insecure')
 
@@ -73,7 +68,7 @@ script:
                             json={'username': USERNAME,
                                   'password': PASSWORD})
 
-
+    @logger
     def logout():
         session.post(BASE_URL + '/api/login/logout')
 
