@@ -218,6 +218,8 @@ script:
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
         human_readable['Effective URL'] = response['page']['url'] # effective url of the submitted url
+        cont['EffectiveURL'] = response['page']['url'] # effective url of the submitted url
+
         if 'uuid' in scan_tasks:
             ec['URLScan']['UUID']
         if 'ips' in scan_lists:
@@ -747,7 +749,11 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
+    - contextPath: URLScan.EffectiveURL
+      description: Effective URL of the original URL
+      type: string
     description: Submit a url to scan
   runonce: false
 tests:
   - urlscan_malicious_Test
+releaseNotes: "-"
