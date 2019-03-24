@@ -10,8 +10,8 @@ configuration:
 - display: Role Arn
   name: roleArn
   required: false
-  type: 0˚
-- display: Role Session Name˚˚
+  type: 0
+- display: Role Session Name
   name: roleSessionName
   required: false
   type: 0
