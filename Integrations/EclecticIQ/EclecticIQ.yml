@@ -352,5 +352,6 @@ script:
       type: String
     description: Gets the reputation of a domain observable.
   runonce: false
+releaseNotes: "-"
 tests:
   - No test - instance issues
