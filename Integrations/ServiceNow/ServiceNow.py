@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 import re
 import requests
 import json
-import time
 import shutil
 
 # disable insecure warnings
