@@ -64,13 +64,18 @@ script:
 
 
     # Following methods raise exceptions so no need to check for return codes
-    SERVER = SMTP(demisto.getParam('host'), int(demisto.getParam('port')))
-    SERVER.ehlo()
-    # TODO - support for non-valid certs
-    if demisto.getParam('tls'):
-        SERVER.starttls()
-    if demisto.getParam('credentials') and demisto.getParam('credentials')['identifier'] and demisto.getParam('credentials')['password']:
-        SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
+    # But we do need to catch them
+    try:
+        SERVER = SMTP(demisto.getParam('host'), int(demisto.getParam('port')))
+        SERVER.ehlo()
+        # TODO - support for non-valid certs
+        if demisto.getParam('tls'):
+            SERVER.starttls()
+        if demisto.getParam('credentials') and demisto.getParam('credentials').get('identifier') and demisto.getParam('credentials').get('password'):
+            SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
+    except Exception, e:
+        return_error(e)
+
     FROM = demisto.getParam('from')
 
 
@@ -262,89 +267,92 @@ script:
                     actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
         return actualParams
 
+    ### COMMANDS ####
+    try:
+        if demisto.command() == 'test-module':
+            msg = MIMEText('This is a test mail from Demisto\nRegards\nDBot')
+            msg['Subject'] = 'Test mail from Demisto'
+            msg['From'] = FROM
+            msg['To'] = FROM
+            SERVER.sendmail(FROM, [FROM], msg.as_string())
+            SERVER.quit()
+            demisto.results('ok')
+        elif demisto.command() == 'send-mail':
+            # Collect all parameters
+            to = argToList(demisto.getArg('to'))
+            cc = argToList(demisto.getArg('cc'))
+            bcc = argToList(demisto.getArg('bcc'))
+            subject = demisto.getArg('subject') or ''
+            body = demisto.getArg('body') or ''
+            htmlBody = demisto.getArg('htmlBody') or ''
+            replyTo = demisto.getArg('replyTo')
+            templateParams = template_params()
+            if templateParams:
+                body = body.format(**templateParams)
+                htmlBody = htmlBody.format(**templateParams)
 
-    if demisto.command() == 'test-module':
-        msg = MIMEText('This is a test mail from Demisto\nRegards\nDBot')
-        msg['Subject'] = 'Test mail from Demisto'
-        msg['From'] = FROM
-        msg['To'] = FROM
-        SERVER.sendmail(FROM, [FROM], msg.as_string())
-        SERVER.quit()
-        demisto.results('ok')
-    elif demisto.command() == 'send-mail':
-        # Collect all parameters
-        to = argToList(demisto.getArg('to'))
-        cc = argToList(demisto.getArg('cc'))
-        bcc = argToList(demisto.getArg('bcc'))
-        subject = demisto.getArg('subject') or ''
-        body = demisto.getArg('body') or ''
-        htmlBody = demisto.getArg('htmlBody') or ''
-        replyTo = demisto.getArg('replyTo')
-        templateParams = template_params()
-        if templateParams:
-            body = body.format(**templateParams)
-            htmlBody = htmlBody.format(**templateParams)
+            # Basic validation - we allow pretty much everything but you have to have at least a recipient
+            # We allow messages without subject and also without body
+            if not to and not cc and not bcc:
+                return_error('You must have at least one recipient')
 
-        # Basic validation - we allow pretty much everything but you have to have at least a recipient
-        # We allow messages without subject and also without body
-        if not to and not cc and not bcc:
-            return_error('You must have at least one recipient')
+            attachments = collect_attachments()
+            attachments.extend(collect_manual_attachments())
 
-        attachments = collect_attachments()
-        attachments.extend(collect_manual_attachments())
-
-        # Let's see what type of message we are talking about
-        if not htmlBody:
-            # This is a simple text message - we cannot have CIDs here
-            if len(attachments) > 0:
-                # This is multipart - default is mixed
-                msg = MIMEMultipart()
-                msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
-                msg.attach(MIMEText(body, 'plain', 'utf-8'))
-                for att in attachments:
-                    handle_file(msg, att['name'], att['maintype'], att['subtype'], None, att['data'])
-            else:
-                # Just text, how boring
-                msg = MIMEText(body, 'plain', 'utf-8')
-        else:
-            htmlBody, htmlAttachments = handle_html(htmlBody)
-            attachments += htmlAttachments
-            if len(attachments) > 0:
-                msg = MIMEMultipart()
-                msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
-                if body:
-                    alt = MIMEMultipart('alternative')
-                    alt.attach(MIMEText(body, 'plain', 'utf-8'))
-                    alt.attach(MIMEText(htmlBody, 'html', 'utf-8'))
-                    msg.attach(alt)
-                else:
-                    msg.attach(MIMEText(htmlBody, 'html', 'utf-8'))
-                for att in attachments:
-                    handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
-            else:
-                if body:
-                    msg = MIMEMultipart('alternative')
+            # Let's see what type of message we are talking about
+            if not htmlBody:
+                # This is a simple text message - we cannot have CIDs here
+                if len(attachments) > 0:
+                    # This is multipart - default is mixed
+                    msg = MIMEMultipart()
                     msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
                     msg.attach(MIMEText(body, 'plain', 'utf-8'))
-                    msg.attach(MIMEText(htmlBody, 'html', 'utf-8'))
+                    for att in attachments:
+                        handle_file(msg, att['name'], att['maintype'], att['subtype'], None, att['data'])
                 else:
-                    msg = MIMEText(htmlBody, 'html', 'utf-8')
+                    # Just text, how boring
+                    msg = MIMEText(body, 'plain', 'utf-8')
+            else:
+                htmlBody, htmlAttachments = handle_html(htmlBody)
+                attachments += htmlAttachments
+                if len(attachments) > 0:
+                    msg = MIMEMultipart()
+                    msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
+                    if body:
+                        alt = MIMEMultipart('alternative')
+                        alt.attach(MIMEText(body, 'plain', 'utf-8'))
+                        alt.attach(MIMEText(htmlBody, 'html', 'utf-8'))
+                        msg.attach(alt)
+                    else:
+                        msg.attach(MIMEText(htmlBody, 'html', 'utf-8'))
+                    for att in attachments:
+                        handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
+                else:
+                    if body:
+                        msg = MIMEMultipart('alternative')
+                        msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
+                        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                        msg.attach(MIMEText(htmlBody, 'html', 'utf-8'))
+                    else:
+                        msg = MIMEText(htmlBody, 'html', 'utf-8')
 
-        # Add the relevant headers to the most outer message
-        msg['Subject'] = subject
-        msg['From'] = FROM
-        if replyTo:
-            msg['Reply-To'] = replyTo
-        if to:
-            msg['To'] = ','.join(to)
-        if cc:
-            msg['CC'] = ','.join(cc)
-        # Notice we should not add BCC header since Python2 does not filter it
-        SERVER.sendmail(FROM, to + cc + bcc, msg.as_string())
-        SERVER.quit()
-        demisto.results('Mail sent successfully')
-    else:
-        return_error('Command not recognized')
+            # Add the relevant headers to the most outer message
+            msg['Subject'] = subject
+            msg['From'] = FROM
+            if replyTo:
+                msg['Reply-To'] = replyTo
+            if to:
+                msg['To'] = ','.join(to)
+            if cc:
+                msg['CC'] = ','.join(cc)
+            # Notice we should not add BCC header since Python2 does not filter it
+            SERVER.sendmail(FROM, to + cc + bcc, msg.as_string())
+            SERVER.quit()
+            demisto.results('Mail sent successfully')
+        else:
+            return_error('Command not recognized')
+    except Exception, e:
+        return_error(e)
   type: python
   commands:
   - name: send-mail
@@ -405,3 +413,4 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
+releaseNotes: "Displays better errors (no traceback)"
