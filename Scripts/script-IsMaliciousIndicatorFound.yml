@@ -3,28 +3,38 @@ commonfields:
   version: -1
 name: IsMaliciousIndicatorFound
 script: |-
-  minScore = (args.includeSuspicious == 'yes') ? 1 : 2
+  minScore = (args.includeSuspicious == 'yes') ? 2 : 3
 
-  files = dq(invContext,`DBotScore(val.Type.toLowerCase()=='file' && val.Score>${minScore})`)
-  ips = dq(invContext,`DBotScore(val.Type.toLowerCase()=='ip' && val.Score>${minScore})`)
-  urls = dq(invContext,`DBotScore(val.Type.toLowerCase()=='url' && val.Score>${minScore})`)
-  domains = dq(invContext,`DBotScore(val.Type.toLowerCase()=='domain' && val.Score>${minScore})`)
-  emails = dq(invContext,`DBotScore(val.Type.toLowerCase()=='email' && val.Score>${minScore})`)
+  files = dq(invContext,`DBotScore(val.Type.toLowerCase()=='file' && val.Score>=${minScore})`)
+  ips = dq(invContext,`DBotScore(val.Type.toLowerCase()=='ip' && val.Score>=${minScore})`)
+  urls = dq(invContext,`DBotScore(val.Type.toLowerCase()=='url' && val.Score>=${minScore})`)
+  domains = dq(invContext,`DBotScore(val.Type.toLowerCase()=='domain' && val.Score>=${minScore})`)
+  emails = dq(invContext,`DBotScore(val.Type.toLowerCase()=='email' && val.Score>=${minScore})`)
 
-  if (files && (!Array.isArray(files) || files.length > 0)) {
+  if ((files   && (!Array.isArray(files)   || files.length > 0))   ||
+      (ips     && (!Array.isArray(ips)     || ips.length > 0))     ||
+      (urls    && (!Array.isArray(urls)    || urls.length > 0))    ||
+      (domains && (!Array.isArray(domains) || domains.length > 0)) ||
+      (emails  && (!Array.isArray(emails)  || emails.length > 0))) {
       return 'yes'
   }
-  if (ips && (!Array.isArray(ips) || ips.length > 0)) {
-      return 'yes'
-  }
-  if (urls && (!Array.isArray(urls) || urls.length > 0)) {
-      return 'yes'
-  }
-  if (domains && (!Array.isArray(domains) || domains.length > 0)) {
-      return 'yes'
-  }
-  if (emails && (!Array.isArray(emails) || emails.length > 0)) {
-      return 'yes'
+
+  if (args.searchIndicators == 'yes') {
+      var query = "(reputation:Bad"
+      if (args.includeSuspicious == 'yes') {
+          query = query + " or reputation:Suspicious"
+      }
+      query = query + ")"
+
+      if ((args.maliciousQueryOverride) && (args.maliciousQueryOverride.length > 0)) {
+          query = args.maliciousQueryOverride
+      }
+
+      var indicatorsRes = executeCommand("findIndicators", {"query":query+" and investigationIDs:"+investigation.id,"size":1})
+      if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
+          // we have results, so we found a maliciuos indicator for this investigation
+          return 'yes';
+      }
   }
 
   return 'no'
@@ -44,14 +54,20 @@ args:
   - "no"
   description: Whether to check also suspicious indicators - yes/no
   defaultValue: "no"
+- name: queryIndicators
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Query all indicators in investigation (relevant if running in sub-playbook)
+  defaultValue: "yes"
 - name: maliciousQueryOverride
-  description: Override the query to search for malicious indicators in Demisto
+  description: Override the query for malicious indicators in Demisto
 outputs:
 - contextPath: "yes"
   description: if found any Malicious File/URL/IP/Email/Domain in the investigation
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP/Email/Domain in the investigation
 scripttarget: 0
-tests:
-- "Test-IsMaliciousIndicatorFound"
-releaseNotes: "Fix to only depend on DBotScore.Score"
+runonce: false
+runas: DBotWeakRole
