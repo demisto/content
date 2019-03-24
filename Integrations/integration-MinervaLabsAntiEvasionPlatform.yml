@@ -11,22 +11,23 @@ detaileddescription: |-
   Minerva Labs integration with Demisto.
   The integration queries the Minerva server for new events, endpoint status, groups and able to create active response such as adding vaccinations and exclusions.
 configuration:
-- display: url
+- display: Minerva Management Console URL
   name: url
   defaultvalue: ""
   type: 0
   required: true
-- display: user
+- display: Minerva Management Console user
   name: user
   defaultvalue: ""
   type: 0
   required: true
-- display: password
+- display: Minerva Management Console password
   name: password
   defaultvalue: ""
   type: 0
   required: true
-- display: insecure
+- display: Boolean value to indicate that the Minerva Management Console uses insecure
+    communication or not
   name: insecure
   defaultvalue: ""
   type: 8
