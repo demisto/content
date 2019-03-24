@@ -1,0 +1,193 @@
+id: Vertica Test
+version: -1
+name: Vertica Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6116b74b-4133-464c-8edc-3ff09bcba4bc
+    type: start
+    task:
+      id: 6116b74b-4133-464c-8edc-3ff09bcba4bc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: b31903b2-8784-4e53-804c-b6e47fad1a89
+    type: regular
+    task:
+      id: b31903b2-8784-4e53-804c-b6e47fad1a89
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 819e14bb-f9b8-4980-88b8-b7b3f0d49261
+    type: regular
+    task:
+      id: 819e14bb-f9b8-4980-88b8-b7b3f0d49261
+      version: -1
+      name: Query for system tables
+      script: '|||vertica-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT
+          5;
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: a06d007f-69f3-41dd-84ff-2ccc0cd7cac7
+    type: condition
+    task:
+      id: a06d007f-69f3-41dd-84ff-2ccc0cd7cac7
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Vertica.Row.TableSchema
+            iscontext: true
+          right:
+            value:
+              simple: v_catalog
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0919def7-0b1e-4bb9-8292-a69203453846
+    type: title
+    task:
+      id: 0919def7-0b1e-4bb9-8292-a69203453846
+      version: -1
+      name: Query was done successfully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 0b7ef8b5-31c2-41e6-88d6-8c48c8eff3bc
+    type: regular
+    task:
+      id: 0b7ef8b5-31c2-41e6-88d6-8c48c8eff3bc
+      version: -1
+      name: Context was not found
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Query failed due to reasons
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 795,
+        "width": 910,
+        "x": 200,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
