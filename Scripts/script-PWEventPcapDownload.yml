@@ -51,6 +51,5 @@ dependson:
   must:
   - ProtectWise|||event-pcap-download
 timeout: 0s
-releaseNotes: No change
 tests:
 - Protectwise-Test
