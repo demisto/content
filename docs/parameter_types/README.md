@@ -86,7 +86,7 @@ Access: `demisto.params().get('sort')`
 
 ## Important Note
 
-Once a parameter is set in an integration parameter, it is saved to the Demisto server, so before changing an existing
+Once a parameter is set in an integration configuration, it is saved to the Demisto database, so before changing an existing
 parameter you have to consider the existing values (backward compatibility).
 
 
