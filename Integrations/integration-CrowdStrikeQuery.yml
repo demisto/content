@@ -686,7 +686,8 @@ script:
             payload['assigned_to_uuid'] = assigned_to_uuid
         if show_in_ui:
             payload['show_in_ui'] = show_in_ui
-        return http_request('PATCH', '/detects/entities/detects/v2', data=json.dumps(payload))
+        data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"', '"show_in_ui": true')
+        return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
 
     ''' COMMANDS FUNCTIONS '''
@@ -807,13 +808,13 @@ script:
 
     def resolve_detection_command():
         args = demisto.args()
-        ids = str(argToList(args.get('ids')))[1:-1]
+        ids = argToList(args.get('ids'))
         status = args.get('status')
         assigned_to_uuid = args.get('assigned_to_uuid')
         show_in_ui = args.get('show_in_ui')
         raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui)
         args.pop('ids')
-        hr = "Detection {0} was updated\n".format(ids)
+        hr = "Detection {0} was updated\n".format(str(ids)[1:-1])
         hr += 'With the following values:\n'
         for k, arg in args.items():
             hr += '\t{0}:{1}\n'.format(k, arg)
