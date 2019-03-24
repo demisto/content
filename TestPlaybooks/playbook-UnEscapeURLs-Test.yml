@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 50
         }
       }
@@ -47,6 +47,7 @@ tasks:
       - "10"
       - "15"
       - "17"
+      - "20"
     scriptarguments:
       all:
         simple: "yes"
@@ -58,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 195
         }
       }
@@ -125,10 +126,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e379744d-5cb2-414c-80f1-1a06e5708873
+    taskid: de491741-2d76-431e-849d-ab3adfed7d94
     type: regular
     task:
-      id: e379744d-5cb2-414c-80f1-1a06e5708873
+      id: de491741-2d76-431e-849d-ab3adfed7d94
       version: -1
       name: Check Url
       scriptName: VerifyHumanReadableContains
@@ -169,7 +170,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 720
         }
       }
@@ -389,15 +390,16 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: dfcbb9df-c53c-4825-8916-ac60fe1c27ec
+    taskid: e57e6f75-6fa3-42e3-8ec3-a5bfa2c692ed
     type: regular
     task:
-      id: dfcbb9df-c53c-4825-8916-ac60fe1c27ec
+      id: e57e6f75-6fa3-42e3-8ec3-a5bfa2c692ed
       version: -1
       name: UnEscapeURLs an Array of urls
       description: |-
-        Extract URLs redirected by security tools like Proofpoint.
+        Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
         Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Changes na01.safelinks.protection.outlook.com/?url=https%3a%2f%2fexample.com -> https://example.com
         Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
       scriptName: UnEscapeURLs
       type: regular
@@ -423,10 +425,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: ece52ac4-174e-44fe-8473-013ec9d95050
+    taskid: 0affdd1b-af17-432b-8811-a77fd52b1d81
     type: regular
     task:
-      id: ece52ac4-174e-44fe-8473-013ec9d95050
+      id: 0affdd1b-af17-432b-8811-a77fd52b1d81
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -461,10 +463,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 4375a691-2ab7-4900-8a9c-7d2b6956bc07
+    taskid: 11e1f0e6-f719-4e0e-8da1-80a89d9aba76
     type: regular
     task:
-      id: 4375a691-2ab7-4900-8a9c-7d2b6956bc07
+      id: 11e1f0e6-f719-4e0e-8da1-80a89d9aba76
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -497,13 +499,85 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 34f5263d-9f9a-4889-8164-3d3d3ab0197b
+    type: regular
+    task:
+      id: 34f5263d-9f9a-4889-8164-3d3d3ab0197b
+      version: -1
+      name: UnEscapeURL with capitalized 'HTTPS'
+      description: |-
+        Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Changes na01.safelinks.protection.outlook.com/?url=https%3a%2f%2fexample.com -> https://example.com
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      extend-context:
+        simple: output=
+      input:
+        simple: HTTPS://autodesk.com/poststuff # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 6937cc6f-825d-457f-8fd4-315f74b6f721
+    type: condition
+    task:
+      id: 6937cc6f-825d-457f-8fd4-315f74b6f721
+      version: -1
+      name: Verify that the output URL is correct
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        complex:
+          root: output
+      right:
+        simple: https://autodesk.com/poststuff # disable-secrets-detection
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 2960,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
