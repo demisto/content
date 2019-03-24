@@ -19,7 +19,7 @@ script: |-
       return 'yes'
   }
 
-  if (args.searchIndicators == 'yes') {
+  if (args.queryIndicators == 'yes') {
       var query = "(reputation:Bad"
       if (args.includeSuspicious == 'yes') {
           query = query + " or reputation:Suspicious"
