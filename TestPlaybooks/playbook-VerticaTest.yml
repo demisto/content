@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 275,
           "y": 50
         }
       }
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 180
+          "x": 275,
+          "y": 195
         }
       }
     note: false
@@ -75,6 +75,7 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "7"
     scriptarguments:
       limit: {}
       query:
@@ -84,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 350
+          "x": 275,
+          "y": 370
         }
       }
     note: false
@@ -93,12 +94,12 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a06d007f-69f3-41dd-84ff-2ccc0cd7cac7
+    taskid: 9fcbec3d-651d-4f62-815d-a31f43e8c4cd
     type: condition
     task:
-      id: a06d007f-69f3-41dd-84ff-2ccc0cd7cac7
+      id: 9fcbec3d-651d-4f62-815d-a31f43e8c4cd
       version: -1
-      name: Verify Context
+      name: Verify Context Value
       type: condition
       iscommand: false
       brand: ""
@@ -122,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 520
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -144,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 750
+          "x": 490,
+          "y": 735
         }
       }
     note: false
@@ -170,8 +171,48 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 750
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 388dd168-11c2-44a0-8a09-c23df78d228a
+    type: condition
+    task:
+      id: 388dd168-11c2-44a0-8a09-c23df78d228a
+      version: -1
+      name: Check if main keys exist in context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Vertica.Query
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vertica.Row
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 545
         }
       }
     note: false
@@ -182,9 +223,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 795,
-        "width": 910,
-        "x": 200,
+        "height": 765,
+        "width": 830,
+        "x": 50,
         "y": 50
       }
     }
