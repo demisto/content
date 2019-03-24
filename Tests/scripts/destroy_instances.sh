@@ -3,7 +3,6 @@ set -e
 
 if [ -f ./Tests/is_build_failed.txt ]; then
     echo "Run Tests has failed, not Destroying instance"
-    rm -rf ./Tests/is_build_failed.txt
 else
    if [ -z "$2" ]
      then
