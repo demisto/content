@@ -42,7 +42,7 @@ script: |
       }
       // Not Proofpoint so just un-escape
       if (v === 0) {
-          var url = input.replace(/\[\.\]/g, '.').replace('hxxp', 'http').replace(/&amp;/g, '&');
+          var url = input.toLowerCase().replace(/\[\.\]/g, '.').replace('hxxp', 'http').replace(/&amp;/g, '&');
           // Normalize the URL with http prefix
           if (url.indexOf('http') !== 0 && url.indexOf('ftp') !== 0) {
               return 'http://' + url;
