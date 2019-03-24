@@ -1122,6 +1122,5 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "-"
 tests:
   - minemeld_test
