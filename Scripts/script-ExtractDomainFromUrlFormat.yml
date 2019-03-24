@@ -40,7 +40,7 @@ script: |
 
 
   def unescape_url(escaped_url):
-      url = escaped_url.replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')
+      url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')
       if url.find('http') != 0 and url.find('ftp') != 0:
           return 'http://' + url
       return url
