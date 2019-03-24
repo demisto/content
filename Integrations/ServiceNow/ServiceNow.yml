@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: ServiceNow_copy
+  id: ServiceNow
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -60,7 +60,7 @@ configuration:
   type: 8
 description: IT service management
 display: ServiceNow
-name: ServiceNow_copy
+name: ServiceNow
 script:
   commands:
   - arguments:
