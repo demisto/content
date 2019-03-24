@@ -710,6 +710,5 @@ script:
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
   runonce: false
-releaseNotes: wildfire-report erorr handling fix
 tests:
 - Wildfire Test
