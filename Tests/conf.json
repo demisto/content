@@ -1134,6 +1134,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
@@ -1185,13 +1189,15 @@
         "Whois": "Host periodically bans connection",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
         "Threat Grid": "instance problem (issue 16197)",
-        "BitDam": "Changes in service (issue #16247)"
+        "BitDam": "Changes in service (issue #16247)",
+        "SCADAfence CNM": "getting Bad gateway (issue #16277)"
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
         "Panorama": "Pending check: issue 16122",
