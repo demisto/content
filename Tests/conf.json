@@ -1134,6 +1134,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
