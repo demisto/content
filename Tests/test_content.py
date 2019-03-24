@@ -348,7 +348,7 @@ def organize_tests(tests, unmockable_integrations):
     return mock_tests + mockless_tests
 
 
-def execute_testing(server):
+def execute_testing(server, server_ip):
     options = options_handler()
     username = options.user
     password = options.password
@@ -392,12 +392,9 @@ def execute_testing(server):
         print('no integrations are configured for test')
         return
 
-    with open('public_ip', 'rb') as f:
-        public_ip = f.read().strip()
-
-    ami = AMIConnection(public_ip)
+    ami = AMIConnection(server_ip)
     ami.clone_mock_data()
-    proxy = MITMProxy(c, public_ip)
+    proxy = MITMProxy(c, server_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -497,11 +494,14 @@ def main():
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server)
-                sleep(5)
+                execute_testing(server, ami_instance_ip)
+                sleep(8)
 
     else:  # Run tests in Server build configuration
-        execute_testing(server)
+        with open('public_ip', 'rb') as f:
+            public_ip = f.read().strip()
+
+        execute_testing(server, public_ip)
 
 
 if __name__ == '__main__':

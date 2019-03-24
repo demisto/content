@@ -285,6 +285,5 @@ script:
       description: Scan ID of the URL to dispute
     description: DIspute the result of the scan
   runonce: false
-releaseNotes: "Add dispute url command"
 tests:
 - PhishAi-Test
