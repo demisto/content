@@ -129,6 +129,8 @@ def get_code_file(package_path, script_type):
     """
 
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    if not package_path.endswith('/'):
+        package_path += '/'
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path

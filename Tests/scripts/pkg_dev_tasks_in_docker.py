@@ -6,10 +6,11 @@ import subprocess
 import os
 import hashlib
 import sys
+import shutil
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-sys.path.append(SCRIPT_DIR + '/../..')
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
 from package_creator import get_code_file  # noqa: E402
 
 DEF_DOCKER = 'demisto/python:1.3-alpine'
@@ -56,7 +57,8 @@ def get_dev_requirements(project_dir, docker_image):
 
 
 def get_pylint_files(project_dir):
-    return get_code_file(project_dir, '.py')
+    code_file = get_code_file(project_dir, '.py')
+    return os.path.basename(code_file)
 
 
 def docker_image_create(docker_base_image, requirements):
@@ -90,16 +92,33 @@ def docker_image_create(docker_base_image, requirements):
     return target_image
 
 
-def docker_run(project_dir, docker_image, no_test, no_lint):
+def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
     workdir = '/devwork'
+    pylint_files = get_pylint_files(project_dir)
+    # copy demistomock and common server
+    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
+    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
+    shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
+    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
+                           'Scripts/script-CommonServerPython.yml', '-o',
+                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
     run_params = ['docker', 'create', '-v', workdir, '-w', workdir,
-                  '-e', 'PYLINT_FILES={}'.format(get_pylint_files(project_dir))]
-    run_params.append([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
+                  '-e', 'PYLINT_FILES={}'.format(pylint_files)]
+    if no_test:
+        run_params.extend(['-e', 'PYTEST_SKIP=1'])
+    if no_lint:
+        run_params.extend(['-e', 'PYLINT_SKIP=1'])
+    run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
-    subprocess.check_call(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir])
-    subprocess.check_call(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir])
-    subprocess.check_call(['docker', 'start', '-a', container_id])
-    subprocess.check_call(['docker', 'rm', container_id])
+    try:
+        subprocess.check_call(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir])
+        subprocess.check_call(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir])
+        subprocess.check_call(['docker', 'start', '-a', container_id])
+    finally:
+        if not keep_container:
+            subprocess.check_output(['docker', 'rm', container_id])
+        else:
+            print("Test container [{}] was left available".format(container_id))
 
 
 def main():
@@ -110,6 +129,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     parser.add_argument("-d", "--dir", help="Specify directory of integration/script", required=True)
     parser.add_argument("--no-lint", help="Do NOT lint (skip pylint)", action='store_true')
     parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
+    parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
 
     args = parser.parse_args()
@@ -120,8 +140,9 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     global LOG_VERBOSE
     LOG_VERBOSE = args.verbose
 
+    project_dir = os.path.abspath(args.dir)
     # load yaml
-    yml_path = glob.glob(args.dir + '/*.yml')[0]
+    yml_path = glob.glob(project_dir + '/*.yml')[0]
     print_v('Using yaml file: {}'.format(yml_path))
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
@@ -131,13 +152,18 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     script_type = script_obj.get('type')
     if script_type != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
-        return
+        return 1
     docker = get_docker_image(script_obj)
     print_v("Using docker image: {}".format(docker))
-    requirements = get_dev_requirements(args.dir, docker)
+    requirements = get_dev_requirements(project_dir, docker)
     docker_image_created = docker_image_create(docker, requirements)
-    docker_run(args.dir, docker_image_created, args.no_test, args.no_lint)
+    try:
+        docker_run(project_dir, docker_image_created, args.no_test, args.no_lint, args.keep_container)
+    except subprocess.CalledProcessError as ex:
+        sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
+        return 2
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
