@@ -290,11 +290,8 @@ script:
   script: |-
     ''' IMPORTS '''
 
-    # TODO: ADD crowdstrike-get-behavior command
-
     import json
     import requests
-    from requests.auth import HTTPBasicAuth
     import base64
 
     # Disable insecure warnings
@@ -378,7 +375,14 @@ script:
 
     ''' SPLIT KEY DICTIONARY '''
 
-    #   Pattern: {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
+    """
+        Pattern: {
+                    'Path': 'Path to item',
+                    'NewKey': 'Value of output key',
+                    'Delim': 'Delimiter char',
+                    'Index': Split Array Index
+                  }
+    """
     DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
         {
             'Path': 'parent_details.parent_process_graph_id',
@@ -419,9 +423,14 @@ script:
             :type data: ``str``
             :param data: The body data of the request.
 
-            :param headers:
-            :param safe:
-            :return:
+            :type headers: ``dict``
+            :param headers: Request headers
+
+            :type safe: ``bool``
+            :param safe: If set to true will return None in case of error
+
+            :return: Returns the http request response json
+            :rtype: ``dict``
         """
         url = SERVER + url_suffix
         demisto.info("\n\n####SENDING URL: {}\n".format(url))
@@ -444,6 +453,21 @@ script:
 
 
     def create_entry_object(contents='', ec=None, hr=''):
+        """
+            Creates an entry object
+
+            :type contents: ``dict``
+            :param contents: Raw response to output
+
+            :type ec: ``dict``
+            :param ec: Entry context of the entry object
+
+            :type hr: ``str``
+            :param hr: Human readable
+
+            :return: Entry object
+            :rtype: ``dict``
+        """
         return {
             'Type': entryTypes['note'],
             'Contents': contents,
@@ -455,6 +479,15 @@ script:
 
 
     def detection_to_incident(detection):
+        """
+            Creates an incident of a detection.
+
+            :type detection: ``dict``
+            :param detection: Single detection object
+
+            :return: Incident representation of a detection
+            :rtype ``dict``
+        """
         incident = {
             'name': 'Detection ID: ' + str(detection.get('detection_id')),
             'occurred': str(detection.get('first_behavior')),
@@ -465,6 +498,15 @@ script:
 
 
     def severity_string_to_int(severity):
+        """
+            Converts a severity string to DBot score representation
+
+            :type severity: ``str``
+            :param severity: String representation of a severity
+
+            :return: DBot score representation of the severity
+            :rtype ``int``
+        """
         if severity in ('Critical', 'High'):
             return 3
         elif severity in ('Medium', 'Low'):
@@ -474,7 +516,16 @@ script:
 
     def get_trasnformed_dict(old_dict, transformation_dict):
         """
-        Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
+            Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
+
+            :type old_dict: ``dict``
+            :param old_dict: Old dictionary to pull values from
+
+            :type transformation_dict: ``dict``
+            :param transformation_dict: Transformation dictionary that contains oldkeys:newkeys
+
+            :return Transformed dictionart (according to transformation_dict values)
+            :rtype ``dict``
         """
         new_dict = {}
         for k in list(old_dict.keys()):
@@ -485,8 +536,8 @@ script:
 
     def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
         """
-        Extracts new values out of old_dict using a json structure of:
-        {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
+            Extracts new values out of old_dict using a json structure of:
+            {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
         """
         new_dict = {}
         for trans_dict in transformation_dict_arr:
@@ -504,12 +555,17 @@ script:
 
 
     def get_token():
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :rtype: ``str``
+            :return: Token
+        """
         now = datetime.now()
         ctx = demisto.getIntegrationContext()
         if ctx:
             time_delta = now - datetime.fromtimestamp(ctx.get('time'))
             passed_mins = time_delta.seconds / 60
-            demisto.info('\n\n##### PASSED MINS: {}\n\n'.format(passed_mins))
             auth_token = get_token_request() if passed_mins >= TOKEN_LIFE_TIME else ctx.get('auth_token')
         else:
             auth_token = get_token_request()
@@ -519,6 +575,12 @@ script:
 
 
     def get_token_request():
+        """
+            Sends token request
+
+            :rtype ``str``
+            :return: Access token
+        """
         body = {
             'client_id': USERNAME,
             'client_secret': PASSWORD
@@ -536,6 +598,15 @@ script:
 
 
     def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
+        """
+            Sends detections request. The function will ignore the arguments passed according to priority:
+            filter_arg > behavior_id > last_behavior_time
+
+            :param last_behavior_time: 3rd priority. The last behavior time of results will be greater than this value
+            :param behavior_id: 2nd priority. The result will only contain the detections with matching behavior id
+            :param filter_arg: 1st priority. The result will be filtered using this argument.
+            :return: Response json of the get detection endpoint (IDs of the detections)
+        """
         endpoint_url = '/detects/queries/detects/v1'
         params = {
             'sort': 'first_behavior.asc'
@@ -552,6 +623,11 @@ script:
 
 
     def get_detections_entities(detections_ids):
+        """
+            Sends detection entities request
+            :param detections_ids: IDs of the requested detections.
+            :return: Response json of the get detection entities endpoint (detection objects)
+        """
         ids_json = {'ids': detections_ids}
         if detections_ids:
             response = http_request(
@@ -564,6 +640,10 @@ script:
 
 
     def create_ioc():
+        """
+            UNTESTED - Creates an IoC
+            :return: Response json of create IoC request
+        """
         args = demisto.args()
         input_args = {}
         # req args:
@@ -581,6 +661,10 @@ script:
 
 
     def search_iocs():
+        """
+            UNTESTED IN OAUTH 2- Searches an IoC
+            :return: IoCs that were found in the search
+        """
         args = demisto.args()
         ids = args.get('ids')
         if not ids:
@@ -612,11 +696,21 @@ script:
 
 
     def enrich_ioc_dict_with_ids(ioc_dict):
+        """
+            Enriches the provided ioc_dict with IoC ID
+            :param ioc_dict: IoC dict transformed using the SEARCH_IOC_KEY_MAP
+            :return: ioc_dict with its ID key:value updated
+        """
         for ioc in ioc_dict:
             ioc['ID'] = '{0}:{1}'.format(ioc.get('Type'), ioc.get('Value'))
+        return ioc_dict
 
 
     def delete_ioc():
+        """
+            UNTESTED - Sends a delete IoC request
+            :return: Response json of delete IoC
+        """
         ids = str(demisto.args().get('ids'))
         payload = {
             'ids': ids
@@ -625,6 +719,10 @@ script:
 
 
     def update_iocs():
+        """
+            UNTESTED - Updates the values one or more IoC
+            :return: Response json of update IoC request
+        """
         args = demisto.args()
         input_args = {
             'ids': args.get('ids'),
@@ -640,7 +738,9 @@ script:
 
     def search_device():
         """
-        Searches for devices using the argument provided by the command execution. Returns empty result of no device was found.
+            Searches for devices using the argument provided by the command execution. Returns empty
+            result of no device was found
+            :return: Search device response json
         """
         args = demisto.args()
         input_arg_dict = {
@@ -671,12 +771,25 @@ script:
 
 
     def behavior_to_entry_context(behavior):
+        """
+            Transforms a behavior to entry context representation
+            :param behavior: Behavior dict in the format of crowdstrike's API response
+            :return: Behavior in entry context representation
+        """
         raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
         raw_entry.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
         return raw_entry
 
 
     def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
+        """
+            Sends a resolve detection request
+            :param ids: Single or multiple ids in an array string format
+            :param status: New status of the detection
+            :param assigned_to_uuid: uuid to assign the detection to
+            :param show_in_ui: Boolean flag in string format (true/false)
+            :return: Resolve detection response json
+        """
         payload = {
             'ids': ids
         }
@@ -686,6 +799,7 @@ script:
             payload['assigned_to_uuid'] = assigned_to_uuid
         if show_in_ui:
             payload['show_in_ui'] = show_in_ui
+        # We do this so show_in_ui value won't contain ""
         data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"', '"show_in_ui": true')
         return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
@@ -694,6 +808,10 @@ script:
 
 
     def fetch_incidents():
+        """
+            Fetches incident using the detections API
+            :return: Fetched detections in incident format
+        """
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
         last_fetch = last_run.get('first_behavior_time')
@@ -726,11 +844,19 @@ script:
 
 
     def create_ioc_command():
+        """
+            UNTESTED - Creates an IoC
+            :return: EntryObject of create IoC command
+        """
         raw_res = create_ioc()
         return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
 
 
     def search_iocs_command():
+        """
+            UNTESTED IN OAUTH 2 - Searches for an ioc
+            :return: EntryObject of search IoC command
+        """
         raw_res = search_iocs()
         if not raw_res:
             return create_entry_object(hr='Could not find any Indicators of Compromise.')
@@ -742,18 +868,30 @@ script:
 
 
     def delete_iocs_command():
+        """
+            UNTESTED - Deletes an IoC
+            :return: EntryObject of delete IoC command
+        """
         raw_res = delete_ioc()
         ids = demisto.args().get('ids')
         return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
 
 
     def update_iocs_command():
+        """
+            UNTESTED - Updates an IoC
+            :return: EntryObject of update IoC command
+        """
         raw_res = update_iocs()
         ids = demisto.args().get('ids')
         return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
 
 
     def search_device_command():
+        """
+            Searches for a device
+            :return: EntryObject of search device command
+        """
         raw_res = search_device()
         if not raw_res:
             return create_entry_object(hr='Could not find any devices.')
@@ -766,6 +904,10 @@ script:
 
 
     def get_behavior_command():
+        """
+            Gets a behavior by ID
+            :return: EntryObject of get behavior command
+        """
         behavior_id = demisto.args().get('behavior_id')
         detections_ids = demisto.get(get_detections(behavior_id=behavior_id), 'resources')
         raw_res = get_detections_entities(detections_ids)
@@ -781,6 +923,10 @@ script:
 
 
     def search_detections_command():
+        """
+            Searches for a detection
+            :return: EntryObject of search detections command
+        """
         d_args = demisto.args()
         detections_ids = argToList(d_args.get('ids'))
         if not detections_ids:
@@ -807,6 +953,10 @@ script:
 
 
     def resolve_detection_command():
+        """
+            Resolves single or multiple detections
+            :return: EntryObject of resolve detection command
+        """
         args = demisto.args()
         ids = argToList(args.get('ids'))
         status = args.get('status')
