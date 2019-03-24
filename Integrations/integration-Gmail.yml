@@ -1822,4 +1822,3 @@ script:
 tests:
   - Gmail Convert Html Test
   - GmailTest
-releaseNotes: "Fixed fetch incidents"
