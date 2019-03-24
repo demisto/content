@@ -5,6 +5,7 @@ import boto3
 import json
 import re
 import datetime
+from botocore.config import Config
 
 """PARAMETERS"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
@@ -15,6 +16,15 @@ AWS_rolePolicy = None
 AWS_access_key_id = demisto.params().get('access_key')
 AWS_secret_access_key = demisto.params().get('secret_key')
 AWS_session_token = demisto.params().get('session_token')
+VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+if not demisto.params().get('proxy', False):
+    config = Config(
+        retries=dict(
+            max_attempts=10
+        )
+    )
+else:
+    config = None
 
 
 """HELPER FUNCTIONS"""
@@ -52,7 +62,9 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                 region_name=region,
                 aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
                 aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
+                aws_session_token=sts_response['Credentials']['SessionToken'],
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
         else:
             client = boto3.client(
@@ -60,7 +72,9 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                 region_name=AWS_DEFAULT_REGION,
                 aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
                 aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
+                aws_session_token=sts_response['Credentials']['SessionToken'],
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
     else:
         if region is not None:
@@ -69,7 +83,9 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                 region_name=region,
                 aws_access_key_id=AWS_access_key_id,
                 aws_secret_access_key=AWS_secret_access_key,
-                aws_session_token=AWS_session_token
+                aws_session_token=AWS_session_token,
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
         else:
             client = boto3.client(
@@ -77,7 +93,9 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                 region_name=AWS_DEFAULT_REGION,
                 aws_access_key_id=AWS_access_key_id,
                 aws_secret_access_key=AWS_secret_access_key,
-                aws_session_token=AWS_session_token
+                aws_session_token=AWS_session_token,
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
 
     return client
@@ -1817,3 +1835,5 @@ try:
         modify_instance_attribute(demisto.args())
 except Exception as e:
     return_error('Error has occurred in the AWS EC2 Integration: {}\n {}'.format(type(e), e.message))
+finally:
+    enable_proxy()
