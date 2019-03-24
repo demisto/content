@@ -43,7 +43,7 @@ configuration:
   required: false
 script:
   script: |
-    # ''' IMPORTS '''
+    ''' IMPORTS '''
     import json
 
     import requests
@@ -51,21 +51,21 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    # ''' GLOBALS '''
+    ''' GLOBALS '''
     USERNAME = demisto.params().get('user')
     PASSWORD = demisto.params().get('password')
     BASE_URL = demisto.params().get('url')
     VERIFY_SSL = demisto.params().get('insecure')
 
 
-    # ''' HELPERS '''
+    ''' HELPERS '''
     def get_session():
         session = requests.Session()
         session.verify = VERIFY_SSL
         return session
 
 
-    # ''' FUNCTIONS '''
+    ''' FUNCTIONS '''
     @logger
     def login():
         return session.post(BASE_URL + '/api/login',
@@ -136,7 +136,7 @@ script:
         demisto.results(response.json())
 
 
-    # ''' EXECUTION '''
+    ''' EXECUTION '''
     session = get_session()
     try:
         def add_exclusion_command():
