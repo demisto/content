@@ -471,7 +471,8 @@ def execute_testing(server, server_ip, server_version):
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        with open("./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', '')), "w") as is_build_failed_file:
+        file_path = "./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', ''))
+        with open(file_path, "w") as is_build_failed_file:
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
