@@ -329,7 +329,7 @@ tasks:
       extend-context:
         simple: URL1_HASH=sha256
       url:
-        simple: https://onedrive.live.com/?authkey=%21AFQyTp%5FDkLiDBm5&cid=7CDC24A857AA4E43&id=7CDC24A857AA4E43%21105&parId # disable-secrets-detection
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darPd # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -431,7 +431,7 @@ tasks:
       extend-context:
         simple: URL2_HASH=sha256
       url:
-        simple: https://onedrive.live.com/?authkey=%21AFQyTp%5FDkLiDBm5&cid=7CDC24A857AA4E43&id=7CDC24A857AA4E43%21105&parI5 # disable-secrets-detection
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darP5 # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -451,8 +451,8 @@ tasks:
       id: 374ad005-7417-4e9b-844d-878310ec8866
       version: -1
       name: Verify different hashes for different submitted URLs
-      description: Ensure that the _entire_ URL is being submitted to crowdstrike
-        and not only the contents up until the first ampersand. If the two URLs (whose
+      description: Ensure that the URL is being submitted correctly to crowdstrike
+        and not only the contents up until the first ampersand are being processed by crowdstrike. If the two URLs (whose
         contents only differ after the ampersand) get the same hash returned by crowdstrike
         it means that we are incorrectly submitting the URLs and that their contents
         are getting cut off at the first ampersand (this is bad, the desired behavior
