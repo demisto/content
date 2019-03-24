@@ -63,7 +63,15 @@ script:
         );
 
         if (result.StatusCode < 200 || result.StatusCode > 299) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + '\n' + result.Body;
+            if (result.StatusCode == 503) {
+                throw '503 - Rate limit exceeded. Contact your Autofocus representative.';
+            }
+            if (result.StatusCode == 409) {
+                throw '409 - Invalid message or missing parameters.';
+            }
+            else {
+                throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + '\n' + result.Body;
+            }
         }
         if (result.Body === '') {
             throw 'No content received.';
@@ -544,6 +552,6 @@ script:
       type: string
     description: Check file reputation of the given hash
   runonce: false
-releaseNotes: Entry table fixes
+releaseNotes: Entry table fixes, handle htttp errors(quota, bad request, etc) gracefully.
 tests:
 - autofocus_test
