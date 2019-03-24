@@ -96,6 +96,7 @@ script: |-
           if isinstance(objects, list):
               for obj in objects:
                   if isinstance(obj, dict) and "pattern" in obj:
+                      # Creating parameters
                       ind_id = obj.get("id")
                       timestamp = obj.get("created")
                       pattern = obj.get("pattern")
@@ -125,18 +126,17 @@ script: |-
                                               score=score,
                                           )
                                           results_list.append(result)
-                              else:
-                                  if v:
-                                      result = create_indicator_entry(
-                                          indicator_type=k,
-                                          value=v,
-                                          pkg_id=pkg_id,
-                                          ind_id=ind_id,
-                                          timestamp=timestamp,
-                                          source=source,
-                                          score=score,
-                                      )
-                                      results_list.append(result)
+                              elif v:
+                                  result = create_indicator_entry(
+                                      indicator_type=k,
+                                      value=v,
+                                      pkg_id=pkg_id,
+                                      ind_id=ind_id,
+                                      timestamp=timestamp,
+                                      source=source,
+                                      score=score,
+                                  )
+                                  results_list.append(result)
           return results_list
       return None
 
@@ -157,24 +157,24 @@ script: |-
 
       # Remove None/empty strings
       new_indicators = dict()
-      if "URL" in indicators:
+      if "URL" in indicators and indicators["URL"]:
           new_indicators["URL"] = list(set(indicators.get("URL")))
 
-      if "Domain" in indicators:
+      if "Domain" in indicators and indicators["Domain"]:
           new_indicators["Domain"] = list(set(indicators.get("Domain")))
 
       new_indicators["File"] = list()
-      if "MD5" in indicators:
+      if "MD5" in indicators and indicators["MD5"]:
           if not isinstance(indicators["MD5"], list):
               indicators = [indicators]
           new_indicators["File"] += (list(set(indicators.get("MD5"))))
 
-      if "SHA1" in indicators:
+      if "SHA1" in indicators and indicators["SHA1"]:
           if not isinstance(indicators["SHA1"], list):
               indicators = [indicators]
           new_indicators["File"] += (list(set(indicators.get("SHA1"))))
 
-      if "SHA256" in indicators:
+      if "SHA256" in indicators and indicators["SHA256"]:
           if not isinstance(indicators["SHA256"], list):
               indicators = [indicators]
           new_indicators["File"] += (list(set(indicators.get("SHA256"))))
@@ -247,14 +247,15 @@ script: |-
       Args:
           stx_obj: json object
       """
+      global DATA
       if isinstance(stx_obj, dict):
           results = extract_patterns(stx_obj)
-          demisto.results(results)
+          DATA.append(results)
       elif isinstance(stx_obj, list):
           for obj in stx_obj:
               results = extract_patterns(obj)
               if results:
-                demisto.results(results)
+                DATA.append(results)
 
 
   # Start of script
@@ -269,6 +270,7 @@ script: |-
           stx = STIXPackage.from_xml(temp.name)
           stix1_to_demisto(stx)
 
+  # Returns entry to demisto
   json_data = json.dumps(DATA)
   demisto.results(json_data)
 type: python
