@@ -18,13 +18,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -600
         }
       }
     note: false
@@ -44,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -279,7 +279,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -377,33 +377,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: be1c63ab-e412-432a-8379-3c343ea501f8
-    type: playbook
-    task:
-      id: be1c63ab-e412-432a-8379-3c343ea501f8
-      version: -1
-      name: Extract Indicators From File - Generic
-      playbookName: Extract Indicators From File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-      - "14"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 869
+          "y": 250
         }
       }
     note: false
@@ -514,6 +488,165 @@ tasks:
       }
     note: false
     timertriggers: []
+  "15":
+    id: "15"
+    taskid: c5d8255b-e175-4f8b-81d7-19e45bfd30c9
+    type: regular
+    task:
+      id: c5d8255b-e175-4f8b-81d7-19e45bfd30c9
+      version: -1
+      name: Delete Context
+      description: Delete the context of the incident to start with clear context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 29c8d166-e11e-4f64-8e83-ac5c8de067de
+    type: regular
+    task:
+      id: 29c8d166-e11e-4f64-8e83-ac5c8de067de
+      version: -1
+      name: download invalid pdf file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/jpg_with_pdf_extension.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 336003d0-2d7b-42c4-8be1-3047342ccece
+    type: condition
+    task:
+      id: 336003d0-2d7b-42c4-8be1-3047342ccece
+      version: -1
+      name: validate output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 7da44f9c-baf2-4c31-84e2-11c20bd50230
+    type: playbook
+    task:
+      id: 7da44f9c-baf2-4c31-84e2-11c20bd50230
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 1b76a5a5-6444-4dc3-8874-9d9089a86675
+    type: playbook
+    task:
+      id: 1b76a5a5-6444-4dc3-8874-9d9089a86675
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "14"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -522,12 +655,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1495,
+        "height": 2145,
         "width": 1820,
         "x": -660,
-        "y": 50
+        "y": -600
       }
     }
   }
 inputs: []
 outputs: []
+releaseNotes: 'test Extract Indicators From File - Generic playbook with invalid pdf file'
