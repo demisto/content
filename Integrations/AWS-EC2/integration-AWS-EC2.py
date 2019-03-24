@@ -6,7 +6,6 @@ import json
 import re
 import datetime
 
-
 """PARAMETERS"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
 AWS_roleArn = demisto.params().get('roleArn')
@@ -19,6 +18,8 @@ AWS_session_token = demisto.params().get('session_token')
 
 
 """HELPER FUNCTIONS"""
+
+
 def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
                 rolePolicy=None):
     kwargs = {}
@@ -137,6 +138,8 @@ def parse_resource_ids(resource_id):
 
 
 """MAIN FUNCTIONS"""
+
+
 def describe_regions(args):
     client = aws_session(
         region=args.get('region'),
@@ -720,7 +723,6 @@ def delete_snapshot(args):
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Snapshot with ID: {0} was deleted".format(args.get('snapshotId')))
-
 
 
 def create_image(args):
