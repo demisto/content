@@ -96,7 +96,7 @@ script: |-
           objects = stx_obj.get("objects")
           if isinstance(objects, list):
               for obj in objects:
-                  if isinstance(obj, dict) and "pattern" in obj:
+                  if isinstance(obj, dict):
                       # Creating parameters
                       ind_id = obj.get("id")
                       timestamp = obj.get("created")
@@ -256,14 +256,19 @@ script: |-
       if isinstance(stx_obj, dict):
           indicators = extract_indicators(stx_obj)
           entry = build_entry(stx_obj, indicators)
-          if entry:
+          if isinstance(entry, list):
+              DATA.extend(entry)
+          else:
               DATA.append(entry)
       elif isinstance(stx_obj, list):
           for obj in stx_obj:
               indicators = extract_indicators(obj)
               entry = build_entry(stx_obj, indicators)
               if entry:
-                  DATA.append(entry)
+                  if isinstance(entry, list):
+                      DATA.extend(entry)
+                  else:
+                      DATA.append(entry)
 
 
   # Start of script
@@ -281,6 +286,7 @@ script: |-
   # Returns entry to demisto
   json_data = json.dumps(DATA)
   demisto.results(json_data)
+
 type: python
 tags:
 - stix
