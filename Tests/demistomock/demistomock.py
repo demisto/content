@@ -442,8 +442,8 @@ def credentials(credentials):
     print ("credentials: {}".format(credentials))
 
 
-def getFilePath():
-    return ""
+def getFilePath(id):
+    return {'id': id, 'path': 'test/test.txt', 'name': 'test.txt'}
 
 
 def investigation():
