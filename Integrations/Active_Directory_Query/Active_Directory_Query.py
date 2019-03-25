@@ -882,7 +882,11 @@ def main():
     DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
     NTLM_AUTH = demisto.params().get('ntlm')
     UNSECURE = demisto.params().get('unsecure', False)
-    PORT = int(demisto.params().get('port'))
+    PORT = demisto.params().get('port')
+
+    if PORT:
+        # port was configured, cast to int
+        PORT = int(PORT)
 
     try:
         server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
