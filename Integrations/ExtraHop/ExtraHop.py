@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -191,7 +190,7 @@ def whitelist_retrieve():
 
 def whitelist_retrieve_command():
     res = whitelist_retrieve()
-    if len(res) is 0:
+    if len(res) == 0:
         demisto.results('No devices found in whitelist')
     elif len(res) > 0:
         format_device_results(res)
@@ -223,13 +222,13 @@ def get_alerts_command():
 
 def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type, protocols):
     data = {
-            "apply_all": apply_all,
-            "disabled": disabled,
-            "name": name,
-            "notify_snmp": notify_snmp,
-            "refire_interval": int(refire_interval),
-            "severity": int(severity),
-            "type": alert_type
+        "apply_all": apply_all,
+        "disabled": disabled,
+        "name": name,
+        "notify_snmp": notify_snmp,
+        "refire_interval": int(refire_interval),
+        "severity": int(severity),
+        "type": alert_type
     }
     if object_type:
         data['object_type'] = object_type
