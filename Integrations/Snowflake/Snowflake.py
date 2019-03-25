@@ -8,16 +8,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import dsa
 from cryptography.hazmat.primitives import serialization
-from datetime import date, time
+from datetime import date, time, timedelta, datetime
 from decimal import Decimal
-
-'''SETUP'''
-
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 '''GLOBAL VARS'''
 
@@ -34,12 +26,49 @@ DATABASE = PARAMS.get('database')
 SCHEMA = PARAMS.get('schema')
 ROLE = PARAMS.get('role')
 # How much time before the first fetch to retrieve incidents
+IS_FETCH = PARAMS.get('isFetch')
 FETCH_TIME = PARAMS.get('fetch_time')
 FETCH_QUERY = PARAMS.get('fetch_query')
+DATETIME_COLUMN = PARAMS.get('datetime_column')
+INCIDENT_NAME_COLUMN = PARAMS.get('incident_name_column')
 MAX_ROWS = 10000
+
+'''SETUP'''
+
+if not PARAMS.get('proxy', False):
+    disable_proxy()
+    # del os.environ['HTTP_PROXY']
+    # del os.environ['HTTPS_PROXY']
+    # del os.environ['http_proxy']
+    # del os.environ['https_proxy']
+
+if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
+    err_msg = 'When fetching is enabled there are two additional parameters that are required;'
+    err_msg += ' The fetch query that determines what data to fetch and the name of the column'
+    err_msg += ' in the fetched data that contains a datetime object or timestamp.'
+    return_error(err_msg)
 
 
 '''HELPER FUNCTIONS'''
+
+
+def convert_datetime_to_string(v):
+    """
+    Parses date, time, timedelta, or datetime object into string
+
+    parameter: (datetime/date/time/timedelta) v
+        The datetime/date/time/timedelta object to convert
+
+    returns:
+        Formatted string of the object
+    """
+    if isinstance(v, datetime):
+        return v.strftime('%Y-%m-%d %H:%M:%S.%f %z')
+    elif isinstance(v, date):
+        return v.strftime('%Y-%m-%d')
+    elif isinstance(v, time) or isinstance(v, timedelta):
+        return v.strftime('%H:%M:%S.%f')
+    return v
 
 
 def set_provided(params, key, val1, val2=None):
@@ -65,7 +94,7 @@ def format_to_json_serializable(column_descriptions, results):
     not json serializable, and return 'results'
 
     parameter: (list) column_descriptions
-        The metadata that describes data for each column in the 'results' argument
+        The metadata that describes data for each column in the 'results' parameter
 
     parameter: (list) results
         What was returned by the cursor object's execute or fetch operation
@@ -82,15 +111,9 @@ def format_to_json_serializable(column_descriptions, results):
         if col[type_code] == 0:
             # Then need to check that column's data to see if its data type is Decimal
             checks.setdefault('isDecimal', []).append(col[name])
-        elif col[type_code] == 3:
-            # Then need to check that column's data to see if its data type is date
-            checks.setdefault('isDate', []).append(col[name])
-        elif col[type_code] in {7, 8}:
-            # Then need to check that column's data to see if its data type is datetime
-            checks.setdefault('isDatetime', []).append(col[name])
-        elif col[type_code] == 12:
-            # Then need to check that column's data to see if its data type is time
-            checks.setdefault('isTime', []).append(col[name])
+        elif col[type_code] in {3, 4, 6, 7, 8, 12}:
+            # Then need to check that column's data to see if its data type is date, time, timedelta or datetime
+            checks.setdefault('isDT', []).append(col[name])
 
     # Check candidates and reformat if necessary
     for row in results:
@@ -99,18 +122,9 @@ def format_to_json_serializable(column_descriptions, results):
                 # Then check the value and reformat it if necessary
                 if type(val) == Decimal:
                     row[column_name] = str(val)
-            elif column_name in checks.get('isDate', []):
-                # Then check the value and reformat it if necessary
-                if type(val) == date:
-                    row[column_name] = val.strftime('%Y-%m-%d')
-            elif column_name in checks.get('isDatetime', []):
-                # Then check the value and reformat it if necessary
-                if type(val) == datetime:
-                    row[column_name] = val.strftime('%Y-%m-%d %H:%M:%S.%f %z')
-            elif column_name in checks.get('isTime', []):
-                # Then check the value and reformat it if necessary
-                if type(val) == time:
-                    row[column_name] = val.strftime('%H:%M:%S.%f')
+            elif column_name in checks.get('isDT', []):
+                # Then reformat it if necessary
+                row[column_name] = convert_datetime_to_string(val)
     return results
 
 
@@ -144,6 +158,42 @@ def get_connection(args):
     return snowflake.connector.connect(**params)
 
 
+def row_to_incident(column_descriptions, row):
+    """
+    Create incident from data returned by queried database in fetch_incidents
+
+    parameter: (list) column_descriptions
+        The metadata that describes the values for each column in the 'data' parameter
+
+    parameter: (dict) row
+        The row of data where each cell's key in the row is the name of the column
+        to which it belongs
+
+    returns:
+        Incident Object
+    """
+    incident = {}
+    occurred = row.get(DATETIME_COLUMN)
+    if occurred:
+        if isinstance(occurred, time) or isinstance(occurred, timedelta):
+            err_msg = 'The datetime field specified in the integration parameters must '
+            err_msg += 'contain values of type "datetime" or "date".'
+            raise Exception(err_msg)
+        occurred = convert_datetime_to_string(occurred)
+    else:
+        err_msg = 'Nothing found when trying to fetch the datetime field specified in'
+        err_msg += ' the integration parameters. Please check that the name was correct.'
+        raise Exception(err_msg)
+    # Incident Title
+    incident['name'] = row.get(INCIDENT_NAME_COLUMN) if INCIDENT_NAME_COLUMN else 'Snowflake Incident -- ' + occurred
+    # Incident occurrence time - the datetime field specified in the integration parameters
+    incident['occurred'] = occurred
+    # The raw response for the row (reformatted to be json serializable) returned by the db query
+    reformatted_row = format_to_json_serializable(column_descriptions, row)
+    incident['rawJSON'] = json.dumps(reformatted_row)
+    return incident
+
+
 '''MAIN FUNCTIONS / API CALLS'''
 
 
@@ -174,18 +224,16 @@ def fetch_incidents():
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
-    # args = {'updated_since': updated_since, 'order_type': 'asc'}
     args = {'rows': MAX_ROWS, 'query': FETCH_QUERY}
 
-    _, data = snowflake_query(args)
+    column_descriptions, data = snowflake_query(args)
     # convert the data/events to demisto incidents
     incidents = []
     for row in data:
-        incident = ticket_to_incident(ticket)
-        incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
+        incident = row_to_incident(column_descriptions, row)
+        incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%d %H:%M:%S.%f %z')
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_date > last_fetch:
+        if incident_date >= last_fetch:
             last_fetch = incident_date
             incidents.append(incident)
 
@@ -281,3 +329,5 @@ try:
         commands[demisto.command()]()
 except Exception as e:
     return_error(e.message)
+finally:
+    enable_proxy()
