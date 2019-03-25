@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+flake8 = "*"
+autopep8 = "*"
+pytest-mock = "*"
+
+[packages]
+requests = "*"
+olefile = "*"
+python-dateutil = "*"
+dateparser = "*"
+pyyaml = "*"
+
+[requires]
+python_version = "2.7"

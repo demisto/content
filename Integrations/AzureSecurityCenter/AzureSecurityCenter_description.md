@@ -1,0 +1,2 @@
+To grant access to Microsoft Security Center, an admin needs to approve Demisto using an admin consent flow. To start the admin consent flow, click [here](https://demistobot.demisto.com/azuresc-sub).
+  After authorizing the Demisto app, you'll receive a tenant ID, which you should enter in the integration instance settings.
