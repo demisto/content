@@ -3730,8 +3730,8 @@ script:
       description: The IP CIDR range represented by this alias IP range. This IP CIDR
         range must belong to the specified subnetwork and cannot contain IP addresses
         reserved by system or used by other network interfaces. This range may be
-        a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24) or a CIDR format
-        string (e.g. 10.1.2.0/24).
+        a single IP address (e.g. 0.0.0.0), a netmask (e.g. /24) or a CIDR format
+        string (e.g. 0.0.0.0/24).
     - name: subnetworkRangeName
       description: Optional subnetwork secondary range name specifying the secondary
         range from which to allocate the IP CIDR range for this alias IP range. If
@@ -3923,7 +3923,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -4490,8 +4490,8 @@ script:
       description: The IP CIDR range represented by this alias IP range. This IP CIDR
         range must belong to the specified subnetwork and cannot contain IP addresses
         reserved by system or used by other network interfaces. This range may be
-        a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24) or a CIDR format
-        string (e.g. 10.1.2.0/24).
+        a single IP address (e.g. 0.0.0.0), a netmask (e.g. /24) or a CIDR format
+        string (e.g. 0.0.0.0/24).
       type: string
     - contextPath: GoogleCloud.Compute.Instances.networkInterfaces.aliasIpRanges.subnetworkRangeName
       description: Optional subnetwork secondary range name specifying the secondary
@@ -4919,8 +4919,8 @@ script:
       description: The IP CIDR range represented by this alias IP range. This IP CIDR
         range must belong to the specified subnetwork and cannot contain IP addresses
         reserved by system or used by other network interfaces. This range may be
-        a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24) or a CIDR format
-        string (e.g. 10.1.2.0/24).
+        a single IP address (e.g. 0.0.0.0), a netmask (e.g. /24) or a CIDR format
+        string (e.g. 0.0.0.0/24).
       type: string
     - contextPath: GoogleCloud.Compute.Instances.networkInterfaces.aliasIpRanges.subnetworkRangeName
       description: Optional subnetwork secondary range name specifying the secondary
@@ -5235,7 +5235,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -5369,7 +5369,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -5523,7 +5523,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -5759,8 +5759,8 @@ script:
       description: The IP CIDR range represented by this alias IP range. This IP CIDR
         range must belong to the specified subnetwork and cannot contain IP addresses
         reserved by system or used by other network interfaces. This range may be
-        a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24) or a CIDR format
-        string (e.g. 10.1.2.0/24).
+        a single IP address (e.g. 0.0.0.0), a netmask (e.g. /24) or a CIDR format
+        string (e.g. 0.0.0.0/24).
       type: string
     - contextPath: GoogleCloud.Compute.Instances.networkInterfaces.aliasIpRanges.subnetworkRangeName
       description: Optional subnetwork secondary range name specifying the secondary
@@ -6078,7 +6078,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -6212,7 +6212,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -6345,7 +6345,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -6482,7 +6482,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -6624,7 +6624,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -6768,7 +6768,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -6906,7 +6906,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -7040,7 +7040,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -7194,7 +7194,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -7355,7 +7355,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -7495,7 +7495,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -7753,7 +7753,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -8089,7 +8089,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -8349,7 +8349,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -8808,7 +8808,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -8941,7 +8941,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -9327,7 +9327,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -9669,7 +9669,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -9813,7 +9813,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -10695,7 +10695,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -10835,7 +10835,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -11077,7 +11077,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -11214,7 +11214,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -11376,7 +11376,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -11584,7 +11584,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -11870,7 +11870,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -12018,7 +12018,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -12827,7 +12827,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -12957,7 +12957,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -13113,7 +13113,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -13359,7 +13359,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -13607,7 +13607,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -13829,7 +13829,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -14267,7 +14267,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -14413,7 +14413,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
@@ -14805,7 +14805,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.user
-      description: User who requested the operation for example user@example.com.
+      description: User who requested the operation for example EMAILADDRESS.
       type: string
     - contextPath: GoogleCloud.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There
