@@ -1,0 +1,980 @@
+id: 15edb224-4413-48cc-8324-02042a59ada6
+version: 14
+name: GCP-Tests-NetworksAndFirewalls
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05ba3e45-0b46-41ea-8138-18769f444e3a
+    type: start
+    task:
+      id: 05ba3e45-0b46-41ea-8138-18769f444e3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 1b56bfaf-e7b9-4a47-8337-4c7fc0ac79e2
+    type: title
+    task:
+      id: 1b56bfaf-e7b9-4a47-8337-4c7fc0ac79e2
+      version: -1
+      name: Networks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+    type: regular
+    task:
+      id: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 3a1937fe-b379-4dde-8469-da2c8360ad36
+    type: regular
+    task:
+      id: 3a1937fe-b379-4dde-8469-da2c8360ad36
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 76d0db73-907a-4300-845b-5b6716cae6a6
+    type: regular
+    task:
+      id: 76d0db73-907a-4300-845b-5b6716cae6a6
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: b32f09a2-856c-42e8-8176-bc362672f794
+    type: regular
+    task:
+      id: b32f09a2-856c-42e8-8176-bc362672f794
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: 62f08d29-42b3-45d4-8131-6ca05378b885
+    type: regular
+    task:
+      id: 62f08d29-42b3-45d4-8131-6ca05378b885
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "81":
+    id: "81"
+    taskid: ef35d595-dd74-4610-82fd-38e0e77935e8
+    type: regular
+    task:
+      id: ef35d595-dd74-4610-82fd-38e0e77935e8
+      version: -1
+      name: Create Network
+      script: Google Cloud Compute|||gcp-compute-insert-network
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      autoCreateSubnetworks:
+        simple: "True"
+      description: {}
+      name:
+        simple: test-net1
+      routingConfigRoutingMode:
+        simple: GLOBAL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "82":
+    id: "82"
+    taskid: 9848c674-b5a6-459d-8cc8-e20e0fa5495a
+    type: regular
+    task:
+      id: 9848c674-b5a6-459d-8cc8-e20e0fa5495a
+      version: -1
+      name: Get network
+      script: Google Cloud Compute|||gcp-compute-get-network
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      network:
+        simple: test-net1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "83":
+    id: "83"
+    taskid: abbe2216-f043-4e75-88dc-06a59bce1038
+    type: regular
+    task:
+      id: abbe2216-f043-4e75-88dc-06a59bce1038
+      version: -1
+      name: add peering
+      script: Google Cloud Compute|||gcp-compute-networks-add-peering
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      name: {}
+      network:
+        simple: ${GoogleCloud.Compute.Networks.name}
+      networkPeeringExchangeSubnetRoutes:
+        simple: "True"
+      networkPeeringName:
+        simple: test-peering1
+      networkPeeringNetwork:
+        simple: global/networks/default
+      peerNetwork: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "84":
+    id: "84"
+    taskid: 918ad892-985b-4675-8b47-5f05389fe8bf
+    type: regular
+    task:
+      id: 918ad892-985b-4675-8b47-5f05389fe8bf
+      version: -1
+      name: remove peering
+      script: Google Cloud Compute|||gcp-compute-networks-remove-peering
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      name:
+        simple: test-peering1
+      network:
+        simple: ${GoogleCloud.Compute.Networks.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 33f91351-3eb7-4cbf-89cb-a0b34a375c6c
+    type: regular
+    task:
+      id: 33f91351-3eb7-4cbf-89cb-a0b34a375c6c
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "86":
+    id: "86"
+    taskid: d1bbc53a-f77f-4afa-8a75-1896ba9e7c98
+    type: regular
+    task:
+      id: d1bbc53a-f77f-4afa-8a75-1896ba9e7c98
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: c651e808-313e-4fe9-8b66-ddbd1642871a
+    type: regular
+    task:
+      id: c651e808-313e-4fe9-8b66-ddbd1642871a
+      version: -1
+      name: List networks
+      script: Google Cloud Compute|||gcp-compute-list-networks
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "88":
+    id: "88"
+    taskid: ff04a6b6-87a2-4cd1-8b22-7e98c6f6082d
+    type: regular
+    task:
+      id: ff04a6b6-87a2-4cd1-8b22-7e98c6f6082d
+      version: -1
+      name: Delete Network
+      script: Google Cloud Compute|||gcp-compute-delete-network
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      network:
+        simple: ${GoogleCloud.Compute.Networks.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "89":
+    id: "89"
+    taskid: 3f5843e2-ea49-473d-83fb-f8703993f598
+    type: regular
+    task:
+      id: 3f5843e2-ea49-473d-83fb-f8703993f598
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "90":
+    id: "90"
+    taskid: 75a42765-bc34-488e-83d4-9bb9d3d2ee6e
+    type: regular
+    task:
+      id: 75a42765-bc34-488e-83d4-9bb9d3d2ee6e
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "91":
+    id: "91"
+    taskid: b36fbeb8-07be-4933-879f-48a5233606b8
+    type: title
+    task:
+      id: b36fbeb8-07be-4933-879f-48a5233606b8
+      version: -1
+      name: start firewalls
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "92":
+    id: "92"
+    taskid: e53f9f12-a7ff-4d42-8ed6-ac6224a5defb
+    type: regular
+    task:
+      id: e53f9f12-a7ff-4d42-8ed6-ac6224a5defb
+      version: -1
+      name: inser firewall
+      script: Google Cloud Compute|||gcp-compute-insert-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      allowed:
+        simple: ipprotocol=tcp,ports=22,443
+      denied: {}
+      description: {}
+      destinationRanges: {}
+      direction: {}
+      disabled:
+        simple: "False"
+      logConfigEnable:
+        simple: "True"
+      name:
+        simple: test-firewall1
+      network:
+        simple: ${GoogleCloud.Compute.Networks.selfLink}
+      priority:
+        simple: "1"
+      sourceRanges:
+        simple: 0.0.0.0/0
+      sourceServiceAccounts: {}
+      sourceTags: {}
+      targetServiceAccounts: {}
+      targetTags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "93":
+    id: "93"
+    taskid: fd514362-5235-43f8-8978-e4ee75faeded
+    type: regular
+    task:
+      id: fd514362-5235-43f8-8978-e4ee75faeded
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "94":
+    id: "94"
+    taskid: 09d802c7-eed2-41c7-837f-46edc72fa5ac
+    type: regular
+    task:
+      id: 09d802c7-eed2-41c7-837f-46edc72fa5ac
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "95":
+    id: "95"
+    taskid: c93111dd-71d6-40ed-861a-a1c02cbe41a0
+    type: regular
+    task:
+      id: c93111dd-71d6-40ed-861a-a1c02cbe41a0
+      version: -1
+      name: patch firewall
+      script: Google Cloud Compute|||gcp-compute-patch-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      allowed:
+        simple: ipprotocol=tcp,ports=80
+      denied: {}
+      description: {}
+      destinationRanges: {}
+      direction: {}
+      disabled:
+        simple: "True"
+      logConfigEnable:
+        simple: "False"
+      name:
+        simple: test-firewall1
+      network:
+        simple: ${GoogleCloud.Compute.Networks.selfLink}
+      priority:
+        simple: "2"
+      sourceRanges:
+        simple: 0.0.0.0/0
+      sourceServiceAccounts: {}
+      sourceTags: {}
+      targetServiceAccounts: {}
+      targetTags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "96":
+    id: "96"
+    taskid: d1b62fb8-f7b9-4ccf-84fd-52ccaffdfc36
+    type: regular
+    task:
+      id: d1b62fb8-f7b9-4ccf-84fd-52ccaffdfc36
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "97":
+    id: "97"
+    taskid: d0a7f109-f704-47d1-8089-10051ad0fb9c
+    type: regular
+    task:
+      id: d0a7f109-f704-47d1-8089-10051ad0fb9c
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "98":
+    id: "98"
+    taskid: ec878dbd-0eea-4e3b-8b1f-d65d2979493b
+    type: regular
+    task:
+      id: ec878dbd-0eea-4e3b-8b1f-d65d2979493b
+      version: -1
+      name: Get firewall
+      script: Google Cloud Compute|||gcp-compute-get-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      name:
+        simple: test-firewall1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "99":
+    id: "99"
+    taskid: 87ec180b-918d-4e18-8b4b-a2fdc65ff602
+    type: regular
+    task:
+      id: 87ec180b-918d-4e18-8b4b-a2fdc65ff602
+      version: -1
+      name: List firewalls
+      script: Google Cloud Compute|||gcp-compute-list-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "100":
+    id: "100"
+    taskid: f7ac1ff3-011b-4b84-82a9-3026185d414d
+    type: regular
+    task:
+      id: f7ac1ff3-011b-4b84-82a9-3026185d414d
+      version: -1
+      name: Delete Firewall
+      script: Google Cloud Compute|||gcp-compute-delete-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      name:
+        simple: test-firewall1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "101":
+    id: "101"
+    taskid: e8f5682c-5468-45d5-829e-eb16c0ff495d
+    type: regular
+    task:
+      id: e8f5682c-5468-45d5-829e-eb16c0ff495d
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "102":
+    id: "102"
+    taskid: cf705dc0-0b3f-464f-8192-a462f99c998e
+    type: regular
+    task:
+      id: cf705dc0-0b3f-464f-8192-a462f99c998e
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "103":
+    id: "103"
+    taskid: 3ccb7903-901b-4f67-8a8f-7b0d779e4d89
+    type: title
+    task:
+      id: 3ccb7903-901b-4f67-8a8f-7b0d779e4d89
+      version: -1
+      name: Done firewalls
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5050,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: zone
+  value:
+    simple: us-east1-b
+  required: false
+  description: ""
+outputs: []

@@ -1,0 +1,607 @@
+id: 17df650c-0341-4b12-82f0-f9a77f8d9e30
+version: 4
+name: GCP-Tests-Disks
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05ba3e45-0b46-41ea-8138-18769f444e3a
+    type: start
+    task:
+      id: 05ba3e45-0b46-41ea-8138-18769f444e3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 3708811f-c269-4c7b-84ba-fb9622583276
+    type: title
+    task:
+      id: 3708811f-c269-4c7b-84ba-fb9622583276
+      version: -1
+      name: Disks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 4e2cbc60-e865-46a9-8ac5-39a194ac5515
+    type: regular
+    task:
+      id: 4e2cbc60-e865-46a9-8ac5-39a194ac5515
+      version: -1
+      name: Get DiskType
+      script: Google Cloud Compute|||gcp-compute-get-disk-type
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      disktype:
+        simple: pd-ssd
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+    type: regular
+    task:
+      id: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: f0494b28-bc76-4fa1-892a-b9833beef01e
+    type: regular
+    task:
+      id: f0494b28-bc76-4fa1-892a-b9833beef01e
+      version: -1
+      name: Create Disk
+      script: Google Cloud Compute|||gcp-compute-insert-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      description: {}
+      diskEncryptionKeyKmsKeyName: {}
+      diskEncryptionKeyRawKey: {}
+      disktype:
+        simple: ${GoogleCloud.Compute.DiskTypes.selfLink}
+      guestOsFeatures: {}
+      labelFingerprint: {}
+      labels: {}
+      licenseCodes: {}
+      licenses: {}
+      name:
+        simple: test-disk1
+      physicalBlockSizeBytes: {}
+      replicaZones: {}
+      sizeGb:
+        simple: "10"
+      sourceImage: {}
+      sourceImageEncryptionKeyKmsKeyName: {}
+      sourceImageEncryptionKeyRawKey: {}
+      sourceSnapshot: {}
+      sourceSnapshotEncryptionKeyKmsKeyName: {}
+      sourceSnapshotEncryptionKeyRawKey: {}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 8d2c07bd-4e56-4c64-8436-5720eb69bc9d
+    type: regular
+    task:
+      id: 8d2c07bd-4e56-4c64-8436-5720eb69bc9d
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-zone-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 76d0db73-907a-4300-845b-5b6716cae6a6
+    type: regular
+    task:
+      id: 76d0db73-907a-4300-845b-5b6716cae6a6
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "70":
+    id: "70"
+    taskid: 2cd8916f-1d78-4232-8388-b6b663494919
+    type: regular
+    task:
+      id: 2cd8916f-1d78-4232-8388-b6b663494919
+      version: -1
+      name: aggregated list disks
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-disks
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: c8f53021-0903-475e-84f1-3a37b725e50a
+    type: regular
+    task:
+      id: c8f53021-0903-475e-84f1-3a37b725e50a
+      version: -1
+      name: list disks
+      script: Google Cloud Compute|||gcp-compute-list-disks
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: cac582b3-1e29-461e-875f-9d21e445506e
+    type: regular
+    task:
+      id: cac582b3-1e29-461e-875f-9d21e445506e
+      version: -1
+      name: Get disk
+      script: Google Cloud Compute|||gcp-compute-get-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      disk:
+        simple: test-disk1
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "73":
+    id: "73"
+    taskid: bb10c917-387a-4928-8aa7-f73f67151d65
+    type: regular
+    task:
+      id: bb10c917-387a-4928-8aa7-f73f67151d65
+      version: -1
+      name: resize disk
+      script: Google Cloud Compute|||gcp-compute-resize-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      disk:
+        simple: ${GoogleCloud.Compute.Disks.name}
+      sizeGb:
+        simple: "20"
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: f7b173fc-8364-4732-88a9-58640b719fb7
+    type: regular
+    task:
+      id: f7b173fc-8364-4732-88a9-58640b719fb7
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-zone-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "75":
+    id: "75"
+    taskid: d6d60148-5742-4386-8aac-332bf528d316
+    type: regular
+    task:
+      id: d6d60148-5742-4386-8aac-332bf528d316
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "76":
+    id: "76"
+    taskid: 73d56feb-d38f-4608-89ca-0ca2115041a0
+    type: regular
+    task:
+      id: 73d56feb-d38f-4608-89ca-0ca2115041a0
+      version: -1
+      name: delete disk
+      script: Google Cloud Compute|||gcp-compute-delete-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      disk:
+        simple: ${GoogleCloud.Compute.Disks.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: b9cc767c-2204-4355-8aa5-9e60308d5097
+    type: regular
+    task:
+      id: b9cc767c-2204-4355-8aa5-9e60308d5097
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: 0cce1ec2-e87c-4393-8b4f-e1f73cd5a705
+    type: regular
+    task:
+      id: 0cce1ec2-e87c-4393-8b4f-e1f73cd5a705
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-zone-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: be471cc3-d068-4cd6-81e2-86924dbc5ac3
+    type: regular
+    task:
+      id: be471cc3-d068-4cd6-81e2-86924dbc5ac3
+      version: -1
+      name: aggregated list disk types
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-disk-types
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "80":
+    id: "80"
+    taskid: c605b606-9080-4c2a-888d-69e828c4fb56
+    type: regular
+    task:
+      id: c605b606-9080-4c2a-888d-69e828c4fb56
+      version: -1
+      name: List disk types
+      script: Google Cloud Compute|||gcp-compute-list-disk-types
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: zone
+  value:
+    simple: us-east1-b
+  required: false
+  description: ""
+outputs: []

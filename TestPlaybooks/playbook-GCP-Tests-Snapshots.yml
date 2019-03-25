@@ -1,0 +1,736 @@
+id: 6faeecd3-9d21-4f20-8529-f98731e3b528
+version: 7
+name: GCP-Tests-Snapshots
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05ba3e45-0b46-41ea-8138-18769f444e3a
+    type: start
+    task:
+      id: 05ba3e45-0b46-41ea-8138-18769f444e3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 1873e9a3-3ec2-46e2-8dbe-f062106ac827
+    type: title
+    task:
+      id: 1873e9a3-3ec2-46e2-8dbe-f062106ac827
+      version: -1
+      name: Snapshots
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 4e2cbc60-e865-46a9-8ac5-39a194ac5515
+    type: regular
+    task:
+      id: 4e2cbc60-e865-46a9-8ac5-39a194ac5515
+      version: -1
+      name: Get DiskType
+      script: Google Cloud Compute|||gcp-compute-get-disk-type
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      disktype:
+        simple: pd-ssd
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+    type: regular
+    task:
+      id: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: fc981309-1f52-4d1c-8b79-5beecd0e6e48
+    type: regular
+    task:
+      id: fc981309-1f52-4d1c-8b79-5beecd0e6e48
+      version: -1
+      name: Create Disk
+      script: Google Cloud Compute|||gcp-compute-insert-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      description: {}
+      diskEncryptionKeyKmsKeyName: {}
+      diskEncryptionKeyRawKey: {}
+      disktype:
+        simple: ${GoogleCloud.Compute.DiskTypes.selfLink}
+      guestOsFeatures: {}
+      labelFingerprint: {}
+      labels: {}
+      licenseCodes: {}
+      licenses: {}
+      name:
+        simple: test-disk3
+      physicalBlockSizeBytes: {}
+      replicaZones: {}
+      sizeGb:
+        simple: "10"
+      sourceImage: {}
+      sourceImageEncryptionKeyKmsKeyName: {}
+      sourceImageEncryptionKeyRawKey: {}
+      sourceSnapshot: {}
+      sourceSnapshotEncryptionKeyKmsKeyName: {}
+      sourceSnapshotEncryptionKeyRawKey: {}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 8d2c07bd-4e56-4c64-8436-5720eb69bc9d
+    type: regular
+    task:
+      id: 8d2c07bd-4e56-4c64-8436-5720eb69bc9d
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-zone-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 76d0db73-907a-4300-845b-5b6716cae6a6
+    type: regular
+    task:
+      id: 76d0db73-907a-4300-845b-5b6716cae6a6
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: db837089-d6ef-4983-8ac0-906055840dd0
+    type: regular
+    task:
+      id: db837089-d6ef-4983-8ac0-906055840dd0
+      version: -1
+      name: Create snapshot
+      script: Google Cloud Compute|||gcp-compute-create-disk-snapshot
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      description: {}
+      disk:
+        simple: ${GoogleCloud.Compute.Disks.name}
+      labelFingerprint: {}
+      labels: {}
+      name:
+        simple: test-snapshot1
+      snapshotEncryptionKeyKmsKeyName: {}
+      snapshotEncryptionKeyRawKey: {}
+      sourceDiskEncryptionKeyKmsKeyName: {}
+      sourceDiskEncryptionKeyRawKey: {}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: 495623fb-94cd-4d82-8f5d-fbb29d9b6781
+    type: regular
+    task:
+      id: 495623fb-94cd-4d82-8f5d-fbb29d9b6781
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-zone-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: 62f08d29-42b3-45d4-8131-6ca05378b885
+    type: regular
+    task:
+      id: 62f08d29-42b3-45d4-8131-6ca05378b885
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "68":
+    id: "68"
+    taskid: 898275fa-0856-4de9-856e-c97171ba540e
+    type: regular
+    task:
+      id: 898275fa-0856-4de9-856e-c97171ba540e
+      version: -1
+      name: Get snapshot
+      script: Google Cloud Compute|||gcp-compute-get-snapshot
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      name:
+        simple: test-snapshot1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: c61f9c3e-ad68-4cb6-8604-0e49e08a0c64
+    type: regular
+    task:
+      id: c61f9c3e-ad68-4cb6-8604-0e49e08a0c64
+      version: -1
+      name: list snapshot
+      script: Google Cloud Compute|||gcp-compute-list-snapshots
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: 36078f68-3c03-47a8-8d33-4ef831644dac
+    type: regular
+    task:
+      id: 36078f68-3c03-47a8-8d33-4ef831644dac
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: b43660e6-c4d9-4671-8b2d-0baab36a96d9
+    type: regular
+    task:
+      id: b43660e6-c4d9-4671-8b2d-0baab36a96d9
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: 897c3f9c-4721-4712-81f6-fb562a2dad2e
+    type: regular
+    task:
+      id: 897c3f9c-4721-4712-81f6-fb562a2dad2e
+      version: -1
+      name: Get Disk
+      script: Google Cloud Compute|||gcp-compute-get-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      disk:
+        simple: test-disk3
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: 5aa6e7d0-2dfc-4f87-88aa-3bb1129a8d93
+    type: regular
+    task:
+      id: 5aa6e7d0-2dfc-4f87-88aa-3bb1129a8d93
+      version: -1
+      name: Delete Disk
+      script: Google Cloud Compute|||gcp-compute-delete-disk
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      disk:
+        simple: test-disk3
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: 7407c9a5-e9e8-4eaa-8bb2-12ffb735760e
+    type: regular
+    task:
+      id: 7407c9a5-e9e8-4eaa-8bb2-12ffb735760e
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "80":
+    id: "80"
+    taskid: 20e1dcb4-61b8-47bb-8d2c-8218169861c0
+    type: regular
+    task:
+      id: 20e1dcb4-61b8-47bb-8d2c-8218169861c0
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-zone-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "82":
+    id: "82"
+    taskid: 4988e7b8-ad7c-4fc3-88ca-8a6012abafd8
+    type: regular
+    task:
+      id: 4988e7b8-ad7c-4fc3-88ca-8a6012abafd8
+      version: -1
+      name: set snapshot labels
+      script: Google Cloud Compute|||gcp-compute-set-snapshot-labels
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      labelFingerprint:
+        simple: ${GoogleCloud.Compute.Snapshots.labelFingerprint}
+      labels:
+        simple: key=test,value=123
+      name:
+        simple: test-snapshot1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "83":
+    id: "83"
+    taskid: 8e0042a4-cb4a-4024-84ed-ad959e4fae69
+    type: regular
+    task:
+      id: 8e0042a4-cb4a-4024-84ed-ad959e4fae69
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "84":
+    id: "84"
+    taskid: 88b90486-f5cc-4bd1-8cd2-aaf9db5cfa3e
+    type: regular
+    task:
+      id: 88b90486-f5cc-4bd1-8cd2-aaf9db5cfa3e
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 500f44d6-96cb-4ffb-86f2-c6c6b5aa2580
+    type: regular
+    task:
+      id: 500f44d6-96cb-4ffb-86f2-c6c6b5aa2580
+      version: -1
+      name: Delete Snapshot
+      script: Google Cloud Compute|||gcp-compute-delete-snapshot
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      name:
+        simple: test-snapshot1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3755,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+inputs:
+- key: zone
+  value:
+    simple: us-east1-b
+  required: false
+  description: ""
+outputs: []

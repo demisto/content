@@ -1,0 +1,743 @@
+id: 72e3a9ad-b415-4f35-87a3-e3ed57845e53
+version: 5
+name: GCP-Tests-Addresses
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05ba3e45-0b46-41ea-8138-18769f444e3a
+    type: start
+    task:
+      id: 05ba3e45-0b46-41ea-8138-18769f444e3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 2a070327-a68e-46ff-8fec-10d9a3f1ea7f
+    type: title
+    task:
+      id: 2a070327-a68e-46ff-8fec-10d9a3f1ea7f
+      version: -1
+      name: Addresses
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+    type: regular
+    task:
+      id: 46ddc3be-faad-49f4-82a4-e82cb5914bce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: 716cbcaa-5049-4c1c-8dc0-cc0ef79816f0
+    type: regular
+    task:
+      id: 716cbcaa-5049-4c1c-8dc0-cc0ef79816f0
+      version: -1
+      name: Create address
+      script: Google Cloud Compute|||gcp-compute-insert-address
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      address: {}
+      addressType: {}
+      description: {}
+      ipVersion:
+        simple: IPV4
+      name:
+        simple: test-addr1
+      network: {}
+      networkTier: {}
+      prefixLength: {}
+      purpose: {}
+      region:
+        simple: ${inputs.region}
+      subnetwork: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 469d8036-6940-440e-8efc-399b8e3db725
+    type: regular
+    task:
+      id: 469d8036-6940-440e-8efc-399b8e3db725
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-region-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 08eaccd9-3852-40cb-8a04-fadfa472d9a2
+    type: regular
+    task:
+      id: 08eaccd9-3852-40cb-8a04-fadfa472d9a2
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: 4f33fac8-4e08-4148-8fb6-5b1e1ed29a12
+    type: regular
+    task:
+      id: 4f33fac8-4e08-4148-8fb6-5b1e1ed29a12
+      version: -1
+      name: aggregated list addresses
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-addresses
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: 21cab86b-81af-40d1-8fff-6a0b84aa65d8
+    type: regular
+    task:
+      id: 21cab86b-81af-40d1-8fff-6a0b84aa65d8
+      version: -1
+      name: list addresses
+      script: Google Cloud Compute|||gcp-compute-list-addresses
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: f8af237b-4184-48fc-8ed4-0b702527aaa8
+    type: regular
+    task:
+      id: f8af237b-4184-48fc-8ed4-0b702527aaa8
+      version: -1
+      name: delete address
+      script: Google Cloud Compute|||gcp-compute-delete-address
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      address:
+        simple: test-addr1
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "68":
+    id: "68"
+    taskid: d1a0817e-9f0d-4b93-84df-eca4845b7cd2
+    type: regular
+    task:
+      id: d1a0817e-9f0d-4b93-84df-eca4845b7cd2
+      version: -1
+      name: get address
+      script: Google Cloud Compute|||gcp-compute-get-address
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      address:
+        simple: test-addr1
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: 89eba096-01b9-40ac-8ada-37a2b4a8ce80
+    type: regular
+    task:
+      id: 89eba096-01b9-40ac-8ada-37a2b4a8ce80
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-region-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "70":
+    id: "70"
+    taskid: 54544fd9-beda-4b30-8df2-8b6bd56d2843
+    type: regular
+    task:
+      id: 54544fd9-beda-4b30-8df2-8b6bd56d2843
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: 367bc88f-17e3-4508-816e-f65111e10adb
+    type: title
+    task:
+      id: 367bc88f-17e3-4508-816e-f65111e10adb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: dba96866-f87b-4534-8195-c21f72c6bfcd
+    type: title
+    task:
+      id: dba96866-f87b-4534-8195-c21f72c6bfcd
+      version: -1
+      name: Global addresses
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "73":
+    id: "73"
+    taskid: 44cc9fae-9fc4-4cbd-8cab-45fca0c91a08
+    type: regular
+    task:
+      id: 44cc9fae-9fc4-4cbd-8cab-45fca0c91a08
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: ffad7eb3-f4e7-443b-89e1-7dbb549314f6
+    type: regular
+    task:
+      id: ffad7eb3-f4e7-443b-89e1-7dbb549314f6
+      version: -1
+      name: Create global address
+      script: Google Cloud Compute|||gcp-compute-insert-global-address
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      address: {}
+      addressType: {}
+      description: {}
+      ipVersion:
+        simple: IPV4
+      name:
+        simple: test-global-addr1
+      network: {}
+      networkTier: {}
+      prefixLength: {}
+      purpose: {}
+      subnetwork: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "75":
+    id: "75"
+    taskid: d8e000f6-11c0-48a5-8984-d7c088b2b0dd
+    type: regular
+    task:
+      id: d8e000f6-11c0-48a5-8984-d7c088b2b0dd
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "76":
+    id: "76"
+    taskid: cf935151-e5f8-401a-8a09-2256ff16c142
+    type: regular
+    task:
+      id: cf935151-e5f8-401a-8a09-2256ff16c142
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: e845919a-eed7-4cb6-8b57-449b089a04d2
+    type: regular
+    task:
+      id: e845919a-eed7-4cb6-8b57-449b089a04d2
+      version: -1
+      name: list global addresses
+      script: Google Cloud Compute|||gcp-compute-list-global-addresses
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: 62d659ed-c3a5-4551-8bd9-d036f8ffa446
+    type: regular
+    task:
+      id: 62d659ed-c3a5-4551-8bd9-d036f8ffa446
+      version: -1
+      name: Get Global addresses
+      script: Google Cloud Compute|||gcp-compute-get-global-address
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      address:
+        simple: test-global-addr1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: 12010593-9e7c-47ea-8bf6-da1a7f591b42
+    type: regular
+    task:
+      id: 12010593-9e7c-47ea-8bf6-da1a7f591b42
+      version: -1
+      name: delete global address
+      script: Google Cloud Compute|||gcp-compute-delete-global-address
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      address:
+        simple: test-global-addr1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "80":
+    id: "80"
+    taskid: cf02abaa-2a79-46c6-8576-d62bc1c8c6fc
+    type: regular
+    task:
+      id: cf02abaa-2a79-46c6-8576-d62bc1c8c6fc
+      version: -1
+      name: Wait Operation
+      script: Google Cloud Compute|||gcp-compute-wait-for-global-operation
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      name:
+        simple: ${GoogleCloud.Compute.Operations.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "81":
+    id: "81"
+    taskid: 0ba7cefd-8db5-4d4a-841f-dfb0a1978345
+    type: regular
+    task:
+      id: 0ba7cefd-8db5-4d4a-841f-dfb0a1978345
+      version: -1
+      name: Delete Operation from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloud.Compute.Operations
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3825,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: region
+  value:
+    simple: us-east1
+  required: false
+  description: ""
+outputs: []
