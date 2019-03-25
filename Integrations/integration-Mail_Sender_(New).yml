@@ -36,7 +36,7 @@ configuration:
   defaultvalue: noreply@demisto.com
   type: 0
   required: true
-- display: Fully Qualified Domain Name (FQDN)
+- display: Fully Qualified Domain Name (FQDN) - used in EHLO
   name: fqdn
   defaultvalue: ""
   type: 0
