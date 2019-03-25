@@ -55,10 +55,8 @@ if [[ -n "$SUCCESS_STATUS"  ]]; then
     echo ""
 fi
 if [[ -n "${FAIL_STATUS}"  ]]; then
-    tput setaf 1 # set terminal to red
     echo -e "******* FAILED PKGS: *******"  1>&2
-    echo -e "${FAIL_STATUS}" 1>&2
-    tput sgr0 # reset terminal color
+    echo -e "\x1B[31m${FAIL_STATUS}\x1B[0m" 1>&2    
     echo ""
     exit 1
 fi
