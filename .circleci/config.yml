@@ -58,6 +58,10 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
+      - setup_remote_docker
+      - run:
+          name: Run Unit Testing and Lint
+          command: ./Tests/scripts/run_all_pkg_dev_tasks.sh || echo '=== Unit Testing and or Linting FAILED ==='
       - run:
           name: Download Artifacts
           command: |
