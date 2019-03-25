@@ -38,10 +38,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 # Remove proxy if not set to true in params
 if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+    disable_proxy()
 
 
 @logger
@@ -649,3 +646,4 @@ except Exception, ex:
 
 finally:
     LOG.print_log()
+    enable_proxy()
