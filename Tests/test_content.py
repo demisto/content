@@ -17,7 +17,7 @@ from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
