@@ -1138,7 +1138,7 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
-        }
+        },
         {
             "integrations": "Google Cloud Compute",
             "playbookID": "GCP-Tests-Addresses",
@@ -1174,7 +1174,7 @@
             "playbookID": "GCP-Tests-Snapshots",
             "timeout": 600,
             "nightly": true
-        },
+        }
     ],
     "skipped_tests": {
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
