@@ -480,7 +480,7 @@ script:
         results = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
-        threshold = int(demisto.args().get('threshold'))
+        threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
         # Fetch data
         res = get_domain_security(domain)
         if res:
@@ -505,7 +505,7 @@ script:
                 secure_rank = res.get('securerank2', False)
                 DBotScore = 0
                 if secure_rank:
-                    if threshold != MALICIOUS_THRESHOLD and secure_rank < threshold:
+                    if secure_rank < threshold:
                         DBotScore = 3
                     else:
                         DBotScore = securerank_to_dbotscore(secure_rank)
@@ -1054,7 +1054,7 @@ script:
         results = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
-        threshold = int(demisto.args().get('threshold'))
+        threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
         # Fetch data
         res = get_domain_details(domain)
         if res:
@@ -1082,7 +1082,7 @@ script:
                 }
                 secure_rank = res.get('securerank2', False)
                 if secure_rank:
-                    if threshold != MALICIOUS_THRESHOLD and secure_rank < threshold:
+                    if secure_rank < threshold:
                         dbotscore = 3
                     else:
                         dbotscore = securerank_to_dbotscore(secure_rank)
