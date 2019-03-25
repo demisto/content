@@ -9,18 +9,22 @@ script: |-
   from stix2 import Indicator, Bundle
 
   indicators = []
-  all_args = json.loads(json.dumps(demisto.args().get('args','Unkown')))
+
+  userArgs = demisto.args().get('indicators','Unknown')
+  if isinstance(userArgs, dict) == True:
+      all_args = json.loads(json.dumps(userArgs))
+  else:
+      all_args = json.loads(demisto.args().get('indicators','Unknown'))
 
   counter = 0
   for indicatorFields in all_args:
-      demisto_indicator_type = all_args.get(str(counter)).get('indicator_type','Unkown')
+      demisto_indicator_type = all_args.get(str(counter)).get('indicator_type','Unknown')
       value = all_args.get(str(counter)).get('value','')
-      source_system =all_args.get(str(counter)).get('source','')
+      source_system = all_args.get(str(counter)).get('source','')
       demisto_score = all_args.get(str(counter)).get('score','')
       first_seen = all_args.get(str(counter)).get('firstSeen','1970-01-01T00:00:00+00:00')
       demisto_created = all_args.get(str(counter)).get('timestamp','1970-01-01T00:00:00+00:00')
       last_seen = all_args.get(str(counter)).get('lastSeen','1970-01-01T00:00:00+00:00')
-
       counter+=1
 
       stix_type_and_value = ""
@@ -60,7 +64,6 @@ script: |-
                             allow_custom=True)
 
       indicators.append(indicator)
-
   if counter > 1:
       bundle = Bundle(indicators)
       context = {
@@ -84,7 +87,7 @@ type: python
 tags: []
 enabled: true
 args:
-- name: args
+- name: indicators
   description: json object of all indicators  fields index mapped to indicators fields
 outputs:
 - contextPath: StixExportedIndicators.created
@@ -97,7 +100,10 @@ outputs:
   type: string
 - contextPath: StixExportedIndicators.pattern
   type: string
+- contextPath: StixExportedIndicators.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/stix2:1.0.0.1553427508
 runas: DBotWeakRole
+tests:
+  - ThreatMiner-Test
