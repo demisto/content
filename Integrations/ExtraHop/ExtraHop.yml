@@ -36,6 +36,7 @@ configuration:
   type: 13
 display: ExtraHop
 name: ExtraHop
+description: ExtraHop performs real-time stream analysis of the packets that carry data across a network.
 script:
   commands:
   - deprecated: false
