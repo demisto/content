@@ -1,5 +1,5 @@
-id: 6faeecd3-9d21-4f20-8529-f98731e3b528
-version: 7
+id: GCP-Tests-Snapshots
+version: -1
 name: GCP-Tests-Snapshots
 starttaskid: "0"
 tasks:

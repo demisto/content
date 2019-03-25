@@ -1,5 +1,5 @@
-id: d16bd910-e5f0-47bd-8be1-a3eb6c9ff86d
-version: 26
+id: GCP-Tests-InstancesAndInstanceGroups
+version: -1
 name: GCP-Tests-InstancesAndInstanceGroups
 starttaskid: "0"
 tasks:

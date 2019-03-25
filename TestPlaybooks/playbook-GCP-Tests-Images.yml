@@ -1,5 +1,5 @@
-id: 15045596-58ec-43e3-88d1-4b99e35d9271
-version: 9
+id: GCP-Tests-Images
+version: -1
 name: GCP-Tests-Images
 starttaskid: "0"
 tasks:

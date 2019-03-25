@@ -5,7 +5,7 @@
         {
             "integrations": "Server Message Block (SMB)",
             "playbookID": "SMB test"
-        },        
+        },
         {
             "playbookID": "TestParseEmailHeaders"
         },
@@ -1139,6 +1139,42 @@
             "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
         }
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GCP-Tests-Addresses",
+            "timeout": 600,
+            "nightly": true
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GCP-Tests-Disks",
+            "timeout": 600,
+            "nightly": true
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GCP-Tests-Images",
+            "timeout": 600,
+            "nightly": true
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GCP-Tests-InstancesAndInstanceGroups",
+            "timeout": 600,
+            "nightly": true
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GCP-Tests-NetworksAndFirewalls",
+            "timeout": 600,
+            "nightly": true
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GCP-Tests-Snapshots",
+            "timeout": 600,
+            "nightly": true
+        },
     ],
     "skipped_tests": {
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
@@ -1157,7 +1193,14 @@
         "SalesforceTestPlaybook": "User and password expired (issue 15901)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
-        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
+        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
+        "GCP-Tests-Addresses":"need to consider the test and finalize it",
+        "GCP-Tests-Disks":"need to consider the test and finalize it",
+        "GCP-Tests-Images":"need to consider the test and finalize it",
+        "GCP-Tests-InstancesAndInstanceGroups":"need to consider the test and finalize it",
+        "GCP-Tests-NetworksAndFirewalls":"need to consider the test and finalize it",
+        "GCP-Tests-Snapshots":"need to consider the test and finalize it"
+
     },
     "skipped_integrations": {
         "RSA Archer": "Server not responding (issue 16085)",

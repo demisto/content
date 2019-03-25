@@ -1,5 +1,5 @@
-id: 17df650c-0341-4b12-82f0-f9a77f8d9e30
-version: 4
+id: GCP-Tests-Disks
+version: -1
 name: GCP-Tests-Disks
 starttaskid: "0"
 tasks:
