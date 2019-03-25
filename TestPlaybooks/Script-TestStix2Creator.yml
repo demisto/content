@@ -43,11 +43,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      args:
-        simple: '{"0": {"firstSeen": "2019-03-13T11:39:11+02:00", "id": "320", "indicator_type":
-          "Email", "investigationIDs": "101, 128, 237, 283, 343, 462, 466", "lastSeen":
-          "2019-03-25T17:08:25+02:00", "source": "DBot", "timestamp": "2019-03-13T11:39:11+02:00",
-          "value": "vaspervnp@yahoo.gr"}}'
       indicators:
         simple: |-
           {"0": {"firstSeen": "2019-03-13T11:39:11+02:00", "id": "320", "indicator_type":
@@ -173,11 +168,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      args:
-        simple: '{"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
-          "IP", "investigationIDs": "237, 283, 466", "lastSeen": "2019-03-24T10:33:42+02:00",
-          "score": "Bad", "source": "DBot", "timestamp": "2019-03-13T12:06:27+02:00",
-          "value": "10.142.170.6"}}'
       indicators:
         simple: |-
           {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
