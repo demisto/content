@@ -39,8 +39,9 @@ script: |-
       """
       global SAVE_PROXIES
       for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-          SAVE_PROXIES[k] = os.environ[k]
-          del os.environ[k]
+          if k in os.environ:
+              SAVE_PROXIES[k] = os.environ[k]
+              del os.environ[k]
 
   def enable_proxy():
       """
