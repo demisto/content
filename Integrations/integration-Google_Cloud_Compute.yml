@@ -3653,6 +3653,7 @@ script:
         when you create the resource.
     - name: zone
       required: true
+      description: The name of the zone for this request.
     - name: tags
       description: Tags to apply to this instance. Tags are used to identify valid
         sources or targets for network firewalls and are specified by the client during
@@ -8745,6 +8746,7 @@ script:
       description: Name of the persistent disk to snapshot.
     - name: disk
       required: true
+      description: Name of the persistent disk to snapshot.
     - name: description
       description: An optional description of this resource. Provide this property
         when you create the resource.
