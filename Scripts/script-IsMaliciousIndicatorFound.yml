@@ -6,7 +6,7 @@ script: |-
   minScore = (args.includeSuspicious == 'yes') ? 2 : 3
 
   files = dq(invContext,`DBotScore(val.Type.toLowerCase()=='file' && val.Score>=${minScore})`)
-  hashes = dq(invContext,`DBotScore(val.Type.toLowerCase()=='hashes' && val.Score>=${minScore})`)
+  hashes = dq(invContext,`DBotScore(val.Type.toLowerCase()=='hash' && val.Score>=${minScore})`)
   ips = dq(invContext,`DBotScore(val.Type.toLowerCase()=='ip' && val.Score>=${minScore})`)
   urls = dq(invContext,`DBotScore(val.Type.toLowerCase()=='url' && val.Score>=${minScore})`)
   domains = dq(invContext,`DBotScore(val.Type.toLowerCase()=='domain' && val.Score>=${minScore})`)
