@@ -39,7 +39,7 @@ name: ExtraHop
 script:
   commands:
   - deprecated: false
-    description: Get alerts from Extra Hop
+    description: Get alerts from ExtraHop
     execution: false
     name: extrahop-get-alerts
   - arguments:
@@ -118,6 +118,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: View Devices from ExtraHop
     execution: false
     name: extrahop-devices
   - arguments:
@@ -134,9 +135,11 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Modify whitelist from ExtraHop
     execution: false
     name: extrahop-whitelist-modify
   - deprecated: false
+    description: Retrieve whitelist from ExtraHop
     execution: false
     name: extrahop-whitelist-retrieve
   - arguments:
@@ -227,13 +230,14 @@ script:
       name: protocols
       required: false
       secret: false
+    description: Add Alert to ExtraHop
     deprecated: false
     execution: false
     name: extrahop-add-alert
   isfetch: true
   runonce: false
-  script:
-    script: ''
   type: python
+  script: ''
+releaseNotes: "-"
 tests:
   - No tests
