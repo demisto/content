@@ -13,7 +13,7 @@
 pylint_return=0
 if [ -z "${PYLINT_SKIP}" ]; then
     echo "======== Running pylint on files: ${PYLINT_FILES} ==========="
-    python -m pylint -E ${PYLINT_FILES}
+    python -m pylint -E -f parseable ${PYLINT_FILES}
     pylint_return=$?
 fi
 
