@@ -11,7 +11,6 @@ tasks:
       id: 9ea3ae9a-a213-4b9e-87fd-71f51ba77883
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +28,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 9bc7b4cf-277c-47a4-81e6-a6a7183f08a5
+    taskid: 5340bf12-5af8-4dc5-8a2a-713a0a01cdbd
     type: regular
     task:
-      id: 9bc7b4cf-277c-47a4-81e6-a6a7183f08a5
+      id: 5340bf12-5af8-4dc5-8a2a-713a0a01cdbd
       version: -1
       name: Check Malicious url
       description: Check if file MD5 is malicious
@@ -44,6 +43,7 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      limit: {}
       searchParameter:
         simple: malware.wicar.org
       url:
@@ -105,7 +105,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "18"
     scriptarguments:
       additional: {}
       data: {}
@@ -152,7 +152,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
     note: false
@@ -184,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1565
         }
       }
     note: false
@@ -229,7 +229,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1740
         }
       }
     note: false
@@ -253,7 +253,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1915
         }
       }
     note: false
@@ -286,7 +286,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1390
         }
       }
     note: false
@@ -300,7 +300,7 @@ tasks:
       version: -1
       name: Multiple url submission(rate limit test)
       description: Submit a url to scan
-      script: urlscan.io|||url
+      script: '|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -324,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1535
+          "y": 2060
         }
       }
     note: false
@@ -338,7 +338,7 @@ tasks:
       version: -1
       name: url
       description: Submit a url to scan
-      script: urlscan.io|||url
+      script: '|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -362,7 +362,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 2235
         }
       }
     note: false
@@ -376,7 +376,7 @@ tasks:
       version: -1
       name: url
       description: Submit a url to scan
-      script: urlscan.io|||url
+      script: '|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -397,7 +397,115 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 5c34218f-3338-437b-89da-5bae723a6046
+    type: regular
+    task:
+      id: 5c34218f-3338-437b-89da-5bae723a6046
+      version: -1
+      name: Check another Malicious url
+      description: Submit a url to scan
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
+        simple: http://malware.wicar.org/data/eicar.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 8fcc4236-5c19-49d4-8237-f71a1dead455
+    type: regular
+    task:
+      id: 8fcc4236-5c19-49d4-8237-f71a1dead455
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 3d42a663-2479-493e-8d96-4ab7d72fc78e
+    type: condition
+    task:
+      id: 3d42a663-2479-493e-8d96-4ab7d72fc78e
+      version: -1
+      name: Check DBot score is 3
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -407,7 +515,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1930,
+        "height": 2455,
         "width": 380,
         "x": 50,
         "y": 50
