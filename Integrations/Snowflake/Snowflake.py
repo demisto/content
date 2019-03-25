@@ -271,15 +271,22 @@ def snowflake_query(args):
 def snowflake_query_command():
     args = demisto.args()
     query = args.get('query')
+    db = args.get('database') if args.get('database') else DATABASE
+    schema = args.get('schema') if args.get('schema') else SCHEMA
     col_descriptions, results = snowflake_query(args)
     results = format_to_json_serializable(col_descriptions, results)
 
     entry_context = {
+        'Database': db,
+        'Schema': schema,
         'Query': query,
         'Result': results
     }
     columns = argToList(args.get('columns'))
     human_readable = tableToMarkdown(query, results, columns)
+    demisto_transform = 'Snowflake(val.Query && val.Query === obj.Query'
+    demisto_transform += ' && val.Database && val.Database === obj.Database'
+    demisto_transform += ' && val.Schema && val.Schema === obj.Schema)'
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -288,7 +295,7 @@ def snowflake_query_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
-            'Snowflake(val.Query && val.Query === obj.Query)': entry_context
+            demisto_transform: entry_context
         }
     })
 
