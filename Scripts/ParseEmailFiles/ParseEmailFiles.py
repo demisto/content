@@ -3204,7 +3204,8 @@ def save_attachments(attachments, root_email_file_name, max_depth):
 
                     inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name,
                                                                   max_depth=max_depth)
-                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name))
+                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
+                                   outputs=None)
                     attached_emls.append(inner_eml)
                     attached_emls.extend(attached_inner_emails)
                 finally:
