@@ -1,3 +1,4 @@
+import copy
 import time
 from pprint import pformat
 import uuid
@@ -67,7 +68,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     if not module_configuration:
         module_configuration = []
 
-    instance_name = integration_name + '_test' + str(uuid.uuid4())
+    instance_name = (integration_name + '_test' + str(uuid.uuid4())).replace(' ', '_')
     # define module instance
     module_instance = {
         'brand': configuration['name'],
@@ -224,8 +225,24 @@ def __print_investigation_error(client, playbook_id, investigation_id):
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
                 if entry['parentContent']:
-                    print_error('\t- Command: ' + str(entry['parentContent']))
-                print_error('\t- Body: ' + str(entry['contents']))
+                    print_error('\t- Command: ' + entry['parentContent'].encode('utf-8'))
+                print_error('\t- Body: ' + entry['contents'].encode('utf-8'))
+
+
+# Configure integrations to work with mock
+def configure_proxy_unsecure(integration_params):
+    """Copies the intgeration parameters dictionary.
+        Set proxy and unscure integration parameters to true.
+
+    Args:
+        integration_params: dict of the integration parameters.
+    """
+    integration_params_copy = copy.deepcopy(integration_params)
+    if integration_params_copy:
+        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
+            integration_params[param] = True
+
+    return integration_params_copy
 
 
 # 1. create integrations instances
@@ -233,7 +250,7 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integrations, playbook_id, options=None):
+def test_integration(client, integrations, playbook_id, options=None, is_mock_run=False):
     options = options if options is not None else {}
     # create integrations instances
     module_instances = []
@@ -241,6 +258,9 @@ def test_integration(client, integrations, playbook_id, options=None):
         integration_name = integration.get('name', None)
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
+
+        if is_mock_run:
+            configure_proxy_unsecure(integration_params)
 
         module_instance = __create_integration_instance(client, integration_name, integration_params, is_byoi)
         if module_instance is None:

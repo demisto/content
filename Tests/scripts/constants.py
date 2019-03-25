@@ -16,7 +16,9 @@ BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 # file types regexes
 PIPFILE_REGEX = r".*\Pipfile"
 TEST_DATA_REGEX = r".*test_data.*"
+DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
+DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
@@ -31,6 +33,7 @@ INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r"{}.(?!playbook).*-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
+
 
 WIDGETS_REGEX = r"{}.*widget-.*\.json$".format(WIDGETS_DIR)
 DASHBOARD_REGEX = r"{}.*dashboard-.*\.json$".format(DASHBOARDS_DIR)
@@ -65,3 +68,4 @@ TYPE_TO_EXTENSION = {
 
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
+FILTER_CONF = "./Tests/filter_file.txt"

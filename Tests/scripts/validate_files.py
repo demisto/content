@@ -20,6 +20,7 @@ from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
 from Tests.scripts.hook_validations.secrets import get_secrets
 from Tests.scripts.hook_validations.image import ImageValidator
+from Tests.scripts.hook_validations.description import DescriptionValidator
 from Tests.scripts.update_id_set import get_script_package_data
 from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
@@ -39,6 +40,7 @@ class FilesValidator(object):
         conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
+
     def __init__(self, is_circle=False):
         self._is_valid = True
         self.is_circle = is_circle
@@ -154,6 +156,10 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
+                description_validator = DescriptionValidator(file_path)
+                if not description_validator.is_valid():
+                    self._is_valid = False
+
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if not integration_validator.is_backward_compatible():
                     self._is_valid = False
@@ -206,6 +212,15 @@ class FilesValidator(object):
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
 
+                image_validator = ImageValidator(file_path)
+                if not image_validator.is_valid():
+                    self._is_valid = False
+
+                description_validator = DescriptionValidator(file_path)
+                if not description_validator.is_valid():
+                    self._is_valid = False
+
+            elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
                     self._is_valid = False

@@ -35,12 +35,12 @@ configuration:
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -1438,10 +1438,6 @@ script:
       description: 'The name of a closing reason. You must provide a valid closing_reason_name
         when you close an offense. The default  closing_reasons are: (1) False-Positive,
         Tuned (2) Non-Issues (3) Policy Violation'
-    - name: closing_reason_id
-      deprecated: true
-      description: The ID of a closing reason. You must provide a valid closing_reason_id
-        when you close an offense
     - name: assigned_to
       description: A user to assign the offense to
     - name: headers
@@ -1860,3 +1856,4 @@ script:
   runonce: false
 tests:
   - test_Qradar
+releaseNotes: "-"
