@@ -1,6 +1,6 @@
-id: ContextGetters-Test
+id: ContextGetters_Test
 version: 34
-name: ContextGetters-Test
+name: ContextGetters_Test
 starttaskid: "0"
 tasks:
   "0":

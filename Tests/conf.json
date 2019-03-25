@@ -470,7 +470,7 @@
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
-          "playbookID": "ContextGetters-Test"
+          "playbookID": "ContextGetters_Test"
         },
         {
             "integrations": [
