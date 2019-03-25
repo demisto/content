@@ -17,6 +17,8 @@ DEF_DOCKER = 'demisto/python:1.3-alpine'
 ENVS_DIRS_BASE = '{}/dev_envs/default_python'.format(SCRIPT_DIR)
 RUN_SH_FILE_NAME = 'run_dev_tasks.sh'
 RUN_SH_FILE = '{}/{}'.format(SCRIPT_DIR, RUN_SH_FILE_NAME)
+CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'
+CONTAINER_SETUP_SCRIPT = '{}/{}'.format(SCRIPT_DIR, CONTAINER_SETUP_SCRIPT_NAME)
 LOG_VERBOSE = False
 
 
@@ -83,8 +85,9 @@ def docker_image_create(docker_base_image, requirements):
         print_v('Using already existing image: {}'.format(target_image))
         return target_image
     container_id = subprocess.check_output(
-        ['docker', 'create', '-i', docker_base_image, 'pip', 'install', '-r', '/dev/stdin'],
+        ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
         universal_newlines=True).strip()
+    subprocess.check_call(['docker', 'cp', CONTAINER_SETUP_SCRIPT, container_id + ':/' + CONTAINER_SETUP_SCRIPT_NAME])
     subprocess.run(['docker', 'start', '-a', '-i', container_id], input=requirements.encode('utf-8'), check=True)
     subprocess.check_call(['docker', 'commit', container_id, target_image])
     subprocess.check_call(['docker', 'rm', container_id])

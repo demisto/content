@@ -12,19 +12,28 @@ fi
 
 ERRORS_FOUND=false
 
-for d in `find Scripts Integrations Beta_Integrations -type d -maxdepth 1 -mindepth 1`; do
+SUCCESS_STATUS=""
+FAIL_STATUS=""
+
+for d in `find Integrations Scripts Beta_Integrations -type d -maxdepth 1 -mindepth 1`; do
     echo "**** `date`: Running dev tasks for: $d"
     ${PKG_DEV_TASKS_DIR}/pkg_dev_tasks_in_docker.py -d "$d" $*
     if [[ $? -ne 0 ]]; then
-        ERRORS_FOUND=true
-        echo "**** FAILED: $d"
+        FAIL_STATUS=`printf "${FAIL_STATUS}\n\t-$d"`        
     else
-        echo "**** SUCCESS: $d"
+        SUCCESS_STATUS=`printf "${SUCCESS_STATUS}\n\t-$d"`
     fi
 done
-
-if [[ "$ERRORS_FOUND" == "true" ]]; then
-    echo "========== ERRORS FOUND WHILE RUNNING ALL PKG TASKS ===========" 1>&2
+echo ""
+if [[ -n "$SUCCESS_STATUS"  ]]; then
+    echo "******* SUCCESS PKGS: *******" 
+    echo "$SUCCESS_STATUS"
+    echo ""
+fi
+if [[ -n "$FAIL_STATUS"  ]]; then
+    echo "******* FAILED PKGS: *******"  1>&2
+    echo "$FAIL_STATUS" 1>&2
+    echo ""
     exit 1
 fi
 exit 0

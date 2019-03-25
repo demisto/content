@@ -8,6 +8,7 @@
 # PYLINT_FILES: file names to pass to pylint
 # PYLINT_SKIP: if set will skip pylint
 # PYTEST_SKIP: if set will skip pytest
+# PYTEST_FAIL_NO_TESTS: if set will fail if no tests are defined 
 
 pylint_return=0
 if [ -z "${PYLINT_SKIP}" ]; then
@@ -16,8 +17,23 @@ if [ -z "${PYLINT_SKIP}" ]; then
     pylint_return=$?
 fi
 
+if [ -z "${PYTEST_SKIP}" -a -z "${PYTEST_FAIL_NO_TESTS}" ]; then
+    echo "collecting tests..."
+    collect_res=$(python -m pytest --collect-only 2>&1)
+    echo "collected res: *****$collect_res******"
+    case "$collect_res" in
+        *"collected 0 items"*)
+            echo "========= No tests found. Skipping. ========"
+            echo "========= Output of: pytest --collect-only ========"
+            echo "$collect_res"
+            echo "========= End of Output ========"
+            PYTEST_SKIP=1
+        ;;
+    esac
+fi
+
 pytest_return=0
-if [[ -z "${PYTEST_SKIP}" ]]; then
+if [ -z "${PYTEST_SKIP}" ]; then
     echo "========= Running pytest ==============="
     python -m pytest -v
     pytest_return=$?
