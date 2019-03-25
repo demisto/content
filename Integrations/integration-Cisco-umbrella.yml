@@ -198,7 +198,7 @@ script:
             DBotScore = 1
         elif sr < 0 and sr > MALICIOUS_THRESHOLD:
             DBotScore = 2
-        elif sr < MALICIOUS_THRESHOLD:
+        elif sr <= MALICIOUS_THRESHOLD:
             DBotScore = 3
         return DBotScore
 
