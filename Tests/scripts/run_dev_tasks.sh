@@ -19,8 +19,6 @@ fi
 
 if [ -z "${PYTEST_SKIP}" -a -z "${PYTEST_FAIL_NO_TESTS}" ]; then
     echo "collecting tests..."
-    collect_res=$(python -m pytest --collect-only 2>&1)
-    echo "collected res: *****$collect_res******"
     case "$collect_res" in
         *"collected 0 items"*)
             echo "========= No tests found. Skipping. ========"
