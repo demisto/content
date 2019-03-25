@@ -2,7 +2,9 @@
 
 # Run pylint and pytest in the current directory. 
 # Used by pkg_dev_tasks_in_docker.py to run pylint and pytest 
-# inside a docker.
+# inside a docker. Since this is meant to run inside a minimal docker
+# image it uses sh and not bash. Additionally, script tries to keep it 
+# simply and not use any shell utilities that may be missing in a minimal docker.
 
 # Env variables:
 # PYLINT_FILES: file names to pass to pylint
@@ -19,6 +21,7 @@ fi
 
 if [ -z "${PYTEST_SKIP}" -a -z "${PYTEST_FAIL_NO_TESTS}" ]; then
     echo "collecting tests..."
+    collect_res=$(python -m pytest --collect-only 2>&1)
     case "$collect_res" in
         *"collected 0 items"*)
             echo "========= No tests found. Skipping. ========"
