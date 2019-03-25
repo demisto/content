@@ -36,7 +36,7 @@ configuration:
   required: false
 - display: Use system proxy
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 script:
@@ -54,7 +54,7 @@ script:
     import re
     from urlparse import urljoin
 
-    #globals and constants
+    # globals and constants
     IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
     IPV6_CLASS = 'minemeld.ft.local.YamlIPv6FT'
     URL_CLASS = 'minemeld.ft.local.YamlURLFT'
@@ -64,19 +64,14 @@ script:
     SERVER_URL = demisto.params()['url']
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    USE_PROXY = demisto.params().get('proxy', False)
+    USE_PROXY = demisto.params()['proxy']
     WHITELISTS = []
     BLACKLISTS = []
     WHITELISTS = argToList(demisto.params().get('whitelist'))
     BLACKLISTS = argToList(demisto.params().get('blacklist'))
 
     if not USE_PROXY:
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
         os.environ['NO_PROXY'] = SERVER_URL
-
     if not isinstance(WHITELISTS, (list)) or not isinstance(BLACKLISTS, (list)):
         return_error('Either blacklist or whitelist params were misconfigured - expecting comma seperated list, ex: miner_a,miner_b,miner_c')
 
@@ -236,15 +231,21 @@ script:
             indicators = indicators.split(',')
 
         if MineMeldClient.data_file_type == 'localdb':
+            # check that all indicators to remove are on localdb miner
+            miner_list_indicators = [o['indicator'] for o in miner_list]
+            contain_all_indicators =  all(elem in miner_list_indicators for elem in indicators)
+            if not contain_all_indicators:
+                return_error('Did not find all indicators on miner'.format(miner))
+
             for indicator in indicators:
                 request_params = {
-                    'removed': True,
                     'indicator': indicator,
                     'type': json.loads(updated_miner_list[indicator])['type'],
                     'ttl': -1
                 }
                 updated_miner_list = { indicator: json.dumps(request_params) }
         else:
+            # remove indicator from miner, if nothing was removed, indicator not on miner
             for indicator in indicators:
                 indicator_from_list = updated_miner_list.pop(indicator, None)
                 if not indicator_from_list:
@@ -317,7 +318,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': domain,
-            'Type': 'Domain',
+            'Type': 'domain',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -395,7 +396,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': url,
-            'Type': 'URL',
+            'Type': 'url',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -473,7 +474,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': file,
-            'Type': 'Hash',
+            'Type': 'hash',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -551,7 +552,7 @@ script:
         # start building output and context
         dbotscore_list = {
             'Indicator': ip,
-            'Type': 'IP',
+            'Type': 'ip',
             'Vendor': 'Palo Alto MineMeld',
             'Score': dbotscore
         }
@@ -1122,6 +1123,6 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added validation of deleting indictors from miners of type localDB"
 tests:
   - minemeld_test
