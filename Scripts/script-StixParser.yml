@@ -336,3 +336,6 @@ dependson: {}
 timeout: 0s
 dockerimage: demisto/stix
 system: true
+releaseNotes: "Supports STIX2.0"
+tests:
+  - STIXParserTest
