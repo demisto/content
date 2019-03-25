@@ -70,7 +70,7 @@ def jira_req(method, resource_url, body='', link=False):
         except ValueError as ve:
             demisto.debug(str(ve))
             if result.status_code == 401:
-                return_error('Unauthorized, please check parameters')
+                return_error('Unauthorized request, please check parameters')
             elif result.status_code == 404:
                 return_error("Server is unreachable, please insure the URL is correct")
             else:
