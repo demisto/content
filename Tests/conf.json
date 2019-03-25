@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Server Message Block (SMB)",
+            "playbookID": "SMB test"
+        },        
+        {
+            "playbookID": "TestParseEmailHeaders"
+        },
+        {
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
@@ -11,6 +18,10 @@
         },
         {
             "playbookID": "test_similar_incidents"
+        },
+        {
+            "playbookID": "autofocus_test",
+            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -1125,9 +1136,7 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
+            "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
         }
     ],
@@ -1161,11 +1170,9 @@
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
         "iDefense": "DevOps investigation",
-        "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
-        "Server Message Block (SMB)": "No instance",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
@@ -1180,14 +1187,20 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
         "Whois": "Host periodically bans connection",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
+        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
+        "Threat Grid": "instance problem (issue 16197)",
+        "BitDam": "Changes in service (issue #16247)",
+        "SCADAfence CNM": "getting Bad gateway (issue #16277)"
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
+        "Autofocus": "JS integration, problem listed in issue 15544",
+        "Panorama": "Pending check: issue 16122",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",
