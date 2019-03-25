@@ -6,12 +6,14 @@ script: |-
   minScore = (args.includeSuspicious == 'yes') ? 2 : 3
 
   files = dq(invContext,`DBotScore(val.Type.toLowerCase()=='file' && val.Score>=${minScore})`)
+  hashes = dq(invContext,`DBotScore(val.Type.toLowerCase()=='hashes' && val.Score>=${minScore})`)
   ips = dq(invContext,`DBotScore(val.Type.toLowerCase()=='ip' && val.Score>=${minScore})`)
   urls = dq(invContext,`DBotScore(val.Type.toLowerCase()=='url' && val.Score>=${minScore})`)
   domains = dq(invContext,`DBotScore(val.Type.toLowerCase()=='domain' && val.Score>=${minScore})`)
   emails = dq(invContext,`DBotScore(val.Type.toLowerCase()=='email' && val.Score>=${minScore})`)
 
   if ((files   && (!Array.isArray(files)   || files.length > 0))   ||
+      (hashes  && (!Array.isArray(hashes)  || hashes.length > 0))  ||
       (ips     && (!Array.isArray(ips)     || ips.length > 0))     ||
       (urls    && (!Array.isArray(urls)    || urls.length > 0))    ||
       (domains && (!Array.isArray(domains) || domains.length > 0)) ||
@@ -33,7 +35,7 @@ script: |-
       var indicatorsRes = executeCommand("findIndicators", {"query":query+" and investigationIDs:"+investigation.id,"size":1})
       if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
           // we have results, so we found a maliciuos indicator for this investigation
-          return 'yes';
+          return 'yes'
       }
   }
 
