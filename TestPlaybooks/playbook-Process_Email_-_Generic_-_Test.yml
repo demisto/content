@@ -5,13 +5,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1b02ec4b-5673-406a-85a8-5f6a5ab070cc
+    taskid: ead303e7-4702-447f-8b86-97892809dc4a
     type: start
     task:
-      id: 1b02ec4b-5673-406a-85a8-5f6a5ab070cc
+      id: ead303e7-4702-447f-8b86-97892809dc4a
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -25,12 +24,15 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 90fa0e7b-ae47-42ab-86a1-2daad557faba
+    taskid: 47bbbb35-643c-4697-80de-4f8bb9e3ff76
     type: regular
     task:
-      id: 90fa0e7b-ae47-42ab-86a1-2daad557faba
+      id: 47bbbb35-643c-4697-80de-4f8bb9e3ff76
       version: -1
       name: Download EML file
       description: Sends http request. Returns the response as json.
@@ -53,9 +55,11 @@ tasks:
       proxy: {}
       saveAsFile:
         simple: "yes"
+      unsecure: {}
       url:
         simple: https://www.phpclasses.org/browse/download/1/file/14672/name/message.eml
       username: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -64,12 +68,15 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: e853bb76-5e03-4ca4-85fe-e78e886a4aef
+    taskid: eea7485a-2b8d-4160-8e73-06555f6097c9
     type: regular
     task:
-      id: e853bb76-5e03-4ca4-85fe-e78e886a4aef
+      id: eea7485a-2b8d-4160-8e73-06555f6097c9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -92,15 +99,17 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 3c2fd6cb-c9e3-4236-857b-d7b8344bcc8d
+    taskid: d5a04d67-583c-4ddb-85fd-c238a66e13c7
     type: title
     task:
-      id: 3c2fd6cb-c9e3-4236-857b-d7b8344bcc8d
+      id: d5a04d67-583c-4ddb-85fd-c238a66e13c7
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -108,19 +117,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 30,
+          "y": 2430
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 4f66938b-1d07-4187-8c19-f4263965c16b
+    taskid: 4fd63104-4fff-4747-88af-14a657e47ad8
     type: playbook
     task:
-      id: 4f66938b-1d07-4187-8c19-f4263965c16b
+      id: 4fd63104-4fff-4747-88af-14a657e47ad8
       version: -1
       name: Process Email - Generic
-      description: ""
       playbookName: Process Email - Generic
       type: playbook
       iscommand: false
@@ -136,28 +147,37 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 0785145c-9c5c-4480-8b75-645aeacddb8d
-    type: regular
+    taskid: 99482124-9179-4d10-8adb-6851a6baec2a
+    type: condition
     task:
-      id: 0785145c-9c5c-4480-8b75-645aeacddb8d
+      id: 99482124-9179-4d10-8adb-6851a6baec2a
       version: -1
       name: Verify context
-      description: ""
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: Email
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.From
+            iscontext: true
+          right:
+            value:
+              simple: mlemos@acm.org # disable-secrets-detection
     view: |-
       {
         "position": {
@@ -165,14 +185,328 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 7b8b96f8-7f36-45d2-8095-c1120ab759c8
+    type: regular
+    task:
+      id: 7b8b96f8-7f36-45d2-8095-c1120ab759c8
+      version: -1
+      name: Error Verifying Context Output
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed Email verification
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c5ea33ce-db3f-4cd5-81f1-672d57bad5de
+    type: regular
+    task:
+      id: c5ea33ce-db3f-4cd5-81f1-672d57bad5de
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 07257cda-0365-4b43-8d20-ec4fce1fb3c5
+    type: regular
+    task:
+      id: 07257cda-0365-4b43-8d20-ec4fce1fb3c5
+      version: -1
+      name: Download SMTP Email
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test-smtp-email.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/smtp_email_utf_8.test
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: c5d26a90-4094-4f21-8c90-1d8c1466e528
+    type: playbook
+    task:
+      id: c5d26a90-4094-4f21-8c90-1d8c1466e528
+      version: -1
+      name: Process Email - Generic
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 706475b9-4943-4b04-8676-875f02386f4f
+    type: condition
+    task:
+      id: 706475b9-4943-4b04-8676-875f02386f4f
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Email.From
+            iscontext: true
+          right:
+            value:
+              simple: test@test.com
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 0d7b819f-e2d0-458d-8c90-12714bb8d40d
+    type: regular
+    task:
+      id: 0d7b819f-e2d0-458d-8c90-12714bb8d40d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: da19c36a-be4e-4b87-8d5d-4c0dd8b507e6
+    type: regular
+    task:
+      id: da19c36a-be4e-4b87-8d5d-4c0dd8b507e6
+      version: -1
+      name: Download Word Doc
+      description: "Check that a word doc doesn't trigger processing the email. \n\nSee
+        issue: https://github.com/demisto/etc/issues/15743"
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: file.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators.doc
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: c331e2a5-d755-4b88-827a-9d45969a62b0
+    type: playbook
+    task:
+      id: c331e2a5-d755-4b88-827a-9d45969a62b0
+      version: -1
+      name: Process Email - Generic
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 758d3acb-2a0f-4a30-8af7-7981a9241821
+    type: condition
+    task:
+      id: 758d3acb-2a0f-4a30-8af7-7981a9241821
+      version: -1
+      name: Verify Email is Null
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: Email.From
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 380,
-        "x": 50,
+        "height": 2445,
+        "width": 1030,
+        "x": 30,
         "y": 50
       }
     }
