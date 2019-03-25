@@ -34,8 +34,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: ExtraHop performs real-time stream analysis of the packets that carry
-  data across a network.
 display: ExtraHop
 name: ExtraHop
 script:
