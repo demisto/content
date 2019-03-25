@@ -1,6 +1,6 @@
-id: Script-TestStixCreator
-version: 20
-name: Script-TestStixCreator
+id: StixCreator-Test
+version: -1
+name: StixCreator-Test
 starttaskid: "0"
 tasks:
   "0":
