@@ -208,13 +208,13 @@ script: |-
       first = None
       if date1 == 'now':
           first = datetime.now(tzlocal())
-      elif isinstance(date1, basestring):
+      elif isinstance(date1, STRING_TYPES):
           first = parse(date1)
 
       second = None
       if date2 == 'now':
           second = datetime.now(tzlocal())
-      elif isinstance(date2, basestring):
+      elif isinstance(date2, STRING_TYPES):
           second = parse(date2)
       delta = first - second
 
@@ -1526,7 +1526,7 @@ script: |-
         :return: The parsed timestamp.
         :rtype: ``int``
       """
-      if isinstance(date_str_or_dt, basestring):
+      if isinstance(date_str_or_dt, STRING_TYPES):
           return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
 
       # otherwise datetime.datetime
