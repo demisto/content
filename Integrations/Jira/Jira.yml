@@ -125,6 +125,13 @@ script:
       - "false"
       defaultValue: "false"
       description: If "true", retrives issues attachment
+    - name: expandLinks
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: If "true", expands issue's links
     outputs:
     - contextPath: Ticket.Id
       description: Id of ticket

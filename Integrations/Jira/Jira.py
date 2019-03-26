@@ -20,7 +20,7 @@ IS_OAUTH = demisto.params().get('consumerKey') and demisto.params().get('accessT
 
 # if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
 if not IS_OAUTH and not (USERNAME and PASSWORD or API_TOKEN):
-    return_error('Provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
+    return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
 BASIC_AUTH = 'Basic ' + b64encode(USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD))
 OAUTH = {
     "ConsumerKey": demisto.params().get('consumerKey'),
@@ -38,7 +38,10 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 # Remove proxy if not set to true in params
 if not demisto.params().get('proxy', False):
-    disable_proxy()
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 
 @logger
@@ -147,7 +150,7 @@ def expand_urls(data, depth=0):
 
 
 @logger
-def generate_md_context_get_issue(data):
+def generate_md_context_get_issue(data, custom_fields=None):
     get_issue_obj = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -405,7 +408,7 @@ def create_issue_command():
 
 @logger
 def edit_issue_command(issue_id, headers=None, status=None, **kwargs):
-    url = 'rest/api/latest/issue/{issue_Id}/'.format(issue_Id=issue_id)
+    url = 'rest/api/latest/issue/{issue_id}/'.format(issue_id=issue_id)
     issue = get_issue_fields(**demisto.args())
     jira_req('PUT', url, json.dumps(issue))
     if status:
@@ -417,13 +420,13 @@ def edit_issue_command(issue_id, headers=None, status=None, **kwargs):
 def edit_status(issue_id, status):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
-    url = 'rest/api/2/issue/{issue_Id}/transitions'.format(issue_Id=issue_id)
+    url = 'rest/api/2/issue/{issue_id}/transitions'.format(issue_id=issue_id)
     result = jira_req('GET', url)
     j_res = result.json()
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
-            url = 'rest/api/latest/issue/{issue_Id}/transitions?expand=transitions.fields'.format(issue_Id=issue_id)
+            url = 'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'.format(issue_id=issue_id)
             json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
             return jira_req('POST', url, json.dumps(json_body))
 
@@ -433,7 +436,7 @@ def edit_status(issue_id, status):
 
 @logger
 def get_comments_command(issue_id):
-    url = 'rest/api/latest/issue/{issue_Id}/comment'.format(issue_Id=issue_id)
+    url = 'rest/api/latest/issue/{issue_id}/comment'.format(issue_id=issue_id)
     result = jira_req('GET', url)
     body = result.json()
     comments = []
@@ -456,7 +459,7 @@ def get_comments_command(issue_id):
 
 @logger
 def add_comment_command(issue_id, comment, visibility=''):
-    url = 'rest/api/latest/issue/{issue_Id}/comment'.format(issue_Id=issue_id)
+    url = 'rest/api/latest/issue/{issue_id}/comment'.format(issue_id=issue_id)
     comment = {
         "body": comment
     }
@@ -524,7 +527,7 @@ def get_file(entry_id):
 
 @logger
 def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None):
-    req_url = 'rest/api/latest/issue/{issue_Id}/remotelink'.format(issue_Id=issue_id)
+    req_url = 'rest/api/latest/issue/{issue_id}/remotelink'.format(issue_id=issue_id)
     link = {
         "object": {
             "url": url,
@@ -646,4 +649,3 @@ except Exception, ex:
 
 finally:
     LOG.print_log()
-    enable_proxy()
