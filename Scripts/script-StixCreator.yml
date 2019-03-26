@@ -37,7 +37,7 @@ script: |-
           stix_type_and_value = "[file:hashes.sha1 = '" + value + "']"
       elif demisto_indicator_type.lower() == "File SHA256".lower():
           stix_type_and_value = "[file:hashes.sha256 = '" + value + "']"
-      elif demisto_indicator_type.lower() == "File SHA256".lower():
+      elif demisto_indicator_type.lower() == "File SHA-256".lower():
           stix_type_and_value = "[file:hashes.sha256 = '" + value + "']"
       elif demisto_indicator_type.lower() == "IP".lower():
           stix_type_and_value = "[ipv4-addr:value = '" + value + "']"
