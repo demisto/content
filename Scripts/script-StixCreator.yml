@@ -67,7 +67,7 @@ script: |-
   if counter > 1:
       bundle = Bundle(indicators)
       context = {
-          'StixExportedIndicators': json.loads(str(bundle))
+          'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
       }
       demisto.results({'Type': entryTypes['note'],
                        'Contents': str(bundle),
@@ -76,7 +76,7 @@ script: |-
   else:
 
       context = {
-          'StixExportedIndicators': json.loads(str(indicators[0]))
+          'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(indicators[0]))
       }
 
       demisto.results({'Type': entryTypes['note'],
@@ -106,6 +106,9 @@ outputs:
   type: string
 - contextPath: StixExportedIndicators.pattern
   description: STIX pattern
+  type: string
+- contextPath: StixExportedIndicators.score
+  description: STIX impact score
   type: string
 scripttarget: 0
 runonce: false
