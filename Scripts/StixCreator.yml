@@ -17,7 +17,7 @@ script: |-
       all_args = json.loads(demisto.args().get('indicators','Unknown'))
 
   counter = 0
-  for indicatorFields in all_args:
+  for indicator_fields in all_args:
       demisto_indicator_type = all_args.get(str(counter)).get('indicator_type','Unknown')
       value = all_args.get(str(counter)).get('value','')
       source_system = all_args.get(str(counter)).get('source','')
