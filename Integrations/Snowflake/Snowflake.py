@@ -5,8 +5,6 @@ from CommonServerUserPython import *
 
 import snowflake.connector
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.asymmetric import dsa
 from cryptography.hazmat.primitives import serialization
 from datetime import date, timedelta, datetime
 from datetime import time as dttime
