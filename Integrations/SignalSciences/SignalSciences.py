@@ -547,7 +547,10 @@ def test_module():
     except Exception as e:
         raise Exception(e.message)
 
-    return_outputs(readable_output='ok')
+    return_outputs(
+        readable_output='Success',
+        outputs={}
+    )
 
 
 def create_corp_list(list_name, list_type, entries_list, description=None):
