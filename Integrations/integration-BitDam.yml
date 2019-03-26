@@ -211,6 +211,7 @@ script:
         verdict = response_json['scan_data']['verdict']
         if verdict == 'Still scanning...' or verdict == VERDICT_SCANNING:
             # Still in progress
+            verdict = VERDICT_SCANNING
             status = STATUS_IN_PROGRESS
         else:
             status = STATUS_DONE
