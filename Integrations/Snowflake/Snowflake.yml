@@ -7,10 +7,6 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Credentials
   name: credentials
   required: true
@@ -43,12 +39,8 @@ configuration:
   name: role
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Fetch query to retrieve new incidents
+- display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch
+    query to retrieve new incidents
   name: fetch_query
   required: false
   type: 0
@@ -67,6 +59,15 @@ configuration:
   name: incident_name_column
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Your analytic data warehouse provided as Software-as-a-Service
 display: Snowflake
 name: Snowflake
