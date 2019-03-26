@@ -235,9 +235,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
     scriptarguments:
       body: {}
       filename: {}
@@ -319,9 +316,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
     scriptarguments:
       body: {}
       filename: {}
