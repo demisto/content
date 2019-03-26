@@ -48,7 +48,7 @@ tasks:
           {"0": {"firstSeen": "2019-03-13T11:39:11+02:00", "id": "320", "indicator_type":
                     "Email", "investigationIDs": "101, 128, 237, 283, 343, 462, 466", "lastSeen":
                     "2019-03-25T17:08:25+02:00", "source": "DBot", "timestamp": "2019-03-13T11:39:11+02:00",
-                    "value": "abc@def.ghi"}}
+                    "value": "koko@demisto.com"}}
     separatecontext: false
     view: |-
       {
@@ -85,7 +85,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '[email:value = ''abc@def.ghi'']'
+              simple: '[email:value = ''koko@demisto.com'']'
     view: |-
       {
         "position": {
