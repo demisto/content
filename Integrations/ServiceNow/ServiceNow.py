@@ -4,8 +4,6 @@ from CommonServerUserPython import *
 import re
 import requests
 import json
-import datetime
-import time
 import shutil
 
 # disable insecure warnings
@@ -24,7 +22,10 @@ def get_server_url():
     url = re.sub('\/$', '', url)
     return url
 
+
 ''' GLOBAL VARIABLES '''
+
+
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('insecure', False)
@@ -114,18 +115,25 @@ SEVERITY_MAP = {
 }
 
 DEFAULTS = {
-    'limit':10,
-    'offset':0,
-    'fetch_limit':10
+    'limit': 10,
+    'offset': 0,
+    'fetch_limit': 10,
+    'fetch_time': '10 minutes'
 }
 
-SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history', 'approval_set', 'assigned_to', 'assignment_group',
-     'business_duration', 'business_service', 'business_stc', 'calendar_duration', 'calendar_stc', 'caller_id', 'caused_by', 'close_code', 'close_notes',
-     'closed_at', 'closed_by', 'cmdb_ci', 'comments', 'comments_and_work_notes', 'company', 'contact_type', 'correlation_display', 'correlation_id',
-     'delivery_plan', 'delivery_task', 'description', 'due_date', 'expected_start', 'follow_up', 'group_list', 'hold_reason', 'impact', 'incident_state',
-     'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority', 'problem_id', 'resolved_at', 'resolved_by', 'rfc',
-     'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list',
-     'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
+SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
+             'approval_set', 'assigned_to', 'assignment_group',
+             'business_duration', 'business_service', 'business_stc', 'calendar_duration', 'calendar_stc', 'caller_id',
+             'caused_by', 'close_code', 'close_notes',
+             'closed_at', 'closed_by', 'cmdb_ci', 'comments', 'comments_and_work_notes', 'company', 'contact_type',
+             'correlation_display', 'correlation_id',
+             'delivery_plan', 'delivery_task', 'description', 'due_date', 'expected_start', 'follow_up', 'group_list',
+             'hold_reason', 'impact', 'incident_state',
+             'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority',
+             'problem_id', 'resolved_at', 'resolved_by', 'rfc',
+             'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input',
+             'watch_list', 'work_end', 'work_notes', 'work_notes_list',
+             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
 
 
 # Every table in ServiceNow should have those fields
@@ -143,6 +151,7 @@ DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
                        'servicenow-incidents-query', 'servicenow-incident-update']
 
 ''' HELPER FUNCTIONS '''
+
 
 def send_request(path, method='get', body=None, params=None, headers=None, file=None):
     body = body if body is not None else {}
@@ -163,14 +172,14 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
             shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
             with open(file_name, 'rb') as f:
                 files = {'file': f}
-                res = requests.request(method, url, headers=headers, params=params, data=body,files=files, auth=(USERNAME, PASSWORD),
-                verify=VERIFY_SSL)
+                res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
+                                       auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
             shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
         except Exception as e:
             raise Exception('Failed to upload file - ' + e.message)
     else:
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params,
+                               auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
 
     try:
         obj = res.json()
@@ -194,6 +203,7 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
 
     return obj
 
+
 def get_table_name(ticket_type=None):
     if ticket_type:
         return ticket_type
@@ -203,8 +213,9 @@ def get_table_name(ticket_type=None):
         else:
             return 'incident'
 
+
 def create_ticket_context(data, ticket_type):
-    context =  {
+    context = {
         'ID': data.get('sys_id'),
         'Summary': data.get('short_description'),
         'Number': data.get('number'),
@@ -241,6 +252,7 @@ def create_ticket_context(data, ticket_type):
 
     return createContext(context, removeNull=True)
 
+
 def get_ticket_context(data, ticket_type):
     if not isinstance(data, list):
         return create_ticket_context(data, ticket_type)
@@ -249,6 +261,7 @@ def get_ticket_context(data, ticket_type):
     for d in data:
         tickets.append(create_ticket_context(d, ticket_type))
     return tickets
+
 
 def get_ticket_human_readable(tickets, ticket_type):
     if not isinstance(tickets, list):
@@ -269,7 +282,8 @@ def get_ticket_human_readable(tickets, ticket_type):
             'Opened At': ticket.get('opened_at'),
             'Due Date': ticket.get('due_date'),
             # This field refers to a record in the database, the value is its system ID.
-            'Resolved By': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict) else ticket.get('closed_by'),
+            'Resolved By': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict)
+            else ticket.get('closed_by'),
             'Resolved At': ticket.get('resolved_at'),
             'SLA Due': ticket.get('sla_due'),
             'Short Description': ticket.get('short_description'),
@@ -292,6 +306,7 @@ def get_ticket_human_readable(tickets, ticket_type):
             hr['State'] = mapped_state
         result.append(hr)
     return result
+
 
 def get_ticket_fields(template, ticket_type):
     # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
@@ -317,7 +332,8 @@ def get_ticket_fields(template, ticket_type):
 
     return body
 
-def get_body(template, fields, custom_fields):
+
+def get_body(fields, custom_fields):
     body = {}
 
     if fields:
@@ -349,18 +365,10 @@ def split_fields(fields):
 
     return dic_fields
 
-def get_snow_time(minutes_offset):
-    now = datetime.datetime.now()
-    ts = time.time()
-    utc_offset_minutes = (datetime.datetime.utcfromtimestamp(ts) - datetime.datetime.fromtimestamp(ts)).total_seconds() / 60
-    snow_time = now + datetime.timedelta(minutes = utc_offset_minutes)
-
-    if minutes_offset:
-        snow_time = snow_time + datetime.timedelta(minutes = minutes_offset)
-
-    return snow_time.strftime('%Y-%m-%d %H:%M:%S')
 
 ''' FUNCTIONS '''
+
+
 def get_template(name):
     query_params={}
     query_params['sysparm_limit'] = 1
@@ -378,10 +386,11 @@ def get_template(name):
 
     for i in range(len(template) - 1):
         template_value = template[i].split('=')
-        if (len(template_value) > 1):
+        if len(template_value) > 1:
             dic_template[template_value[0]] = template_value[1]
 
     return dic_template
+
 
 def get_ticket_command():
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
@@ -408,9 +417,10 @@ def get_ticket_command():
     hr = get_ticket_human_readable(ticket, ticket_type)
     context = get_ticket_context(ticket, ticket_type)
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
-
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
@@ -427,6 +437,7 @@ def get_ticket_command():
     entries.append(entry)
 
     return entries
+
 
 def get_record_command():
     table_name = demisto.args()['table_name']
@@ -495,6 +506,7 @@ def get(table_name, record_id, number = None):
 
     return send_request(path, 'get', params=query_params)
 
+
 def get_ticket_attachments(ticket_id):
     path = 'attachment'
     query_params = {
@@ -519,6 +531,7 @@ def get_ticket_attachment_entries(ticket_id):
 
     return entries
 
+
 def update_ticket_command():
     custom_fields = split_fields(demisto.args().get('custom_fields'))
     template = demisto.args().get('template')
@@ -526,10 +539,10 @@ def update_ticket_command():
     ticket_id = demisto.args()['id']
 
     if template:
-        template = get_template(template_name)
+        template = get_template(template)
     fields = get_ticket_fields(template, ticket_type)
 
-    res = update(ticket_type, ticket_id ,fields, custom_fields, template)
+    res = update(ticket_type, ticket_id ,fields, custom_fields)
 
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
@@ -542,13 +555,15 @@ def update_ticket_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type, hr, removeNull=True),
+        'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type,
+                                         hr, removeNull=True),
         'EntryContext': {
             'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
     return entry
+
 
 def update_record_command():
     table_name = demisto.args()['table_name']
@@ -582,14 +597,13 @@ def update_record_command():
 
     return entry
 
-    res = update(table_name, record_id, fields, custom_fields)
 
-
-def update(table_name, record_id, fields, custom_fields, template=None):
-    body = get_body(template, fields, custom_fields)
+def update(table_name, record_id, fields, custom_fields):
+    body = get_body(fields, custom_fields)
     path = 'table/' + table_name + '/' + record_id
 
-    return send_request(path, 'patch', body = body)
+    return send_request(path, 'patch', body=body)
+
 
 def create_ticket_command():
     custom_fields = split_fields(demisto.args().get('custom_fields'))
@@ -597,10 +611,10 @@ def create_ticket_command():
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
     if template:
-        template = get_template(template_name)
+        template = get_template(template)
     fields = get_ticket_fields(template, ticket_type)
 
-    res = create(ticket_type, fields, custom_fields, template)
+    res = create(ticket_type, fields, custom_fields)
 
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
@@ -608,15 +622,18 @@ def create_ticket_command():
     hr = get_ticket_human_readable(res['result'], ticket_type)
     context = get_ticket_context(res['result'], ticket_type)
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr,
+                                         headers=headers, removeNull=True),
         'EntryContext': {
               'Ticket(val.ID===obj.ID)': context,
               'ServiceNow.Ticket(val.ID===obj.ID)': context
@@ -625,18 +642,18 @@ def create_ticket_command():
 
     return entry
 
+
 def create_record_command():
     table_name = demisto.args()['table_name']
     fields = demisto.args().get('fields')
     custom_fields = demisto.args().get('custom_fields')
-    template = demisto.args().get('template')
 
     if fields:
         fields = split_fields(fields)
     if custom_fields:
         custom_fields = split_fields(custom_fields)
 
-    res = create(table_name, fields, custom_fields, template)
+    res = create(table_name, fields, custom_fields)
 
     if not res or 'result' not in res:
         return 'Could not retrieve record'
@@ -658,11 +675,12 @@ def create_record_command():
     return entry
 
 
-def create(table_name, fields, custom_fields, template):
-    body = get_body(template, fields, custom_fields)
+def create(table_name, fields, custom_fields):
+    body = get_body(fields, custom_fields)
     path = 'table/' + table_name
 
-    return send_request(path, 'post', body = body)
+    return send_request(path, 'post', body=body)
+
 
 def delete_ticket_command():
     ticket_id = demisto.args()['id']
@@ -679,6 +697,7 @@ def delete_ticket_command():
     }
 
     return entry
+
 
 def delete_record_command():
     record_id = demisto.args()['id']
@@ -715,8 +734,10 @@ def add_link_command():
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     hr = get_ticket_human_readable(res['result'], ticket_type)
     entry = {
@@ -724,7 +745,8 @@ def add_link_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr, headers=headers, removeNull=True)
+        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr,
+                                         headers=headers, removeNull=True)
     }
 
     return entry
@@ -737,6 +759,7 @@ def add_link(ticket_id, ticket_type, key, link):
 
     return send_request(path, 'patch', body=body)
 
+
 def add_comment_command():
     ticket_id = demisto.args()['id']
     key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
@@ -748,8 +771,10 @@ def add_comment_command():
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     hr = get_ticket_human_readable(res['result'], ticket_type)
     entry = {
@@ -757,10 +782,12 @@ def add_comment_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr, headers=headers, removeNull=True)
+        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr,
+                                         headers=headers, removeNull=True)
     }
 
     return entry
+
 
 def add_comment(ticket_id, ticket_type, key, text):
     body = {}
@@ -768,6 +795,7 @@ def add_comment(ticket_id, ticket_type, key, text):
     path = 'table/' + ticket_type + '/' + ticket_id
 
     return send_request(path, 'patch', body=body)
+
 
 def get_ticket_notes_command():
     ticket_id = demisto.args()['id']
@@ -803,13 +831,15 @@ def get_ticket_notes_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers, headerTransform=pascalToSpace, removeNull=True),
+        'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers,
+                                         headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': {
               'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
         }
     }
 
     return entry
+
 
 def query_tickets_command():
     sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
@@ -829,8 +859,10 @@ def query_tickets_command():
     hr = get_ticket_human_readable(res['result'], ticket_type)
     context = get_ticket_context(res['result'], ticket_type)
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
@@ -942,8 +974,8 @@ def upload_file_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('File uploaded successfully', hr),
         'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)' : context,
-            'Ticket(val.ID===obj.ID)' : context
+            'ServiceNow.Ticket(val.ID===obj.ID)': context,
+            'Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -963,7 +995,8 @@ def upload_file(ticket_id, file_id, file_name, ticket_type):
 
     path = 'attachment/upload'
 
-    return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
+    return send_request(path, 'post', headers = headers, body=body, file={'id': file_id, 'name': file_name})
+
 
 # Deprecated
 def get_computer_command():
@@ -1039,7 +1072,8 @@ def query_computers_command():
     if len(computers) == 0:
         return 'No computers found'
 
-    headers = ['ID','AssetTag','Name','DisplayName','SupportGroup','OperatingSystem','Company','AssignedTo','State','Cost','Comments']
+    headers = ['ID', 'AssetTag', 'Name', 'DisplayName', 'SupportGroup', 'OperatingSystem', 'Company', 'AssignedTo',
+               'State', 'Cost', 'Comments']
 
     mapped_computers = [{
         'ID': computer.get('sys_id'),
@@ -1060,7 +1094,8 @@ def query_computers_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers,
+                                         removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
               'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
         }
@@ -1094,7 +1129,7 @@ def query_groups_command():
     if len(groups) == 0:
         return 'No groups found'
 
-    headers = ['ID','Description','Name','Active','Manager','Updated']
+    headers = ['ID', 'Description', 'Name', 'Active', 'Manager', 'Updated']
 
     mapped_groups = [{
         'ID': group.get('sys_id'),
@@ -1110,7 +1145,8 @@ def query_groups_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers,
+                                         removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
               'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
         }
@@ -1160,13 +1196,15 @@ def query_users_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True,
+                                         headerTransform=pascalToSpace),
         'EntryContext': {
               'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
         }
     }
 
     return entry
+
 
 # Deprecated
 def get_groups_command():
@@ -1208,6 +1246,7 @@ def get_groups_command():
 
     return entry
 
+
 def list_table_fields_command():
     table_name = demisto.args()['table_name']
 
@@ -1234,12 +1273,14 @@ def list_table_fields_command():
 
     return entry
 
+
 def get_table_fields(table_name):
     # Get one record
     path = 'table/' + table_name + '?sysparm_limit=1'
     res = send_request(path, 'GET')
 
     return res
+
 
 def get_table_name_command():
     label = demisto.args()['label']
@@ -1271,7 +1312,8 @@ def get_table_name_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables, headers=headers, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables,
+                                         headers=headers, headerTransform=pascalToSpace),
         'EntryContext': {
               'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
         }
@@ -1286,7 +1328,7 @@ def fetch_incidents():
     if FETCH_TIME:
         fetch_time = FETCH_TIME
     else:
-        fetch_time = '10 minutes'
+        fetch_time = DEFAULTS['fetch_time']
 
     sysparm_query = demisto.params().get('sysparm_query')
     sysparm_limit = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
@@ -1295,7 +1337,7 @@ def fetch_incidents():
 
     last_run = demisto.getLastRun()
     if 'time' not in last_run:
-        snow_time = get_snow_time(-10)
+        snow_time, _ = parse_date_range(fetch_time, '%Y-%m-%d %H:%M:%S')
     else:
         snow_time = last_run['time']
 
@@ -1306,12 +1348,24 @@ def fetch_incidents():
 
     path = 'table/' + ticket_type
 
-    res = send_request(path, 'get', params = query_params)
+    res = send_request(path, 'get', params=query_params)
+
+    count = 0
+    current_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
 
     for result in res['result']:
         labels = []
 
-        for k,v in result.iteritems():
+        if count > sysparm_limit:
+            break
+
+        try:
+            if datetime.strptime(result['opened_at'], '%Y-%m-%d %H:%M:%S') < current_time:
+                continue
+        except:
+            pass
+
+        for k, v in result.iteritems():
             if isinstance(v, basestring):
                 labels.append({
                     'type': k,
@@ -1345,10 +1399,12 @@ def fetch_incidents():
             'rawJSON': json.dumps(result)
         })
 
+        count += 1
         snow_time = result['opened_at']
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
+
 
 LOG('Executing command ' + demisto.command())
 raise_exception = False
@@ -1362,11 +1418,14 @@ try:
     elif demisto.command() == 'fetch-incidents':
         raise_exception = True
         fetch_incidents()
-    elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
+    elif demisto.command() == 'servicenow-get' or\
+            demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
         demisto.results(get_ticket_command())
-    elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
+    elif demisto.command() == 'servicenow-update' or\
+            demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
         demisto.results(update_ticket_command())
-    elif demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
+    elif demisto.command() == 'servicenow-create' or\
+            demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
         demisto.results(create_ticket_command())
     elif demisto.command() == 'servicenow-delete-ticket':
         demisto.results(delete_ticket_command())
@@ -1374,7 +1433,8 @@ try:
         demisto.results(add_link_command())
     elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
         demisto.results(add_comment_command())
-    elif demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
+    elif demisto.command() == 'servicenow-query' or\
+            demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
         demisto.results(query_tickets_command())
     elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
         demisto.results(upload_file_command())
