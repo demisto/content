@@ -193,7 +193,7 @@ script:
     description: Search for details of specific detections, either via a filter query
       or by providing the ids of the detections.
     execution: false
-    name: crowdstrike-search-detections
+    name: crowdstrike-search-detection
     outputs:
     - contextPath: CrowdStrike.Detection.Behavior.FileName
       description: File name in the behavior.
@@ -1067,7 +1067,7 @@ script:
         demisto.results(search_device_command())
     elif demisto.command() == 'crowdstrike-get-behavior':
         demisto.results(get_behavior_command())
-    elif demisto.command() == 'crowdstrike-search-detections':
+    elif demisto.command() == 'crowdstrike-search-detection':
         demisto.results(search_detections_command())
     elif demisto.command() == 'crowdstrike-resolve-detection':
         demisto.results(resolve_detection_command())

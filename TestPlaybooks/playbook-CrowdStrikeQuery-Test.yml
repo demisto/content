@@ -63,7 +63,7 @@ tasks:
       id: 2158cb97-17f2-4ed9-8601-7cacfda01021
       version: -1
       name: Get multiple detections by IDs
-      script: '|||crowdstrike-search-detections'
+      script: '|||crowdstrike-search-detection'
       type: regular
       iscommand: true
       brand: ""
