@@ -46,10 +46,10 @@ def http_request(method, url_suffix, data=None, payload=None):
     # Handle error responses gracefully
     if res.status_code == 204:
         return demisto.results('Successful Modification')
-    if demisto.command() == 'extrahop-add-alert' or demisto.command() == 'extrahop-modify-alert' and res.status_code == 400:
+    if demisto.command() == 'extrahop-add-alert' or 'extrahop-modify-alert' and res.status_code == 400:
         resp = res.json()
         return_error('Error in request format - [%s]' % resp['error_message'])
-    if demisto.command() == 'extrahop-add-alert' or demisto.command() == 'extrahop-modify-alert' and res.status_code == 201:
+    if demisto.command() == 'extrahop-add-alert' or 'extrahop-modify-alert' and res.status_code == 201:
         return demisto.results('Alert successfully added')
     elif res.status_code not in {200, 204, 201}:
         return_error('Error in API call to ExtraHop [%d] - %s' % (res.status_code, res.reason))
