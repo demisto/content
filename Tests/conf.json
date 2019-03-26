@@ -1143,6 +1143,10 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "integrations": "Symantec Deepsight Intelligence",
+            "playbookID": "Symantec Deepsight Test"
         }
     ],
     "skipped_tests": {
