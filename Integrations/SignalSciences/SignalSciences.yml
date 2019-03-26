@@ -52,22 +52,22 @@ script:
       required: true
       description: The site that holds the whitelist you wish to get
     outputs:
-    - contextPath: SigSciences.Whitelist.ID
+    - contextPath: SigSciences.Corp.Site.Whitelist.ID
       description: ID for this particular entry.
       type: string
-    - contextPath: SigSciences.Whitelist.Source
+    - contextPath: SigSciences.Corp.Site.Whitelist.Source
       description: IP Address present in the whitelist.
       type: string
-    - contextPath: SigSciences.Whitelist.ExpiryDate
+    - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
       description: Expiration Timestamp.
       type: date
-    - contextPath: SigSciences.Whitelist.Note
+    - contextPath: SigSciences.Corp.Site.Whitelist.Note
       description: Note associated with the tag.
       type: string
-    - contextPath: SigSciences.Whitelist.CreatedDate
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
       description: Created Date Timestamp
       type: date
-    - contextPath: SigSciences.Whitelist.CreatedBy
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
       description: User who added this source.
       type: string
     description: Fetch whitelist residing on Signal Sciences' Platform.
@@ -77,22 +77,22 @@ script:
       required: true
       description: The site that holds the blacklist you wish to get
     outputs:
-    - contextPath: SigSciences.Blacklist.ID
+    - contextPath: SigSciences.Corp.Site.Blacklist.ID
       description: ID for this particular entry.
       type: string
-    - contextPath: SigSciences.Blacklist.Source
+    - contextPath: SigSciences.Corp.Site.Blacklist.Source
       description: IP Address present in the blacklist.
       type: string
-    - contextPath: SigSciences.Blacklist.ExpiryDate
+    - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
       description: Expiration Timestamp.
       type: date
-    - contextPath: SigSciences.Blacklist.Note
+    - contextPath: SigSciences.Corp.Site.Blacklist.Note
       description: Note associated with the tag.
       type: string
-    - contextPath: SigSciences.Blacklist.CreatedDate
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
       description: Created Date Timestamp
       type: date
-    - contextPath: SigSciences.Blacklist.CreatedBy
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
       description: User who added this source.
       type: string
     description: Fetch blacklist residing on Signal Sciences' Platform.
@@ -111,22 +111,22 @@ script:
       description: Optional RFC3339-formatted datetime in the future. Omit this paramater
         if it does not expire.
     outputs:
-    - contextPath: SigSciences.Whitelist.Source
+    - contextPath: SigSciences.Corp.Site.Whitelist.Source
       description: IP Address present in the whitelist.
       type: string
-    - contextPath: SigSciences.Whitelist.Note
+    - contextPath: SigSciences.Corp.Site.Whitelist.Note
       description: Note associated with the tag.
       type: string
-    - contextPath: SigSciences.Whitelist.ID
+    - contextPath: SigSciences.Corp.Site.Whitelist.ID
       description: ID for this particular entry.
       type: string
-    - contextPath: SigSciences.Whitelist.CreatedBy
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
       description: User who added this source.
       type: string
-    - contextPath: SigSciences.Whitelist.CreatedDate
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
       description: Created Date Timestamp
       type: date
-    - contextPath: SigSciences.Whitelist.ExpiryDate
+    - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
       description: Expiration Timestamp.
       type: date
     description: Add an IP to the whitelist residing on Signal Sciences' Platform.
@@ -145,22 +145,22 @@ script:
       description: Optional RFC3339-formatted datetime in the future. Omit this paramater
         if it does not expire.
     outputs:
-    - contextPath: SigSciences.Blacklist.Source
+    - contextPath: SigSciences.Corp.Site.Blacklist.Source
       description: IP Address present in the Blacklist.
       type: string
-    - contextPath: SigSciences.Blacklist.Note
+    - contextPath: SigSciences.Corp.Site.Blacklist.Note
       description: Note associated with the tag.
       type: string
-    - contextPath: SigSciences.Blacklist.ID
+    - contextPath: SigSciences.Corp.Site.Blacklist.ID
       description: ID for this particular entry.
       type: string
-    - contextPath: SigSciences.Blacklist.CreatedBy
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
       description: User who added this source.
       type: string
-    - contextPath: SigSciences.Blacklist.CreatedDate
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
       description: Created Date Timestamp.
       type: date
-    - contextPath: SigSciences.Blacklist.ExpiryDate
+    - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
       description: Expiration Timestamp.
       type: date
     description: Add an IP to the blacklist residing on Signal Sciences' Platform.
@@ -185,10 +185,10 @@ script:
   - name: sigsci-get-sites
     arguments: []
     outputs:
-    - contextPath: SigSciences.Sites.Name
+    - contextPath: SigSciences.Site.Name
       description: Site name
       type: string
-    - contextPath: SigSciences.Sites.CreatedDate
+    - contextPath: SigSciences.Site.CreatedDate
       description: Site creation date
       type: date
     description: Get all the site name from SignalSciences
@@ -978,3 +978,6 @@ script:
     description: Get a request by ID
   isfetch: true
   runonce: false
+releaseNotes: "Signal Sciences integration"
+tests:
+- SignalSciences Test
