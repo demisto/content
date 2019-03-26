@@ -97,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -119,6 +119,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      expandLinks:
+        simple: "true"
+      getAttachments: {}
       headers: {}
       issueId:
         simple: ${Ticket.Id}
@@ -127,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 545
         }
       }
     note: false
@@ -233,7 +236,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
@@ -264,7 +267,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1420
         }
       }
     note: false
@@ -302,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 1770
         }
       }
     note: false
@@ -334,7 +337,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1595
         }
       }
     note: false
@@ -366,7 +369,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1245
         }
       }
     note: false

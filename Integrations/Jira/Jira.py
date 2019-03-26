@@ -359,10 +359,10 @@ def get_issue_fields(**kwargs):
 
 
 @logger
-def get_issue(issue_id, headers=None, expend_links=False, is_update=False, get_attachments=False):
+def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False):
     result = jira_req('GET', 'rest/api/latest/issue/' + issue_id)
     j_res = result.json()
-    if expend_links:
+    if expand_links == "true":
         expand_urls(j_res)
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
