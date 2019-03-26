@@ -1540,6 +1540,7 @@ script: |-
 
         :type string: `str`
         :param string: String to be converted. (required)
+        :rtype: `bool`
       """
       if string == 'true' or string == 'True':
           string = True
