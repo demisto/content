@@ -147,6 +147,153 @@ script:
     description: Query records from ExtraHop
     execution: false
     name: extrahop-query
+    outputs:
+    - contextPath: ExtraHop.Query.Id
+      description: ID of the queried item
+      type: String
+    - contextPath: ExtraHop.Query.Index
+      description: Index of the queried item
+      type: String
+    - contextPath: ExtraHop.Query.Sort
+      description: Sort of the queried item
+      type: Number
+    - contextPath: ExtraHop.Query.Source.roundTripTime
+      description: Roundtrip time of the item
+      type: Number
+    - contextPath: ExtraHop.Query.Source.processingTime
+      description: Processing time of the item
+      type: Number
+    - contextPath: ExtraHop.Query.Source.method
+      description: Method of the item
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverZeroWnd
+      type: Number
+    - contextPath: ExtraHop.Query.Source.server.type
+      description: Type of item found
+      type: String
+    - contextPath: ExtraHop.Query.Source.server.value
+      description: ID of server found
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverPort
+      description: Port of item
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqTimeToLastByte
+      description: Time to Last Byte
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isSQLi
+      description: Is SQLi
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.isRspCompressed
+      description: Is response compressed
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.rspTimeToFirstHeader
+      description: Response time of first header
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqL2Bytes
+      description: Request L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isRspChunked
+      description: Is response chunked
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.query
+      description: Query of item
+      type: String
+    - contextPath: ExtraHop.Query.Source.host
+      description: Host of item
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspPkts
+      description: Number of response packets found
+      type: Number
+    - contextPath: ExtraHop.Query.Source.flowId
+      description: Flow ID
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspVersion
+      description: Response version
+      type: String
+    - contextPath: ExtraHop.Query.Source.isRspAborted
+      description: Was response aborted
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.client.type
+      description: Type of client
+      type: String
+    - contextPath: ExtraHop.Query.Source.client.value
+      description: ID of client
+      type: String
+    - contextPath: ExtraHop.Query.Source.uri
+      description: URI of the item
+      type: String
+    - contextPath: ExtraHop.Query.Source.clientPort
+      description: Client port
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqBytes
+      description: Request size in bytes
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isXSS
+      description: Is XSS?
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.reqRTO
+      description: Request RTO
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspSize
+      description: Response size
+      type: Number
+    - contextPath: ExtraHop.Query.Source.ex.isSuspicious
+      description: Is suspicious?
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.contentType
+      description: Content type
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverAddr.type
+      description: Server address type
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverAddr.value
+      description: Server address value
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspTimeToLastByte
+      description: Resposne time to last byte
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspTimeToFirstPayload
+      description: Response time to first payload
+      type: Number
+    - contextPath: ExtraHop.Query.Source.timestamp
+      description: Timestamp of item
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspL2Bytes
+      description: Response L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqPkts
+      description: Request packets
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isPipelined
+      description: Is pipelined?
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.clientZeroWnd
+      description: Client Zero Wnd
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isReqAborted
+      description: Was request aborted
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.clientAddr.type
+      description: Client address type
+      type: String
+    - contextPath: ExtraHop.Query.Source.clientAddr.value
+      description: Client address value
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspBytes
+      description: Response Bytes
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspRTO
+      description: Response RTO
+      type: Number
+    - contextPath: ExtraHop.Query.Source.statusCode
+      description: Status code
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqSize
+      description: Request size
+      type: Number
+    - contextPath: ExtraHop.Query.Type
+      description: Type of query
+      type: String
   - arguments:
     - default: false
       description: The beginning timestamp for the request. Return only devices active
