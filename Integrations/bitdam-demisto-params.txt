@@ -1,0 +1,10 @@
+apitoken:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOCwidHlwZSI6MCwiaWQiOiI3MDdmZWUxNy04ZTVlLTQzM2UtYmJkMy1iODhiZmEyYzNkNzViYTA0YjYzYy03N2RhLTRiYTQtYTY2MS0xN2VlN2RjY2E5MDkifQ.4iurRaT3ZUdOYfjOtK4u4VEG78XvSh1EZ1jFpo293p0
+
+base url:
+https://app.bitdam.com/api/v1.0
+* I saw it already has a DefaultValue, so I changed it there but just in case you need to change it in another place
+
+proxy, insecure - not sure what they mean. didn't change them. let me know if there's a problem.
+
+
