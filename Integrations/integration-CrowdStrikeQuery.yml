@@ -957,7 +957,7 @@ script:
         devices = raw_res.get('resources')
         entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
         headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
-        hr = tableToMarkdown('Devices', entries, headers=headers)
+        hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
         ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
         return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
@@ -975,7 +975,7 @@ script:
             for resource in demisto.get(raw_res, "resources"):
                 for behavior in demisto.get(resource, 'behaviors'):
                     entries.append(behavior_to_entry_context(behavior))
-        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries)
+        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries, headerTransform=pascalToSpace)
         # no dt since behavior vary by more than their ID
         ec = {'CrowdStrike.Behavior': entries}
         return create_entry_object(contents=raw_res, ec=ec, hr=hr)
@@ -1006,7 +1006,7 @@ script:
                     behaviors.append(behavior_to_entry_context(behavior))
                 detection_entry['Behavior'] = behaviors
                 entries.append(detection_entry)
-        hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True)
+        hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True, headerTransform=pascalToSpace)
         ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
         return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
