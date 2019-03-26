@@ -553,6 +553,7 @@ script:
     name: extrahop-modify-alert
   isfetch: true
   runonce: false
+  script: ''
   type: python
 releaseNotes: '-'
 tests:
