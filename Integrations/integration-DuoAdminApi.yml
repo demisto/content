@@ -70,7 +70,9 @@ script:
 
     OPTIONS_TO_TIME = {
         '10_seconds_ago' : datetime.datetime.now() - datetime.timedelta(seconds = 10),
+        #left here for backwards compatability
         '1_minutes_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 1),
+        '1_minute_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 1),
         '10_minutes_ago' : datetime.datetime.now() - datetime.timedelta(minutes = 10),
         '1_hour_ago' : datetime.datetime.now() - datetime.timedelta(hours = 1),
         '10_hours_ago' : datetime.datetime.now() - datetime.timedelta(hours = 10),
@@ -230,7 +232,7 @@ script:
       auto: PREDEFINED
       predefined:
       - 10_seconds_ago
-      - 1_minutes_ago
+      - 1_minute_ago
       - 10_minutes_ago
       - 1_hour_ago
       - 10_hours_ago
@@ -368,5 +370,6 @@ script:
     description: Associates a device to a user
   dockerimage: demisto/duoadmin:1.0.0.147 #disable-secrets-detection
   runonce: false
+releaseNotes: "Changed naming of 1_minutes_ago to 1_minute_ago"
 tests:
   - DuoAdmin API test playbook
