@@ -1,0 +1,238 @@
+id: 4126e8b7-e080-4e18-80b6-00791196f759
+version: 1
+name: Symantec Site Review Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1c667795-3bfd-4fd6-86af-15cba9177a32
+    type: start
+    task:
+      id: 1c667795-3bfd-4fd6-86af-15cba9177a32
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 0dd71877-715f-45f9-8ddb-2b76807c16a7
+    type: regular
+    task:
+      id: 0dd71877-715f-45f9-8ddb-2b76807c16a7
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: f9120b76-27b7-466f-8aeb-ff2ade716c70
+    type: regular
+    task:
+      id: f9120b76-27b7-466f-8aeb-ff2ade716c70
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 8849727a-aba3-4e59-87cc-c306a591d560
+    type: regular
+    task:
+      id: 8849727a-aba3-4e59-87cc-c306a591d560
+      version: -1
+      name: List Risk Levels
+      script: '|||symantec-site-list-risklevels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: c754bf0f-8d3a-4904-817d-e1ea401a0da4
+    type: regular
+    task:
+      id: c754bf0f-8d3a-4904-817d-e1ea401a0da4
+      version: -1
+      name: Review Context
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 53f9cbbb-ab47-4763-8965-13600f84c44a
+    type: regular
+    task:
+      id: 53f9cbbb-ab47-4763-8965-13600f84c44a
+      version: -1
+      name: Review Context
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: c38f6340-31ea-475b-8ede-14904e783b1e
+    type: regular
+    task:
+      id: c38f6340-31ea-475b-8ede-14904e783b1e
+      version: -1
+      name: Site Lookup
+      script: '|||symantec-site-lookup'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      urls:
+        simple: www.demisto.com,www.symantec.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: ef87de42-9ffe-40b5-84b0-48f5bd772a8d
+    type: regular
+    task:
+      id: ef87de42-9ffe-40b5-84b0-48f5bd772a8d
+      version: -1
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: Resolved
+      description: {}
+      host: {}
+      id: {}
+      vulnerabilityid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
