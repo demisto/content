@@ -5,8 +5,9 @@
 import os
 import glob
 
+from Tests.test_utils import server_version_compare
 
-def yml_remove_releaseNote_record(file_path):
+def yml_remove_releaseNote_record(file_path, current_server_version):
     '''
     locate and remove release notes from a yaml file.
     :param file_path: path of the file
@@ -15,12 +16,22 @@ def yml_remove_releaseNote_record(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
-    orig_size = len(lines)
+    version_key = 'fromversion'
+    clear_releaseNotes = False
     consider_multiline_notes = False
     new_lines = []
     for line in lines:
+        if line.startswith(version_key):
+            v = line[len(version_key + 1):].strip()
+            # compare server versions
+            if server_version_compare(current_server_version, v) < 0:
+                print "keeping release notes for %\nto be published on % version release " (file_path, current_server_version)
+                clear_releaseNotes = False
+                break
+
         if line.startswith('releaseNotes:'):
             # releaseNote title: ignore current line and consider following lines as part of it (multiline notes)
+            clear_releaseNotes = True
             consider_multiline_notes = True
 
         elif consider_multiline_notes:
@@ -36,13 +47,14 @@ def yml_remove_releaseNote_record(file_path):
             # regular line
             new_lines.append(line)
 
-    with open(file_path, 'w') as f:
-        f.write(''.join(new_lines))
+    if clear_releaseNotes:
+        with open(file_path, 'w') as f:
+            f.write(''.join(new_lines))
 
-    return orig_size != len(new_lines)
+    return clear_releaseNotes
 
 
-def json_remove_releaseNote_record(file_path):
+def json_remove_releaseNote_record(file_path, current_server_version):
     '''
     locate and remove release notes from a json file.
     :param file_path: path of the file
@@ -51,12 +63,22 @@ def json_remove_releaseNote_record(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
-    orig_size = len(lines)
+    version_key = 'fromversion'
+    clear_releaseNotes = False
     consider_multiline_notes = False
     new_lines = []
     for line in lines:
+        if line.strip.startswith(version_key):
+            v = line.strip().[len(version_key + 1):]
+            # compare server versions
+            if server_version_compare(current_server_version, v) < 0:
+                print "keeping release notes for %\nto be published on % version release " (file_path, current_server_version)
+                clear_releaseNotes = False
+                break
+
         if line.strip().startswith('"releaseNotes"'):
             # releaseNote title: ignore current line and consider following lines as part of it (multiline notes)
+            clear_releaseNotes = True
             consider_multiline_notes = True
 
         elif consider_multiline_notes:
@@ -79,10 +101,11 @@ def json_remove_releaseNote_record(file_path):
             # regular line
             new_lines.append(line)
 
-    with open(file_path, 'w') as f:
-        f.write(''.join(new_lines))
+    if clear_releaseNotes:
+        with open(file_path, 'w') as f:
+            f.write(''.join(new_lines))
 
-    return orig_size != len(new_lines)
+    return clear_releaseNotes
 
 
 FILE_EXTRACTER_DICT = {
@@ -91,7 +114,7 @@ FILE_EXTRACTER_DICT = {
 }
 
 
-def remove_releaseNotes_folder(folder_path, files_extension):
+def remove_releaseNotes_folder(folder_path, files_extension, current_server_version="0.0.0"):
     '''
     scan folder and remove all references to release notes
     :param folder_path: path of the folder
@@ -101,24 +124,30 @@ def remove_releaseNotes_folder(folder_path, files_extension):
 
     count = 0
     for path in scan_files:
-        if FILE_EXTRACTER_DICT[files_extension](path):
+        if FILE_EXTRACTER_DICT[files_extension](path, current_server_version):
             count += 1
 
     print '--> Changed %d out of %d files' % (count, len(scan_files), )
 
 
 def main(root_dir):
+    if len(argv) < 2:
+        print "<Server version>"
+        sys.exit(1)
+
+    current_server_version = parse_change_list(argv[1])
+
     yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks']  # yml
     json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets',
                             'Classifiers', 'Layouts', 'IncidentFields']  # json
 
     for folder in yml_folders_to_scan:
         print 'Scanning directory: "%s"' % (folder, )
-        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml')
+        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml', current_server_version)
 
     for folder in json_folders_to_scan:
         print 'Scanning directory: "%s"' % (folder, )
-        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json')
+        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json', current_server_version)
 
 
 if __name__ == '__main__':

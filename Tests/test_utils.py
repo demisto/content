@@ -139,3 +139,17 @@ def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False
+
+def server_version_compare(v1, v2):
+    v1_nums = [int(d) for d in v1.split(".")]
+    v2_nums = [int(d) for d in v2.split(".")]
+
+    for i in range(min(v1_nums, v2_nums)):
+        if v1_nums[i] != v2_nums[i]:
+            return v1_nums[i] - v2_nums[i]
+
+    # versions are equal to the i th number
+
+    # versions are equal
+    return 0
+
