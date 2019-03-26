@@ -136,10 +136,10 @@ def devices():
 
 def format_alerts(alerts):
     for alert in alerts:
-        hr = tableToMarkdown('Found Device', alert, headerTransform=string_to_table_header, removeNull=True)
+        hr = tableToMarkdown('Found Alert', alert, headerTransform=string_to_table_header, removeNull=True)
         ec = {
             "Extrahop": {
-                "Device": createContext(alert, keyTransform=string_to_context_key, removeNull=True)
+                "Alert": createContext(alert, keyTransform=string_to_context_key, removeNull=True)
             }
         }
         demisto.results({
@@ -149,6 +149,8 @@ def format_alerts(alerts):
             'HumanReadable': hr,
             'EntryContext': ec
         })
+    if len(alerts) == 0:
+        demisto.results('No results were found')
 
 
 def format_device_results(data):
@@ -183,14 +185,12 @@ def whitelist_modify(add, remove):
         remove_items = remove.split(',')
         remove_items = list(map(int, remove_items))
         assignments['unassign'] = remove_items
-    res_raw = http_request('POST', 'whitelist/devices', data=assignments)
-    res = res_raw.json()
+    res = http_request('POST', 'whitelist/devices', data=assignments)
     return res
 
 
 def whitelist_modify_command():
     add = demisto.args().get('add')
-    demisto.results(str(repr(add)))
     remove = demisto.args().get('remove')
     whitelist_modify(add, remove)
 
@@ -359,7 +359,7 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
     elif demisto.command() == 'extrahop-get-alerts':
-        get_alerts()
+        get_alerts_command()
     elif demisto.command() == 'extrahop-query':
         query_records_command()
     elif demisto.command() == 'extrahop-devices':
