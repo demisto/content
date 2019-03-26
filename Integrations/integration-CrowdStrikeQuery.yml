@@ -291,7 +291,7 @@ script:
       description: The host agent ID (AID) of the host you want to contain. Get an
         agent ID from a detection
       isArray: true
-      name: agent_ids
+      name: ids
       required: true
       secret: false
     deprecated: false
@@ -300,6 +300,19 @@ script:
       in your containment policy.
     execution: false
     name: crowdstrike-contain-host
+  - arguments:
+    - default: false
+      description: The host agent ID (AID) of the host you want to contain. Get an
+        agent ID from a detection
+      isArray: true
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Lifts containment on the host, which returns its network communications
+      to normal
+    execution: false
+    name: crowdstrike-lift-host-containment
   dockerimage: demisto/python3:latest
   isfetch: true
   runonce: false
