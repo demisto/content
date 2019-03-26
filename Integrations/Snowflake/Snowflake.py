@@ -8,8 +8,10 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import dsa
 from cryptography.hazmat.primitives import serialization
-from datetime import date, time, timedelta, datetime
+from datetime import date, timedelta, datetime
+from datetime import time as dttime
 from decimal import Decimal
+from typing import Dict, Tuple, List
 
 '''GLOBAL VARS'''
 
@@ -25,6 +27,7 @@ WAREHOUSE = PARAMS.get('warehouse')
 DATABASE = PARAMS.get('database')
 SCHEMA = PARAMS.get('schema')
 ROLE = PARAMS.get('role')
+PROXY = PARAMS.get('proxy', False)
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get('isFetch')
 FETCH_TIME = PARAMS.get('fetch_time')
@@ -35,18 +38,36 @@ MAX_ROWS = 10000
 
 '''SETUP'''
 
-if not PARAMS.get('proxy', False):
-    disable_proxy()
-    # del os.environ['HTTP_PROXY']
-    # del os.environ['HTTPS_PROXY']
-    # del os.environ['http_proxy']
-    # del os.environ['https_proxy']
+if not PROXY:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
     err_msg = 'When fetching is enabled there are two additional parameters that are required;'
     err_msg += ' The fetch query that determines what data to fetch and the name of the column'
     err_msg += ' in the fetched data that contains a datetime object or timestamp.'
     return_error(err_msg)
+
+
+'''HELPER CLASSES'''
+
+
+class DemistoError(Exception):
+    """Basic exception for errors raised by Demisto"""
+    def __init__(self, msg=None):
+        if not msg:
+            msg = 'A Demisto integration error occurred'
+        super(DemistoError, self).__init__(msg)
+
+
+class FetchError(DemistoError):
+    """For errors that occur in the inside an integration's fetch_incidents method"""
+    def __init__(self, msg=None):
+        if not msg:
+            msg = 'An error occurred whilst trying to fetch incidents'
+        super(FetchError, self).__init__(msg)
 
 
 '''HELPER FUNCTIONS'''
@@ -66,7 +87,7 @@ def convert_datetime_to_string(v):
         return v.strftime('%Y-%m-%d %H:%M:%S.%f %z')
     elif isinstance(v, date):
         return v.strftime('%Y-%m-%d')
-    elif isinstance(v, time) or isinstance(v, timedelta):
+    elif isinstance(v, dttime) or isinstance(v, timedelta):
         return v.strftime('%H:%M:%S.%f')
     return v
 
@@ -81,26 +102,45 @@ def set_provided(params, key, val1, val2=None):
         params[key] = val2
 
 
-def check_and_update_parameters():
+def process_table_row(row, checks):
     """
-    Update integration instance parameters if they have changed
+    Check row data and reformat if necessary
+
+    parameter: (dict) row
+        The data (table row) that needs to be processed
+
+    parameter: (dict[str, list]) checks
+        Dictionary where the key is a string indicative of the type (or bucket of types) that needs
+        reformatting and the values are a list of column names whose data is of that type
+
+    returns:
+        Reformatted Row
     """
-    pass
+    for column_name, val in row.items():
+        if column_name in checks.get('isDecimal', []):
+            # Then check the value and reformat it if necessary
+            if type(val) == Decimal:
+                row[column_name] = str(val)
+        elif column_name in checks.get('isDT', []):
+            # Then reformat it if necessary
+            row[column_name] = convert_datetime_to_string(val)
+    return row
 
 
 def format_to_json_serializable(column_descriptions, results):
     """
     Screen and reformat any data in 'results' argument that is
-    not json serializable, and return 'results'
+    not json serializable, and return 'results'. 'results' can
+    be a table of data (a list of rows) or a single row.
 
     parameter: (list) column_descriptions
         The metadata that describes data for each column in the 'results' parameter
 
-    parameter: (list) results
+    parameter: (list/dict) results
         What was returned by the cursor object's execute or fetch operation
 
     returns:
-        Reformatted 'results' list
+        Reformatted 'results'
     """
     name = 0
     type_code = 1
@@ -115,16 +155,15 @@ def format_to_json_serializable(column_descriptions, results):
             # Then need to check that column's data to see if its data type is date, time, timedelta or datetime
             checks.setdefault('isDT', []).append(col[name])
 
+    # if 'results' is a list then it is a data table (list of rows) and need to process each row
+    # in the table, otherwise if 'results' is a dict then it a single table row
     # Check candidates and reformat if necessary
-    for row in results:
-        for column_name, val in row.items():
-            if column_name in checks.get('isDecimal', []):
-                # Then check the value and reformat it if necessary
-                if type(val) == Decimal:
-                    row[column_name] = str(val)
-            elif column_name in checks.get('isDT', []):
-                # Then reformat it if necessary
-                row[column_name] = convert_datetime_to_string(val)
+    if isinstance(results, dict):
+        results = process_table_row(results, checks)
+    else:
+        # if 'results' isn't a dict, assume it's a list
+        for i, row in enumerate(results):
+            results[i] = process_table_row(row, checks)
     return results
 
 
@@ -174,20 +213,27 @@ def row_to_incident(column_descriptions, row):
     """
     incident = {}
     occurred = row.get(DATETIME_COLUMN)
+    timestamp = None
     if occurred:
-        if isinstance(occurred, time) or isinstance(occurred, timedelta):
+        if isinstance(occurred, dttime) or isinstance(occurred, timedelta):
             err_msg = 'The datetime field specified in the integration parameters must '
             err_msg += 'contain values of type "datetime" or "date".'
-            raise Exception(err_msg)
-        occurred = convert_datetime_to_string(occurred)
+            raise FetchError(err_msg)
+        timestamp = occurred.timestamp() * 1000
     else:
         err_msg = 'Nothing found when trying to fetch the datetime field specified in'
         err_msg += ' the integration parameters. Please check that the name was correct.'
-        raise Exception(err_msg)
+        err_msg += ' If the field name was correct, verify that the returned value for'
+        err_msg += ' the specified field is not NULL for ALL of the rows to be fetched.'
+        raise FetchError(err_msg)
     # Incident Title
-    incident['name'] = row.get(INCIDENT_NAME_COLUMN) if INCIDENT_NAME_COLUMN else 'Snowflake Incident -- ' + occurred
-    # Incident occurrence time - the datetime field specified in the integration parameters
-    incident['occurred'] = occurred
+    if INCIDENT_NAME_COLUMN:
+        name = row.get(INCIDENT_NAME_COLUMN)
+    else:
+        name = 'Snowflake Incident -- ' + convert_datetime_to_string(occurred) + '-' + datetime.now().timestamp()
+    incident['name'] = name
+    # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
+    incident['timestamp'] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query
     reformatted_row = format_to_json_serializable(column_descriptions, row)
     incident['rawJSON'] = json.dumps(reformatted_row)
@@ -220,9 +266,11 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetched_data_timestamp')
+    first_fetch = False
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
+        first_fetch = True
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     args = {'rows': MAX_ROWS, 'query': FETCH_QUERY}
 
@@ -231,17 +279,23 @@ def fetch_incidents():
     incidents = []
     for row in data:
         incident = row_to_incident(column_descriptions, row)
-        incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%d %H:%M:%S.%f %z')
+        incident_timestamp = incident.get('timestamp')
+
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_date >= last_fetch:
-            last_fetch = incident_date
-            incidents.append(incident)
+        if incident_timestamp and incident_timestamp >= last_fetch:
+            if first_fetch:
+                last_fetch = incident_timestamp
+                incidents.append(incident)
+                first_fetch = False
+            elif len(incidents) >= 1 and incident.get('rawJSON') != incidents[-1].get('rawJSON'):
+                last_fetch = incident_timestamp
+                incidents.append(incident)
 
     demisto.setLastRun({'last_fetched_data_timestamp': last_fetch})
     demisto.incidents(incidents)
 
 
-def snowflake_query(args):
+def snowflake_query(args: Dict) -> Tuple[List, List]:
     connection = get_connection(args)
     if connection:
         try:
@@ -335,6 +389,7 @@ try:
     if demisto.command() in commands.keys():
         commands[demisto.command()]()
 except Exception as e:
-    return_error(e.message)
-finally:
-    enable_proxy()
+    if isinstance(e, FetchError):
+        raise e.with_traceback(None)
+    else:
+        return_error(str(e))
