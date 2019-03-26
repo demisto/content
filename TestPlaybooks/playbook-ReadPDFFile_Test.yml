@@ -1,0 +1,294 @@
+id: ReadPDFFile-Test
+version: -1
+name: ReadPDFFile-Test
+description: Creates a text file and tests ReadFile script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 586a5318-debb-45a7-82a8-c1985ab18b62
+    type: start
+    task:
+      id: 586a5318-debb-45a7-82a8-c1985ab18b62
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: e63e3873-1f29-47eb-862c-545aa25ed903
+    type: regular
+    task:
+      id: e63e3873-1f29-47eb-862c-545aa25ed903
+      version: -1
+      name: 'Get corrupted file '
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 165976c6-44ec-47d6-8f69-a9bea47fa9e8
+    type: regular
+    task:
+      id: 165976c6-44ec-47d6-8f69-a9bea47fa9e8
+      version: -1
+      name: Read PDF
+      description: Load the contents and metadata of a PDF file into context.
+      scriptName: ReadPDFFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: ea19f72c-1533-4e8a-8385-dc02b7317f61
+    type: regular
+    task:
+      id: ea19f72c-1533-4e8a-8385-dc02b7317f61
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 4c65c439-9683-4512-881b-be7b63cdb09a
+    type: condition
+    task:
+      id: 4c65c439-9683-4512-881b-be7b63cdb09a
+      version: -1
+      name: 'Check if PSEOF '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 6a9b6099-03b0-40df-8686-76872ee24fed
+    type: regular
+    task:
+      id: 6a9b6099-03b0-40df-8686-76872ee24fed
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: bc5080b9-3d95-48b9-8a0a-f64e7643b286
+    type: regular
+    task:
+      id: bc5080b9-3d95-48b9-8a0a-f64e7643b286
+      version: -1
+      name: Get working PDF
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 0c08d722-da68-469f-849d-ef42e2a14891
+    type: regular
+    task:
+      id: 0c08d722-da68-469f-849d-ef42e2a14891
+      version: -1
+      name: Read PDF
+      scriptName: ReadPDFFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 0a92fee5-d9fb-446f-8de6-bd0b2eb4d366
+    type: title
+    task:
+      id: 0a92fee5-d9fb-446f-8de6-bd0b2eb4d366
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
