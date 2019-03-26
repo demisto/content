@@ -28,6 +28,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Test Question
+  name: test_question
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     import os
@@ -542,6 +547,10 @@ script:
         d_args = demisto.args()
 
         if demisto.command() == 'test-module':
+            test_question = demisto.params().get('test_question','')
+            if not test_question:
+                test_question = 'get Computer Name from all machines with Computer Name contains "this is a test"'
+            final_result = askParsedQuestion(handler, test_question, '1')
             restoreSoutAndExit('ok')
         if demisto.command() == 'tn-get-package':
             final_result = getPackage(handler)
