@@ -150,7 +150,8 @@ script: |-
                                           source=source,
                                           score=score,
                                       )
-                                      results_list.append(result)
+                                      if result:
+                                          results_list.append(result)
                           elif v:
                               result = create_indicator_entry(
                                   indicator_type=k,
@@ -161,7 +162,8 @@ script: |-
                                   source=source,
                                   score=score,
                               )
-                              results_list.append(result)
+                              if result:
+                                  results_list.append(result)
           return results_list
       return None
 
