@@ -2,7 +2,6 @@
     "id": "cpu-percentage-trend",
     "version": -1,
     "fromVersion": "3.5.1",
-    "toVersion": "5.0",
     "modified": "2018-03-14T17:42:44.919467+02:00",
     "name": "Server CPU Usage % (last 24h)",
     "dataType": "system",
@@ -22,6 +21,5 @@
     "params": {
         "timeFrame": "minutes"
     },
-    "size": 1440,
-    "releaseNotes": "EOL in 5.0, as we support partitions"
+    "size": 1440
 }
