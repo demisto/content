@@ -47,7 +47,15 @@ script: |-
 
 
   def create_indicator_entry(
-      indicator_type, value, pkg_id, ind_id, timestamp, source=None, score=None
+      indicator_type,
+      value,
+      pkg_id,
+      ind_id,
+      timestamp,
+      source=None,
+      score=None,
+      last_seen=None,
+      first_seen=None,
   ):
       """Creating a JSON object of given args
 
@@ -56,7 +64,9 @@ script: |-
           value: (str) indicator value
           pkg_id: (str) package id
           ind_id: (str) indicator id
-          timestamp: (str)timestamp
+          timestamp: (str) timestamp
+          first_seen: (str) first_seen timestamo
+          last_seen:  (str) modified timestamp
           source: (str) source of indicator (custom field)
           score: (str) score of indicator (custom field)
 
@@ -79,7 +89,10 @@ script: |-
       entry["CustomFields"] = {"indicatorId": ind_id, "stixPackageId": pkg_id}
       entry["source"] = source if source else ind_id.split("-")[0]
       entry["score"] = score
+      # Times
       entry["timestamp"] = create_timestamp(timestamp)
+      entry["lastSeen"] = create_timestamp(last_seen)
+      entry["firstSeen"] = create_timestamp(first_seen)
       return entry
 
 
@@ -129,8 +142,11 @@ script: |-
                   if isinstance(obj, dict):
                       # Creating parameters
                       ind_id = obj.get("id")
-                      timestamp = obj.get("created")
                       source = obj.get("source")
+                      # times
+                      timestamp = obj.get("created")
+                      first_seen = obj.get("firstSeen")
+                      modified = obj.get("modified")
                       score = (
                           dscore(obj.get("score"))
                           if "score" in obj
@@ -149,6 +165,8 @@ script: |-
                                           timestamp=timestamp,
                                           source=source,
                                           score=score,
+                                          first_seen=first_seen,
+                                          last_seen=modified
                                       )
                                       if result:
                                           results_list.append(result)
@@ -161,6 +179,8 @@ script: |-
                                   timestamp=timestamp,
                                   source=source,
                                   score=score,
+                                  first_seen=first_seen,
+                                  last_seen=modified
                               )
                               if result:
                                   results_list.append(result)
@@ -321,7 +341,6 @@ script: |-
                               i = i + 1
       json_data = json.dumps(data)
       demisto.results(json_data)
-
 type: python
 tags:
 - stix
