@@ -1532,6 +1532,23 @@ script: |-
       # otherwise datetime.datetime
       return int(time.mktime(date_str_or_dt.timetuple())*1000)
 
+
+  def string_to_bool(string):
+  """
+      Converts argument string of 'True'/'true' and 'False'/'false' to their respective boolean values.
+      Example: ("True" becomes True, "False" becomes False)
+
+      :type string: `str`
+      :param string: String to be converted. (required)
+  """
+      if string == 'true' or string == 'True':
+          string = True
+      elif string == 'false' or string == 'False':
+          string = False
+      else:
+          string = string
+      return string
+
 type: python
 tags:
 - infra
@@ -1541,6 +1558,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added proxy enable/disable methods."
+releaseNotes: "Added string to boolean function"
 tests:
   - TestPYCommonServer
