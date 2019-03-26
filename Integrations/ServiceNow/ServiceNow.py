@@ -203,7 +203,8 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
         raise Exception('ServiceNow Error: {}, details: {}'.format(message, details))
 
     if res.status_code < 200 or res.status_code >= 300:
-        raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, str(res.content), str(res.headers)))
+        raise Exception('Got status code {} with url {} with body {} with headers {}'
+                        .format(str(res.status_code), url, str(res.content), str(res.headers)))
 
     return obj
 
@@ -374,9 +375,7 @@ def split_fields(fields):
 
 
 def get_template(name):
-    query_params = {}
-    query_params['sysparm_limit'] = 1
-    query_params['sysparm_query'] = 'name='+name
+    query_params = {'sysparm_limit': 1, 'sysparm_query': 'name=' + name}
 
     ticket_type = 'sys_template'
     path = 'table/' + ticket_type
@@ -639,8 +638,8 @@ def create_ticket_command():
         'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr,
                                          headers=headers, removeNull=True),
         'EntryContext': {
-              'Ticket(val.ID===obj.ID)': context,
-              'ServiceNow.Ticket(val.ID===obj.ID)': context
+          'Ticket(val.ID===obj.ID)': context,
+          'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -730,7 +729,7 @@ def add_link_command():
     ticket_id = demisto.args()['id']
     key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
     text = demisto.args().get('text', demisto.args()['link'])
-    link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >'+text+'</a>[/code]'
+    link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >' + text + '</a>[/code]'
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
     res = add_link(ticket_id, ticket_type, key, link)
@@ -838,7 +837,7 @@ def get_ticket_notes_command():
         'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers,
                                          headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': {
-              'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
+          'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
         }
     }
 
@@ -875,8 +874,8 @@ def query_tickets_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
         'EntryContext': {
-              'Ticket(val.ID===obj.ID)': context,
-              'ServiceNow.Ticket(val.ID===obj.ID)': context
+          'Ticket(val.ID===obj.ID)': context,
+          'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -949,7 +948,7 @@ def upload_file_command():
     ticket_id = demisto.args()['id']
     file_id = demisto.args()['file_id']
     file_name = demisto.args().get('file_name',
-                                demisto.dt(demisto.context(), "File(val.EntryID=='"+file_id+"').Name"))
+                                   demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
     res = upload_file(ticket_id, file_id, file_name, ticket_type)
@@ -999,7 +998,7 @@ def upload_file(ticket_id, file_id, file_name, ticket_type):
 
     path = 'attachment/upload'
 
-    return send_request(path, 'post', headers = headers, body=body, file={'id': file_id, 'name': file_name})
+    return send_request(path, 'post', headers=headers, body=body, file={'id': file_id, 'name': file_name})
 
 
 # Deprecated
@@ -1040,7 +1039,7 @@ def get_computer_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Computer', hr),
         'EntryContext': {
-              'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
+            'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
         }
     }
 
@@ -1086,8 +1085,10 @@ def query_computers_command():
         'DisplayName': '{} - {}'.format(computer.get('asset_tag', ''), computer.get('name', '')),
         'SupportGroup': computer.get('support_group'),
         'OperatingSystem': computer.get('os'),
-        'Company': computer.get('company', {}).get('value') if isinstance(computer.get('company'), dict) else computer.get('company'),
-        'AssignedTo': computer.get('assigned_to', {}).get('value') if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
+        'Company': computer.get('company', {}).get('value')
+        if isinstance(computer.get('company'), dict) else computer.get('company'),
+        'AssignedTo': computer.get('assigned_to', {}).get('value')
+        if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
         'State': COMPUTER_STATUS.get(computer.get('install_status', ''), computer.get('install_status')),
         'Cost': '{} {}'.format(computer.get('cost', ''), computer.get('cost_cc', '')).rstrip(),
         'Comments': computer.get('comments')
@@ -1101,7 +1102,7 @@ def query_computers_command():
         'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers,
                                          removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
+            'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
         }
     }
 
@@ -1140,7 +1141,8 @@ def query_groups_command():
         'Description': group.get('description'),
         'Name': group.get('name'),
         'Active': group.get('active'),
-        'Manager': group.get('manager', {}).get('value') if isinstance(group.get('manager'), dict) else group.get('manager'),
+        'Manager': group.get('manager', {}).get('value')
+        if isinstance(group.get('manager'), dict) else group.get('manager'),
         'Updated': group.get('sys_updated_on'),
     } for group in groups]
 
@@ -1152,7 +1154,7 @@ def query_groups_command():
         'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers,
                                          removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
+            'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
         }
     }
 
@@ -1203,7 +1205,7 @@ def query_users_command():
         'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True,
                                          headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
+            'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
         }
     }
 
@@ -1244,7 +1246,7 @@ def get_groups_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Group', hr_groups),
         'EntryContext': {
-              'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
+            'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
         }
     }
 
@@ -1361,7 +1363,7 @@ def fetch_incidents():
         try:
             if datetime.strptime(result['opened_at'], '%Y-%m-%d %H:%M:%S') < current_time:
                 continue
-        except:
+        except Exception as e:
             pass
 
         for k, v in result.iteritems():
