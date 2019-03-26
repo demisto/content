@@ -10,7 +10,10 @@ script: |-
       maxFileSize = 1024**2
   res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
   with open(res[0]['Contents']['path'], 'r') as f:
-      data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
+      data = f.read(maxFileSize)
+      data = data.decode(demisto.args().get("encoding"), errors="replace")
+      data = data.encode('utf-8')
+
   if data:
       message = 'Read %d bytes from file.' % (len(data))
       demisto.results({"Type" : entryTypes["note"],
@@ -36,7 +39,11 @@ args:
   required: false
   default: false
   description: Maximal file size to load, in bytes. Default is 1MB.
+- name: encoding
+  description: The character encoding of the file
+  defaultValue: utf-8
 outputs:
 - contextPath: FileData
   description: Data read from war room file
+releaseNotes: "Fixing unicode parsing error"
 scripttarget: 0
