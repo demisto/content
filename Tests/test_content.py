@@ -342,7 +342,7 @@ def organize_tests(tests, unmockable_integrations):
     mock_tests, mockless_tests = [], []
     for test in tests:
         integrations = test.get('integrations', [])
-        if not integrations or any(integration in unmockable_integrations for integration in integrations):
+        if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
             mockless_tests.append(test)
         else:
             mock_tests.append(test)
