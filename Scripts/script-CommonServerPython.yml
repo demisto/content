@@ -1545,8 +1545,6 @@ script: |-
           string = True
       elif string == 'false' or string == 'False':
           string = False
-      else:
-          string = string
       return string
 
 type: python
