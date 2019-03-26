@@ -46,9 +46,9 @@ tasks:
     scriptarguments:
       action: {}
       category: {}
-      cmd: {}
-      command:
-        simple: <show></show>
+      cmd:
+        simple:  <show><system><info></info></system></show>
+      command: {}
       dst: {}
       element: {}
       from: {}
