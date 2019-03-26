@@ -1535,11 +1535,11 @@ script: |-
 
   def string_to_bool(string):
   """
-      Converts argument string of 'True'/'true' and 'False'/'false' to their respective boolean values.
-      Example: ("True" becomes True, "False" becomes False)
+    Converts argument string of 'True'/'true' and 'False'/'false' to their respective boolean values.
+    Example: ("True" becomes True, "False" becomes False)
 
-      :type string: `str`
-      :param string: String to be converted. (required)
+    :type string: `str`
+    :param string: String to be converted. (required)
   """
       if string == 'true' or string == 'True':
           string = True
