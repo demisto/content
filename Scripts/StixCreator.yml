@@ -91,16 +91,20 @@ args:
   description: json object of all indicators  fields index mapped to indicators fields
 outputs:
 - contextPath: StixExportedIndicators.created
+  description: Indicator creation date
   type: string
 - contextPath: StixExportedIndicators.firstSeen
+  description: Indicator first appearance
   type: string
 - contextPath: StixExportedIndicators.source
+  description: Source system for this indicator
   type: string
 - contextPath: StixExportedIndicators.type
+  description: Indicator type
   type: string
 - contextPath: StixExportedIndicators.pattern
+  description: STIX pattern
   type: string
-- contextPath: StixExportedIndicators.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/stix2:1.0.0.1553427508
