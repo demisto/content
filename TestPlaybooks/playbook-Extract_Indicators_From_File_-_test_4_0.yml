@@ -115,26 +115,6 @@ tasks:
           right:
             value:
               simple: http://www.pdftesturl.com
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: URL
-                accessor: Data
-            iscontext: true
-          right:
-            value:
-              simple: http://www.doctesturl.com
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: URL
-                accessor: Data
-            iscontext: true
-          right:
-            value:
-              simple: http://www.docxtesturl.com
     view: |-
       {
         "position": {
