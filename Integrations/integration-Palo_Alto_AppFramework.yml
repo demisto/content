@@ -8,19 +8,19 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAyCAYAAAAweqkjAAAMjUl
 description: This framework manages all PA's cloud managed products
 detaileddescription: 25$nhXyu4
 configuration:
-- display: API url provided by Palo Alto. (e.g. https://apigw-stg4.us.paloaltonetworks.com)
-  name: apiUrl
-  defaultvalue: ""
-  type: 0
-  required: true
 - display: Demisto App Token
   name: token
   defaultvalue: ""
   type: 4
   required: true
-- display: Accept any certificate
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Severity to filter fetch results by (Informational, Low, Medium, High,
@@ -56,9 +56,15 @@ script:
 
     ''' GLOBAL VARS '''
 
-    API_URL=demisto.params()['apiUrl']
+    API_URL=''
     DEMISTO_APP_TOKEN = demisto.params()['token']
     USE_SSL = not demisto.params().get('insecure', False)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     DEFAULT_HEADERS = {
         'Accept': 'application/json',
@@ -92,6 +98,7 @@ script:
 
     def get_access_token():
 
+        global API_URL
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
         stored = integration_context.get('stored')
@@ -114,9 +121,10 @@ script:
             err_msg = 'There was a problem in retrieving an updated access token.\nThe response from the Demistobot server did not contain the expected content.'
             return_error(err_msg)
         access_token = parsed_response.get('access_token')
+        API_URL = parsed_response.get('url')
         demisto.setIntegrationContext({
             'access_token': access_token,
-            'stored': epoch_seconds()
+            'stored': epoch_seconds(),
         })
         return access_token
 
@@ -684,7 +692,6 @@ script:
             demisto.results(search_by_file_hash_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
-
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
