@@ -432,8 +432,8 @@ def get_ticket_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, headers=headers, removeNull=True),
         'EntryContext': {
-          'Ticket(val.ID===obj.ID)': context,
-          'ServiceNow.Ticket(val.ID===obj.ID)': context
+            'Ticket(val.ID===obj.ID)': context,
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -638,8 +638,8 @@ def create_ticket_command():
         'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr,
                                          headers=headers, removeNull=True),
         'EntryContext': {
-          'Ticket(val.ID===obj.ID)': context,
-          'ServiceNow.Ticket(val.ID===obj.ID)': context
+           'Ticket(val.ID===obj.ID)': context,
+           'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -837,7 +837,7 @@ def get_ticket_notes_command():
         'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers,
                                          headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': {
-          'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
+           'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
         }
     }
 
@@ -874,8 +874,8 @@ def query_tickets_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
         'EntryContext': {
-          'Ticket(val.ID===obj.ID)': context,
-          'ServiceNow.Ticket(val.ID===obj.ID)': context
+           'Ticket(val.ID===obj.ID)': context,
+           'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -1363,7 +1363,7 @@ def fetch_incidents():
         try:
             if datetime.strptime(result['opened_at'], '%Y-%m-%d %H:%M:%S') < current_time:
                 continue
-        except Exception as e:
+        except Exception:
             pass
 
         for k, v in result.iteritems():
