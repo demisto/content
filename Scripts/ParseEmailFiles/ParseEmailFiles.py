@@ -9,6 +9,7 @@ import email.utils
 from email.parser import HeaderParser
 import traceback
 import tempfile
+import sys
 
 
 # -*- coding: utf-8 -*-
@@ -35,6 +36,9 @@ from olefile import OleFileIO, isOleFile
 # coding=utf-8
 from datetime import datetime, timedelta
 from struct import unpack
+
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
 
