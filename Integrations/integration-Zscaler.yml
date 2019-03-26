@@ -88,7 +88,6 @@ script:
             if res.status_code not in (200, 204):
                 if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
                     time.sleep(num_of_seconds_to_wait)
-                    #time.sleep(num_of_seconds_to_wait)
                     return http_request(method, url_suffix, data, headers=DEFAULT_HEADERS, num_of_seconds_to_wait=num_of_seconds_to_wait+3)
                 else:
                     raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
