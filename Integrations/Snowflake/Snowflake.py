@@ -11,7 +11,6 @@ from cryptography.hazmat.primitives import serialization
 from datetime import date, timedelta, datetime
 from datetime import time as dttime
 from decimal import Decimal
-from typing import Dict, Tuple, List
 
 '''GLOBAL VARS'''
 
@@ -295,7 +294,7 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def snowflake_query(args: Dict) -> Tuple[List, List]:
+def snowflake_query(args):
     connection = get_connection(args)
     if connection:
         try:
