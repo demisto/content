@@ -47,15 +47,15 @@ script: |-
 
 
   def create_indicator_entry(
-      indicator_type,
-      value,
-      pkg_id,
-      ind_id,
-      timestamp,
-      source=None,
-      score=None,
-      last_seen=None,
-      first_seen=None,
+          indicator_type,
+          value,
+          pkg_id,
+          ind_id,
+          timestamp,
+          source=None,
+          score=None,
+          last_seen=None,
+          first_seen=None,
   ):
       """Creating a JSON object of given args
 
@@ -166,7 +166,7 @@ script: |-
                                           source=source,
                                           score=score,
                                           first_seen=first_seen,
-                                          last_seen=modified
+                                          last_seen=modified,
                                       )
                                       if result:
                                           results_list.append(result)
@@ -180,7 +180,7 @@ script: |-
                                   source=source,
                                   score=score,
                                   first_seen=first_seen,
-                                  last_seen=modified
+                                  last_seen=modified,
                               )
                               if result:
                                   results_list.append(result)
@@ -231,12 +231,12 @@ script: |-
                           if len(term) == 2 and key in term[0]:
                               patterns_lists[value].append(term[1])
           else:
-              pattern = obj.get("pattern")
-                      groups = regex.findall(pattern)
-                      for key, value in patterns_dict.items():
-                          for term in groups:
-                              if len(term) == 2 and key in term[0]:
-                                  patterns_lists[value].append(term[1])
+              pattern = objects.get("pattern")
+              groups = regex.findall(pattern)
+              for key, value in patterns_dict.items():
+                  for term in groups:
+                      if len(term) == 2 and key in term[0]:
+                          patterns_lists[value].append(term[1])
 
           # Make all the values unique
           for k, v in patterns_lists.items():
@@ -349,6 +349,7 @@ script: |-
                               i = i + 1
       json_data = json.dumps(data)
       demisto.results(json_data)
+
 type: python
 tags:
 - stix
