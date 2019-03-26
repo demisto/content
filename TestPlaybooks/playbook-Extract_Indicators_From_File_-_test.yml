@@ -429,7 +429,7 @@ tasks:
         - File.CreationDate
         - File.Pages
 
-        File.Title is not being checked because it doesn't exist in the test PDF provided.
+        File.Title is not being checked because it doesn't exist in the test PDF that we provided.
       type: condition
       iscommand: false
       brand: ""
