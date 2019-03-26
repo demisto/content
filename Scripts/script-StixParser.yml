@@ -90,9 +90,9 @@ script: |-
       entry["source"] = source if source else ind_id.split("-")[0]
       entry["score"] = score
       # Times
-      entry["timestamp"] = create_timestamp(timestamp)
-      entry["lastSeen"] = create_timestamp(last_seen)
-      entry["firstSeen"] = create_timestamp(first_seen)
+      entry["timestamp"] = timestamp
+      entry["lastSeen"] = last_seen
+      entry["firstSeen"] = first_seen
       return entry
 
 
@@ -349,6 +349,7 @@ script: |-
                               i = i + 1
       json_data = json.dumps(data)
       demisto.results(json_data)
+
 
 type: python
 tags:
