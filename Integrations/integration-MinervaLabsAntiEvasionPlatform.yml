@@ -78,18 +78,18 @@ script:
             r_events = session.post(BASE_URL + '/api/events',
                                     json={"archive": False})
             if r_events.status_code is not 200:
-                return_error('Error in API call. More information: {}, {}'.format(r_exclusion.status_code, r_exclusion.reason))
-            else:
-                incidents = []
-                for event in r_events.json():
-                    incident = {
-                        'name': event['type'],
-                        'rawJSON': json.dumps(event)
-                    }
-                    incidents.append(incident),
-                    session.put(BASE_URL + '/api/events/archive',
-                                json={'events': event['id']})
-                demisto.incidents(incidents)
+                raise Exception('Error in API call. More information: {}, {}'.format(r_exclusion.status_code, r_exclusion.reason))
+
+            incidents = []
+            for event in r_events.json():
+                incident = {
+                    'name': event['type'],
+                    'rawJSON': json.dumps(event)
+                }
+                incidents.append(incident)
+                session.put(BASE_URL + '/api/events/archive',
+                            json={'events': event['id']})
+            demisto.incidents(incidents)
         except Exception, e:
             return_error('Error while fetching incidents. More information: {}'.format(e.message))
 
@@ -170,7 +170,7 @@ script:
             search(endpoint_search_url, search_param, search_condition, search_value)
 
 
-        LOG('command is {}'.format(demisto.command()))
+        LOG('Command is {}'.format(demisto.command()))
         if USERNAME and PASSWORD:
             minerva_login = login()
         else:
