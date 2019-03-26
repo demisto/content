@@ -1,0 +1,321 @@
+id: Snowflake-Test
+version: -1
+name: Snowflake-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a3244a3d-eb9a-4b61-86ae-cef683fcca3a
+    type: start
+    task:
+      id: a3244a3d-eb9a-4b61-86ae-cef683fcca3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: dacc063e-50f7-43d1-812f-1c1d0a433380
+    type: regular
+    task:
+      id: dacc063e-50f7-43d1-812f-1c1d0a433380
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 7be55930-9389-41cb-8263-0959be8e61c8
+    type: regular
+    task:
+      id: 7be55930-9389-41cb-8263-0959be8e61c8
+      version: -1
+      name: snowflake-update
+      description: Make a DML change in the database
+      script: Snowflake|||snowflake-update
+      type: regular
+      iscommand: true
+      brand: Snowflake
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      database:
+        simple: demo_db
+      db_operation:
+        simple: update test set name = '${RandomString}' where id = 9
+      role:
+        simple: sysadmin
+      schema:
+        simple: public
+      warehouse:
+        simple: demo_wh
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 8694012b-4bb5-4056-8480-faef40999716
+    type: regular
+    task:
+      id: 8694012b-4bb5-4056-8480-faef40999716
+      version: -1
+      name: snowflake-query
+      description: Execute a SELECT query and retrieve the data
+      script: Snowflake|||snowflake-query
+      type: regular
+      iscommand: true
+      brand: Snowflake
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      columns: {}
+      database:
+        simple: demo_db
+      query:
+        simple: select * from test where ID = 8 and NAME = 'blah'
+      role:
+        simple: sysadmin
+      rows: {}
+      schema:
+        simple: public
+      warehouse:
+        simple: demo_wh
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 95e49ad5-e102-4c2a-8443-32a69393b91a
+    type: regular
+    task:
+      id: 95e49ad5-e102-4c2a-8443-32a69393b91a
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+      substring:
+        simple: 2019-03-26 11:14:18.574000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 96327438-b479-4b98-8027-11a85f175ed0
+    type: regular
+    task:
+      id: 96327438-b479-4b98-8027-11a85f175ed0
+      version: -1
+      name: Generate Random String to Use in Table Field Update
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3413a228-bab8-4494-8fba-f6baf016f06f
+    type: regular
+    task:
+      id: 3413a228-bab8-4494-8fba-f6baf016f06f
+      version: -1
+      name: Query Data again to make sure it was altered
+      script: Snowflake|||snowflake-query
+      type: regular
+      iscommand: true
+      brand: Snowflake
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      columns: {}
+      database:
+        simple: demo_db
+      query:
+        simple: select * from test where id = 9
+      role:
+        simple: sysadmin
+      rows: {}
+      schema:
+        simple: public
+      warehouse:
+        simple: demo_wh
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 545ccdf0-313a-4786-8407-a2e0c19fe4fe
+    type: regular
+    task:
+      id: 545ccdf0-313a-4786-8407-a2e0c19fe4fe
+      version: -1
+      name: Verify Data was Altered
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+      substring:
+        complex:
+          root: RandomString
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: af19262d-c556-4f70-8e64-4aa726540bce
+    type: title
+    task:
+      id: af19262d-c556-4f70-8e64-4aa726540bce
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
