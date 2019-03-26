@@ -1,7 +1,8 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
-fromversion: 4.1.0
+fromversion: 3.6.0
+toversion: 4.0.9
 description: "A test playbook for extracting indicators from EML files.\nIndicators:
   \n- Email addresses"
 starttaskid: "0"
@@ -114,26 +115,6 @@ tasks:
           right:
             value:
               simple: http://www.pdftesturl.com
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: URL
-                accessor: Data
-            iscontext: true
-          right:
-            value:
-              simple: http://www.doctesturl.com
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: URL
-                accessor: Data
-            iscontext: true
-          right:
-            value:
-              simple: http://www.docxtesturl.com
     view: |-
       {
         "position": {
@@ -532,4 +513,4 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "update 'Extract Indicators From File - test' playbook' version"
+releaseNotes: "Add 'Extract Indicators From File - test' playbook for version 4.0"
