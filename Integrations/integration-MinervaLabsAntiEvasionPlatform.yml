@@ -104,7 +104,12 @@ script:
                                 json=json_params)
         if response.status_code is not 200:
             return_error('Error while adding exclusion. More information: {}, {}'.format(response.status_code, response.reason))
-        demisto.results(response.json())
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), removeNull=True)
+        })
 
 
     @logger
@@ -117,7 +122,12 @@ script:
                                 json=json_params)
         if response.status_code is not 200:
             return_error('Error while adding a vaccine. More information: {}, {}'.format(response.status_code, response.reason))
-        demisto.results(response.json())
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), removeNull=True)
+        })
 
 
     @logger
@@ -129,7 +139,11 @@ script:
                                 json=json_params)
         if response.status_code is not 200:
             return_error('Error while perfroming search for {}. More information: {}, {}'.format(search_url.rsplit('/')[1], response.status_code, response.reason))
-        demisto.results(response.json())
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json()
+        })
 
 
     ''' EXECUTION '''
