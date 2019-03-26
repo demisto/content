@@ -57,7 +57,6 @@
             "playbookID": "ThreatMiner-Test"
         },
         {
-            "integrations": "StixCreator",
             "playbookID": "StixCreator-Test"
         },
         {
