@@ -85,6 +85,8 @@ script: |-
                        'ContentsFormat': formats['json']})
 type: python
 tags: []
+comment: Get list of indicators in argument 'indicators' and create out of them a
+  json file in STIX 2.0 format
 enabled: true
 args:
 - name: indicators
