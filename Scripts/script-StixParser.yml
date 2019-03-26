@@ -27,7 +27,7 @@ script: |-
           js = json.loads(string)
           return js
       except ValueError:
-          return False
+          return None
 
 
   def create_timestamp(timestamp):
@@ -105,7 +105,7 @@ script: |-
       Returns:
           str: `IMPACT` field
       """
-      if description and isinstance(description, str):
+      if description and isinstance(description, (str, basestring, unicode)):
           regex = re.compile("(IMPACT:)(Low|Medium|High)")
           groups = regex.match(description)
           score = groups.group(2) if groups else None
@@ -222,13 +222,21 @@ script: |-
           objects = data.get("objects")
 
           # Use regex to extract indicators
-          for obj in objects:
+          if isinstance(objects, list):
+              for obj in objects:
+                  pattern = obj.get("pattern")
+                  groups = regex.findall(pattern)
+                  for key, value in patterns_dict.items():
+                      for term in groups:
+                          if len(term) == 2 and key in term[0]:
+                              patterns_lists[value].append(term[1])
+          else:
               pattern = obj.get("pattern")
-              groups = regex.findall(pattern)
-              for key, value in patterns_dict.items():
-                  for term in groups:
-                      if len(term) == 2 and key in term[0]:
-                          patterns_lists[value].append(term[1])
+                      groups = regex.findall(pattern)
+                      for key, value in patterns_dict.items():
+                          for term in groups:
+                              if len(term) == 2 and key in term[0]:
+                                  patterns_lists[value].append(term[1])
 
           # Make all the values unique
           for k, v in patterns_lists.items():
