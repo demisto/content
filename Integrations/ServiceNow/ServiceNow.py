@@ -26,14 +26,24 @@ def get_server_url():
 ''' GLOBAL VARIABLES '''
 
 
+DEFAULTS = {
+    'limit': 10,
+    'offset': 0,
+    'fetch_limit': 10,
+    'fetch_time': '10 minutes'
+}
+
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('insecure', False)
 API = '/api/now/'
 VERSION = demisto.params().get('api_version')
 PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', 'incident')
-SYSPARM_QUERY = demisto.params().get('sysparm_query')
 FETCH_TIME = demisto.params().get('fetch_time').strip()
+SYSPARM_QUERY = demisto.params().get('sysparm_query')
+SYSPARM_LIMIT = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
+TICKET_TYPE = demisto.params()['ticket_type']
+GET_ATTACHMENTS = demisto.params().get('get_attachments', False)
 
 if VERSION:
     API += VERSION + '/'
@@ -114,12 +124,6 @@ SEVERITY_MAP = {
     '3': 1
 }
 
-DEFAULTS = {
-    'limit': 10,
-    'offset': 0,
-    'fetch_limit': 10,
-    'fetch_time': '10 minutes'
-}
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
              'approval_set', 'assigned_to', 'assignment_group',
@@ -160,8 +164,8 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
     url = '{}{}'.format(SERVER_URL, path)
     if not headers:
         headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         }
     if file:
         # Not supported in v2
@@ -237,11 +241,11 @@ def create_ticket_context(data, ticket_type):
 
     # Try to map fields
     if 'priority' in data:
-            # Backward compatibility
-            if demisto.command() in DEPRECATED_COMMANDS:
-                context['Priority'] = data['priority']
-            else:
-                context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
+        # Backward compatibility
+        if demisto.command() in DEPRECATED_COMMANDS:
+            context['Priority'] = data['priority']
+        else:
+            context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
     if 'state' in data:
         mapped_state = data['state']
         # Backward compatibility
@@ -370,13 +374,13 @@ def split_fields(fields):
 
 
 def get_template(name):
-    query_params={}
+    query_params = {}
     query_params['sysparm_limit'] = 1
     query_params['sysparm_query'] = 'name='+name
 
     ticket_type = 'sys_template'
     path = 'table/' + ticket_type
-    res = send_request('GET',path,params=query_params)
+    res = send_request('GET', path, params=query_params)
 
     if len(res['result']) == 0:
         raise ValueError("Incorrect template name")
@@ -429,8 +433,8 @@ def get_ticket_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, headers=headers, removeNull=True),
         'EntryContext': {
-              'Ticket(val.ID===obj.ID)': context,
-              'ServiceNow.Ticket(val.ID===obj.ID)': context
+          'Ticket(val.ID===obj.ID)': context,
+          'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -469,7 +473,7 @@ def get_record_command():
             fields.append('sys_id')
         # filter the record for the required fields
         record = dict(filter(lambda kv_pair: kv_pair[0] in fields, record.items()))
-        for k,v in record.iteritems():
+        for k, v in record.iteritems():
             if isinstance(v, dict):
                 # For objects that refer to a record in the database, take their value(system ID).
                 record[k] = v.get('value', record[k])
@@ -490,7 +494,7 @@ def get_record_command():
     return entry
 
 
-def get(table_name, record_id, number = None):
+def get(table_name, record_id, number=None):
     path = None
     query_params = {}
     if record_id:
@@ -542,7 +546,7 @@ def update_ticket_command():
         template = get_template(template)
     fields = get_ticket_fields(template, ticket_type)
 
-    res = update(ticket_type, ticket_id ,fields, custom_fields)
+    res = update(ticket_type, ticket_id, fields, custom_fields)
 
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
@@ -847,7 +851,7 @@ def query_tickets_command():
     sysparm_offset = demisto.args().get('offset', DEFAULTS['offset'])
 
     if not sysparm_query:
-        #backward compatibility
+        # backward compatibility
         sysparm_query = demisto.args().get('sysparm_query')
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
@@ -908,7 +912,7 @@ def query_table_command():
         records = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
         for r in records:
             r['ID'] = r.pop('sys_id')
-            for k,v in r.iteritems():
+            for k, v in r.iteritems():
                 if isinstance(v, dict):
                     # For objects that refer to a record in the database, take their value (system ID).
                     r[k] = v.get('value', v)
@@ -937,7 +941,7 @@ def query(table_name, sysparm_limit, sysparm_offset, sysparm_query):
 
     path = 'table/' + table_name
 
-    return send_request(path, 'get', params = query_params)
+    return send_request(path, 'get', params=query_params)
 
 
 def upload_file_command():
@@ -1180,7 +1184,7 @@ def query_users_command():
     if len(users) == 0:
         return 'No users found'
 
-    headers = ['ID','Name','UserName','Email','Created','Updated']
+    headers = ['ID', 'Name', 'UserName', 'Email', 'Created', 'Updated']
 
     mapped_users = [{
         'ID': user.get('sys_id'),
@@ -1258,7 +1262,7 @@ def list_table_fields_command():
     if len(res['result']) == 0:
         return 'Table contains no records'
 
-    fields = [{'Name': k} for k,v in res['result'][0].iteritems()]
+    fields = [{'Name': k} for k, v in res['result'][0].iteritems()]
 
     entry = {
         'Type': entryTypes['note'],
@@ -1267,7 +1271,7 @@ def list_table_fields_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Table fields - ' + table_name, fields),
         'EntryContext': {
-              'ServiceNow.Field': createContext(fields),
+            'ServiceNow.Field': createContext(fields),
         }
     }
 
@@ -1315,7 +1319,7 @@ def get_table_name_command():
         'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables,
                                          headers=headers, headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
+            'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
         }
     }
 
@@ -1330,11 +1334,6 @@ def fetch_incidents():
     else:
         fetch_time = DEFAULTS['fetch_time']
 
-    sysparm_query = demisto.params().get('sysparm_query')
-    sysparm_limit = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
-    ticket_type = demisto.params()['ticket_type']
-    get_attachments = demisto.params().get('get_attachments', False)
-
     last_run = demisto.getLastRun()
     if 'time' not in last_run:
         snow_time, _ = parse_date_range(fetch_time, '%Y-%m-%d %H:%M:%S')
@@ -1342,11 +1341,11 @@ def fetch_incidents():
         snow_time = last_run['time']
 
     query_params['sysparm_query'] = 'ORDERBYopened_at^opened_at>' + snow_time
-    query_params['sysparm_limit'] = sysparm_limit
-    if sysparm_query:
-        query_params['sysparm_query'] += '^' + sysparm_query
+    query_params['sysparm_limit'] = SYSPARM_LIMIT
+    if SYSPARM_QUERY:
+        query_params['sysparm_query'] += '^' + SYSPARM_QUERY
 
-    path = 'table/' + ticket_type
+    path = 'table/' + TICKET_TYPE
 
     res = send_request(path, 'get', params=query_params)
 
@@ -1356,7 +1355,7 @@ def fetch_incidents():
     for result in res['result']:
         labels = []
 
-        if count > sysparm_limit:
+        if count > SYSPARM_LIMIT:
             break
 
         try:
@@ -1380,7 +1379,7 @@ def fetch_incidents():
         severity = SEVERITY_MAP.get(result.get('severity', ''), 0)
 
         file_names = []
-        if get_attachments:
+        if GET_ATTACHMENTS:
             file_entries = get_ticket_attachment_entries(result['sys_id'])
             for file_result in file_entries:
                 if file_result['Type'] == entryTypes['error']:
