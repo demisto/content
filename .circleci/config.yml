@@ -61,7 +61,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Run Unit Testing and Lint
-          command: SKIP_GIT_COMPARE_FILTER=1 ./Tests/scripts/run_all_pkg_dev_tasks.sh || echo '=== Unit Testing and or Linting FAILED ==='
+          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
           name: Download Artifacts
           command: |
