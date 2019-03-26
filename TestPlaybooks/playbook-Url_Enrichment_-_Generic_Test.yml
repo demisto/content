@@ -1,17 +1,17 @@
 id: url_enrichment_-_generic_test
 version: -1
-name: Url Enrichment Generic - Test
+name: URL Enrichment - Generic - Test
+description: A test for the URL Enrichment - Generic playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6f1ce801-3dd7-47ef-8ef9-6472a6525afa
+    taskid: fdfb6e67-9f56-4e09-8adc-2840921415ff
     type: start
     task:
-      id: 6f1ce801-3dd7-47ef-8ef9-6472a6525afa
+      id: fdfb6e67-9f56-4e09-8adc-2840921415ff
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -22,19 +22,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -100
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
+    taskid: b5a53d6c-00e9-4978-8ed8-d7a5d8053dd4
     type: regular
     task:
-      id: d3eb1773-d77b-4590-8128-83b65bf6e083
+      id: b5a53d6c-00e9-4978-8ed8-d7a5d8053dd4
       version: -1
-      name: Clear Context
-      description: Clear the context
+      name: Clear context
+      description: Clear the context for a fresh start of the test.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -45,24 +46,29 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
       key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 45
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 55310715-a100-4d29-8423-9cf7946fc1ff
+    taskid: 0010d483-c357-4fda-87e5-ddcdd3fbf778
     type: regular
     task:
-      id: 55310715-a100-4d29-8423-9cf7946fc1ff
+      id: 0010d483-c357-4fda-87e5-ddcdd3fbf778
       version: -1
-      name: Set URL
+      name: Add URLs to context
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -70,113 +76,80 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     scriptarguments:
       append: {}
       key:
-        simple: Test.url
+        simple: URL
       value:
-        simple: google.com
+        simple: '["www.google.com", "http://www.yahoo.com", "https://www.facebook.com/"]'
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 230
         }
       }
     note: false
-  "6":
-    id: "6"
-    taskid: 8362ebe6-8622-420c-8ab7-881abed983ab
-    type: regular
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 480876c6-7f2b-4f3b-84e0-4857d0d83368
+    type: title
     task:
-      id: 8362ebe6-8622-420c-8ab7-881abed983ab
+      id: 480876c6-7f2b-4f3b-84e0-4857d0d83368
       version: -1
-      name: Verify URL
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      name: Done
+      description: ""
+      type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Data
-      path:
-        simple: URL
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 265,
+          "y": 980
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 62559528-c212-46ef-82ae-03c3d21d9fe1
-    type: regular
-    task:
-      id: 62559528-c212-46ef-82ae-03c3d21d9fe1
-      version: -1
-      name: Verify DBotScore
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Indicator,Score,Type,Vendor
-      path:
-        simple: DBotScore
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 962e4198-f41d-4436-8602-96de795a5183
     type: playbook
     task:
-      id: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
+      id: 962e4198-f41d-4436-8602-96de795a5183
       version: -1
       name: URL Enrichment - Generic
+      description: |-
+        Enrich URL using one or more integrations.
+
+        URL enrichment includes:
+        * Verify URL SSL
+        * Threat information
+        * URL reputaiton
+        * Take URL screenshot
       playbookName: URL Enrichment - Generic
-      playbookId: url_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "16"
+      - "18"
     scriptarguments:
-      url:
-        simple: ${Test.url}
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
@@ -186,58 +159,27 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 445
         }
       }
     note: false
-  "9":
-    id: "9"
-    taskid: 82983881-8c77-418c-82ab-c4aeb4b525d1
-    type: regular
-    task:
-      id: 82983881-8c77-418c-82ab-c4aeb4b525d1
-      version: -1
-      name: Rasterize
-      description: Pull a docker image for the sub playbook so it doesn't timeout
-      script: Rasterize|||rasterize
-      type: regular
-      iscommand: true
-      brand: Rasterize
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      height: {}
-      type: {}
-      url:
-        simple: google.com
-      width: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 597b30fe-8383-4f4c-805a-eb14401bf925
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 1d0fd1cb-954a-444b-86c5-80660c0ed637
     type: condition
     task:
-      id: 597b30fe-8383-4f4c-805a-eb14401bf925
+      id: 1d0fd1cb-954a-444b-86c5-80660c0ed637
       version: -1
-      name: Check for error
+      name: Verify DBotScore context fields
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "17"
       "yes":
-      - "11"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -245,82 +187,111 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ${Error}
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 620,
+          "y": 620
         }
       }
     note: false
-  "11":
-    id: "11"
-    taskid: 4d0d56fb-8849-4deb-8caa-960f4fee91e5
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: d3d29b45-7064-4512-8ce0-20ccf3426bd0
+    type: regular
+    task:
+      id: d3d29b45-7064-4512-8ce0-20ccf3426bd0
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message:
+        simple: Not all DBotScore context fields were created.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 10182857-c240-4ee1-8cfd-a458dd201571
     type: condition
     task:
-      id: 4d0d56fb-8849-4deb-8caa-960f4fee91e5
+      id: 10182857-c240-4ee1-8cfd-a458dd201571
       version: -1
-      name: Check if API RATE
+      name: Verify URL screenshot
+      description: Verifies that at least one screenshot of the URLs has been created.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "17"
       "yes":
       - "12"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
-              simple: ${Error}
+              simple: InfoFile.Name
             iscontext: true
           right:
             value:
-              simple: No content received. Possible API rate limit reached.
+              simple: url.png
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": -90,
+          "y": 620
         }
       }
     note: false
-  "12":
-    id: "12"
-    taskid: bfbbe0fb-1d04-47c0-820b-92ae52e89de0
-    type: title
-    task:
-      id: bfbbe0fb-1d04-47c0-820b-92ae52e89de0
-      version: -1
-      name: End test
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1420
-        }
-      }
-    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 1145,
+        "width": 1090,
+        "x": -90,
+        "y": -100
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 3.5.0
