@@ -2,7 +2,7 @@ commonfields:
   id: CheckDockerImageAvailable
   version: -1
 name: CheckDockerImageAvailable
-script: file:CheckDockerImageAvailable.py
+script: ''
 type: python
 tags: []
 comment: Check if a docker image is available for performing docker pull. Script simulates

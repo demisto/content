@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f8c1b13e-9337-429b-8c6f-8dfc4564cb49
+    taskid: a0dcd7fa-7fc3-40b3-8ca5-f0bec3fc7113
     type: start
     task:
-      id: f8c1b13e-9337-429b-8c6f-8dfc4564cb49
+      id: a0dcd7fa-7fc3-40b3-8ca5-f0bec3fc7113
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +25,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 69c8f1ff-1163-462e-8522-23c8fa0fc8f7
+    taskid: 0f64c5c1-525c-4149-8db5-41f8fc1a80a2
     type: regular
     task:
-      id: 69c8f1ff-1163-462e-8522-23c8fa0fc8f7
+      id: 0f64c5c1-525c-4149-8db5-41f8fc1a80a2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -54,12 +55,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: 1c4906bd-845b-44ff-8e61-8fb3346cbab6
+    taskid: f93131bc-4a7b-4710-8c9f-1ba7637b0276
     type: title
     task:
-      id: 1c4906bd-845b-44ff-8e61-8fb3346cbab6
+      id: f93131bc-4a7b-4710-8c9f-1ba7637b0276
       version: -1
       name: Done
       type: title
@@ -70,16 +72,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
-    taskid: 678d77fa-c30f-49b3-8878-2bcc2acfe42d
+    taskid: a1c93f10-60cc-40a7-8107-8d5020ad5cfe
     type: regular
     task:
-      id: 678d77fa-c30f-49b3-8878-2bcc2acfe42d
+      id: a1c93f10-60cc-40a7-8107-8d5020ad5cfe
       version: -1
       name: vt-get-domain-report
       description: Retrieves a report on a given domain (including the information
@@ -105,12 +108,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
-    taskid: 07a75f3a-5ba9-4746-85d4-7782363e4790
+    taskid: 39b5240c-0afe-4a05-8f7e-e85d1d4ff065
     type: condition
     task:
-      id: 07a75f3a-5ba9-4746-85d4-7782363e4790
+      id: 39b5240c-0afe-4a05-8f7e-e85d1d4ff065
       version: -1
       name: StringContains
       description: "Checks whether substring is within string. Returns: \nyes - string
@@ -140,12 +144,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "17":
     id: "17"
-    taskid: 84e56fa2-fa83-4728-8cfc-ea376b1cbd4d
+    taskid: 95437b2b-68d6-40cc-8d7f-8ce47491f06f
     type: regular
     task:
-      id: 84e56fa2-fa83-4728-8cfc-ea376b1cbd4d
+      id: 95437b2b-68d6-40cc-8d7f-8ce47491f06f
       version: -1
       name: vt-get-file-report
       description: Retrieves a concluded url scan report for a given url.
@@ -171,12 +176,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
-    taskid: c88db526-35d8-4990-8d66-905c4c81030e
+    taskid: fa8e12aa-5e56-4298-83ff-833dc3066972
     type: regular
     task:
-      id: c88db526-35d8-4990-8d66-905c4c81030e
+      id: fa8e12aa-5e56-4298-83ff-833dc3066972
       version: -1
       name: VerifyContext
       description: |-
@@ -206,12 +212,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "19":
     id: "19"
-    taskid: da536f91-baf0-4f69-8125-e55740657054
+    taskid: 8e0fa070-5fad-4273-843c-a5994828e7c5
     type: regular
     task:
-      id: da536f91-baf0-4f69-8125-e55740657054
+      id: 8e0fa070-5fad-4273-843c-a5994828e7c5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -235,12 +242,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "20":
     id: "20"
-    taskid: 59c6bd0f-14ec-4ab1-80e8-a6f822b69e33
+    taskid: 323d8693-db18-4ded-8e88-e212900b698c
     type: regular
     task:
-      id: 59c6bd0f-14ec-4ab1-80e8-a6f822b69e33
+      id: 323d8693-db18-4ded-8e88-e212900b698c
       version: -1
       name: vt-private-get-url-report
       description: Retrieves a concluded url scan report for a given url.
@@ -250,12 +258,12 @@ tasks:
       brand: VirusTotal - Private API
     nexttasks:
       '#none#':
-      - "12"
+      - "23"
     scriptarguments:
       allInfo: {}
       fullResponse: {}
       resource:
-        simple: http://En-us.secureconnection.moneytransaction.kb4.io
+        simple: http://En-us.secureconnection.moneytransaction.kb4.io,https://ctgold.in.net/G5?POP!=junk.name@avbaa.com
       shortFormat: {}
       threshold: {}
     separatecontext: false
@@ -267,12 +275,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "21":
     id: "21"
-    taskid: e0ee4735-adb1-469c-8801-a5c9b08d8b01
+    taskid: 234e065e-9a31-4169-8179-276711c869c0
     type: regular
     task:
-      id: e0ee4735-adb1-469c-8801-a5c9b08d8b01
+      id: 234e065e-9a31-4169-8179-276711c869c0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -299,12 +308,81 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: cda42da8-c048-41f0-8a27-4cd6b68929b0
+    type: regular
+    task:
+      id: cda42da8-c048-41f0-8a27-4cd6b68929b0
+      version: -1
+      name: vt-private-get-url-report
+      description: Retrieves a concluded url scan report for a given url.
+      script: VirusTotal - Private API|||vt-private-get-url-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        simple: http://En-us.secureconnection.moneytransaction.kb4.io
+      retries: {}
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: b9e28ebe-37c8-4af1-852e-df786c326c82
+    type: condition
+    task:
+      id: b9e28ebe-37c8-4af1-852e-df786c326c82
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50

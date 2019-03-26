@@ -1,6 +1,7 @@
 {
   "id": "criticalAndHighIncidentsReport",
   "name": "Critical and High incidents",
+  "releaseNotes": "changed occurred time format in decoder",
   "description": "All critical and high severity incidents that may need the analyst attention.",
   "fromVersion": "3.5.0",
   "tags": [],
@@ -331,7 +332,7 @@
     },
     "incident.occurred": {
       "type": "date",
-      "value": "02 Jan 2006"
+      "value": "Mon, 02 Jan 2006 15:04:05 MST"
     },
     "incident.openDuration": {
       "type": "duration",
