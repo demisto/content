@@ -566,7 +566,7 @@ script:
 
 
     def login():
-        login_do_response = requests.get(USAGE_URL, headers=HEADERS, verify=VERIFY)
+        login_do_response = requests.get(BASE_URL + USAGE_LIMIT_STATUS_SUFFIX, headers=HEADERS, verify=VERIFY)
         login_status = login_do_response.status_code
         if login_status == requests.codes.ok:
             return True
