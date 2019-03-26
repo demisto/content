@@ -1178,6 +1178,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
