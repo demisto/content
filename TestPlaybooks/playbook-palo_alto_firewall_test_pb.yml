@@ -1221,10 +1221,10 @@ tasks:
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
-      script: pa_fw_pcap|||panorama-list-pcaps
+      script: '|||panorama-list-pcaps'
       type: regular
       iscommand: true
-      brand: pa_fw_pcap
+      brand:
     nexttasks:
       '#none#':
       - "81"
