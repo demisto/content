@@ -112,4 +112,4 @@ runonce: false
 dockerimage: demisto/stix2:1.0.0.1553427508
 runas: DBotWeakRole
 tests:
-  - StixCreator-Test
+- StixCreator-Test
