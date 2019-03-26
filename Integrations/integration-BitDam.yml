@@ -50,7 +50,7 @@ script:
     '''CONSTANTS'''
     READ_BINARY_MODE = 'rb'
     SLASH = '/'
-    SCAN_FILE_URL = 'direct/scan/file'
+    SCAN_FILE_URL = 'direct/scan/file/'
     GET_FILE_VERDICT_URL = 'direct/verdict/?hash={}'
     TOKEN_PREFIX = 'Bearer'
     RESPONSE_CODE_OK = 200
@@ -205,17 +205,17 @@ script:
         response_json = json.loads(response.content)
         status = ''
         verdict = ''
-        if not response_json.has_key('scan_data'):
+        if not response_json.has_key('scan_data') or not response_json['scan_data'].has_key('verdict'):
             raise Exception("Get file verdict failed. Unknown response schema. Data- '{}'".format(response.content))
 
-        scan_data = response_json['scan_data']
-        if not scan_data.has_key('verdict') or verdict == 'Still scanning...' or verdict == VERDICT_SCANNING:
+        verdict = response_json['scan_data']['verdict']
+        if verdict == 'Still scanning...' or verdict == VERDICT_SCANNING:
             # Still in progress
             status = STATUS_IN_PROGRESS
         else:
             status = STATUS_DONE
 
-        return scan_data['verdict'], status
+        return verdict, status
 
 
     def get_file_verdict_command(identifier_value):
