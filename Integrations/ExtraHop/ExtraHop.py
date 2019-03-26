@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -45,9 +46,14 @@ def http_request(method, url_suffix, data=None, payload=None):
     # Handle error responses gracefully
     if res.status_code == 204:
         return demisto.results('Successful Modification')
-    if res.status_code not in {200, 204}:
+    if demisto.command() == 'extrahop-add-alert' or demisto.command() == 'extrahop-modify-alert' and res.status_code == 400:
+        resp = res.json()
+        return_error('Error in request format - [%s]' % resp['error_message'])
+    if demisto.command() == 'extrahop-add-alert' or demisto.command() == 'extrahop-modify-alert' and res.status_code == 201:
+        return demisto.results('Alert successfully added')
+    elif res.status_code not in {200, 204, 201}:
         return_error('Error in API call to ExtraHop [%d] - %s' % (res.status_code, res.reason))
-    return res.json()
+    return res
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -71,7 +77,8 @@ def test_module():
 
 
 def get_alerts():
-    res = http_request('GET', 'alerts')
+    res_raw = http_request('GET', 'alerts')
+    res = res_raw.json()
     return res
 
 
@@ -81,7 +88,8 @@ def paginate(can_paginate, cursor):
             "cursor": cursor,
             "context_ttl": 400000
         }
-        res = http_request('POST', 'records/cursor', body)
+        res_raw = http_request('POST', 'records/cursor', body)
+        res = res_raw.json()
         response.append(res)
         if 'cursor' in res:
             paginate(True, res['cursor'])
@@ -90,16 +98,18 @@ def paginate(can_paginate, cursor):
         return response
 
 
-def query_records(field, value, operator, query_from):
+def query_records(field, value, operator, query_from, limit):
     data = {
         "filter": {
             "field": str(field),
             "operand": str(value),
             "operator": str(operator)
         },
-        "from": int(query_from)
+        "from": int(query_from),
+        "limit": int(limit)
     }
-    res = http_request('POST', 'records/search', data)
+    res_raw = http_request('POST', 'records/search', data)
+    res = res_raw.json()
     response.append(res)
     if 'cursor' in res:
         response.append(paginate(True, res['cursor']))
@@ -119,7 +129,8 @@ def devices():
     if limit:
         payload['limit'] = limit
     payload['search_type'] = search_type
-    res = http_request('GET', 'devices', data=None, payload=payload)
+    res_raw = http_request('GET', 'devices', data=None, payload=payload)
+    res = res_raw.json()
     return res
 
 
@@ -172,7 +183,8 @@ def whitelist_modify(add, remove):
         remove_items = remove.split(',')
         remove_items = list(map(int, remove_items))
         assignments['unassign'] = remove_items
-    res = http_request('POST', 'whitelist/devices', data=assignments)
+    res_raw = http_request('POST', 'whitelist/devices', data=assignments)
+    res = res_raw.json()
     return res
 
 
@@ -184,7 +196,8 @@ def whitelist_modify_command():
 
 
 def whitelist_retrieve():
-    res = http_request('GET', 'whitelist/devices')
+    res_raw = http_request('GET', 'whitelist/devices')
+    res = res_raw.json()
     return res
 
 
@@ -201,18 +214,25 @@ def query_records_command():
     value = demisto.args().get('value')
     operator = demisto.args().get('operator')
     query_from = demisto.args().get('query_from')
-    res = query_records(field, value, operator, query_from)
+    limit = demisto.args().get('limit')
+    res = query_records(field, value, operator, query_from, limit)
     source = res[0]['records']
+    hr = ''
+    ec = {
+        "ExtraHop": {
+            "Query": []
+        }
+    }
     for record in source:
-        hr = tableToMarkdown('Incident result for ID {}'.format(record['_id']), record['_source'])
-        ec = {"Extrahop": record}
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': record,
-            'HumanReadable': hr,
-            'EntryContext': createContext(ec, removeNull=True)
-        })
+        hr += tableToMarkdown('Incident result for ID {}'.format(record['_id']), record['_source'])
+        ec['ExtraHop']['Query'].append(createContext(record, keyTransform=string_to_context_key, removeNull=True))
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': source,
+        'HumanReadable': hr,
+        'EntryContext': createContext(ec, removeNull=True)
+    })
 
 
 def get_alerts_command():
@@ -220,7 +240,9 @@ def get_alerts_command():
     format_alerts(res)
 
 
-def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type, protocols):
+def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
+              protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
+              param, param2, alert_id=None):
     data = {
         "apply_all": apply_all,
         "disabled": disabled,
@@ -230,34 +252,80 @@ def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity,
         "severity": int(severity),
         "type": alert_type
     }
-    if object_type:
+    if alert_type == 'detection':
         data['object_type'] = object_type
-    if protocols:
         data['protocols'] = [str(protocols)]
-    return http_request('POST', 'alerts', data=data)
-
-
-def string_to_bool(string):
-    if string == 'true':
-        string = True
+    elif alert_type == 'threshold':
+        data['field_name'] = field_name
+        data['stat_name'] = stat_name
+        data['units'] = units
+        data['interval_length'] = int(interval_length)
+        data['operand'] = operand
+        data['operator'] = operator
+        if demisto.args().get('field_name2'):
+            data['field_name2'] = field_name2
+        if demisto.args().get('field_op'):
+            data['field_op'] = field_op
+        if demisto.args().get('param'):
+            data['param'] = param
+        if demisto.args().get('param2'):
+            data['param2'] = param2
+    if alert_id:
+        res = http_request('PATCH', 'alerts/{}'.format(alert_id), data=data)
     else:
-        string = False
-    return string
+        res = http_request('POST', 'alerts', data=data)
+    return res
 
 
 def add_alert_command():
-    apply_all = string_to_bool(demisto.args().get('apply_all'))
-    disabled = string_to_bool(demisto.args().get('disabled'))
+    apply_all = bool(strtobool(demisto.args().get('apply_all', False)))
+    disabled = bool(strtobool(demisto.args().get('disabled', False)))
     name = demisto.args().get('name')
-    notify_snmp = string_to_bool(demisto.args().get('notify_snmp'))
+    notify_snmp = bool(strtobool(demisto.args().get('notify_snmp', False)))
+    field_name = demisto.args().get('field_name')
+    stat_name = demisto.args().get('stat_name')
+    units = demisto.args().get('units')
+    interval_length = demisto.args().get('interval_length')
+    operand = demisto.args().get('operand')
     refire_interval = demisto.args().get('refire_interval')
     severity = demisto.args().get('severity')
     alert_type = demisto.args().get('type')
     object_type = demisto.args().get('object_type')
     protocols = demisto.args().get('protocols')
-    res = add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
-                    protocols)
-    demisto.results(res)
+    operator = demisto.args().get('operator')
+    field_name2 = demisto.args().get('field_name2')
+    field_op = demisto.args().get('field_op')
+    param = demisto.args().get('param')
+    param2 = demisto.args().get('param2')
+    add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
+              protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
+              param, param2)
+
+
+def modify_alert_command():
+    alert_id = demisto.args().get('alert_id')
+    apply_all = bool(strtobool(demisto.args().get('apply_all', False)))
+    disabled = bool(strtobool(demisto.args().get('disabled', False)))
+    name = demisto.args().get('name')
+    notify_snmp = bool(strtobool(demisto.args().get('notify_snmp', False)))
+    field_name = demisto.args().get('field_name')
+    stat_name = demisto.args().get('stat_name')
+    units = demisto.args().get('units')
+    interval_length = demisto.args().get('interval_length')
+    operand = demisto.args().get('operand')
+    refire_interval = demisto.args().get('refire_interval')
+    severity = demisto.args().get('severity')
+    alert_type = demisto.args().get('type')
+    object_type = demisto.args().get('object_type')
+    protocols = demisto.args().get('protocols')
+    operator = demisto.args().get('operator')
+    field_name2 = demisto.args().get('field_name2')
+    field_op = demisto.args().get('field_op')
+    param = demisto.args().get('param')
+    param2 = demisto.args().get('param2')
+    add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
+              protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
+              param, param2, alert_id)
 
 
 def fetch_incidents():
@@ -302,6 +370,8 @@ try:
         whitelist_retrieve_command()
     elif demisto.command() == 'extrahop-add-alert':
         add_alert_command()
+    elif demisto.command() == 'extrahop-modify-alert':
+        modify_alert_command()
 
 # Log exceptions
 except Exception, e:
