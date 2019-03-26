@@ -28,6 +28,32 @@ script: |-
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
 
+  SAVE_PROXIES = {}
+
+  def disable_proxy():
+      """
+          Disable routing traffic through the system proxy.
+          Should usually be called at the beginning of the integration, depeding on proxy checkbox state.
+          :rtype: ``None``
+          :return: None
+      """
+      global SAVE_PROXIES
+      for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+          SAVE_PROXIES[k] = os.environ[k]
+          del os.environ[k]
+
+  def enable_proxy():
+      """
+          Re-enable routing traffic through the system proxy (for container re-use).
+          Should usually be called in a "finally" block at the bottom of the integration.
+          :rtype: ``None``
+          :return: None
+      """
+      global SAVE_PROXIES
+      for k, v in SAVE_PROXIES.iteritems():
+          os.environ[k] = v
+      SAVE_PROXIES = {}
+
   def urljoin(url, suffix=""):
       """
           Will join url and its suffix
@@ -182,13 +208,13 @@ script: |-
       first = None
       if date1 == 'now':
           first = datetime.now(tzlocal())
-      elif isinstance(date1, basestring):
+      elif isinstance(date1, STRING_TYPES):
           first = parse(date1)
 
       second = None
       if date2 == 'now':
           second = datetime.now(tzlocal())
-      elif isinstance(date2, basestring):
+      elif isinstance(date2, STRING_TYPES):
           second = parse(date2)
       delta = first - second
 
@@ -1500,7 +1526,7 @@ script: |-
         :return: The parsed timestamp.
         :rtype: ``int``
       """
-      if isinstance(date_str_or_dt, basestring):
+      if isinstance(date_str_or_dt, STRING_TYPES):
           return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
 
       # otherwise datetime.datetime
@@ -1515,6 +1541,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
+releaseNotes: "Added proxy enable/disable methods."
 tests:
   - TestPYCommonServer

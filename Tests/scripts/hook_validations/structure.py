@@ -5,7 +5,7 @@ import json
 import yaml
 
 from Tests.scripts.constants import *
-from Tests.test_utils import print_error, print_warning, run_command, get_json, checked_type
+from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type
 
 try:
     from pykwalify.core import Core
@@ -22,10 +22,23 @@ class StructureValidator(object):
         file_path (str): the path to the file we are examining at the moment.
         is_added_file (bool): whether the file is modified or added.
     """
+    VERSION_SCHEMAS = [
+        INTEGRATION_REGEX,
+        PLAYBOOK_REGEX,
+        SCRIPT_REGEX,
+        INTEGRATION_YML_REGEX,
+        WIDGETS_REGEX,
+        DASHBOARD_REGEX,
+        CLASSIFIER_REGEX,
+        SCRIPT_YML_REGEX,
+        INCIDENT_FIELD_REGEX,
+        MISC_REGEX
+    ]
     SKIPPED_SCHEMAS = [
         TEST_DATA_REGEX,
         MISC_REGEX,
         IMAGE_REGEX,
+        DESCRIPTION_REGEX,
         PIPFILE_REGEX,
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
@@ -126,27 +139,40 @@ class StructureValidator(object):
 
         return is_valid
 
+    @staticmethod
+    def validate_layout_file(json_dict):
+        """Validate that the layout file has version of -1."""
+        is_valid = True
+        layout = json_dict.get('layout')
+        if layout.get('version') != -1:
+            is_valid = False
+
+        return is_valid
+
     def is_valid_version(self):
         """Validate that the version of self.file_path is -1."""
         file_extension = os.path.splitext(self.file_path)[1]
         version_number = -1
         reputations_valid = True
+        layouts_valid = True
         if file_extension == '.yml':
-            yaml_dict = get_json(self.file_path)
+            yaml_dict = get_yaml(self.file_path)
             version_number = yaml_dict.get('commonfields', {}).get('version')
             if not version_number:  # some files like playbooks do not have commonfields key
                 version_number = yaml_dict.get('version')
 
         elif file_extension == '.json':
-            if checked_type(self.file_path):
+            if checked_type(self.file_path, self.VERSION_SCHEMAS):
                 file_name = os.path.basename(self.file_path)
                 json_dict = get_json(self.file_path)
                 if file_name == "reputations.json":
                     reputations_valid = self.validate_reputations_file(json_dict)
+                elif re.match(LAYOUT_REGEX, self.file_path, re.IGNORECASE):
+                    layouts_valid = self.validate_layout_file(json_dict)
                 else:
                     version_number = json_dict.get('version')
 
-        if version_number != -1 or not reputations_valid:
+        if version_number != -1 or not reputations_valid or not layouts_valid:
             print_error("The version for our files should always be -1, "
                         "please update the file {}.".format(self.file_path))
             self._is_valid = False

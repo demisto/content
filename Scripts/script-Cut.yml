@@ -50,4 +50,3 @@ runonce: false
 runas: DBotWeakRole
 tests:
   - CutTransformerTest
-releaseNotes: "-"
