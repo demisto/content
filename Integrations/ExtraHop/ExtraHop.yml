@@ -167,6 +167,7 @@ script:
       description: Method of the item
       type: String
     - contextPath: ExtraHop.Query.Source.serverZeroWnd
+      description: Server Zero Wnd
       type: Number
     - contextPath: ExtraHop.Query.Source.server.type
       description: Type of item found
