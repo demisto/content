@@ -4121,6 +4121,7 @@ script:
       type: string
   isfetch: true
   runonce: false
+  script: '-'
   type: python
 tests:
 - No test - Hibernating instance
