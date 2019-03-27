@@ -74,11 +74,14 @@ script:
         try:
             whois_result = whois.whois(DOMAIN)
             md = {}
-            for key in whois_result:
-                value = whois_result[key]
-                value = my_converter(value)
-                key = string_to_table_header(key)
-                md.update({key: value})
+            try:
+              for key in whois_result:
+                  value = whois_result[key]
+                  value = my_converter(value)
+                  key = string_to_table_header(key)
+                  md.update({key: value})
+            except:
+              demisto.results('No result was found for {}'.format(DOMAIN))
             ec = {}
             ec.update({
                 'Domain': {
@@ -110,8 +113,8 @@ script:
                 'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md, removeNull=True),
                 'EntryContext': createContext(ec, removeNull=True)
                 })
-        except:
-            demisto.results('No result found for {}'.format(DOMAIN))
+        except OSError as msg:
+            return_error(msg)
 
 
     def test_command():
@@ -191,7 +194,7 @@ script:
     description: Provides data enrichment for Domains, URLs, and IP addresses.
   dockerimage: demisto/ippysocks
   runonce: false
+releaseNotes: "-"
 fromversion: 4.1.0
-releaseNotes: Removed from default
 tests:
   - whois_test

@@ -33,6 +33,11 @@ configuration:
   defaultvalue: '2000'
   type: 0
   required: false
+- display: The maximum number of incidents to fetch each time.
+  name: fetch_chunk_size
+  defaultvalue: '50'
+  type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
@@ -266,7 +271,7 @@ script:
     arguments:
     - name: caseId
       required: true
-      description: Case resource ID to update.
+      description: Case resource ID to update. The case must be unlocked, and the user should have edit permissions.
     - name: stage
       auto: PREDEFINED
       predefined:

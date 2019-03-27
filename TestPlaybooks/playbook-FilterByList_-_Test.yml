@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -140
+          "y": -990
         }
       }
     note: false
@@ -183,6 +183,98 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -860
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: dd358b95-e139-4e0f-80b7-d703317a2f7e
+    type: regular
+    task:
+      id: dd358b95-e139-4e0f-80b7-d703317a2f7e
+      version: -1
+      name: Create white list
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      listData:
+        simple: demisto.com
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -690
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: fa5b1bd6-a71e-4658-84c7-7e70b3890f9b
+    type: regular
+    task:
+      id: fa5b1bd6-a71e-4658-84c7-7e70b3890f9b
+      version: -1
+      name: remove from list
+      script: Builtin|||removeFromList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      listData:
+        simple: demisto.com
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -530
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 8875b85c-41dd-469a-88cd-4b6571df2056
+    type: regular
+    task:
+      id: 8875b85c-41dd-469a-88cd-4b6571df2056
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
       - "1"
     scriptarguments:
       all:
@@ -196,7 +288,92 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 40
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 11a03a25-4641-4aca-888b-8b93a81ae2ab
+    type: regular
+    task:
+      id: 11a03a25-4641-4aca-888b-8b93a81ae2ab
+      version: -1
+      name: Verify 'NotIn' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      expectedValue:
+        simple: '["demisto.com","google.com","foo.google.com"]'
+      fields: {}
+      path:
+        simple: List.NotIn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -85
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: f5b78bed-a379-4375-8486-600d57fa1979
+    type: regular
+    task:
+      id: f5b78bed-a379-4375-8486-600d57fa1979
+      version: -1
+      name: Run FilterByList on empty list
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      listname:
+        simple: whiteList
+      values:
+        simple: demisto.com,google.com,foo.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 8b796c33-3727-4606-83d0-5eb4b95ef6d3
+    type: title
+    task:
+      id: 8b796c33-3727-4606-83d0-5eb4b95ef6d3
+      version: -1
+      name: list is empty
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -375
         }
       }
     note: false
@@ -206,12 +383,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1155,
+        "height": 2005,
         "width": 380,
         "x": 450,
-        "y": -140
+        "y": -990
       }
     }
   }
 inputs: []
 outputs: []
+releaseNotes: 'verify context on empty list'

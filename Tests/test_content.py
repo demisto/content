@@ -4,6 +4,7 @@ import string
 import random
 import argparse
 import requests
+from time import sleep
 
 import demisto
 from slackclient import SlackClient
@@ -11,11 +12,10 @@ from slackclient import SlackClient
 from test_integration import test_integration
 from mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
-from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT
+from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF
 
 
 SERVER_URL = "https://{}"
-FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
@@ -348,7 +348,7 @@ def organize_tests(tests, unmockable_integrations):
     return mock_tests + mockless_tests
 
 
-def execute_testing(server):
+def execute_testing(server, server_ip, server_version):
     options = options_handler()
     username = options.user
     password = options.password
@@ -392,12 +392,9 @@ def execute_testing(server):
         print('no integrations are configured for test')
         return
 
-    with open('public_ip', 'rb') as f:
-        public_ip = f.read().strip()
-
-    ami = AMIConnection(public_ip)
+    ami = AMIConnection(server_ip)
     ami.clone_mock_data()
-    proxy = MITMProxy(c, public_ip)
+    proxy = MITMProxy(c, server_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -474,7 +471,8 @@ def execute_testing(server):
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
+        file_path = "./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', ''))
+        with open(file_path, "w") as is_build_failed_file:
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
@@ -484,23 +482,27 @@ def main():
     options = options_handler()
     server = options.server
     is_ami = options.isAMI
+    server_version = options.serverVersion
 
     if is_ami:  # Run tests in AMI configuration
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-        server_version = options.serverVersion
         for ami_instance_name, ami_instance_ip in instance_ips:
             if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
                 # TODO: remove the and condition once version 4.5 is out
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server)
+                execute_testing(server, ami_instance_ip, server_version)
+                sleep(8)
 
     else:  # Run tests in Server build configuration
-        execute_testing(server)
+        with open('public_ip', 'rb') as f:
+            public_ip = f.read().strip()
+
+        execute_testing(server, public_ip, server_version)
 
 
 if __name__ == '__main__':
