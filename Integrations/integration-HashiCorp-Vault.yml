@@ -105,7 +105,7 @@ script:
 
         url = '{}/{}'.format(SERVER_URL, path)
         res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)
-        if (res.status_code < 200 or res.status_code) >= 300 and res.status_code not in DEFAULT_STATUS_CODES:
+        if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
             try:
                 error_body = res.json()
                 if 'errors' in error_body and isinstance(error_body['errors'], list):
