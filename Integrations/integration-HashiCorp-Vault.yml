@@ -615,12 +615,12 @@ script:
             engines_to_fetch_from += engines_to_fetch
 
         if len(engines_to_fetch_from) == 0:
-                return_error('Engine type not configured, please use the configure-engine command to configure a secrets engine.')
+                return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
         for engine in engines_to_fetch_from:
             if engine['type'] == 'KV':
                 if 'version' not in engine:
-                    return_error('Version not configured for KV engine, please re-configure')
+                    return_error('Version not configured for KV engine, Re-configure the engine')
                 if engine['version'] == '1':
                     credentials += get_kv1_secrets(engine['path'])
                 elif engine['version'] == '2':
