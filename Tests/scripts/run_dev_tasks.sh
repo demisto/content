@@ -18,6 +18,11 @@ if [ -z "${PYLINT_SKIP}" ]; then
     python -m pylint -E -f parseable --generated-members=requests.packages.urllib3,requests.codes.ok \
         ${PYLINT_FILES}
     pylint_return=$?
+    echo "Pylint completed with status code: $pylint_return"
+fi
+
+if [ -z "${PYTEST_SKIP}" ]; then
+    echo "========= Running pytest ==============="
 fi
 
 if [ -z "${PYTEST_SKIP}" -a -z "${PYTEST_FAIL_NO_TESTS}" ]; then
@@ -36,9 +41,9 @@ fi
 
 pytest_return=0
 if [ -z "${PYTEST_SKIP}" ]; then
-    echo "========= Running pytest ==============="
     python -m pytest -v
     pytest_return=$?
+    echo "Pytest completed with status code: $pytest_return"
 fi
 
 if [ $pylint_return -ne 0 -o $pytest_return -ne 0 ]; then

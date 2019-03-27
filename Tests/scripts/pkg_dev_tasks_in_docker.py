@@ -82,16 +82,19 @@ def docker_image_create(docker_base_image, requirements):
     images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
                                          '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
     if images_ls == target_image:
-        print_v('Using already existing image: {}'.format(target_image))
+        print('Using already existing docker image: {}'.format(target_image))
         return target_image
+    print("Creating docker image: {} (this may take a minute or two...)".format(target_image))
     container_id = subprocess.check_output(
         ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
         universal_newlines=True).strip()
     subprocess.check_call(['docker', 'cp', CONTAINER_SETUP_SCRIPT, container_id + ':/' + CONTAINER_SETUP_SCRIPT_NAME])
-    subprocess.run(['docker', 'start', '-a', '-i', container_id], input=requirements.encode('utf-8'), check=True)
-    subprocess.check_call(['docker', 'commit', container_id, target_image])
-    subprocess.check_call(['docker', 'rm', container_id])
-    print_v('Done creating docker image: {}'.format(target_image))
+    output = None if LOG_VERBOSE else subprocess.DEVNULL
+    subprocess.run(['docker', 'start', '-a', '-i', container_id], input=requirements.encode('utf-8'), check=True,
+                   stdout=output, stderr=output)
+    subprocess.run(['docker', 'commit', container_id, target_image], check=True, stdout=output, stderr=output)
+    subprocess.run(['docker', 'rm', container_id], check=True, stdout=output, stderr=output)
+    print('Done creating docker image: {}'.format(target_image))
     return target_image
 
 
