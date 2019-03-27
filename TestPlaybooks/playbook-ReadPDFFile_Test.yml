@@ -291,8 +291,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1960
+          "x": 480,
+          "y": 2135
         }
       }
     note: false
@@ -312,7 +312,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "15"
     scriptarguments:
       body: {}
       filename: {}
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -430,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -464,12 +464,44 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 3caf38fe-ae5d-4b49-849f-bdef78e14305
+    type: regular
+    task:
+      id: 3caf38fe-ae5d-4b49-849f-bdef78e14305
+      version: -1
+      name: Read PDF
+      description: Load the contents and metadata of a PDF file into context.
+      scriptName: ReadPDFFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1990,
+        "height": 2165,
         "width": 1025,
         "x": 50,
         "y": 50
