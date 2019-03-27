@@ -46,9 +46,10 @@ def get_dev_requirements(project_dir, docker_image):
     Returns:
         string -- requirement required for the project
     """
+    stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
     major_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
                                          "python", "-c", "import sys; print(sys.version_info[0])"],
-                                        universal_newlines=True).strip()
+                                        universal_newlines=True, stderr=stderr_out).strip()
     print_v("detected python version: [{}] for docker image: {}".format(major_ver, docker_image))
     if major_ver not in ["2", "3"]:
         raise ValueError("Unknown python major versoin: {}".format(major_ver))
