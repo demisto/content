@@ -54,8 +54,6 @@ script: |-
           timestamp,
           source=None,
           score=None,
-          last_seen=None,
-          first_seen=None,
   ):
       """Creating a JSON object of given args
 
@@ -65,8 +63,6 @@ script: |-
           pkg_id: (str) package id
           ind_id: (str) indicator id
           timestamp: (str) timestamp
-          first_seen: (str) first_seen timestamo
-          last_seen:  (str) modified timestamp
           source: (str) source of indicator (custom field)
           score: (str) score of indicator (custom field)
 
@@ -91,8 +87,6 @@ script: |-
       entry["score"] = score
       # Times
       entry["timestamp"] = timestamp
-      entry["lastSeen"] = last_seen
-      entry["firstSeen"] = first_seen
       return entry
 
 
@@ -145,8 +139,7 @@ script: |-
                       source = obj.get("source")
                       # times
                       timestamp = obj.get("created")
-                      first_seen = obj.get("firstSeen")
-                      modified = obj.get("modified")
+
                       score = (
                           dscore(obj.get("score"))
                           if "score" in obj
@@ -165,8 +158,6 @@ script: |-
                                           timestamp=timestamp,
                                           source=source,
                                           score=score,
-                                          first_seen=first_seen,
-                                          last_seen=modified,
                                       )
                                       if result:
                                           results_list.append(result)
@@ -179,8 +170,6 @@ script: |-
                                   timestamp=timestamp,
                                   source=source,
                                   score=score,
-                                  first_seen=first_seen,
-                                  last_seen=modified,
                               )
                               if result:
                                   results_list.append(result)
