@@ -184,7 +184,7 @@ script:
         is_file_upload_on = is_true(CMD_ARGS['malware_file_upload']) # arg value = 'yes' or 'no'
         endpoint = CMD_ARGS['endpoint']
         scan_options = CMD_ARGS['scan_options']
-        incident_name = CMD_ARGS.get('incident_name','Default') # If no incident name is provided it is put into the "Default" incident
+        incident_name = CMD_ARGS['incident_name']
 
         # Validate scan options
         invalid_options = [opt for opt in scan_options.split(',') if opt not in SCAN_OPTIONS]
@@ -262,6 +262,7 @@ script:
       defaultValue: "no"
     - name: incident_name
       description: Cyber Triage incident name that the collection will belong to
+      defaultValue: Default
     outputs:
     - contextPath: CyberTriage.SessionId
       description: The session ID for the newly created session
