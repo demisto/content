@@ -29,10 +29,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: d8d04a1f-f5b9-4614-8779-4f795a9d93cd
+    taskid: e1021bd5-59f6-43a5-8ffd-cf91edb8dc43
     type: regular
     task:
-      id: d8d04a1f-f5b9-4614-8779-4f795a9d93cd
+      id: e1021bd5-59f6-43a5-8ffd-cf91edb8dc43
       version: -1
       name: panorama
       description: Run any panorama command supported in api.
@@ -46,9 +46,9 @@ tasks:
     scriptarguments:
       action: {}
       category: {}
-      cmd: {}
-      command:
-        simple: <show></show>
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
       dst: {}
       element: {}
       from: {}
@@ -60,6 +60,7 @@ tasks:
       reporttype: {}
       search-time: {}
       serialno: {}
+      target: {}
       to: {}
       type:
         simple: op
@@ -800,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7100
+          "y": 6780
         }
       }
     note: false
@@ -995,7 +996,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+      - "80"
     scriptarguments:
       pre_post: {}
       rulename:
@@ -1008,56 +1009,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 6110
-        }
-      }
-    note: false
-    timertriggers: []
-  "71":
-    id: "71"
-    taskid: aa7978e9-71d9-4a6a-84cd-c4def0538001
-    type: regular
-    task:
-      id: aa7978e9-71d9-4a6a-84cd-c4def0538001
-      version: -1
-      name: panorama-list-applications
-      description: Get a list of applications from Palo Alto Firewall or Panorama
-      script: '|||panorama-list-applications'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "80"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6430
-        }
-      }
-    note: false
-    timertriggers: []
-  "73":
-    id: "73"
-    taskid: 3e1525e3-10de-4769-8fa9-f0275c01626e
-    type: title
-    task:
-      id: 3e1525e3-10de-4769-8fa9-f0275c01626e
-      version: -1
-      name: Other Commands
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "71"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6285
         }
       }
     note: false
@@ -1220,7 +1171,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6605
+          "y": 6285
         }
       }
     note: false
@@ -1256,7 +1207,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6925
+          "y": 6605
         }
       }
     note: false
@@ -1273,7 +1224,7 @@ tasks:
       script: '|||panorama-list-pcaps'
       type: regular
       iscommand: true
-      brand: ""
+      brand:
     nexttasks:
       '#none#':
       - "81"
@@ -1286,7 +1237,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6750
+          "y": 6430
         }
       }
     note: false
@@ -1298,7 +1249,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7115,
+        "height": 6795,
         "width": 380,
         "x": 50,
         "y": 50
