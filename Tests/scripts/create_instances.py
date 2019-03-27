@@ -31,10 +31,9 @@ def create_instance(ami_name):
     run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         instance_id = instance_file.read()
-        print("Instance name is ".format(ami_name))
     with open('image_id.txt', 'r') as image_id_file:
         image_id = image_id_file.read()
-        print("image ID name is ".format(image_id))
+        print("image ID is {}".format(image_id))
     return instance_id
 
 
