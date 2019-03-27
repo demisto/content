@@ -30,7 +30,7 @@ configuration:
   defaultvalue: https://investigate.api.umbrella.com
   type: 0
   required: true
-- display: DbotScore Malicious Threshold (-100 to 100)
+- display: DBot Score Malicious Threshold (-100 to 100)
   name: dboscore_threshold
   defaultvalue: "-100"
   type: 0
