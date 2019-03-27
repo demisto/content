@@ -63,12 +63,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: da89ff6b-99e7-4da7-8d94-4e0e6886b75a
+    taskid: 33e66e93-8eee-4493-8572-d4ec6f0d9f7b
     type: regular
     task:
-      id: da89ff6b-99e7-4da7-8d94-4e0e6886b75a
+      id: 33e66e93-8eee-4493-8572-d4ec6f0d9f7b
       version: -1
       name: hashicorp-list-secrets-engines
+      description: List all secrets engines that exist in HashiCorp Vault
       script: HashiCorp Vault|||hashicorp-list-secrets-engines
       type: regular
       iscommand: true
@@ -89,12 +90,13 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a3294a19-669b-46f9-8b41-8fcd19d8f4b6
+    taskid: 30242859-98e0-4219-86cc-5471f3187e1e
     type: regular
     task:
-      id: a3294a19-669b-46f9-8b41-8fcd19d8f4b6
+      id: 30242859-98e0-4219-86cc-5471f3187e1e
       version: -1
       name: hashicorp-list-secrets
+      description: List secrets (names) for a specified KV engine
       script: HashiCorp Vault|||hashicorp-list-secrets
       type: regular
       iscommand: true
@@ -134,12 +136,14 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 6e59529d-96ea-4763-88bf-774ab9a08fd6
+    taskid: 83416e0a-4e8d-44d1-8536-ad006381a31a
     type: regular
     task:
-      id: 6e59529d-96ea-4763-88bf-774ab9a08fd6
+      id: 83416e0a-4e8d-44d1-8536-ad006381a31a
       version: -1
       name: hashicorp-get-secret-metadata
+      description: Returns information about a specified secret in a specified KV
+        V2 engine
       script: HashiCorp Vault|||hashicorp-get-secret-metadata
       type: regular
       iscommand: true
@@ -179,10 +183,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 505a18a3-7728-4862-8f47-35e3fe643df5
+    taskid: e277fc28-820e-41c4-8c52-dd815accf363
     type: condition
     task:
-      id: 505a18a3-7728-4862-8f47-35e3fe643df5
+      id: e277fc28-820e-41c4-8c52-dd815accf363
       version: -1
       name: Is deleted
       type: condition
@@ -228,12 +232,14 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: ba770892-244b-4fa0-890c-bd26bdb8a323
+    taskid: d5dcec3c-588b-46a0-8a4f-01f3a486bbc7
     type: regular
     task:
-      id: ba770892-244b-4fa0-890c-bd26bdb8a323
+      id: d5dcec3c-588b-46a0-8a4f-01f3a486bbc7
       version: -1
       name: hashicorp-undelete-secret
+      description: Undeletes (restores) a secret on HashiCorp (for KV engine version
+        2)
       script: HashiCorp Vault|||hashicorp-undelete-secret
       type: regular
       iscommand: true
@@ -261,12 +267,15 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 335f6eff-a46f-420c-88aa-8063672f178b
+    taskid: 3d06fa8a-8b6a-47a6-8ae0-f69e6faef56a
     type: regular
     task:
-      id: 335f6eff-a46f-420c-88aa-8063672f178b
+      id: 3d06fa8a-8b6a-47a6-8ae0-f69e6faef56a
       version: -1
       name: hashicorp-delete-secret
+      description: Deletes the data under a specified secret given the secret path.
+        Performs a soft delete that allows you to run the hashicorp-undelete-secret
+        command if necessary (for KV engine version 2)
       script: HashiCorp Vault|||hashicorp-delete-secret
       type: regular
       iscommand: true
@@ -294,12 +303,14 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 05c1d2ab-e3ff-4c10-8cdd-e477eca1d79c
+    taskid: 82abb548-deed-4dec-8b35-5335cf1c81d6
     type: regular
     task:
-      id: 05c1d2ab-e3ff-4c10-8cdd-e477eca1d79c
+      id: 82abb548-deed-4dec-8b35-5335cf1c81d6
       version: -1
       name: hashicorp-undelete-secret
+      description: Undeletes (restores) a secret on HashiCorp (for KV engine version
+        2)
       script: HashiCorp Vault|||hashicorp-undelete-secret
       type: regular
       iscommand: true
@@ -327,12 +338,13 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 83c352e1-c14b-43f6-8969-f13d444363be
+    taskid: 18c3323d-44c0-4ed6-8cb0-356bbecdc49e
     type: regular
     task:
-      id: 83c352e1-c14b-43f6-8969-f13d444363be
+      id: 18c3323d-44c0-4ed6-8cb0-356bbecdc49e
       version: -1
       name: hashicorp-destroy-secret
+      description: Permanently deletes a secret (for KV engine version 2)
       script: HashiCorp Vault|||hashicorp-destroy-secret
       type: regular
       iscommand: true
@@ -360,12 +372,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: d1e40572-6a52-41e5-83a0-0f37eb397c6e
+    taskid: 635b40e6-2966-4764-887a-1c89ccfe9196
     type: regular
     task:
-      id: d1e40572-6a52-41e5-83a0-0f37eb397c6e
+      id: 635b40e6-2966-4764-887a-1c89ccfe9196
       version: -1
       name: hashicorp-enable-engine
+      description: Enables a new secrets engine at the specified path
       script: HashiCorp Vault|||hashicorp-enable-engine
       type: regular
       iscommand: true
@@ -402,12 +415,15 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 08fae6fb-943a-4381-8966-c46a884b2820
+    taskid: fda2ed0d-6b78-4065-86a2-baa0f15ce8bd
     type: regular
     task:
-      id: 08fae6fb-943a-4381-8966-c46a884b2820
+      id: fda2ed0d-6b78-4065-86a2-baa0f15ce8bd
       version: -1
       name: hashicorp-disable-engine
+      description: When a secrets engine is no longer needed, it can be disabled.  All
+        secrets under the engine are revoked and the corresponding vault data and
+        configurations are removed.
       script: HashiCorp Vault|||hashicorp-disable-engine
       type: regular
       iscommand: true
@@ -431,12 +447,13 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: e687c631-b4eb-4ba1-85f0-15b547f7513e
+    taskid: 0656f23f-ff62-4ea4-8512-954739fb5228
     type: regular
     task:
-      id: e687c631-b4eb-4ba1-85f0-15b547f7513e
+      id: 0656f23f-ff62-4ea4-8512-954739fb5228
       version: -1
       name: hashicorp-list-policies
+      description: List all configured policies
       script: HashiCorp Vault|||hashicorp-list-policies
       type: regular
       iscommand: true
@@ -457,10 +474,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 801af8f1-fc76-4602-8b6e-6b11015e7a0b
+    taskid: 756429e7-ab70-495a-8798-a36e2c94e0bb
     type: regular
     task:
-      id: 801af8f1-fc76-4602-8b6e-6b11015e7a0b
+      id: 756429e7-ab70-495a-8798-a36e2c94e0bb
       version: -1
       name: hashicorp-get-policy
       description: Get information for a policy
@@ -501,12 +518,13 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: c742646b-b21d-43e9-802f-aef8ad5e0ef0
+    taskid: d6906fce-6b76-4bb9-871c-889f986f18a3
     type: regular
     task:
-      id: c742646b-b21d-43e9-802f-aef8ad5e0ef0
+      id: d6906fce-6b76-4bb9-871c-889f986f18a3
       version: -1
       name: hashicorp-create-token
+      description: Creates a new authentication token
       script: HashiCorp Vault|||hashicorp-create-token
       type: regular
       iscommand: true
@@ -543,12 +561,13 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 1c9f3549-d0ee-4c2d-8b62-b7dcf7ea570d
+    taskid: adf833e9-c1e1-41c8-8632-fb5f93610e56
     type: regular
     task:
-      id: 1c9f3549-d0ee-4c2d-8b62-b7dcf7ea570d
+      id: adf833e9-c1e1-41c8-8632-fb5f93610e56
       version: -1
       name: hashicorp-configure-engine
+      description: Configure a secrets engine to fetch secrets from
       script: HashiCorp Vault|||hashicorp-configure-engine
       type: regular
       iscommand: true
@@ -576,10 +595,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: ade8806b-6c71-4c6e-84eb-2270446828b4
+    taskid: 458e042c-19bb-45c8-8cf3-a35ef0eea37f
     type: regular
     task:
-      id: ade8806b-6c71-4c6e-84eb-2270446828b4
+      id: 458e042c-19bb-45c8-8cf3-a35ef0eea37f
       version: -1
       name: GetTime
       description: |
@@ -611,12 +630,13 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: a6814aa4-b7c8-437a-8558-2598341b864a
+    taskid: caa0912b-aef8-4d5a-8c90-0189955ea97f
     type: regular
     task:
-      id: a6814aa4-b7c8-437a-8558-2598341b864a
+      id: caa0912b-aef8-4d5a-8c90-0189955ea97f
       version: -1
       name: hashicorp-reset-configuration
+      description: Reset the engines configuration
       script: HashiCorp Vault|||hashicorp-reset-configuration
       type: regular
       iscommand: true
