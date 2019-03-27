@@ -27,7 +27,6 @@ with patch('Tests.mock_server.AMIConnection._get_docker_ip') as mock:
 
     ami = AMIConnection('1.1.1.1')
 
-
     def test_ami():
         assert ami.public_ip == '1.1.1.1'
         assert ami.docker_ip == '2.2.2.2'
