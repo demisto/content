@@ -54,7 +54,8 @@ def get_dev_requirements(project_dir, docker_image):
     if major_ver not in ["2", "3"]:
         raise ValueError("Unknown python major versoin: {}".format(major_ver))
     env_dir = "{}{}".format(ENVS_DIRS_BASE, major_ver)
-    requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True)
+    requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True,
+                                           stderr=stderr_out)
     print_v("dev requirements:\n{}".format(requirements))
     return requirements
 
