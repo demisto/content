@@ -347,7 +347,6 @@ def organize_tests(tests, unmockable_integrations):
         else:
             mock_tests.append(test)
 
-    # first run the mock tests to avoid mockless side effects in container
     return mock_tests, mockless_tests
 
 
@@ -479,6 +478,7 @@ def execute_testing(server, server_ip, server_version):
     # move all mock tests to the top of the list
     mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations)
 
+    # first run the mock tests to avoid mockless side effects in container
     proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
     for t in mock_tests:
         run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
@@ -488,8 +488,11 @@ def execute_testing(server, server_ip, server_version):
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name)
 
+    print "\nRunning mock-disabled tests"
     proxy.configure_proxy_in_demisto('')
+    print "Restarting demisto service"
     restart_demisto_service(ami)
+    print "Demisto service restarted\n"
 
     for t in mockless_tests:
         run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
