@@ -64,7 +64,7 @@ script:
     CT_PARAMS = demisto.params()
     CMD_ARGS = demisto.args()
 
-    SCAN_OPTIONS = ['pr','nw','nc','st','sc','ru','co','lo','ns','wb','fs']
+    SCAN_OPTIONS = ['pr', 'nw', 'nc', 'st', 'sc', 'ru', 'co', 'lo', 'ns', 'wb', 'fs']
     CT_SERVER = CT_PARAMS['server']
     REST_PORT = CT_PARAMS['rest_port']
     API_KEY = CT_PARAMS['api_key']
@@ -203,9 +203,9 @@ script:
         response = make_rest_call(REST_APIS['start_collection'], 'post', api_data)
 
         if is_ip_valid(endpoint):
-            endpoint_context = { 'IPAddress' : endpoint }
+            endpoint_context = {'IPAddress': endpoint}
         else:
-            endpoint_context = { 'Hostname' : endpoint }
+            endpoint_context = {'Hostname': endpoint}
 
         ec = {
             'CyberTriage' : response['response'],
@@ -239,13 +239,12 @@ script:
       required: true
       default: true
       description: IP or hostname of a windows endpoint
-    - name: full_scan
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: Scan entire file system for suspicious files
-      defaultValue: "yes"
+    - name: scan_options
+      description: Comma separated list of data types that Cyber Triage will collect.
+        Processes (pr), Network (nw),  Network Caches (nc), Startup Items (st), Scheduled
+        Tasks (sc), Program Run (ru),  System Config (co), User Logins (lo), Network
+        Shares (ns), Web Artifacts (wb), Full File System Scan (fs)
+      defaultValue: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs
     - name: malware_hash_upload
       auto: PREDEFINED
       predefined:
@@ -261,6 +260,8 @@ script:
       description: Send unknown files to external malware analysis service. Hash upload
         must be enabled for file uploads to occur.
       defaultValue: "no"
+    - name: incident_name
+      description: Cyber Triage incident name that the collection will belong to
     outputs:
     - contextPath: CyberTriage.SessionId
       description: The session ID for the newly created session
