@@ -338,10 +338,18 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def organize_tests(tests, unmockable_integrations):
+def organize_tests(tests, unmockable_integrations, skipped_integration, skipped_integrations_conf,
+                   nightly_integrations):
     mock_tests, mockless_tests = [], []
     for test in tests:
-        integrations = test.get('integrations', [])
+        integrations_conf = test.get('integrations', [])
+
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf, ]
+
+        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
         if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
             mockless_tests.append(test)
         else:
@@ -476,7 +484,8 @@ def execute_testing(server, server_ip, server_version):
     skipped_integration = set([])
 
     # move all mock tests to the top of the list
-    mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations)
+    mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations, skipped_integration,
+                                                skipped_integrations_conf, nightly_integrations)
 
     # first run the mock tests to avoid mockless side effects in container
     proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
