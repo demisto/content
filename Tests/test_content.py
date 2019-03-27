@@ -347,7 +347,7 @@ def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, ni
             integrations_conf = [integrations_conf, ]
 
         has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-            integrations_conf, [], skipped_integrations_conf, nightly_integrations)
+            integrations_conf, set(), skipped_integrations_conf, nightly_integrations)
 
         if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
             mockless_tests.append(test)
