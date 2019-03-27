@@ -721,12 +721,15 @@ script:
             'Description': response.get('description'),
             'Severity': response.get('severity'),
             'Category': response.get('Category'),
-            'ReportID': response.get('reportId')
+            'ReportID': response.get('reportId'),
+            'ID': response.get('id'),
+            'Status': response.get('status')
         }
+        output = {k: v for k, v in output.iteritems() if v is not None}
         ec = {
             'MicrosoftATP.Alert': output
         }
-        hr = tableToMarkdown('Alert created:', output, removeNull=True)
+        hr = tableToMarkdown('Alert created:', output)
 
         entry = {
             'Type': entryTypes['note'],
@@ -1395,6 +1398,12 @@ script:
     - contextPath: MicrosoftATP.Alert.EventTime
       description: Event time of the alert, as created by the user
       type: date
+    - contextPath: MicrosoftATP.Alert.ID
+      description: ID of the created alert.
+      type: string
+    - contextPath: MicrosoftATP.Alert.Status
+      description: Status of the alert
+      type: string
     description: Create a new alert entity using event data, as obtained from the
       Advanced Hunting.
   - name: microsoft-atp-get-alert-related-user
@@ -1440,4 +1449,4 @@ releaseNotes: "Added 3 new commands:
       - microsoft-atp-create-alert - Create a new alert entity using event data, as obtained from the Advanced Hunting.
       - microsoft-atp-get-alert-related-user - Retrieves the user associated to a specific alert."
 tests:
-- No test - TBD
+- Test - Windows Defender Advanced Threat Protection
