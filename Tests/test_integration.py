@@ -180,6 +180,7 @@ def __get_investigation_playbook_state(client, inv_id):
     res = client.req('GET', '/inv-playbook/' + inv_id, {})
     investigation_playbook = res.json()
 
+    print(investigation_playbook)
     return investigation_playbook['state']
 
 
@@ -273,6 +274,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
 
     # create incident with playbook
     incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
+    print(incident)
 
     if not incident:
         return False, -1
