@@ -1129,6 +1129,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "integrations": "Microsoft ATP"
         }
     ],
     "skipped_tests": {
