@@ -1,0 +1,680 @@
+category: Authentication
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAADoRJREFUeAHtmXl8VNUVx9+9772ZzIQksoigKMimYiNaWlyqiNoq1aq1ftDaulRUrCyWEDKTZGINQpYhEYKIsrQqYK1L/dRqa921H1HcEDf6KRVBEBShUQKG2d7S328yb5yZZBKK9J/2nc/nm7ud+5Zz7jn3vomiuOJawLWAawHXAq4FXAu4FnAt4FrAtYBrAdcCrgVcC7gWcC3gWsC1gGsB1wKuBVwLuBZwLeBawLXA/6kFRJ73/nZOP/UMsAfsABHQlRyHzlGgFbwEDkjKy0ODda+4Wiii1rIsWwql8ssvW1cuWbJk5wFd8D+YVFZZOdyrqKW2lLqwlA8bG+esy51eUVExYt8+7YvFixv4nkkpLy8f7PH4BxmKIfHMQkpp6kJsqq+v/4wKFRU1wzRNDHDGVU2L7t5lbFi2LNzWcQVFqa2t1WKx2Mm2LQfZthKFydeFw+GtHJ84caJn8ODBI5uamtYLIWxnzpQpU3oVFxf3a2xs/NjpyyxlZiOj/ibq5C2wNlW+g/LvgC98Bzga5MqV6PgDuD13IKN9JOp6RjurGqwKzfR4tVeFLc4xTaUFb3KvIuS0Pn37v11ZWTMhS/kgNmBcGaisvtUj1RCc01valldI87pAZWh5IBAocm41derUvqqmP1ZUJOudPpa6XlAjhHoVjD8W88dKSzvDsuSSqqrQNRwX0mpWNHlZetxWz+vTR3uwPBgcx3EsmmHRaOIBRdH4jlJo8jCheesDgaoZHB80cuShml7wCuxTw7YjRUW9T7SlNttp55Zabkeq7TiekfousIAXHAWOSfFjlBcBOt6RfagQRnqunICOJjAYnAq+BFkSDIaqpRCzLNO+Ihye87QzOHny5JK+/QaEpSofnTnzltPmz5/DZ+pW+jzZWuz1yt5KNKIUioE7Np4vYt1NiEbjkxAXQ30e/Vo4m+9LWRUM1swXUv856kvY0atX8XWWKZYLqYwLBoOliLD32W/ZipqIRVbcfnt4NduUSmQD01ZXoLqCUdceaV9+R3PzB8lB/JlVfcuVmqLxfqujUaPFtu1lyBhPOOO/qK1dOcBUH6qqqtloxLW3bDXxnlTE6cFg9c/C4XoshpSYiuMvpydd5nOwo7AZlTMA0zPT9KHgalAHGInN4DxgAspdgDfuypil6D8XMGUhMLMFjhutCKtWsc2fhMNz086l1rJly9pghCkwwgm6LsLo+iHodA3qOuL1WpO0At8cW9pKxNzJ+65xxrookY3lJUZCVIfDaecm1Xw+LRCJRArZKCsr62ML9cydn2+7dODAga2WUG9C9xSOCaHY0qMXT58+3cu21+vVDClPUW1lPdsUr+YtLSsLIvtLW9PkIXjX04Rt/a69PX6CUD3KvHBd2rnUv6+2NlpdXX2nacqrdT2+1rREm6oqNyVM8WAgENo0b17da9SzBRJ6Hsnr+Qx9R4cX4R5Ipz6SGj8Z5eGpOgtG5WbwKRs5wsimcDF02sN13ZqKPffthoaGPye1cv7AwRZWeIOQ9jnYz4bmDHdqqkJ4sBH2Ija80kkhowPXVqGvq8Xq5xndySrGDERpcp/UvL5rYMv3ioqKPHDSC3DrGETpkI45tqKr6rUF/uK5vqKiOUjZC6Upyi0juSCpInVVjvN4tAtVVb0Yz3U5tqERtq3uU1TvAFz3Xx3Xyf4bj8c/U4RdZJrY0rET1NXVfYJ8WoYMsgDOH2hKK5E9I7vVUwRna3/d4j7MtOUBvq+7FR7ORoIvwDOA44y2AnAqoPgB57aDOHgSRkwgOseh/iDIK4YRXaNqXiwOayyUPsqrmBzAqraRafMv7vR0OjFYGdqjRu1j0bkjPYAKto3TsbDO8fs9DXjGy6Um3vf3KpprmsLSVDWK8nqoYV8Uipmwf1Po059PzZeRSGIa9vFpaJcBKxGPLsUhKb2llZVVDvd41aWqImYhBQyCDrNkVjRiHy5Fx2e25YsLLS5w2FIRuW9UVFTiHKTerRjWHYoGl+eRA3XwmNT1mG6JI5NRuREwLX0L9AJ0WgFwpA8qv001+DKHjRo1qm3duncPSVhW5rUc/XSJyPliXzSxQ0p1RLozT4UpMz0ED6XreSqqtJdallIVCoU+SkYJ9KZOreqL64SEkAsjEeMa1F+rr5uTPPTwMtOnVx3qL5SPTy4vb6FfDMOwamvruZ0lBXv0s4rQ5rCB1aZaqpp1uPR6lUEWwtjnVddHo9ZGHCKrCwq0MBcc55SXVx2LzHKjacRmCJHQhKWnM1FTU+PvA4GaITiN4yBqv039rqQnB9MwjDJHeqMyCVye6uBpeW+qzsJJF9yDuRqZlgOAjmY6vxjwAAaD8DMgmaq/QmliCe7DAWsA6nkFL24FgtXt+IwozlJ62FbHDMVBY+3adPdn2CAlwteCabG/amOWvvW1cceMUdaOwVYhsPWmBJ8zzyJa/Ti5N8DQ23C1OE5Ow5FZHyooUJ/BCXelZSWSznLmLFrUsCtQXfN4sdc/wbbMrdhanW0oqWJZvl1SGnvx3Brmf6qp+mSc1C/loBSqDxbqhQgMYDw+C6Kq3upIzODJe7slpV+Y1kDLtGYz6mfODB2p6/Y2594s582b2xisDo1Eemc27FLohK7EWfE0/mpAQ3gBI+cosAGEwb0gUxahwZTEFfVdkDYg6teD5YAPOQxkLhykwppVeOHRmz7acNIjjzzCfbqT4HPlGHwqrDUNc2E4XBdyFAa92NoiNM/3bSOeem6h7InE+kbajf64pl1S7N1coGtYdB3DAh/ZViLRtP2s3iucazglTux6YZ8+g3UkYMuKbmtubm6HA2RbW5t3wYIFnc4OmCdw+CrYtq0Ez7zezH12jPlKSkpira2tuqZphfF4gUgk4sLvN42Wlpbdzn2dkp9hhYWF/S2PJ9pL07ZwUXMMSUjcfPPNnkWLFjF4soQHu676qaRlaXZuMPImdO5WeBjZ2kV/d13cjylcVNyHsxwshNGCz5HXhw4fWYuxW0CW4DvxRBxTFiNdSts2d2UNCjFS+guPt+MdGQyfJIqAr81YFEdb5EBVH6H6Cmik5DThRfDsbj086xqpBk7szEIbM8dSRu7KuVSz8zg+eYmMMTqmk3OSShl/Fi9e3IomyRJ+ZqGjy/n5nMsL9OTgLdC5AfClaT0eBJhmLwHPgdvAreAbC36JWYsfFaZhmS+qDNWckrDs+1XT3ook21/X9XOxjHHYMeYbRnyIospNmTcUlvWOve+rEjuR6PAgBoWZOMLj9wyhU20jgXGrPT1o2QKfMB9nXgN1ZqgLQeZ5gSpckNxOmP953+MAsxON/QTISsto58rZ6KDduKD/BHIXylD0UecYwCDgOeR18DIwQD/AIONzvAiYASlHgPGAPpSA/vgEZElPDmaKfjZrBj7a0a4D1YCRxvHV4BvLvMa6JRUVVe9rujbDI5RbLYlPF6Htxi76cixiXODxqP3hpBJdtXmKT8snZ/fjs2TJkS/umlXcu7jJjseEGYtP23p231eyFDo3itC1HBzSeSjZwy+DC8BYsBDQwSNAdw4ehvHHAK9N4Tfz3clax58ZKH4NeLbJlRfQcS3oD1alBhlYdPBZYBkYDrgIQqAVdBJ6vjvhqnFSa6beXWjwsMTxH2UOfNN6U1PDKw31cyZ+tbftuL17tOPwa9Tohvq5UxYsaNyIzDsFN3zTOeV2dy8Ebsc5mmHLnN2zUJORSnkAXJ5iMkoaj6f/y4Cjw5JzupNZGHScSz22nQV0IeoLAJ37FDgXjAXlgIHFqL4HMAid+9CZN4G/ADr3XXAGmAf2gU7CyQcivBhfkKdZvvhBl9S+kt5z+LMg3pIGTp5CD/oNsy/YF01GH4W/YtFOFngTlID9keOhdBWgc1pS9aEorwfN4FpAYVq9AuxmA8J76OCngNvGEYD3ZjCGwShA4SJkRmhjI58cqIO50mgEyucdxX7/VaG5PxGVviD/YyJV/T7Tsp/2+3Su3v0QRK3ErSQ+lnDm2o8JmSrnoUEyxUTDB3rKes6cICpcHLvA4+AkMB4wLa8AhwHKP4Hj3GQH/nBBrARcHNwGeE++g+NcVJUBgAuhW+npYXmDeMYV/KifD+4CdBRfmg+/P+K8BCP+yP2ZQB18Gg0qOaTv4zgO+20zfoPz2dDTfLi3HT8t7bQtYye+JTPfoaepHJ8PaExSCv4K+L5V4FBAoW2YybqS76CT2YZC/RfBeEBhRDKKN7ABoQOdYEl24M88wPT7N8D5tDOFB6nbAO99NvgjyJ2Lrq+lpwgeDFVGDFMEV+9RgA/kyGxUmFL2R/jA3EM8YDG4GzDdPQZ4cqSI8ePHq6WlpX78WH8U/r96MX4RmGLZ5j8sI/YDfPDv6FDr+a/tjdyT2J14WPoK7c8/3txtGuviakPQ971UP0/Vg1L1dpSJVJ32qAZ7Um0WHFsCGL1Mr8xu9wM6hJwF6PypoAZcCWhTBsmdYCc4E/wS0E7Pgi3A8RP37CdBBDSA08Gj4FLQCjqJ6NTT0cGHySd8Sf6QwQd6OEeJTuPDfQBGAy4MR3gvPuCvnI5UyQihvhKoqrkIP8g344cMfn8X4LeoTfg1afGaNatXvfTSSwZ1/ovSD9dmuuyd5x7b0T8JHAsW5tFh93SwKDVORzMaHRmLymvAsQUXPcf7g0xxMuMN6BwK3kgNXoKSAUGZDX6drCnKKyi5Z29LtdOFszLSHakKV0Sm8IF4U6bZrWAz6GoRcPU+B77sYpz6M8FTgCv4aLAKbAFJiZnxDR61oAmH3u2xmLlx/vy6DzHQ1X1SMw5qwUi8CjDycmUvOuiMnYDvTmd39VzcCvg5NRHQXs+DTKGjJoAi8BV4GlDnLHAB4L0ZtVwEDCIK70N/0AevA0duReVVwGDQARdoJwejzxXXAq4FXAu4FnAt4FrAtYBrAdcCrgVcC7gWcC3gWsC1gGsB1wKuBVwLuBZwLeBawLWAawHXAq4FXAu4FvgftMC/AcHP09B6zNZ1AAAAAElFTkSuQmCC
+commonfields:
+  id: CarbonBlackProtectionV2
+  version: -1
+configuration:
+- defaultvalue: https://192.168.0.1
+  display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+detaileddescription: Use these detailed instructions in order to retrieve the API
+  key
+display: Carbon Black Protection V2
+name: CarbonBlackProtectionV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'Grouping is optional and can be defined with a single attribute:
+        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: limit number of returned results, to avoid flooding context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Is maximum number of results to retrieve. If not specified:
+        First 1000 results will be returned. If set to -1: Only result count will
+        be returned, without actual results. Offset parameter is ignored in this case.
+        If set to 0: All results will be returned. Offset parameter is ignored in
+        this case. Note that some result sets could be very large, resulting in query
+        timeout. Therefore, unless you know that query will not return more than 1000
+        results, it is recommended to retrieve data in chunks using offset and limit.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Offset in data set
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'A condition contains three parts: name, operator and value. Name
+        is any valid field in the object that is being queried. Operator (: LIKE,
+        ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
+        values) is any of valid operators (see below). All operators consist of a
+        single character. Value is compared with operator and depends on field type.
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting is optional and can be defined with a single attribute:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
+        (if omitted) is ASC. xyz is field name from the result set.'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filecatalog'
+    execution: false
+    name: cbp-fileCatalog-search
+    outputs:
+    - contextPath: File.Size
+      description: Size of the file
+      type: Unknown
+    - contextPath: File.Path
+      description: Path on the found hostname
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 has of the file
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: String
+    - contextPath: File.Name
+      description: Name of the file
+      type: String
+    - contextPath: File.Type
+      description: File Type
+      type: String
+    - contextPath: File.ProductName
+      description: The name of the product this file belongs to
+      type: String
+    - contextPath: File.ID
+      description: Unique fileCatalog Id
+      type: String
+    - contextPath: File.Publisher
+      description: The publisher of the file
+      type: String
+    - contextPath: File.Company
+      description: The company for the product
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: String
+    - contextPath: File.Extension
+      description: Extension of the file
+      type: String
+  - arguments:
+    - default: false
+      description: 'A condition contains three parts: name, operator and value. Name
+        is any valid field in the object that is being queried. Operator (: LIKE,
+        ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
+        values) is any of valid operators (see below). All operators consist of a
+        single character. Value is compared with operator and depends on field type.
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Is maximum number of results to retrieve. If not specified:
+        First 1000 results will be returned. If set to -1: Only result count will
+        be returned, without actual results. Offset parameter is ignored in this case.
+        If set to 0: All results will be returned. Offset parameter is ignored in
+        this case. Note that some result sets could be very large, resulting in query
+        timeout. Therefore, unless you know that query will not return more than 1000
+        results, it is recommended to retrieve data in chunks using offset and limit.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Offset in data set
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Grouping is optional and can be defined with a single attribute:
+        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting is optional and can be defined with a single attribute:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
+        (if omitted) is ASC. xyz is field name from the result set.'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+    execution: false
+    name: cbp-computer-search
+    outputs:
+    - contextPath: Endpoint.Memory
+      description: Amount of memory for the endpoint
+      type: Number
+    - contextPath: Endpoint.Processors
+      description: The number of processors
+      type: Number
+    - contextPath: Endpoint.OS
+      description: The short OS name running on the endpoint
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC address of the endpoint
+      type: String
+    - contextPath: Endpoint.Model
+      description: The machine model, if available
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint
+      type: String
+    - contextPath: Endpoint.Processor
+      description: The model of the processor
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: Hostname of the endpoint
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The full OS name for the endpoint
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retreiving the endpoint
+      type: String
+  - arguments:
+    - default: true
+      description: (Int32) Unique computer id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: (String) Computer name can be changed only if computer is a template
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: (String) Custom computer tag
+      isArray: false
+      name: computerTag
+      required: false
+      secret: false
+    - default: false
+      description: (String) Description of this computer
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) New Id of policy for this computer. PolicyId is ignored
+        if either automaticPolicy us True or localApproval is True
+      isArray: false
+      name: policyId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True if this policy is assigned automatically through
+        AD. Has to be False if localApproval is True
+      isArray: false
+      name: automaticPolicy
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True if this computer is currently in local approval
+        mode. Has to be False if automaticPolicy is True
+      isArray: false
+      name: localApproval
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Change refresh flags for this agent. Can be combination
+        of: 0x01=Complete resynch of agent NAB and installer table is requested 0x02=Rescan
+        of programs installed on the computer is requested 0x20=Tell agent to refresh
+        config list 0x40=Force this agent to reregister with new cookie 0x200=Trigger
+        agent Reboot. 0x1000=Tell agent to refresh config list from the file 0x4000
+        Boost the priority of this agent over all others permanently (until it is
+        de-prioritized)'
+      isArray: false
+      name: refreshFlags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True to prioritize this computer
+      isArray: false
+      name: prioritized
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Current debug level of agent. Range is from 0 (none) to
+        8 (verbose). This value can be changed only if ‘changeDiagnostics’ request
+        parameter is set to true.
+      isArray: false
+      name: debugLevel
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Current kernel debug level of agent. Range is from 0 (none)
+        to 5 (verbose). This value can be changed only if ‘changeDiagnostics’ request
+        parameter is set to true.
+      isArray: false
+      name: kernelDebugLevel
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Debug flags. Can be 0 or combination of: 0x01 = Upload
+        debug files now 0x10 = Enable full memory dumps 0x20 = Copy agent cache 0x40
+        = Delete debug files 0x80 = Upload agent cache 0x200 = Save verbose debug
+        info + counters to the cache when copied/uploaded 0x400 = Generate and upload
+        an analysis.bt9 file that contains various constraint violation analysis information
+        0x800 = Run a health check and send results to server This value can be changed
+        only if ‘changeDiagnostics’ request parameter is set to true.'
+      isArray: false
+      name: debugFlags
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Debug duration in minutes. This value can be changed only
+        if ‘changeDiagnostics’ request parameter is set to true.
+      isArray: false
+      name: debugDuration
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Cache consistency check level set for agent. Can be one
+        of: 0 = None 1 = Quick verification 2 = Rescan known files Full scan for new
+        files This value can be changed only if ‘changeDiagnostics’ request parameter
+        is set to true.'
+      isArray: false
+      name: cCLevel
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Cache consistency check flags set for agent. Can be 0
+        or combination of: 0x0001 = Whether this is just a test run or not 0x0002
+        = Should the state of invalid files be preserved 0x0004 = Should new files
+        found be locally approved or not 0x0008 = Should we re-evaluate whether a
+        file’s certificate information is still valid or not 0x0010 = Whether the
+        check was scheduled or not 0x0020 = Whether the agent should run constraint
+        checks to test for invalid results 0x0040 = Whether we are only searching
+        for new script types as a result of a change to what ‘IsScript’ means 0x0080
+        = Whether we are doing a level 3 check for initialization 0x0100 = This cache
+        check is to remediate CR# 18041 0x0200 = Force the re-evaluation of the IsCrawlable
+        state and archive type'
+      isArray: false
+      name: cCFlags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True to force upgrade for this computer
+      isArray: false
+      name: forceUpgrade
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True if computer is a VDI template. This value can be
+        changed only if ‘changeTemplate’ request parameter is set to true.
+      isArray: false
+      name: template
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        (Int32) Mode of template cleanup. Can be one of:
+        1=Manual (from console)
+        2=Automatic, by time (specified by templateCloneCleanupTime and templateCloneCleanupTimeScale)
+        3=Automatic, when new computer with the same name comes online
+        4=Automatic, as soon as computer goes offline
+        This value can be changed only if ‘changeTemplate’ request parameter is set to true.
+      isArray: false
+      name: templateCloneCleanupMode
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) If templateCloneCleanupMode is 2, this is time before clone
+        is cleaned up. Time unit is specified in templateCloneCleanupTimeScale.This
+        value can be changed only if ‘changeTemplate’ request parameter is set to
+        true.
+      isArray: false
+      name: templateCloneCleanupTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        (Int32) Time unit of template cleanup. Can be one of:
+        1=Hours
+        2=Days
+        3=Weeks
+        This value can be changed only if ‘changeTemplate’ request parameter is set to true.
+      isArray: false
+      name: templateCloneCleanupTimeScale
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) If True, clones of this template will track only new
+        and modified files. This value can be changed only if ‘changeTemplate’ request
+        parameter is set to true.
+      isArray: false
+      name: templateTrackModsOnly
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Updates computer object. Note that some computer properties can
+      be changed only if specific boolean param is set, as noted below. See more:
+      https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+    execution: false
+    name: cbp-computer-update
+  dockerimage: demisto/python3
+  isfetch: false
+  runonce: false
+  script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from distutils.util import strtobool
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    TOKEN = demisto.params().get('token')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('unsecure', False)
+    # Service base URL
+    BASE_URL = SERVER + '/api/v2.0/'
+    # Headers to be sent in requests
+    HEADERS = {
+        'Authorization': 'Token ' + TOKEN
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
+        """
+            A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: HTTP method for the request.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The suffix of the URL (endpoint)
+
+            :type params: ``dict``
+            :param params: The URL params to be passed.
+
+            :type data: ``str``
+            :param data: The body data of the request.
+
+            :type headers: ``dict``
+            :param headers: Request headers
+
+            :type safe: ``bool``
+            :param safe: If set to true will return None in case of error
+
+            :return: Returns the http request response json
+            :rtype: ``dict``
+        """
+        url = SERVER + url_suffix
+        try:
+            res = requests.request(
+                method,
+                url,
+                verify=USE_SSL,
+                params=params,
+                data=data,
+                headers=headers,
+            )
+        except requests.exceptions.RequestException as e:
+            return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201}:
+            if safe:
+                return None
+            return_error('Error in API call [{0}] - {1}'.format(res.status_code, res.reason))
+        return res.json()
+
+
+    def create_entry_object(contents='', ec=None, hr=''):
+        """
+            Creates an entry object
+
+            :type contents: ``dict``
+            :param contents: Raw response to output
+
+            :type ec: ``dict``
+            :param ec: Entry context of the entry object
+
+            :type hr: ``str``
+            :param hr: Human readable
+
+            :return: Entry object
+            :rtype: ``dict``
+        """
+        return {
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        samples = http_request('GET', 'items/samples')
+
+
+    def get_items_command():
+        """
+        Gets details about a items using IDs or some other filters
+        """
+        # Init main vars
+        headers = []
+        contents = []
+        context = {}
+        context_entries = []
+        title = ''
+        # Get arguments from user
+        item_ids = argToList(demisto.args().get('item_ids', []))
+        is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
+        limit = int(demisto.args().get('limit', 10))
+        # Make request and get raw response
+        items = get_items_request(item_ids, is_active)
+        # Parse response into context & content entries
+        if items:
+            if limit:
+                items = items[:limit]
+            title = 'Example - Getting Items Details'
+
+            for item in items:
+                contents.append({
+                    'ID': item.get('id'),
+                    'Description': item.get('description'),
+                    'Name': item.get('name'),
+                    'Created Date': item.get('createdDate')
+                })
+                context_entries.append({
+                    'ID': item.get('id'),
+                    'Description': item.get('description'),
+                    'Name': item.get('name'),
+                    'CreatedDate': item.get('createdDate')
+                })
+
+            context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+            'EntryContext': context
+        })
+
+
+    def get_items_request(item_ids, is_active):
+        # The service endpoint to request from
+        endpoint_url = 'items'
+        # Dictionary of params for the request
+        params = {
+            'ids': item_ids,
+            'isActive': is_active
+        }
+        # Send a request using our http_request wrapper
+        response = http_request('GET', endpoint_url, params)
+        # Check if response contains errors
+        if response.get('errors'):
+            return_error(response.get('errors'))
+        # Check if response contains any data to parse
+        if 'data' in response:
+            return response.get('data')
+        # If neither was found, return back empty results
+        return {}
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('time')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+
+        incidents = []
+        items = get_items_request()
+        for item in items:
+            incident = item_to_incident(item)
+            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_date > last_fetch:
+                last_fetch = incident_date
+                incidents.append(incident)
+
+        demisto.setLastRun({'time' : last_fetch})
+        demisto.incidents(incidents)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is {}'.format(demisto.command()))
+
+
+    def search_file_catalog_command():
+        args = demisto.args()
+        group = args.get('group')
+        headers = args.get('headers')
+        limit = args.get('limit')
+        offset = args.get('offset')
+        query = args.get('query')
+        sort = args.get('sort')
+        raw_res = search_file_catalog(group, headers, limit, offset, query, sort)
+        demisto.results(fileResult(raw_res.get('name???'), raw_res.get('data???')))
+
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'cbp-fileCatalog-search':
+            # An example command
+            search_file_catalog_command()
+
+    # Log exceptions
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+releaseNotes: "Created integration"
