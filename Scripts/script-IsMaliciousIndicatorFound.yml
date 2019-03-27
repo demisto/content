@@ -71,8 +71,6 @@ outputs:
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP/Email/Domain in the investigation
 scripttarget: 0
-runas: DBotWeakRole
-runonce: false
 tests:
 - "Test-IsMaliciousIndicatorFound"
 releaseNotes: "Fix to only depend on DBotScore.Score"
