@@ -1160,15 +1160,12 @@
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
     },
     "skipped_integrations": {
-        "RSA Archer": "Server not responding (issue 16085)",
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
         "VMware": "We don't have a license for VMWare, and probably not going to get it",
         "Farsight DNSDB": "No instance (issue 15512)",
-        "Symantec MSS": "No instance (issue 15513)",
-        "Remedy AR": "DevOps investigation (issue 15514)",
         "iDefense": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
@@ -1190,7 +1187,7 @@
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
         "Threat Grid": "instance problem (issue 16197)",
         "BitDam": "Changes in service (issue #16247)",
-        "SCADAfence CNM": "getting Bad gateway (issue #16277)"
+        "IntSights": "getting Account Expired (issue #16351)"
     },
     "nigthly_integrations": [
         "Lastline",
