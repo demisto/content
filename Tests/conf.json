@@ -1143,7 +1143,7 @@
         },
         {
             "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "integrations": "Microsoft ATP"
+            "integrations": "Windows Defender Advanced Threat Protection"
         }
     ],
     "skipped_tests": {
