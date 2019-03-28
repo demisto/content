@@ -487,7 +487,7 @@ def main():
     if is_ami:  # Run tests in AMI configuration
         with open('./Tests/images_data.txt', 'r') as image_data_file:
             image_data = [line for line in image_data_file if line.startswith(server_version)]
-            if len(image_data) != 0:
+            if len(image_data) != 1:
                 print('Did not get one image data for server version, got {}'.format(image_data))
             else:
                 print('Server image info: {}'.format(image_data[0]))
