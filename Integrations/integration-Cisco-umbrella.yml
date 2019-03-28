@@ -30,6 +30,11 @@ configuration:
   defaultvalue: https://investigate.api.umbrella.com
   type: 0
   required: true
+- display: DBot Score Malicious Threshold (-100 to 100)
+  name: dboscore_threshold
+  defaultvalue: "-100"
+  type: 0
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -57,7 +62,7 @@ script:
         'Authorization': 'Bearer {}'.format(API_TOKEN),
         'Accept': 'application/json'
     }
-    DEFAULT_THRESHOLD = -100
+    MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
     # remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -191,9 +196,9 @@ script:
         DBotScore = 0
         if sr > 0 and sr <= 100:
             DBotScore = 1
-        elif sr < 0 and sr > -100:
+        elif sr < 0 and sr > MALICIOUS_THRESHOLD:
             DBotScore = 2
-        elif sr == -100:
+        elif sr <= MALICIOUS_THRESHOLD:
             DBotScore = 3
         return DBotScore
 
@@ -475,7 +480,7 @@ script:
         results = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
-        threshold = int(demisto.args().get('threshold'))
+        threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
         # Fetch data
         res = get_domain_security(domain)
         if res:
@@ -500,7 +505,7 @@ script:
                 secure_rank = res.get('securerank2', False)
                 DBotScore = 0
                 if secure_rank:
-                    if threshold != DEFAULT_THRESHOLD and secure_rank < threshold:
+                    if secure_rank < threshold:
                         DBotScore = 3
                     else:
                         DBotScore = securerank_to_dbotscore(secure_rank)
@@ -780,23 +785,7 @@ script:
         secure_rank = domain_details.get('securerank2')
         dbotscore = securerank_to_dbotscore(secure_rank)
 
-        # contents entry
-        contents.append({
-            'Risk Score': risk_score,
-            'Secure Rank': secure_rank,
-            'Populairty': popularity,
-            'Demisto Reputation': scoreToReputation(dbotscore),
-            'First Queried time': first_queried,
-        })
-
         # context entry
-        # DbotScore
-        context[outputPaths['dbotscore']] = {
-            'Indicator': domain,
-            'Type': 'domain',
-            'Vendor': 'Cisco Umbrella Investigate',
-            'Score': dbotscore
-        }
         # Domain
         context[outputPaths['domain']] = {
             'Name': domain,
@@ -810,11 +799,29 @@ script:
         }
 
         # Add malicious if needed
-        if risk_score == -1:
+        if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
             context[outputPaths['domain']]['Malicious'] = {
                 'Vendor': 'Cisco Umbrella Investigate',
                 'Description': 'Malicious domain found with risk score -1'
             }
+            dbotscore = 3
+
+        # DbotScore
+        context[outputPaths['dbotscore']] = {
+            'Indicator': domain,
+            'Type': 'domain',
+            'Vendor': 'Cisco Umbrella Investigate',
+            'Score': dbotscore
+        }
+
+        # contents entry
+        contents.append({
+            'Risk Score': risk_score,
+            'Secure Rank': secure_rank,
+            'Populairty': popularity,
+            'Demisto Reputation': scoreToReputation(dbotscore),
+            'First Queried time': first_queried,
+        })
 
         # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
         results.append ({
@@ -1047,7 +1054,7 @@ script:
         results = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
-        threshold = int(demisto.args().get('threshold'))
+        threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
         # Fetch data
         res = get_domain_details(domain)
         if res:
@@ -1075,7 +1082,7 @@ script:
                 }
                 secure_rank = res.get('securerank2', False)
                 if secure_rank:
-                    if threshold != DEFAULT_THRESHOLD and secure_rank < threshold:
+                    if secure_rank < threshold:
                         dbotscore = 3
                     else:
                         dbotscore = securerank_to_dbotscore(secure_rank)
@@ -2913,5 +2920,6 @@ script:
     description: The timeline command shows when a URL was given attribution of a
       particular security categorization or threat type (indicators of compromise).
   runonce: false
+releaseNotes: "Added threshold parameter to override the default malicious score"
 tests:
   - Cisco Umbrella Test
