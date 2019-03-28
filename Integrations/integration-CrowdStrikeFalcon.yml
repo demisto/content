@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: CrowdsrikeFalcon
+  id: CrowdstrikeFalcon
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -50,8 +50,8 @@ configuration:
   type: 8
 description: The Falcon Query API (formerly known as the Falcon Firehose API)
 detaileddescription: 'To get an API key please contact the crowdstrike support: support@crowdstrike.com'
-display: Crowdsrike Falcon
-name: CrowdsrikeFalcon
+display: Crowdstrike Falcon
+name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
