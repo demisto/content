@@ -1154,6 +1154,10 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "playbookID": "EmailReputationTest",
+            "integrations": "Pwned"
         }
     ],
     "skipped_tests": {
