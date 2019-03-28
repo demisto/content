@@ -22,7 +22,7 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
 
-SERVICE_RESTART_TIMEOUT = 120
+SERVICE_RESTART_TIMEOUT = 90
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
 
