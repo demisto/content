@@ -50,7 +50,7 @@ configuration:
   type: 8
 description: The Falcon Query API (formerly known as the Falcon Firehose API)
 detaileddescription: 'To get an API key please contact the crowdstrike support: support@crowdstrike.com'
-display: Crowdstrike Falcon
+display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
   commands:
