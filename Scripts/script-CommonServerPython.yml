@@ -537,11 +537,7 @@ script: |-
       :return: string representation of all the arguments
       :rtype: ``string``
       """
-      allargs = [repr(a) for a in args]
-      for key,item in kwds.items():
-          allargs.append('{}={}'.format(key, item))
-      formattedArgs = ', '.join(allargs)
-
+      formattedArgs = ','.join([repr(a) for a in args]) + ',' + str(kwds).replace(':', "=").replace(" ", "")[1:-1]
       return formattedArgs
 
 
