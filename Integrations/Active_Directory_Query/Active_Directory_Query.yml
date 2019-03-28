@@ -1,1234 +1,395 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Active Directory Query v2
   version: -1
+name: Active Directory Query v2
+display: Active Directory Query v2
+category: Data Enrichment & Threat Intelligence
+description: Active Directory Query integration enables you to  access and manage Active
+  Directory objects (users, contacts, and computers).
 configuration:
 - display: Server IP address (e.g., 192.168.0.1)
   name: server_ip
-  required: true
+  defaultvalue: ""
   type: 0
+  required: true
 - display: Port. If not specified, default the port is 389, or 636 for LDAPS.
   name: port
-  required: false
+  defaultvalue: ""
   type: 0
+  required: false
 - display: Credentials
   name: credentials
-  required: true
+  defaultvalue: ""
   type: 9
+  required: true
 - display: NTLM authentication
   name: ntlm
-  required: false
+  defaultvalue: ""
   type: 8
+  required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
-  required: true
+  defaultvalue: ""
   type: 0
-- defaultvalue: '500'
-  display: Page size
+  required: true
+- display: Page size
   name: page_size
-  required: true
+  defaultvalue: "500"
   type: 0
-- defaultvalue: SSL
-  display: Secure Connection
+  required: true
+- display: Secure Connection
   name: secure_connection
+  defaultvalue: SSL
+  type: 15
+  required: true
   options:
   - None
   - SSL
-  required: true
-  type: 15
 - display: Trust any certificate (unsecure)
   name: unsecure
-  required: false
+  defaultvalue: ""
   type: 8
-description: Active Directory Query integration enables you to  access and manage
-  Active Directory objects (users, contacts, and computers).
-detaileddescription: |-
-  Active Directory search uses paging. You set the page size by specifying the 'page size'
-  parameter in the instance settings.
-display: Active Directory Query v2
-name: Active Directory Query v2
+  required: false
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - default: false
+  - name: ad-expire-password
+    arguments:
+    - name: username
+      required: true
       description: The username (samAccountName) of the user to modify
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    - default: false
+    - name: base-dn
       description: Root (e.g., DC=domain,DC=com)
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
     description: Expires the password of an Active Directory user.
-    execution: false
-    name: ad-expire-password
-  - arguments:
-    - default: false
+  - name: ad-create-user
+    arguments:
+    - name: username
+      required: true
       description: The username (samAccountName) of the user to be modified
-      isArray: false
-      name: username
+    - name: password
       required: true
-      secret: false
-    - default: false
-      description: The initial password to set for the user. The user will be asked
-        to change the password after login.
-      isArray: false
-      name: password
+      description: 'The initial password to set for the user. The user will be asked
+        to change the password after login.'
+    - name: user-dn
       required: true
-      secret: false
-    - default: false
       description: The user's DN
-      isArray: false
-      name: user-dn
-      required: true
-      secret: false
-    - default: false
+    - name: display-name
       description: The user's display name
-      isArray: false
-      name: display-name
-      required: false
-      secret: false
-    - default: false
+    - name: description
       description: Short description of the user
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - default: false
+    - name: email
       description: User email.
-      isArray: false
-      name: email
-      required: false
-      secret: false
-    - default: false
+    - name: telephone-number
       description: The user's telephone number
-      isArray: false
-      name: telephone-number
-      required: false
-      secret: false
-    - default: false
+    - name: title
       description: The user's job title
-      isArray: false
-      name: title
-      required: false
-      secret: false
-    - default: false
+    - name: custom-attributes
       description: Use to set basic or custom attributes of the user object, e.g.,
         custom-attributes="{"notes":"a note about the contact","company":"company
         name"}"
-      isArray: false
-      name: custom-attributes
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates an Active Directory user. This command requires a secure
-      connection (SSL,TLS). in order to use this command.
-    execution: false
-    name: ad-create-user
-  - arguments:
-    - default: false
-      description: 'Query Active Directory in Active Directory syntax, e.g., this
-        query will find all user objects, except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"'
-      isArray: false
-      name: filter
+    description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+      in order to use this command.
+  - name: ad-search
+    arguments:
+    - name: filter
       required: true
-      secret: false
-    - default: false
-      description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    - default: false
-      description: CSV list of the object attributes to return, e.g., "dn,memberOf".
-        To get all objects atributes, specify 'ALL'.
-      isArray: false
-      name: attributes
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+      description: 'Query Active Directory in Active Directory syntax, e.g., this query will find all user objects, except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"'
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
+    - name: attributes
+      description: CSV list of the object attributes to return, e.g.,
+        "dn,memberOf". To get all objects atributes, specify 'ALL'.
+    - name: size-limit
       description: Maximum number of records to return
-      isArray: false
-      name: size-limit
-      required: false
-      secret: false
-    - default: false
+      defaultValue: "50"
+    - name: time-limit
       description: Maximum time to pull records (in seconds)
-      isArray: false
-      name: time-limit
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'yes'
+    - name: context-output
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      defaultValue: "yes"
       description: If set to 'no' will not output the the results of the search to
         the context.
-      isArray: false
-      name: context-output
-      predefined:
-      - 'yes'
-      - 'no'
-      required: false
-      secret: false
-    deprecated: false
-    description: Runs Active Directory queries.
-    execution: false
-    name: ad-search
     outputs:
-    - contextPath: ActiveDirectory.Search.dn
+    - contextPath: 'ActiveDirectory.Search.dn'
       description: The distinguished names that match the query.
       type: string
-    - contextPath: ActiveDirectory.Search
+    - contextPath: 'ActiveDirectory.Search'
       description: Result of the search.
       type: unknown
-  - arguments:
-    - default: false
-      description: "The username of the user to add to the group. If this argument\
-        \ is not specified, the computer name argument must be specified.\t"
-      isArray: false
-      name: username
-      required: false
-      secret: false
-    - default: false
-      description: The name of the computer to add to the group. If this argument
-        is not specified, the username argument must be specified.
-      isArray: false
-      name: computer-name
-      required: false
-      secret: false
-    - default: false
+    description: Runs Active Directory queries.
+  - name: ad-add-to-group
+    arguments:
+    - name: username
+      description: "The username of the user to add to the group. If this argument is not specified,
+        the computer name argument must be specified.\t"
+    - name: computer-name
+      description: The name of the computer to add to the group. If this argument is not specified,
+        the username argument must be specified.
+    - name: group-cn
+      required: true
       description: The name of the group to add the user to
-      isArray: false
-      name: group-cn
-      required: true
-      secret: false
-    - default: false
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
+    - name: base-dn
+      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
     description: Adds an Active Directory user or computer to a group.
-    execution: false
-    name: ad-add-to-group
-  - arguments:
-    - default: false
-      description: "The name of the user to remove from the group. If this argument\
-        \ is not specified, the computer name argument must be specified.\t"
-      isArray: false
-      name: username
-      required: false
-      secret: false
-    - default: false
-      description: The name of the computer to remove from the group. If this argument
-        is not specified, the username argument must be specified.
-      isArray: false
-      name: computer-name
-      required: false
-      secret: false
-    - default: false
+  - name: ad-remove-from-group
+    arguments:
+    - name: username
+      description: "The name of the user to remove from the group. If this argument is not specified,
+        the computer name argument must be specified.\t"
+    - name: computer-name
+      description: The name of the computer to remove from the group. If this argument is not specified,
+        the username argument must be specified.
+    - name: group-cn
+      required: true
       description: "The name of the group to remove the user from\t"
-      isArray: false
-      name: group-cn
-      required: true
-      secret: false
-    - default: false
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
+    - name: base-dn
+      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
     description: Removes an Active Directory user or computer from a group.
-    execution: false
-    name: ad-remove-from-group
-  - arguments:
-    - default: false
-      description: "The username of the account to update (sAMAccountName)\t"
-      isArray: false
-      name: username
+  - name: ad-update-user
+    arguments:
+    - name: username
       required: true
-      secret: false
-    - default: false
+      description: "The username of the account to update (sAMAccountName)\t"
+    - name: attribute-name
+      required: true
       description: The name of the attribute to modify (e.g., sn, displayName, mail,
         etc.)
-      isArray: false
-      name: attribute-name
+    - name: attribute-value
       required: true
-      secret: false
-    - default: false
       description: "The value the attribute should be changed to\t"
-      isArray: false
-      name: attribute-value
-      required: true
-      secret: false
-    - default: false
-      description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
     description: Updates attributes of an existing Active Directory user.
-    execution: false
-    name: ad-update-user
-  - arguments:
-    - default: false
+  - name: ad-delete-user
+    arguments:
+    - name: user-dn
+      required: true
       description: The DN of the user to delete
-      isArray: false
-      name: user-dn
-      required: true
-      secret: false
-    deprecated: false
     description: Deletes an Active Directory user.
-    execution: false
-    name: ad-delete-user
-  - arguments:
-    - default: false
-      description: "The contact's DN\t"
-      isArray: false
-      name: contact-dn
+  - name: ad-create-contact
+    arguments:
+    - name: contact-dn
       required: true
-      secret: false
-    - default: false
+      description: "The contact's DN\t"
+    - name: display-name
       description: "The contact's display name\t"
-      isArray: false
-      name: display-name
-      required: false
-      secret: false
-    - default: false
+    - name: description
       description: Short description of the contact
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - default: false
+    - name: email
       description: The contact's email address
-      isArray: false
-      name: email
-      required: false
-      secret: false
-    - default: false
+    - name: telephone-number
       description: The contact's telephone number
-      isArray: false
-      name: telephone-number
-      required: false
-      secret: false
-    - default: false
+    - name: custom-attributes
       description: Use to set basic or custom attributes of the contact object, e.g.,
         custom-attributes="{"notes":"some note about the contact","company":"some
         company"}"
-      isArray: false
-      name: custom-attributes
-      required: false
-      secret: false
-    - default: false
+    - name: title
       description: The contact's job title
-      isArray: false
-      name: title
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an Active Directory contact.
-    execution: false
-    name: ad-create-contact
-  - arguments:
-    - default: false
+  - name: ad-update-contact
+    arguments:
+    - name: contact-dn
+      required: true
       description: "The contact's DN\t"
-      isArray: false
-      name: contact-dn
+    - name: attribute-name
       required: true
-      secret: false
-    - default: false
       description: "The attribute name to update\t"
-      isArray: false
-      name: attribute-name
+    - name: attribute-value
       required: true
-      secret: false
-    - default: false
       description: "The attribute value to be updated\t"
-      isArray: false
-      name: attribute-value
-      required: true
-      secret: false
-    deprecated: false
     description: Updates attributes of an existing Active Directory contact.
-    execution: false
-    name: ad-update-contact
-  - arguments:
-    - default: false
+  - name: ad-disable-account
+    arguments:
+    - name: username
+      required: true
       description: "The username of the account to disable (sAMAccountName)\t"
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    - default: false
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
+    - name: base-dn
+      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
     description: Disables an Active Directory user account.
-    execution: false
-    name: ad-disable-account
-  - arguments:
-    - default: false
+  - name: ad-enable-account
+    arguments:
+    - name: username
+      required: true
       description: "The username of the account to enable (sAMAccountName)\t"
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    - default: false
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
+    - name: base-dn
+      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
     description: Enables a previously disabled Active Directory account.
-    execution: false
-    name: ad-enable-account
-  - arguments:
-    - default: false
+  - name: ad-unlock-account
+    arguments:
+    - name: username
+      required: true
       description: "The username of the account to unlock (sAMAccountName)\t"
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    - default: false
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured
-        for the instance will be used.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
+    - name: base-dn
+      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
+        will be used.
     description: Unlocks a previously locked Active Directory user account.
-    execution: false
-    name: ad-unlock-account
-  - arguments:
-    - default: false
+  - name: ad-set-new-password
+    arguments:
+    - name: username
+      required: true
       description: "The username of the account to be disabled (sAMAccountName)\t"
-      isArray: false
-      name: username
+    - name: password
       required: true
-      secret: false
-    - default: false
       description: "The password to set for the user\t"
-      isArray: false
-      name: password
-      required: true
-      secret: false
-    - default: false
+    - name: base-dn
       description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
         will be used as default.
-      isArray: false
-      name: base-dn
-      required: false
-      secret: false
-    deprecated: false
-    description: Sets a new password for an Active Directory user. This command requires
-      a secure connection (SSL,TLS).
-    execution: false
-    name: ad-set-new-password
-  - arguments:
-    - default: false
-      description: "The computer name\t"
-      isArray: false
-      name: computer-name
+    description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
+  - name: ad-modify-computer-ou
+    arguments:
+    - name: computer-name
       required: true
-      secret: false
-    - default: false
-      description: Superior DN, e.g., OU=computers,DC=domain,DC=com (The specified
-        domain must be the same as the current computer domain)
-      isArray: false
-      name: full-superior-dn
-      required: false
-      secret: false
-    deprecated: false
+      description: "The computer name\t"
+    - name: full-superior-dn
+      description: Superior DN, e.g., OU=computers,DC=domain,DC=com (The specified domain
+        must be the same as the current computer domain)
     description: Modifies the computer organizational unit within a domain.
-    execution: false
-    name: ad-modify-computer-ou
-  - arguments:
-    - default: true
+  - name: ad-get-user
+    arguments:
+    - name: dn
+      default: true
       description: Query by the user's Active Directory Distinguished Name
-      isArray: false
-      name: dn
-      required: false
-      secret: false
-    - default: false
+    - name: name
       description: Query by the user's name
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
+    - name: attributes
       description: Include these AD attributes of the resulting objects in addition
         to the default attributes
-      isArray: false
-      name: attributes
-      required: false
-      secret: false
-    - default: false
+    - name: custom-field-type
       description: Query users by this custom field type
-      isArray: false
-      name: custom-field-type
-      required: false
-      secret: false
-    - default: false
-      description: Query users by this custom field data (relevant only if the `custom-field-type`
-        argument is provided)
-      isArray: false
-      name: custom-field-data
-      required: false
-      secret: false
-    - default: false
+    - name: custom-field-data
+      description: Query users by this custom field data (relevant only if the `custom-field-type` argument
+        is provided)
+    - name: username
       description: Query users by the samAccountName attribute
-      isArray: false
-      name: username
-      required: false
-      secret: false
-    - default: false
+    - name: limit
       description: Maximum number of objects to return (default is 20)
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
+    - name: email
       description: Query by the user's email address
-      isArray: false
-      name: email
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Include verbose translation for UserAccountControl flags
-      isArray: false
-      name: user-account-control-out
+    - name: user-account-control-out
+      auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves detailed information about a user account. The user can
-      be specified by name, email address, or as an Active Directory Distinguished
-      Name (DN). If no filter is specified, all users are returned.
-    execution: false
-    name: ad-get-user
+      - "true"
+      - "false"
+      description: Include verbose translation for UserAccountControl flags
+      defaultValue: "false"
     outputs:
-    - contextPath: ActiveDirectory.Users.dn
+    - contextPath: 'ActiveDirectory.Users.dn'
       description: The user's distinguished name
       type: string
-    - contextPath: ActiveDirectory.Users.displayName
+    - contextPath: 'ActiveDirectory.Users.displayName'
       description: The user's display name
       type: string
-    - contextPath: ActiveDirectory.Users.name
+    - contextPath: 'ActiveDirectory.Users.name'
       description: The user's common name
       type: string
-    - contextPath: ActiveDirectory.Users.sAMAccountName
+    - contextPath: 'ActiveDirectory.Users.sAMAccountName'
       description: The user's sAMAccountName
       type: string
-    - contextPath: ActiveDirectory.Users.userAccountControl
+    - contextPath: 'ActiveDirectory.Users.userAccountControl'
       description: The user's account control flag
       type: number
-    - contextPath: ActiveDirectory.Users.mail
+    - contextPath: 'ActiveDirectory.Users.mail'
       description: The user's email address
       type: string
-    - contextPath: ActiveDirectory.Users.manager
+    - contextPath: 'ActiveDirectory.Users.manager'
       description: The user's manager
       type: string
-    - contextPath: ActiveDirectory.Users.memberOf
+    - contextPath: 'ActiveDirectory.Users.memberOf'
       description: Groups the user is member of
       type: string
-    - contextPath: Account.DisplayName
+    - contextPath: 'Account.DisplayName'
       description: The user's display name
       type: string
-    - contextPath: Account.Groups
+    - contextPath: 'Account.Groups'
       description: Groups the user is member of
       type: string
-    - contextPath: Account.Manager
-      description: The user's manager
+    - contextPath: 'Account.Manager'
+      description: "The user's manager"
       type: string
-    - contextPath: Account.ID
+    - contextPath: 'Account.ID'
       description: The user's distinguished name
       type: string
-    - contextPath: Account.Username
+    - contextPath: 'Account.Username'
       description: The user's samAccountName
       type: string
-    - contextPath: Account.Email
+    - contextPath: 'Account.Email'
       description: The user's email address
       type: string
-  - arguments:
-    - default: false
+    description: Retrieves detailed information about a user account. The user can
+      be specified by name, email address, or as an Active Directory Distinguished Name (DN).
+      If no filter is specified, all users are returned.
+  - name: ad-get-computer
+    arguments:
+    - name: dn
       description: The computer's DN
-      isArray: false
-      name: dn
-      required: false
-      secret: false
-    - default: false
+    - name: name
       description: Name of the computer to get information for
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
+    - name: attributes
       description: Include these AD attributes of the resulting objects in addition
         to the default attributes
-      isArray: false
-      name: attributes
-      required: false
-      secret: false
-    - default: false
-      description: Search computers by this custom field data (relevant only if the
-        `customFieldType` argument is provided)
-      isArray: false
-      name: custom-field-data
-      required: false
-      secret: false
-    - default: false
+    - name: custom-field-data
+      description: Search computers by this custom field data (relevant only if the `customFieldType` argument
+        is provided)
+    - name: custom-field-type
       description: Search computer by this custom field type
-      isArray: false
-      name: custom-field-type
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves detailed information about a computer account. The computer
-      can be specified by name, email address, or as an Active Directory Distinguished
-      Name (DN). If no filters are provided, all computers are returned.
-    execution: false
-    name: ad-get-computer
     outputs:
-    - contextPath: ActiveDirectory.Computers.dn
+    - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name
-      type: Unknown
-    - contextPath: ActiveDirectory.Computers.memberOf
+    - contextPath: 'ActiveDirectory.Computers.memberOf'
       description: Groups the computer is listed as a member
-      type: Unknown
-    - contextPath: ActiveDirectory.Computers.name
+    - contextPath: 'ActiveDirectory.Computers.name'
       description: The computer name
-      type: Unknown
-    - contextPath: Endpoint.ID
+    - contextPath: 'Endpoint.ID'
       description: The computer DN
-      type: Unknown
-    - contextPath: Endpoint.Hostname
+    - contextPath: 'Endpoint.Hostname'
       description: The computer name
-      type: Unknown
-    - contextPath: Endpoint.Groups
+    - contextPath: 'Endpoint.Groups'
       description: Groups the computer is listed as a member of
-      type: Unknown
-  - arguments:
-    - default: false
-      description: Group's Active Directory Distinguished Name
-      isArray: false
-      name: group-dn
+    description: 'Retrieves detailed information about a computer account. The computer
+      can be specified by name, email address, or as an Active Directory Distinguished Name
+      (DN). If no filters are provided, all computers are returned. '
+  - name: ad-get-group-members
+    arguments:
+    - name: group-dn
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: person
-      description: Which members type to query
-      isArray: false
-      name: member-type
+      description: "Group's Active Directory Distinguished Name"
+    - name: member-type
+      required: true
+      auto: PREDEFINED
       predefined:
       - person
       - computer
-      required: true
-      secret: false
-    - default: false
-      description: CSV list of attributes to include in the results, in addition to
-        the default attributes
-      isArray: false
-      name: attributes
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves the list of users or computers that are members of the
-      specified group
-    execution: false
-    name: ad-get-group-members
+      description: Which members type to query
+      defaultValue: person
+    - name: attributes
+      description: CSV list of attributes to include in the results, in addition to the
+        default attributes
     outputs:
-    - contextPath: ActiveDirectory.Groups.dn
+    - contextPath: 'ActiveDirectory.Groups.dn'
       description: The group DN
       type: string
-    - contextPath: ActiveDirectory.Groups.members.dn
+    - contextPath: 'ActiveDirectory.Groups.members.dn'
       description: The group member DN
       type: string
-    - contextPath: ActiveDirectory.Groups.members.category
+    - contextPath: 'ActiveDirectory.Groups.members.category'
       description: Person/computer
       type: string
-  dockerimage: demisto/ldap:1.0.0.75
-  isfetch: false
+    description: Retrieves the list of users or computers that are members of the
+      specified group
   runonce: false
-  script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
-    ''' IMPORTS '''
-
-    # TODO: ADD crowdstrike-get-behavior command
-
-    import json
-    import requests
-    from requests.auth import HTTPBasicAuth
-    import base64
-
-    # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    ''' GLOBALS/PARAMS '''
-
-    USERNAME = demisto.params().get('credentials').get('identifier')
-    PASSWORD = demisto.params().get('credentials').get('password')
-    # Remove trailing slash to prevent wrong URL path to service
-    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-        demisto.params()['url']
-    # Should we use SSL
-    USE_SSL = not demisto.params().get('insecure', False)
-    # How many time before the first fetch to retrieve incidents
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-    # Headers to be sent in requests
-    HEADERS = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Basic {}'.format(base64.b64encode('{0}:{1}'.format(USERNAME, PASSWORD).encode('utf-8')).decode())
-    }
-    # Note: True life time is actually 30 mins
-    TOKEN_LIFE_TIME = 28
-    # Remove proxy if not set to true in params
-    if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
-    ''' KEY DICTIONARY '''
-
-    DETECTIONS_BASE_KEY_MAP = {
-        'device.hostname': 'System',
-        'device.cid': 'CustomerID',
-        'hostinfo.domain': 'MachineDomain',
-        'detection_id': 'ID',
-        'created_timestamp': 'ProcessStartTime'
-    }
-
-    DETECTIONS_BEHAVIORS_KEY_MAP = {
-        'filename': 'FileName',
-        'scenario': 'Scenario',
-        'md5': 'MD5',
-        'sha256': 'SHA256',
-        'ioc_type': 'IOCType',
-        'ioc_value': 'IOCValue',
-        'cmdline': 'CommandLine',
-        'user_name': 'UserName',
-        'behavior_id': 'ID',
-    }
-
-    SEARCH_IOC_KEY_MAP = {
-        'type': 'Type',
-        'value': 'Value',
-        'policy': 'Policy',
-        'source': 'Source',
-        'share_level': 'ShareLevel',
-        'expiration_timestamp': 'Expiration',
-        'description': 'Description',
-        'created_timestamp': 'CreatedTime',
-        'created_by': 'CreatedBy',
-        'modified_timestamp': 'ModifiedTime',
-        'modified_by': 'ModifiedBy'
-    }
-
-    SEARCH_DEVICE_KEY_MAP = {
-        'device_id': 'ID',
-        'external_ip': 'ExternalIP',
-        'local_ip': 'LocalIP',
-        'hostname': 'Hostname',
-        'os_version': 'OS',
-        'mac_address': 'MacAddress',
-        'first_seen': 'FirstSeen',
-        'last_seen': 'LastSeen'
-    }  # TODO: Add PolicyType via a function - key is policies
-
-    ''' SPLIT KEY DICTIONARY '''
-
-    #   Pattern: {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
-    DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
-        {
-            'Path': 'parent_details.parent_process_graph_id',
-            'NewKey': 'SensorID',
-            'Delim': ':',
-            'Index': 1
-        },
-        {
-            'Path': 'parent_details.parent_process_graph_id',
-            'NewKey': 'ParentProcessID',
-            'Delim': ':',
-            'Index': 2
-        },
-        {
-            'Path': 'triggering_process_graph_id',
-            'NewKey': 'ProcessID',
-            'Delim': ':',
-            'Index': 2
-        },
-    ]
-
-    ''' HELPER FUNCTIONS '''
-
-
-    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
-        """
-            A wrapper for requests lib to send our requests and handle requests and responses better.
-
-            :type method: ``str``
-            :param method: HTTP method for the request.
-
-            :type url_suffix: ``str``
-            :param url_suffix: The suffix of the URL (endpoint)
-
-            :type params: ``dict``
-            :param params: The URL params to be passed.
-
-            :type data: ``str``
-            :param data: The body data of the request.
-
-            :param headers:
-            :param safe:
-            :return:
-        """
-        url = SERVER + url_suffix
-        demisto.info("\n\n####SENDING URL: {}\n".format(url))
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            params=params,
-            data=data,
-            headers=headers,
-        )
-        # Handle error responses gracefully
-        demisto.info('\n\n#### Request: {}\n'.format(str(data)))
-        demisto.info('\n\n#### Response: {}\n'.format(str(res.status_code)))
-        if res.status_code not in {200, 201}:
-            if safe:
-                return None
-            return_error('Error in API call [{0}] - {1}'.format(res.status_code, res.reason))
-        return res.json()
-
-
-    def create_entry_object(contents='', ec=None, hr=''):
-        return {
-            'Type': entryTypes['note'],
-            'Contents': contents,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': hr,
-            'EntryContext': ec
-        }
-
-
-    def detection_to_incident(detection):
-        incident = {
-            'name': 'Detection ID: ' + str(detection.get('detection_id')),
-            'occurred': str(detection.get('first_behavior')),
-            'rawJSON': json.dumps(detection),
-            'severity': severity_string_to_int(detection.get('max_severity_displayname'))
-        }
-        return incident
-
-
-    def severity_string_to_int(severity):
-        if severity in ('Critical', 'High'):
-            return 3
-        elif severity in ('Medium', 'Low'):
-            return 2
-        return 0
-
-
-    def get_trasnformed_dict(old_dict, transformation_dict):
-        """
-        Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
-        """
-        new_dict = {}
-        for k in list(old_dict.keys()):
-            if k in transformation_dict:
-                new_dict[transformation_dict[k]] = old_dict[k]
-        return new_dict
-
-
-    def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
-        """
-        Extracts new values out of old_dict using a json structure of:
-        {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
-        """
-        new_dict = {}
-        for trans_dict in transformation_dict_arr:
-            try:
-                val = demisto.get(old_dict, trans_dict['Path'])
-                if 'split' in dir(val):
-                    i = trans_dict['Index']
-                    new_dict[trans_dict['NewKey']] = val.split(trans_dict['Delim'])[i]
-            except:
-                LOG('Error with: {}'.format(trans_dict))
-        return new_dict
-
-
-    ''' COMMAND SPECIFIC FUNCTIONS '''
-
-
-    def get_token():
-        now = datetime.now()
-        ctx = demisto.getIntegrationContext()
-        if ctx:
-            time_delta = now - datetime.fromtimestamp(ctx.get('time'))
-            passed_mins = time_delta.seconds / 60
-            demisto.info('\n\n##### PASSED MINS: {}\n\n'.format(passed_mins))
-            auth_token = get_token_request() if passed_mins >= TOKEN_LIFE_TIME else ctx.get('auth_token')
-        else:
-            auth_token = get_token_request()
-            demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
-        HEADERS['Authorization'] = 'Bearer {}'.format(auth_token)
-        return auth_token
-
-
-    def get_token_request():
-        body = {
-            'client_id': USERNAME,
-            'client_secret': PASSWORD
-        }
-        headers = {
-            'Authorization': HEADERS['Authorization']
-        }
-        token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True)
-        if not token_res:
-            err_msg = 'Authorization Error: User has no authorization to create a token.'
-            if demisto.command() != 'fetch-incidents':
-                return_error(err_msg)
-            raise Exception(err_msg)
-        return token_res.get('access_token')
-
-
-    def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
-        endpoint_url = '/detects/queries/detects/v1'
-        params = {
-            'sort': 'first_behavior.asc'
-        }
-        if filter_arg:
-            params['filter'] = filter_arg
-        elif behavior_id:
-            params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
-        elif last_behavior_time:
-            params['filter'] = "first_behavior:>'{0}'".format(last_behavior_time)
-
-        response = http_request('GET', endpoint_url, params)
-        return response
-
-
-    def get_detections_entities(detections_ids):
-        ids_json = {'ids': detections_ids}
-        if detections_ids:
-            response = http_request(
-                'POST',
-                '/detects/entities/summaries/GET/v1',
-                data=json.dumps(ids_json)
-            )
-            return response
-        return detections_ids
-
-
-    def create_ioc():
-        args = demisto.args()
-        input_args = {}
-        # req args:
-        input_args['type'] = args['ioc_type']
-        input_args['value'] = args['ioc_value']
-        input_args['policy'] = args['policy']
-        # opt args:
-        input_args['expiration_days'] = args.get('expiration_days')
-        input_args['source'] = args.get('source')
-        input_args['description'] = args.get('description')
-
-        payload = {k: str(v) for k, v in input_args.items() if v}
-        headers = {'Authorization': HEADERS['Authorization']}
-        return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
-
-
-    def search_iocs():
-        args = demisto.args()
-        ids = args.get('ids')
-        if not ids:
-            search_args = {
-                'types': str(args.get('ioc_types', '')).split(','),
-                'values': str(args.get('ioc_values', '')).split(','),
-                'policies': str(args.get('policy', '')),
-                'sources': str(args.get('sources', '')).split(','),
-                'from.expiration_timestamp': str(args.get('expiration_from', '')),
-                'to.expiration_timestamp': str(args.get('expiration_to', '')),
-                'limit': str(args.get('limit', 50))
-            }
-            payload = {}
-            for k, arg in search_args.items():
-                if type(arg) is list:
-                    if arg[0]:
-                        payload[k] = arg
-                elif arg:
-                    payload[k] = arg
-            ids = http_request('GET', '/indicators/queries/iocs/v1', payload).get('resources')
-            if not ids:
-                return None
-        else:
-            ids = str(ids)
-        payload = {
-            'ids': ids
-        }
-        return http_request('GET', '/indicators/entities/iocs/v1', params=payload)
-
-
-    def enrich_ioc_dict_with_ids(ioc_dict):
-        for ioc in ioc_dict:
-            ioc['ID'] = '{0}:{1}'.format(ioc.get('Type'), ioc.get('Value'))
-
-
-    def delete_ioc():
-        ids = str(demisto.args().get('ids'))
-        payload = {
-            'ids': ids
-        }
-        return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
-
-
-    def update_iocs():
-        args = demisto.args()
-        input_args = {
-            'ids': args.get('ids'),
-            'policy': args.get('policy', ''),
-            'expiration_days': args.get('expiration_days', ''),
-            'source': args.get('source'),
-            'description': args.get('description')
-        }
-        payload = {k: str(v) for k, v in input_args.items() if v}
-        headers = {'Authorization': HEADERS['Authorization']}
-        return http_request('PATCH', '/indicators/entities/iocs/v1', params=payload, headers=headers)
-
-
-    def search_device():
-        """
-        Searches for devices using the argument provided by the command execution. Returns empty result of no device was found.
-        """
-        args = demisto.args()
-        input_arg_dict = {
-            'device_id': str(args.get('ids', '')).split(','),
-            'status': str(args.get('status', '')).split(','),
-            'hostname': str(args.get('hostname', '')).split(','),
-            'platform_name': str(args.get('platform_name', '')).split(','),
-            'site_name': str(args.get('site_name', '')).split(',')
-        }
-        url_filter = ''.format(str(args.get('filter', '')))
-        for k, arg in input_arg_dict.items():
-            if arg:
-                if type(arg) is list:
-                    arg_filter = ''
-                    for arg_elem in arg:
-                        if arg_elem:
-                            arg_filter = "{0}:'{1}'".format('{0},{1}'.format(arg_filter, k) if arg_filter else k, arg_elem)
-                    if arg_filter:
-                        url_filter = "{0}{1}".format(url_filter + '+' if url_filter else '', arg_filter)
-                else:
-                    # All args should be a list. this is a fallback
-                    url_filter = "{0}+{1}:'{2}'".format(url_filter, k, arg)
-        raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
-        device_ids = raw_res.get('resources')
-        if not device_ids:
-            return None
-        return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids})
-
-
-    def behavior_to_entry_context(behavior):
-        raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-        raw_entry.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
-        return raw_entry
-
-
-    def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
-        payload = {
-            'ids': ids
-        }
-        if status:
-            payload['status'] = status
-        if assigned_to_uuid:
-            payload['assigned_to_uuid'] = assigned_to_uuid
-        if show_in_ui:
-            payload['show_in_ui'] = show_in_ui
-        return http_request('PATCH', '/detects/entities/detects/v2', data=json.dumps(payload))
-
-
-    ''' COMMANDS FUNCTIONS '''
-
-
-    def fetch_incidents():
-        last_run = demisto.getLastRun()
-        # Get the last fetch time, if exists
-        last_fetch = last_run.get('first_behavior_time')
-
-        # Handle first time fetch, fetch incidents retroactively
-        if last_fetch is None:
-            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
-        last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
-        fetch_query = demisto.params().get('fetch_query')
-        if fetch_query:
-            fetch_query = "first_behavior:>'{0}'+{1}".format(last_fetch, fetch_query)
-            detections_ids = demisto.get(get_detections(filter_arg=fetch_query), 'resources')
-        else:
-            detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
-
-        incidents = []
-        raw_res = get_detections_entities(detections_ids)
-        if "resources" in raw_res:
-            for detection in demisto.get(raw_res, "resources"):
-                incident = detection_to_incident(detection)
-                incident_date = incident['occurred']
-                incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
-                # Update last run and add incident if the incident is newer than last fetch
-                if incident_date_timestamp > last_fetch_timestamp:
-                    last_fetch = incident_date
-                incidents.append(incident)
-
-        demisto.setLastRun({'first_behavior_time': last_fetch})
-        return incidents
-
-
-    def create_ioc_command():
-        raw_res = create_ioc()
-        return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
-
-
-    def search_iocs_command():
-        raw_res = search_iocs()
-        if not raw_res:
-            return create_entry_object(hr='Could not find any Indicators of Compromise.')
-        iocs = raw_res.get('resources')
-        ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
-        enrich_ioc_dict_with_ids(ec)
-        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
-                                   hr=tableToMarkdown('Indicators of Compromise', ec))
-
-
-    def delete_iocs_command():
-        raw_res = delete_ioc()
-        ids = demisto.args().get('ids')
-        return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
-
-
-    def update_iocs_command():
-        raw_res = update_iocs()
-        ids = demisto.args().get('ids')
-        return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
-
-
-    def search_device_command():
-        raw_res = search_device()
-        if not raw_res:
-            return create_entry_object(hr='Could not find any devices.')
-        devices = raw_res.get('resources')
-        entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
-        hr = tableToMarkdown('Devices', entries, headers=headers)
-        ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
-        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
-
-
-    def get_behavior_command():
-        behavior_id = demisto.args().get('behavior_id')
-        detections_ids = demisto.get(get_detections(behavior_id=behavior_id), 'resources')
-        raw_res = get_detections_entities(detections_ids)
-        entries = []
-        if "resources" in raw_res:
-            for resource in demisto.get(raw_res, "resources"):
-                for behavior in demisto.get(resource, 'behaviors'):
-                    entries.append(behavior_to_entry_context(behavior))
-        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries)
-        # no dt since behavior vary by more than their ID
-        ec = {'CrowdStrike.Behavior': entries}
-        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
-
-
-    def search_detections_command():
-        d_args = demisto.args()
-        detections_ids = argToList(d_args.get('ids'))
-        if not detections_ids:
-            filter_arg = d_args.get('filter')
-            if not filter_arg:
-                return_error('Command Error: Please provide at least one argument.')
-            detections_ids = get_detections(filter_arg=filter_arg).get('resources')
-        raw_res = get_detections_entities(detections_ids)
-        entries = []
-        headers = ['ID', 'System', 'ProcessStartTime', 'CustomerID']
-        if "resources" in raw_res:
-            for detection in demisto.get(raw_res, "resources"):
-                detection_entry = {}
-                for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
-                    detection_entry[new_key] = demisto.get(detection, path)
-                behaviors = []
-                for behavior in demisto.get(detection, 'behaviors'):
-                    behaviors.append(behavior_to_entry_context(behavior))
-                detection_entry['Behavior'] = behaviors
-                entries.append(detection_entry)
-        hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True)
-        ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
-        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
-
-
-    def resolve_detection_command():
-        args = demisto.args()
-        ids = str(argToList(args.get('ids')))[1:-1]
-        status = args.get('status')
-        assigned_to_uuid = args.get('assigned_to_uuid')
-        show_in_ui = args.get('show_in_ui')
-        raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui)
-        args.pop('ids')
-        hr = "Detection {0} was updated\n".format(ids)
-        hr += 'With the following values:\n'
-        for k, arg in args.items():
-            hr += '\t{0}:{1}\n'.format(k, arg)
-        return create_entry_object(contents=raw_res, hr=hr)
-
-
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-    LOG('Command being called is {}'.format(demisto.command()))
-
-    TOKEN = get_token()
-
-    if demisto.command() == 'test-module':
-        # if not set properly will fail when trying to get_token, so if reached here then test passed
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
-    elif demisto.command() == 'crowdstrike-search-device':
-        demisto.results(search_device_command())
-    elif demisto.command() == 'crowdstrike-get-behavior':
-        demisto.results(get_behavior_command())
-    elif demisto.command() == 'crowdstrike-search-detections':
-        demisto.results(search_detections_command())
-    elif demisto.command() == 'crowdstrike-resolve-detection':
-        demisto.results(resolve_detection_command())
-  type: python
+  dockerimage: demisto/ldap:1.0.0.75
+releaseNotes: "-"
 tests:
-- Active Directory Test
-releaseNotes: Added new argument 'context-output' to command 'ad-search' - If set
-  to no, will not output results. Improved functionality of 'size-limit' argument
-  in command 'ad-search'
+  - Active Directory Test
+releaseNotes: "Added new argument 'context-output' to command 'ad-search' - If set to no, will not output results.
+          Improved functionality of 'size-limit' argument in command 'ad-search'"

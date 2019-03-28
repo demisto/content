@@ -1,6 +1,7 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
+fromversion: 4.1.0
 description: "A test playbook for extracting indicators from EML files.\nIndicators:
   \n- Email addresses"
 starttaskid: "0"
@@ -531,3 +532,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "update 'Extract Indicators From File - test' playbook' version"
