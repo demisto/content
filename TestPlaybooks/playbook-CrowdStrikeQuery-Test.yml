@@ -62,7 +62,7 @@ tasks:
       id: 720839bc-e262-4db7-8a1a-f3b161e32158
       version: -1
       name: Get multiple detections by IDs
-      script: '|||crowdstrike-search-detection'
+      script: '|||cs-falcon-search-detection'
       type: regular
       iscommand: true
       brand: ""
@@ -130,7 +130,7 @@ tasks:
       id: 630b5708-38f4-4f9d-8dc6-32e19f4aca50
       version: -1
       name: Get behavior
-      script: '|||crowdstrike-get-behavior'
+      script: '|||cs-falcon-get-behavior'
       type: regular
       iscommand: true
       brand: ""
@@ -195,7 +195,7 @@ tasks:
       id: b3915a44-5892-42dd-8882-efc242e878c5
       version: -1
       name: Get multiple devices
-      script: '|||crowdstrike-search-device'
+      script: '|||cs-falcon-search-device'
       type: regular
       iscommand: true
       brand: ""
