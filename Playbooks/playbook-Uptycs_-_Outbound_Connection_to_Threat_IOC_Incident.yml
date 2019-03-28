@@ -28,12 +28,13 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 97dcd290-c96b-4ece-8fa6-4672eeff90a2
+    taskid: 676b7848-7c2e-45e4-83fd-aed49fd243b3
     type: regular
     task:
-      id: 97dcd290-c96b-4ece-8fa6-4672eeff90a2
+      id: 676b7848-7c2e-45e4-83fd-aed49fd243b3
       version: -1
       name: Get Bad IP alert
+      description: Retrieve more information about the alert.
       script: '|||uptycs-get-alerts'
       type: regular
       iscommand: true
@@ -58,6 +59,7 @@ tasks:
       limit: {}
       start_window: {}
       time_ago: {}
+      value: {}
     separatecontext: false
     view: |-
       {
@@ -69,12 +71,13 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: caa2c95b-deac-49d2-81e8-32beee6216ba
+    taskid: 5e633601-891b-4128-864f-ae29047b367f
     type: regular
     task:
-      id: caa2c95b-deac-49d2-81e8-32beee6216ba
+      id: 5e633601-891b-4128-864f-ae29047b367f
       version: -1
       name: Get process Info
+      description: Get information about the process which opened the connection.
       script: '|||uptycs-get-process-event-information'
       type: regular
       iscommand: true
@@ -101,12 +104,14 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: ec80844b-ed08-4e4a-899f-19d8941778a3
+    taskid: ade31a6b-642a-4a95-8fc4-0cd25390eefd
     type: regular
     task:
-      id: ec80844b-ed08-4e4a-899f-19d8941778a3
+      id: ade31a6b-642a-4a95-8fc4-0cd25390eefd
       version: -1
       name: Get child processes
+      description: Get information about the child processes which were spawned from
+        the parent process of the process which opened the connection.
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true
@@ -135,12 +140,13 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 608934d1-00b2-4c69-8b80-6ecae546e091
+    taskid: b5ec9d1b-6ad1-47e1-85dd-9f25b4355535
     type: regular
     task:
-      id: 608934d1-00b2-4c69-8b80-6ecae546e091
+      id: b5ec9d1b-6ad1-47e1-85dd-9f25b4355535
       version: -1
       name: Get information about the connection that was opened
+      description: Get information about the connection which was opened.
       script: '|||uptycs-get-socket-events'
       type: regular
       iscommand: true
@@ -172,12 +178,14 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 30de4492-a98a-4230-8d07-ae646d986543
+    taskid: 77b13754-0fdf-463d-864b-5d79ef7532a2
     type: regular
     task:
-      id: 30de4492-a98a-4230-8d07-ae646d986543
+      id: 77b13754-0fdf-463d-864b-5d79ef7532a2
       version: -1
       name: Get parent event info
+      description: Get information about the parent process of the process which opened
+        the connection.
       script: '|||uptycs-get-parent-event-information'
       type: regular
       iscommand: true
@@ -237,12 +245,14 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 982e3b75-b807-4a6a-8a4e-076cf08341e3
+    taskid: 32f806a1-a7c2-49be-8c1e-855936575633
     type: regular
     task:
-      id: 982e3b75-b807-4a6a-8a4e-076cf08341e3
+      id: 32f806a1-a7c2-49be-8c1e-855936575633
       version: -1
       name: Get parent info
+      description: Get information about the parent process of the process which opened
+        the connection.
       script: '|||uptycs-get-parent-information'
       type: regular
       iscommand: true
@@ -269,12 +279,14 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: 73d8a54b-20df-499b-8258-13897ecde6df
+    taskid: 64556689-82d5-47d2-81ce-13015465af66
     type: regular
     task:
-      id: 73d8a54b-20df-499b-8258-13897ecde6df
+      id: 64556689-82d5-47d2-81ce-13015465af66
       version: -1
       name: Get child processes
+      description: Get information about the child processes which were spawned from
+        the parent process of the process which opened the connection.
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true

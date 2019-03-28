@@ -365,8 +365,8 @@ script:
             'os_flavor', 'os', 'last_enrolled_at', 'status', 'host_name',
             'os_version', 'osquery_version', 'last_activity_at', 'upt_asset_id',
             'created_at']
-
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -410,9 +410,9 @@ script:
             start_window = demisto.args().get('start_window')
             end_window = demisto.args().get('end_window')
 
-            if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+            if time_ago!=None or (start_window!=None or end_window!=None):
                 begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
-                query = apply_datetime_cuts(query, "upt_time", begin, end)
+                query = apply_datetime_cuts(query, "alert_time", begin, end)
 
             query = ("%s ORDER BY a.alert_time DESC" % query)
 
@@ -434,19 +434,21 @@ script:
             'alert_time', 'updated_at', 'metadata', 'asset', 'status', 'upt_asset_id',
             'created_at', 'description', 'severity', 'value']
 
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
-        for index in range(len(context)):
-            if bool(json.loads(context[index].get('metadata')).get('pid')):
-                context[index]['pid'] = json.loads(context[index].get('metadata')).get('pid')
-            else:
-                context[index]['pid'] = 'Not applicable or unknown'
-            if bool(json.loads(context[index].get('metadata')).get('indicatorId')):
-                context[index]['threat_indicator_id'] = json.loads(context[index].get('metadata')).get('indicatorId')
-                context[index]['threat_source_name'] = json.loads(context[index].get('metadata')).get('indicatorSummary').get('threatSourceName')
-            else:
-                context[index]['threat_indicator_id'] = 'No threat indicator for this alert'
-                context[index]['threat_source_name'] = 'No threat source for this alert'
+        if context != None:
+            for index in range(len(context)):
+                if bool(json.loads(context[index].get('metadata')).get('pid')):
+                    context[index]['pid'] = json.loads(context[index].get('metadata')).get('pid')
+                else:
+                    context[index]['pid'] = 'Not applicable or unknown'
+                if bool(json.loads(context[index].get('metadata')).get('indicatorId')):
+                    context[index]['threat_indicator_id'] = json.loads(context[index].get('metadata')).get('indicatorId')
+                    context[index]['threat_source_name'] = json.loads(context[index].get('metadata')).get('indicatorSummary').get('threatSourceName')
+                else:
+                    context[index]['threat_indicator_id'] = 'No threat indicator for this alert'
+                    context[index]['threat_source_name'] = 'No threat source for this alert'
 
         human_readable = tableToMarkdown('Uptycs Alerts: ',
             context,
@@ -484,9 +486,9 @@ script:
         start_window = demisto.args().get('start_window')
         end_window = demisto.args().get('end_window')
 
-        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+        if time_ago!=None or (start_window!=None or end_window!=None):
             begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
-            query = apply_datetime_cuts(query, "upt_time", begin, end)
+            query = apply_datetime_cuts(query, "event_time", begin, end)
 
         query = ("%s ORDER BY a.event_time DESC" % query)
 
@@ -508,7 +510,8 @@ script:
             'event_time', 'updated_at', 'metadata', 'asset', 'status', 'id',
             'created_at', 'description', 'severity', 'value']
 
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         human_readable = tableToMarkdown('Uptycs Events',
             query_results.get('items'),
@@ -624,8 +627,8 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['upt_hostname', 'pid', 'path', 'fd',
                 'upt_time']
-
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -888,10 +891,8 @@ script:
         start_window = demisto.args().get('start_window')
         end_window = demisto.args().get('end_window')
 
-        if time==None and (time_ago!=None or (start_window!=None and end_window!=None)):
+        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
             begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
-
-        if time==None:
             query = apply_datetime_cuts(query, "upt_time", begin, end)
 
         query = ("%s ORDER BY upt_time DESC" % query)
@@ -1181,10 +1182,10 @@ script:
         context['updatedByAdmin'] = context.get('updatedByUser').get('admin')
         context['updatedByEmail'] = context.get('updatedByUser').get('email')
         context_entries_to_keep = ['id', 'code', 'status', 'createdAt', 'updatedAt', 'updatedBy', 'updatedByAdmin', 'updatedByEmail']
-
-        for key in context.keys():
-            if key not in context_entries_to_keep:
-                context.pop(key, None)
+        if context != None:
+            for key in context.keys():
+                if key not in context_entries_to_keep:
+                    context.pop(key, None)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1219,9 +1220,10 @@ script:
         context = query_results
         context_entries_to_keep = ['hostName', 'tags']
 
-        for key in context.keys():
-            if key not in context_entries_to_keep:
-                context.pop(key, None)
+        if context != None:
+            for key in context.keys():
+                if key not in context_entries_to_keep:
+                    context.pop(key, None)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1252,7 +1254,8 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['name', 'email', 'id', 'admin', 'active', 'createdAt', 'updatedAt']
 
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1284,9 +1287,10 @@ script:
 
         context_entries_to_keep = ['name','email', 'id', 'userRoles', 'userObjectGroups']
 
-        for key in context.keys():
-            if key not in context_entries_to_keep:
-                context.pop(key, None)
+        if context != None:
+            for key in context.keys():
+                if key not in context_entries_to_keep:
+                    context.pop(key, None)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1361,7 +1365,8 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['id', 'name', 'description', 'objectType', 'custom', 'createdAt', 'updatedAt']
 
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1396,7 +1401,8 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['id', 'indicator', 'description', 'indicatorType', 'createdAt', 'isActive', 'threatId']
 
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1427,9 +1433,10 @@ script:
 
         context_entries_to_keep = ['id', 'indicator', 'description', 'indicatorType', 'createdAt', 'updatedAt' 'isActive', 'threatId', 'threat_source_id', 'threat_vendor_id', 'threat_source_name']
 
-        for key in context.keys():
-            if key not in context_entries_to_keep:
-                context.pop(key, None)
+        if context != None:
+            for key in context.keys():
+                if key not in context_entries_to_keep:
+                    context.pop(key, None)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1460,7 +1467,8 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['name', 'description', 'url', 'enabled', 'custom', 'createdAt', 'lastDownload']
 
-        remove_context_entries(context, context_entries_to_keep)
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1491,9 +1499,10 @@ script:
         context = query_results
         context_entries_to_keep = ['name', 'description', 'url', 'enabled', 'custom', 'createdAt', 'lastDownload']
 
-        for key in context.keys():
-            if key not in context_entries_to_keep:
-                context.pop(key, None)
+        if context != None:
+            for key in context.keys():
+                if key not in context_entries_to_keep:
+                    context.pop(key, None)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1525,8 +1534,9 @@ script:
         query_results = uptycs_get_threat_vendors()
         context = query_results.get('items')
 
-        for index in range(len(context)):
-            context[index].pop('links', None)
+        if context != None:
+            for index in range(len(context)):
+                context[index].pop('links', None)
 
         human_readable = tableToMarkdown('Uptycs Threat Vendors',
             context)
@@ -1605,36 +1615,36 @@ script:
         incidents = []
         if len(query_results.get('items')) == 0:
             return incidents
+        if query_results.get('items') != None:
+          for index in range(len(query_results.get('items'))):
+                context = query_results.get('items')[index]
+                context['alertId'] = context.get('id')
+                context['hostName'] = context.get('asset').get('hostName')
+                if bool(context.get('metadata').get('indicatorId')):
+                    context['indicatorId'] = context.get('metadata').get('indicatorId')
+                    context['threatId'] = context.get('metadata').get('indicatorSummary').get('threatId')
+                    context['threatSourceName'] = context.get('metadata').get('indicatorSummary').get('threatSourceName')
+                    context['indicatorType'] = context.get('metadata').get('indicatorSummary').get('indicatorType')
 
-        for index in range(len(query_results.get('items'))):
-            context = query_results.get('items')[index]
-            context['alertId'] = context.get('id')
-            context['hostName'] = context.get('asset').get('hostName')
-            if bool(context.get('metadata').get('indicatorId')):
-                context['indicatorId'] = context.get('metadata').get('indicatorId')
-                context['threatId'] = context.get('metadata').get('indicatorSummary').get('threatId')
-                context['threatSourceName'] = context.get('metadata').get('indicatorSummary').get('threatSourceName')
-                context['indicatorType'] = context.get('metadata').get('indicatorSummary').get('indicatorType')
+                context_entries_to_keep = ['id', 'hostName', 'grouping', 'assignedTo',
+                'alertTime', 'alertId', 'updatedAt', 'status', 'assetId', 'createdAt', 'description',
+                'severity', 'value', 'threatId', 'threatSourceName', 'indicatorType', 'indicatorId']
 
-            context_entries_to_keep = ['id', 'hostName', 'grouping', 'assignedTo',
-            'alertTime', 'alertId', 'updatedAt', 'status', 'assetId', 'createdAt', 'description',
-            'severity', 'value', 'threatId', 'threatSourceName', 'indicatorType', 'indicatorId']
+                for key in context.keys():
+                    if key not in context_entries_to_keep:
+                        context.pop(key, None)
 
-            for key in context.keys():
-                if key not in context_entries_to_keep:
-                    context.pop(key, None)
+                alert_time = context.get('alertTime')
+                alert_time = alert_time.encode('utf-8')
 
-            alert_time = context.get('alertTime')
-            alert_time = alert_time.encode('utf-8')
-
-            incident = {"Name":"Uptycs Alert: "+context.get('description')+\
-                                " for asset: "+context.get('hostName'),
-                            "Occurred":alert_time,
-                            "Severity":severity_to_int(context.get('severity')),
-                            "Details":context.get('id'),
-                            "rawJSON":json.dumps(context)
-                           }
-            incidents.insert(0, incident)
+                incident = {"Name":"Uptycs Alert: "+context.get('description')+\
+                                    " for asset: "+context.get('hostName'),
+                                "Occurred":alert_time,
+                                "Severity":severity_to_int(context.get('severity')),
+                                "Details":context.get('id'),
+                                "rawJSON":json.dumps(context)
+                            }
+                incidents.insert(0, incident)
 
         demisto.setLastRun({'time':this_run})
         return incidents

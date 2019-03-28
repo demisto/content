@@ -1,4 +1,4 @@
-id: Uptycs - Bad IP Incident
+id: Uptycs - Bad IP Incident8
 version: -1
 name: Uptycs - Bad IP Incident
 description: Get information about processes which open connections to known Bad IP's
@@ -28,12 +28,13 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 97dcd290-c96b-4ece-8fa6-4672eeff90a2
+    taskid: 09383c8c-e929-4edf-86e9-d33a0d292fc1
     type: regular
     task:
-      id: 97dcd290-c96b-4ece-8fa6-4672eeff90a2
+      id: 09383c8c-e929-4edf-86e9-d33a0d292fc1
       version: -1
       name: Get Bad IP alert
+      description: Retrieve more information about the alert.
       script: '|||uptycs-get-alerts'
       type: regular
       iscommand: true
@@ -60,6 +61,7 @@ tasks:
       limit: {}
       start_window: {}
       time_ago: {}
+      value: {}
     separatecontext: false
     view: |-
       {
@@ -71,12 +73,13 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 62d84fd9-18d5-48b3-834f-aaa6b8501e06
+    taskid: 34b656c0-7eef-4ae0-8393-c5051ccd1b06
     type: regular
     task:
-      id: 62d84fd9-18d5-48b3-834f-aaa6b8501e06
+      id: 34b656c0-7eef-4ae0-8393-c5051ccd1b06
       version: -1
       name: Get process Info
+      description: Get information about the process which opened the connection.
       script: '|||uptycs-get-process-information'
       type: regular
       iscommand: true
@@ -103,12 +106,14 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 01c181f8-1da4-4a44-8f10-c0543d37e3fd
+    taskid: d7d24260-1542-4d2a-83e3-63eab8da4efe
     type: regular
     task:
-      id: 01c181f8-1da4-4a44-8f10-c0543d37e3fd
+      id: d7d24260-1542-4d2a-83e3-63eab8da4efe
       version: -1
       name: Get child processes
+      description: Get information about the child processes which were spawned from
+        the parent process of the process which opened the connection.
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true
@@ -142,12 +147,13 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: c0cc24ae-cc52-41b1-8cd3-89116a8dfc5c
+    taskid: 6268c9fb-32ff-459e-8e8f-abeca2250646
     type: regular
     task:
-      id: c0cc24ae-cc52-41b1-8cd3-89116a8dfc5c
+      id: 6268c9fb-32ff-459e-8e8f-abeca2250646
       version: -1
       name: Get information about the connection that was opened
+      description: Get information about the connection which was opened.
       script: '|||uptycs-get-process-open-sockets'
       type: regular
       iscommand: true
@@ -163,6 +169,7 @@ tasks:
       host_name_like: {}
       ip:
         simple: ${Uptycs.Alerts.value}
+      limit: {}
       start_window: {}
       time:
         simple: ${Uptycs.Alerts.alert_time}
@@ -178,12 +185,14 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 1a0eb56e-6dea-4081-862d-50c880103f29
+    taskid: cf635963-d89e-4c75-87e6-e53f74ac80ee
     type: regular
     task:
-      id: 1a0eb56e-6dea-4081-862d-50c880103f29
+      id: cf635963-d89e-4c75-87e6-e53f74ac80ee
       version: -1
       name: Get parent info
+      description: Get information about the parent process of the process which opened
+        the connection.
       script: '|||uptycs-get-parent-information'
       type: regular
       iscommand: true
@@ -210,12 +219,14 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 76b57ec9-f617-444e-80ff-aa139a3b9fe0
+    taskid: 9b99e315-8a5d-4153-8923-2ec5ccb7265e
     type: regular
     task:
-      id: 76b57ec9-f617-444e-80ff-aa139a3b9fe0
+      id: 9b99e315-8a5d-4153-8923-2ec5ccb7265e
       version: -1
       name: Get threat indicator info
+      description: Get information about the threat indicator which caused the alert
+        to be fired.
       script: '|||uptycs-get-threat-indicator'
       type: regular
       iscommand: true
@@ -237,12 +248,14 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 9356e956-3af6-4b7f-8b68-f30cfb8fdb76
+    taskid: df3199e9-f3c5-4689-8ed7-0822dc32a9c6
     type: regular
     task:
-      id: 9356e956-3af6-4b7f-8b68-f30cfb8fdb76
+      id: df3199e9-f3c5-4689-8ed7-0822dc32a9c6
       version: -1
       name: Get threat source info
+      description: Get information about the source of the threat indicator which
+        fired the alert.
       script: '|||uptycs-get-threat-source'
       type: regular
       iscommand: true
@@ -277,7 +290,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 400,
+          "x": 480,
           "y": 970
         }
       }
