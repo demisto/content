@@ -3,32 +3,20 @@ commonfields:
   id: FalconQuery
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - defaultvalue: https://api.crowdstrike.com
   display: Server URL (e.g. https://api.crowdstrike.com)
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
+- display: Client ID
+  name: client_id
   required: true
-  type: 9
-- defaultvalue: ""
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
+  type: 0
+- display: Secret
+  name: secret
+  defaultvalue: ""
+  type: 4
+  required: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -39,6 +27,27 @@ configuration:
   name: incidents_per_fetch
   required: false
   type: 0
+- display: Fetch query
+  name: fetch_query
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
 description: The Falcon Query API (formerly known as the Falcon Firehose API)
 detaileddescription: 'To get an API key please contact the crowdstrike support: support@crowdstrike.com'
 display: CrowdStrike Query
@@ -333,8 +342,8 @@ script:
 
     ''' GLOBALS/PARAMS '''
 
-    USERNAME = demisto.params().get('credentials').get('identifier')
-    PASSWORD = demisto.params().get('credentials').get('password')
+    USERNAME = demisto.params().get('client_id')
+    PASSWORD = demisto.params().get('secret')
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
         demisto.params()['url']
@@ -996,7 +1005,7 @@ script:
         d_args = demisto.args()
         detections_ids = argToList(d_args.get('ids'))
         if not detections_ids:
-            filter_arg = d_args.gcet('filter')
+            filter_arg = d_args.get('filter')
             if not filter_arg:
                 return_error('Command Error: Please provide at least one argument.')
             detections_ids = get_detections(filter_arg=filter_arg).get('resources')
