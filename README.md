@@ -84,3 +84,4 @@ cp .hooks/* .git/hooks
 | [Fetching Credentials](https://github.com/demisto/content/blob/master/docs/fetching_credentials/README.md) | How to Fetch Credentials |
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
 | [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |
+| [Integration Parameter Types](https://github.com/demisto/content/blob/master/docs/parameter_types/README.md) | Description of the various integration parameter types |
