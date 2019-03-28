@@ -578,6 +578,10 @@
           "playbookID": "crowdstrike_falconhost_test"
         },
         {
+            "integrations": "FalconQuery",
+            "playbookID": "Test - CrowdStrike Query"
+        },
+        {
             "integrations": [
                 "VirusTotal"
             ],
