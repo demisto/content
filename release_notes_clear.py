@@ -4,6 +4,7 @@
 # Usage: python release_notes_clear.py
 import os
 import glob
+import sys
 
 from Tests.test_utils import server_version_compare
 
@@ -17,21 +18,21 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
         lines = f.readlines()
 
     version_key = 'fromversion'
-    clear_releaseNotes = False
+    clear_release_notes = False
     consider_multiline_notes = False
     new_lines = []
     for line in lines:
         if line.startswith(version_key):
-            v = line[len(version_key + 1):].strip()
+            v = line[len(version_key) + 1:].strip()
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print "keeping release notes for %\nto be published on % version release " (file_path, current_server_version)
-                clear_releaseNotes = False
+                print "keeping release notes for (%s)\nto be published on %s version release " % (file_path, current_server_version)
+                clear_release_notes = False
                 break
 
         if line.startswith('releaseNotes:'):
             # releaseNote title: ignore current line and consider following lines as part of it (multiline notes)
-            clear_releaseNotes = True
+            clear_release_notes = True
             consider_multiline_notes = True
 
         elif consider_multiline_notes:
@@ -47,11 +48,11 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
             # regular line
             new_lines.append(line)
 
-    if clear_releaseNotes:
+    if clear_release_notes:
         with open(file_path, 'w') as f:
             f.write(''.join(new_lines))
 
-    return clear_releaseNotes
+    return clear_release_notes
 
 
 def json_remove_releaseNote_record(file_path, current_server_version):
@@ -64,21 +65,21 @@ def json_remove_releaseNote_record(file_path, current_server_version):
         lines = f.readlines()
 
     version_key = 'fromversion'
-    clear_releaseNotes = False
+    clear_release_notes = False
     consider_multiline_notes = False
     new_lines = []
     for line in lines:
-        if line.strip.startswith(version_key):
-            v = line.strip()[len(version_key + 1):]
+        if line.strip().startswith(version_key):
+            v = line.strip()[len(version_key) + 1:]
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print "keeping release notes for %\nto be published on % version release " (file_path, current_server_version)
-                clear_releaseNotes = False
+                print "keeping release notes for (%s)\nto be published on %s version release " % (file_path, current_server_version)
+                clear_release_notes = False
                 break
 
         if line.strip().startswith('"releaseNotes"'):
             # releaseNote title: ignore current line and consider following lines as part of it (multiline notes)
-            clear_releaseNotes = True
+            clear_release_notes = True
             consider_multiline_notes = True
 
         elif consider_multiline_notes:
@@ -101,11 +102,11 @@ def json_remove_releaseNote_record(file_path, current_server_version):
             # regular line
             new_lines.append(line)
 
-    if clear_releaseNotes:
+    if clear_release_notes:
         with open(file_path, 'w') as f:
             f.write(''.join(new_lines))
 
-    return clear_releaseNotes
+    return clear_release_notes
 
 
 FILE_EXTRACTER_DICT = {
@@ -130,12 +131,13 @@ def remove_releaseNotes_folder(folder_path, files_extension, current_server_vers
     print '--> Changed %d out of %d files' % (count, len(scan_files), )
 
 
-def main(root_dir):
+def main(argv):
     if len(argv) < 2:
         print "<Server version>"
         sys.exit(1)
 
-    current_server_version = parse_change_list(argv[1])
+    root_dir = argv[0]
+    current_server_version = argv[1]
 
     yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks']  # yml
     json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets',
@@ -151,4 +153,4 @@ def main(root_dir):
 
 
 if __name__ == '__main__':
-    main(os.path.dirname(__file__))
+    main([os.path.dirname(__file__)] + sys.argv[1:])

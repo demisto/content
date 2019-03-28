@@ -140,7 +140,28 @@ def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
             return True
     return False
 
+
 def server_version_compare(v1, v2):
+    """compare Demisto versions
+
+    Args:
+        v1 (string): string representing Demisto version (first comparable)
+        v2 (string): string representing Demisto version (second comparable)
+
+
+    Returns:
+        int.
+        0 for equal versions.
+        positive if v1 later version than v2.
+        negative if v2 later version than v1.
+    """
+
+    v1 = re.sub('[\'\"]', '', v1)
+    v2 = re.sub('[\'\"]', '', v2)
+
+    if v1 == "" or v2 == "":
+        return 0
+
     v1_nums = [int(d) for d in v1.split(".")]
     v2_nums = [int(d) for d in v2.split(".")]
 
