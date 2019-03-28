@@ -174,7 +174,7 @@ script:
         return undefined;
     }
 
-    function executeCommand(command, cmdArgs) {
+    function exeCommand(command, cmdArgs) {
         var method = methodDict[command];
         var url = getURL(command, cmdArgs);
         var query = '';
@@ -195,11 +195,11 @@ script:
 
     switch (command) {
         case 'test-module':
-            executeCommand('amp_get_version', args);
-            // successful reponse
+            exeCommand('amp_get_version', args);
+            // successful response
             return 'ok';
         default:
-            return executeCommand(command, args);
+            return exeCommand(command, args);
     }
   type: javascript
   commands:
