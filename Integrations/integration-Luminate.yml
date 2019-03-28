@@ -361,6 +361,5 @@ script:
   isfetch: true
   runonce: false
 fromversion: 0.0.0
-releaseNotes: add severity to fetched incidents.
 tests:
   - Luminate-TestPlaybook

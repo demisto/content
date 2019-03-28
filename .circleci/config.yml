@@ -5,8 +5,8 @@ jobs:
       - image: devdemisto/content-build:1.0.0.159 # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.3.0"
-      GIT_SHA1: "6c42492a4b4c92e56e5e73412698c7284b555a84" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.3.1"
+      GIT_SHA1: "eae9e2c8c301dc8d01e450f4c334fe90dc84d995" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -81,7 +81,7 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY
+                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY -b $CIRCLE_BRANCH
 
               else
                 ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
