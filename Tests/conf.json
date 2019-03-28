@@ -578,8 +578,8 @@
           "playbookID": "crowdstrike_falconhost_test"
         },
         {
-            "integrations": "CrowdsrikeFalcon",
-            "playbookID": "Test - CrowdStrike Query"
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test - CrowdStrike Falcon"
         },
         {
             "integrations": [

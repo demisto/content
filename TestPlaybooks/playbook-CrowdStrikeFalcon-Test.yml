@@ -1,6 +1,6 @@
-id: Test - CrowdStrike Query
+id: Test - CrowdStrike Falcon
 version: -1
-name: Test - CrowdStrike Query
+name: Test - CrowdStrike Falcon
 starttaskid: "0"
 tasks:
   "0":
