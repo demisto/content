@@ -487,6 +487,7 @@ script:
         template_context = demisto.args().get('templateContext')
         filters = demisto.args().get('filters', [])
         within_last_days = demisto.args().get('withinLastDays')
+        guid_list = argToList(demisto.args().get('malopGuid'))
 
         if within_last_days:
             current_timestamp = time.time()
@@ -500,7 +501,7 @@ script:
                 'filterType': 'GreaterThan'
             })
 
-        response = query_malops(total_result_limit, per_group_limit, template_context, None)
+        response = query_malops(total_result_limit, per_group_limit, template_context, None, guid_list=guid_list)
         data = response['data']
         malops_map = data.get('resultIdToElementDataMap')
         if not data or not malops_map:
@@ -561,7 +562,7 @@ script:
             'EntryContext': ec
         })
 
-    def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None):
+    def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None, guid_list=[]):
 
         body = {
             'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
@@ -571,6 +572,7 @@ script:
             'queryPath': [
                 {
                     'requestedType': 'MalopProcess',
+                    'guidList': guid_list,
                     'result': True,
                     'filters': filters or None
                 }
@@ -1679,6 +1681,9 @@ script:
       defaultValue: MALOP
     - name: withinLastDays
       description: Return all the malops within the last days
+    - name: malopGuid
+      description: Malop GUIDs to filter by (Comma separated values supported, e.g.
+        11.5681864988155542407,11.1773255057963879999)
     outputs:
     - contextPath: Cybereason.Malops.GUID
       description: The unique globally unique identifier (guid) for the Malop.
@@ -1954,6 +1959,6 @@ script:
     description: Query users as part of investigation
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
   - Cybereason Test
-releaseNotes: "add machinename argument to malop processes command"

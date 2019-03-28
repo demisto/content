@@ -87,4 +87,3 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 deprecated: true
-releaseNotes: support eml and msg headers parsing - using ParseEmailFiles internally

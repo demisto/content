@@ -60,7 +60,7 @@ class IntegrationValidator(object):
         commands = self.current_integration.get('script', {}).get('commands', [])
         for command in commands:
             arg_list = []
-            for arg in command['arguments']:
+            for arg in command.get('arguments', []):
                 if arg in arg_list:
                     self._is_valid = False
                     print_error("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
@@ -106,7 +106,7 @@ class IntegrationValidator(object):
         commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             command_to_args[command['name']] = {}
-            for arg in command['arguments']:
+            for arg in command.get('arguments', []):
                 command_to_args[command['name']][arg['name']] = arg.get('required', False)
 
         return command_to_args
