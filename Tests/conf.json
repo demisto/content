@@ -1124,6 +1124,13 @@
             "playbookID": "Kafka Test"
         },
         {
+            "integrations": [
+                "VirusTotal - Private API",
+                "Cylance Protect v2"
+            ],
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500
