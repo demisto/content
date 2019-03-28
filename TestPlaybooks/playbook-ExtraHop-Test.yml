@@ -36,7 +36,7 @@ tasks:
       version: -1
       name: extrahop-get-alerts
       description: Get alerts from Extra Hop
-      script: ExtraHop|||extrahop-get-alert-rule
+      script: ExtraHop|||extrahop-get-alert-rules
       type: regular
       iscommand: true
       brand: ExtraHop
