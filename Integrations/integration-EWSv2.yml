@@ -224,10 +224,6 @@ script:
         return Build(*build_params)
 
 
-    def get_endpoint_autodiscover(context_dict):
-        return context_dict["service_endpoint"]
-
-
     def get_version(version_str):
         if version_str not in VERSIONS:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
@@ -245,7 +241,7 @@ script:
 
     def prepare_context(credentials):
         context_dict = demisto.getIntegrationContext()
-        global SERVER_BUILD, EWS_SERVER
+        global SERVER_BUILD
         if not context_dict:
             try:
                 account = Account(
@@ -259,7 +255,6 @@ script:
                 return_error("Auto discovery failed. Check credentials or configure manually")
         else:
             SERVER_BUILD = get_build_autodiscover(context_dict)
-            EWS_SERVER = get_endpoint_autodiscover(context_dict)
 
 
     def prepare():
@@ -966,8 +961,8 @@ script:
         if item.headers:
             headers = []
             for header in item.headers:
-                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': header.value})
-                headers.append("{}: {}".format(header.name, header.value))
+                labels.append({'type': 'Email/Header/' + header.name, 'value': header.value})
+                headers.append(header.name + ": " + header.value)
             labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
