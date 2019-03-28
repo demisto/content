@@ -1290,6 +1290,7 @@
         "RedCanary": "Nightly - Checking",
         "McAfee Active Response": "Nightly - Checking",
         "Whois": "Integration socks proxy on tcp connection not http/s",
+        "SCADAfence CNM": "might be dynamic test",
         "Recorded Future": "might be dynamic test",
         "QRadar": "might be dynamic test",
         "Centreon": "might be dynamic test",
