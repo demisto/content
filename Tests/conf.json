@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Vertica",
+            "playbookID": "Vertica Test"
+        },
+        {
             "integrations": "Server Message Block (SMB)",
             "playbookID": "SMB test"
         },
@@ -439,6 +443,9 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
+            "playbookID": "dedup_-_generic_-_test"
+        },
+        {
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
@@ -466,7 +473,9 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
-        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
+        {
+          "playbookID": "ContextGetters_Test"
+        },
         {
             "integrations": [
                 "Mail Sender (New)",
@@ -908,6 +917,9 @@
             "playbookID": "Centreon-Test-Playbook"
         },
         {
+            "playbookID": "ReadFile test"
+        },
+        {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
         },
@@ -1133,9 +1145,7 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
+            "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
         }
     ],
@@ -1186,15 +1196,20 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
         "Whois": "Host periodically bans connection",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
+        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
+        "Threat Grid": "instance problem (issue 16197)",
+        "BitDam": "Changes in service (issue #16247)",
+        "SCADAfence CNM": "getting Bad gateway (issue #16277)"
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
+        "Panorama": "Pending check: issue 16122",
         "RTIR": "Pending check: issue 16072",
         "GRR": "Pending check: issue 16072",
         "PageDuty": "Pending check: issue 16072",

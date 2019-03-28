@@ -194,7 +194,7 @@ script:
     description: Provides data enrichment for Domains, URLs, and IP addresses.
   dockerimage: demisto/ippysocks
   runonce: false
+releaseNotes: "-"
 fromversion: 4.1.0
-releaseNotes: Removed from default
 tests:
   - whois_test
