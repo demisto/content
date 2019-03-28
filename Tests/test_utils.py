@@ -144,7 +144,7 @@ def server_version_compare(v1, v2):
     v1_nums = [int(d) for d in v1.split(".")]
     v2_nums = [int(d) for d in v2.split(".")]
 
-    for i in range(min(v1_nums, v2_nums)):
+    for i in range(min(len(v1_nums), len(v2_nums))):
         if v1_nums[i] != v2_nums[i]:
             return v1_nums[i] - v2_nums[i]
 
