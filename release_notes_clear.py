@@ -69,7 +69,7 @@ def json_remove_releaseNote_record(file_path, current_server_version):
     new_lines = []
     for line in lines:
         if line.strip.startswith(version_key):
-            v = line.strip().[len(version_key + 1):]
+            v = line.strip()[len(version_key + 1):]
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
                 print "keeping release notes for %\nto be published on % version release " (file_path, current_server_version)
