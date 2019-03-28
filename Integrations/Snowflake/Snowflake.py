@@ -25,13 +25,33 @@ DATABASE = PARAMS.get('database')
 SCHEMA = PARAMS.get('schema')
 ROLE = PARAMS.get('role')
 PROXY = PARAMS.get('proxy', False)
+INSECURE = PARAMS.get('insecure', False)
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get('isFetch')
 FETCH_TIME = PARAMS.get('fetch_time')
 FETCH_QUERY = PARAMS.get('fetch_query')
 DATETIME_COLUMN = PARAMS.get('datetime_column')
 INCIDENT_NAME_COLUMN = PARAMS.get('incident_name_column')
-MAX_ROWS = 10000
+MAX_ROWS = int(PARAMS.get('limit')) if PARAMS.get('limit') else 10000
+
+TYPE_CODE_TO_DATATYPE = {
+    0: 'number/int',
+    1: 'real',
+    2: 'varchar/string',
+    3: 'date',
+    4: 'timestamp',
+    5: 'variant',
+    6: 'timestamp_ltz',
+    7: 'timestamp_tz',
+    8: 'timestamp_tz',
+    9: 'object',
+    10: 'array',
+    11: 'binary',
+    12: 'time',
+    13: 'boolean'
+}
+DT_NEEDS_CHECKING = {'date', 'timestamp', 'timestamp_ltz', 'timestamp_tz', 'time'}
+
 
 '''SETUP'''
 
@@ -45,26 +65,7 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
     err_msg = 'When fetching is enabled there are two additional parameters that are required;'
     err_msg += ' The fetch query that determines what data to fetch and the name of the column'
     err_msg += ' in the fetched data that contains a datetime object or timestamp.'
-    return_error(err_msg)
-
-
-'''HELPER CLASSES'''
-
-
-class DemistoError(Exception):
-    """Basic exception for errors raised by Demisto"""
-    def __init__(self, msg=None):
-        if not msg:
-            msg = 'A Demisto integration error occurred'
-        super(DemistoError, self).__init__(msg)
-
-
-class FetchError(DemistoError):
-    """For errors that occur in the inside an integration's fetch_incidents method"""
-    def __init__(self, msg=None):
-        if not msg:
-            msg = 'An error occurred whilst trying to fetch incidents'
-        super(FetchError, self).__init__(msg)
+    raise Exception(err_msg)
 
 
 '''HELPER FUNCTIONS'''
@@ -89,6 +90,34 @@ def convert_datetime_to_string(v):
     return v
 
 
+def error_message_from_snowflake_error(e):
+    """
+    Return formatted error message from contents of a Snowflake error
+
+    parameter: (snowflake.connector.errors.Error) e
+        The Snowflake error object
+
+    returns:
+        Formatted error message
+    """
+    err_msg = 'Snowflake DB error code: {}\n'.format(e.errno)
+    err_msg += 'ANSI-compliant SQL State code: {}\n'.format(e.sqlstate)
+    err_msg += 'Snowflake query ID: {}\n'.format(e.sfqid)
+    err_msg += 'Error message: {}'
+    if e.errno == 606:
+        first_sentence = e.raw_msg[:e.raw_msg.find('.') + 1]
+        err_msg = err_msg.format(first_sentence)
+        err_msg += ' Specify an active warehouse in the command '
+        err_msg += 'arguments or in the integration parameters.'
+    elif e.errno == 2003:
+        err_msg = err_msg.format(e.raw_msg)
+        err_msg += ' A possible explanation is that the values you entered'
+        err_msg += ' for the \'warehouse\' and \'database\' were incorrect.'
+    else:
+        err_msg = err_msg.format(e.raw_msg)
+    return err_msg
+
+
 def set_provided(params, key, val1, val2=None):
     """
     If value is provided, set it in the dict
@@ -103,6 +132,11 @@ def process_table_row(row, checks):
     """
     Check row data and reformat if necessary
 
+    The 'checks' parameter contains the names of fields that have the potential to cause
+    issues when they will be json decoded. This function checks the values of the fields
+    flagged in the 'checks' parameter and formats the contents to a json friendly type if
+    necessary.
+
     parameter: (dict) row
         The data (table row) that needs to be processed
 
@@ -116,7 +150,7 @@ def process_table_row(row, checks):
     for column_name, val in row.items():
         if column_name in checks.get('isDecimal', []):
             # Then check the value and reformat it if necessary
-            if type(val) == Decimal:
+            if isinstance(val, Decimal):
                 row[column_name] = str(val)
         elif column_name in checks.get('isDT', []):
             # Then reformat it if necessary
@@ -145,10 +179,12 @@ def format_to_json_serializable(column_descriptions, results):
     checks = {}
     # Screen by type_code
     for col in column_descriptions:
-        if col[type_code] == 0:
+        # if col[type_code] == 0:
+        if TYPE_CODE_TO_DATATYPE.get(col[type_code]) == 'number/int':
             # Then need to check that column's data to see if its data type is Decimal
             checks.setdefault('isDecimal', []).append(col[name])
-        elif col[type_code] in {3, 4, 6, 7, 8, 12}:
+        # elif col[type_code] in {3, 4, 6, 7, 8, 12}:
+        elif TYPE_CODE_TO_DATATYPE.get(col[type_code]) in DT_NEEDS_CHECKING:
             # Then need to check that column's data to see if its data type is date, time, timedelta or datetime
             checks.setdefault('isDT', []).append(col[name])
 
@@ -164,15 +200,15 @@ def format_to_json_serializable(column_descriptions, results):
     return results
 
 
-def get_connection(args):
+def get_connection_params(args):
     """
-    Build the connection based on parameters
+    Construct and return the connection parameters
 
     parameter: (dict) args
         The command arguments of the command function calling this helper function
 
     returns:
-        Snowflake connection
+        Snowflake connection params
     """
     params = {}
     set_provided(params, 'user', USER)
@@ -180,6 +216,7 @@ def get_connection(args):
     set_provided(params, 'account', ACCOUNT)
     set_provided(params, 'authenticator', AUTHENTICATOR)
     set_provided(params, 'region', REGION)
+    set_provided(params, 'insecure_mode', INSECURE)
     set_provided(params, 'warehouse', args.get('warehouse'), WAREHOUSE)
     set_provided(params, 'database', args.get('database'), DATABASE)
     set_provided(params, 'schema', args.get('schema'), SCHEMA)
@@ -189,9 +226,10 @@ def get_connection(args):
         pkb = p_key.private_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption())
+            encryption_algorithm=serialization.NoEncryption()
+        )
         params['private_key'] = pkb
-    return snowflake.connector.connect(**params)
+    return params
 
 
 def row_to_incident(column_descriptions, row):
@@ -212,23 +250,25 @@ def row_to_incident(column_descriptions, row):
     occurred = row.get(DATETIME_COLUMN)
     timestamp = None
     if occurred:
-        if isinstance(occurred, dttime) or isinstance(occurred, timedelta):
+        if isinstance(occurred, (dttime, timedelta)):
             err_msg = 'The datetime field specified in the integration parameters must '
             err_msg += 'contain values of type "datetime" or "date".'
-            raise FetchError(err_msg)
+            raise Exception(err_msg)
         timestamp = occurred.timestamp() * 1000
     else:
         err_msg = 'Nothing found when trying to fetch the datetime field specified in'
         err_msg += ' the integration parameters. Please check that the name was correct.'
         err_msg += ' If the field name was correct, verify that the returned value for'
         err_msg += ' the specified field is not NULL for ALL of the rows to be fetched.'
-        raise FetchError(err_msg)
+        raise Exception(err_msg)
     # Incident Title
     if INCIDENT_NAME_COLUMN:
         name = row.get(INCIDENT_NAME_COLUMN)
     else:
-        name = 'Snowflake Incident -- ' + convert_datetime_to_string(occurred) + '-' + datetime.now().timestamp()
+        name = 'Snowflake Incident -- '
+        name += convert_datetime_to_string(occurred) + '- ' + str(datetime.now().timestamp())
     incident['name'] = name
+    incident['occurred'] = occurred.strftime('%Y-%m-%dT%H:%M:%SZ%z')
     # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
     incident['timestamp'] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query
@@ -247,9 +287,9 @@ def test_module():
     returns:
         An 'ok' message if valid, otherwise an error message
     """
-    conn = get_connection({})
-    demisto.results('ok')
-    conn.close()
+    params = get_connection_params({})
+    with snowflake.connector.connect(**params) as _:
+        demisto.results('ok')
 
 
 def fetch_incidents():
@@ -261,17 +301,16 @@ def fetch_incidents():
     """
     # demisto.getLastRun() will returns an obj with the previous run in it.
     last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
+    # Get the last fetch time and data if it exists
     last_fetch = last_run.get('last_fetched_data_timestamp')
-    first_fetch = False
+    last_fetched_data = last_run.get('last_fetched_data')
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
-        first_fetch = True
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     args = {'rows': MAX_ROWS, 'query': FETCH_QUERY}
-
     column_descriptions, data = snowflake_query(args)
+    data.sort(key=lambda k: k[DATETIME_COLUMN])
     # convert the data/events to demisto incidents
     incidents = []
     for row in data:
@@ -280,43 +319,34 @@ def fetch_incidents():
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_timestamp and incident_timestamp >= last_fetch:
-            if first_fetch:
-                last_fetch = incident_timestamp
-                incidents.append(incident)
-                first_fetch = False
-            elif len(incidents) >= 1 and incident.get('rawJSON') != incidents[-1].get('rawJSON'):
-                last_fetch = incident_timestamp
+            last_fetch = incident_timestamp
+            if incident.get('rawJSON') != last_fetched_data:
+                last_fetched_data = incident.get('rawJSON')
                 incidents.append(incident)
 
-    demisto.setLastRun({'last_fetched_data_timestamp': last_fetch})
+    this_run = {
+        'last_fetched_data': last_fetched_data,
+        'last_fetched_data_timestamp': last_fetch
+    }
+    demisto.setLastRun(this_run)
     demisto.incidents(incidents)
 
 
 def snowflake_query(args):
-    connection = get_connection(args)
-    if connection:
-        try:
-            query = args.get('query')
-            cur = connection.cursor(snowflake.connector.DictCursor)
+    params = get_connection_params(args)
+    query = args.get('query')
+    limit = args.get('limit', '100')
+    limit = int(limit)
+    if limit > MAX_ROWS:
+        limit = MAX_ROWS
+    with snowflake.connector.connect(**params) as connection:
+        with connection.cursor(snowflake.connector.DictCursor) as cur:
             cur.execute(query)
-            rows = args.get('rows')
-            if rows:
-                rows = int(rows)
-            if rows and rows > MAX_ROWS:
-                rows = MAX_ROWS
-            results = cur.fetchmany(rows)
+            results = cur.fetchmany(limit)
             if results:
                 return cur.description, results
             else:
-                return_error('No data found matching the query')
-        except snowflake.connector.errors.ProgrammingError as e:
-            return_error(str(e))
-        finally:
-            if cur:
-                cur.close()
-            connection.close()
-    else:
-        return_error('Unable to connect')
+                return [], []
 
 
 def snowflake_query_command():
@@ -325,49 +355,39 @@ def snowflake_query_command():
     db = args.get('database') if args.get('database') else DATABASE
     schema = args.get('schema') if args.get('schema') else SCHEMA
     col_descriptions, results = snowflake_query(args)
-    results = format_to_json_serializable(col_descriptions, results)
+    if not results:
+        demisto.results('No data found matching the query')
+    else:
+        results = format_to_json_serializable(col_descriptions, results)
 
-    entry_context = {
-        'Database': db,
-        'Schema': schema,
-        'Query': query,
-        'Result': results
-    }
-    columns = argToList(args.get('columns'))
-    human_readable = tableToMarkdown(query, results, columns)
-    demisto_transform = 'Snowflake(val.Query && val.Query === obj.Query'
-    demisto_transform += ' && val.Database && val.Database === obj.Database'
-    demisto_transform += ' && val.Schema && val.Schema === obj.Schema)'
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {
-            demisto_transform: entry_context
+        entry_context = {
+            'Database': db,
+            'Schema': schema,
+            'Query': query,
+            'Result': results
         }
-    })
+        columns = argToList(args.get('columns'))
+        human_readable = tableToMarkdown(query, results, columns, removeNull=True)
+        demisto_transform = 'Snowflake(val.Query && val.Query === obj.Query'
+        demisto_transform += ' && val.Database && val.Database === obj.Database'
+        demisto_transform += ' && val.Schema && val.Schema === obj.Schema)'
+        outputs = {demisto_transform: entry_context}
+
+        return_outputs(
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=results
+        )
 
 
 def snowflake_update_command():
     args = demisto.args()
-    connection = get_connection(args)
-    if connection:
-        try:
-            db_operation = args.get('db_operation')
-            cursor = connection.cursor()
+    db_operation = args.get('db_operation')
+    params = get_connection_params(args)
+    with snowflake.connector.connect(**params) as connection:
+        with connection.cursor() as cursor:
             cursor.execute(db_operation)
             demisto.results('Operation executed successfully.')
-        except snowflake.connector.errors.ProgrammingError as e:
-            return_error(str(e))
-        finally:
-            if cursor:
-                cursor.close()
-            connection.close()
-    else:
-        return_error('Unable to connect')
 
 
 '''COMMAND SWITCHBOARD'''
@@ -385,8 +405,13 @@ commands = {
 try:
     if demisto.command() in commands.keys():
         commands[demisto.command()]()
+except snowflake.connector.errors.Error as e:
+    return_error(error_message_from_snowflake_error(e))
 except Exception as e:
-    if isinstance(e, FetchError):
-        raise e.with_traceback(None)
+    if IS_FETCH:
+        raise e
     else:
-        return_error(str(e))
+        if isinstance(e, snowflake.connector.errors.Error):
+            return_error(error_message_from_snowflake_error(e))
+        else:
+            return_error(str(e))
