@@ -388,7 +388,7 @@ script:
         trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
-      description: ' The number of seconds that this alert is active'.
+      description: ' The number of seconds that this alert is active.'
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
       description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
@@ -432,7 +432,7 @@ script:
         trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
-      description: ' The number of seconds this alert is active'.
+      description: ' The number of seconds this alert is active.'
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
       description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
@@ -520,7 +520,7 @@ script:
         trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
-      description: ' The number of seconds that this alert is active'.
+      description: ' The number of seconds that this alert is active.'
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
       description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
@@ -561,7 +561,7 @@ script:
         trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
-      description: ' The number of seconds this alert is active'.
+      description: ' The number of seconds this alert is active.'
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.SkipNotification
       description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
@@ -891,7 +891,7 @@ script:
     - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
       description: The remote country code.
     - contextPath: SigSciences.Corp.Site.Request.UserAgent
-      description: ' The user agent of the request'.
+      description: ' The user agent of the request.'
     - contextPath: SigSciences.Corp.Site.Request.Timestamp
       description: The timestamp (RFC3339 format).
     - contextPath: SigSciences.Corp.Site.Request.Method
@@ -899,7 +899,7 @@ script:
     - contextPath: SigSciences.Corp.Site.Request.ServerName
       description: The server name.
     - contextPath: SigSciences.Corp.Site.Request.Protocol
-      description: ' The HTTP protocol, for example, "HTTP/1.1" '.
+      description: ' The HTTP protocol, for example, "HTTP/1.1" .'
     - contextPath: SigSciences.Corp.Site.Request.Path
       description: The path.
     - contextPath: SigSciences.Corp.Site.Request.URI
@@ -907,9 +907,9 @@ script:
     - contextPath: SigSciences.Corp.Site.Request.ResponseCode
       description: The HTTP response code.
     - contextPath: SigSciences.Corp.Site.Request.ResponseSize
-      description: ' The HTTP response size'.
+      description: ' The HTTP response size.'
     - contextPath: SigSciences.Corp.Site.Request.ResponseMillis
-      description: ' The response time in millis'.
+      description: ' The response time in millis.'
     - contextPath: SigSciences.Corp.Site.Request.AgentResponseCode
       description: The agent response code.
     - contextPath: SigSciences.Corp.Site.Request.Tags
@@ -927,31 +927,31 @@ script:
     - contextPath: SigSciences.Corp.Site.Request.ID
       description: The unique ID of the request.
     - contextPath: SigSciences.Corp.Site.Request.ServerHostName
-      description: ' Server hostname'.
+      description: ' Server hostname.'
     - contextPath: SigSciences.Corp.Site.Request.RemoteIP
-      description: ' The remote IP address'.
+      description: ' The remote IP address.'
     - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
-      description: ' The remote hostname'.
+      description: ' The remote hostname.'
     - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
       description: The remote country code.
     - contextPath: SigSciences.Corp.Site.Request.UserAgent
       description: The user agent of the request.
     - contextPath: SigSciences.Corp.Site.Request.Timestamp
-      description: ' The timestamp RFC3339 date time serverHostname string'.
+      description: ' The timestamp RFC3339 date time serverHostname string.'
     - contextPath: SigSciences.Corp.Site.Request.Method
       description: The HTTP method, for example, "PUT".
     - contextPath: SigSciences.Corp.Site.Request.ServerName
-      description: ' The server name'.
+      description: ' The server name.'
     - contextPath: SigSciences.Corp.Site.Request.Protocol
-      description: ' The HTTP protocol, for example "HTTP/1.1"'.
+      description: ' The HTTP protocol, for example "HTTP/1.1".'
     - contextPath: SigSciences.Corp.Site.Request.Path
       description: The path.
     - contextPath: SigSciences.Corp.Site.Request.URI
       description: The URI.
     - contextPath: SigSciences.Corp.Site.Request.ResponseCode
-      description: ' The HTTP response code'.
+      description: ' The HTTP response code.'
     - contextPath: SigSciences.Corp.Site.Request.ResponseSize
-      description: ' The HTTP response size'.
+      description: ' The HTTP response size.'
     - contextPath: SigSciences.Corp.Site.Request.ResponseMillis
       description: The response time in milliseconds.
     - contextPath: SigSciences.Corp.Site.Request.AgentResponseCode
