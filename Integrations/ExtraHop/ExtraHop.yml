@@ -327,6 +327,69 @@ script:
     description: View Devices from ExtraHop
     execution: false
     name: extrahop-devices
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: MAC Address of device
+      type: String
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: Class of device
+      type: String
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: Role given automatically to device.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: ID of parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: Device vendor
+      type: String
+    - contextPath: ExtraHop.Device.AnalysisLevel
+      description: Analysis level of device.
+      type: Number
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: ID given by Discovery appliance.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: Default name of device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: Display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Is device whitelisted?
+      type: Boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Is device L3?
+      type: Boolean
+    - contextPath: ExtraHop.Device.ExtrahopId
+      description: ID given by ExtraHop.
+      type: String
+    - contextPath: ExtraHop.Device.Role
+      description: Role of device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: Time device was discovered.
+      type: Number
+    - contextPath: ExtraHop.Device.Id
+      description: ID of device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: IPv4 address of device.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: Analysis level of device.
+      type: String
+    - contextPath: ExtraHop.Device.Vlanid
+      description: ID of VLan
+      type: Number
   - arguments:
     - default: false
       description: IDs of resources to assign
