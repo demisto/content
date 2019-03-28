@@ -31,7 +31,7 @@ script: |-
   def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
       """
           Handle logic for routing traffic through the system proxy.
-          Should usually be called at the beginning of the integration, depeding on proxy checkbox state.
+           Should usually be called at the beginning of the integration, depending on proxy checkbox state.
 
           :type proxy_param_name: ``string``
           :param proxy_param_name: name of the "use system proxy" integration parameter
