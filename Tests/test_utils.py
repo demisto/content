@@ -173,4 +173,3 @@ def server_version_compare(v1, v2):
 
     # versions are equal
     return 0
-

@@ -8,6 +8,7 @@ import sys
 
 from Tests.test_utils import server_version_compare
 
+
 def yml_remove_releaseNote_record(file_path, current_server_version):
     '''
     locate and remove release notes from a yaml file.
@@ -26,7 +27,8 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
             v = line[len(version_key) + 1:].strip()
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print "keeping release notes for (%s)\nto be published on %s version release " % (file_path, current_server_version)
+                print "keeping release notes for (%s)\nto be published on %s version release " % (file_path,
+                                                                                                  current_server_version)
                 clear_release_notes = False
                 break
 
@@ -115,7 +117,8 @@ FILE_EXTRACTER_DICT = {
 }
 
 
-def remove_releaseNotes_folder(folder_path, files_extension, current_server_version="0.0.0"):
+def remove_releaseNotes_folder(folder_path, files_extension,
+                               current_server_version="0.0.0"):
     '''
     scan folder and remove all references to release notes
     :param folder_path: path of the folder
