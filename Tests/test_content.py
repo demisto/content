@@ -422,8 +422,8 @@ def restart_demisto_service(ami):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
         sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        polling_result = ami.check_output(['service', 'demisto', 'status'])
-        if 'active (running)' in polling_result:
+        exit_code = ami.call(['service', 'demisto', 'status'])
+        if exit_code == 0:
             return
 
     raise Exception('Timeout waiting for demisto service to restart')
