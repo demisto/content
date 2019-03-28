@@ -485,6 +485,12 @@ def main():
     server_version = options.serverVersion
 
     if is_ami:  # Run tests in AMI configuration
+        with open('./Tests/images_data.txt', 'r') as image_data_file:
+            image_data = [line for line in image_data_file if line.startswith(server_version)]
+            if len(image_data) != 0:
+                print('Did not get one image data for server version, got {}'.format(image_data))
+            else:
+                print('Server image info: {}'.format(image_data[0]))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
