@@ -1289,6 +1289,12 @@
         "Forcepoint": "Nightly - Checking",
         "RedCanary": "Nightly - Checking",
         "McAfee Active Response": "Nightly - Checking",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Recorded Future": "might be dynamic test",
+        "QRadar": "might be dynamic test",
+        "Centreon": "might be dynamic test",
+        "Cisco pxGrid ISE": "might be dynamic test",
+        "RSA NetWitness v11.1": "might be dynamic test",
+        "Zscaler": "might be dynamic test"
     }
 }
