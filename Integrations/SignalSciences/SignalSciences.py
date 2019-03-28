@@ -173,6 +173,8 @@ def http_request(method, url, params_dict=None, data=None, use_format_instead_of
     }
 
     try:
+        # Some commands in Signal Sciences require sending the data in raw, and some in format
+        # To send in format, we use the 'data' argument in requests. for raw, we use the 'json' argument.
         if use_format_instead_of_raw:
             res = requests.request(method,
                                    url,
@@ -257,7 +259,7 @@ def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enab
         return_error("Error: {0} is not a valid interval value. Interval value must be 1, 10 or 60".format(interval))
     if len(long_name) < 3 or len(long_name) > 25:
         return_error("Error: Illegal value for long_name argument - long_name must be between 3 and 25 characters long")
-    if not (enabled == 'True' or enabled == 'False'):
+    if not (enabled.lower() == 'true' or enabled.lower() == 'false'):
         return_error("Error: Illegal value for 'enabled' argument - value must be 'True' or 'False'")
     if not (action == 'info' or action == 'flagged'):
         return_error("Error: Illegal value for 'action' argument - value must be 'info' or 'flagged'")
@@ -282,8 +284,8 @@ def validate_get_events_args(from_time, until_time, sort, limit, page, action, i
         return_error("Error: page must be an integer.")
 
 
-def gen_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
-                                 limit, page, action, tag, ip, status):
+def create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
+                                    limit, page, action, tag, ip, status):
     get_events_request_data = {}
     if from_time is not None:
         get_events_request_data['from'] = int(from_time)
@@ -424,14 +426,15 @@ def check_ip_is_valid(ip):
 
 
 def gen_entries_data_for_update_list_request(entries_list, method):
-    """
+    """Using the recieved args, generates the data object required by the API
+    in order to update a list (site or corp alike).
     Args:
-        entries_list: an array of IP addresses
-        method: a string, either 'Add' or 'Remove'.
+        entries_list (list): a list containing IP addresses
+        method (string): The method we want to apply on the entries, either 'Add' or 'Remove'.
             States if the IPs should be added or removed to the site/corp list.
 
     Returns:
-        An 'entries' dict, in the expected format by the SigSciences API
+        dict. Contains additions and deletions list with the entries we want to act on.
     """
     entries = {
         "additions": [],
@@ -445,28 +448,6 @@ def gen_entries_data_for_update_list_request(entries_list, method):
     return entries
 
 
-def generate_whitelist_or_blacklist_ip_context(response_data):
-    ips_contexts = []
-    for item in response_data:
-        output = {}
-        output['ID'] = item.get('id', '')
-        output['Source'] = item.get('source', '')
-        output['ExpiryDate'] = item.get('expires', '')
-        output['Note'] = item.get('note', '')
-        output['CreatedDate'] = item.get('created', '')
-        output['CreatedBy'] = item.get('createdBy', '')
-        ips_contexts.append(output)
-    return ips_contexts
-
-
-def gen_human_readable_for_add_to_whitelist_or_blacklist(ip_context):
-    human_readable = {}
-    human_readable['Note'] = ip_context['Note']
-    human_readable['Source'] = ip_context['Source']
-    human_readable['Expiration date'] = ip_context['ExpiryDate'] if ip_context['ExpiryDate'] else "Not Set"
-    return human_readable
-
-
 def gen_context_for_add_to_whitelist_or_blacklist(response_data):
     ip_context = {}
     ip_context['ID'] = response_data.get('id', '')
@@ -476,6 +457,22 @@ def gen_context_for_add_to_whitelist_or_blacklist(response_data):
     ip_context['CreatedDate'] = response_data.get('created', '')
     ip_context['ExpiryDate'] = response_data.get('expires', '')
     return ip_context
+
+
+def generate_whitelist_or_blacklist_ip_context(response_data):
+    ips_contexts = []
+    for ip_data in response_data:
+        cur_ip_context = gen_context_for_add_to_whitelist_or_blacklist(ip_data)
+        ips_contexts.append(cur_ip_context)
+    return ips_contexts
+
+
+def gen_human_readable_for_add_to_whitelist_or_blacklist(ip_context):
+    human_readable = {}
+    human_readable['Note'] = ip_context['Note']
+    human_readable['Source'] = ip_context['Source']
+    human_readable['Expiration date'] = ip_context['ExpiryDate'] if ip_context['ExpiryDate'] else "Not Set"
+    return human_readable
 
 
 def add_ip_to_whitelist_or_blacklist(url, ip, note, expires=None):
@@ -554,10 +551,19 @@ def test_module():
 
 
 def create_corp_list(list_name, list_type, entries_list, description=None):
-    """
+    """This method sends a request to the Signal Sciences API to create a new corp list.
     Note:
         Illegal entries (not compatible with the type) will result in a 404.
         They will be handled by the http_request function.
+
+    Args:
+        list_name (string): A name for the newly created list.
+        list_type (string): The desired type for the newly created list.
+        entries_list (list): A list of entries, consistent with the given type.
+        description (string): A description for the newly created list.
+
+    Returns:
+        dict. The data returned from the Signal Sciences API in response to the request, loaded into a json.
     """
     validate_create_list_args(list_type, description)
 
@@ -702,7 +708,7 @@ def get_events(siteName, from_time=None, until_time=None, sort=None, since_id=No
 
     validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status)
     url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
-    data_for_request = gen_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
+    data_for_request = create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
                                                     limit, page, action, tag, ip, status)
     events_data_response = http_request('GET', url, data=data_for_request)
 
@@ -1246,7 +1252,7 @@ def whitelist_remove_ip(siteName, ip):
             res = http_request('DELETE', url)
 
     if 'res' not in locals():
-        raise Exception("The IP {0} was not found on the Whitelist".format(ip))
+        return_error("The IP {0} was not found on the Whitelist".format(ip))
 
     return site_whitelist
 
@@ -1274,7 +1280,7 @@ def blacklist_remove_ip(siteName, ip):
             res = http_request('DELETE', url)
 
     if 'res' not in locals():
-        raise Exception("The IP {0} was not found on the Blacklist".format(ip))
+        return_error("The IP {0} was not found on the Blacklist".format(ip))
 
     return site_blacklist
 
