@@ -135,7 +135,7 @@ def format_alerts(alerts):
     }
     for alert in alerts:
         hr += tableToMarkdown('Found Alert', alert, headerTransform=string_to_table_header, removeNull=True)
-        ec['Extrahop']['Alert'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
+        ec['ExtraHop']['Alert'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
     if len(alerts) == 0:
         demisto.results('No results were found')
     else:
@@ -158,15 +158,15 @@ def format_device_results(data):
     for device in data:
         hr = {}
         if 'id' in device:
-            hr['ID'] = device['id']
+            hr['ID'] = device.get('id')
         if 'display_name' in device:
-            hr['Display Name'] = device['display_name']
+            hr['Display Name'] = device.get('display_name')
         if 'ipaddr4' in device:
-            hr['IP Address'] = device['ipaddr4']
+            hr['IP Address'] = device.get('ipaddr4')
         if 'macaddr' in device:
-            hr['MAC Address'] = device['macaddr']
+            hr['MAC Address'] = device.get('macaddr')
         if 'vendor' in device:
-            hr['Vendor'] = device['vendor']
+            hr['Vendor'] = device.get('vendor')
         hr_table.append(hr)
         ec['ExtraHop']['Device'].append(createContext(device, keyTransform=string_to_context_key, removeNull=True))
     demisto.results({
