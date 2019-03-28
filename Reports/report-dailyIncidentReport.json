@@ -10,7 +10,7 @@
     },
     "incident.occurred": {
       "type": "date",
-      "value": "02 Jan 2006"
+      "value": "Mon, 02 Jan 2006 15:04:05 MST"
     },
     "incident.severity.0.5": {
       "type": "string",
@@ -812,6 +812,7 @@
   "type": "pdf",
   "createdBy": "DBot",
   "tags": [],
+  "releaseNotes": "changed occurred time format in decoder",
   "fromVersion": "3.5.0",
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
   "name": "Daily incidents",

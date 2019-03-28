@@ -22,10 +22,23 @@ class StructureValidator(object):
         file_path (str): the path to the file we are examining at the moment.
         is_added_file (bool): whether the file is modified or added.
     """
+    VERSION_SCHEMAS = [
+        INTEGRATION_REGEX,
+        PLAYBOOK_REGEX,
+        SCRIPT_REGEX,
+        INTEGRATION_YML_REGEX,
+        WIDGETS_REGEX,
+        DASHBOARD_REGEX,
+        CLASSIFIER_REGEX,
+        SCRIPT_YML_REGEX,
+        INCIDENT_FIELD_REGEX,
+        MISC_REGEX
+    ]
     SKIPPED_SCHEMAS = [
         TEST_DATA_REGEX,
         MISC_REGEX,
         IMAGE_REGEX,
+        DESCRIPTION_REGEX,
         PIPFILE_REGEX,
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
@@ -149,7 +162,7 @@ class StructureValidator(object):
                 version_number = yaml_dict.get('version')
 
         elif file_extension == '.json':
-            if checked_type(self.file_path):
+            if checked_type(self.file_path, self.VERSION_SCHEMAS):
                 file_name = os.path.basename(self.file_path)
                 json_dict = get_json(self.file_path)
                 if file_name == "reputations.json":
