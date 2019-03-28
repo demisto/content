@@ -1090,8 +1090,12 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
-
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2_with_port_configuration"
         },
         {
             "integrations": "mysql",
