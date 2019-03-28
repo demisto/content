@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 583280a6-547a-4c77-898b-2bb5e747047b
+    taskid: 17da5948-b066-4eb6-8dbc-098f4e736cd0
     type: start
     task:
-      id: 583280a6-547a-4c77-898b-2bb5e747047b
+      id: 17da5948-b066-4eb6-8dbc-098f4e736cd0
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 72942f3b-836c-4825-8d1a-ae06b75405d3
+    taskid: efda3edf-fa42-4121-8f0e-f02ee03924c1
     type: regular
     task:
-      id: 72942f3b-836c-4825-8d1a-ae06b75405d3
+      id: efda3edf-fa42-4121-8f0e-f02ee03924c1
       version: -1
       name: Fetch from instance
       scriptName: FetchFromInstance
@@ -57,10 +57,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 2158cb97-17f2-4ed9-8601-7cacfda01021
+    taskid: 25ef8a72-cd82-4954-8969-44db4e5b80ea
     type: regular
     task:
-      id: 2158cb97-17f2-4ed9-8601-7cacfda01021
+      id: 25ef8a72-cd82-4954-8969-44db4e5b80ea
       version: -1
       name: Get multiple detections by IDs
       script: '|||crowdstrike-search-detection'
@@ -86,10 +86,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 11398aa8-e9dd-4174-89db-fd54a5115736
+    taskid: 124ea820-c127-4305-84ec-a173dfca2374
     type: condition
     task:
-      id: 11398aa8-e9dd-4174-89db-fd54a5115736
+      id: 124ea820-c127-4305-84ec-a173dfca2374
       version: -1
       name: Assert 2 detections were fetched
       type: condition
@@ -125,10 +125,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: abd9f4e6-3d1e-4ecb-81e3-cd05ed656260
+    taskid: 630b5708-38f4-4f9d-8dc6-32e19f4aca50
     type: regular
     task:
-      id: abd9f4e6-3d1e-4ecb-81e3-cd05ed656260
+      id: 630b5708-38f4-4f9d-8dc6-32e19f4aca50
       version: -1
       name: Get behavior
       script: '|||crowdstrike-get-behavior'
@@ -153,10 +153,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: b12ea73d-127e-4039-824b-123fd54c56ac
+    taskid: 4f1a6911-4c86-4c0b-8a3d-27ffbddd7283
     type: condition
     task:
-      id: b12ea73d-127e-4039-824b-123fd54c56ac
+      id: 4f1a6911-4c86-4c0b-8a3d-27ffbddd7283
       version: -1
       name: Assert 'known_malware' scenario
       type: condition
@@ -190,10 +190,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: a86f199d-be8d-4fa4-8115-5aaa502ff3cc
+    taskid: b3915a44-5892-42dd-8882-efc242e878c5
     type: regular
     task:
-      id: a86f199d-be8d-4fa4-8115-5aaa502ff3cc
+      id: b3915a44-5892-42dd-8882-efc242e878c5
       version: -1
       name: Get multiple devices
       script: '|||crowdstrike-search-device'
@@ -207,7 +207,7 @@ tasks:
       filter: {}
       hostname: {}
       ids:
-        simple: 026d1723f680460652c6317f367d4b5f
+        simple: 336474ea6a524e7c68575f6508d84781,459146dbe524472e73751a43c63324f3
       platfrom_name: {}
       site_name: {}
       status: {}
@@ -223,10 +223,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 8807ac07-4dba-4036-8eb4-93a7fbd73444
+    taskid: 79f6c85a-283f-4a0f-8608-ad9b53190aa0
     type: condition
     task:
-      id: 8807ac07-4dba-4036-8eb4-93a7fbd73444
+      id: 79f6c85a-283f-4a0f-8608-ad9b53190aa0
       version: -1
       name: Assert 2 devices were fetched
       type: condition
@@ -262,10 +262,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: e6df1c51-5558-4307-8edf-420b8aa60103
+    taskid: 43923626-c7c9-49a0-8efc-b17ec98cc14f
     type: title
     task:
-      id: e6df1c51-5558-4307-8edf-420b8aa60103
+      id: 43923626-c7c9-49a0-8efc-b17ec98cc14f
       version: -1
       name: Done
       type: title

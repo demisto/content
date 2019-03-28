@@ -34,6 +34,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: '15'
+  display: Max incidents per fetch
+  name: incidents_per_fetch
+  required: false
+  type: 0
 description: The Falcon Query API (formerly known as the Falcon Firehose API)
 detaileddescription: 'To get an API key please contact the crowdstrike support: support@crowdstrike.com'
 display: CrowdStrike Query
@@ -345,6 +350,7 @@ script:
     }
     # Note: True life time is actually 30 mins
     TOKEN_LIFE_TIME = 28
+    INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
     # Remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -885,20 +891,21 @@ script:
             detections_ids = demisto.get(get_detections(filter_arg=fetch_query), 'resources')
         else:
             detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
-
         incidents = []
-        raw_res = get_detections_entities(detections_ids)
-        if "resources" in raw_res:
-            for detection in demisto.get(raw_res, "resources"):
-                incident = detection_to_incident(detection)
-                incident_date = incident['occurred']
-                incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
-                # Update last run and add incident if the incident is newer than last fetch
-                if incident_date_timestamp > last_fetch_timestamp:
-                    last_fetch = incident_date
-                incidents.append(incident)
-
-        demisto.setLastRun({'first_behavior_time': last_fetch})
+        if detections_ids:
+            # Limit the results to INCIDENTS_PER_FETCH`z
+            detections_ids = detections_ids[0:INCIDENTS_PER_FETCH]
+            raw_res = get_detections_entities(detections_ids)
+            if "resources" in raw_res:
+                for detection in demisto.get(raw_res, "resources"):
+                    incident = detection_to_incident(detection)
+                    incident_date = incident['occurred']
+                    incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
+                    # Update last run and add incident if the incident is newer than last fetch
+                    if incident_date_timestamp > last_fetch_timestamp:
+                        last_fetch = incident_date
+                    incidents.append(incident)
+            demisto.setLastRun({'first_behavior_time': last_fetch})
         return incidents
 
 
@@ -989,7 +996,7 @@ script:
         d_args = demisto.args()
         detections_ids = argToList(d_args.get('ids'))
         if not detections_ids:
-            filter_arg = d_args.get('filter')
+            filter_arg = d_args.gcet('filter')
             if not filter_arg:
                 return_error('Command Error: Please provide at least one argument.')
             detections_ids = get_detections(filter_arg=filter_arg).get('resources')
