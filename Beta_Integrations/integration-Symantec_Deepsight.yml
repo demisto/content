@@ -32,6 +32,8 @@ script:
     import requests
     import json
 
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
     ''' Global Variables '''
     APIKEY = demisto.params()['apikey']
