@@ -17,17 +17,18 @@ APIKEY = demisto.params().get('apikey')
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '7 days')
 BASE_URL = SERVER + '/api/v1/'
 HEADERS = {
     'Accept': 'application/json',
     'Authorization': 'ExtraHop apikey={}'.format(APIKEY)
 }
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# if not demisto.params().get('proxy'):
+#     del os.environ['HTTP_PROXY']
+#     del os.environ['HTTPS_PROXY']
+#     del os.environ['http_proxy']
+#     del os.environ['https_proxy']
+
+# 'response' is a container for paginated results
 response = []
 
 ''' HELPER FUNCTIONS '''
@@ -46,10 +47,10 @@ def http_request(method, url_suffix, data=None, payload=None):
     # Handle error responses gracefully
     if res.status_code == 204:
         return demisto.results('Successful Modification')
-    if demisto.command() == 'extrahop-add-alert' or 'extrahop-modify-alert' and res.status_code == 400:
+    if demisto.command() == 'extrahop-add-alert-rule' or 'extrahop-modify-alert-rule' and res.status_code == 400:
         resp = res.json()
         return_error('Error in request format - [%s]' % resp['error_message'])
-    if demisto.command() == 'extrahop-add-alert' or 'extrahop-modify-alert' and res.status_code == 201:
+    if demisto.command() == 'extrahop-add-alert-rule' or 'extrahop-modify-alert-rule' and res.status_code == 201:
         return demisto.results('Alert successfully added')
     elif res.status_code not in {200, 204, 201}:
         return_error('Error in API call to ExtraHop [%d] - %s' % (res.status_code, res.reason))
@@ -57,15 +58,6 @@ def http_request(method, url_suffix, data=None, payload=None):
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
-
-
-def item_to_incident(item):
-    epoch_occured = item.get('mod_time')
-    incident = {
-        'name': item.get('name'),
-        'occurred': timestamp_to_datestring(epoch_occured),
-        'rawJSON': json.dumps(item)}
-    return incident
 
 
 def test_module():
@@ -135,44 +127,55 @@ def devices():
 
 
 def format_alerts(alerts):
-    for alert in alerts:
-        hr = tableToMarkdown('Found Alert', alert, headerTransform=string_to_table_header, removeNull=True)
-        ec = {
-            "Extrahop": {
-                "Alert": createContext(alert, keyTransform=string_to_context_key, removeNull=True)
-            }
+    hr = ''
+    ec = {
+        "ExtraHop": {
+            "Alert": []
         }
+    }
+    for alert in alerts:
+        hr += tableToMarkdown('Found Alert', alert, headerTransform=string_to_table_header, removeNull=True)
+        ec['Extrahop']['Alert'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
+    if len(alerts) == 0:
+        demisto.results('No results were found')
+    else:
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
-            'Contents': alert,
+            'Contents': alerts,
             'HumanReadable': hr,
             'EntryContext': ec
         })
-    if len(alerts) == 0:
-        demisto.results('No results were found')
 
 
 def format_device_results(data):
-    for device in data:
-        hr = tableToMarkdown('Found Device', device, headerTransform=string_to_table_header, removeNull=True)
-        ec = {
-            "Extrahop": {
-                "Device": createContext(device, keyTransform=string_to_context_key, removeNull=True)
-            }
+    hr_table = []
+    ec = {
+        "ExtraHop": {
+            "Device": []
         }
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': device,
-            'HumanReadable': hr,
-            'EntryContext': ec
-        })
-
-
-def devices_command():
-    found_devices = devices()
-    format_device_results(found_devices)
+    }
+    for device in data:
+        hr = {}
+        if 'id' in device:
+            hr['ID'] = device['id']
+        if 'display_name' in device:
+            hr['Display Name'] = device['display_name']
+        if 'ipaddr4' in device:
+            hr['IP Address'] = device['ipaddr4']
+        if 'macaddr' in device:
+            hr['MAC Address'] = device['macaddr']
+        if 'vendor' in device:
+            hr['Vendor'] = device['vendor']
+        hr_table.append(hr)
+        ec['ExtraHop']['Device'].append(createContext(device, keyTransform=string_to_context_key, removeNull=True))
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': data,
+        'HumanReadable': tableToMarkdown('Devices Found', hr_table),
+        'EntryContext': ec
+    })
 
 
 def whitelist_modify(add, remove):
@@ -189,55 +192,10 @@ def whitelist_modify(add, remove):
     return res
 
 
-def whitelist_modify_command():
-    add = demisto.args().get('add')
-    remove = demisto.args().get('remove')
-    whitelist_modify(add, remove)
-
-
 def whitelist_retrieve():
     res_raw = http_request('GET', 'whitelist/devices')
     res = res_raw.json()
     return res
-
-
-def whitelist_retrieve_command():
-    res = whitelist_retrieve()
-    if len(res) == 0:
-        demisto.results('No devices found in whitelist')
-    elif len(res) > 0:
-        format_device_results(res)
-
-
-def query_records_command():
-    field = demisto.args().get('field')
-    value = demisto.args().get('value')
-    operator = demisto.args().get('operator')
-    query_from = demisto.args().get('query_from')
-    limit = demisto.args().get('limit')
-    res = query_records(field, value, operator, query_from, limit)
-    source = res[0]['records']
-    hr = ''
-    ec = {
-        "ExtraHop": {
-            "Query": []
-        }
-    }
-    for record in source:
-        hr += tableToMarkdown('Incident result for ID {}'.format(record['_id']), record['_source'])
-        ec['ExtraHop']['Query'].append(createContext(record, keyTransform=string_to_context_key, removeNull=True))
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': source,
-        'HumanReadable': hr,
-        'EntryContext': createContext(ec, removeNull=True)
-    })
-
-
-def get_alerts_command():
-    res = get_alerts()
-    format_alerts(res)
 
 
 def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
@@ -328,26 +286,54 @@ def modify_alert_command():
               param, param2, alert_id)
 
 
-def fetch_incidents():
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time')
+def get_alerts_command():
+    res = get_alerts()
+    format_alerts(res)
 
-    # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    incidents = []
-    items = get_alerts()
-    for item in items:
-        incident = item_to_incident(item)
-        incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_date > last_fetch:
-            last_fetch = incident_date
-            incidents.append(incident)
+def whitelist_modify_command():
+    add = demisto.args().get('add')
+    remove = demisto.args().get('remove')
+    whitelist_modify(add, remove)
 
-    demisto.setLastRun({'time': last_fetch})
-    demisto.incidents(incidents)
+
+def query_records_command():
+    field = demisto.args().get('field')
+    value = demisto.args().get('value')
+    operator = demisto.args().get('operator')
+    query_from = demisto.args().get('query_from')
+    limit = demisto.args().get('limit')
+    res = query_records(field, value, operator, query_from, limit)
+    source = res[0]['records']
+    hr = ''
+    ec = {
+        "ExtraHop": {
+            "Query": []
+        }
+    }
+    for record in source:
+        hr += tableToMarkdown('Incident result for ID {}'.format(record['_id']), record['_source'])
+        ec['ExtraHop']['Query'].append(createContext(record, keyTransform=string_to_context_key, removeNull=True))
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': source,
+        'HumanReadable': hr,
+        'EntryContext': createContext(ec, removeNull=True)
+    })
+
+
+def whitelist_retrieve_command():
+    res = whitelist_retrieve()
+    if len(res) == 0:
+        demisto.results('No devices found in whitelist')
+    elif len(res) > 0:
+        format_device_results(res)
+
+
+def devices_command():
+    found_devices = devices()
+    format_device_results(found_devices)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -356,9 +342,7 @@ try:
     if demisto.command() == 'test-module':
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'extrahop-get-alerts':
+    elif demisto.command() == 'extrahop-get-alert-rules':
         get_alerts_command()
     elif demisto.command() == 'extrahop-query':
         query_records_command()
@@ -368,9 +352,9 @@ try:
         whitelist_modify_command()
     elif demisto.command() == 'extrahop-whitelist-retrieve':
         whitelist_retrieve_command()
-    elif demisto.command() == 'extrahop-add-alert':
+    elif demisto.command() == 'extrahop-add-alert-rule':
         add_alert_command()
-    elif demisto.command() == 'extrahop-modify-alert':
+    elif demisto.command() == 'extrahop-modify-alert-rule':
         modify_alert_command()
 
 # Log exceptions
