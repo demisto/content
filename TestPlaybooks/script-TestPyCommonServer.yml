@@ -390,7 +390,7 @@ script: |-
       temp_dictionary = {"a": "b", "c": 4, "e": [], "f": {}, "g": None, "h": "", "i": [1,], "k": ()}
       expected_dictionary = {"a": "b", "c": 4, "i": [1,]}
 
-      deleteNullsFromDictionary(temp_dictionary)
+      removeNullsFromDictionary(temp_dictionary)
 
       if expected_dictionary != temp_dictionary:
           return_error('deleteNullsFromDictionary test failed, {} is not equal to {}'.format(str(deleteNullsFromDictionary), str(expected_dictionary)))

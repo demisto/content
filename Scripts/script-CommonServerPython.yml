@@ -773,7 +773,7 @@ script: |-
 
   tblToMd = tableToMarkdown
 
-  def deleteNullsFromDictionary(dict):
+  def removeNullsFromDictionary(dict):
       """
           Remove Null values from a dictionary. (updating the given dictionary)
 
