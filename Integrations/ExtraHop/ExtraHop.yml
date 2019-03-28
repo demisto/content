@@ -21,19 +21,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 7 days
-  display: Days of initial alerts to fetch
-  name: fetch_time
-  required: true
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 description: ExtraHop performs real-time stream analysis of the packets that carry
   data across a network.
 display: ExtraHop
@@ -43,7 +30,7 @@ script:
   - deprecated: false
     description: Get alerts from ExtraHop
     execution: false
-    name: extrahop-get-alerts
+    name: extrahop-get-alert-rules
     outputs:
     - contextPath: Extrahop.Alert.Operator
       description: The logical operator applied when comparing the value of the operand
@@ -623,7 +610,7 @@ script:
     deprecated: false
     description: Add Alert to ExtraHop
     execution: false
-    name: extrahop-add-alert
+    name: extrahop-add-alert-rule
   - arguments:
     - default: false
       description: The unique identifier for the alert.
@@ -829,8 +816,8 @@ script:
     deprecated: false
     description: Modify alert in ExtraHop
     execution: false
-    name: extrahop-modify-alert
-  isfetch: true
+    name: extrahop-modify-alert-rule
+  isfetch: false
   runonce: false
   script: ''
   type: python
