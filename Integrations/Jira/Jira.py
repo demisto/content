@@ -61,20 +61,24 @@ def jira_req(method, resource_url, body='', link=False):
             rj = result.json()
             if rj.get('errorMessages'):
                 return_error(
-                    'Status code: {}\nMessage: {}'.format(result.status_code, ','.join(rj['errorMessages'])))
+                    'Status code: {status_code}\nMessage: {message}'.format(status_code=result.status_code,
+                                                                            message=','.join(rj['errorMessages'])))
             elif rj.get('errors'):
                 return_error(
-                    'Status code: {}\nMessage: {}'.format(result.status_code, ','.join(rj['errors'].values())))
+                    'Status code: {status_code}\nMessage: {message}'.format(status_code=result.status_code,
+                                                                            message=','.join(rj['errors'].values())))
             else:
-                return_error('Status code: {}\nError text: {}'.format(result.status_code, result.text))
+                return_error('Status code: {status_code}\nError text: {message}'.format(status_code=result.status_code,
+                                                                                        message=result.text))
         except ValueError as ve:
             demisto.debug(str(ve))
             if result.status_code == 401:
-                return_error('Unauthorized request, please check parameters')
+                return_error('Unauthorized request, please check authentication related parameters')
             elif result.status_code == 404:
                 return_error("Server is unreachable, please insure the URL is correct")
             else:
-                return_error("Failed reaching the server. status code: {}".format(result.status_code))
+                return_error(
+                    "Failed reaching the server. status code: {status_code}".format(status_code=result.status_code))
 
     return result
 
@@ -94,7 +98,7 @@ def run_query(query, start_at='', max_results=None):
         ]
     }
     """
-    demisto.debug('querying with: {}'.format(query))
+    demisto.debug('querying with: {query}'.format(query=query))
     url = BASE_URL + 'rest/api/latest/search/'
     query_params = {
         'jql': query,
@@ -114,16 +118,19 @@ def run_query(query, start_at='', max_results=None):
 
     except ValueError as ve:
         demisto.debug(ve.message)
-        return_error('Failed to send request, reason: {}'.format(result.reason))
+        return_error('Failed to send request, reason: {reason}'.format(reason=result.reason))
 
 
 @logger
 def get_id_offset():
+    """
+    gets the ID Offset, i.e., the first issue id. used to fetch correctly all issues
+    """
     query = "ORDER BY created ASC"
     j_res = run_query(query=query, max_results=1)
     first_issue_id = j_res.get('issues')[0].get('id')
     return_outputs(
-        readable_output="ID Offset: {}".format(first_issue_id),
+        readable_output="ID Offset: {idOffSet}".format(idOffSet=first_issue_id),
         outputs={'Ticket.idOffSet': first_issue_id},
     )
 
@@ -150,7 +157,7 @@ def expand_urls(data, depth=0):
 
 
 @logger
-def generate_md_context_get_issue(data, custom_fields=None):
+def generate_md_context_get_issue(data):
     get_issue_obj = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -254,7 +261,7 @@ def create_incident_from_ticket(issue):
 
     name = demisto.get(issue, 'fields.summary')
     if name:
-        name = "Jira issue: {}".format(issue.get('id'))
+        name = "Jira issue: {issue_id}".format(issue_id=issue.get('id'))
 
     severity = 0
     if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
@@ -287,73 +294,78 @@ def get_project_id(project_key='', project_name=''):
 
 
 @logger
-def get_issue_fields(**kwargs):
+def get_issue_fields(issue_creating=False, **issue_args):
+    """
+    refactor issues's argument as received from demisto into jira acceptable format, and back.
+    :param issue_creating: flag that indicates this function is called when creating an issue
+    :param issue_args: issue argument
+    """
     issue = {}
-    if 'issueJson' in kwargs:
-        issue = json.dumps(kwargs['issueJson'])
+    if 'issueJson' in issue_args:
+        issue = json.dumps(issue_args['issueJson'])
 
     if not issue.get('fields'):
         issue['fields'] = {}
 
-    if not issue['fields'].get('issuetype') and demisto.command() == 'jira-create-issue':
+    if not issue['fields'].get('issuetype') and issue_creating:
         issue['fields']['issuetype'] = {}
 
-    if kwargs.get('summary'):
-        issue['fields']['summary'] = kwargs['summary']
+    if issue_args.get('summary'):
+        issue['fields']['summary'] = issue_args['summary']
 
     if not issue['fields'].get('project'):
         issue['fields']['project'] = {}
 
-    if kwargs.get('projectKey'):
-        issue['fields']['project']['key'] = kwargs.get('projectKey', '')
-    if kwargs.get('projectName'):
-        issue['fields']['project']['name'] = kwargs.get('projectName', '')
+    if issue_args.get('projectKey'):
+        issue['fields']['project']['key'] = issue_args.get('projectKey', '')
+    if issue_args.get('projectName'):
+        issue['fields']['project']['name'] = issue_args.get('projectName', '')
 
-    if demisto.command() == 'jira-create-issue':
+    if issue_creating:
         # make sure the key & name are right, and get the corresponding project id & key
         project_id = get_project_id(issue['fields']['project'].get('key', ''),
                                     issue['fields']['project'].get('name', ''))
         issue['fields']['project']['id'] = project_id
 
-    if kwargs.get('issueTypeName'):
-        issue['fields']['issuetype']['name'] = kwargs['issueTypeName'].title()
+    if issue_args.get('issueTypeName'):
+        issue['fields']['issuetype']['name'] = issue_args['issueTypeName'].title()
 
-    if kwargs.get('issueTypeId'):
-        issue['fields']['issuetype']['id'] = kwargs['issueTypeId']
+    if issue_args.get('issueTypeId'):
+        issue['fields']['issuetype']['id'] = issue_args['issueTypeId']
 
-    if kwargs.get('parentIssueId'):
+    if issue_args.get('parentIssueId'):
         if not issue['fields'].get('parent'):
             issue['fields']['parent'] = {}
-        issue['fields']['parent']['id'] = kwargs['parentIssueId']
+        issue['fields']['parent']['id'] = issue_args['parentIssueId']
 
-    if kwargs.get('parentIssueKey'):
+    if issue_args.get('parentIssueKey'):
         if not issue['fields'].get('parent'):
             issue['fields']['parent'] = {}
-        issue['fields']['parent']['key'] = kwargs['parentIssueKey']
+        issue['fields']['parent']['key'] = issue_args['parentIssueKey']
 
-    if kwargs.get('description'):
-        issue['fields']['description'] = kwargs['description']
+    if issue_args.get('description'):
+        issue['fields']['description'] = issue_args['description']
 
-    if kwargs.get('labels'):
-        issue['fields']['labels'] = kwargs['labels'].split(",")
+    if issue_args.get('labels'):
+        issue['fields']['labels'] = issue_args['labels'].split(",")
 
-    if kwargs.get('priority'):
+    if issue_args.get('priority'):
         if not issue['fields'].get('priority'):
             issue['fields']['priority'] = {}
-        issue['fields']['priority']['name'] = kwargs['priority']
+        issue['fields']['priority']['name'] = issue_args['priority']
 
-    if kwargs.get('duedate'):
-        issue['fields']['duedate'] = kwargs['duedate']
+    if issue_args.get('duedate'):
+        issue['fields']['duedate'] = issue_args['duedate']
 
-    if kwargs.get('assignee'):
+    if issue_args.get('assignee'):
         if not issue['fields'].get('assignee'):
             issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['name'] = kwargs['assignee']
+        issue['fields']['assignee']['name'] = issue_args['assignee']
 
-    if kwargs.get('reporter'):
+    if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
             issue['fields']['reporter'] = {}
-        issue['fields']['reporter']['name'] = kwargs['reporter']
+        issue['fields']['reporter']['name'] = issue_args['reporter']
 
     return issue
 
@@ -367,8 +379,10 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
     if get_attachments == 'true' and attachments:
-        attachments_zip = jira_req(method='GET', resource_url='secure/attachmentzip/{}.zip'.format(issue_id)).content
-        demisto.results(fileResult(filename='{}_attachments.zip'.format(j_res.get('id')), data=attachments_zip))
+        attachments_zip = jira_req(method='GET',
+                                   resource_url='secure/attachmentzip/{issue_id}.zip'.format(issue_id=issue_id)).content
+        demisto.results(
+            fileResult(filename='{issue_id}_attachments.zip'.format(issue_id=j_res.get('id')), data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
@@ -394,7 +408,7 @@ def issue_query_command(query, start_at='', max_results=None, headers=''):
 @logger
 def create_issue_command():
     url = 'rest/api/latest/issue'
-    issue = get_issue_fields(**demisto.args())
+    issue = get_issue_fields(issue_creating=True, **demisto.args())
     result = jira_req('POST', url, json.dumps(issue))
     j_res = result.json()
 
@@ -407,7 +421,7 @@ def create_issue_command():
 
 
 @logger
-def edit_issue_command(issue_id, headers=None, status=None, **kwargs):
+def edit_issue_command(issue_id, headers=None, status=None, **_):
     url = 'rest/api/latest/issue/{issue_id}/'.format(issue_id=issue_id)
     issue = get_issue_fields(**demisto.args())
     jira_req('PUT', url, json.dumps(issue))
@@ -430,8 +444,8 @@ def edit_status(issue_id, status):
             json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
             return jira_req('POST', url, json.dumps(json_body))
 
-    return_error('Status "{}" not found. \n'
-                 'Valid transitions are: {} \n'.format(status, transitions))
+    return_error('Status "{status}" not found. \n'
+                 'Valid transitions are: {transitions} \n'.format(status=status, transitions=transitions))
 
 
 @logger
@@ -510,7 +524,9 @@ def upload_file(entry_id, issue_id):
     )
 
     if not res.ok:
-        return_error('Failed to execute request:{}\nBody: {}'.format(res.status_code, res.text))
+        return_error(
+            'Failed to execute request, status code:{status_code}\nBody: {body}'.format(status_code=res.status_code,
+                                                                                        body=res.text))
 
     return res.json()
 
@@ -562,7 +578,7 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
 
 @logger
 def delete_issue_command(issue_id_or_key):
-    url = 'rest/api/latest/issue/{}'.format(issue_id_or_key)
+    url = 'rest/api/latest/issue/{id_or_key}'.format(id_or_key=issue_id_or_key)
     issue = get_issue_fields(**demisto.args())
     result = jira_req('DELETE', url, json.dumps(issue))
     if result.status_code == 204:
@@ -583,9 +599,9 @@ def test_module():
 
 
 @logger
-def fetch_incidents(query, id_offset=None, fetch_by_created=None, **kwargs):
+def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
-    demisto.debug("last_run: {}".format(last_run) if last_run else 'last_run is empty')
+    demisto.debug("last_run: {last_run}".format(last_run=last_run) if last_run else 'last_run is empty')
     id_offset = last_run.get("idOffset") if (last_run and last_run.get("idOffset")) else id_offset
 
     incidents, max_results = [], 50
