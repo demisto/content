@@ -33,7 +33,7 @@ def create_instance(ami_name):
         instance_id = instance_file.read()
     with open('image_id.txt', 'r') as image_id_file:
         image_data = image_id_file.read()
-        print('Image data is {}.format(image_data))
+        print('Image data is {}'.format(image_data))
         with open("./Tests/images_data.txt", "a") as image_data_file:
             image_data_file.write(
                 '{name} Image info is: {data}\n'.format(name=AMI_NAME_TO_READABLE[ami_name], data=image_data))
