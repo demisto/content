@@ -1095,7 +1095,8 @@
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2_with_port_configuration"
+            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
             "integrations": "mysql",
