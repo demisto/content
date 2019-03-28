@@ -15,13 +15,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
@@ -49,18 +48,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 200
+          "x": 50,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
   "2":
     id: "2"
-    taskid: 25ef8a72-cd82-4954-8969-44db4e5b80ea
+    taskid: 720839bc-e262-4db7-8a1a-f3b161e32158
     type: regular
     task:
-      id: 25ef8a72-cd82-4954-8969-44db4e5b80ea
+      id: 720839bc-e262-4db7-8a1a-f3b161e32158
       version: -1
       name: Get multiple detections by IDs
       script: '|||crowdstrike-search-detection'
@@ -73,13 +72,13 @@ tasks:
     scriptarguments:
       filter: {}
       ids:
-        simple: ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902,ldt:68b5432856c1496d7547947fc7d1aae4:2031680653318830323
+        simple: ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347,ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 200
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -117,8 +116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 400
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -145,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 600
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -182,8 +181,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 790
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -215,8 +214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1000
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -254,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1190
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -275,8 +274,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1370
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 701e8733-a914-4b29-8b27-577de10b508c
+    type: regular
+    task:
+      id: 701e8733-a914-4b29-8b27-577de10b508c
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -286,9 +318,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1385,
-        "width": 920,
-        "x": 180,
+        "height": 1435,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
