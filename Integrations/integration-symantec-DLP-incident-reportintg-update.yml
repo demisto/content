@@ -9,12 +9,12 @@ description: Integration to fetch and update symantec DLP Incidents
 detaileddescription: Symantec DLP integration uses SOAP API to communicate with Enforce
   server to fetch and update  incident Data. uses Zeep package for SOAP Api
 configuration:
-- display: 'credentials '
-  name: credentials
+- display: Username
+  name: Username
   defaultvalue: ""
   type: 9
   required: false
-- display: 'Server Host (ip or hostname. Specify port followed by ":". ie: dlp-host:8443)'
+- display: Server Host (ip address or hostname) eg https://dlp-host:8443
   name: server-ip
   defaultvalue: ""
   type: 0
@@ -35,13 +35,13 @@ configuration:
   defaultvalue: 2 months
   type: 0
   required: false
-- display: 'Saved Report ID'
+- display: Saved Report ID
   name: saved-Report-id
   defaultvalue: ""
   type: 0
   required: false
 script:
-  script: |+
+  script: |
     from requests import Session
     from zeep import Client
     from zeep.transports import Transport
@@ -52,11 +52,9 @@ script:
     from datetime import datetime
     import json
     import requests
-    from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
     requests.packages.urllib3.disable_warnings()
 
-    # hexdump:732073756468656572206b756d6172
 
     class SymantecAuth(AuthBase):
         def __init__(self, user, password, host):
@@ -69,40 +67,42 @@ script:
             else:
                 return r
 
+
     SERVER_IP = demisto.params()['server-ip']
-    USERNAME = demisto.params()['credentials']['identifier']
-    PASSWORD = demisto.params()['credentials']['password']
+    USERNAME = demisto.params()['Username']['identifier']
+    PASSWORD = demisto.params()['Username']['password']
     SAVED_REPORT_ID = demisto.params()['saved-Report-id']
     FETCH_TIME = demisto.params()['fetch_time']
-    SEVERITY = {'high':3,'medium':2,'low':1,'info':5}
+    SEVERITY = {
+        'high': 3,
+        'medium': 2,
+        'low': 1,
+        'info': 5
+    }
 
-    wsdl = 'https://{}/ProtectManager/services/v2011/incidents?wsdl'.format(SERVER_IP)
+    wsdl = '{}/ProtectManager/services/v2011/incidents?wsdl'.format(SERVER_IP)
 
     session = Session()
-    session.auth = SymantecAuth(USERNAME,PASSWORD, "https://{}".format(SERVER_IP))
+    session.auth = SymantecAuth(USERNAME, PASSWORD, SERVER_IP)
     session.verify = False
     cache = SqliteCache(timeout=None)
     transport = Transport(session=session, cache=cache)
 
     client = Client(wsdl=wsdl, transport=transport)
 
-    def  get_incident_id(dtobj):
 
+    def get_inc_list(dtobj):
         if type(dtobj) is datetime:
-            return client.service.incidentList(savedReportId=SAVED_REPORT_ID, incidentCreationDateLaterThan=dtobj)
+            return client.service.incidentList(savedReportId=SAVED_REPORT_ID,
+                                               incidentCreationDateLaterThan=dtobj)
         else:
-            return_error('excpected datetime object')
+            return_error('expected datetime object')
 
 
-
-    def incidentDetail(_id):
-
-        return client.service.incidentDetail(incidentId=_id,includeViolations=True,includeHistory=True)
-
-
-    def incidentBinaries(args):
-
-        return client.service.incidentBinaries(**args)
+    def incident_detail(_id):
+        return client.service.incidentDetail(incidentId=_id,
+                                             includeHistory=True,
+                                             includeViolations=True)
 
 
     def myconverter(o):
@@ -110,80 +110,95 @@ script:
             return o.__str__()
 
 
-    def fetchincidents():
-        last_run=demisto.getLastRun()
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
         if 'lt_time' not in last_run:
-            fetch_time,_ = parse_date_range(FETCH_TIME)
+            fetch_time, _ = parse_date_range(FETCH_TIME)
             last_run['lt_time'] = fetch_time
         else:
-            last_run['lt_time']= datetime.strptime(last_run['lt_time'],'%d/%m/%Y %H:%M:%S.%f')
+            last_run['lt_time'] = datetime.strptime(last_run['lt_time'],
+                                                    '%d/%m/%Y %H:%M:%S.%f')
 
-        incidentids=get_incident_id(last_run['lt_time'])
-        incidents=[]
-        if len(incidentids['incidentId']) > 0:
-            for incident1 in incidentids['incidentId']:
-                inc=incidentDetail(str(incident1))
+        incident_ids = get_inc_list(last_run['lt_time'])
+        incidents = []
+        if len(incident_ids['incidentId']) > 0:
+            for incident_id in incident_ids['incidentId']:
+                inc = incident_detail(str(incident_id))
+                rule_name = inc[0]['incident']['violatedPolicyRule'][0]['ruleName']
+                inc_created = inc[0]['incident']['incidentCreationDate']
                 serialized_obj = helpers.serialize_object(inc[0])
                 incidents.append({
-                    'name':"#"+str(incident1) + " DLP "+ inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated",
-                    'details': json.dumps(serialized_obj,default = myconverter),
-                    'rawJSON': json.dumps(serialized_obj,default = myconverter),
-                    'severity' : SEVERITY[inc[0]['incident']['severity']]
+                    'name': "#" + str(incident_id) + " DLP " + rule_name +
+                            "RULE has been violated",
+                    'details': json.dumps(serialized_obj, default=myconverter),
+                    'rawJSON': json.dumps(serialized_obj, default=myconverter),
+                    'severity': SEVERITY[inc[0]['incident']['severity']]
                 })
-                if inc[0]['incident']['incidentCreationDate'].isoformat() > last_run['lt_time'].isoformat():
-                    demisto.setLastRun({'lt_time':inc[0]['incident']['incidentCreationDate'].strftime("%d/%m/%Y %H:%M:%S.%f")})
+                if inc_created.isoformat() > last_run['lt_time'].isoformat():
+                    demisto.setLastRun(
+                        {'lt_time': inc_created.strftime("%d/%m/%Y %H:%M:%S.%f")}
+                    )
         demisto.incidents(incidents)
 
 
-    def updateIncidents():
+    def update_incident():
         args = demisto.args()
         inc_id = args['incidentId']
         args.pop('incidentId')
         if args['status'] == 'New':
             args['status'] = 'incident.status.New'
-        return client.service.updateIncidents(updateBatch={'batchId':str(random.randint(11111,99999)),'incidentId':inc_id,'incidentAttributes':args})
-
-
-
-    if demisto.command() == 'fetch-incidents':
-        fetchincidents()
-
-    elif demisto.command() =='test-module':
-        try:
-            inc_list = get_incident_id(datetime.now())
-            demisto.results("ok")
-        except:
-            return_error("Invalid instance details")
-
-    elif demisto.command() == 'sdlp-incident-details':
-        inc_details = incidentDetail( demisto.args()['incidentId'])
-        res = helpers.serialize_object(inc_details[0])
-        json_res = json.loads(json.dumps(res,default = myconverter))
-        demisto.results({'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents':json_res,
-            'EntryContext':{'SymantecDLP':{'Incident':json_res}}}
+        return client.service.updateIncidents(
+            updateBatch={'batchId': str(random.randint(11111, 99999)),
+                         'incidentId': inc_id, 'incidentAttributes': args
+                         }
         )
 
-    elif demisto.command() == 'sdlp-update-incident':
-        demisto.results(updateIncidents())
 
-    elif demisto.command() == 'sdlp-incident-binaries':
+    def incident_binaries():
         args = demisto.args()
-        binaries = incidentBinaries(args)
-        if len(binaries["Component"]) > 0 :
+        binaries = client.service.incidentBinaries(**args)
+        if len(binaries["Component"]) > 0:
             for binary in binaries["Component"]:
-                demisto.results(fileResult(binary["name"],binary["content"]))
-                component={"name":binary["name"],"componentId":binary["componentId"],"componentType":binary["componentType"]}
+                demisto.results(fileResult(binary["name"], binary["content"]))
+                component = {"name": binary["name"],
+                             "componentId": binary["componentId"],
+                             "componentType": binary["componentType"]}
                 demisto.results({'ContentsFormat': formats['json'],
-                                'Type': entryTypes['note'],
-                                'Contents':component,
-                                'EntryContext':{'binaries':component}
-                                }
-                            )
+                                 'Type': entryTypes['note'],
+                                 'Contents': component,
+                                 'EntryContext': {'binaries': component}
+                                 }
+                                )
 
         else:
             demisto.results("No binaries for the incident")
+
+
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+
+    elif demisto.command() == 'test-module':
+        try:
+            inc_list = get_inc_list(datetime.now())
+            demisto.results("ok")
+        except Exception as e:
+            return_error(e.args[0])
+
+    elif demisto.command() == 'sdlp-incident-details':
+        inc_details = incident_detail(demisto.args()['incidentId'])
+        res = helpers.serialize_object(inc_details[0])
+        json_res = json.loads(json.dumps(res, default=myconverter))
+        demisto.results({'ContentsFormat': formats['json'],
+                         'Type': entryTypes['note'],
+                         'Contents': json_res,
+                         'EntryContext': {'SymantecDLP': {'Incident': json_res}}}
+                        )
+
+    elif demisto.command() == 'sdlp-update-incident':
+        demisto.results(update_incident())
+
+    elif demisto.command() == 'sdlp-incident-binaries':
+        incident_binaries()
 
     elif demisto.command() == 'sdlp-incident-violations':
         args = demisto.args()
@@ -192,36 +207,30 @@ script:
             for violation in violations[0]["violatingComponent"]:
                 violation = helpers.serialize_object(violation)
                 demisto.results({'ContentsFormat': formats['json'],
-                                    'Type': entryTypes['note'],
-                                    'Contents':json.dumps(violation,),
-                                    'EntryContext':{'ViolationComponents':violation}
-                                    }
+                                 'Type': entryTypes['note'],
+                                 'Contents': json.dumps(violation, ),
+                                 'EntryContext': {'ViolationComponents': violation}
+                                 }
                                 )
 
     elif demisto.command() == 'sdlp-list-incident-status':
         statusList = client.service.listIncidentStatus()
         demisto.results({'ContentsFormat': formats['json'],
-                                    'Type': entryTypes['note'],
-                                    'Contents':statusList,
-                                    'EntryContext':{'incidentStatusList':statusList}
-                                    }
-                                )
+                         'Type': entryTypes['note'],
+                         'Contents': statusList,
+                         'EntryContext': {'incidentStatusList': statusList}
+                         }
+                        )
 
 
     elif demisto.command() == 'sdlp-list-custom-attributes':
         customAttributes = client.service.listCustomAttributes()
         demisto.results({'ContentsFormat': formats['json'],
-                                    'Type': entryTypes['note'],
-                                    'Contents':customAttributes,
-                                    'EntryContext':{'customAttributes':customAttributes}
-                                    }
-                                )
-
-
-
-
-
-
+                         'Type': entryTypes['note'],
+                         'Contents': customAttributes,
+                         'EntryContext': {'customAttributes': customAttributes}
+                         }
+                        )
   type: python
   commands:
   - name: sdlp-incident-details
