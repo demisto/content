@@ -1,7 +1,7 @@
 id: test_Qradar
 version: -1
 name: test_Qradar
-fromversion: 4.1.0
+toversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -574,7 +574,7 @@ tasks:
       - "1"
       - "27"
       - "26"
-      - "37"
+      - "38"
     scriptarguments:
       all:
         simple: "yes"
@@ -934,34 +934,6 @@ tasks:
         }
       }
     note: false
-  "37":
-    id: "37"
-    taskid: 1acde938-be32-41ba-8848-0b391e524d5a
-    type: regular
-    task:
-      id: 1acde938-be32-41ba-8848-0b391e524d5a
-      version: -1
-      name: Test fetch incidents
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      brand_name:
-        simple: QRadar
-      instance_name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2650,
-          "y": 370
-        }
-      }
-    note: false
   "38":
     id: "38"
     taskid: 6e2ea1b2-ac80-4787-8f33-4a185f07c624
@@ -969,7 +941,7 @@ tasks:
     task:
       id: 6e2ea1b2-ac80-4787-8f33-4a185f07c624
       version: -1
-      name: Fetch test was completed successfuly
+      name: Fetch test was skipped on older version
       type: title
       iscommand: false
       brand: ""
