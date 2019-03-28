@@ -961,13 +961,13 @@ script:
         if item.headers:
             headers = []
             for header in item.headers:
-                labels.append({'type': 'Email/Header/' + header.name, 'value': header.value})
-                headers.append(header.name + ": " + header.value)
+                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
+                headers.append("{}: {}".format(header.name, header.value))
             labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
         if item.message_id:
-            labels.append({'type': 'Email/MessageId', 'value': item.message_id})
+            labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
 
         if item.item_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})
