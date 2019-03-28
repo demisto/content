@@ -99,12 +99,7 @@ def camel_case_to_spaces(string_in_camel_case):
         A new string, separated by spaces and every word starts with a capital letter
     """
     string_with_underscores = camel_case_to_underscore(string_in_camel_case)
-    words_in_string = string_with_underscores.split('_')
-    new_string_with_spaces = ""
-    for word in words_in_string:
-        new_string_with_spaces += "{0} ".format(word)
-    # remove last unnecessary space
-    new_string_with_spaces = new_string_with_spaces[:-1]
+    new_string_with_spaces = string_with_underscores.replace('_', ' ')
     return new_string_with_spaces.title()
 
 
@@ -709,7 +704,7 @@ def get_events(siteName, from_time=None, until_time=None, sort=None, since_id=No
     validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status)
     url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
     data_for_request = create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
-                                                    limit, page, action, tag, ip, status)
+                                                       limit, page, action, tag, ip, status)
     events_data_response = http_request('GET', url, data=data_for_request)
 
     return events_data_response
