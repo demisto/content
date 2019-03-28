@@ -966,8 +966,8 @@ script:
         if item.headers:
             headers = []
             for header in item.headers:
-                labels.append({'type': 'Email/Header/' + header.name, 'value': header.value})
-                headers.append(header.name + ": " + header.value)
+                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': header.value})
+                headers.append("{}: {}".format(header.name, header.value))
             labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id

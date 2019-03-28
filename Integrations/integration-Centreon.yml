@@ -37,10 +37,7 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     if not demisto.params().get('proxy', False):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
+        disable_proxy()
 
     ''' GLOBAL VARS '''
     SERVER_NAME=demisto.params()['server']
@@ -199,6 +196,8 @@ script:
         LOG(e.message)
         LOG.print_log()
         raise
+    finally:
+        enable_proxy()
   type: python
   commands:
   - name: centreon-get-host-status
@@ -323,6 +322,6 @@ script:
       description: Service state
     description: All the monitoring information regarding services
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Fixed proxy logic"
 tests:
     - Centreon-Test-Playbook
