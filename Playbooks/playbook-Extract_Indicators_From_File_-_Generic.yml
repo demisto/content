@@ -8,7 +8,7 @@ description: |-
   - PDF
   - TXT
   - HTM, HTML
-  - DOC, DOCX 
+  - DOC, DOCX
 starttaskid: "0"
 tasks:
   "0":
