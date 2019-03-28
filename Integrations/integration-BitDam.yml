@@ -228,9 +228,18 @@ script:
         response = requests.get(url, headers=auth_headers, verify=not UNSECURE)
         return response
 
+    def upload_test_file_to_scan():
+        auth_headers = get_auth_headers()
+        d = {
+            "file_name": "demisto.txt",
+            "file_data_base64": 'ZGVtaXN0bw=='
+        }
+        url = "{}{}".format(get_url_base_with_trailing_slash(), SCAN_FILE_URL)
+        response = requests.post(url, headers=auth_headers, json=d, verify=not UNSECURE)
+        return response
 
     def test_module():
-        response = get_file_verdict_command('111')
+        response = upload_test_file_to_scan()
         if RESPONSE_CODE_OK == response.status_code:
             return True
         raise Exception("Status code - {}, Error- '{}'".format(str(response.status_code),
