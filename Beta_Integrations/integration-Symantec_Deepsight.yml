@@ -544,6 +544,7 @@ script:
         status_data_json = json.loads(status_data.content)
         return status_data_json
 
+
     # get results of request status - determine current limit usage of the api license
     def get_request_status_command():
         status_data_json = get_request_status()
@@ -565,21 +566,14 @@ script:
         })
 
 
-    def login():
-        login_do_response = requests.get(BASE_URL + USAGE_LIMIT_STATUS_SUFFIX, headers=HEADERS, verify=VERIFY)
-        login_status = login_do_response.status_code
-        if login_status == requests.codes.ok:
-            return True
-        else:
-            result = return_code_match(login_status)
-            return result
-
     def test_module():
-        result = login()
-        if result == True:
-            demisto.results("ok")
-        else:
-            return_error("Test Failed" + str(result))
+        try:
+            result = get_ip_data("5.79.86.16")
+            ip = result["ip"]
+        except Exception, e:
+            raise Exception("Test failed: API request did not succeed")
+        demisto.results('ok')
+
 
     LOG('command is %s' % (demisto.command(), ))
     try:
