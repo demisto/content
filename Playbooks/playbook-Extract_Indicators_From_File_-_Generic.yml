@@ -365,17 +365,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: application/pdf
+                        simple: pdf
                     ignorecase: true
-                  - operator: containsString
+                - - operator: containsString
                     left:
                       value:
                         simple: File.Info
                       iscontext: true
                     right:
                       value:
-                        simple: application/pdf
-                    ignorecase: true
+                        simple: pdf
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -664,3 +663,4 @@ outputs:
   type: unknown
 tests:
   - Extract Indicators From File - test
+releaseNotes: 'fix Is there a PDF file task - check if file.type and file.info contains pdf'
