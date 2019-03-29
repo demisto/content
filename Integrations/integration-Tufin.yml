@@ -202,10 +202,12 @@ script:
                 return_json['objects'].append({'object_name': obj['display_name'], 'device': device_name(device_json, obj['device_id']), 'comment': obj['comment']})
         else:
             entry['HumanReadable'] = 'No Results'
+            entry['EntryContext']['Tufin.ObjectResolve.NumberOfObjects'] = 0
             return entry
 
         # Return to Demisto
         entry['Contents'] = json.dumps(return_json)
+        entry['EntryContext']['Tufin.ObjectResolve.NumberOfObjects'] = total
         entry['HumanReadable'] = tableToMarkdown('Object Lookup for {}'.format(querystring['exact_subnet']), return_json['objects'], ['object_name', 'device', 'comment'], underscoreToCamelCase, removeNull=True)
         # Send back to Demisto inside function
         return entry
@@ -343,6 +345,10 @@ script:
     - name: ip
       required: true
       description: IP Address to Resolve to Network Object
+    outputs:
+    - contextPath: Tufin.ObjectResolve.NumberOfObjects
+      description: Number of objects that resolve to given IP address.
+      type: number
     description: Resolve IP address to Network Object
   - name: tufin-policy-search
     arguments:
