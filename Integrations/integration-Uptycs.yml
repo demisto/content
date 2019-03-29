@@ -1198,6 +1198,35 @@ script:
 
         return entry
 
+    def uptycs_get_asset_tags():
+        '''set a tag on an asset'''
+        http_method='get'
+        api_call = ('/assets/%s' % demisto.args().get('asset_id'))
+        return restcall(http_method, api_call).get('tags')
+
+    def uptycs_get_asset_tags_command():
+        query_results = uptycs_get_asset_tags()
+        human_readable = tableToMarkdown('Uptycs Asset Tags for asset id: %s' % demisto.args().get('asset_id'),
+            query_results, 'Tags')
+        context = query_results
+        #context_entries_to_keep = ['hostName', 'tags']
+
+        #if context != None:
+        #    for key in context.keys():
+        #        if key not in context_entries_to_keep:
+        #            context.pop(key, None)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.AssetTags': context
+                    }
+                }
+
+        return entry
+
     def uptycs_set_asset_tag():
         '''set a tag on an asset'''
         http_method='get'
@@ -1705,6 +1734,9 @@ script:
 
     if demisto.command() == 'uptycs-set-alert-status':
         demisto.results(uptycs_set_alert_status_command())
+
+    if demisto.command() == 'uptycs-get-asset-tags':
+        demisto.results(uptycs_get_asset_tags_command())
 
     if demisto.command() == 'uptycs-set-asset-tag':
         demisto.results(uptycs_set_asset_tag_command())
@@ -2639,6 +2671,12 @@ script:
       description: asset id for asset which ran the specified process
       type: string
     description: get information for a particular socket event
+  - name: uptycs-get-asset-tags
+    arguments:
+    - name: asset_id
+      required: true
+      description: Uptycs asset id for the asset you are looking for.
+    description: Retrieve a list of tags for a particular asset
   dockerimage: bkschmolluptycs/demisto_uptycs:latest
   isfetch: true
   runonce: true
