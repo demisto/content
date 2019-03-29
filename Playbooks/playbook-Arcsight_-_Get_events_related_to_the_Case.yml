@@ -35,6 +35,7 @@ tasks:
     id: "1"
     taskid: f8237bac-e860-407c-810a-1a5ce6e14802
     type: regular
+    ignoreworker: false
     task:
       id: f8237bac-e860-407c-810a-1a5ce6e14802
       version: -1
@@ -465,3 +466,4 @@ inputs: []
 outputs: []
 tests:
   - test Arcsight - Get events related to the Case
+releaseNotes: "-"
