@@ -36,9 +36,6 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    if not demisto.params().get('proxy', False):
-        disable_proxy()
-
     ''' GLOBAL VARS '''
     SERVER_NAME=demisto.params()['server']
     USERNAME=demisto.params()['credentials']['identifier']
@@ -181,6 +178,7 @@ script:
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
     try:
+        handle_proxy()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             if get_host_status():
@@ -196,8 +194,6 @@ script:
         LOG(e.message)
         LOG.print_log()
         raise
-    finally:
-        enable_proxy()
   type: python
   commands:
   - name: centreon-get-host-status
