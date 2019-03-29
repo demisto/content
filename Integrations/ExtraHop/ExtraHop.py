@@ -22,11 +22,11 @@ HEADERS = {
     'Accept': 'application/json',
     'Authorization': 'ExtraHop apikey={}'.format(APIKEY)
 }
-# if not demisto.params().get('proxy'):
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
+if not demisto.params().get('proxy'):
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 # 'response' is a container for paginated results
 response = []
