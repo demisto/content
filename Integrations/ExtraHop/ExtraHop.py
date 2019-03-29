@@ -45,7 +45,7 @@ def http_request(method, url_suffix, data=None, payload=None):
             headers=HEADERS,
             params=payload
         )
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
+    except requests.exceptions.RequestException:  # This is the correct syntax
         return_error('Failed to connect to - %s - Please check the URL' % BASE_URL)
     # Handle error responses gracefully
     if res.status_code == 204:
