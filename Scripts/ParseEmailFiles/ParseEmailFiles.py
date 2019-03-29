@@ -3249,8 +3249,7 @@ def convert_to_unicode(s):
             else:
                 res += decoded_s
         return res.strip()
-    except Exception as ex:
-        print('exception: {}'.format(ex))
+    except Exception:
         for file_data in ENCODINGS_TYPES:
             try:
                 s = s.decode(file_data).encode('utf-8').strip()
