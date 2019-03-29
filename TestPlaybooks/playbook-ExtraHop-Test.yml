@@ -107,7 +107,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: ExtraHop.[0].Alert.[0].Id
+              simple: ExtraHop.Alert.[0].Id
             iscontext: true
           right:
             value:
