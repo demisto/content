@@ -1160,6 +1160,10 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "playbookID": "EmailReputationTest",
+            "integrations": "Pwned"
+        },
+        {
             "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
