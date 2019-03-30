@@ -109,7 +109,7 @@ script:
             'Authorization': DEMISTO_APP_TOKEN,
             'Accept': 'application/json'
         }
-        token_retrieval_url = 'https://ec2-3-86-130-35.compute-1.amazonaws.com/panw-token'
+        token_retrieval_url = 'https://demistobot.demisto.com/panw-token'
         dbot_response = requests.get(token_retrieval_url, headers=headers, params={'token': DEMISTO_APP_TOKEN}, verify=USE_SSL)
         if dbot_response.status_code not in {200, 201}:
             #return_error(dbot_response.content)
