@@ -46,17 +46,12 @@ def http_request(method, url_suffix, data=None, payload=None):
             params=payload
         )
     except requests.exceptions.RequestException:  # This is the correct syntax
-        return_error('Failed to connect to - %s - Please check the URL' % BASE_URL)
+        return_error('Failed to connect to - {} - Please check the URL'.format(BASE_URL))
     # Handle error responses gracefully
     if res.status_code == 204:
         return demisto.results('Successful Modification')
-    if demisto.command() == 'extrahop-add-alert-rule' or 'extrahop-modify-alert-rule' and res.status_code == 400:
-        resp = res.json()
-        return_error('Error in request format - [%s]' % resp['error_message'])
-    if demisto.command() == 'extrahop-add-alert-rule' or 'extrahop-modify-alert-rule' and res.status_code == 201:
-        return demisto.results('Alert successfully added')
     elif res.status_code not in {200, 204, 201}:
-        return_error('Error in API call to ExtraHop [%d] - %s' % (res.status_code, res.reason))
+        return_error('Error in API call to ExtraHop {} - {}'.format(res.status_code, res.reason))
     return res
 
 
@@ -232,9 +227,32 @@ def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity,
         if demisto.args().get('param2'):
             data['param2'] = param2
     if alert_id:
-        res = http_request('PATCH', 'alerts/{}'.format(alert_id), data=data)
+        method = 'PATCH'
+        url_suffix = 'alerts/{}'.format(alert_id)
     else:
-        res = http_request('POST', 'alerts', data=data)
+        method = 'POST'
+        url_suffix = 'alerts'
+    data = json.dumps(data)
+    try:
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            data=data,
+            headers=HEADERS
+        )
+    except requests.exceptions.RequestException:  # This is the correct syntax
+        return_error('Failed to connect to - {} - Please check the URL'.format(BASE_URL))
+    # Handle error responses gracefully
+    if res.status_code == 204:
+        return demisto.results('Successful Modification')
+    if res.status_code == 400:
+        resp = res.json()
+        return_error('Error in request format - {}'.format(resp['error_message']))
+    if res.status_code == 201:
+        return demisto.results('Alert successfully added')
+    elif res.status_code not in {200, 204, 201}:
+        return_error('Error in API call to ExtraHop {} - {}'.format(res.status_code, res.reason))
     return res
 
 
@@ -361,7 +379,7 @@ try:
         modify_alert_command()
 
 # Log exceptions
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
