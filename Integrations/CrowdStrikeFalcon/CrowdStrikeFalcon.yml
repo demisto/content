@@ -46,8 +46,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CrowdStrike Falcon OAuth 2 API (formerly known as the Falcon Firehose API). Enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lift host containment.
-detaileddescription: 'To get an The API client ID and secret please contact the crowdstrike support: support@crowdstrike.com'
+description: The CrowdStrike Falcon OAuth 2 API (formerly known as the Falcon Firehose
+  API). Enables fetching and resolving detections, searching devices, getting behaviors
+  by ID, containing hosts, and lift host containment.
+detaileddescription: 'To get an The API client ID and secret please contact the crowdstrike
+  support: support@crowdstrike.com'
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
