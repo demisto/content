@@ -12,6 +12,7 @@ tasks:
       id: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -218,6 +219,7 @@ tasks:
       id: 336fccc7-ebc6-4ec5-8c47-8376faf4c9e4
       version: -1
       name: Rows in parent_events?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -324,6 +326,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
+      description: ""
       brand: ""
     separatecontext: false
     view: |-

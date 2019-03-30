@@ -3,6 +3,7 @@ version: -1
 name: Uptycs - Bad IP Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"
+fromversion: ""
 tasks:
   "0":
     id: "0"
@@ -13,6 +14,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -285,6 +287,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
+      description: ""
       brand: ""
     separatecontext: false
     view: |-
