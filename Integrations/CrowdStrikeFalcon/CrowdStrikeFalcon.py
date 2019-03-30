@@ -22,11 +22,12 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
 # Headers to be sent in requests
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': 'Basic {}'.format(base64.b64encode('{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')).decode())
+    'Authorization': 'Basic {}'.format(base64.b64encode(BYTE_CREDS).decode())
 }
 # Note: True life time is actually 30 mins
 TOKEN_LIFE_TIME = 28
@@ -86,7 +87,7 @@ SEARCH_DEVICE_KEY_MAP = {
     'mac_address': 'MacAddress',
     'first_seen': 'FirstSeen',
     'last_seen': 'LastSeen'
-}  # TODO: Add PolicyType via a function - key is policies
+}
 
 ''' SPLIT KEY DICTIONARY '''
 
@@ -151,7 +152,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
     if not TOKEN:
         # this will update the Authorization header in HEADERS
         get_token()
-        headers=HEADERS
+        headers = HEADERS
     url = SERVER + url_suffix
     try:
         res = requests.request(
@@ -162,13 +163,13 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
             data=data,
             headers=headers,
         )
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 202}:
         if safe:
             return None
-        return_error('Error in API call. status code: {code}; reason: {reason}'.format(code=res.status_code, reason=res.reason))
+        return_error('Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason))
     return res.json()
 
 
@@ -266,8 +267,8 @@ def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
             if 'split' in dir(val):
                 i = trans_dict['Index']
                 new_dict[trans_dict['NewKey']] = val.split(trans_dict['Delim'])[i]
-        except:
-            LOG('Error with: {}'.format(trans_dict))
+        except Exception as ex:
+            LOG('Error {exception} with: {tdict}'.format(exception=ex, tdict=trans_dict))
     return new_dict
 
 
@@ -495,9 +496,11 @@ def search_device():
                 arg_filter = ''
                 for arg_elem in arg:
                     if arg_elem:
-                        arg_filter = "{first}:'{second}'".format(first='{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k, second=arg_elem)
+                        first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
+                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
                 if arg_filter:
-                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + '+' if url_filter else '', arg_filter=arg_filter)
+                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + '+' if url_filter else '',
+                                                                   arg_filter=arg_filter)
             else:
                 # All args should be a list. this is a fallback
                 url_filter = "{url_filter}+{inp_arg}:'{arg_val}'".format(url_filter=url_filter, inp_arg=k, arg_val=arg)
@@ -538,7 +541,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
     if show_in_ui:
         payload['show_in_ui'] = show_in_ui
     # We do this so show_in_ui value won't contain ""
-    data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"', '"show_in_ui": true')
+    data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
+                                                                                               '"show_in_ui": true')
     return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
 
@@ -552,7 +556,10 @@ def contain_host(ids):
         'ids': ids
     }
     data = json.dumps(payload)
-    return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params={'action_name': 'contain'})
+    params = {
+        'action_name': 'contain'
+    }
+    return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params=params)
 
 
 def lift_host_containment(ids):
@@ -565,7 +572,10 @@ def lift_host_containment(ids):
         'ids': ids
     }
     data = json.dumps(payload)
-    return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params={'action_name': 'lift_containment'})
+    params = {
+        'action_name': 'lift_containment'
+    }
+    return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params=params)
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -783,7 +793,7 @@ try:
     elif demisto.command() == 'cs-falcon-lift-host-containment':
         demisto.results(lift_host_containment_command())
     # Log exceptions
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
