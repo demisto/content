@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a0dcd7fa-7fc3-40b3-8ca5-f0bec3fc7113
+    taskid: c2fdb80f-d9ba-41d7-8fb8-15a770dabfe7
     type: start
     task:
-      id: a0dcd7fa-7fc3-40b3-8ca5-f0bec3fc7113
+      id: c2fdb80f-d9ba-41d7-8fb8-15a770dabfe7
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 0f64c5c1-525c-4149-8db5-41f8fc1a80a2
+    taskid: cb996a01-c0e3-447c-83d1-6328a0dcefbb
     type: regular
     task:
-      id: 0f64c5c1-525c-4149-8db5-41f8fc1a80a2
+      id: cb996a01-c0e3-447c-83d1-6328a0dcefbb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,10 +58,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: f93131bc-4a7b-4710-8c9f-1ba7637b0276
+    taskid: deae3ffc-3937-4a5e-83d0-96bb78723bf0
     type: title
     task:
-      id: f93131bc-4a7b-4710-8c9f-1ba7637b0276
+      id: deae3ffc-3937-4a5e-83d0-96bb78723bf0
       version: -1
       name: Done
       type: title
@@ -72,25 +72,25 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2320
         }
       }
     note: false
     timertriggers: []
   "14":
     id: "14"
-    taskid: a1c93f10-60cc-40a7-8107-8d5020ad5cfe
+    taskid: 3a154399-9055-486c-8328-e52bd4f78894
     type: regular
     task:
-      id: a1c93f10-60cc-40a7-8107-8d5020ad5cfe
+      id: 3a154399-9055-486c-8328-e52bd4f78894
       version: -1
       name: vt-get-domain-report
       description: Retrieves a report on a given domain (including the information
         recorded by VirusTotal's passive DNS infrastructure).
-      script: VirusTotal - Private API|||vt-private-get-domain-report
+      script: '|||vt-private-get-domain-report'
       type: regular
       iscommand: true
-      brand: VirusTotal - Private API
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -111,31 +111,37 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: 39b5240c-0afe-4a05-8f7e-e85d1d4ff065
+    taskid: 411efc82-26ce-48f6-819f-89e8aa236a49
     type: condition
     task:
-      id: 39b5240c-0afe-4a05-8f7e-e85d1d4ff065
+      id: 411efc82-26ce-48f6-819f-89e8aa236a49
       version: -1
-      name: StringContains
+      name: Verify Domain Whois Contains
       description: "Checks whether substring is within string. Returns: \nyes - string
         contains substring. \nno - string does not contain substring. \nIf stringSeperator
         is provided, the substring will be split using the separator, and each item
         will be checked.\nIf one of the items will be found in the string, the srcipt
         will return yes.\n"
-      scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
       - "19"
-    scriptarguments:
-      string:
-        simple: ${Domain.VirusTotal.Whois}
-      substring:
-        simple: GOOGLE
-      substringSeperator: {}
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: VirusTotal.Whois
+            iscontext: true
+          right:
+            value:
+              simple: GOOGLE
     view: |-
       {
         "position": {
@@ -147,17 +153,17 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 95437b2b-68d6-40cc-8d7f-8ce47491f06f
+    taskid: 18f5ac65-12c7-4ec6-88bf-9b5431308e2b
     type: regular
     task:
-      id: 95437b2b-68d6-40cc-8d7f-8ce47491f06f
+      id: 18f5ac65-12c7-4ec6-88bf-9b5431308e2b
       version: -1
       name: vt-get-file-report
       description: Retrieves a concluded url scan report for a given url.
-      script: VirusTotal - Private API|||vt-private-get-file-report
+      script: '|||vt-private-get-file-report'
       type: regular
       iscommand: true
-      brand: VirusTotal - Private API
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -179,31 +185,35 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: fa8e12aa-5e56-4298-83ff-833dc3066972
-    type: regular
+    taskid: 54d72653-d27b-4549-8619-daabc2e14f1a
+    type: condition
     task:
-      id: fa8e12aa-5e56-4298-83ff-833dc3066972
+      id: 54d72653-d27b-4549-8619-daabc2e14f1a
       version: -1
-      name: VerifyContext
+      name: Verify File Malicious
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "21"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: File.Malicious
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Malicious
+            iscontext: true
     view: |-
       {
         "position": {
@@ -215,10 +225,10 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: 8e0fa070-5fad-4273-843c-a5994828e7c5
+    taskid: 99c0783e-3341-4ff2-893b-733447e200fe
     type: regular
     task:
-      id: 8e0fa070-5fad-4273-843c-a5994828e7c5
+      id: 99c0783e-3341-4ff2-893b-733447e200fe
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -245,25 +255,27 @@ tasks:
     timertriggers: []
   "20":
     id: "20"
-    taskid: 323d8693-db18-4ded-8e88-e212900b698c
+    taskid: c0d85491-fc4a-4912-8a48-9611b94a80d6
     type: regular
     task:
-      id: 323d8693-db18-4ded-8e88-e212900b698c
+      id: c0d85491-fc4a-4912-8a48-9611b94a80d6
       version: -1
       name: vt-private-get-url-report
       description: Retrieves a concluded url scan report for a given url.
-      script: VirusTotal - Private API|||vt-private-get-url-report
+      script: '|||vt-private-get-url-report'
       type: regular
       iscommand: true
-      brand: VirusTotal - Private API
+      brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "24"
     scriptarguments:
       allInfo: {}
       fullResponse: {}
       resource:
-        simple: http://En-us.secureconnection.moneytransaction.kb4.io,https://ctgold.in.net/G5?POP!=junk.name@avbaa.com
+        simple: http://En-us.secureconnection.moneytransaction.kb4.io
+      retries: {}
+      retry_time: {}
       shortFormat: {}
       threshold: {}
     separatecontext: false
@@ -278,10 +290,10 @@ tasks:
     timertriggers: []
   "21":
     id: "21"
-    taskid: 234e065e-9a31-4169-8179-276711c869c0
+    taskid: 0e538c1a-778d-4a3c-8be0-e455d29d1649
     type: regular
     task:
-      id: 234e065e-9a31-4169-8179-276711c869c0
+      id: 0e538c1a-778d-4a3c-8be0-e455d29d1649
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -311,28 +323,125 @@ tasks:
     timertriggers: []
   "22":
     id: "22"
-    taskid: cda42da8-c048-41f0-8a27-4cd6b68929b0
+    taskid: 95324590-ddd8-40c5-83ef-f108df7255df
     type: regular
     task:
-      id: cda42da8-c048-41f0-8a27-4cd6b68929b0
+      id: 95324590-ddd8-40c5-83ef-f108df7255df
       version: -1
-      name: vt-private-get-url-report
-      description: Retrieves a concluded url scan report for a given url.
-      script: VirusTotal - Private API|||vt-private-get-url-report
+      name: vt-private-get-ip-report
+      description: Retrieves a report on a given IP address (including the information
+        recorded by VirusTotal's Passive DNS infrastructure).
+      script: '|||vt-private-get-ip-report'
       type: regular
       iscommand: true
-      brand: VirusTotal - Private API
+      brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "23"
     scriptarguments:
-      allInfo: {}
       fullResponse: {}
-      resource:
-        simple: http://En-us.secureconnection.moneytransaction.kb4.io
-      retries: {}
-      shortFormat: {}
+      ip:
+        simple: 139.130.4.5
       threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: f4854eef-e673-4943-8b2e-5aa5d7f62e99
+    type: condition
+    task:
+      id: f4854eef-e673-4943-8b2e-5aa5d7f62e99
+      version: -1
+      name: Verify DBot Score of ip
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 4dc0b7d1-7450-4308-8c50-35888456b6c5
+    type: regular
+    task:
+      id: 4dc0b7d1-7450-4308-8c50-35888456b6c5
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 1193046c-e6e9-4190-8ca0-de86abea0703
+    type: regular
+    task:
+      id: 1193046c-e6e9-4190-8ca0-de86abea0703
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -343,46 +452,12 @@ tasks:
       }
     note: false
     timertriggers: []
-  "23":
-    id: "23"
-    taskid: b9e28ebe-37c8-4af1-852e-df786c326c82
-    type: condition
-    task:
-      id: b9e28ebe-37c8-4af1-852e-df786c326c82
-      version: -1
-      name: Verify Context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: URL
-                accessor: Data
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 2335,
         "width": 380,
         "x": 50,
         "y": 50
