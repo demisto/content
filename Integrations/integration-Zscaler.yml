@@ -39,6 +39,7 @@ script:
     import requests
     import time
     import json
+    import random
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
