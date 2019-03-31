@@ -293,7 +293,9 @@ def get_token():
         :rtype: ``str``
         :return: Token
     """
+    # set TOKEN to true to avoid calling get_token from http_request
     global TOKEN
+    TOKEN = True
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
     if ctx:
@@ -328,7 +330,7 @@ def get_token_request():
     headers = {
         'Authorization': HEADERS['Authorization']
     }
-    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True)
+    token_res = http_request('POST', '/oauth2/token', data=json.dumps(body), headers=headers, safe=True)
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
@@ -794,6 +796,6 @@ try:
         demisto.results(lift_host_containment_command())
     # Log exceptions
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
-    return_error(e.message)
+    return_error(str(e))

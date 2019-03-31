@@ -49,7 +49,6 @@ configuration:
 description: The CrowdStrike Falcon OAuth 2 API (formerly known as the Falcon Firehose
   API). Enables fetching and resolving detections, searching devices, getting behaviors
   by ID, containing hosts, and lift host containment.
-detaileddescription: ''
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
@@ -332,5 +331,8 @@ script:
   runonce: false
   script: ''
   type: python
+releaseNotes: New integration. The CrowdStrike Falcon OAuth 2 API (formerly known as the Falcon Firehose
+  API). Enables fetching and resolving detections, searching devices, getting behaviors
+  by ID, containing hosts, and lift host containment.
 tests:
   - Test - CrowdStrike Falcon
