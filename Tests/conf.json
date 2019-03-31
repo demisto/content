@@ -1343,6 +1343,7 @@
         "Cisco pxGrid ISE": "might be dynamic test",
         "RSA NetWitness v11.1": "might be dynamic test",
         "Zscaler": "might be dynamic test",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Snowflake": "Checking if proxy is cause of TLS failed handshake"
     }
 }
