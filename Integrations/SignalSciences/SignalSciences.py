@@ -538,11 +538,7 @@ def test_module():
         http_request('GET', url)
     except Exception as e:
         raise Exception(e.message)
-
-    return_outputs(
-        readable_output='Success',
-        outputs={}
-    )
+    demisto.results("ok")
 
 
 def create_corp_list(list_name, list_type, entries_list, description=None):
