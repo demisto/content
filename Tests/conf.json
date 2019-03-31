@@ -99,6 +99,10 @@
             "playbookID": "servicenow_test_new"
         },
         {
+            "integrations": "ExtraHop",
+            "playbookID": "ExtraHop-Test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
