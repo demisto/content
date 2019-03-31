@@ -30,6 +30,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import getaddresses
 
 from olefile import OleFileIO, isOleFile
 
@@ -3318,14 +3319,16 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             else:
                 headers_map[item[0]] = convert_to_unicode(item[1])
 
+        eml = message_from_string(file_data)
+        if not eml:
+            raise Exception("Could not parse eml file!")
+
+        headers_map['From'] = getaddresses(eml.get_all('from', []))[0][1]
+
         if parse_only_headers:
             return {
                 "HeadersMap": headers_map
             }, []
-
-        eml = message_from_string(file_data)
-        if not eml:
-            raise Exception("Could not parse eml file!")
 
         html = ''
         text = ''
@@ -3414,7 +3417,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         email_data = {
             'To': extract_address(eml['To']),
             'CC': extract_address(eml['Cc']),
-            'From': extract_address(eml['From']),
+            'From': getaddresses(eml.get_all('from', []))[0][1],
             'Subject': convert_to_unicode(eml['Subject']),
             'HTML': convert_to_unicode(html),
             'Text': convert_to_unicode(text),
