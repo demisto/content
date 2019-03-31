@@ -941,6 +941,197 @@ script:
     - contextPath: CBPFileRule.ReportOnly
       description: Is this rule reporting only or also enforcing
       type: String
+  - arguments:
+    - default: false
+      description: (Int32) Unique id of this fileRule
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+    execution: false
+    name: cbp-fileRule-get
+    outputs:
+    - contextPath: CBPFileRule.CatalogID
+      description: The file catalog ID for the rule
+      type: String
+    - contextPath: CBPFileRule.Description
+      description: |
+        The rule description
+      type: String
+    - contextPath: CBPFileRule.FileState
+      description: The file state for the rule
+      type: String
+    - contextPath: CBPFileRule.Hash
+      description: The hash for the rule
+      type: String
+    - contextPath: CBPFileRule.ID
+      description: The rule ID
+      type: String
+    - contextPath: CBPFileRule.Name
+      description: The rule name
+      type: String
+    - contextPath: CBPFileRule.PolicyIDs
+      description: The policies this rule is part of
+      type: String
+    - contextPath: CBPFileRule.ReportOnly
+      description: Is this rule reporting only or also enforcing
+      type: String
+  - arguments:
+    - default: false
+      description: (Int32) Unique id of this fileRule
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+    execution: false
+    name: cbp-fileRule-delete
+    outputs:
+    - contextPath: CBPFileRule.CatalogID
+      description: The file catalog ID for the rule
+      type: String
+    - contextPath: CBPFileRule.Description
+      description: |
+        The rule description
+      type: String
+    - contextPath: CBPFileRule.FileState
+      description: The file state for the rule
+      type: String
+    - contextPath: CBPFileRule.Hash
+      description: The hash for the rule
+      type: String
+    - contextPath: CBPFileRule.ID
+      description: The rule ID
+      type: String
+    - contextPath: CBPFileRule.Name
+      description: The rule name
+      type: String
+    - contextPath: CBPFileRule.PolicyIDs
+      description: The policies this rule is part of
+      type: String
+    - contextPath: CBPFileRule.ReportOnly
+      description: Is this rule reporting only or also enforcing
+      type: String
+    - type: Unknown
+  - arguments:
+    - default: false
+      description: 'A condition contains three parts: name, operator and value. Name
+        is any valid field in the object that is being queried. Operator (: LIKE,
+        ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
+        values) is any of valid operators (see below). All operators consist of a
+        single character. Value is compared with operator and depends on field type.
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Is maximum number of results to retrieve. If not specified:
+        First 1000 results will be returned. If set to -1: Only result count will
+        be returned, without actual results. Offset parameter is ignored in this case.
+        If set to 0: All results will be returned. Offset parameter is ignored in
+        this case. Note that some result sets could be very large, resulting in query
+        timeout. Therefore, unless you know that query will not return more than 1000
+        results, it is recommended to retrieve data in chunks using offset and limit.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Offset in data set
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Grouping is optional and can be defined with a single attribute:
+        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting is optional and can be defined with a single attribute:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
+        (if omitted) is ASC. xyz is field name from the result set.'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#policy'
+    execution: false
+    name: cbp-policy-search
+    outputs:
+    - contextPath: CBPPolicy.ReadOnly
+      description: Is this policy read only
+      type: Boolean
+    - contextPath: CBPPolicy.EnforcementLevel
+      description: The level of enforcement of the policy
+      type: String
+    - contextPath: CBPPolicy.ReputationEnabled
+      description: Is reputation enabled for policy
+      type: Boolean
+    - contextPath: CBPPolicy.AtEnforcementComputers
+      description: Number of enforced computers
+      type: Number
+    - contextPath: CBPPolicy.Automatic
+      description: Is this policy automatic
+      type: Boolean
+    - contextPath: CBPPolicy.Name
+      description: Name of the policy
+      type: String
+    - contextPath: CBPPolicy.FileTrackingEnabled
+      description: Is file tracking enabled for policy
+      type: Boolean
+    - contextPath: CBPPolicy.ConnectedComputers
+      description: Number of connected computers assocuated with the policy
+      type: Number
+    - contextPath: CBPPolicy.PackageName
+      description: Package name of the policy
+      type: String
+    - contextPath: CBPPolicy.AllowAgentUpgrades
+      description: Does the polixy allow agent upgrades
+      type: Boolean
+    - contextPath: CBPPolicy.TotalComputers
+      description: Number of computers associated with the policy
+      type: Number
+    - contextPath: CBPPolicy.LoadAgentInSafeMode
+      description: Should we load in safe mode
+      type: Boolean
+    - contextPath: CBPPolicy.AutomaticApprovalsOnTransition
+      description: Approve on transition
+      type: String
+    - contextPath: ICBPPolicy.ID
+      description: CBP internal ID of the policy
+      type: String
+    - contextPath: ICBPPolicy.Description
+      description: Description of the policy
+      type: String
+    - contextPath: ICBPPolicy.DisconnectedEnforcementLevel
+      description: The level of enforcement of the policy when disconnected
+      type: String
   dockerimage: demisto/python3
   isfetch: false
   runonce: false
