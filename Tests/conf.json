@@ -1329,6 +1329,7 @@
         "Centreon": "might be dynamic test",
         "Cisco pxGrid ISE": "might be dynamic test",
         "RSA NetWitness v11.1": "might be dynamic test",
+        "Signal Sciences WAF": "error with certificate",
         "Zscaler": "might be dynamic test"
     }
 }
