@@ -152,7 +152,8 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :rtype: ``dict``
     """
     if get_token_flag:
-        get_token()
+        token = get_token()
+        headers['Authorization'] = 'Bearer {}'.format(token)
     url = SERVER + url_suffix
     try:
         res = requests.request(
@@ -316,7 +317,6 @@ def get_token(new_token=False):
         # there is no token
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
-    HEADERS['Authorization'] = 'Bearer {}'.format(auth_token)
     return auth_token
 
 
