@@ -739,7 +739,7 @@ script:
     - contextPath: SigSciences.Corp.List.UpdatedDate
       description: The last update date of the list.
     description: Retrieves data about all lists for the given corp.
-  - name: sigsci-fetch-events
+  - name: sigsci-get-events
     arguments:
     - name: siteName
       required: true
