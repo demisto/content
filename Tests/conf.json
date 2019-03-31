@@ -99,6 +99,10 @@
             "playbookID": "servicenow_test_new"
         },
         {
+            "integrations": "ExtraHop",
+            "playbookID": "ExtraHop-Test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -582,6 +586,10 @@
           "playbookID": "crowdstrike_falconhost_test"
         },
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test - CrowdStrike Falcon"
+        },
+        {
             "integrations": [
                 "VirusTotal"
             ],
@@ -766,6 +774,11 @@
         {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
             "nightly": true
         },
         {
@@ -1325,6 +1338,7 @@
         "Cisco pxGrid ISE": "might be dynamic test",
         "RSA NetWitness v11.1": "might be dynamic test",
         "Signal Sciences WAF": "error with certificate",
-        "Zscaler": "might be dynamic test"
+        "Zscaler": "might be dynamic test",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
     }
 }
