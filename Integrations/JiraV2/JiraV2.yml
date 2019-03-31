@@ -1,8 +1,8 @@
 commonfields:
-  id: jira
+  id: jira-v2
   version: -1
-name: jira
-display: Atlassian Jira
+name: jira-v2
+display: Atlassian Jira (v2)
 fromversion: 2.6.0
 category: Case Management
 description: Issue tracking product, developed by Atlassian
@@ -295,4 +295,7 @@ script:
     description: gets the ID Offset, i.e., the first issue id.
   isfetch: true
   runonce: false
+  dockerimage: demisto/python3:3.7.2.200
+tests:
+  - Jira-v2-Test
 releaseNotes: Rewritten into python; fetch fixed; better JQL support; getAttachments flag in get-issue.
