@@ -322,6 +322,7 @@ def fetch_incidents():
             last_fetch = incident_timestamp
             if incident.get('rawJSON') != last_fetched_data:
                 last_fetched_data = incident.get('rawJSON')
+                del incident['timestamp']
                 incidents.append(incident)
 
     this_run = {
