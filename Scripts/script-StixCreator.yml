@@ -18,15 +18,14 @@ script: |-
 
   counter = 0
   for indicator_fields in all_args:
-      demisto_indicator_type = all_args.get(str(counter)).get('indicator_type','Unknown')
-      value = all_args.get(str(counter)).get('value','')
-      source_system = all_args.get(str(counter)).get('source','')
-      demisto_score = all_args.get(str(counter)).get('score','')
-      first_seen = all_args.get(str(counter)).get('firstSeen','1970-01-01T00:00:00+00:00')
-      demisto_created = all_args.get(str(counter)).get('timestamp','1970-01-01T00:00:00+00:00')
-      last_seen = all_args.get(str(counter)).get('lastSeen','1970-01-01T00:00:00+00:00')
+      demisto_indicator_type = all_args[indicator_fields].get('indicator_type','Unknown')
+      value = all_args[indicator_fields].get('value','')
+      source_system = all_args[indicator_fields].get('source','')
+      demisto_score = all_args[indicator_fields].get('score','')
+      first_seen = all_args[indicator_fields].get('firstSeen','1970-01-01T00:00:00+00:00')
+      demisto_created = all_args[indicator_fields].get('timestamp','1970-01-01T00:00:00+00:00')
+      last_seen = all_args[indicator_fields].get('lastSeen','1970-01-01T00:00:00+00:00')
       counter+=1
-
       stix_type_and_value = ""
 
       if demisto_indicator_type.lower() == "File MD5".lower():
@@ -69,20 +68,17 @@ script: |-
       context = {
           'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
       }
-      demisto.results({'Type': entryTypes['note'],
-                       'Contents': str(bundle),
-                       'EntryContext': context,
-                       'ContentsFormat': formats['json']})
+      return_outputs(readable_output="",
+                     outputs=context,
+                     raw_response=str(bundle))
   else:
 
       context = {
           'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(indicators[0]))
       }
-
-      demisto.results({'Type': entryTypes['note'],
-                       'Contents': str(indicators[0]),
-                       'EntryContext': context,
-                       'ContentsFormat': formats['json']})
+      return_outputs(readable_output="",
+                     outputs=context,
+                     raw_response=str(indicators[0]))
 type: python
 tags: []
 comment: Get list of indicators in argument 'indicators' and create out of them a
@@ -94,10 +90,10 @@ args:
 outputs:
 - contextPath: StixExportedIndicators.created
   description: Indicator creation date
-  type: string
+  type: date
 - contextPath: StixExportedIndicators.firstSeen
   description: Indicator first appearance
-  type: string
+  type: date
 - contextPath: StixExportedIndicators.source
   description: Source system for this indicator
   type: string
@@ -108,8 +104,11 @@ outputs:
   description: STIX pattern
   type: string
 - contextPath: StixExportedIndicators.score
-  description: STIX impact score
+  description: STIX impact score can be High, Medium or empty
   type: string
+- contextPath: StixExportedIndicators.modified
+  description: Indicator last appearance
+  type: date
 scripttarget: 0
 runonce: false
 dockerimage: demisto/stix2:1.0.0.204
