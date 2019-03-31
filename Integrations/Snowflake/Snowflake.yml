@@ -3,10 +3,6 @@ commonfields:
   id: Snowflake
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Username
   name: credentials
   required: true
@@ -46,6 +42,10 @@ configuration:
   type: 8
 - display: Trust server certificate (insecure)
   name: insecure
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
   required: false
   type: 8
 - display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch
