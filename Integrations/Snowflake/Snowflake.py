@@ -84,11 +84,11 @@ def convert_datetime_to_string(v):
         Formatted string of the object
     """
     if isinstance(v, datetime):
-        return v.strftime('%Y-%m-%d %H:%M:%S.%f %z')
+        return v.strftime('%Y-%m-%d %H:%M:%S.%f %z').strip()
     elif isinstance(v, date):
-        return v.strftime('%Y-%m-%d')
+        return v.strftime('%Y-%m-%d').strip()
     elif isinstance(v, dttime) or isinstance(v, timedelta):
-        return v.strftime('%H:%M:%S.%f')
+        return v.strftime('%H:%M:%S.%f').strip()
     return v
 
 
