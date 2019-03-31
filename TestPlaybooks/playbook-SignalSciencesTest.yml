@@ -1,6 +1,6 @@
-id: SignalSciences Test
+id: SignalSciences-Test
 version: -1
-name: SignalSciences Test
+name: SignalSciences-Test
 starttaskid: "0"
 tasks:
   "0":
