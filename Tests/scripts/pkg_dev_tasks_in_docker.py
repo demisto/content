@@ -47,13 +47,16 @@ def get_dev_requirements(project_dir, docker_image):
         string -- requirement required for the project
     """
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
-    major_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
-                                         "python", "-c", "import sys; print(sys.version_info[0])"],
-                                        universal_newlines=True, stderr=stderr_out).strip()
-    print_v("detected python version: [{}] for docker image: {}".format(major_ver, docker_image))
-    if major_ver not in ["2", "3"]:
-        raise ValueError("Unknown python major versoin: {}".format(major_ver))
-    env_dir = "{}{}".format(ENVS_DIRS_BASE, major_ver)
+    py_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
+                                      "python", "-c",
+                                      "import sys;print('{}.{}'.format(sys.version_info[0], sys.version_info[1]))"],
+                                     universal_newlines=True, stderr=stderr_out).strip()
+    print_v("detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
+    py_num = float(py_ver)
+    if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
+        raise ValueError("Python vesion for docker image: {} is not supported: {}. "
+                         "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
+    env_dir = "{}{}".format(ENVS_DIRS_BASE, int(py_num))
     requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True,
                                            stderr=stderr_out)
     print_v("dev requirements:\n{}".format(requirements))
@@ -87,15 +90,22 @@ def docker_image_create(docker_base_image, requirements):
         print('Using already existing docker image: {}'.format(target_image))
         return target_image
     print("Creating docker image: {} (this may take a minute or two...)".format(target_image))
-    container_id = subprocess.check_output(
-        ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
-        universal_newlines=True).strip()
-    subprocess.check_call(['docker', 'cp', CONTAINER_SETUP_SCRIPT, container_id + ':/' + CONTAINER_SETUP_SCRIPT_NAME])
-    output = None if LOG_VERBOSE else subprocess.DEVNULL
-    subprocess.run(['docker', 'start', '-a', '-i', container_id], input=requirements.encode('utf-8'), check=True,
-                   stdout=output, stderr=output)
-    subprocess.run(['docker', 'commit', container_id, target_image], check=True, stdout=output, stderr=output)
-    subprocess.run(['docker', 'rm', container_id], check=True, stdout=output, stderr=output)
+    try:
+        container_id = subprocess.check_output(
+            ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
+            universal_newlines=True).strip()
+        subprocess.check_call(['docker', 'cp', CONTAINER_SETUP_SCRIPT,
+                               container_id + ':/' + CONTAINER_SETUP_SCRIPT_NAME])
+        print_v(subprocess.check_output(['docker', 'start', '-a', '-i', container_id],
+                                        input=requirements, stderr=subprocess.STDOUT,
+                                        universal_newlines=True))
+        print_v(subprocess.check_output(['docker', 'commit', container_id, target_image], stderr=subprocess.STDOUT,
+                                        universal_newlines=True))
+        print_v(subprocess.check_output(['docker', 'rm', container_id], stderr=subprocess.STDOUT,
+                                        universal_newlines=True))
+    except subprocess.CalledProcessError as err:
+        print("Failed executing command with  error: {} Output: \n{}".format(err, err.output))
+        raise err
     print('Done creating docker image: {}'.format(target_image))
     return target_image
 
