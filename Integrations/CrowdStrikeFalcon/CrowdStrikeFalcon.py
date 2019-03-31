@@ -332,7 +332,7 @@ def get_token_request():
     headers = {
         'Authorization': HEADERS['Authorization']
     }
-    token_res = http_request('POST', '/oauth2/token', data=json.dumps(body), headers=headers, safe=True,
+    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
                              get_token_flag=False)
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
@@ -783,7 +783,7 @@ if demisto.command() == 'fetch-incidents':
 
 try:
     if demisto.command() == 'test-module':
-        get_token()
+        get_token(new_token=True)
         demisto.results('ok')
     elif demisto.command() == 'cs-falcon-search-device':
         demisto.results(search_device_command())
