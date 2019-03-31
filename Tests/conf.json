@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tufin",
+            "playbookID": "Tufin Test"
+        },
+        {
             "integrations": "Vertica",
             "playbookID": "Vertica Test"
         },
@@ -93,6 +97,10 @@
         {
             "integrations": "ServiceNow",
             "playbookID": "servicenow_test_new"
+        },
+        {
+            "integrations": "ExtraHop",
+            "playbookID": "ExtraHop-Test"
         },
         {
             "playbookID": "Test CommonServer"
@@ -578,6 +586,10 @@
           "playbookID": "crowdstrike_falconhost_test"
         },
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test - CrowdStrike Falcon"
+        },
+        {
             "integrations": [
                 "VirusTotal"
             ],
@@ -762,6 +774,11 @@
         {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
             "nightly": true
         },
         {
@@ -1156,8 +1173,15 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "playbookID": "EmailReputationTest",
+            "integrations": "Pwned"
+        },
+        {
             "integrations": "Symantec Deepsight Intelligence",
             "playbookID": "Symantec Deepsight Test"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
     "skipped_tests": {
@@ -1318,6 +1342,7 @@
         "Centreon": "might be dynamic test",
         "Cisco pxGrid ISE": "might be dynamic test",
         "RSA NetWitness v11.1": "might be dynamic test",
-        "Zscaler": "might be dynamic test"
+        "Zscaler": "might be dynamic test",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
     }
 }
