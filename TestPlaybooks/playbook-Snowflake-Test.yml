@@ -61,44 +61,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 7be55930-9389-41cb-8263-0959be8e61c8
-    type: regular
-    task:
-      id: 7be55930-9389-41cb-8263-0959be8e61c8
-      version: -1
-      name: snowflake-update
-      description: Make a DML change in the database
-      script: Snowflake|||snowflake-update
-      type: regular
-      iscommand: true
-      brand: Snowflake
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      database:
-        simple: demo_db
-      db_operation:
-        simple: update test set name = '${RandomString}' where id = 9
-      role:
-        simple: sysadmin
-      schema:
-        simple: public
-      warehouse:
-        simple: demo_wh
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "3":
     id: "3"
     taskid: 8694012b-4bb5-4056-8480-faef40999716
@@ -139,83 +101,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 96327438-b479-4b98-8027-11a85f175ed0
-    type: regular
-    task:
-      id: 96327438-b479-4b98-8027-11a85f175ed0
-      version: -1
-      name: Generate Random String to Use in Table Field Update
-      description: Generates random string
-      scriptName: GenerateRandomString
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      Digits:
-        simple: "True"
-      Length:
-        simple: "10"
-      Lowercase:
-        simple: "True"
-      Punctuation:
-        simple: "False"
-      Uppercase:
-        simple: "True"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 3413a228-bab8-4494-8fba-f6baf016f06f
-    type: regular
-    task:
-      id: 3413a228-bab8-4494-8fba-f6baf016f06f
-      version: -1
-      name: Query Data again to make sure it was altered
-      script: Snowflake|||snowflake-query
-      type: regular
-      iscommand: true
-      brand: Snowflake
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      columns: {}
-      database:
-        simple: demo_db
-      query:
-        simple: select * from test where id = 9
-      role:
-        simple: sysadmin
-      rows: {}
-      schema:
-        simple: public
-      warehouse:
-        simple: demo_wh
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "8":
     id: "8"
     taskid: af19262d-c556-4f70-8e64-4aa726540bce
@@ -232,53 +117,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: f6c97aec-6f25-4d87-8c44-84adc8e5ccf5
-    type: condition
-    task:
-      id: f6c97aec-6f25-4d87-8c44-84adc8e5ccf5
-      version: -1
-      name: Verify Data was Altered
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Snowflake
-                accessor: Result
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: NAME
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: RandomString
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -299,7 +138,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -330,14 +169,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 1ab1378a-feef-4d38-84bd-1a7b5f1e6880
+  "13":
+    id: "13"
+    taskid: d208c6ab-12ba-4fc6-8775-3560b27b3878
     type: regular
     task:
-      id: 1ab1378a-feef-4d38-84bd-1a7b5f1e6880
+      id: d208c6ab-12ba-4fc6-8775-3560b27b3878
       version: -1
-      name: DeleteContet
+      name: DeleteContext
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -345,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
@@ -364,12 +203,98 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e4cbd5a7-1071-4d31-852b-52ab7682e71e
+    type: regular
+    task:
+      id: e4cbd5a7-1071-4d31-852b-52ab7682e71e
+      version: -1
+      name: Test Fetch
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name:
+        simple: Snowflake
+      expect_data: {}
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Snowflake
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: de121620-0883-4cb2-81e4-f6a96f3124e9
+    type: condition
+    task:
+      id: de121620-0883-4cb2-81e4-f6a96f3124e9
+      version: -1
+      name: Verify Fetch Fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FetchedIncidents
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NAME
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
