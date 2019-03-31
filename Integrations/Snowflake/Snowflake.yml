@@ -11,11 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: The Snowflake account that you wish to connect to. Do not include the Snowflake
-    domain name (snowflakecomputing.com) as part of the parameter. For example, if
-    you typically connect to the Snowflake portal at 'examplecompany.snowflakecomputing.com'
-    then the account name you would enter here would be 'examplecompany'. For more
-    information regarding this parameter please visit https://docs.snowflake.net/manuals/user-guide/python-connector-api.html#label-account-format-info #disable-secrets-detection
+- display: Account - See Detailed Description section.
   name: account
   required: true
   type: 0
@@ -23,12 +19,7 @@ configuration:
   name: region
   required: false
   type: 0
-- display: Authenticator (optional for Okta). If you wish to use this method of connecting
-    to your Snowflake account then the 'Username' parameter should be your '<okta_login_name>',
-    'Password' should be your '<okta_password>' and the value entered here should
-    be 'https://<okta_account_name>.okta.com/' where all the values between the less
-    than and greater than symbols is replaced with the actual information specific
-    to your okta account.
+- display: Authenticator - See Detailed Description section.
   name: authenticator
   required: false
   type: 0
@@ -48,6 +39,15 @@ configuration:
   name: role
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust server certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
 - display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch
     query to retrieve new incidents. This field is mandatory when 'Fetches incidents'
     is set to true.
@@ -75,15 +75,6 @@ configuration:
   name: limit
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Trust server certificate (insecure)
-  name: insecure
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -101,29 +92,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: Warehouse to use for the query. Will use the warehouse value specified
-        in the integration parameters if it is not provided here.
+      description: Warehouse to use for the query. If not specified, the default will be used.
       isArray: false
       name: warehouse
       required: false
       secret: false
     - default: false
-      description: Database to use for the query. Will use the database value specified
-        in the integration parameters if it is not provided here.
+      description: Database to use for the query. If not specified, the default will be used.
       isArray: false
       name: database
       required: false
       secret: false
     - default: false
-      description: Schema to use for the query. Will use the schema value specified
-        in the integration parameters if it is not provided here.
+      description: Schema to use for the query. If not specified, the default will be used.
       isArray: false
       name: schema
       required: false
       secret: false
     - default: false
-      description: Role to use for the query. Will use the role value specified in
-        the integration parameters if it is not provided here.
+      description: Role to use for the query. If not specified, the default will be used.
       isArray: false
       name: role
       required: false
@@ -167,29 +154,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: Warehouse to use for the query. Will use the warehouse value specified
-        in the integration parameters if it is not provided here.
+      description: Warehouse to use for the query. If not specified, the default will be used.
       isArray: false
       name: warehouse
       required: false
       secret: false
     - default: false
-      description: Database to use for the query. Will use the database value specified
-        in the integration parameters if it is not provided here.
+      description: Database to use for the query. If not specified, the default will be used.
       isArray: false
       name: database
       required: false
       secret: false
     - default: false
-      description: Schema to use for the query. Will use the schema value specified
-        in the integration parameters if it is not provided here.
+      description: Schema to use for the query. If not specified, the default will be used.
       isArray: false
       name: schema
       required: false
       secret: false
     - default: false
-      description: Role to use for the query. Will use the role value specified in
-        the integration parameters if it is not provided here.
+      description: Role to use for the query. If not specified, the default will be used.
       isArray: false
       name: role
       required: false
