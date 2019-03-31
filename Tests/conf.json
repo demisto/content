@@ -1217,7 +1217,6 @@
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Signal Sciences WAF": "API problems, not returning the correct data",
         "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
