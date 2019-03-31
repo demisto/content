@@ -157,7 +157,7 @@ script:
 
     def query_loggings(query_data):
         '''
-        This function handles all the querying of Appframework Logging service
+        This function handles all the querying of Cortex Logging service
         '''
 
         logging_service = LoggingService(
@@ -189,7 +189,7 @@ script:
 
     def poll_events(channel_id):
         '''
-        This function handles polling events from Appframework's Events service
+        This function handles polling events from Cortex Events service
         '''
 
         event_service = EventService(
@@ -345,7 +345,7 @@ script:
 
     def query_logs_command():
         '''
-        Corresponds to 'pan-appframework-query-logs' command. Return the result of querying the Logging service
+        Corresponds to 'pan-cortex-query-logs' command. Return the result of querying the Logging service
         '''
         args = demisto.args()
         start_time = args.get('startTime')
@@ -404,7 +404,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
 
@@ -412,7 +412,7 @@ script:
 
     def poll_events_command():
         '''
-        corresponds to 'pan-appframework-poll-events' command. Polls events from Appframework
+        corresponds to 'pan-cortex-poll-events' command. Polls events from Cortex
         '''
 
         channel_id = 'EventFilter'
@@ -425,7 +425,7 @@ script:
 
     def get_critical_logs_command():
         '''
-        corresponds to 'pan-appframework-get-critical-threat-logs' command. Queries Appframework Logging according to a pre-set query
+        corresponds to 'pan-cortex-get-critical-threat-logs' command. Queries Cortex Logging according to a pre-set query
         '''
 
         args = demisto.args()
@@ -484,13 +484,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
         return entry
 
     def get_social_applications_command():
-        ''' corresponds to 'pan-appframework-get-social-applications' command. Queries Appframework Logging according to a pre-set query '''
+        ''' corresponds to 'pan-cortex-get-social-applications' command. Queries Cortex Logging according to a pre-set query '''
 
         args = demisto.args()
 
@@ -548,14 +548,14 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
         return entry
 
     def search_by_file_hash_command():
         '''
-        corresponds to 'pan-appframework-search-by-file-hash' command. Queries Appframework Logging according to a pre-set query
+        corresponds to 'pan-cortex-search-by-file-hash' command. Queries Cortex Logging according to a pre-set query
         '''
 
         args = demisto.args()
@@ -615,7 +615,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
         return entry
@@ -638,7 +638,7 @@ script:
         if (severity):
             query += " AND severity='%d'" %severity
 
-        LOG('Fetching Palo Alto Appframeword incidents with query: %s' %query)
+        LOG('Fetching Palo Alto Cortex incidents with query: %s' %query)
 
         service_start_date_epoch = int(last_run.strftime("%s"))
         service_end_date_epoch = int(datetime.datetime.now().strftime("%s"))
@@ -680,15 +680,15 @@ script:
                 demisto.results('ok')
             else:
                 demisto.results('test failed')
-        elif demisto.command() == 'pan-appframework-query-logs':
+        elif demisto.command() == 'pan-cortex-query-logs':
             demisto.results(query_logs_command())
-        elif demisto.command() == 'pan-appframework-poll-events':
+        elif demisto.command() == 'pan-cortex-poll-events':
             demisto.results(poll_events_command())
-        elif demisto.command() == 'pan-appframework-get-critical-threat-logs':
+        elif demisto.command() == 'pan-cortex-get-critical-threat-logs':
             demisto.results(get_critical_logs_command())
-        elif demisto.command() == 'pan-appframework-get-social-applications':
+        elif demisto.command() == 'pan-cortex-get-social-applications':
             demisto.results(get_social_applications_command())
-        elif demisto.command() == 'pan-appframework-search-by-file-hash':
+        elif demisto.command() == 'pan-cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
@@ -698,7 +698,7 @@ script:
         raise
   type: python
   commands:
-  - name: pan-appframework-query-logs
+  - name: pan-cortex-query-logs
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -710,7 +710,7 @@ script:
     - name: query
       description: 'Free text SQL query. For example, query="select * from panw.traffic
         limit 5". There are multiple tables in Loggings, such as: threat, traffic.
-        Refer to Appframework Logging service schema reference for the full list.
+        Refer to Cortex Logging service schema reference for the full list.
         Our documentation has more queries samples.'
       defaultValue: select * from panw.traffic limit 5
     - name: timeRange
@@ -725,51 +725,51 @@ script:
       description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
         rangeValue="1" would run the query on the last week.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    description: Query Appframework Logging service
-  - name: pan-appframework-get-critical-threat-logs
+    description: Query Cortex Logging service
+  - name: pan-cortex-get-critical-threat-logs
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -792,73 +792,73 @@ script:
       description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
         rangeValue="1" would run the query on the last week.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    - contextPath: Appframework.Logging.risk-of-app
+    - contextPath: Cortex.Logging.risk-of-app
       description: Risk of application
-    - contextPath: Appframework.Logging.type
+    - contextPath: Cortex.Logging.type
       description: Threat type
-    - contextPath: Appframework.Logging.pcad_id
+    - contextPath: Cortex.Logging.pcad_id
       description: Pcap id
-    - contextPath: Appframework.Logging.reportid
+    - contextPath: Cortex.Logging.reportid
       description: Report id
       type: number
-    - contextPath: Appframework.Logging.category-of-threatid
+    - contextPath: Cortex.Logging.category-of-threatid
       description: Category of threat id
-    - contextPath: Appframework.Logging.subtype
+    - contextPath: Cortex.Logging.subtype
       description: Threat sub type
-    - contextPath: Appframework.Logging.time_received
+    - contextPath: Cortex.Logging.time_received
       description: Time received
-    - contextPath: Appframework.Logging.pcap
+    - contextPath: Cortex.Logging.pcap
       description: Pcap
-    - contextPath: Appframework.Logging.name-of-threatid
+    - contextPath: Cortex.Logging.name-of-threatid
       description: Name of threat id
       type: string
-    - contextPath: Appframework.Logging.severity
+    - contextPath: Cortex.Logging.severity
       description: Threat Severity
-    description: Query Appframework Logging service according to pre-set queries
-  - name: pan-appframework-get-social-applications
+    description: Query Cortex Logging service according to pre-set queries
+  - name: pan-cortex-get-social-applications
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -881,61 +881,61 @@ script:
       description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
         rangeValue="1" would run the query on the last week.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    - contextPath: Appframework.Logging.risk-of-app
+    - contextPath: Cortex.Logging.risk-of-app
       description: Risk of application
-    - contextPath: Appframework.Logging.aggregations.size
+    - contextPath: Cortex.Logging.aggregations.size
       description: Aggregations size
-    - contextPath: Appframework.Logging.natsport
+    - contextPath: Cortex.Logging.natsport
       description: NAT s port
-    - contextPath: Appframework.Logging.start
+    - contextPath: Cortex.Logging.start
       description: Traffic start
-    - contextPath: Appframework.Logging.subcategory-of-apptime_received
+    - contextPath: Cortex.Logging.subcategory-of-apptime_received
       description: Sub-category of application time
-    description: Query Appframework Logging service according to pre-set queries
-  - name: pan-appframework-search-by-file-hash
+    description: Query Cortex Logging service according to pre-set queries
+  - name: pan-cortex-search-by-file-hash
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -962,72 +962,72 @@ script:
       description: File hash for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc"
         would return all logs related to this file.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    - contextPath: Appframework.Logging.risk-of-app
+    - contextPath: Cortex.Logging.risk-of-app
       description: Risk of application
-    - contextPath: Appframework.Logging.type
+    - contextPath: Cortex.Logging.type
       description: Threat type
-    - contextPath: Appframework.Logging.pcad_id
+    - contextPath: Cortex.Logging.pcad_id
       description: Pcap id
-    - contextPath: Appframework.Logging.reportid
+    - contextPath: Cortex.Logging.reportid
       description: Report id
       type: number
-    - contextPath: Appframework.Logging.category-of-threatid
+    - contextPath: Cortex.Logging.category-of-threatid
       description: Category of threat id
-    - contextPath: Appframework.Logging.subtype
+    - contextPath: Cortex.Logging.subtype
       description: Threat sub type
-    - contextPath: Appframework.Logging.time_received
+    - contextPath: Cortex.Logging.time_received
       description: Time received
-    - contextPath: Appframework.Logging.pcap
+    - contextPath: Cortex.Logging.pcap
       description: Pcap
-    - contextPath: Appframework.Logging.name-of-threatid
+    - contextPath: Cortex.Logging.name-of-threatid
       description: Name of threat id
       type: string
-    - contextPath: Appframework.Logging.severity
+    - contextPath: Cortex.Logging.severity
       description: Threat Severity
-    description: Query Appframework Logging service according to pre-set queries
+    description: Query Cortex Logging service according to pre-set queries
   dockerimage: demisto/python_pancloud:1.0.0.170
   isfetch: true
   runonce: false
