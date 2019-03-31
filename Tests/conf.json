@@ -777,6 +777,11 @@
             "nightly": true
         },
         {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
+            "nightly": true
+        },
+        {
             "integrations": "Cisco Meraki",
             "playbookID": "Cisco-Meraki-Test"
         },
