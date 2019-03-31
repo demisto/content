@@ -167,13 +167,15 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 202}:
-        err_msg = res.json().get('errors')[0].get('message')
-        if err_msg == 'access denied, invalid bearer token' and get_token_flag:
+        err_msg = 'Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason)
+        # try to create a new token
+        if res.status_code == 403 and get_token_flag:
+            LOG(err_msg)
             get_token(new_token=True)
-            http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+            return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
         elif safe:
             return None
-        return_error('Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason))
+        return_error(err_msg)
     return res.json()
 
 
@@ -799,6 +801,4 @@ try:
         demisto.results(lift_host_containment_command())
     # Log exceptions
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
     return_error(str(e))
