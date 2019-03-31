@@ -252,7 +252,9 @@ script:
                     primary_smtp_address=ACCOUNT_EMAIL, autodiscover=True,
                     access_type=ACCESS_TYPE, credentials=credentials,
                 )
-                os.environ['NO_PROXY'] = EWS_SERVER = account.protocol.service_endpoint
+                EWS_SERVER = account.protocol.service_endpoint
+                if not USE_PROXY:
+                    os.environ['NO_PROXY'] = EWS_SERVER
                 SERVER_BUILD = account.protocol.version.build
                 demisto.setIntegrationContext(create_context_dict(account))
             except AutoDiscoverFailed:
@@ -966,13 +968,13 @@ script:
         if item.headers:
             headers = []
             for header in item.headers:
-                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': header.value})
+                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
                 headers.append("{}: {}".format(header.name, header.value))
             labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
         if item.message_id:
-            labels.append({'type': 'Email/MessageId', 'value': item.message_id})
+            labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
 
         if item.item_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})
