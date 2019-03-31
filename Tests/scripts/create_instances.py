@@ -1,6 +1,7 @@
 import argparse
 
 from Tests.test_utils import str2bool, run_command
+from Tests.scripts.constants import FILTER_CONF, RUN_ALL_TESTS_FORMAT
 
 
 SERVER_GA = "Demisto-Circle-CI-Content-GA*"
@@ -17,25 +18,42 @@ AMI_NAME_TO_READABLE = {
     SERVER_TWO_BEFORE_GA: "Demisto two before GA"}
 
 
-def is_nightly_build():
+def options_handler():
     parser = argparse.ArgumentParser(description='Utility creating an instance for Content build')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly build')
+    parser.add_argument('-b', '--branch', help='Branch Name')
     options = parser.parse_args()
-    return options.nightly
+    return options.nightly, options.branch
 
 
 def create_instance(ami_name):
-    print "Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name])
+    print("Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name]))
     run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         instance_id = instance_file.read()
-
+    with open('image_id.txt', 'r') as image_id_file:
+        image_data = image_id_file.read()
+        print('Image data is {}'.format(image_data))
+        with open("./Tests/images_data.txt", "a") as image_data_file:
+            image_data_file.write(
+                '{name} Image info is: {data}\n'.format(name=AMI_NAME_TO_READABLE[ami_name], data=image_data))
     return instance_id
+
+
+def is_run_all():
+    with open(FILTER_CONF, 'r') as filter_file:
+        filtered_tests = filter_file.readlines()
+        filtered_tests = [line.strip('\n') for line in filtered_tests]
+        run_all = True if RUN_ALL_TESTS_FORMAT in filtered_tests else False
+
+    return run_all
 
 
 def main():
     instance_ids = []
-    if not is_nightly_build():
+    is_nightly_build, branch_name = options_handler()
+    run_all = is_run_all()
+    if is_nightly_build or branch_name == 'master' or run_all:
         instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[SERVER_GA], create_instance(SERVER_GA)))
 
     else:

@@ -115,7 +115,7 @@ script: |-
                    })
 
   # Returning all parsed data:
-  demisto.results(parser.all_data)
+  demisto.results(parser.all_data.encode('utf-8'))
 
   # Returning error:
   if parser.res:  # If there was an error:
