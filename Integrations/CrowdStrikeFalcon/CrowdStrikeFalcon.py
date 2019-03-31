@@ -12,7 +12,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = ''
 CLIENT_ID = demisto.params().get('client_id')
 SECRET = demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -124,7 +123,7 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
+def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False, get_token_flag=True):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -146,13 +145,14 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :type safe: ``bool``
         :param safe: If set to true will return None in case of http error
 
+        :type get_token_flag: ``bool``
+        :param get_token_flag: If set to True will call get_token()
+
         :return: Returns the http request response json
         :rtype: ``dict``
     """
-    if not TOKEN:
-        # this will update the Authorization header in HEADERS
+    if get_token_flag:
         get_token()
-        headers = HEADERS
     url = SERVER + url_suffix
     try:
         res = requests.request(
@@ -286,19 +286,18 @@ def get_passed_mins(start_time, end_time_str):
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
-def get_token():
+def get_token(new_token=False):
     """
         Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+        :param new_token: If set to True will generate a new token regardless of time passed
 
         :rtype: ``str``
         :return: Token
     """
-    # set TOKEN to true to avoid calling get_token from http_request
-    global TOKEN
-    TOKEN = True
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
-    if ctx:
+    if ctx and not new_token:
         passed_mins = get_passed_mins(now, ctx.get('time'))
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
@@ -312,7 +311,6 @@ def get_token():
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
     HEADERS['Authorization'] = 'Bearer {}'.format(auth_token)
-    TOKEN = auth_token
     return auth_token
 
 
@@ -330,7 +328,8 @@ def get_token_request():
     headers = {
         'Authorization': HEADERS['Authorization']
     }
-    token_res = http_request('POST', '/oauth2/token', data=json.dumps(body), headers=headers, safe=True)
+    token_res = http_request('POST', '/oauth2/token', data=json.dumps(body), headers=headers, safe=True,
+                             get_token_flag=False)
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
