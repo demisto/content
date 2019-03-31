@@ -240,10 +240,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 8bb63f49-999e-4851-83b8-892d68e28bd9
+    taskid: f6c97aec-6f25-4d87-8c44-84adc8e5ccf5
     type: condition
     task:
-      id: 8bb63f49-999e-4851-83b8-892d68e28bd9
+      id: f6c97aec-6f25-4d87-8c44-84adc8e5ccf5
       version: -1
       name: Verify Data was Altered
       type: condition
@@ -286,10 +286,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: c0cccd4e-13fd-424c-848e-8c937e904020
+    taskid: b6ec06ad-ace2-45ec-8cf8-102810f05f03
     type: condition
     task:
-      id: c0cccd4e-13fd-424c-848e-8c937e904020
+      id: b6ec06ad-ace2-45ec-8cf8-102810f05f03
       version: -1
       name: Verify Query Output
       description: Check whether the values provided in arguments are equal. If either
@@ -304,18 +304,18 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isEqualString
           left:
             value:
               complex:
                 root: Snowflake
-                accessor: Result
+                accessor: Result.TS
                 transformers:
-                - operator: getField
+                - operator: atIndex
                   args:
-                    field:
+                    index:
                       value:
-                        simple: TS
+                        simple: "0"
             iscontext: true
           right:
             value:
