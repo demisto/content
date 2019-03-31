@@ -1,7 +1,7 @@
 commonfields:
-  id: FindSimilarIncidentsV2
+  id: FindSimilarIncidents
   version: -1
-name: FindSimilarIncidentsV2
+name: FindSimilarIncidents
 fromversion: 4.5.0
 script: |-
   from datetime import timedelta, datetime
