@@ -5,11 +5,11 @@ from email import message_from_string
 from email.header import decode_header
 from base64 import b64decode
 
-import sys
 import email.utils
 from email.parser import HeaderParser
 import traceback
 import tempfile
+import sys
 
 
 # -*- coding: utf-8 -*-
@@ -38,7 +38,7 @@ from datetime import datetime, timedelta
 from struct import unpack
 
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
 
@@ -224,22 +224,22 @@ class DataModel(object):
     @staticmethod
     def PtypMultipleInteger16(data_value):
         entry_count = len(data_value) / 2
-        return [unpack('h', bytes[i * 2:(i + 1) * 2])[0] for i in range(entry_count)]
+        return [unpack('h', data_value[i * 2:(i + 1) * 2])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleInteger32(data_value):
         entry_count = len(data_value) / 4
-        return [unpack('i', bytes[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
+        return [unpack('i', data_value[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleFloating32(data_value):
         entry_count = len(data_value) / 4
-        return [unpack('f', bytes[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
+        return [unpack('f', data_value[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleFloating64(data_value):
         entry_count = len(data_value) / 8
-        return [unpack('d', bytes[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
+        return [unpack('d', data_value[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleCurrency(data_value):
@@ -248,12 +248,12 @@ class DataModel(object):
     @staticmethod
     def PtypMultipleFloatingTime(data_value):
         entry_count = len(data_value) / 8
-        return [get_floating_time(bytes[i * 8:(i + 1) * 8]) for i in range(entry_count)]
+        return [get_floating_time(data_value[i * 8:(i + 1) * 8]) for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleInteger64(data_value):
         entry_count = len(data_value) / 8
-        return [unpack('q', bytes[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
+        return [unpack('q', data_value[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleString(data_value):
@@ -271,12 +271,12 @@ class DataModel(object):
     @staticmethod
     def PtypMultipleTime(data_value):
         entry_count = len(data_value) / 8
-        return [get_time(bytes[i * 8:(i + 1) * 8]) for i in range(entry_count)]
+        return [get_time(data_value[i * 8:(i + 1) * 8]) for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleGuid(data_value):
         entry_count = len(data_value) / 16
-        return [bytes[i * 16:(i + 1) * 16] for i in range(entry_count)]
+        return [data_value[i * 16:(i + 1) * 16] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleBinary(data_value):
@@ -305,7 +305,7 @@ def get_multi_value_offsets(data_value):
     if ul_count == 1:
         rgul_data_offsets = [8]
     else:
-        rgul_data_offsets = [unpack('Q', bytes[4 + i * 8:4 + (i + 1) * 8])[0] for i in range(ul_count)]
+        rgul_data_offsets = [unpack('Q', data_value[4 + i * 8:4 + (i + 1) * 8])[0] for i in range(ul_count)]
 
     rgul_data_offsets.append(len(data_value))
 
@@ -3204,7 +3204,8 @@ def save_attachments(attachments, root_email_file_name, max_depth):
 
                     inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name,
                                                                   max_depth=max_depth)
-                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name))
+                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
+                                   outputs=None)
                     attached_emls.append(inner_eml)
                     attached_emls.extend(attached_inner_emails)
                 finally:
@@ -3240,13 +3241,18 @@ def get_utf_string(text, field):
 def convert_to_unicode(s):
     global ENCODINGS_TYPES
     try:
-        encoded_s, encoding = decode_header(s)[0]
-        s = encoded_s.decode(encoding).encode('utf-8').strip()
-        ENCODINGS_TYPES.add(encoding)
+        res = ''  # utf encoded result
+        for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
+            if encoding:
+                res += decoded_s.decode(encoding).encode('utf-8')
+                ENCODINGS_TYPES.add(encoding)
+            else:
+                res += decoded_s
+        return res.strip()
     except Exception:
         for file_data in ENCODINGS_TYPES:
             try:
-                s = s.decode(encoding).encode(file_data).strip()
+                s = s.decode(file_data).encode('utf-8').strip()
                 break
             except:     # noqa: E722
                 pass

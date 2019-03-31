@@ -18,6 +18,7 @@ PIPFILE_REGEX = r".*\Pipfile"
 TEST_DATA_REGEX = r".*test_data.*"
 DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
+DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
@@ -68,3 +69,10 @@ TYPE_TO_EXTENSION = {
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
+
+
+class PB_Status:
+    NOT_SUPPORTED_VERSION = 'Not supported version'
+    COMPLETED = 'completed'
+    FAILED = 'failed'
+    IN_PROGRESS = 'inprogress'

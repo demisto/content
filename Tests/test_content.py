@@ -12,7 +12,7 @@ from slackclient import SlackClient
 from test_integration import test_integration
 from mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
-from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF
+from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 
 
 SERVER_URL = "https://{}"
@@ -107,10 +107,15 @@ def has_unmockable_integration(integrations, unmockable_integrations):
 
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
-    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
-    if succeed:
+    status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
+    if status == PB_Status.COMPLETED:
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
+
+    elif status == PB_Status.NOT_SUPPORTED_VERSION:
+        print 'PASS: %s skipped - not supported version' % (test_message,)
+        succeed_playbooks.append(playbook_id)
+
     else:
         print 'Failed: %s failed' % (test_message,)
         playbook_id_with_mock = playbook_id
@@ -118,6 +123,8 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
             playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
         notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+
+    succeed = status == PB_Status.COMPLETED or status == PB_Status.NOT_SUPPORTED_VERSION
     return succeed
 
 
@@ -144,11 +151,18 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
         print start_message + ' (Mock: Playback)'
         proxy.start(playbook_id)
         # run test
-        succeed, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True)
+        status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True)
         # use results
         proxy.stop()
-        if succeed:
+        if status == PB_Status.COMPLETED:
             print 'PASS: %s succeed' % (test_message,)
+            succeed_playbooks.append(playbook_id)
+            print '------ Test %s end ------' % (test_message,)
+
+            return
+
+        elif status == PB_Status.NOT_SUPPORTED_VERSION:
+            print 'PASS: %s skipped - not supported version' % (test_message,)
             succeed_playbooks.append(playbook_id)
             print '------ Test %s end ------' % (test_message,)
 
@@ -348,7 +362,7 @@ def organize_tests(tests, unmockable_integrations):
     return mock_tests + mockless_tests
 
 
-def execute_testing(server, server_ip):
+def execute_testing(server, server_ip, server_version):
     options = options_handler()
     username = options.user
     password = options.password
@@ -471,7 +485,8 @@ def execute_testing(server, server_ip):
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
+        file_path = "./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', ''))
+        with open(file_path, "w") as is_build_failed_file:
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
@@ -481,27 +496,33 @@ def main():
     options = options_handler()
     server = options.server
     is_ami = options.isAMI
+    server_version = options.serverVersion
 
     if is_ami:  # Run tests in AMI configuration
+        with open('./Tests/images_data.txt', 'r') as image_data_file:
+            image_data = [line for line in image_data_file if line.startswith(server_version)]
+            if len(image_data) != 1:
+                print('Did not get one image data for server version, got {}'.format(image_data))
+            else:
+                print('Server image info: {}'.format(image_data[0]))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-        server_version = options.serverVersion
         for ami_instance_name, ami_instance_ip in instance_ips:
             if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
                 # TODO: remove the and condition once version 4.5 is out
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server, ami_instance_ip)
+                execute_testing(server, ami_instance_ip, server_version)
                 sleep(8)
 
     else:  # Run tests in Server build configuration
         with open('public_ip', 'rb') as f:
             public_ip = f.read().strip()
 
-        execute_testing(server, public_ip)
+        execute_testing(server, public_ip, server_version)
 
 
 if __name__ == '__main__':

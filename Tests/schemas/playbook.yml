@@ -56,6 +56,8 @@ mapping:
             type: seq
             sequence:
             - include: timertriggers_schema
+          ignoreworker:
+            type: bool
           task:
             type: map
             required: yes
