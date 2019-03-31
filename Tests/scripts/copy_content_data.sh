@@ -8,6 +8,7 @@ USER="ec2-user"
 echo "add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+# copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'

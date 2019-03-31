@@ -26,6 +26,12 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: URL Threshold. Minimum number of positive results from urlscan.io to consider
+    the URL malicious.
+  name: url_threshold
+  defaultvalue: "1"
+  type: 0
+  required: false
 script:
   script: |-
     '''IMPORTS'''
@@ -38,10 +44,10 @@ script:
     requests.packages.urllib3.disable_warnings()
 
 
-
     '''GLOBAL VARS'''
     BASE_URL = 'https://urlscan.io/api/v1/'
     APIKEY = demisto.params().get('apikey')
+    THRESHOLD = int(demisto.params().get('url_threshold', '1'))
     INSECURE = demisto.params().get('insecure')
     PROXY = demisto.params().get('proxy')
     if not demisto.params().get('proxy', False):
@@ -49,7 +55,6 @@ script:
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
-
 
 
     '''HELPER FUNCTIONS'''
@@ -185,6 +190,7 @@ script:
         while scan_lists is None:
             try:
                 response = urlscan_submit_request(uuid)
+                scan_data = response['data']
                 scan_lists = response['lists']
                 scan_tasks = response['task']
                 scan_page = response['page']
@@ -217,7 +223,9 @@ script:
         if 'urls' in scan_lists:
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
-        human_readable['Effective URL'] = response['page']['url'] # effective url of the submitted url
+        # effective url of the submitted url
+        human_readable['Effective URL'] = response['page']['url']
+        cont['EffectiveURL'] = response['page']['url']
         if 'uuid' in scan_tasks:
             ec['URLScan']['UUID']
         if 'ips' in scan_lists:
@@ -244,6 +252,16 @@ script:
                 i = i + 1
             cont['RelatedIPs'] = ip_ec_info
             IP_HEADERS = ['Count', 'IP', 'ASN']
+        # add redirected URLs
+        if 'requests' in scan_data:
+            redirected_urls = []
+            demisto.log(str(scan_data['requests']))
+            for o in scan_data['requests']:
+                if 'redirectResponse' in o['request']:
+                    if 'url' in o['request']['redirectResponse']:
+                        url = o['request']['redirectResponse']['url']
+                        redirected_urls.append(url)
+            cont['RedirectedURLs'] = redirected_urls
         if 'countries' in scan_lists:
             countries = scan_lists['countries']
             human_readable['Associated Countries'] = countries
@@ -260,7 +278,7 @@ script:
             cont['ASN'] = scan_page['asn']
         if 'malicious' in scan_stats:
             human_readable['Malicious URLs Found'] = scan_stats['malicious']
-            if int(scan_stats['malicious']) > 0:
+            if int(scan_stats['malicious']) >= THRESHOLD:
                 human_readable['Malicious'] = 'Malicious'
                 url_cont['Data'] = demisto.args().get('url')
                 cont['Data'] = demisto.args().get('url')
@@ -658,6 +676,12 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
+    - contextPath: URLScan.RedirectedURLs
+      description: Redirected URLs from the URL scanned
+      type: string
+    - contextPath: URLScan.EffectiveURL
+      description: Effective URL of the original URL
+      type: string
     description: 'Deprecated: replaced with url command'
   - name: url
     arguments:
@@ -747,7 +771,14 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
+    - contextPath: URLScan.RedirectedURLs
+      description: Redirected URLs from the URL scanned
+      type: string
+    - contextPath: URLScan.EffectiveURL
+      description: Effective URL of the original URL
+      type: string
     description: Submit a url to scan
   runonce: false
+releaseNotes: "Add RediredctedURLs, EffectiveURL data from '!url' to context, add threshold parameter"
 tests:
   - urlscan_malicious_Test
