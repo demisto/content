@@ -2,40 +2,26 @@ commonfields:
   id: Palo Alto AppFramework
   version: -1
 name: Palo Alto AppFramework
-display: Palo Alto AppFramework
+display: Palo Alto Networks Cortex
 category: Analytics & SIEM
 image: data:image/png;base64,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
 description: This framework manages all PA's cloud managed products
+detaileddescription: 25$nhXyu4
 configuration:
-- display: API url provided by Palo Alto. (e.g. https://apigw-stg4.us.paloaltonetworks.com)
-  name: apiUrl
+- display: Demisto App Token
+  name: token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
-- display: Accept any certificate
-  name: insecure
-  defaultvalue: ""
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
   type: 8
   required: false
-- display: Client ID from Palo Alto cloud
-  name: clientId
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Client Secret from Palo Alto cloud
-  name: clientSecret
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Refresh token
-  name: refreshToken
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: 'PAN application to fetch from (for example: Wildfire)'
-  name: application
-  defaultvalue: ""
-  type: 0
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
   required: false
 - display: Severity to filter fetch results by (Informational, Low, Medium, High,
     Critical)
@@ -70,9 +56,15 @@ script:
 
     ''' GLOBAL VARS '''
 
-    API_URL=demisto.params()['apiUrl']
-    REFRESH_TOKEN=demisto.params()['refreshToken']
+    API_URL=''
+    DEMISTO_APP_TOKEN = demisto.params()['token']
     USE_SSL = not demisto.params().get('insecure', False)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     DEFAULT_HEADERS = {
         'Accept': 'application/json',
@@ -89,95 +81,54 @@ script:
 
     COMMON_HEADERS = ['id', 'score', 'action', 'app', 'proto', 'dst', 'rule', 'characteristic-of-app', 'device_name', 'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc','filetype', 'SHA256', 'filename']
 
-    API_TOKEN_URL = 'https://api.paloaltonetworks.com/api/oauth2/RequestToken'
-
-    def refresh_access_token(refresh_token):
-        """ Refresh an Access-Token
-
-            Args:
-                refresh_token (str): a valid Refresh-Token
-            Returns:
-                str: new Access-Token
-
-            Code is modified from the following gist - https://gist.github.com/jtschichold/df349bcf2a9ca16a0ac69c4ff1d5edd1
+    def epoch_seconds(d=None):
         """
-        client_id = demisto.params()['clientId']
-        client_secret = demisto.params()['clientSecret']
+        Return the number of seconds for given date. If no date, return current.
 
-        # grant_type should refreshToken per OAuth2 std
-        # refresh_token should be a valid <refreshToken> per OAuth2
-        request_params = [('grant_type', 'refresh_token')]
-        request_params.append((unicode('refresh_token'), refresh_token))
-        request_params.append((unicode('client_id'), client_id))
-        request_params.append((unicode('client_secret'), client_secret))
+        parameter: (date) d
+            The date to convert to seconds
 
-        # POST the request
-        response = requests.post(
-            API_TOKEN_URL,
-            data=request_params,
-            timeout=20,
-            headers=DEFAULT_HEADERS,
-            verify=USE_SSL,
-        )
-        response.raise_for_status()
+        returns:
+            The date in seconds
+        """
+        if not d:
+            d = datetime.datetime.utcnow()
+        return int((d - datetime.datetime.utcfromtimestamp(0)).total_seconds())
 
-        # load the JSON response
-        response_json = response.json()
-        # and check for errors
-        if 'error' in response_json:
-            LOG('Error: {!r} Description: {!r}'.format(response_json['error'], response_json['error_description']))
-            raise Exception('Error refreshing token. Error: {!r} Description: {!r}'.format(response_json['error'], response_json['error_description']))
-        # if all good, just return the new access token
-        try:
-            return response_json['access_token']
-        except KeyError:
-            raise Exception("Problem with refreshing token in Palo Alto. Response from server was: " + json.dumps(response_json))
 
-    def update_context_data(access_token):
-        new_data = {
-            'access_token': access_token,
-            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    def get_access_token():
+
+        global API_URL
+        integration_context = demisto.getIntegrationContext()
+        access_token = integration_context.get('access_token')
+        stored = integration_context.get('stored')
+        if access_token and stored:
+            if epoch_seconds() - stored < 60 * 60 - 30:
+                return access_token
+        headers = {
+            'Authorization': DEMISTO_APP_TOKEN,
+            'Accept': 'application/json'
         }
-        demisto.setIntegrationContext(new_data)
-
-    def refresh_needed(saved_data):
-        '''
-        This function returns whether or not we need to refresh our access token
-        '''
-        if ((saved_data is None) or ('access_token' not in saved_data) or ('timestamp' not in saved_data)):
-            return True
-
-        current_time = datetime.datetime.now()
-        saved_time = datetime.datetime.strptime(saved_data['timestamp'], "%Y-%m-%d %H:%M:%S")
-        # access token is valid for one hour
-
-        if ((current_time - saved_time).total_seconds() >= 3600):
-            return True
-
-        return False
-
-    def get_access_token(refresh_token):
-        '''
-        This function checks if we need to refresh our authentication token and if we do it
-        refreshes the token and returns the new one
-        '''
-        access_token = None
-        saved_data = demisto.getIntegrationContext()
-
-        if (refresh_needed(saved_data)):
-            access_token = refresh_access_token(refresh_token)
-            update_context_data(access_token)
-        else:
-            access_token = saved_data['access_token']
-
+        token_retrieval_url = 'https://demistobot.demisto.com/panw-token'
+        dbot_response = requests.get(token_retrieval_url, headers=headers, params={'token': DEMISTO_APP_TOKEN}, verify=USE_SSL)
+        if dbot_response.status_code not in {200, 201}:
+            #return_error(dbot_response.content)
+            return_error('Error in authentication with the application. Try checking the credentials you entered.')
+        try:
+            parsed_response = dbot_response.json()
+        except ValueError:
+            #return_error(dbot_response.content)
+            err_msg = 'There was a problem in retrieving an updated access token.\nThe response from the Demistobot server did not contain the expected content.'
+            return_error(err_msg)
+        access_token = parsed_response.get('access_token')
+        API_URL = parsed_response.get('url')
+        demisto.setIntegrationContext({
+            'access_token': access_token,
+            'stored': epoch_seconds(),
+        })
         return access_token
 
-    try:
-        ACCESS_TOKEN=get_access_token(REFRESH_TOKEN)
-    except AttributeError:
-        # if we are using a Demisto version which doesn't support integrationContext (Demisto <= 3.6)
-        ACCESS_TOKEN=refresh_access_token(REFRESH_TOKEN)
-
+    ACCESS_TOKEN = get_access_token()
 
     # setting the access token as env variable for the pancloud sdk
     os.environ['ACCESS_TOKEN'] = ACCESS_TOKEN;
@@ -206,7 +157,7 @@ script:
 
     def query_loggings(query_data):
         '''
-        This function handles all the querying of Appframework Logging service
+        This function handles all the querying of Cortex Logging service
         '''
 
         logging_service = LoggingService(
@@ -238,7 +189,7 @@ script:
 
     def poll_events(channel_id):
         '''
-        This function handles polling events from Appframework's Events service
+        This function handles polling events from Cortex Events service
         '''
 
         event_service = EventService(
@@ -394,7 +345,7 @@ script:
 
     def query_logs_command():
         '''
-        Corresponds to 'pan-appframework-query-logs' command. Return the result of querying the Logging service
+        Corresponds to 'pan-cortex-query-logs' command. Return the result of querying the Logging service
         '''
         args = demisto.args()
         start_time = args.get('startTime')
@@ -453,7 +404,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
 
@@ -461,7 +412,7 @@ script:
 
     def poll_events_command():
         '''
-        corresponds to 'pan-appframework-poll-events' command. Polls events from Appframework
+        corresponds to 'pan-cortex-poll-events' command. Polls events from Cortex
         '''
 
         channel_id = 'EventFilter'
@@ -474,7 +425,7 @@ script:
 
     def get_critical_logs_command():
         '''
-        corresponds to 'pan-appframework-get-critical-threat-logs' command. Queries Appframework Logging according to a pre-set query
+        corresponds to 'pan-cortex-get-critical-threat-logs' command. Queries Cortex Logging according to a pre-set query
         '''
 
         args = demisto.args()
@@ -533,13 +484,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
         return entry
 
     def get_social_applications_command():
-        ''' corresponds to 'pan-appframework-get-social-applications' command. Queries Appframework Logging according to a pre-set query '''
+        ''' corresponds to 'pan-cortex-get-social-applications' command. Queries Cortex Logging according to a pre-set query '''
 
         args = demisto.args()
 
@@ -597,14 +548,14 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
         return entry
 
     def search_by_file_hash_command():
         '''
-        corresponds to 'pan-appframework-search-by-file-hash' command. Queries Appframework Logging according to a pre-set query
+        corresponds to 'pan-cortex-search-by-file-hash' command. Queries Cortex Logging according to a pre-set query
         '''
 
         args = demisto.args()
@@ -664,7 +615,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
             'EntryContext': {
-                  'Appframework.Logging(val.id==obj.id)': results
+                  'Cortex.Logging(val.id==obj.id)': results
             }
         }
         return entry
@@ -687,7 +638,7 @@ script:
         if (severity):
             query += " AND severity='%d'" %severity
 
-        LOG('Fetching Palo Alto Appframeword incidents with query: %s' %query)
+        LOG('Fetching Palo Alto Cortex incidents with query: %s' %query)
 
         service_start_date_epoch = int(last_run.strftime("%s"))
         service_end_date_epoch = int(datetime.datetime.now().strftime("%s"))
@@ -729,26 +680,25 @@ script:
                 demisto.results('ok')
             else:
                 demisto.results('test failed')
-        elif demisto.command() == 'pan-appframework-query-logs':
+        elif demisto.command() == 'pan-cortex-query-logs':
             demisto.results(query_logs_command())
-        elif demisto.command() == 'pan-appframework-poll-events':
+        elif demisto.command() == 'pan-cortex-poll-events':
             demisto.results(poll_events_command())
-        elif demisto.command() == 'pan-appframework-get-critical-threat-logs':
+        elif demisto.command() == 'pan-cortex-get-critical-threat-logs':
             demisto.results(get_critical_logs_command())
-        elif demisto.command() == 'pan-appframework-get-social-applications':
+        elif demisto.command() == 'pan-cortex-get-social-applications':
             demisto.results(get_social_applications_command())
-        elif demisto.command() == 'pan-appframework-search-by-file-hash':
+        elif demisto.command() == 'pan-cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
-
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
         raise
   type: python
   commands:
-  - name: pan-appframework-query-logs
+  - name: pan-cortex-query-logs
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -760,7 +710,7 @@ script:
     - name: query
       description: 'Free text SQL query. For example, query="select * from panw.traffic
         limit 5". There are multiple tables in Loggings, such as: threat, traffic.
-        Refer to Appframework Logging service schema reference for the full list.
+        Refer to Cortex Logging service schema reference for the full list.
         Our documentation has more queries samples.'
       defaultValue: select * from panw.traffic limit 5
     - name: timeRange
@@ -775,51 +725,51 @@ script:
       description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
         rangeValue="1" would run the query on the last week.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    description: Query Appframework Logging service
-  - name: pan-appframework-get-critical-threat-logs
+    description: Query Cortex Logging service
+  - name: pan-cortex-get-critical-threat-logs
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -842,73 +792,73 @@ script:
       description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
         rangeValue="1" would run the query on the last week.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    - contextPath: Appframework.Logging.risk-of-app
+    - contextPath: Cortex.Logging.risk-of-app
       description: Risk of application
-    - contextPath: Appframework.Logging.type
+    - contextPath: Cortex.Logging.type
       description: Threat type
-    - contextPath: Appframework.Logging.pcad_id
+    - contextPath: Cortex.Logging.pcad_id
       description: Pcap id
-    - contextPath: Appframework.Logging.reportid
+    - contextPath: Cortex.Logging.reportid
       description: Report id
       type: number
-    - contextPath: Appframework.Logging.category-of-threatid
+    - contextPath: Cortex.Logging.category-of-threatid
       description: Category of threat id
-    - contextPath: Appframework.Logging.subtype
+    - contextPath: Cortex.Logging.subtype
       description: Threat sub type
-    - contextPath: Appframework.Logging.time_received
+    - contextPath: Cortex.Logging.time_received
       description: Time received
-    - contextPath: Appframework.Logging.pcap
+    - contextPath: Cortex.Logging.pcap
       description: Pcap
-    - contextPath: Appframework.Logging.name-of-threatid
+    - contextPath: Cortex.Logging.name-of-threatid
       description: Name of threat id
       type: string
-    - contextPath: Appframework.Logging.severity
+    - contextPath: Cortex.Logging.severity
       description: Threat Severity
-    description: Query Appframework Logging service according to pre-set queries
-  - name: pan-appframework-get-social-applications
+    description: Query Cortex Logging service according to pre-set queries
+  - name: pan-cortex-get-social-applications
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -931,61 +881,61 @@ script:
       description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
         rangeValue="1" would run the query on the last week.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    - contextPath: Appframework.Logging.risk-of-app
+    - contextPath: Cortex.Logging.risk-of-app
       description: Risk of application
-    - contextPath: Appframework.Logging.aggregations.size
+    - contextPath: Cortex.Logging.aggregations.size
       description: Aggregations size
-    - contextPath: Appframework.Logging.natsport
+    - contextPath: Cortex.Logging.natsport
       description: NAT s port
-    - contextPath: Appframework.Logging.start
+    - contextPath: Cortex.Logging.start
       description: Traffic start
-    - contextPath: Appframework.Logging.subcategory-of-apptime_received
+    - contextPath: Cortex.Logging.subcategory-of-apptime_received
       description: Sub-category of application time
-    description: Query Appframework Logging service according to pre-set queries
-  - name: pan-appframework-search-by-file-hash
+    description: Query Cortex Logging service according to pre-set queries
+  - name: pan-cortex-search-by-file-hash
     arguments:
     - name: startTime
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
@@ -1012,72 +962,75 @@ script:
       description: File hash for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc"
         would return all logs related to this file.
     outputs:
-    - contextPath: Appframework.Logging.id
+    - contextPath: Cortex.Logging.id
       description: The id of the log
       type: string
-    - contextPath: Appframework.Logging.score
+    - contextPath: Cortex.Logging.score
       description: The score of the log
       type: number
-    - contextPath: Appframework.Logging.action
+    - contextPath: Cortex.Logging.action
       description: The action of the log
-    - contextPath: Appframework.Logging.app
+    - contextPath: Cortex.Logging.app
       description: The app of the log
-    - contextPath: Appframework.Logging.proto
+    - contextPath: Cortex.Logging.proto
       description: The protocol used
       type: string
-    - contextPath: Appframework.Logging.dst
+    - contextPath: Cortex.Logging.dst
       description: Destination ip
       type: string
-    - contextPath: Appframework.Logging.rule
+    - contextPath: Cortex.Logging.rule
       description: Rule used
-    - contextPath: Appframework.Logging.src
+    - contextPath: Cortex.Logging.src
       description: The source of the action
-    - contextPath: Appframework.Logging.category-of-app
+    - contextPath: Cortex.Logging.category-of-app
       description: Application's category
       type: string
-    - contextPath: Appframework.Logging.srcloc
+    - contextPath: Cortex.Logging.srcloc
       description: Source location
       type: string
-    - contextPath: Appframework.Logging.dstloc
+    - contextPath: Cortex.Logging.dstloc
       description: Destination location
       type: string
-    - contextPath: Appframework.Logging.characteristic-of-app
+    - contextPath: Cortex.Logging.characteristic-of-app
       description: Application's characteristics
-    - contextPath: Appframework.Logging.device_name
+    - contextPath: Cortex.Logging.device_name
       description: The name of the device
       type: string
-    - contextPath: Appframework.Logging.nat
+    - contextPath: Cortex.Logging.nat
       description: Whether NAT was used or not
       type: number
-    - contextPath: Appframework.Logging.natdport
+    - contextPath: Cortex.Logging.natdport
       description: NAT port
-    - contextPath: Appframework.Logging.natdst
+    - contextPath: Cortex.Logging.natdst
       description: NAT destination
-    - contextPath: Appframework.Logging.natsrc
+    - contextPath: Cortex.Logging.natsrc
       description: NAT source
-    - contextPath: Appframework.Logging.risk-of-app
+    - contextPath: Cortex.Logging.risk-of-app
       description: Risk of application
-    - contextPath: Appframework.Logging.type
+    - contextPath: Cortex.Logging.type
       description: Threat type
-    - contextPath: Appframework.Logging.pcad_id
+    - contextPath: Cortex.Logging.pcad_id
       description: Pcap id
-    - contextPath: Appframework.Logging.reportid
+    - contextPath: Cortex.Logging.reportid
       description: Report id
       type: number
-    - contextPath: Appframework.Logging.category-of-threatid
+    - contextPath: Cortex.Logging.category-of-threatid
       description: Category of threat id
-    - contextPath: Appframework.Logging.subtype
+    - contextPath: Cortex.Logging.subtype
       description: Threat sub type
-    - contextPath: Appframework.Logging.time_received
+    - contextPath: Cortex.Logging.time_received
       description: Time received
-    - contextPath: Appframework.Logging.pcap
+    - contextPath: Cortex.Logging.pcap
       description: Pcap
-    - contextPath: Appframework.Logging.name-of-threatid
+    - contextPath: Cortex.Logging.name-of-threatid
       description: Name of threat id
       type: string
-    - contextPath: Appframework.Logging.severity
+    - contextPath: Cortex.Logging.severity
       description: Threat Severity
-    description: Query Appframework Logging service according to pre-set queries
-  dockerimage: demisto/python_pancloud
+    description: Query Cortex Logging service according to pre-set queries
+  dockerimage: demisto/python_pancloud:1.0.0.170
   isfetch: true
   runonce: false
+tests:
+  - No test - OAUTH2
+releaseNotes: "Implemented OAUTH2"
