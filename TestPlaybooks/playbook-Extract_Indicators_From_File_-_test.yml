@@ -1,8 +1,14 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
-description: "A test playbook for extracting indicators from EML files.\nIndicators:
-  \n- Email addresses"
+fromversion: 4.1.0
+description: |-
+  A test playbook for extracting indicators from a file.
+  Supported file types:
+  PDF
+  TXT
+  HTM, HTML
+  DOC, DOCX
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -65,7 +71,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": 50,
           "y": 570
         }
       }
@@ -73,10 +79,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 620415d6-33b2-4055-8d76-ce93d7b8aedb
+    taskid: 389f0a8f-5d83-4c4e-8985-b63942105268
     type: condition
     task:
-      id: 620415d6-33b2-4055-8d76-ce93d7b8aedb
+      id: 389f0a8f-5d83-4c4e-8985-b63942105268
       version: -1
       name: Were the correct indicators extracted?
       description: Checks whether specific indicators were extracted from each one
@@ -133,11 +139,21 @@ tasks:
           right:
             value:
               simple: http://www.docxtesturl.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://tpb.crushus.com/www.paperstreetcash.com
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 1060
+          "x": 280,
+          "y": 980
         }
       }
     note: false
@@ -158,8 +174,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1480
+          "x": 50,
+          "y": 1400
         }
       }
     note: false
@@ -189,8 +205,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 1300
+          "x": 600,
+          "y": 1220
         }
       }
     note: false
@@ -212,6 +228,7 @@ tasks:
       - "9"
       - "1"
       - "11"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -237,7 +254,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -258,7 +275,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 1010,
           "y": 570
         }
       }
@@ -279,7 +296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -300,7 +317,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
+          "x": 530,
           "y": 570
         }
       }
@@ -321,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -342,7 +359,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
+          "x": -430,
           "y": 570
         }
       }
@@ -378,32 +395,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: be1c63ab-e412-432a-8379-3c343ea501f8
-    type: playbook
-    task:
-      id: be1c63ab-e412-432a-8379-3c343ea501f8
-      version: -1
-      name: Extract Indicators From File - Generic
-      playbookName: Extract Indicators From File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-      - "14"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 869
         }
       }
     note: false
@@ -508,8 +499,76 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 1060
+          "x": -180,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 92125e06-aaf4-4afc-8a7e-ba7f63a3f6c9
+    type: regular
+    task:
+      id: 92125e06-aaf4-4afc-8a7e-ba7f63a3f6c9
+      version: -1
+      name: Download EML file
+      description: Downloads an EML file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Inline_malicious_url.eml
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: b6dd871e-0d86-4dec-81c2-30ba4aeae03d
+    type: playbook
+    task:
+      id: b6dd871e-0d86-4dec-81c2-30ba4aeae03d
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 760
         }
       }
     note: false
@@ -522,12 +581,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 1820,
-        "x": -660,
+        "height": 1415,
+        "width": 2300,
+        "x": -910,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+releaseNotes: "update 'Extract Indicators From File - test' playbook' version"
