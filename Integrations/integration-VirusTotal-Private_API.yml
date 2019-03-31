@@ -870,7 +870,7 @@ script:
                 }
             })
             dbotScore = 3
-        elif (bad_downloads_amount >= 0 or len(detected_urls) >= 0):
+        elif (bad_downloads_amount >= threshold/2 or len(detected_urls) >= threshold/2):
             dbotScore = 2
         else:
             dbotScore = 1
@@ -1591,4 +1591,5 @@ script:
   runonce: false
 tests:
 - virusTotalPrivateAPI-test-playbook
-releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands"
+- File Enrichment - Virus Total Private API Test
+releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands, fix of Dbot score in ip-report command"
