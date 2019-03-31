@@ -9,20 +9,35 @@ script: |
       demisto.results(lst)
       sys.exit(0)
 
-  lst = lst[0]["Contents"].split(",")
+  notwhitelisted = []
+  whitlisted = []
+  hr = ""
   items = demisto.args().get("values", "")
-
   if not isinstance(items, list):
       items = items.split(",")
 
-  whitlisted = []
-  notwhitelisted = []
-  hr = ""
+  if not lst[0]["Contents"]:
+
+      for item in items:
+          notwhitelisted.append(item)
+
+      ec = {"List.In":whitlisted,"List.NotIn":notwhitelisted }
+
+      demisto.results({"ContentsFormat": formats["text"],
+                           "Type": entryTypes["note"],
+                           "Contents": 'The list ' + demisto.args()["listname"] + ' is empty',
+                           "EntryContext": ec})
+      sys.exit(0)
+
+
+  lst = lst[0]["Contents"].split(",")
 
   # fill whitlisted array with all the the values that match the regex items in listname argument
   for item in items:
       found = ''
       for list_item in lst:
+          if not list_item:
+              continue
           if re.search(list_item, item):
               found = item
               break
@@ -69,3 +84,4 @@ scripttarget: 0
 runonce: false
 tests:
   - FilterByList - Test
+releaseNotes: "update context when the list is empty"
