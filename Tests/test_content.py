@@ -436,7 +436,7 @@ def restart_demisto_service(ami):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
         sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status'])
+        exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
         if exit_code == 0:
             return
 
