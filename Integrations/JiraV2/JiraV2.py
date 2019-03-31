@@ -660,7 +660,7 @@ try:
         get_id_offset()
 
 
-except Exception, ex:
+except Exception as ex:
     return_error(str(ex))
 
 finally:
