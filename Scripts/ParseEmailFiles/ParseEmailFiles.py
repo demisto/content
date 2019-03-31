@@ -3241,13 +3241,18 @@ def get_utf_string(text, field):
 def convert_to_unicode(s):
     global ENCODINGS_TYPES
     try:
-        encoded_s, encoding = decode_header(s)[0]
-        s = encoded_s.decode(encoding).encode('utf-8').strip()
-        ENCODINGS_TYPES.add(encoding)
+        res = ''  # utf encoded result
+        for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
+            if encoding:
+                res += decoded_s.decode(encoding).encode('utf-8')
+                ENCODINGS_TYPES.add(encoding)
+            else:
+                res += decoded_s
+        return res.strip()
     except Exception:
         for file_data in ENCODINGS_TYPES:
             try:
-                s = s.decode(encoding).encode(file_data).strip()
+                s = s.decode(file_data).encode('utf-8').strip()
                 break
             except:     # noqa: E722
                 pass
