@@ -380,6 +380,6 @@ try:
 
 # Log exceptions
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
     raise
