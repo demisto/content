@@ -167,7 +167,11 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 202}:
-        if safe:
+        err_msg = res.json().get('errors')[0].get('message')
+        if err_msg == 'access denied, invalid bearer token' and get_token_flag:
+            get_token(new_token=True)
+            http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+        elif safe:
             return None
         return_error('Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason))
     return res.json()
@@ -490,7 +494,7 @@ def search_device():
         'platform_name': str(args.get('platform_name', '')).split(','),
         'site_name': str(args.get('site_name', '')).split(',')
     }
-    url_filter = ''.format(str(args.get('filter', '')))
+    url_filter = '{}'.format(str(args.get('filter', '')))
     for k, arg in input_arg_dict.items():
         if arg:
             if type(arg) is list:
