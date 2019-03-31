@@ -21,7 +21,7 @@ IS_OAUTH = demisto.params().get('consumerKey') and demisto.params().get('accessT
 # if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
 if not IS_OAUTH and not (USERNAME and PASSWORD or API_TOKEN):
     return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
-BASIC_AUTH = 'Basic ' + b64encode(USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD))
+BASIC_AUTH = 'Basic ' + b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ASCII'))
 OAUTH = {
     "ConsumerKey": demisto.params().get('consumerKey'),
     "AccessToken": demisto.params().get('accessToken'),
