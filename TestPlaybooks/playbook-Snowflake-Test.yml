@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       brand: Snowflake
     nexttasks:
       '#none#':
-      - "4"
+      - "11"
     scriptarguments:
       columns: {}
       database:
@@ -134,39 +134,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 95e49ad5-e102-4c2a-8443-32a69393b91a
-    type: regular
-    task:
-      id: 95e49ad5-e102-4c2a-8443-32a69393b91a
-      version: -1
-      name: VerifyHumanReadableContains
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-      substring:
-        simple: 2019-03-26 11:14:18.574000
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
         }
       }
     note: false
@@ -204,7 +171,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -224,7 +191,7 @@ tasks:
       brand: Snowflake
     nexttasks:
       '#none#':
-      - "7"
+      - "10"
     scriptarguments:
       columns: {}
       database:
@@ -238,40 +205,6 @@ tasks:
         simple: public
       warehouse:
         simple: demo_wh
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 545ccdf0-313a-4786-8407-a2e0c19fe4fe
-    type: regular
-    task:
-      id: 545ccdf0-313a-4786-8407-a2e0c19fe4fe
-      version: -1
-      name: Verify Data was Altered
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-      substring:
-        complex:
-          root: RandomString
     separatecontext: false
     view: |-
       {
@@ -299,7 +232,133 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 8bb63f49-999e-4851-83b8-892d68e28bd9
+    type: condition
+    task:
+      id: 8bb63f49-999e-4851-83b8-892d68e28bd9
+      version: -1
+      name: Verify Data was Altered
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Snowflake
+                accessor: Result
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NAME
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: c0cccd4e-13fd-424c-848e-8c937e904020
+    type: condition
+    task:
+      id: c0cccd4e-13fd-424c-848e-8c937e904020
+      version: -1
+      name: Verify Query Output
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Snowflake
+                accessor: Result
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: TS
+            iscontext: true
+          right:
+            value:
+              simple: 2019-03-26 11:14:18.574000
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 1ab1378a-feef-4d38-84bd-1a7b5f1e6880
+    type: regular
+    task:
+      id: 1ab1378a-feef-4d38-84bd-1a7b5f1e6880
+      version: -1
+      name: DeleteContet
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -310,7 +369,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50
