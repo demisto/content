@@ -1150,11 +1150,6 @@
 
         },
         {
-            "integrations": "Signal Sciences WAF",
-            "playbookID": "SignalSciences Test"
-
-        },
-        {
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
