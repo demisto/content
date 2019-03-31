@@ -26,6 +26,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: d8caa391-a351-42c5-8cbc-db60e34113bb
@@ -59,12 +60,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: a7ad5342-af8a-465e-897c-c0eda3ae1cf5
+    taskid: 33e66e93-8eee-4493-8572-d4ec6f0d9f7b
     type: regular
     task:
-      id: a7ad5342-af8a-465e-897c-c0eda3ae1cf5
+      id: 33e66e93-8eee-4493-8572-d4ec6f0d9f7b
       version: -1
       name: hashicorp-list-secrets-engines
       description: List all secrets engines that exist in HashiCorp Vault
@@ -85,15 +87,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: c2344a8e-bc97-4261-8748-f5f738d38a24
+    taskid: 30242859-98e0-4219-86cc-5471f3187e1e
     type: regular
     task:
-      id: c2344a8e-bc97-4261-8748-f5f738d38a24
+      id: 30242859-98e0-4219-86cc-5471f3187e1e
       version: -1
       name: hashicorp-list-secrets
-      description: List secrets (names) for a specified KV V2 engine
+      description: List secrets (names) for a specified KV engine
       script: HashiCorp Vault|||hashicorp-list-secrets
       type: regular
       iscommand: true
@@ -118,6 +121,8 @@ tasks:
               getField:
                 value:
                   simple: Path
+      version:
+        simple: "2"
     separatecontext: false
     view: |-
       {
@@ -128,12 +133,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: f41943d5-fd3d-4f81-8662-0a27ad6e43f5
+    taskid: 83416e0a-4e8d-44d1-8536-ad006381a31a
     type: regular
     task:
-      id: f41943d5-fd3d-4f81-8662-0a27ad6e43f5
+      id: 83416e0a-4e8d-44d1-8536-ad006381a31a
       version: -1
       name: hashicorp-get-secret-metadata
       description: Returns information about a specified secret in a specified KV
@@ -174,12 +180,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 505a18a3-7728-4862-8f47-35e3fe643df5
+    taskid: e277fc28-820e-41c4-8c52-dd815accf363
     type: condition
     task:
-      id: 505a18a3-7728-4862-8f47-35e3fe643df5
+      id: e277fc28-820e-41c4-8c52-dd815accf363
       version: -1
       name: Is deleted
       type: condition
@@ -222,12 +229,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: dd22f8f9-ce54-4b5b-8f72-27eca69feb8c
+    taskid: d5dcec3c-588b-46a0-8a4f-01f3a486bbc7
     type: regular
     task:
-      id: dd22f8f9-ce54-4b5b-8f72-27eca69feb8c
+      id: d5dcec3c-588b-46a0-8a4f-01f3a486bbc7
       version: -1
       name: hashicorp-undelete-secret
       description: Undeletes (restores) a secret on HashiCorp (for KV engine version
@@ -256,12 +264,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 082d381a-7ac7-43ea-8412-58157d251488
+    taskid: 3d06fa8a-8b6a-47a6-8ae0-f69e6faef56a
     type: regular
     task:
-      id: 082d381a-7ac7-43ea-8412-58157d251488
+      id: 3d06fa8a-8b6a-47a6-8ae0-f69e6faef56a
       version: -1
       name: hashicorp-delete-secret
       description: Deletes the data under a specified secret given the secret path.
@@ -291,12 +300,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 64693243-4ce7-42d9-892d-9e7b741e038f
+    taskid: 82abb548-deed-4dec-8b35-5335cf1c81d6
     type: regular
     task:
-      id: 64693243-4ce7-42d9-892d-9e7b741e038f
+      id: 82abb548-deed-4dec-8b35-5335cf1c81d6
       version: -1
       name: hashicorp-undelete-secret
       description: Undeletes (restores) a secret on HashiCorp (for KV engine version
@@ -325,12 +335,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 98b2db1e-d670-4a6a-8a68-b8395a42c444
+    taskid: 18c3323d-44c0-4ed6-8cb0-356bbecdc49e
     type: regular
     task:
-      id: 98b2db1e-d670-4a6a-8a68-b8395a42c444
+      id: 18c3323d-44c0-4ed6-8cb0-356bbecdc49e
       version: -1
       name: hashicorp-destroy-secret
       description: Permanently deletes a secret (for KV engine version 2)
@@ -358,12 +369,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 1b49ca60-403f-4363-884e-457e3289ce2e
+    taskid: 635b40e6-2966-4764-887a-1c89ccfe9196
     type: regular
     task:
-      id: 1b49ca60-403f-4363-884e-457e3289ce2e
+      id: 635b40e6-2966-4764-887a-1c89ccfe9196
       version: -1
       name: hashicorp-enable-engine
       description: Enables a new secrets engine at the specified path
@@ -400,17 +412,18 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: e8ffe6fa-a8c3-492e-8ba0-96629e7b2b58
+    taskid: fda2ed0d-6b78-4065-86a2-baa0f15ce8bd
     type: regular
     task:
-      id: e8ffe6fa-a8c3-492e-8ba0-96629e7b2b58
+      id: fda2ed0d-6b78-4065-86a2-baa0f15ce8bd
       version: -1
       name: hashicorp-disable-engine
-      description: When a secrets engine is no longer needed, it can be disabled.
-        All secrets under the engine are revoked and the corresponding vault data
-        and configurations are removed.
+      description: When a secrets engine is no longer needed, it can be disabled.  All
+        secrets under the engine are revoked and the corresponding vault data and
+        configurations are removed.
       script: HashiCorp Vault|||hashicorp-disable-engine
       type: regular
       iscommand: true
@@ -431,12 +444,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 0796bf6e-0deb-4b7b-846a-fd9f59b4ff17
+    taskid: 0656f23f-ff62-4ea4-8512-954739fb5228
     type: regular
     task:
-      id: 0796bf6e-0deb-4b7b-846a-fd9f59b4ff17
+      id: 0656f23f-ff62-4ea4-8512-954739fb5228
       version: -1
       name: hashicorp-list-policies
       description: List all configured policies
@@ -457,12 +471,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 801af8f1-fc76-4602-8b6e-6b11015e7a0b
+    taskid: 756429e7-ab70-495a-8798-a36e2c94e0bb
     type: regular
     task:
-      id: 801af8f1-fc76-4602-8b6e-6b11015e7a0b
+      id: 756429e7-ab70-495a-8798-a36e2c94e0bb
       version: -1
       name: hashicorp-get-policy
       description: Get information for a policy
@@ -500,12 +515,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 6af3231e-333f-4e22-861c-1e882f75ba09
+    taskid: d6906fce-6b76-4bb9-871c-889f986f18a3
     type: regular
     task:
-      id: 6af3231e-333f-4e22-861c-1e882f75ba09
+      id: d6906fce-6b76-4bb9-871c-889f986f18a3
       version: -1
       name: hashicorp-create-token
       description: Creates a new authentication token
@@ -542,12 +558,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 50862b62-7095-4237-8edb-b1d41532497d
+    taskid: adf833e9-c1e1-41c8-8632-fb5f93610e56
     type: regular
     task:
-      id: 50862b62-7095-4237-8edb-b1d41532497d
+      id: adf833e9-c1e1-41c8-8632-fb5f93610e56
       version: -1
       name: hashicorp-configure-engine
       description: Configure a secrets engine to fetch secrets from
@@ -575,12 +592,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: ade8806b-6c71-4c6e-84eb-2270446828b4
+    taskid: 458e042c-19bb-45c8-8cf3-a35ef0eea37f
     type: regular
     task:
-      id: ade8806b-6c71-4c6e-84eb-2270446828b4
+      id: 458e042c-19bb-45c8-8cf3-a35ef0eea37f
       version: -1
       name: GetTime
       description: |
@@ -609,12 +627,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 7e17043c-4906-43f5-80c1-615b77c996bb
+    taskid: caa0912b-aef8-4d5a-8c90-0189955ea97f
     type: regular
     task:
-      id: 7e17043c-4906-43f5-80c1-615b77c996bb
+      id: caa0912b-aef8-4d5a-8c90-0189955ea97f
       version: -1
       name: hashicorp-reset-configuration
       description: Reset the engines configuration
@@ -632,6 +651,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
