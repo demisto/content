@@ -223,6 +223,7 @@ script:
         build_params = context_dict["build"].split(".")
         return Build(*build_params)
 
+
     def get_endpoint_autodiscover(context_dict):
         return context_dict["service_endpoint"]
 
