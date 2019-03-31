@@ -1,7 +1,7 @@
 id: Recorded Future Test
 version: -1
 name: Recorded Future Test
-fromversion: 4.1.0
+toversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -1362,7 +1362,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+      - "30"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -1375,38 +1375,6 @@ tasks:
         "position": {
           "x": 695,
           "y": 3255
-        }
-      }
-    note: false
-    timertriggers: []
-  "41":
-    id: "41"
-    taskid: 70a745f8-d119-4889-8fc1-b211526d50ef
-    type: regular
-    task:
-      id: 70a745f8-d119-4889-8fc1-b211526d50ef
-      version: -1
-      name: Test fetch
-      description: Execute FetchIncident for a given instance
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      add_to_context: {}
-      brand_name:
-        simple: Recorded Future
-      expect_data: {}
-      instance_name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3430
         }
       }
     note: false
