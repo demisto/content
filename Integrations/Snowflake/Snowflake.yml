@@ -123,7 +123,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of columns to display in the specified order, for example: "Name, ID, Timestamp"
+      description: 'A CSV list of columns to display in the specified order, for example: "Name, ID, Timestamp"'
       isArray: true
       name: columns
       required: false
