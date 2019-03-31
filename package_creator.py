@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import io
 import sys
@@ -99,7 +99,9 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
                          ' in the package: {}'.format(package_path))
     if desc_data:
         if not desc_data.startswith('"'):
-            desc_data = '"' + desc_data + '"'
+            # for multiline detailed-description, if it's not wrapped in quotation marks
+            # add | to the beginning of the description, and shift everything to the right
+            desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
         yml_text = "detaileddescription: " + desc_data + '\n' + yml_text
 
     return yml_text, found_desc_path
@@ -129,6 +131,8 @@ def get_code_file(package_path, script_type):
     """
 
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    if not package_path.endswith('/'):
+        package_path += '/'
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path
@@ -197,8 +201,8 @@ def get_package_path():
             directory_name = dir_name
 
     if not directory_name:
-        print "You have failed to provide a legal file path, a legal file path " \
-              "should contain either Integrations or Scripts directories"
+        print("You have failed to provide a legal file path, a legal file path "
+              "should contain either Integrations or Scripts directories")
         sys.exit(1)
 
     return package_path, directory_name, dest_path
