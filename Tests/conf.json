@@ -310,7 +310,7 @@
         },
         {
           "integrations": "Signal Sciences WAF",
-          "playbookID": "SignalSciences Test"
+          "playbookID": "SignalSciences-Test"
         },
         {
             "integrations": "RTIR",
