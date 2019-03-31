@@ -26,7 +26,6 @@ WAREHOUSE = PARAMS.get('warehouse')
 DATABASE = PARAMS.get('database')
 SCHEMA = PARAMS.get('schema')
 ROLE = PARAMS.get('role')
-PROXY = PARAMS.get('proxy', False)
 INSECURE = PARAMS.get('insecure', False)
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get('isFetch')
@@ -56,12 +55,6 @@ DT_NEEDS_CHECKING = {'date', 'timestamp', 'timestamp_ltz', 'timestamp_tz', 'time
 
 
 '''SETUP'''
-
-if not PROXY:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
     err_msg = 'When fetching is enabled there are two additional parameters that are required;'
@@ -406,6 +399,7 @@ commands = {
 '''EXECUTION'''
 
 try:
+    handle_proxy()
     if demisto.command() in commands.keys():
         commands[demisto.command()]()
 except snowflake.connector.errors.Error as e:
