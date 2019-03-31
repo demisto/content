@@ -42,6 +42,7 @@ PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', 'incident')
 FETCH_TIME = demisto.params().get('fetch_time').strip()
 SYSPARM_QUERY = demisto.params().get('sysparm_query')
 SYSPARM_LIMIT = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
+TIMESTAMP_FIELD = demisto.params().get('timestamp_field')
 TICKET_TYPE = demisto.params()['ticket_type']
 GET_ATTACHMENTS = demisto.params().get('get_attachments', False)
 
@@ -1342,10 +1343,21 @@ def fetch_incidents():
     else:
         snow_time = last_run['time']
 
-    query_params['sysparm_query'] = 'ORDERBYopened_at^opened_at>' + snow_time
-    query_params['sysparm_limit'] = SYSPARM_LIMIT
+    query = ''
     if SYSPARM_QUERY:
-        query_params['sysparm_query'] += '^' + SYSPARM_QUERY
+        query += SYSPARM_QUERY
+        if TIMESTAMP_FIELD:
+            query += '^'
+    if TIMESTAMP_FIELD:
+        query += 'ORDERBY{0}^{0}>{1}'.format(TIMESTAMP_FIELD, snow_time)
+
+    if query:
+        query_params['sysparm_query'] = query
+
+    # query_params['sysparm_query'] = 'ORDERBYopened_at^opened_at>' + snow_time
+    query_params['sysparm_limit'] = SYSPARM_LIMIT
+    # if SYSPARM_QUERY:
+    #    query_params['sysparm_query'] += SYSPARM_QUERY
 
     path = 'table/' + TICKET_TYPE
 
@@ -1354,14 +1366,18 @@ def fetch_incidents():
     count = 0
     current_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
 
-    for result in res['result']:
+    for result in res.get('result', []):
         labels = []
+
+        if TIMESTAMP_FIELD not in result:
+            raise ValueError("The timestamp field [{}]"
+                             " does not exist in the ticket".format(TIMESTAMP_FIELD))
 
         if count > SYSPARM_LIMIT:
             break
 
         try:
-            if datetime.strptime(result['opened_at'], '%Y-%m-%d %H:%M:%S') < current_time:
+            if datetime.strptime(result[TIMESTAMP_FIELD], '%Y-%m-%d %H:%M:%S') < current_time:
                 continue
         except Exception:
             pass
@@ -1392,7 +1408,7 @@ def fetch_incidents():
                 })
 
         incidents.append({
-            'name': 'ServiceNow Incident ' + result['number'],
+            'name': 'ServiceNow Incident ' + result.get('number'),
             'labels': labels,
             'details': json.dumps(result),
             'severity': severity,
@@ -1401,7 +1417,7 @@ def fetch_incidents():
         })
 
         count += 1
-        snow_time = result['opened_at']
+        snow_time = result[TIMESTAMP_FIELD]
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
