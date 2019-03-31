@@ -1369,7 +1369,7 @@ def fetch_incidents():
     for result in res.get('result', []):
         labels = []
 
-        if TIMESTAMP_FIELD not in result:
+        if TIMESTAMP_FIELD and TIMESTAMP_FIELD not in result:
             raise ValueError("The timestamp field [{}]"
                              " does not exist in the ticket".format(TIMESTAMP_FIELD))
 
@@ -1377,7 +1377,7 @@ def fetch_incidents():
             break
 
         try:
-            if datetime.strptime(result[TIMESTAMP_FIELD], '%Y-%m-%d %H:%M:%S') < current_time:
+            if TIMESTAMP_FIELD and datetime.strptime(result[TIMESTAMP_FIELD], '%Y-%m-%d %H:%M:%S') < current_time:
                 continue
         except Exception:
             pass
@@ -1417,7 +1417,8 @@ def fetch_incidents():
         })
 
         count += 1
-        snow_time = result[TIMESTAMP_FIELD]
+        if TIMESTAMP_FIELD:
+            snow_time = result[TIMESTAMP_FIELD]
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
