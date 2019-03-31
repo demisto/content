@@ -36,6 +36,11 @@ configuration:
   defaultvalue: noreply@demisto.com
   type: 0
   required: true
+- display: Fully Qualified Domain Name (FQDN) - used in EHLO
+  name: fqdn
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: Use TLS for connection
   name: tls
   defaultvalue: "false"
@@ -62,11 +67,12 @@ script:
     import random
     import string
 
+    FQDN = demisto.params().get('fqdn')
 
     # Following methods raise exceptions so no need to check for return codes
     # But we do need to catch them
     try:
-        SERVER = SMTP(demisto.getParam('host'), int(demisto.getParam('port')))
+        SERVER = SMTP(demisto.getParam('host'), int(demisto.getParam('port')), local_hostname=FQDN)
         SERVER.ehlo()
         # TODO - support for non-valid certs
         if demisto.getParam('tls'):
@@ -413,4 +419,4 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
-releaseNotes: "Displays better errors (no traceback)"
+releaseNotes: "Displays better errors (no traceback), added FQDN parameter"
