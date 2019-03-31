@@ -326,7 +326,7 @@ script:
       to normal
     execution: false
     name: cs-falcon-lift-host-containment
-  dockerimage: demisto/python3
+  dockerimage: demisto/python3:3.7.2.200
   isfetch: true
   runonce: false
   script: ''
