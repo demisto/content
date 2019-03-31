@@ -1151,7 +1151,12 @@ script:
 
     except Exception as ex:
         demisto.error('#### error in McAfee ESM v10: ' + str(ex))
-        return_error(str(ex))
+        if demisto.command() == 'fetch-incidents':
+            LOG(str(ex))
+            LOG.print_log()
+            raise
+        else:
+            return_error(str(ex))
     finally:
         esm.logout()
   type: python
