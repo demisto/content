@@ -105,7 +105,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     scriptarguments:
       append:
         simple: "true"
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1110
+          "y": 1245
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 710
+          "y": 895
         }
       }
     note: false
@@ -197,7 +197,36 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 930
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
+    type: regular
+    task:
+      id: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -207,7 +236,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1125,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
