@@ -99,7 +99,7 @@ script:
             return true;
         }
         if (PREFERRED_VENDORS && !(PREFERRED_VENDORS_THRESHOLD)) {
-            return("Error: If you entered PREFERRED_VENDORS you must also enter PREFERRED_VENDORS_THRESHOLD")
+            return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendor Threshold")
         }
         if (!("scans" in scanResults)) {
             return false;
@@ -118,6 +118,7 @@ script:
                 vendorNameLowercase = vendorName.toLowerCase();
 
                 if (listOfPrefferedVendors.indexOf(vendorNameLowercase) != -1) {
+                    // "detected" is a key in each vendor's scan with a boolean value
                     if ("detected" in curVendorScan && curVendorScan["detected"]) {
                         counter++;
                     }
@@ -1301,6 +1302,6 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes: "Adding to malicious based on preferred vendors on File and URL"
+releaseNotes: "Adding malicious attribute based on preferred vendors on File and URL"
 tests:
 - virusTotal-test-playbook
