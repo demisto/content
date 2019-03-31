@@ -198,7 +198,7 @@ def http_request(method, url, params_dict=None, data=None, use_format_instead_of
             return {}
         return res_json
 
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise (e)
 
