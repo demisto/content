@@ -1177,6 +1177,10 @@
             "integrations": "Pwned"
         },
         {
+            "integrations": "Symantec Deepsight Intelligence",
+            "playbookID": "Symantec Deepsight Test"
+        },
+        {
             "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
