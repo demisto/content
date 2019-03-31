@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tufin",
+            "playbookID": "Tufin Test"
+        },
+        {
             "integrations": "Vertica",
             "playbookID": "Vertica Test"
         },
@@ -93,6 +97,10 @@
         {
             "integrations": "ServiceNow",
             "playbookID": "servicenow_test_new"
+        },
+        {
+            "integrations": "ExtraHop",
+            "playbookID": "ExtraHop-Test"
         },
         {
             "playbookID": "Test CommonServer"
@@ -578,6 +586,10 @@
           "playbookID": "crowdstrike_falconhost_test"
         },
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test - CrowdStrike Falcon"
+        },
+        {
             "integrations": [
                 "VirusTotal"
             ],
@@ -762,6 +774,11 @@
         {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
             "nightly": true
         },
         {
@@ -1154,6 +1171,13 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "playbookID": "EmailReputationTest",
+            "integrations": "Pwned"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
         }
     ],
     "skipped_tests": {
@@ -1238,16 +1262,17 @@
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
+        "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
-        "OpenPhish": "JS integration, problem listed in issue 15544",
-        "VxStream": "JS integration, problem listed in issue 15544. Detonate URL: Large mock file.",
-        "ThreatExchange": "JS integration, problem listed in issue 15544",
-        "wildfire": "JS integration, problem listed in issue 15544",
-        "FalconHost": "JS integration, problem listed in issue 15544",
-        "VirusTotal": "JS integration, problem listed in issue 15544",
-        "carbonblack-v2": "JS integration, problem listed in issue 15544",
+        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
         "epo": "Pending merge of branch proxy-unsecure-checks",
@@ -1265,6 +1290,7 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
+        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",

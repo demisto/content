@@ -3,7 +3,9 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+
 from test_utils import print_error
+from Tests.scripts.constants import PB_Status
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
@@ -12,12 +14,6 @@ ENTRY_TYPE_ERROR = 4
 
 INC_CREATION_ERR = 'Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and ' \
                    'the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.'
-
-
-class PB_Status:
-    COMPLETED = 'completed'
-    FAILED = 'failed'
-    IN_PROGRESS = 'inprogress'
 
 
 # ----- Functions ----- #
@@ -180,7 +176,11 @@ def __get_investigation_playbook_state(client, inv_id):
     res = client.req('GET', '/inv-playbook/' + inv_id, {})
     investigation_playbook = res.json()
 
-    return investigation_playbook['state']
+    if 'state' in investigation_playbook.keys():
+        return investigation_playbook['state']
+
+    else:
+        return PB_Status.NOT_SUPPORTED_VERSION
 
 
 # return True if delete-incident succeeded, False otherwise
@@ -249,7 +249,7 @@ def configure_proxy_unsecure(integration_params):
 # 2. create incident with playbook
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
-# return True if playbook completed successfully
+# return playbook status
 def test_integration(client, integrations, playbook_id, options=None, is_mock_run=False):
     options = options if options is not None else {}
     # create integrations instances
@@ -294,7 +294,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         # fetch status
         playbook_state = __get_investigation_playbook_state(client, investigation_id)
 
-        if playbook_state == PB_Status.COMPLETED:
+        if playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION:
             break
         if playbook_state == PB_Status.FAILED:
             print_error(playbook_id + ' failed with error/s')
@@ -310,7 +310,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
 
     __disable_integrations_instances(client, module_instances)
 
-    test_pass = playbook_state == PB_Status.COMPLETED
+    test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
     if test_pass:
         # delete incident
         __delete_incident(client, incident)
@@ -318,4 +318,4 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         # delete integration instance
         __delete_integrations_instances(client, module_instances)
 
-    return test_pass, inc_id
+    return playbook_state, inc_id
