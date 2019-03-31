@@ -16,7 +16,9 @@ PARAMS = demisto.params()
 CREDENTIALS = PARAMS.get('credentials')
 USER = CREDENTIALS.get('identifier')
 PASSWORD = CREDENTIALS.get('password')
-CERTIFICATE = CREDENTIALS.get('credentials', {}).get('sshkey')
+CERTIFICATE = CREDENTIALS.get('credentials', {}).get('sshkey').encode()
+CERT_PASSWORD = CREDENTIALS.get('credentials', {}).get('password')
+CERT_PASSWORD = CERT_PASSWORD.encode() if CERT_PASSWORD else None
 ACCOUNT = PARAMS.get('account')
 AUTHENTICATOR = PARAMS.get('authenticator')
 REGION = PARAMS.get('region')
@@ -222,7 +224,7 @@ def get_connection_params(args):
     set_provided(params, 'schema', args.get('schema'), SCHEMA)
     set_provided(params, 'role', args.get('role'), ROLE)
     if CERTIFICATE:
-        p_key = serialization.load_pem_private_key(CERTIFICATE, backend=default_backend())
+        p_key = serialization.load_pem_private_key(CERTIFICATE, password=CERT_PASSWORD, backend=default_backend())
         pkb = p_key.private_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PrivateFormat.PKCS8,
