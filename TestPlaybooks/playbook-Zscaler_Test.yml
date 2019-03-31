@@ -1,5 +1,5 @@
 id: Zscaler Test
-version: -1
+version: 11
 name: Zscaler Test
 starttaskid: "0"
 tasks:
@@ -15,15 +15,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-      - "4"
-      - "12"
+      - "23"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 172.5,
-          "y": 50
+          "x": -290,
+          "y": -590
         }
       }
     note: false
@@ -137,7 +135,7 @@ tasks:
       version: -1
       name: GenerateUUID
       description: Generates random UUID
-      script: GenerateUUID
+      scriptName: GenerateUUID
       type: regular
       iscommand: false
       brand: ""
@@ -388,16 +386,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
-      - "13"
-      - "15"
-      - "16"
-      - "17"
-      - "18"
-      - "19"
-      - "20"
-      - "21"
       - "22"
+      - "21"
+      - "20"
+      - "19"
+      - "18"
+      - "17"
+      - "16"
+      - "15"
+      - "13"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -410,25 +408,19 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: 26d96a2d-1ab5-4478-8827-992965c47009
+    taskid: 5d9f899c-ad54-4dcd-89ba-5a5aee8ee7c7
     type: regular
     task:
-      id: 26d96a2d-1ab5-4478-8827-992965c47009
+      id: 5d9f899c-ad54-4dcd-89ba-5a5aee8ee7c7
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -441,25 +433,19 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: 527509eb-2cb8-47ed-83c3-a907c3563b21
+    taskid: f46376e9-ea37-45d5-80f2-436e58c677f1
     type: regular
     task:
-      id: 527509eb-2cb8-47ed-83c3-a907c3563b21
+      id: f46376e9-ea37-45d5-80f2-436e58c677f1
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -472,25 +458,19 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: 3d6a750b-17b6-4c7d-8334-9cad97600add
+    taskid: d27c8712-96fe-453b-801e-2e7c305b2d51
     type: regular
     task:
-      id: 3d6a750b-17b6-4c7d-8334-9cad97600add
+      id: d27c8712-96fe-453b-801e-2e7c305b2d51
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -503,25 +483,19 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: 9388e04f-331b-4bf5-8996-1b867d9b3941
+    taskid: 0060808d-6d47-4928-811f-25649d4fda0a
     type: regular
     task:
-      id: 9388e04f-331b-4bf5-8996-1b867d9b3941
+      id: 0060808d-6d47-4928-811f-25649d4fda0a
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -534,25 +508,19 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: fb7f2358-bf27-4a67-8fc5-25b3c81635b2
+    taskid: 785f7a4f-1c69-463a-8359-af8300cfa5b5
     type: regular
     task:
-      id: fb7f2358-bf27-4a67-8fc5-25b3c81635b2
+      id: 785f7a4f-1c69-463a-8359-af8300cfa5b5
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -565,25 +533,19 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 06e89f64-559b-425e-8f85-9cdc0d94a9fb
+    taskid: a35de4c5-fc3b-417f-856c-97ac0f87b001
     type: regular
     task:
-      id: 06e89f64-559b-425e-8f85-9cdc0d94a9fb
+      id: a35de4c5-fc3b-417f-856c-97ac0f87b001
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -596,25 +558,19 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: 0fc7c5c3-6d55-4e8f-8588-2326d8ba9880
+    taskid: bd731ec0-6741-4a53-8329-06f28d86b407
     type: regular
     task:
-      id: 0fc7c5c3-6d55-4e8f-8588-2326d8ba9880
+      id: bd731ec0-6741-4a53-8329-06f28d86b407
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -627,25 +583,19 @@ tasks:
     timertriggers: []
   "20":
     id: "20"
-    taskid: d1026ddc-88c7-4b0b-85fb-bc4d6d1d4e04
+    taskid: f7d85818-6025-4cb8-86af-1ea38ed07297
     type: regular
     task:
-      id: d1026ddc-88c7-4b0b-85fb-bc4d6d1d4e04
+      id: f7d85818-6025-4cb8-86af-1ea38ed07297
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -658,25 +608,19 @@ tasks:
     timertriggers: []
   "21":
     id: "21"
-    taskid: 46cbe433-054d-4bff-86ee-bd85073e3e66
+    taskid: c2ca27c2-93bf-42b1-89bf-8c3206b85665
     type: regular
     task:
-      id: 46cbe433-054d-4bff-86ee-bd85073e3e66
+      id: c2ca27c2-93bf-42b1-89bf-8c3206b85665
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -689,25 +633,19 @@ tasks:
     timertriggers: []
   "22":
     id: "22"
-    taskid: 4f528673-7c7c-40c9-8a11-5f14b3c1481b
+    taskid: 99703783-7cc1-4478-8ad5-82c4bc0cc32d
     type: regular
     task:
-      id: 4f528673-7c7c-40c9-8a11-5f14b3c1481b
+      id: 99703783-7cc1-4478-8ad5-82c4bc0cc32d
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler|||ip
+      script: Zscaler_copy|||ip
       type: regular
       iscommand: true
-      brand: Zscaler
+      brand: Zscaler_copy
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 1.1.1.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -718,15 +656,49 @@ tasks:
       }
     note: false
     timertriggers: []
+  "23":
+    id: "23"
+    taskid: 166d3876-dc2d-480e-8fcb-ad33d4aa70d9
+    type: regular
+    task:
+      id: 166d3876-dc2d-480e-8fcb-ad33d4aa70d9
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "1"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 2425,
         "width": 3290,
         "x": -2430,
-        "y": 50
+        "y": -590
       }
     }
   }
