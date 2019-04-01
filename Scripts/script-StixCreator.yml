@@ -54,8 +54,11 @@ script: |-
           demisto_score = "High"
       elif demisto_score.lower() == "suspicious":
           demisto_score = "Medium"
+      elif demisto_score.lower() == "good":
+          demisto_score = "none"
       else:
-          demisto_score = ""
+          demisto_score = "Not Specified"
+
       indicator = Indicator(labels=[label_as_type],
                             pattern=stix_type_and_value,
                             source=source_system,
