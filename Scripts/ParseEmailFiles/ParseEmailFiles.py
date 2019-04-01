@@ -3162,6 +3162,7 @@ def extract_address(s):
     else:
         return s
 
+
 def extract_address_eml(eml, s):
     addresses = getaddresses(eml.get_all(s, []))
     if addresses:
@@ -3171,7 +3172,6 @@ def extract_address_eml(eml, s):
         return res[:-2]
     else:
         return ''
-
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
