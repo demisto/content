@@ -19,13 +19,13 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
-    version_key = 'fromversion'
+    version_key = ('fromversion', 'fromVersion')
     clear_release_notes = False
     consider_multiline_notes = False
     new_lines = []
     for line in lines:
         if line.startswith(version_key):
-            v = line[len(version_key) + 1:].strip()
+            v = line[len(version_key[0]) + 1:].strip()
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
                 print "keeping release notes for (%s)\nto be published on %s version release " \
@@ -67,13 +67,13 @@ def json_remove_releaseNote_record(file_path, current_server_version):
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
-    version_key = 'fromversion'
+    version_key = ('fromversion', 'fromVersion')
     clear_release_notes = False
     consider_multiline_notes = False
     new_lines = []
     for line in lines:
         if line.strip().startswith(version_key):
-            v = line.strip()[len(version_key) + 1:]
+            v = line.strip()[len(version_key[0]) + 1:]
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
                 print "keeping release notes for (%s)\nto be published on %s version release " \
