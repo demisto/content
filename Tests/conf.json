@@ -1147,7 +1147,8 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "MAR - Endpoint data collection test"
+            "playbookID": "MAR - Endpoint data collection test",
+            "timeout": 500
         },
         {
 
