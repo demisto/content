@@ -20,8 +20,8 @@ IS_OAUTH = demisto.getParam('consumerKey') and demisto.getParam('accessToken') a
 # if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
 if not IS_OAUTH and not (USERNAME and (PASSWORD or API_TOKEN)):
     return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
-# B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
-# BASIC_AUTH = 'Basic ' + B64_AUTH
+B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
+BASIC_AUTH = 'Basic ' + B64_AUTH
 OAUTH = {
     "ConsumerKey": demisto.getParam('consumerKey'),
     "AccessToken": demisto.getParam('accessToken'),
@@ -31,8 +31,8 @@ OAUTH = {
 HEADERS = {
     'Content-Type': 'application/json',
 }
-# if not IS_OAUTH:
-#     HEADERS['Authorization'] = BASIC_AUTH
+if not IS_OAUTH:
+    HEADERS['Authorization'] = BASIC_AUTH
 
 USE_SSL = not demisto.params().get('insecure', False)
 
@@ -45,8 +45,7 @@ def jira_req(method, resource_url, body='', link=False):
         data=body,
         headers=HEADERS,
         verify=USE_SSL,
-        # params=OAUTH,
-        auth=(USERNAME, API_TOKEN if API_TOKEN else PASSWORD)
+        params=OAUTH,
     )
     if not result.ok:
         demisto.debug(result.text)
