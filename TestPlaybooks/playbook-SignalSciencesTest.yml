@@ -1,0 +1,1757 @@
+id: SignalSciences-Test
+version: -1
+name: SignalSciences-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bbd64fca-0c13-4a97-8170-dba41620d63a
+    type: start
+    task:
+      id: bbd64fca-0c13-4a97-8170-dba41620d63a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 636abf0e-8a41-4917-8a41-58c7ad6732bd
+    type: regular
+    task:
+      id: 636abf0e-8a41-4917-8a41-58c7ad6732bd
+      version: -1
+      name: Add ip to blacklist
+      script: '|||sigsci-blacklist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expires: {}
+      ip:
+        simple: 8.3.3.3
+      note:
+        simple: test blacklist
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: fa7b1a50-80e1-4ccc-8020-6c6681eb56d9
+    type: regular
+    task:
+      id: fa7b1a50-80e1-4ccc-8020-6c6681eb56d9
+      version: -1
+      name: Get blacklist
+      script: '|||sigsci-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 35974231-ab1b-41e1-8c97-3555abb9daa8
+    type: regular
+    task:
+      id: 35974231-ab1b-41e1-8c97-3555abb9daa8
+      version: -1
+      name: Remove IP from blacklist
+      script: '|||sigsci-blacklist-remove-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      IP:
+        simple: ${SigSciences.Corp.Site.Blacklist.Source}
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 0dc18bdf-3306-4af0-819b-72c3e1d05bc4
+    type: regular
+    task:
+      id: 0dc18bdf-3306-4af0-819b-72c3e1d05bc4
+      version: -1
+      name: Add ip to whitelist
+      script: '|||sigsci-whitelist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expires: {}
+      ip:
+        simple: 8.3.3.3
+      note:
+        simple: test adding ip to whitelist
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: d90ba826-99c4-41c7-8b8a-66ad80bd5f92
+    type: regular
+    task:
+      id: d90ba826-99c4-41c7-8b8a-66ad80bd5f92
+      version: -1
+      name: Get whitelist
+      script: '|||sigsci-get-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 0f4e601f-0081-40ca-809f-b5cbdfde0b1a
+    type: regular
+    task:
+      id: 0f4e601f-0081-40ca-809f-b5cbdfde0b1a
+      version: -1
+      name: Remove IP from whitelist
+      script: '|||sigsci-whitelist-remove-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      IP:
+        simple: ${SigSciences.Corp.Site.Whitelist.Source}
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 7dc207af-af0c-4d5c-87a9-65ecfb69dabd
+    type: regular
+    task:
+      id: 7dc207af-af0c-4d5c-87a9-65ecfb69dabd
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+      - "18"
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: e4055cee-9655-48de-8715-f1ac88792019
+    type: regular
+    task:
+      id: e4055cee-9655-48de-8715-f1ac88792019
+      version: -1
+      name: Add alert
+      script: '|||sigsci-add-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action:
+        simple: flagged
+      enabled:
+        simple: "True"
+      interval:
+        simple: "10"
+      long_name:
+        simple: demisto-test
+      siteName:
+        simple: test
+      tag_name:
+        simple: USERAGENT
+      threshold:
+        simple: "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 8ee1105b-866e-4b92-80d2-dd016de6a759
+    type: regular
+    task:
+      id: 8ee1105b-866e-4b92-80d2-dd016de6a759
+      version: -1
+      name: Get alerts
+      script: '|||sigsci-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: c85af68b-8380-4c44-80a4-d43b85b3ddab
+    type: regular
+    task:
+      id: c85af68b-8380-4c44-80a4-d43b85b3ddab
+      version: -1
+      name: Update alert
+      script: '|||sigsci-update-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action:
+        simple: flagged
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      enabled:
+        simple: "True"
+      interval:
+        simple: "1"
+      long_name:
+        simple: demisto-test-alert-2
+      siteName:
+        simple: test
+      tag_name:
+        simple: USERAGENT
+      threshold:
+        simple: "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 4e66f4fb-3878-4623-83ec-868f3c537a8c
+    type: regular
+    task:
+      id: 4e66f4fb-3878-4623-83ec-868f3c537a8c
+      version: -1
+      name: Get updated alert
+      script: '|||sigsci-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: f43eea5e-52b0-4870-814a-643229475e24
+    type: condition
+    task:
+      id: f43eea5e-52b0-4870-814a-643229475e24
+      version: -1
+      name: Verify alert has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Alert.Threshold
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: e012bdd4-9077-4d1d-8bd2-c30cfd4fc971
+    type: regular
+    task:
+      id: e012bdd4-9077-4d1d-8bd2-c30cfd4fc971
+      version: -1
+      name: Delete alert
+      script: '|||sigsci-delete-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 5ec957dc-eed6-4bd2-89ec-71e45de2a877
+    type: title
+    task:
+      id: 5ec957dc-eed6-4bd2-89ec-71e45de2a877
+      version: -1
+      name: Test blacklist and whitelist
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 72047f69-a0b6-487f-8d74-b1ef439c6d81
+    type: title
+    task:
+      id: 72047f69-a0b6-487f-8d74-b1ef439c6d81
+      version: -1
+      name: Test alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 978743f9-254c-44ea-8e83-ec20a7664da9
+    type: title
+    task:
+      id: 978743f9-254c-44ea-8e83-ec20a7664da9
+      version: -1
+      name: Test lists
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 975339de-ed44-49b2-82a0-7cd6a93c947b
+    type: regular
+    task:
+      id: 975339de-ed44-49b2-82a0-7cd6a93c947b
+      version: -1
+      name: Create site list
+      script: '|||sigsci-create-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      description: {}
+      entries_list:
+        simple: 1.2.3.4,5.6.7.8
+      list_name:
+        simple: test-site-list
+      list_type:
+        simple: IP
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: e0839b15-eed2-43fd-88d4-add36e3031a6
+    type: regular
+    task:
+      id: e0839b15-eed2-43fd-88d4-add36e3031a6
+      version: -1
+      name: Get site list
+      script: '|||sigsci-get-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      list_id:
+        simple: ${SigSciences.Corp.Site.List.ID}
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: e8fee0ac-0354-426d-8cca-34c90697dd67
+    type: regular
+    task:
+      id: e8fee0ac-0354-426d-8cca-34c90697dd67
+      version: -1
+      name: Update site list
+      script: '|||sigsci-update-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      description: {}
+      entries_list:
+        complex:
+          root: SigSciences
+          accessor: Corp.Site.List.Entries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      list_id:
+        simple: ${SigSciences.Corp.Site.List.ID}
+      method:
+        simple: Remove
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: ff1d4bb6-c9c4-4127-89f0-cc749f671689
+    type: condition
+    task:
+      id: ff1d4bb6-c9c4-4127-89f0-cc749f671689
+      version: -1
+      name: Verify site list has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: SigSciences.Site.List.Entries
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 0c86eb52-2a8b-4ad7-8a23-2926337ee982
+    type: regular
+    task:
+      id: 0c86eb52-2a8b-4ad7-8a23-2926337ee982
+      version: -1
+      name: Delete site list
+      script: '|||sigsci-delete-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      list_id:
+        simple: ${SigSciences.Corp.Site.List.ID}
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 4f067dac-096f-4a97-8a5b-fcf122afc25f
+    type: regular
+    task:
+      id: 4f067dac-096f-4a97-8a5b-fcf122afc25f
+      version: -1
+      name: Get all alerts
+      script: '|||sigsci-get-all-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 7b96b75e-6190-4a7c-80f1-e1775e104a70
+    type: condition
+    task:
+      id: 7b96b75e-6190-4a7c-80f1-e1775e104a70
+      version: -1
+      name: Verify alert was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Alert.LongName
+            iscontext: true
+          right:
+            value:
+              simple: demisto-test-tag-2
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 52dbe84d-1ce8-47f7-8ddb-474abc4ce4a0
+    type: regular
+    task:
+      id: 52dbe84d-1ce8-47f7-8ddb-474abc4ce4a0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: SigSciences.Corp.Site.Alert
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 2ed850f9-0874-46f5-8c03-92227f11c0f6
+    type: title
+    task:
+      id: 2ed850f9-0874-46f5-8c03-92227f11c0f6
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 64eadcea-70fd-4167-8b76-0a2d20df17c4
+    type: regular
+    task:
+      id: 64eadcea-70fd-4167-8b76-0a2d20df17c4
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: ${SigSciences.Corp.Site.List}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 127b70ba-f7f1-4067-8008-2de7b71facd8
+    type: regular
+    task:
+      id: 127b70ba-f7f1-4067-8008-2de7b71facd8
+      version: -1
+      name: Get all site lists
+      script: '|||sigsci-get-all-site-lists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      siteName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 911170e5-6b15-4f98-8a56-15b1dc7e191b
+    type: condition
+    task:
+      id: 911170e5-6b15-4f98-8a56-15b1dc7e191b
+      version: -1
+      name: Verify site list was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.List.Name
+            iscontext: true
+          right:
+            value:
+              simple: test-site-list
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: 09893eec-368c-4658-8545-a491f0ba1d5e
+    type: title
+    task:
+      id: 09893eec-368c-4658-8545-a491f0ba1d5e
+      version: -1
+      name: Test site lists
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: 00011918-0262-4f70-8701-4979ba8453e6
+    type: title
+    task:
+      id: 00011918-0262-4f70-8701-4979ba8453e6
+      version: -1
+      name: Test corp lists
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 11c9a422-3468-4298-8e5b-52f1edb10530
+    type: regular
+    task:
+      id: 11c9a422-3468-4298-8e5b-52f1edb10530
+      version: -1
+      name: Create corp list
+      script: '|||sigsci-create-corp-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      description:
+        simple: '"test description"'
+      entries_list:
+        simple: 1.1.1.1,2.2.2.2
+      list_name:
+        simple: test-corp-list
+      list_type:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: c461743e-7368-4de3-867f-705e69c21f96
+    type: regular
+    task:
+      id: c461743e-7368-4de3-867f-705e69c21f96
+      version: -1
+      name: Get corp list
+      script: '|||sigsci-get-corp-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      list_id:
+        simple: ${SigSciences.Corp.List.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 87051a04-ba3f-497a-80ee-5a53fa5a8a1d
+    type: regular
+    task:
+      id: 87051a04-ba3f-497a-80ee-5a53fa5a8a1d
+      version: -1
+      name: Update corp list
+      script: '|||sigsci-update-corp-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      description: {}
+      entries_list:
+        simple: 3.3.3.3,4.4.4.4,5.5.5.5
+      list_id:
+        simple: ${SigSciences.Corp.List.ID}
+      method:
+        simple: Add
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+  "38":
+    id: "38"
+    taskid: 6e53efae-d6fd-44dc-8f9a-204f0f6b2344
+    type: condition
+    task:
+      id: 6e53efae-d6fd-44dc-8f9a-204f0f6b2344
+      version: -1
+      name: Verify site list has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: SigSciences.Corp.List.Entries
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+  "39":
+    id: "39"
+    taskid: de20f20f-63d0-4c3e-84c4-c093f5b164e9
+    type: regular
+    task:
+      id: de20f20f-63d0-4c3e-84c4-c093f5b164e9
+      version: -1
+      name: Delete corp list
+      script: '|||sigsci-delete-corp-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      list_id:
+        simple: ${SigSciences.Corp.List.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: 9098dd54-a008-4a38-8252-9a6c691d37da
+    type: regular
+    task:
+      id: 9098dd54-a008-4a38-8252-9a6c691d37da
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: SigSciences.Corp.List
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+  "41":
+    id: "41"
+    taskid: d4eee6e8-106c-4ae4-8089-6208565ffee6
+    type: regular
+    task:
+      id: d4eee6e8-106c-4ae4-8089-6208565ffee6
+      version: -1
+      name: Get all corp lists
+      script: '|||sigsci-get-all-corp-lists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 3640
+        }
+      }
+    note: false
+    timertriggers: []
+  "42":
+    id: "42"
+    taskid: ea684ede-404e-4ec2-8cc5-c85aa68340f1
+    type: condition
+    task:
+      id: ea684ede-404e-4ec2-8cc5-c85aa68340f1
+      version: -1
+      name: Verify corp list has been deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.List.Name
+            iscontext: true
+          right:
+            value:
+              simple: test-corp-list
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+  "43":
+    id: "43"
+    taskid: 4eaee8a7-57ea-4676-8dd2-82bd62ffbacf
+    type: title
+    task:
+      id: 4eaee8a7-57ea-4676-8dd2-82bd62ffbacf
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+  "44":
+    id: "44"
+    taskid: 9ea7763d-12a9-427f-85f3-cb61ff7e22b4
+    type: title
+    task:
+      id: 9ea7763d-12a9-427f-85f3-cb61ff7e22b4
+      version: -1
+      name: Test requests / events
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+  "45":
+    id: "45"
+    taskid: 063d4b02-25db-498f-8924-930a91b123c6
+    type: title
+    task:
+      id: 063d4b02-25db-498f-8924-930a91b123c6
+      version: -1
+      name: Test requests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+  "46":
+    id: "46"
+    taskid: 304a1859-6f78-4a88-8dad-a476aa81c3f4
+    type: regular
+    task:
+      id: 304a1859-6f78-4a88-8dad-a476aa81c3f4
+      version: -1
+      name: Get requests
+      script: '|||sigsci-get-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      limit: {}
+      page: {}
+      q:
+        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d
+          tag:sqli tag:xss tag:cmdexe tag:traversal"'
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+  "47":
+    id: "47"
+    taskid: 1fcb55e1-eebc-4bb4-86c6-3595670b1f0e
+    type: regular
+    task:
+      id: 1fcb55e1-eebc-4bb4-86c6-3595670b1f0e
+      version: -1
+      name: Get request by ID
+      script: '|||sigsci-get-request-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      request_id:
+        simple: 5c82c5d0b62acc0007d8eb03
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "48":
+    id: "48"
+    taskid: 34278148-86ef-4235-89dd-885c45ee55ec
+    type: title
+    task:
+      id: 34278148-86ef-4235-89dd-885c45ee55ec
+      version: -1
+      name: Test events
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "49":
+    id: "49"
+    taskid: 3996b4e3-eecc-48e9-802e-0a0d6daccbe4
+    type: regular
+    task:
+      id: 3996b4e3-eecc-48e9-802e-0a0d6daccbe4
+      version: -1
+      name: Get events
+      script: '|||sigsci-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      action: {}
+      from_time: {}
+      ip: {}
+      limit: {}
+      max_id: {}
+      page: {}
+      since_id: {}
+      siteName:
+        simple: demisto
+      sort: {}
+      status: {}
+      tag: {}
+      until_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+  "50":
+    id: "50"
+    taskid: 25d6262e-8ae1-4fa2-88e7-21e43f2d86bb
+    type: condition
+    task:
+      id: 25d6262e-8ae1-4fa2-88e7-21e43f2d86bb
+      version: -1
+      name: Verify events were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Event.ID
+            iscontext: true
+          right:
+            value:
+              simple: 5c82c52ec9a3db111b430b98
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "51":
+    id: "51"
+    taskid: 5c68bfa0-a024-44fb-87a1-06ec13520d83
+    type: regular
+    task:
+      id: 5c68bfa0-a024-44fb-87a1-06ec13520d83
+      version: -1
+      name: Get event by ID
+      script: '|||sigsci-get-event-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      event_id:
+        simple: 5c82c52ec9a3db111b430b98
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+  "52":
+    id: "52"
+    taskid: c34d17cc-43a2-466e-8ece-60a698dfb975
+    type: condition
+    task:
+      id: c34d17cc-43a2-466e-8ece-60a698dfb975
+      version: -1
+      name: Verify IP was added to blacklist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Blacklist.Source
+            iscontext: true
+          right:
+            value:
+              simple: 8.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+  "53":
+    id: "53"
+    taskid: 1dec5a24-e377-43ca-8582-2b9534cc4fb6
+    type: regular
+    task:
+      id: 1dec5a24-e377-43ca-8582-2b9534cc4fb6
+      version: -1
+      name: Get blacklist
+      script: '|||sigsci-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+  "54":
+    id: "54"
+    taskid: 5d5759fe-0634-4f90-80a7-3a4f05d31234
+    type: regular
+    task:
+      id: 5d5759fe-0634-4f90-80a7-3a4f05d31234
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: SigSciences.Corp.Site.Blacklist
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+  "55":
+    id: "55"
+    taskid: 9deb3982-9a9f-4763-89f9-af7cd4ca8d91
+    type: condition
+    task:
+      id: 9deb3982-9a9f-4763-89f9-af7cd4ca8d91
+      version: -1
+      name: Verify IP was deleted from blacklist (blacklist is empty)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Blacklist.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+  "57":
+    id: "57"
+    taskid: ec8303a8-ac73-45c8-813a-feacb988666a
+    type: regular
+    task:
+      id: ec8303a8-ac73-45c8-813a-feacb988666a
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: SigSciences.Corp.Site.Whitelist
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+  "59":
+    id: "59"
+    taskid: fc11233a-d8c1-4b4f-8683-6fe49717a372
+    type: regular
+    task:
+      id: fc11233a-d8c1-4b4f-8683-6fe49717a372
+      version: -1
+      name: Get whitelist
+      script: '|||sigsci-get-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+  "60":
+    id: "60"
+    taskid: 8c5dbb93-ff8c-43fd-8cf6-fb749610bf30
+    type: title
+    task:
+      id: 8c5dbb93-ff8c-43fd-8cf6-fb749610bf30
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3295
+        }
+      }
+    note: false
+    timertriggers: []
+  "62":
+    id: "62"
+    taskid: 41229677-7249-4d3e-874d-e327b8ec83c4
+    type: condition
+    task:
+      id: 41229677-7249-4d3e-874d-e327b8ec83c4
+      version: -1
+      name: Verify IP was deleted from whitelist (whitelist is empty)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Whitelist.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+  "63":
+    id: "63"
+    taskid: 00206f2b-f323-4a42-8baa-da76daab84f6
+    type: condition
+    task:
+      id: 00206f2b-f323-4a42-8baa-da76daab84f6
+      version: -1
+      name: Verify IP was added to whitelist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Whitelist.Source
+            iscontext: true
+          right:
+            value:
+              simple: 8.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4030,
+        "width": 1990,
+        "x": -320,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

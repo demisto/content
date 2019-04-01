@@ -174,30 +174,32 @@ script:
         return undefined;
     }
 
+    function exeCommand(command, cmdArgs) {
+        var method = methodDict[command];
+        var url = getURL(command, cmdArgs);
+        var query = '';
+        var body = '';
+        if (method === 'GET') {
+            query = encodeToURLQuery(fixArgs(command, cmdArgs));
+        } else {
+            body = encodeBody(cmdArgs);
+        }
+        var res = sendRequest(
+            method,
+            server + url + query,
+            urlDict[command],
+            body
+        );
+        return res;
+    }
+
     switch (command) {
         case 'test-module':
-            command = 'amp_get_version';
+            exeCommand('amp_get_version', args);
+            // successful response
+            return 'ok';
         default:
-            var method = methodDict[command];
-            var url = getURL(command, args);
-            var query = '';
-            var body = '';
-            if (method === 'GET') {
-                query = encodeToURLQuery(fixArgs(command, args));
-            } else {
-                body = encodeBody(args);
-            }
-            var res= sendRequest(
-                method,
-                server + url + query,
-                urlDict[command],
-                body
-            );
-            if (command === 'test-module') {
-              return 'ok';
-            } else {
-              return res;
-            }
+            return exeCommand(command, args);
     }
   type: javascript
   commands:
@@ -414,3 +416,7 @@ script:
     arguments: []
     description: Fetch list of versions
 system: true
+releaseNotes: "Fix instance configuration test"
+tests:
+  - No test - missing instace
+
