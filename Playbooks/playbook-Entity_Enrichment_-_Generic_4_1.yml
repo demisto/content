@@ -1,4 +1,4 @@
-id: ip_enrichment_generic
+id: IP Enrichment - Generic
 version: -1
 name: IP Enrichment - Generic
 fromversion: 4.1.0
@@ -9,7 +9,6 @@ description: |-
   * Resolve IP to Hostname (DNS)
   * Threat information
   * Separate internal and external addresses
-  * IP reputation (using auto-extract)
   * For internal addresses, get host information
 starttaskid: "0"
 tasks:
@@ -21,7 +20,6 @@ tasks:
       id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -64,10 +62,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 3758e92e-53f9-4354-8bf7-4b49e66770d1
+    taskid: be9b245b-a51c-4e13-8695-7eb0572fe902
     type: playbook
     task:
-      id: 3758e92e-53f9-4354-8bf7-4b49e66770d1
+      id: be9b245b-a51c-4e13-8695-7eb0572fe902
       version: -1
       name: IP Enrichment - External - Generic
       description: |-
@@ -77,7 +75,7 @@ tasks:
         * Resolve IP to Hostname (DNS)
         * Threat information
         * Separate internal and external addresses
-        * IP reputation (using auto-extract)
+        * IP reputation
         * For internal addresses, get host information
       playbookName: IP Enrichment - External - Generic
       type: playbook
@@ -90,8 +88,6 @@ tasks:
       IP:
         complex:
           root: inputs.IP
-          transformers:
-          - operator: uniq
       InternalRange: {}
       ResolveIP:
         complex:
@@ -113,10 +109,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 7a76830c-859f-410c-88c1-b295dd16c295
+    taskid: 01ed48af-db70-4d7a-8642-f5c3f5ba125a
     type: playbook
     task:
-      id: 7a76830c-859f-410c-88c1-b295dd16c295
+      id: 01ed48af-db70-4d7a-8642-f5c3f5ba125a
       version: -1
       name: IP Enrichment - Internal - Generic
       description: |-
@@ -139,8 +135,6 @@ tasks:
       IP:
         complex:
           root: inputs.IP
-          transformers:
-          - operator: uniq
       InternalRange: {}
       ResolveIP:
         complex:
@@ -175,11 +169,7 @@ view: |-
 inputs:
 - key: IP
   value:
-    complex:
-      root: IP
-      accessor: Address
-      transformers:
-      - operator: uniq
+    simple: ${IP.Address}
   required: false
   description: The IP address to enrich.
 - key: InternalRange
@@ -218,6 +208,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-releaseNotes: "Rewrote playbook to call 2 separate sub-playbooks. One for internal IPs, the other for external ones. Also added a new test playbook."
+releaseNotes: "Improvements for IP enrichment"
 tests:
-  - IP Enrichment - Generic - NonReputation Test
+  - no test - each enrichment sub-playbook has or will have its own test

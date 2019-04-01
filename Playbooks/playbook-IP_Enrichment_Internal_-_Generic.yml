@@ -37,6 +37,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
     taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
@@ -59,6 +60,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
     taskid: a22c2045-33e0-4ad3-8627-15886227f805
@@ -84,6 +86,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
     taskid: b5a0e443-afd5-42ae-8d21-55f16885e641
@@ -113,12 +116,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
+          "x": 162.5,
           "y": 330
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "31":
     id: "31"
     taskid: 6a9f70f7-69ce-4b60-878c-64ba678b723b
@@ -164,6 +168,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "34":
     id: "34"
     taskid: 22936bea-a0fc-4095-8fb7-9d74fa41159e
@@ -203,12 +208,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
-    taskid: e11258e2-0fc7-4301-88d4-f2a928bc628e
+    taskid: edbdb306-f624-4395-84b2-7fba28c31161
     type: regular
     task:
-      id: e11258e2-0fc7-4301-88d4-f2a928bc628e
+      id: edbdb306-f624-4395-84b2-7fba28c31161
       version: -1
       name: IP to Hostname (DNS)
       description: Convert the IP address to a hostname using DNS query.
@@ -256,6 +262,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "39":
     id: "39"
     taskid: cbcd10d8-201a-414d-8356-6006c81ed53c
@@ -305,12 +312,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "40":
     id: "40"
-    taskid: 40343557-643b-46c0-8f62-499ca72d65a7
+    taskid: d98f4552-a3ea-42f9-8d42-c59d55a86137
     type: regular
     task:
-      id: 40343557-643b-46c0-8f62-499ca72d65a7
+      id: d98f4552-a3ea-42f9-8d42-c59d55a86137
       version: -1
       name: Determine whether the IP address is internal or external
       description: "Checks if the IP address is in the internal IP address ranges.\nAdds
@@ -333,17 +341,20 @@ tasks:
       ipRanges:
         complex:
           root: inputs.InternalRange
+          transformers:
+          - operator: uniq
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 560
+          "x": 162.5,
+          "y": 570
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "41":
     id: "41"
     taskid: 3dbd6139-a053-466c-8abf-86544d804022
@@ -363,12 +374,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 870
+          "x": -380,
+          "y": 930
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -382,8 +394,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1516,
-        "width": 1390,
-        "x": -560,
+        "width": 1210,
+        "x": -380,
         "y": 199
       }
     }
@@ -394,14 +406,18 @@ inputs:
     complex:
       root: IP
       accessor: Address
+      transformers:
+      - operator: uniq
   required: false
   description: The IP address to enrich.
 - key: InternalRange
   value: {}
   required: false
-  description: |-
-    The internal range to check against the IP address.
-    The default range is taken from the IPv4 protocol.
+  description: 'A list of IP ranges to check the IP in. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
 - key: ResolveIP
   value:
     complex:

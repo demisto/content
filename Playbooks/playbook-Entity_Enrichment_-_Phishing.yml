@@ -33,15 +33,23 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 427040f6-9903-4122-8537-bd72d6fcdab2
+    taskid: 00b1e9e8-71c6-4519-8893-851545e1fe14
     type: playbook
     task:
-      id: 427040f6-9903-4122-8537-bd72d6fcdab2
+      id: 00b1e9e8-71c6-4519-8893-851545e1fe14
       version: -1
       name: URL Enrichment - Generic
-      description: Enrich URL using one or more integrations
+      description: |-
+        Enrich URL using one or more integrations.
+
+        URL enrichment includes:
+        * Verify URL SSL
+        * Threat information
+        * URL reputaiton
+        * Take URL screenshot
       playbookName: URL Enrichment - Generic
       type: playbook
       iscommand: false
@@ -50,8 +58,15 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      GetReputation:
+        simple: "True"
+      Rasterize:
+        simple: "True"
+      VerifyURL:
+        simple: "True"
       url:
-        simple: ${inputs.url}
+        complex:
+          root: inputs.url
     separatecontext: false
     loop:
       iscommand: false
@@ -66,12 +81,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 7ea079dc-c904-4088-878d-908e7b5b1ab3
+    taskid: d0f2162f-3ab7-4a29-850c-e12f15ec6af2
     type: playbook
     task:
-      id: 7ea079dc-c904-4088-878d-908e7b5b1ab3
+      id: d0f2162f-3ab7-4a29-850c-e12f15ec6af2
       version: -1
       name: Email Address Enrichment - Generic
       description: Get email address reputation using one or more integrations
@@ -85,7 +101,10 @@ tasks:
     scriptarguments:
       Domain: {}
       Email:
-        simple: ${inputs.Email}
+        complex:
+          root: inputs.Email
+      GetReputation:
+        simple: "True"
     separatecontext: false
     loop:
       iscommand: false
@@ -100,6 +119,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
@@ -133,15 +153,22 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
+    taskid: 587c3b81-99c9-45b4-8755-26af4808bf72
     type: playbook
     task:
-      id: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
+      id: 587c3b81-99c9-45b4-8755-26af4808bf72
       version: -1
       name: File Enrichment - Generic
-      description: Get file reputation using one or more integrations
+      description: |-
+        Enrich a file using one or more integrations.
+
+        File enrichment includes:
+        * File history
+        * Threat information
+        * File reputation
       playbookName: File Enrichment - Generic
       type: playbook
       iscommand: false
@@ -151,11 +178,14 @@ tasks:
       - "15"
     scriptarguments:
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
     separatecontext: false
     loop:
       iscommand: false
@@ -170,6 +200,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: 38007764-1687-47b1-8490-0f3cded9dc95
@@ -192,6 +223,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: 3cb6ebba-40c7-4f8f-859d-218977d7564f
@@ -243,6 +275,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -271,42 +304,60 @@ inputs:
   description: The internal range to check against the IPs
 - key: MD5
   value:
-    simple: ${File.MD5}
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
   required: false
   description: File MD5 to enrich
 - key: SHA256
   value:
-    simple: ${File.SHA256}
+    complex:
+      root: File
+      accessor: SHA256
   required: false
   description: File SHA256 to enrich
 - key: SHA1
   value:
-    simple: ${File.SHA1}
+    complex:
+      root: File
+      accessor: SHA1
   required: false
   description: File SHA1 to enrich
 - key: url
   value:
-    simple: ${URL.Data}
+    complex:
+      root: URL
+      accessor: Data
   required: false
   description: url to enrich
 - key: Email
   value:
-    simple: ${Account.Email.Address}
+    complex:
+      root: Account
+      accessor: Email.Address
   required: false
   description: The email addresses to enrich
 - key: Hostname
   value:
-    simple: ${Endpoint.Hostname}
+    complex:
+      root: Endpoint
+      accessor: Hostname
   required: false
   description: The hostname to enrich
 - key: Username
   value:
-    simple: ${Account.Username}
+    complex:
+      root: Account
+      accessor: Username
   required: false
   description: The Username to enrich
 - key: Domain
   value:
-    simple: ${Domain.Name}
+    complex:
+      root: Domain
+      accessor: Name
   required: false
   description: The domain name to enrich
 - key: ResolveIP
@@ -316,16 +367,6 @@ inputs:
   description: Determines whether the IP Enrichment - Generic playbook should convert
     IP addresses to hostnames using a DNS query. You can set this to either True or
     False.
-- key: GetReputation
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Determines whether to get reputation for the supported entities, using "!command" (such as "!ip"). Supported entities:
-    - IP
-    - File
-    - URL
-    - Domain
 outputs:
 - contextPath: Account
   description: The Account's object

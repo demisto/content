@@ -9,7 +9,7 @@ description: |-
   * Resolve IP to Hostname (DNS)
   * Threat information
   * Separate internal and external addresses
-  * IP reputation
+  * IP reputation (using auto-extract)
   * For internal addresses, get host information
 starttaskid: "0"
 tasks:
@@ -37,6 +37,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: c8d8906f-cbf4-4ddd-84e6-1e55570d00a0
@@ -99,57 +100,7 @@ tasks:
       }
     note: false
     timertriggers: []
-  "19":
-    id: "19"
-    taskid: f4361b4a-8335-44cf-8dd4-7c2ab6fd84b7
-    type: regular
-    task:
-      id: f4361b4a-8335-44cf-8dd4-7c2ab6fd84b7
-      version: -1
-      name: Check IP reputation
-      description: Get the IP reputation from every integration that supports the
-        `!ip` command.
-      script: '|||ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      fullResponse: {}
-      ip:
-        complex:
-          root: IP
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "no"
-          accessor: Address
-          transformers:
-          - operator: uniq
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    reputationcalc: 2
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 1523
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
     taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
@@ -172,6 +123,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
     taskid: 1734f24b-0b27-431e-81b6-89997f08894c
@@ -187,7 +139,6 @@ tasks:
     nexttasks:
       '#none#':
       - "36"
-      - "40"
       - "41"
     separatecontext: false
     view: |-
@@ -199,6 +150,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
     taskid: 13e467ea-87c1-4ecc-808c-2b8e67e0f39e
@@ -234,6 +186,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
     taskid: 24cd44a3-b0ce-4c6e-8687-074e90599b22
@@ -273,6 +226,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "34":
     id: "34"
     taskid: 1bd57324-7ece-47a0-8e22-ebd341ecd0a4
@@ -312,6 +266,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
     taskid: 9a9092a5-a173-4c8d-8a0c-f63960c42451
@@ -365,6 +320,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
     taskid: 22f7b81d-ea1a-44b3-8b73-c628afaf5cfc
@@ -384,12 +340,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 442,
+          "x": -88,
           "y": 1345
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "37":
     id: "37"
     taskid: 886830c0-ea16-4a06-8170-41c05b587259
@@ -442,12 +399,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 442,
-          "y": 1523
+          "x": -88,
+          "y": 1513
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "38":
     id: "38"
     taskid: b16c1c31-82c1-48ce-8607-df2f08b47a20
@@ -488,12 +446,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 442,
-          "y": 1720
+          "x": -88,
+          "y": 1750
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "39":
     id: "39"
     taskid: 67d938bf-2bd3-4dfd-885f-8dd190cd0b93
@@ -519,46 +478,7 @@ tasks:
       }
     note: false
     timertriggers: []
-  "40":
-    id: "40"
-    taskid: 325d3bf7-4191-40c0-818c-b325ea06b15a
-    type: condition
-    task:
-      id: 325d3bf7-4191-40c0-818c-b325ea06b15a
-      version: -1
-      name: Check IP reputation?
-      description: Determines whether reputation should be checked from IP Addresses.
-        This is flag is taken from the Entity Enrichment - Generic playbook.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.GetReputation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "41":
     id: "41"
     taskid: 8828c9f9-9144-42ab-8c98-7479e8f19a04
@@ -578,12 +498,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 390,
           "y": 1345
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "42":
     id: "42"
     taskid: 02350f3e-c374-459c-855a-9e2453ec8697
@@ -635,12 +556,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 390,
           "y": 1523
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "43":
     id: "43"
     taskid: f03d81e7-d7ea-40a3-86bb-94c90e7694f2
@@ -679,12 +601,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 1710
+          "x": 390,
+          "y": 1750
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -696,13 +619,12 @@ view: |-
       "34_35_yes": 0.53,
       "37_24_#default#": 0.42,
       "37_38_yes": 0.52,
-      "40_19_yes": 0.63,
       "42_24_#default#": 0.28
     },
     "paper": {
       "dimensions": {
         "height": 2066,
-        "width": 1860,
+        "width": 1460,
         "x": -560,
         "y": 49
       }
@@ -714,31 +636,24 @@ inputs:
     complex:
       root: IP
       accessor: Address
+      transformers:
+      - operator: uniq
   required: false
   description: The IP address to enrich.
 - key: InternalRange
   value: {}
   required: false
-  description: |-
-    The internal range to check against the IP address.
-    The default range is taken from the IPv4 protocol.
+  description: 'A list of IP ranges to check the IP in. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
 - key: ResolveIP
   value:
     complex:
       root: inputs.ResolveIP
   required: true
   description: Convert the IP address to a hostname using a DNS query (True/ False).
-- key: GetReputation
-  value:
-    complex:
-      root: inputs.GetReputation
-  required: false
-  description: |-
-    Determines whether to get reputation for the supported entities, using "!command" (such as "!ip"). Supported entities:
-    - IP
-    - File
-    - URL
-    - Domain
 outputs:
 - contextPath: IP
   description: The IP objects
