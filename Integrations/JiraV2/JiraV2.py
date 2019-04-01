@@ -54,11 +54,9 @@ def jira_req(method, resource_url, body='', link=False):
         try:
             rj = result.json()
             if rj.get('errorMessages'):
-                return_error(
-                    f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
+                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
             elif rj.get('errors'):
-                return_error(
-                    f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
             else:
                 return_error(f'Status code: {result.status_code}\nError text: {result.text}')
         except ValueError as ve:
