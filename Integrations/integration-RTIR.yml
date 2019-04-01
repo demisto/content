@@ -593,7 +593,7 @@ script:
                         })
 
                         suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
-                        attachment_content = http_request('GET', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}).content
+                        attachment_content = http_request('GET', suffix_url).content
                         attachments_content.append(fileResult(attachment_name, attachment_content))
         return attachments, attachments_content
 
@@ -626,7 +626,7 @@ script:
         """Accepts ticket ID and history ID as input and returns a dictionary of ticket history entry properties"""
 
         suffix_url = 'ticket/{}/history/id/{}'.format(ticket_id, history_id)
-        raw_history = http_request('GET', suffix_url, params={'user': USERNAME, 'pass': PASSWORD})
+        raw_history = http_request('GET', suffix_url)
 
         return raw_history
 
