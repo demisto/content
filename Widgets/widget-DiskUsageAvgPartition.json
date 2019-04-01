@@ -1,12 +1,11 @@
 {
   "id": "disk-current-usage",
   "version": -1,
-  "fromVersion": "3.5.0",
-  "toVersion": "4.6.0",
+  "fromVersion": "5.0.0",
   "name": "Disk Current Usage",
   "dataType": "system",
   "widgetType": "number",
-  "query": "disk.usedPercent",
+  "query": "disk.usedPercent./",
   "isPredefined": true,
   "params": {
     "currencySign": "%",
@@ -29,5 +28,5 @@
   },
   "size": 0,
   "description": "",
-  "releaseNotes": "EOL in 5.0, as we support partitions"
+  "releaseNotes": "We support partitions from this point on"
 }

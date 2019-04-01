@@ -4,6 +4,9 @@
 #
 # In alpine will install necessary python dev tools and then use pip to install
 
+# exit on errors
+set -e
+
 # /dev/stdin is coming in in the format of a requirements file as pip install expects to receive
 # see code at pgk_dev_tasks_in_docker.py (method: docker_image_create)
 cp /dev/stdin /pkg-dev-test-requirements.txt
