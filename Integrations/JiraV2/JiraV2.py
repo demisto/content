@@ -11,12 +11,11 @@ from base64 import b64encode
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-BASE_URL = demisto.params().get('url')
-API_TOKEN = demisto.params().get('APItoken')
-USERNAME = demisto.params().get('username')
-PASSWORD = demisto.params().get('password')
-IS_OAUTH = demisto.params().get('consumerKey') and demisto.params().get('accessToken') and demisto.params().get(
-    'privateKey')
+BASE_URL = demisto.getParam('url')
+API_TOKEN = demisto.getParam('APItoken')
+USERNAME = demisto.getParam('username')
+PASSWORD = demisto.getParam('password')
+IS_OAUTH = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
 
 # if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
 if not IS_OAUTH and not (USERNAME and (PASSWORD or API_TOKEN)):
@@ -24,9 +23,9 @@ if not IS_OAUTH and not (USERNAME and (PASSWORD or API_TOKEN)):
 # B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
 # BASIC_AUTH = 'Basic ' + B64_AUTH
 OAUTH = {
-    "ConsumerKey": demisto.params().get('consumerKey'),
-    "AccessToken": demisto.params().get('accessToken'),
-    "PrivateKey": demisto.params().get('privateKey')
+    "ConsumerKey": demisto.getParam('consumerKey'),
+    "AccessToken": demisto.getParam('accessToken'),
+    "PrivateKey": demisto.getParam('privateKey')
 } if IS_OAUTH else ''
 
 HEADERS = {
@@ -201,8 +200,8 @@ def generate_md_context_create_issue(data, project_name=None, project_key=None):
     if project_key:
         data["projectKey"] = project_key
 
-    elif demisto.params().get('projectKey'):
-        data["projectKey"] = demisto.params().get('projectKey')
+    elif demisto.getParam('projectKey'):
+        data["projectKey"] = demisto.getParam('projectKey')
 
     create_issue_obj['md'].append(data)
     create_issue_obj['context']['Ticket'].append({"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})
@@ -387,8 +386,8 @@ def create_issue_command():
     result = jira_req('POST', url, json.dumps(issue))
     j_res = result.json()
 
-    md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.args().get('projectKey'),
-                                                      project_name=demisto.args().get('issueTypeName'))
+    md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
+                                                      project_name=demisto.getArg('issueTypeName'))
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], "")
     contents = j_res
     outputs = md_and_context['context']
@@ -556,7 +555,7 @@ def test_module():
     Performs basic get request to get item samples
     """
     req_res = jira_req('GET', 'rest/api/latest/myself')
-    run_query(demisto.params().get('query'), max_results=1)
+    run_query(demisto.getParam('query'), max_results=1)
     if req_res.ok:
         demisto.results('ok')
 
