@@ -3340,9 +3340,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         if not eml:
             raise Exception("Could not parse eml file!")
 
-        headers_map['From'] = extract_address_eml(eml,'from')
-        headers_map['To'] = extract_address_eml(eml,'to')
-        headers_map['Cc'] = extract_address_eml(eml,'cc')
+        headers_map['From'] = extract_address_eml(eml, 'from')
+        headers_map['To'] = extract_address_eml(eml, 'to')
+        headers_map['Cc'] = extract_address_eml(eml, 'cc')
 
         if parse_only_headers:
             return {
@@ -3434,9 +3434,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
 
         email_data = {
-            'To': extract_address_eml(eml,'to'),
-            'CC': extract_address_eml(eml,'cc'),
-            'From': extract_address_eml(eml,'from'),
+            'To': extract_address_eml(eml, 'to'),
+            'CC': extract_address_eml(eml, 'cc'),
+            'From': extract_address_eml(eml, 'from'),
             'Subject': convert_to_unicode(eml['Subject']),
             'HTML': convert_to_unicode(html),
             'Text': convert_to_unicode(text),
