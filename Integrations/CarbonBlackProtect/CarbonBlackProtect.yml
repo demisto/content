@@ -1132,6 +1132,61 @@ script:
     - contextPath: ICBPPolicy.DisconnectedEnforcementLevel
       description: The level of enforcement of the policy when disconnected
       type: String
+  - arguments:
+    - default: false
+      description: 'A condition contains three parts: name, operator and value. Name
+        is any valid field in the object that is being queried. Operator (: LIKE,
+        ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
+        values) is any of valid operators (see below). All operators consist of a
+        single character. Value is compared with operator and depends on field type.
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Is maximum number of results to retrieve. If not specified:
+        First 1000 results will be returned. If set to -1: Only result count will
+        be returned, without actual results. Offset parameter is ignored in this case.
+        If set to 0: All results will be returned. Offset parameter is ignored in
+        this case. Note that some result sets could be very large, resulting in query
+        timeout. Therefore, unless you know that query will not return more than 1000
+        results, it is recommended to retrieve data in chunks using offset and limit.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Offset in data set
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Grouping is optional and can be defined with a single attribute:
+        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting is optional and can be defined with a single attribute:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
+        (if omitted) is ASC. xyz is field name from the result set.'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
+    execution: false
+    name: cbp-serverConfig-search
   dockerimage: demisto/python3
   isfetch: false
   runonce: false
