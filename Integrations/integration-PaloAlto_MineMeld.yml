@@ -835,6 +835,7 @@ script:
     arguments:
     - name: ip
       required: true
+      default: true
       description: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -902,6 +903,7 @@ script:
     arguments:
     - name: file
       required: true
+      default: true
       description: file
     outputs:
     - contextPath: DBotScore.Indicator
@@ -975,6 +977,7 @@ script:
     arguments:
     - name: domain
       required: true
+      default: true
       description: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1042,6 +1045,7 @@ script:
     arguments:
     - name: url
       required: true
+      default: true
       description: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1123,6 +1127,6 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "Added validation of deleting indictors from miners of type localDB"
+releaseNotes: "Added validation of deleting indictors from miners of type localDB, Added defaults to threat intel commands"
 tests:
   - minemeld_test
