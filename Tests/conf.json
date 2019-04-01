@@ -314,7 +314,7 @@
         },
         {
           "integrations": "Signal Sciences WAF",
-          "playbookID": "SignalSciences Test"
+          "playbookID": "SignalSciences-Test"
         },
         {
             "integrations": "RTIR",
@@ -1177,7 +1177,15 @@
             "integrations": "Pwned"
         },
         {
+            "integrations": "Symantec Deepsight Intelligence",
+            "playbookID": "Symantec Deepsight Test"
+        },
+        {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
@@ -1225,7 +1233,6 @@
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Signal Sciences WAF": "API problems, not returning the correct data",
         "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
@@ -1338,6 +1345,9 @@
         "Centreon": "might be dynamic test",
         "Cisco pxGrid ISE": "might be dynamic test",
         "RSA NetWitness v11.1": "might be dynamic test",
-        "Zscaler": "might be dynamic test"
+        "Signal Sciences WAF": "error with certificate",
+        "Zscaler": "might be dynamic test",
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }
