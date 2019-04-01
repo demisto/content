@@ -5,54 +5,54 @@ name: RTIR
 display: RTIR
 category: Case Management
 image: data:image/png;base64,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
-description: Request Tracker for Incident Response is a ticketing system which provides
-pre-configured queues and workflows designed for incident response teams.
+description: "Request Tracker for Incident Response is a ticketing system which provides
+  pre-configured queues and workflows designed for incident response teams."
 configuration:
-- display: Server URL (e.g. http://192.168.0.1)
-  name: server
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Credentials
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: true
-- display: Trust any certificate (unsecure)
-  name: unsecure
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
-  required: false
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
-- display: 'Fetch incidents of the following status:'
-  name: fetch_status
-  defaultvalue: new,open
-  type: 0
-  required: false
-- display: 'Fetch incidents with priority greater or equal to:'
-  name: fetch_priority
-  defaultvalue: "0"
-  type: 0
-  required: false
-- display: Queue name to fetch incidents from
-  name: fetch_queue
-  defaultvalue: Incident Reports
-  type: 0
-  required: false
+  - display: Server URL (e.g. http://192.168.0.1)
+    name: server
+    defaultvalue: ""
+    type: 0
+    required: true
+  - display: Credentials
+    name: credentials
+    defaultvalue: ""
+    type: 9
+    required: true
+  - display: Trust any certificate (unsecure)
+    name: unsecure
+    defaultvalue: "true"
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    defaultvalue: "false"
+    type: 8
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Incident type
+    name: incidentType
+    defaultvalue: ""
+    type: 13
+    required: false
+  - display: 'Fetch incidents of the following status:'
+    name: fetch_status
+    defaultvalue: new,open
+    type: 0
+    required: false
+  - display: 'Fetch incidents with priority greater or equal to:'
+    name: fetch_priority
+    defaultvalue: "0"
+    type: 0
+    required: false
+  - display: Queue name to fetch incidents from
+    name: fetch_queue
+    defaultvalue: Incident Reports
+    type: 0
+    required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -81,19 +81,19 @@ script:
     USE_SSL = not demisto.params().get('unsecure', False)
     FETCH_PRIORITY = int(demisto.params()['fetch_priority']) - 1
     FETCH_STATUS = demisto.params()['fetch_status']
+    FETCH_QUEUE = demisto.params()['fetch_queue']
     CURLY_BRACKETS_REGEX = r'\{(.*?)\}' # Extracts string in curly brackets, e.g. '{string}' -> 'string'
     apostrophe = "'"
     SESSION = requests.session()
 
 
-
     ''' HELPER FUNCTIONS '''
     def ticket_to_incident(ticket):
         incident = {
-            'name': 'RTIR Ticket ' + str(ticket['id']),
+            'name': 'RTIR Ticket ' + str(ticket['ID']),
             'rawJSON': json.dumps(ticket),
         }
-        attachments, attachments_content, _ = get_ticket_attachments(ticket['id'])
+        attachments, attachments_content = get_ticket_attachments(ticket['ID'])
         if attachments:
             incident_attachments = []
             for i in range(len(attachments)):
@@ -101,6 +101,7 @@ script:
                     'path': attachments_content[i]['FileID'],
                     'name': attachments[i]['Name']
                 })
+
             incident['attachment'] = incident_attachments
         return incident
 
@@ -113,12 +114,110 @@ script:
         return ticket_id
 
 
+    def http_request(method, suffix_url, data=None, files=None, query=None):
+        #Returns the http request
+
+        url = BASE_URL + suffix_url
+        params = {'user': USERNAME, 'pass': PASSWORD}
+        if query:
+            params.update(query)
+
+        response = SESSION.request(method, url, data=data, params=params, files=files)
+
+        # handle request failure
+        if response.status_code not in {200}:
+            message = parse_error_response(response)
+            return_error('Error in API call with status code {}\n{}'.format(response.status_code, message))
+
+        return response
+
+
+    def parse_error_response(response):
+        try:
+            res = response.json()
+            msg = res.get('message')
+            if res.get('details') and res.get('details')[0].get('message'):
+                msg = msg + "\n"+json.dumps(res.get('details')[0])
+        except:
+            return response.text
+        return msg
+
+
+    def login():
+
+        data = {
+            'user': USERNAME,
+            'pass': PASSWORD
+        }
+        response = SESSION.post(SERVER, data=data)
+
+
+    def logout():
+
+        suffix_url = 'logout'
+        response = http_request('POST', suffix_url)
+
+
+    def parse_ticket_data(raw_query):
+
+        raw_tickets = search_ticket_request(raw_query)
+        headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
+        search_context = []
+        data = raw_tickets.content.split('\n')
+        data = data[2:]
+        raw_ticket_search = []
+        for line in data:
+            split_line = line.split(': ')
+            search_ticket = get_ticket_request(split_line[0]).content
+            search_ticket = search_ticket.split('\n')
+            search_ticket = search_ticket[2:]
+            id_ticket = search_ticket[0].upper()
+            search_ticket[0] = id_ticket
+
+            current_ticket_search = {}
+            for entity in search_ticket:
+                if ': ' in entity:
+                    header, content = entity.split(': ', 1)
+                    if 'ID' in header:
+                        content = ticket_string_to_id(content)
+                    if header in {'ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority'}:
+                        current_ticket_search[header] = content
+
+            for key in search_ticket: # Adding ticket custom fields to outputs
+                if key.startswith('CF.'):
+                    split_key = key.split(':')
+                    if split_key[0]:
+                        custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ', '') # Regex and removing white spaces
+                        current_ticket_search[custom_field_regex] = split_key[1]
+                        headers.append(custom_field_regex)
+
+            if current_ticket_search:
+                search_context.append(current_ticket_search)
+
+        return search_context
+
+
+
     ''' FUNCTIONS '''
 
 
+    def create_ticket_request(encoded):
+
+        suffix_url = 'ticket/new'
+        ticket_id = http_request('POST', suffix_url, data=encoded)
+
+        return ticket_id
+
+
+    def create_ticket_attachments_request(encoded, files_data):
+
+        suffix_url = 'ticket/new'
+        ticket_id = http_request('POST', suffix_url, files=files_data)
+
+        return ticket_id
+
     def create_ticket():
         ticket_context = []
-        kwargs = {}
         queue = demisto.args().get('queue')
         data = 'id: ticket/new\nQueue: {}\n'.format(queue)
 
@@ -128,48 +227,48 @@ script:
 
         requestor = demisto.args().get('requestor')
         if requestor:
-            data += "Requestor: {}".format(requestor)
+            data += "Requestor: {}\n".format(requestor)
 
         cc = demisto.args().get('cc', '')
         if cc:
-            data += "Cc: {}".format(cc)
+            data += "Cc: {}\n".format(cc)
 
         admin_cc = demisto.args().get('admin-cc', '')
         if admin_cc:
-            data += "Admin-Cc: {}".format(admin_cc)
+            data += "AdminCc: {}\n".format(admin_cc)
 
         owner = demisto.args().get('owner')
         if owner:
-            data += "Owner: {}".format(owner)
+            data += "Owner: {}\n".format(owner)
 
         status = demisto.args().get('status')
         if status:
-            data += "Status: {}".format(status)
+            data += "Status: {}\n".format(status)
 
         priority = demisto.args().get('priority')
         if priority:
-            data += "Priority: {}".format(priority)
+            data += "Priority: {}\n".format(priority)
 
         initial_priority = demisto.args().get('initial-priority')
         if initial_priority:
-            data += "Initiatl-priority: {}".format(initial_priority)
+            data += "Initial-priority: {}\n".format(initial_priority)
 
         final_priority = demisto.args().get('final-priority')
         if final_priority:
-            data += "FinalPriority: {}".format(final_priority)
+            data += "FinalPriority: {}\n".format(final_priority)
 
         text = demisto.args().get('text')
         if text:
-            data += "Text: {}".format(unicode(text).encode('utf-8'))
+            data += "Text: {}\n".format(unicode(text).encode('utf-8'))
 
         customfields = demisto.args().get('customfields')
         if customfields:
             cf_list = customfields.split(',')
             for cf in cf_list:
                 equal_index = cf.index('=')
-                key = 'CF_{}'.format(cf[:equal_index])
+                key = 'CF-{}: '.format(cf[:equal_index])
                 value = cf[equal_index + 1:]
-                kwargs[key] = value
+                data = data + key + value + '\n'
 
         attachments = demisto.args().get('attachment')
         if attachments:
@@ -184,13 +283,13 @@ script:
                 files_data['attachment_{:d}'.format(i + 1)] = (file_name ,open(file['path'], 'rb'))
                 data += 'Attachment: {}'.format(file_name)
 
-        suffix_url = 'ticket/new'
+
         encoded = "content=" + urllib.quote_plus(data)
         if attachments:
             files_data.update({'content': (None, data)})
-            ticket_id = http_request('POST', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}, files=files_data)
+            ticket_id = create_ticket_attachments_request(encoded, files_data)
         else:
-            ticket_id = http_request('POST', suffix_url, data=encoded, params={'user': USERNAME, 'pass': PASSWORD})
+            ticket_id = create_ticket_request(encoded)
         ticket_id = re.findall('\d+', ticket_id.content)[-1]
         if ticket_id == -1:
             return_error('Ticket creation failed')
@@ -206,7 +305,7 @@ script:
             'Owner': owner
         })
         ec= {
-            'RTIR.Ticket(val.ID && val.ID == obj.ID)': ticket_context
+            'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket_context
         }
         hr = 'Ticket {} was created successfully.'.format(ticket_id)
         demisto.results({
@@ -218,7 +317,7 @@ script:
             'EntryContext': ec
         })
 
-    def ticket_request(ticket_id):
+    def get_ticket_request(ticket_id):
 
         suffix_url = 'ticket/{}/show'.format(ticket_id)
         raw_ticket = http_request('GET', suffix_url)
@@ -276,78 +375,102 @@ script:
         queue = demisto.args().get('queue')
         if queue:
             raw_query += 'Queue={}{}{}+AND+'.format(apostrophe, queue, apostrophe)
-        suffix_url = 'search/ticket'
-        headers = ['id', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
-        raw_tickets = http_request('GET', suffix_url, params={'user': USERNAME, 'pass': PASSWORD, 'query': raw_query})
+        raw_tickets = search_ticket_request(raw_query)
+        headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
         search_context = []
         data = raw_tickets.content.split('\n')
         data = data[2:]
         raw_ticket_search = []
         for line in data:
             split_line = line.split(': ')
-            search_ticket = ticket_request(split_line[0]).content
+            search_ticket = get_ticket_request(split_line[0]).content
             search_ticket = search_ticket.split('\n')
             search_ticket = search_ticket[2:]
+            id_ticket = search_ticket[0].upper()
+            search_ticket[0] = id_ticket
+
             current_ticket_search = {}
             for entity in search_ticket:
                 if ': ' in entity:
                     header, content = entity.split(': ', 1)
-                    if header in {'id', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority'}:
+                    if 'ID' in header:
+                        content = ticket_string_to_id(content)
+                    if header in {'ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority'}:
                         current_ticket_search[header] = content
+
+            for key in search_ticket: # Adding ticket custom fields to outputs
+                if key.startswith('CF.'):
+                    split_key = key.split(':')
+                    if split_key[0]:
+                        custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ', '') # Regex and removing white spaces
+                        current_ticket_search[custom_field_regex] = split_key[1]
+                        headers.append(custom_field_regex)
+
             if current_ticket_search:
                 search_context.append(current_ticket_search)
-        # for key in raw_tickets: # Adding ticket custom fields to outputs
-        #     if key.startswith('CF'):
-        #         if raw_tickets[key]:
-        #             custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ', '') # Regex and removing white spaces
-        #             data[custom_field_regex] = raw_tickets[key]
-        #             headers.append(custom_field_regex)
-        # search_context.append(search_context)
         if search_context:
             ec = {
-                'RTIR.Ticket(val.ID && val.ID == obj.ID)': search_context
+                'RTIR.Ticket(val.ID && val.ID === obj.ID)': search_context
             }
             title = 'RTIR ticket search results'
+
             demisto.results({
                 'Type': entryTypes['note'],
                 'Contents': search_context,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown(title, search_context, headers),
+                'HumanReadable': tableToMarkdown(title, search_context, headers, removeNull=True),
                 'EntryContext': ec
             })
         else:
             demisto.results('No results found.')
 
+    def search_ticket_request(raw_query):
+        suffix_url = 'search/ticket'
+        raw_tickets = http_request('GET', suffix_url, query={'query': raw_query})
+
+        return raw_tickets
+
+
+    def close_ticket_request(ticket_id, encoded):
+
+        suffix_url = 'ticket/{}/edit'.format(ticket_id)
+        closed_ticket = http_request('POST', suffix_url, data=encoded)
+
+        return closed_ticket
+
+
     def close_ticket():
         ticket_id = demisto.args().get('ticket-id')
-        suffix_url = 'ticket/{}/edit'.format(ticket_id)
-        content = ''
-        content += '\nStatus: resolved'
-        try:
-            encoded = "content=" + urllib.quote_plus(content)
-            closed_ticket = http_request('POST', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}, data=encoded)
-            if closed_ticket.status_code in {200}:
-                ec= {
-                    'RTIR.Ticket(val.ID && val.ID == obj.ID)': {
-                        'ID': int(ticket_id),
-                        'State': 'resolved'
-                    }
+        content = '\nStatus: resolved'
+        encoded = "content=" + urllib.quote_plus(content)
+        closed_ticket = close_ticket_request(ticket_id, encoded)
+        if '200 Ok' in closed_ticket.content:
+            ec= {
+                'RTIR.Ticket(val.ID && val.ID === obj.ID)': {
+                    'ID': int(ticket_id),
+                    'State': 'resolved'
                 }
-                hr = 'Ticket {} was resolved successfully.'.format(ticket_id)
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'Contents': hr,
-                    'ContentsFormat': formats['json'],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': hr,
-                    'EntryContext': ec
-                })
-            else:
-                return_error('Failed to resolve ticket')
-        except Exception, e:
-            demisto.error(str(e))
+            }
+            hr = 'Ticket {} was resolved successfully.'.format(ticket_id)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': hr,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': ec
+            })
+        else:
             return_error('Failed to resolve ticket')
+
+    def edit_ticket_request(ticket_id, encoded):
+
+        suffix_url = 'ticket/{}/edit'.format(ticket_id)
+        edited_ticket = http_request('POST', suffix_url, data=encoded)
+
+        return edited_ticket
+
 
     def edit_ticket():
 
@@ -398,44 +521,39 @@ script:
 
         customfields = demisto.args().get('customfields')
         if customfields:
-            arguments_given = True
             cf_list = customfields.split(',')
             for cf in cf_list:
                 equal_index = cf.index('=')
-                key = 'CF_{}'.format(cf[:equal_index])
+                key = 'CF-{}: '.format(cf[:equal_index])
                 value = cf[equal_index + 1:]
-                kwargs[key] = value
-        suffix_url = 'ticket/{}/edit'.format(ticket_id)
-        if arguments_given:
-            try:
-                encoded = "content=" + urllib.quote_plus(content)
-                edited_ticket = http_request('POST', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}, data=encoded)
-                if edited_ticket.status_code in {200}:
-                    ticket_context = ({
-                        'ID': ticket_id,
-                        'Subject': subject,
-                        'State': status,
-                        'Priority': priority,
-                        'FinalPriority': final_priority,
-                        'Owner': owner
-                    })
-                    ec = {
-                        'RTIR.Ticket(val.ID && val.ID == obj.ID)': ticket_context
-                    }
+                content = content + key + value + '\n'
 
-                    hr = 'Ticket {} was edited successfully.'.format(ticket_id)
-                    demisto.results({
-                        'Type': entryTypes['note'],
-                        'Contents': hr,
-                        'ContentsFormat': formats['json'],
-                        'ReadableContentsFormat': formats['markdown'],
-                        'HumanReadable': hr,
-                        'EntryContext': ec
-                    })
-                else:
-                    return_error('Failed to edit ticket')
-            except Exception, e:
-                demisto.error(str(e))
+        if arguments_given:
+            encoded = "content=" + urllib.quote_plus(content)
+            edited_ticket = edit_ticket_request(ticket_id, encoded)
+            if "200 Ok" in edited_ticket.content:
+                ticket_context = ({
+                    'ID': ticket_id,
+                    'Subject': subject,
+                    'State': status,
+                    'Priority': priority,
+                    'FinalPriority': final_priority,
+                    'Owner': owner
+                })
+                ec = {
+                    'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket_context
+                }
+
+                hr = 'Ticket {} was edited successfully.'.format(ticket_id)
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'Contents': hr,
+                    'ContentsFormat': formats['json'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': hr,
+                    'EntryContext': ec
+                })
+            else:
                 return_error('Failed to edit ticket')
         else:
             return_error('No arguments were given to edit the ticket.')
@@ -443,7 +561,8 @@ script:
 
     def get_ticket_attachments(ticket_id):
         suffix_url = 'ticket/{}/attachments'.format(ticket_id)
-        raw_attachments = http_request('GET', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}).content
+        raw_attachments = http_request('GET', suffix_url).content
+
         attachments = []
         attachments_content = []
         split_raw_attachment = raw_attachments.split('\n')
@@ -453,9 +572,13 @@ script:
                 for line in attachment_lines:
                     if line and 'Unnamed' not in line:
                         split_line = line.split(': ')
-                        attachment_id = split_line[0]
+                        if 'Attachments' in split_line:
+                            starting_index = 1
+                        else:
+                            starting_index = 0
+                        attachment_id = split_line[starting_index]
                         attachment_id = attachment_id.strip()
-                        attachment_name = split_line[1]
+                        attachment_name = split_line[starting_index + 1]
                         attachment_type = attachment_name.replace('(', '').replace(')', '')
                         split_line_type = attachment_type.split(' ')
                         attachment_name = split_line_type[0]
@@ -480,7 +603,7 @@ script:
         attachments, attachments_content = get_ticket_attachments(ticket_id)
         if attachments:
             ec= {
-                'RTIR.Ticket(val.ID && val.ID == obj.ID)': {
+                'RTIR.Ticket(val.ID && val.ID === obj.ID)': {
                     'ID': int(ticket_id),
                     'Attachment': attachments
                 }
@@ -491,7 +614,7 @@ script:
                 'Contents': attachments,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown(title, attachments),
+                'HumanReadable': tableToMarkdown(title, attachments, removeNull=True),
                 'EntryContext': ec
             })
             demisto.results(attachments_content)
@@ -511,10 +634,10 @@ script:
     def get_ticket_history(ticket_id):
 
         suffix_url = 'ticket/{}/history'.format(ticket_id)
-        raw_history = http_request('GET', suffix_url, params={'user': USERNAME, 'pass': PASSWORD})
+        raw_history = http_request('GET', suffix_url)
         history_context = []
-        headers = ['id','Created', 'Creator', 'Description']
-        data = raw_history.text.split("\n")
+        headers = ['ID', 'Created', 'Creator', 'Description']
+        data = raw_history.text.split('\n')
         data = data[4:]
         raw_ticket_history = []
         for line in data:
@@ -522,11 +645,13 @@ script:
             current_raw_ticket_history = get_ticket_history_by_id(ticket_id, split_line[0]).content
             current_raw_ticket_history = current_raw_ticket_history.split('\n')
             current_raw_ticket_history = current_raw_ticket_history[4:]
+            id_ticket = current_raw_ticket_history[0].upper()
+            current_raw_ticket_history[0] = id_ticket
             current_history_context = {}
             for entity in current_raw_ticket_history:
                 if ': ' in entity:
                     header, content = entity.split(': ', 1)
-                    if header in {'id', 'Content', 'Created', 'Creator', 'Description', 'NewValue'}:
+                    if header in {'ID', 'Content', 'Created', 'Creator', 'Description', 'NewValue'}:
                         current_history_context[header] = content
             if current_history_context:
                 history_context.append(current_history_context)
@@ -538,7 +663,7 @@ script:
         history_context, headers = get_ticket_history(ticket_id)
         if history_context:
             ec = {
-                'RTIR.Ticket(val.ID && val.ID == obj.ID)': {
+                'RTIR.Ticket(val.ID && val.ID === obj.ID)': {
                     'ID': int(ticket_id),
                     'History': history_context
                 }
@@ -549,7 +674,7 @@ script:
                 'Contents': history_context,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown(title, history_context, headers),
+                'HumanReadable': tableToMarkdown(title, history_context, headers, removeNull=True),
                 'EntryContext': ec
             })
         else:
@@ -558,25 +683,41 @@ script:
 
     def get_ticket():
         ticket_id = demisto.args().get('ticket-id')
-        suffix_url = 'ticket/{}/show'.format(ticket_id)
-        raw_ticket = http_request('GET', suffix_url)
+        raw_ticket = get_ticket_request(ticket_id)
         if not raw_ticket:
             return_error('Failed to get ticket, possibly does not exist.')
-        headers = ['id', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
-        ticketProperties = {}
-        data = raw_ticket.text.split("\n")
+        headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
+        ticket_context = []
+        data = raw_ticket.content.split('\n')
+        data = data[2:]
+        current_ticket = {}
         for line in data:
-            if "200 Ok" in line or line == '':
-                continue
-            split = line.split(":", 1)
-            ticketProperties[split[0]] = split[1][1:]
+            split_line = line.split(': ')
+            if len(split_line) == 2:
+                current_ticket[split_line[0]] = split_line[1]
+                ticket = {
+                    'ID': ticket_string_to_id(current_ticket['id']),
+                    'Subject': current_ticket.get('Subject'),
+                    'State': current_ticket.get('Status'),
+                    'Creator': current_ticket.get('Creator'),
+                    'Created': current_ticket.get('Created'),
+                    'Priority': current_ticket.get('Priority'),
+                    'InitialPriority': current_ticket.get('InitialPriority'),
+                    'FinalPriority': current_ticket.get('FinalPriority'),
+                    'Queue': current_ticket.get('Queue'),
+                    'Owner': current_ticket.get('Owner')
+                }
 
-        for key in raw_ticket: # Adding ticket custom fields to outputs
-            if key.startswith('CF'):
-                if raw_ticket[key]:
-                    custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ', '') # Regex and removing white spaces
-                    ticketProperties[custom_field_regex] = raw_ticket[key]
-                    headers.append(custom_field_regex)
+            for key in data: # Adding ticket custom fields to outputs
+                if key.startswith('CF.'):
+                    split_key = key.split(':')
+                    if split_key[0]:
+                        custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ', '') # Regex and removing white spaces
+                        ticket[custom_field_regex] = split_key[1]
+
+            if ticket:
+                ticket_context.append(ticket)
+
         suffix_url = 'ticket/{}/links/show'.format(ticket_id)
         raw_links = http_request('GET', suffix_url)
         if raw_links:
@@ -586,20 +727,28 @@ script:
                 links.append({
                     'ID': link_id
                 })
-            ticketProperties['LinkedTo'] = links
+            ticket['LinkedTo'] = links
         ec = {
-            'RTIR.Ticket(val.ID && val.ID == obj.ID)': ticketProperties
+            'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket
         }
         title = 'RTIR ticket {}'.format(ticket_id)
 
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': ticketProperties,
+            'Contents': ticket_context,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, ticketProperties, headers),
+            'HumanReadable': tableToMarkdown(title, ticket, headers, removeNull=True),
             'EntryContext': ec
         })
+
+
+    def add_comment_request(ticket_id, encoded):
+
+        suffix_url = 'ticket/{}/comment'.format(ticket_id)
+        added_comment = http_request('POST', suffix_url, data=encoded)
+
+        return added_comment
 
 
     def add_comment():
@@ -624,9 +773,8 @@ script:
 
         try:
             encoded = "content=" + urllib.quote_plus(content)
-            suffix_url = 'ticket/{}/comment'.format(ticket_id)
-            added_comment = http_request('POST', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}, data=encoded)
-            if "200" in added_comment.content:
+            added_comment = add_comment_request(ticket_id, encoded)
+            if '200' in added_comment.content:
                 demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
             else:
                 return_error('Failed to add comment')
@@ -635,7 +783,17 @@ script:
             return_error('Failed to add comment')
 
 
+    def add_reply_request(ticket_id, encoded):
+
+        suffix_url = 'ticket/{}/comment'.format(ticket_id)
+        added_reply = http_request('POST', suffix_url, data=encoded)
+
+        return added_reply
+
+
     def add_reply():
+
+
         ticket_id = demisto.args().get('ticket-id')
         content = 'Action: comment\n'
         text = demisto.args().get('text')
@@ -643,12 +801,11 @@ script:
             content += '\nText: ' + text.encode('utf-8')
         cc = demisto.args().get('cc')
         if cc:
-            content += '\ncc: ' + cc
+            content += '\nCc: ' + cc
         try:
             encoded = "content=" + urllib.quote_plus(content)
-            suffix_url = 'ticket/{}/comment'.format(ticket_id)
-            added_reply = http_request('POST', suffix_url, params={'user': USERNAME, 'pass': PASSWORD}, data=encoded)
-            if "200" in added_reply.content:
+            added_reply = add_reply_request(ticket_id, encoded)
+            if '200' in added_reply.content:
                 demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
             else:
                 return_error('Failed to reply')
@@ -658,10 +815,9 @@ script:
 
 
     def fetch_incidents():
-        fetch_queue = demisto.get(demisto.params(), 'fetch_queue')
         last_run = demisto.getLastRun()
         last_ticket_id = demisto.getLastRun()['ticket_id'] if (demisto.getLastRun() and demisto.getLastRun()['ticket_id']) else 0
-        raw_query='id>{}+AND+Priority>{}'.format(last_ticket_id, FETCH_PRIORITY)
+        raw_query='id>{}+AND+Priority>{}+AND+Queue={}{}{}'.format(last_ticket_id, FETCH_PRIORITY, apostrophe, FETCH_QUEUE, apostrophe)
         if FETCH_STATUS:
             status_list = FETCH_STATUS.split(',')
             status_query = '+AND+('
@@ -669,15 +825,13 @@ script:
                 status_query += 'Status={}{}{}+OR+'.format(apostrophe, status, apostrophe)
             raw_query += status_query
             raw_query += ')'
-        tickets = search_ticket()
+        tickets = parse_ticket_data(raw_query)
         incidents = []
         max_ticket_id = last_ticket_id
         for ticket in tickets:
-            ticket_string = ticket['id']
-            ticket_id = ticket_string_to_id(ticket_string)
-            ticket['id'] = ticket_id
-            history, _, _ = get_ticket_history(ticket_id)
-            ticket['History'] = history
+            ticket_id = ticket['ID']
+            history_context, _ = get_ticket_history(ticket_id)
+            ticket['History'] = history_context
             incidents.append(ticket_to_incident(ticket))
             max_ticket_id = max(max_ticket_id, ticket_id)
         if tickets:
@@ -688,54 +842,13 @@ script:
     ''' EXECUTION CODE '''
 
 
-    def http_request(method, suffix_url, params=None, data=None, files=None):
-        #Returns the http request
-
-        url = BASE_URL + suffix_url
-        response = SESSION.request(method, url, data=data, params=params, files=files)
-
-        # handle request failure
-        if response.status_code not in {200}:
-            message = parse_error_response(response)
-            return_error('Error in API call with status code {}\n{}'.format(response.status_code, message))
-
-        return response
-
-
-    def parse_error_response(response):
-        try:
-            res = response.json()
-            msg = res.get('message')
-            if res.get('details') is not None and res.get('details')[0].get('message') is not None:
-                msg = msg + "\n"+json.dumps(res.get('details')[0])
-        except:
-            return response.text
-        return msg
-
-
-    def login():
-
-        suffix_url = ''
-        data = {
-            'user': USERNAME,
-            'pass': PASSWORD
-        }
-        response = SESSION.post(SERVER, data=data)
-
-
-    def logout():
-
-        suffix_url = 'logout'
-        response = http_request('POST', suffix_url, params={'user': USERNAME, 'pass': PASSWORD})
-
-
     LOG('command is %s' % (demisto.command(), ))
     try:
-      login()
+        login()
         if demisto.command() == 'test-module':
             demisto.results('ok')
 
-        if demisto.command() == 'fetch-incidents':
+        if demisto.command() in {'fetch-incidents'}:
             fetch_incidents()
 
         elif demisto.command() == 'rtir-create-ticket':
@@ -921,7 +1034,7 @@ script:
     arguments:
     - name: ticket-id
       required: true
-      description: 'Ticket ID '
+      description: 'Ticket ID'
     - name: subject
       description: Ticket subject
     - name: priority
@@ -1110,7 +1223,8 @@ script:
       description: Email of the user to send the reply
       isArray: true
     description: Send a reply from an existing ticket to the user
+  isfetch: true
   runonce: false
 releaseNotes: "Rewriting RTIR to work without RT package"
 tests:
-  - RTIR Test
+  - RTIR test
