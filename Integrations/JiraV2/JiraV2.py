@@ -19,10 +19,10 @@ IS_OAUTH = demisto.params().get('consumerKey') and demisto.params().get('accessT
     'privateKey')
 
 # if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
-if not IS_OAUTH and not (USERNAME and PASSWORD or API_TOKEN):
+if not IS_OAUTH and not (USERNAME and (PASSWORD or API_TOKEN)):
     return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
-B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
-BASIC_AUTH = 'Basic ' + B64_AUTH
+# B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
+# BASIC_AUTH = 'Basic ' + B64_AUTH
 OAUTH = {
     "ConsumerKey": demisto.params().get('consumerKey'),
     "AccessToken": demisto.params().get('accessToken'),
@@ -32,20 +32,12 @@ OAUTH = {
 HEADERS = {
     'Content-Type': 'application/json',
 }
-if not IS_OAUTH:
-    HEADERS['Authorization'] = BASIC_AUTH
+# if not IS_OAUTH:
+#     HEADERS['Authorization'] = BASIC_AUTH
 
 USE_SSL = not demisto.params().get('insecure', False)
 
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
-
-@logger
 def jira_req(method, resource_url, body='', link=False):
     url = resource_url if link else (BASE_URL + resource_url)
     result = requests.request(
@@ -54,7 +46,8 @@ def jira_req(method, resource_url, body='', link=False):
         data=body,
         headers=HEADERS,
         verify=USE_SSL,
-        params=OAUTH
+        # params=OAUTH,
+        auth=(USERNAME, API_TOKEN if API_TOKEN else PASSWORD)
     )
     if not result.ok:
         demisto.debug(result.text)
@@ -62,15 +55,12 @@ def jira_req(method, resource_url, body='', link=False):
             rj = result.json()
             if rj.get('errorMessages'):
                 return_error(
-                    'Status code: {status_code}\nMessage: {message}'.format(status_code=result.status_code,
-                                                                            message=','.join(rj['errorMessages'])))
+                    f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
             elif rj.get('errors'):
                 return_error(
-                    'Status code: {status_code}\nMessage: {message}'.format(status_code=result.status_code,
-                                                                            message=','.join(rj['errors'].values())))
+                    f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
             else:
-                return_error('Status code: {status_code}\nError text: {message}'.format(status_code=result.status_code,
-                                                                                        message=result.text))
+                return_error(f'Status code: {result.status_code}\nError text: {result.text}')
         except ValueError as ve:
             demisto.debug(str(ve))
             if result.status_code == 401:
@@ -79,12 +69,11 @@ def jira_req(method, resource_url, body='', link=False):
                 return_error("Server is unreachable, please insure the URL is correct")
             else:
                 return_error(
-                    "Failed reaching the server. status code: {status_code}".format(status_code=result.status_code))
+                    f"Failed reaching the server. status code: {result.status_code}")
 
     return result
 
 
-@logger
 def run_query(query, start_at='', max_results=None):
     # EXAMPLE
     """
@@ -99,7 +88,7 @@ def run_query(query, start_at='', max_results=None):
         ]
     }
     """
-    demisto.debug('querying with: {query}'.format(query=query))
+    demisto.debug(f'querying with: {query}')
     url = BASE_URL + 'rest/api/latest/search/'
     query_params = {
         'jql': query,
@@ -118,11 +107,10 @@ def run_query(query, start_at='', max_results=None):
         return result.json()
 
     except ValueError as ve:
-        demisto.debug(ve.message)
-        return_error('Failed to send request, reason: {reason}'.format(reason=result.reason))
+        demisto.debug(str(ve))
+        return_error(f'Failed to send request, reason: {result.reason}')
 
 
-@logger
 def get_id_offset():
     """
     gets the ID Offset, i.e., the first issue id. used to fetch correctly all issues
@@ -131,12 +119,11 @@ def get_id_offset():
     j_res = run_query(query=query, max_results=1)
     first_issue_id = j_res.get('issues')[0].get('id')
     return_outputs(
-        readable_output="ID Offset: {idOffSet}".format(idOffSet=first_issue_id),
+        readable_output=f"ID Offset: {first_issue_id}",
         outputs={'Ticket.idOffSet': first_issue_id},
     )
 
 
-@logger
 def expand_urls(data, depth=0):
     if isinstance(data, dict) and depth < 10:
         for key, value in data.items():
@@ -157,7 +144,6 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
-@logger
 def generate_md_context_get_issue(data):
     get_issue_obj = {"md": [], "context": []}
     if not isinstance(data, list):
@@ -209,7 +195,6 @@ def generate_md_context_get_issue(data):
     return get_issue_obj
 
 
-@logger
 def generate_md_context_create_issue(data, project_name=None, project_key=None):
     create_issue_obj = {"md": [], "context": {"Ticket": []}}
     if project_name:
@@ -226,7 +211,6 @@ def generate_md_context_create_issue(data, project_name=None, project_key=None):
     return create_issue_obj
 
 
-@logger
 def generate_md_upload_issue(data, issue_id):
     upload_md = []
     if not isinstance(data, list):
@@ -244,7 +228,6 @@ def generate_md_upload_issue(data, issue_id):
     return upload_md
 
 
-@logger
 def create_incident_from_ticket(issue):
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)}, {'type': 'id', 'value': str(issue.get('id'))},
@@ -262,7 +245,7 @@ def create_incident_from_ticket(issue):
 
     name = demisto.get(issue, 'fields.summary')
     if name:
-        name = "Jira issue: {issue_id}".format(issue_id=issue.get('id'))
+        name = f"Jira issue: {issue.get('id')}"
 
     severity = 0
     if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
@@ -284,7 +267,6 @@ def create_incident_from_ticket(issue):
     }
 
 
-@logger
 def get_project_id(project_key='', project_name=''):
     result = jira_req('GET', 'rest/api/latest/issue/createmeta')
 
@@ -294,7 +276,6 @@ def get_project_id(project_key='', project_name=''):
     return_error('Project not found')
 
 
-@logger
 def get_issue_fields(issue_creating=False, **issue_args):
     """
     refactor issues's argument as received from demisto into jira acceptable format, and back.
@@ -371,7 +352,6 @@ def get_issue_fields(issue_creating=False, **issue_args):
     return issue
 
 
-@logger
 def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False):
     result = jira_req('GET', 'rest/api/latest/issue/' + issue_id)
     j_res = result.json()
@@ -380,22 +360,19 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
     if get_attachments == 'true' and attachments:
-        attachments_zip = jira_req(method='GET',
-                                   resource_url='secure/attachmentzip/{issue_id}.zip'.format(issue_id=issue_id)).content
-        demisto.results(
-            fileResult(filename='{issue_id}_attachments.zip'.format(issue_id=j_res.get('id')), data=attachments_zip))
+        attachments_zip = jira_req(method='GET', resource_url=f'secure/attachmentzip/{issue_id}.zip').content
+        demisto.results(fileResult(filename=f'{j_res.get("id")}_attachments.zip', data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
     if is_update:
-        human_readable += 'Issue #{} was updated successfully'.format(issue_id)
+        human_readable += f'Issue #{issue_id} was updated successfully'
 
     contents = j_res
     outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-@logger
 def issue_query_command(query, start_at='', max_results=None, headers=''):
     j_res = run_query(query, start_at, max_results)
     issues = demisto.get(j_res, 'issues')
@@ -406,7 +383,6 @@ def issue_query_command(query, start_at='', max_results=None, headers=''):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-@logger
 def create_issue_command():
     url = 'rest/api/latest/issue'
     issue = get_issue_fields(issue_creating=True, **demisto.args())
@@ -421,9 +397,8 @@ def create_issue_command():
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-@logger
 def edit_issue_command(issue_id, headers=None, status=None, **_):
-    url = 'rest/api/latest/issue/{issue_id}/'.format(issue_id=issue_id)
+    url = f'rest/api/latest/issue/{issue_id}/'
     issue = get_issue_fields(**demisto.args())
     jira_req('PUT', url, json.dumps(issue))
     if status:
@@ -431,27 +406,24 @@ def edit_issue_command(issue_id, headers=None, status=None, **_):
     return get_issue(issue_id, headers, is_update=True)
 
 
-@logger
 def edit_status(issue_id, status):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
-    url = 'rest/api/2/issue/{issue_id}/transitions'.format(issue_id=issue_id)
+    url = f'rest/api/2/issue/{issue_id}/transitions'
     result = jira_req('GET', url)
     j_res = result.json()
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
-            url = 'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'.format(issue_id=issue_id)
+            url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
             return jira_req('POST', url, json.dumps(json_body))
 
-    return_error('Status "{status}" not found. \n'
-                 'Valid transitions are: {transitions} \n'.format(status=status, transitions=transitions))
+    return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
 
 
-@logger
 def get_comments_command(issue_id):
-    url = 'rest/api/latest/issue/{issue_id}/comment'.format(issue_id=issue_id)
+    url = f'rest/api/latest/issue/{issue_id}/comment'
     result = jira_req('GET', url)
     body = result.json()
     comments = []
@@ -472,9 +444,8 @@ def get_comments_command(issue_id):
         demisto.results('No comments were found in the ticket')
 
 
-@logger
 def add_comment_command(issue_id, comment, visibility=''):
-    url = 'rest/api/latest/issue/{issue_id}/comment'.format(issue_id=issue_id)
+    url = f'rest/api/latest/issue/{issue_id}/comment'
     comment = {
         "body": comment
     }
@@ -502,7 +473,6 @@ def add_comment_command(issue_id, comment, visibility=''):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-@logger
 def issue_upload_command(issue_id, upload):
     j_res = upload_file(upload, issue_id)
     md = generate_md_upload_issue(j_res, issue_id)
@@ -511,13 +481,12 @@ def issue_upload_command(issue_id, upload):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-@logger
 def upload_file(entry_id, issue_id):
     headers = {
         'X-Atlassian-Token': 'no-check',
     }
     res = requests.post(
-        BASE_URL + 'rest/api/latest/issue/{issue_id}/attachments'.format(issue_id=issue_id),
+        BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
         headers=headers,
         files={'file': get_file(entry_id)},
         auth=(USERNAME, PASSWORD),
@@ -526,13 +495,11 @@ def upload_file(entry_id, issue_id):
 
     if not res.ok:
         return_error(
-            'Failed to execute request, status code:{status_code}\nBody: {body}'.format(status_code=res.status_code,
-                                                                                        body=res.text))
+            f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}')
 
     return res.json()
 
 
-@logger
 def get_file(entry_id):
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
@@ -542,9 +509,8 @@ def get_file(entry_id):
     return file_name, file_bytes
 
 
-@logger
 def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None):
-    req_url = 'rest/api/latest/issue/{issue_id}/remotelink'.format(issue_id=issue_id)
+    req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
     link = {
         "object": {
             "url": url,
@@ -577,9 +543,8 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-@logger
 def delete_issue_command(issue_id_or_key):
-    url = 'rest/api/latest/issue/{id_or_key}'.format(id_or_key=issue_id_or_key)
+    url = f'rest/api/latest/issue/{issue_id_or_key}'
     issue = get_issue_fields(**demisto.args())
     result = jira_req('DELETE', url, json.dumps(issue))
     if result.status_code == 204:
@@ -588,7 +553,6 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Failed to delete issue.')
 
 
-@logger
 def test_module():
     """
     Performs basic get request to get item samples
@@ -599,15 +563,14 @@ def test_module():
         demisto.results('ok')
 
 
-@logger
 def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
-    demisto.debug("last_run: {last_run}".format(last_run=last_run) if last_run else 'last_run is empty')
+    demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
     id_offset = last_run.get("idOffset") if (last_run and last_run.get("idOffset")) else id_offset
 
     incidents, max_results = [], 50
     if id_offset:
-        query += ' AND id >= {idOffset}'.format(idOffset=id_offset)
+        query += f' AND id >= {id_offset}'
     if fetch_by_created:
         query += ' and created>-1m'
     res = run_query(query, '', max_results)
@@ -622,6 +585,9 @@ def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 demisto.debug('Command being called is %s' % (demisto.command()))
 try:
+    # Remove proxy if not set to true in params
+    handle_proxy()
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
