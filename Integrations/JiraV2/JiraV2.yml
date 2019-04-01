@@ -293,9 +293,9 @@ script:
       description: ID Offset
       type: string
     description: gets the ID Offset, i.e., the first issue id.
+  dockerimage: demisto/python3:3.7.2.200
   isfetch: true
   runonce: false
-dockerimage: demisto/python3
 tests:
   - Jira-v2-Test
 releaseNotes: Rewritten into python; fetch fixed; better JQL support; getAttachments flag in get-issue.
