@@ -14,7 +14,10 @@ script: |-
   if isinstance(userArgs, dict) == True:
       all_args = json.loads(json.dumps(userArgs))
   else:
-      all_args = json.loads(demisto.args().get('indicators','Unknown'))
+      try:
+          all_args = json.loads(demisto.args().get('indicators','Unknown'))
+      except:
+          return_error('indicators argument is invalid json object')
 
   counter = 0
   for indicator_fields in all_args:
@@ -87,6 +90,7 @@ comment: Get list of indicators in argument 'indicators' and create out of them 
 enabled: true
 args:
 - name: indicators
+  required: true
   description: json object of all indicators  fields index mapped to indicators fields
 outputs:
 - contextPath: StixExportedIndicators.created
