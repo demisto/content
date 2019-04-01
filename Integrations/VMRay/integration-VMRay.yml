@@ -1,0 +1,550 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: vmray2
+  version: -1
+configuration:
+- defaultvalue: https://cloud.vmray.com/
+  display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: API-Key
+  name: api_key
+  required: false
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Ransomware analysis sandboxing
+display: VMRay2
+name: vmray2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The file id to submit
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Submit sample to VMRay
+    execution: false
+    name: vmray-upload-sample
+    outputs:
+    - contextPath: VMRay.Jobs.JobID
+      description: ID of a new job
+      type: Number
+    - contextPath: VMRay.Jobs.Created
+      description: Timestamp of created job
+      type: Date
+    - contextPath: VMRay.Jobs.SampleID
+      description: ID of sample
+      type: Number
+    - contextPath: VMRay.Jobs.VMName
+      description: Name of virtual machine
+      type: String
+    - contextPath: VMRay.Jobs.VMID
+      description: ID of virtual machine
+      type: Number
+    - contextPath: VMRay.Samples.SampleID
+      description: ID of sample
+      type: Number
+    - contextPath: VMRay.Samples.Created
+      description: Timestamp of created sample
+      type: Date
+    - contextPath: VMRay.Submissions.SubmissionID
+      description: Submission ID
+      type: Number
+    - contextPath: VMRay.Submissions.SampleiD
+      description: ID of sample
+      type: Number
+  - arguments:
+    - default: false
+      description: Analysis sample ID
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - default: false
+      description: Limits results (number)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all analysis details about a specific sample.
+    execution: false
+    name: vmray-get-analysis-by-sample
+  - arguments:
+    - default: false
+      description: Job sample id
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all jobs details about a specific sample.
+    execution: false
+    name: vmray_get_job_sample
+    outputs:
+    - contextPath: VMRay.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of submission (can be aquired from vmray-upload-sample)
+      isArray: false
+      name: submission_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a submission result
+    execution: false
+    name: vmray-get-submission
+    outputs:
+    - contextPath: VMRay.Submission.IsFinished
+      description: Status of submission (true or false)
+      type: Boolean
+    - contextPath: VMRay.Submission.HasErrors
+      description: If there are any errors in the submission
+      type: Boolean
+    - contextPath: VMRay.Submission.SubmissionID
+      description: ID of submission
+      type: Number
+    - contextPath: VMRay.Submission.MD5
+      description: MD5 of submission
+      type: String
+    - contextPath: VMRay.Submission.SHA1
+      description: SHA1 of submission
+      type: String
+    - contextPath: VMRay.Submission.SHA256
+      description: SHA256 of submission
+      type: String
+    - contextPath: VMRay.Submission.SSDeep
+      description: SSDeep of submission
+      type: String
+    - contextPath: VMRay.Submission.Severity
+      description: Severity of submission (Malicious, Suspicious, Good, Blacklisted,
+        Whitelested, Unknown)
+      type: String
+  - arguments:
+    - default: false
+      description: 'id of sample '
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: get sample by sample id
+    execution: false
+    name: vmray-get-sample
+    outputs:
+    - contextPath: VMRay.Samples.SampleID
+      type: Number
+    - contextPath: VMRay.Samples.FileName
+      type: String
+    - contextPath: VMRay.Samples.MD5
+      type: String
+    - contextPath: VMRay.Samples.SHA1
+      type: String
+    - contextPath: VMRay.Samples.SHA256
+      type: String
+    - contextPath: VMRay.Samples.SSDeep
+      type: String
+    - contextPath: VMRay.Samples.Severity
+      type: String
+    - contextPath: VMRay.Samples.Type
+      description: File type
+      type: String
+    - contextPath: VMRay.Samples.Created
+      description: timestamp of created sample
+      type: Date
+    - contextPath: VMRay.Samples.Classifications
+      type: Unknown
+  dockerimage: demisto/python
+  isfetch: false
+  runonce: false
+  script: |-
+    import requests
+
+
+
+    """ GLOBAL PARAMS """
+    API_KEY = demisto.params()["api_key"]
+    SERVER = (
+        demisto.params()["server"][:-1]
+        if (demisto.params().get("server") and demisto.params()["server"].endswith("/"))
+        else demisto.params()["server"]
+    )
+
+    SERVER = SERVER + "/rest/"
+    USE_SSL = not demisto.params().get("insecure", False)
+
+    # Remove proxy
+    if not demisto.params().get("proxy"):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
+    url_dict = {"get_job_sample": "job/sample/%s"}
+
+    """ HELPER DICTS """
+    SEVERITY_DICT = {
+        "malicious": "Malicious",
+        "suspicious": "Suspicious",
+        "not_suspicious": "Good",
+        "blacklisted": "Blacklisted",
+        "whitelisted": "Whitelisted",
+        "unknown": "Unknown",
+    }
+
+    DBOTSCORE = {
+        "Malicious": 3,
+        "Suspicious": 2,
+        "Good": 1,
+        "Blacklisted": 3,
+        "Whitelisted": 1,
+        "Unknown": 0,
+    }
+
+    """ HELPER FUNCTIONS """
+
+
+    def http_request(method, url_suffix, body=None, params=None, files=None):
+        """
+
+        Args:
+            method: (str) "GET", "POST", "DELETE' "PUT"
+            url_suffix: (str)
+            body: (dict)
+            params: (dict)
+            files: (tuple, dict)
+
+        Returns:
+            dict: response json
+        """
+        headers = {"Authorization": "api_key " + API_KEY}
+
+        url = SERVER + url_suffix
+        r = requests.request(
+            method,
+            url,
+            json=body,
+            params=params,
+            headers=headers,
+            files=files,
+            verify=USE_SSL,
+        )
+        if r.status_code not in {200, 201, 202, 204}:
+            return_error(
+                "Error in API call to VMRay [{}] - {}".format(r.status_code, r.text)
+            )
+        return r.json()
+
+
+    def score_by_hash(analysis):
+        """Gets a dict containing MD5/SHA1/SHA256/SSDeep and return dbotscore
+
+        Args:
+            analysis: (dict)
+
+        Returns:
+            dict: dbot score
+        """
+        hashes = ["MD5", "SHA256", "SHA1", "SSDeep"]
+        scores = list()
+        for hash_type in hashes:
+            if hash_type in analysis:
+                scores.append(
+                    {
+                        "Indicator": analysis.get(hash_type),
+                        "Type": "hash",
+                        "Vendor": "VMRay",
+                        "Score": DBOTSCORE[analysis.get("Severity")],
+                    }
+                )
+        return scores
+
+
+    def test_module():
+        """Simple get request to see if connected
+        """
+        http_request("GET", "analysis?_limit=1")
+        demisto.results("ok")
+
+
+    def upload_sample(path):
+        suffix = "sample/submit"
+        files = {"sample_file": open(path, "rb")}
+        results = http_request("POST", url_suffix=suffix, files=files)
+        return results
+
+
+    def upload_sample_command():
+        file_id = demisto.args().get("file_id")
+        path = demisto.getFilePath(file_id).get("path")
+
+        raw_response = upload_sample(path).get("data")
+
+        jobs_list = list()
+        jobs = raw_response.get("jobs")
+        if jobs:
+            for job in jobs:
+                if isinstance(job, dict):
+                    job_entry = dict()
+                    job_entry["JobID"] = job.get("job_id")
+                    job_entry["Created"] = job.get("job_created")
+                    job_entry["SampleID"] = job.get("job_sample_id")
+                    job_entry["VMName"] = job.get("job_vm_name")
+                    job_entry["VMID"] = job.get("job_vm_id")
+                    jobs_list.append(job_entry)
+
+        samples_list = list()
+        samples = raw_response.get("samples")
+        if samples:
+            for sample in samples:
+                if isinstance(sample, dict):
+                    sample_entry = dict()
+                    sample_entry["SampleID"] = sample.get("sample_id")
+                    sample_entry["Created"] = sample.get("sample_created")
+                    samples_list.append(sample_entry)
+
+        submissions_list = list()
+        submissions = raw_response.get("submissions")
+        if submissions:
+            for submission in submissions:
+                if isinstance(submission, dict):
+                    submission_entry = dict()
+                    submission_entry["SubmissionID"] = submission.get("submission_id")
+                    submission_entry["SampleID"] = submission.get("submission_sample_id")
+                    submissions_list.append(submission_entry)
+
+        ec = dict()
+        ec["VMRay.Jobs(val.JobID === obj.JobID)"] = jobs_list
+        ec["VMRay.Samples(val.SampleID === obj.SampleID)"] = samples_list
+        ec["VMRay.Submissions(val.SubmissionID === obj.SubmissionID)"] = submissions_list
+
+        table = {
+            "Jobs ID": [job.get("JobID") for job in jobs_list],
+            "Samples ID": [sample.get("SampleID") for sample in samples_list],
+            "Submissions ID": [
+                submission.get("SubmissionID") for submission in submissions_list
+            ],
+        }
+        md = tableToMarkdown(
+            "File submitted to VMRay",
+            t=table,
+            headers=["Jobs ID", "Samples ID", "Submissions ID"],
+        )
+
+        return_outputs(readable_output=md, outputs=ec, raw_response=raw_response)
+
+
+    def build_analysis_data(analyses):
+        """
+
+        Args:
+            analyses: (dict) of analysis
+
+        Returns:
+            dict: formatted entry context
+        """
+        ec = dict()
+        ec["VMRay.Analysis(val.AnalysisID === obj.AnalysisID)"] = [
+            {
+                "AnalysisID": analysis.get("analysis_id"),
+                "AnalysisSampleID": analysis.get("analysis_sample_id"),
+                "Severity": SEVERITY_DICT.get(analysis.get("analysis_severity")),
+                "Created": analysis.get("analysis_job_started"),
+                "SHA1": analysis.get("analysis_sample_sha1"),
+                "MD5": analysis.get("analysis_sample_md5"),
+                "SHA256": analysis.get("analysis_sample_sha25"),
+            }
+            for analysis in analyses
+        ]
+
+        scores = list()
+        for analysis in ec:
+            scores.extend(score_by_hash(analysis))
+        ec[outputPaths.get("dbotscore")] = scores
+
+        return ec
+
+
+    def get_analysis_command():
+        sample_id = demisto.args().get("sample_id")
+        limit = demisto.args().get("limit")
+
+        params = {"_limit": limit}
+
+        raw_response = get_analysis(sample_id, params)
+        ec = build_analysis_data(raw_response)
+        md = json.dumps(ec, indent=4)
+        return_outputs(md, ec, raw_response=raw_response)
+
+
+    def get_analysis(sample, params=None):
+        suffix = "analysis/sample/{}".format(sample)
+        response = http_request("GET", suffix, params=params)
+        return response.get("data")
+
+
+    def get_submission_command():
+        submission_id = demisto.args().get("submission_id")
+        raw_response = get_submission(submission_id)
+
+        # Build entry
+        entry = dict()
+        entry["IsFinished"] = raw_response.get("submission_finished")
+        entry["HasErrors"] = raw_response.get("submission_has_errors")
+        entry["SubmissionID"] = raw_response.get("submission_id")
+        entry["MD5"] = raw_response.get("submission_sample_md5")
+        entry["SHA1"] = raw_response.get("submission_sample_sha1")
+        entry["SHA256"] = raw_response.get("submission_sample_sha256")
+        entry["SSDeep"] = raw_response.get("submission_sample_ssdeep")
+        entry["Severity"] = SEVERITY_DICT.get(raw_response.get("submission_severity"))
+        scores = score_by_hash(entry)
+
+        ec = {
+            "VMRay.Submission(val.SubmissionID === obj.SubmissionID)": entry,
+            outputPaths.get("dbotscore"): scores,
+        }
+
+        md = tableToMarkdown(
+            "Submission results from VMRay for ID {} with severity of {}".format(
+                submission_id, entry.get("Severity")
+            ),
+            entry,
+            headers=[
+                "IsFinished",
+                "Severity",
+                "HasErrors",
+                "MD5",
+                "SHA1",
+                "SHA256",
+                "SSDeep",
+            ],
+        )
+
+        return_outputs(md, ec, raw_response=raw_response)
+
+
+    def get_submission(submission_id):
+        """
+
+        Args:
+            submission_id: (str)
+
+        Returns:
+            dict: response.data
+        """
+        suffix = "submission/{}".format(submission_id)
+        response = http_request("GET", url_suffix=suffix)
+        return response.get("data")
+
+
+    def get_sample_command():
+        sample_id = demisto.args().get("sample_id")
+        raw_response = get_sample(sample_id)
+
+        entry = dict()
+        entry["SampleID"] = raw_response.get("sample_id")
+        entry["FileName"] = raw_response.get("sample_filename")
+        entry["MD5"] = raw_response.get("sample_md5hash")
+        entry["SHA1"] = raw_response.get("sample_sha1hash")
+        entry["SHA256"] = raw_response.get("sample_sha256hash")
+        entry["SSDeep"] = raw_response.get("sample_ssdeephash")
+        entry["Severity"] = SEVERITY_DICT.get(raw_response.get("sample_severity"))
+        entry["Type"] = raw_response.get("sample_type")
+        entry["Created"] = raw_response.get("sample_created")
+        entry["Classifications"] = raw_response.get("sample_classifications")
+        scores = score_by_hash(entry)
+
+        ec = {
+            "VMRay.Samples(var.SampleID === obj.SampleID)": entry,
+            outputPaths.get("dbotscore"): scores,
+        }
+
+        md = tableToMarkdown(
+            "Results for sample id: {} with severity {}".format(
+                entry.get("SampleID"), entry.get("Severity")
+            ),
+            entry,
+            headers=["Type", "MD5", "SHA1", "SHA256", "SSDeep"],
+        )
+        return_outputs(md, ec, raw_response=raw_response)
+
+
+    def get_sample(sample_id):
+        """building http request for get_sample_command
+
+        Args:
+            sample_id: (str, int)
+
+        Returns:
+            dict: data from response
+        """
+        suffix = "sample/{}".format(sample_id)
+        return http_request("GET", suffix).get("data")
+
+
+    def get_job_sample(sample_id):
+        suffix = "job/sample/{}".format(sample_id)
+        response = http_request("GET", suffix)
+        return response.get("data")
+
+
+    def get_job_sample_command():
+        sample_id = demisto.args().get("sample_id")
+        raw_response = get_job_sample(sample_id)
+
+        entry = dict()
+        entry["JobID"] = raw_response.get("job_id")
+        entry["SampleID"] = raw_response.get("job_sample_id")
+        entry["SubmissionID"] = raw_response.get("job_submission_id")
+        entry["MD5"] = raw_response.get("job_sample_md5")
+        entry["SHA1"] = raw_response.get("job_sample_sha1")
+        entry["SHA256"] = raw_response.get("job_sample_sha256")
+        entry["SSDeep"] = raw_response.get("job_sample_ssdeep")
+        entry["JobVMName"] = raw_response.get("job_vm_name")
+        entry["JobVMID"] = raw_response.get("job_vm_id")
+
+        ec = {
+            "VMRay.Jobs(val.JobID === obj.JobID)": entry
+        }
+
+        md = tableToMarkdown(
+            "Results for job sample id: {}".format(sample_id),
+            entry,
+            headers=["JobID", "SampleID", "JobVMName", "JobVMID"]
+        )
+        return_outputs(md, ec, raw_response=raw_response)
+
+
+    try:
+        COMMAND = demisto.command()
+        # The command demisto.command() holds the command sent from the user.
+        if COMMAND == "test-module":
+            # This is the call made when pressing the integration test button.
+            # demisto.results('ok')
+            test_module()
+        elif COMMAND in ("upload_sample", "vmray-upload-sample"):
+            upload_sample_command()
+        elif COMMAND == "vmray-get-submission":
+            get_submission_command()
+        elif COMMAND in ("get_results", "vmray-get-analysis-by-sample"):
+            get_analysis_command()
+        elif COMMAND == "vmray-get-sample":
+            get_sample_command()
+        elif COMMAND in ("vmray-get-job-sample", "get_job_sample"):
+            get_job_sample_command()
+    except Exception as exc:
+        return_error(exc.message)
+  type: python
+image: data:image/png;base64,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
