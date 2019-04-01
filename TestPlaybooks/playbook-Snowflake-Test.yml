@@ -117,7 +117,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 720
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -169,132 +169,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
-    taskid: d208c6ab-12ba-4fc6-8775-3560b27b3878
-    type: regular
-    task:
-      id: d208c6ab-12ba-4fc6-8775-3560b27b3878
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: e4cbd5a7-1071-4d31-852b-52ab7682e71e
-    type: regular
-    task:
-      id: e4cbd5a7-1071-4d31-852b-52ab7682e71e
-      version: -1
-      name: Test Fetch
-      description: Execute FetchIncident for a given instance
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      add_to_context:
-        simple: "true"
-      brand_name:
-        simple: Snowflake
-      expect_data: {}
-      instance_name:
-        complex:
-          root: modules
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: Snowflake
-          accessor: name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: de121620-0883-4cb2-81e4-f6a96f3124e9
-    type: condition
-    task:
-      id: de121620-0883-4cb2-81e4-f6a96f3124e9
-      version: -1
-      name: Verify Fetch Fetched
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: FetchedIncidents
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: NAME
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50
