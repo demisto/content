@@ -123,6 +123,8 @@ script:
             return DBOTSCORE_MALICIOUS
         elif VERDICT_SCANNING == verdict:
             return DBOTSCORE_UNKNOWN
+        else:
+            return DBOTSCORE_UNKNOWN
         return None
 
 
@@ -276,9 +278,6 @@ script:
       required: true
       description: The value of the file's unique identifier (for example - file's
         SHA1)
-    - name: idType
-      description: Type of the identifier(default:sha1)
-      defaultValue: hash
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: Status of the analysis. Can be either 'DONE' or 'IN_PROGRESS'
