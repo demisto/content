@@ -1239,9 +1239,7 @@
         "BitDam": "Changes in service (issue #16247)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
-        "Lastline": "Out of quota",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
     },
     "nigthly_integrations": [
         "Lastline",
