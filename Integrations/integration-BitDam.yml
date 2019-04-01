@@ -284,7 +284,6 @@ script:
       type: string
     - contextPath: BitDam.Analysis.Verdict
       description: Final verdict of the analysis.
-        if analysis isn't finished.
       type: string
     - contextPath: BitDam.Analysis.ID
       description: Unique identifier
