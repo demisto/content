@@ -1227,4 +1227,4 @@ script:
   runonce: false
 releaseNotes: "Rewriting RTIR to work without RT package"
 tests:
-  - RTIR test
+  - RTIR Test
