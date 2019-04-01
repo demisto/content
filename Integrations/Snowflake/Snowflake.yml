@@ -81,7 +81,6 @@ configuration:
   type: 13
 description: Analytic data warehouse provided as Software-as-a-Service.
 display: Snowflake
-fromversion: 4.1.0
 name: Snowflake
 script:
   commands:
