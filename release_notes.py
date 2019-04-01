@@ -576,8 +576,8 @@ def create_content_descriptor(version, asset_id, res):
 
 def main(argv):
     if len(argv) < 5:
-        print "<Release version>, <File with the full list of changes>, " \
-              "<Complete diff file for deleted files>, <assetID>, <Server version>"
+        print_error("<Release version>, <File with the full list of changes>,"
+                    "<Complete diff file for deleted files>, <assetID>, <Server version>")
         sys.exit(1)
     files = parse_change_list(argv[1])
 

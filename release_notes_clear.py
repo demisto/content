@@ -7,6 +7,7 @@ import glob
 import sys
 
 from Tests.test_utils import server_version_compare
+from Tests.test_utils import print_error
 
 
 def yml_remove_releaseNote_record(file_path, current_server_version):
@@ -136,7 +137,7 @@ def remove_releaseNotes_folder(folder_path, files_extension,
 
 def main(argv):
     if len(argv) < 2:
-        print "<Server version>"
+        print_error("<Server version>")
         sys.exit(1)
 
     root_dir = argv[0]
