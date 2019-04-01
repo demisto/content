@@ -61,6 +61,18 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
+    comma separated.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: 'Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file malicious. '
+  name: preferredVendorsThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     var serverUrl = params.Server;
@@ -73,10 +85,51 @@ script:
     var IP_THRESHOLD = params.ipThreshold;
     var URL_THRESHOLD = params.urlThreshold;
     var DOMAIN_THRESHOLD = params.domainThreshold;
+    var PREFERRED_VENDORS = params.preferredVendors
+    var PREFERRED_VENDORS_THRESHOLD = params.preferredVendorsThreshold
 
     if (isNaN(FILE_THRESHOLD) || isNaN(IP_THRESHOLD) || isNaN(URL_THRESHOLD) || isNaN(DOMAIN_THRESHOLD)) {
         throw 'Threshold parameters must be numbers.\n';
     }
+
+
+    function isEnoughPreferredVendors(scanResults) {
+
+        if (!(PREFERRED_VENDORS && PREFERRED_VENDORS_THRESHOLD)) {
+            return true;
+        }
+        if (PREFERRED_VENDORS && !(PREFERRED_VENDORS_THRESHOLD)) {
+            return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendor Threshold")
+        }
+        if (!("scans" in scanResults)) {
+            return false;
+        }
+        counter = 0;
+        vendorsScansDict = scanResults["scans"];
+        listOfPrefferedVendors = PREFERRED_VENDORS.split(',');
+
+        for (var i=0; i < listOfPrefferedVendors.length; i++) {
+            listOfPrefferedVendors[i] = listOfPrefferedVendors[i].toLowerCase();
+        }
+        for (var vendorName in vendorsScansDict) {
+            if (vendorsScansDict.hasOwnProperty(vendorName)) {
+
+                curVendorScan = vendorsScansDict[vendorName];
+                vendorNameLowercase = vendorName.toLowerCase();
+
+                if (listOfPrefferedVendors.indexOf(vendorNameLowercase) != -1) {
+                    // "detected" is a key in each vendor's scan with a boolean value
+                    if ("detected" in curVendorScan && curVendorScan["detected"]) {
+                        counter++;
+                    }
+                }
+
+            }
+        }
+
+        return (parseInt(PREFERRED_VENDORS_THRESHOLD) <= counter);
+    }
+
 
     function createScansTable(scans){
         // Returns a table with the scan result for each vendor
@@ -215,7 +268,6 @@ script:
         } else {
             r = [res.obj];
         }
-
         var md = '';
         ec.DBotScore = [];
         ec[outputPaths.file] = [];
@@ -225,7 +277,8 @@ script:
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             var dbotScore = 0;
-            if (r[i].positives >= threshold) {
+
+            if (r[i].positives >= threshold && isEnoughPreferredVendors(r[i])) {
                 dbotScore = 3;
                 var malFile = {};
                 addMalicious(malFile, outputPaths.file, {
@@ -490,7 +543,7 @@ script:
             md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
 
             var dbotScore = 0;
-            if (o.positives >= threshold) {
+            if (o.positives >= threshold  && isEnoughPreferredVendors(o)) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
@@ -883,7 +936,7 @@ script:
             if (err == "No content received. Possible API rate limit reached."){
                 return true;
             }
-            return err;
+            return String(err);
         }
         return true;
     }
@@ -1249,5 +1302,6 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
+releaseNotes: "Adding malicious attribute based on preferred vendors on File and URL"
 tests:
-  - virusTotal-test-playbook
+- virusTotal-test-playbook

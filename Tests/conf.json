@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tufin",
+            "playbookID": "Tufin Test"
+        },
+        {
             "integrations": "Vertica",
             "playbookID": "Vertica Test"
         },
@@ -93,6 +97,10 @@
         {
             "integrations": "ServiceNow",
             "playbookID": "servicenow_test_new"
+        },
+        {
+            "integrations": "ExtraHop",
+            "playbookID": "ExtraHop-Test"
         },
         {
             "playbookID": "Test CommonServer"
@@ -306,7 +314,7 @@
         },
         {
           "integrations": "Signal Sciences WAF",
-          "playbookID": "SignalSciences Test"
+          "playbookID": "SignalSciences-Test"
         },
         {
             "integrations": "RTIR",
@@ -578,6 +586,10 @@
           "playbookID": "crowdstrike_falconhost_test"
         },
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test - CrowdStrike Falcon"
+        },
+        {
             "integrations": [
                 "VirusTotal"
             ],
@@ -762,6 +774,11 @@
         {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
             "nightly": true
         },
         {
@@ -1154,6 +1171,21 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "playbookID": "EmailReputationTest",
+            "integrations": "Pwned"
+        },
+        {
+            "integrations": "Symantec Deepsight Intelligence",
+            "playbookID": "Symantec Deepsight Test"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
@@ -1201,7 +1233,6 @@
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Signal Sciences WAF": "API problems, not returning the correct data",
         "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
@@ -1238,16 +1269,17 @@
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
+        "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
-        "OpenPhish": "JS integration, problem listed in issue 15544",
-        "VxStream": "JS integration, problem listed in issue 15544. Detonate URL: Large mock file.",
-        "ThreatExchange": "JS integration, problem listed in issue 15544",
-        "wildfire": "JS integration, problem listed in issue 15544",
-        "FalconHost": "JS integration, problem listed in issue 15544",
-        "VirusTotal": "JS integration, problem listed in issue 15544",
-        "carbonblack-v2": "JS integration, problem listed in issue 15544",
+        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
         "epo": "Pending merge of branch proxy-unsecure-checks",
@@ -1265,6 +1297,7 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
+        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
@@ -1312,6 +1345,9 @@
         "Centreon": "might be dynamic test",
         "Cisco pxGrid ISE": "might be dynamic test",
         "RSA NetWitness v11.1": "might be dynamic test",
-        "Zscaler": "might be dynamic test"
+        "Signal Sciences WAF": "error with certificate",
+        "Zscaler": "might be dynamic test",
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }
