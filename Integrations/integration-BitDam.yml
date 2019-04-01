@@ -122,7 +122,7 @@ script:
         elif VERDICT_MALICIOUS == verdict:
             return DBOTSCORE_MALICIOUS
         elif VERDICT_SCANNING == verdict:
-            return DBOTSCORE_SCANNING
+            return DBOTSCORE_UNKNOWN
         return None
 
 
