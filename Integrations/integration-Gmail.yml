@@ -1127,7 +1127,12 @@ script:
             else:
                 demisto.results(cmd_func())
         except Exception as e:
-            return_error('GMAIL: {}'.format(e))
+            if command == 'fetch-incidents':
+                LOG(str(e))
+                LOG.print_log()
+                raise
+            else:
+                return_error('GMAIL: {}'.format(e))
 
     if __name__ == "__builtin__":
         main()
