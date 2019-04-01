@@ -294,7 +294,6 @@ script:
         if ticket_id == -1:
             return_error('Ticket creation failed')
 
-        data += "ID: {}".format(ticket_id)
         ticket_context = ({
             'ID': ticket_id,
             'Subject': subject,
@@ -686,7 +685,6 @@ script:
         raw_ticket = get_ticket_request(ticket_id)
         if not raw_ticket:
             return_error('Failed to get ticket, possibly does not exist.')
-        headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
         ticket_context = []
         data = raw_ticket.content.split('\n')
         data = data[2:]
@@ -732,7 +730,7 @@ script:
             'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket
         }
         title = 'RTIR ticket {}'.format(ticket_id)
-
+        headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority', 'FinalPriority']
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': ticket_context,
@@ -751,36 +749,43 @@ script:
         return added_comment
 
 
-    def add_comment():
-        ticket_id = demisto.args().get('ticket-id')
-        text = demisto.args().get('text')
-        content = 'Action: comment\n'
-        if text:
-            content += '\nText: ' + text.encode('utf-8')
-        attachments = demisto.args().get('attachment')
-        files = []
-        if attachments:
-            files_data = {}
-            if isinstance(attachments, list): # Given as list
-                attachments_list = attachments
-            else: # Given as string
-                attachments_list = attachments.split(',')
-            for i, file_pair in enumerate(attachments_list):
-                file = demisto.getFilePath(file_pair)
-                file_name = file['name']
-                files_data['attachment_{:d}'.format(i + 1)] = (file_name ,open(file['path'], 'rb'))
-                content += 'Attachment: {}'.format(file_name)
+    def add_comment_attachment(ticket_id, encoded, files_data):
 
-        try:
-            encoded = "content=" + urllib.quote_plus(content)
-            added_comment = add_comment_request(ticket_id, encoded)
-            if '200' in added_comment.content:
-                demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
-            else:
-                return_error('Failed to add comment')
-        except Exception, e:
-            demisto.error(str(e))
-            return_error('Failed to add comment')
+      suffix_url = 'ticket/{}/comment'.format(ticket_id)
+      comment = http_request('POST', suffix_url, files=files_data)
+
+      return comment
+
+    def add_comment():
+      ticket_id = demisto.args().get('ticket-id')
+      text = demisto.args().get('text')
+      content = 'Action: comment\n'
+      if text:
+        content += '\nText: ' + text.encode('utf-8')
+      attachments = demisto.args().get('attachment')
+      if attachments:
+        files_data = {}
+        if isinstance(attachments, list):
+          attachments_list = attachments
+        else: # Given as string
+          attachments_list = attachments.split(',')
+        for i, file_pair in enumerate(attachments_list):
+          file = demisto.getFilePath(file_pair)
+          file_name = file['name']
+          files_data['attachment_{:d}'.format(i + 1)] = (file_name ,open(file['path'], 'rb'))
+          content += 'Attachment: {}\n'.format(file_name)
+
+      encoded = "content=" + urllib.quote_plus(content)
+      if attachments:
+        files_data.update({'content': (None, content)})
+        comment = add_comment_attachment(ticket_id, encoded, files_data)
+        demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
+      else:
+        added_comment = add_comment_request(ticket_id, encoded)
+        if '200' in added_comment.content:
+          demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
+        else:
+          return_error('Failed to add comment')
 
 
     def add_reply_request(ticket_id, encoded):
@@ -823,8 +828,7 @@ script:
             status_query = '+AND+('
             for status in status_list:
                 status_query += 'Status={}{}{}+OR+'.format(apostrophe, status, apostrophe)
-            raw_query += status_query
-            raw_query += ')'
+            raw_query += status_query + ')'
         tickets = parse_ticket_data(raw_query)
         incidents = []
         max_ticket_id = last_ticket_id
