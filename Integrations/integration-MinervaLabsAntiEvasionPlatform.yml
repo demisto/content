@@ -47,6 +47,7 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+
     ''' GLOBALS '''
     USERNAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
@@ -59,6 +60,28 @@ script:
         session = requests.Session()
         session.verify = VERIFY_SSL
         return session
+
+
+    def create_entry_context(context_id, data):
+        if context_id.endswith('processes'):
+            return {
+                'Endpoint': data['endpoint'],
+                'SHA256': data['fileHash'],
+                'CommandLine': data['processCommandLine'],
+                'Username': data['username'],
+                'CreateTime': data['startTime'],
+                'Pid': data['processId']
+            }
+        elif context_id.endswith('endpoints'):
+            return {
+                'Group': data['group'],
+                'Name': data['endpoint'],
+                'Users': data['loggedOnUsers'],
+                'IP': data['reportedIpAddress'],
+                'OS': data['operatingSystem']
+            }
+        else:
+            LOG('Failed to create entry context for {}'.format(context_id))
 
 
     ''' FUNCTIONS '''
@@ -96,10 +119,12 @@ script:
 
     @logger
     def add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_id):
-        json_params = {'type': exclusion_type,
-                       'description': exclusion_description,
-                       'data': exclusion_data,
-                       'appliedGroupsIds': groups_id}
+        json_params = {
+            'type': exclusion_type,
+            'description': exclusion_description,
+            'data': exclusion_data,
+            'appliedGroupsIds': groups_id
+        }
         response = session.post(BASE_URL + '/api/exclusions',
                                 json=json_params)
         if response.status_code is not 200:
@@ -139,11 +164,18 @@ script:
                                 json=json_params)
         if response.status_code is not 200:
             return_error('Error while perfroming search for {}. More information: {}, {}'.format(search_url.rsplit('/')[1], response.status_code, response.reason))
-        demisto.results({
+
+        results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
-            'Contents': response.json()
-        })
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Search results for \'{}\''.format(search_url.split('/')[-1]), response.json(), removeNull=True)
+        }
+
+        if response.json():
+            results['EntryContext'] = create_entry_context(search_url, response.json()[0])
+
+        demisto.results(results)
 
 
     ''' EXECUTION '''
@@ -220,8 +252,8 @@ script:
     - name: type
       required: true
       description: type
-    - name: appliedGroupsId
-      description: appliedGroupsId
+    - name: appliedGroupsIds
+      description: Applied groups ids
     - name: description
       required: true
       description: description
@@ -269,6 +301,25 @@ script:
     - name: value
       required: true
       description: value
+    outputs:
+    - contextPath: Process.Endpoint
+      description: The name of the endpoint the process was run
+      type: string
+    - contextPath: Process.SHA256
+      description: The SHA256 has of the process
+      type: string
+    - contextPath: Process.CommandLine
+      description: The process command line
+      type: string
+    - contextPath: Process.Username
+      description: The user name with which the process was executed with
+      type: string
+    - contextPath: Process.Createtime
+      description: The creation time of the process
+      type: date
+    - contextPath: Process.Pid
+      description: The process id
+      type: number
     description: Search process with Minerva
   - name: minerva-search-endpoint
     arguments:
@@ -298,6 +349,22 @@ script:
     - name: value
       required: true
       description: value
+    outputs:
+    - contextPath: Endpoint.Group
+      description: The group to which the endpoint belongs to
+      type: string
+    - contextPath: Endpoint.Name
+      description: The endpoint name
+      type: string
+    - contextPath: Endpoint.Users
+      description: The list of logged on users
+      type: string
+    - contextPath: Endpoint.IP
+      description: The reported IP address
+      type: string
+    - contextPath: Endpoint.OS
+      description: The endpoint Operating System
+      type: string
     description: Search Minerva for an endpoint
   isfetch: true
   runonce: false
