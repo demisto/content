@@ -63,6 +63,7 @@ script: |-
                             allow_custom=True)
 
       indicators.append(indicator)
+
   if counter > 1:
       bundle = Bundle(indicators)
       context = {
@@ -92,16 +93,16 @@ outputs:
   description: Indicator creation date
   type: date
 - contextPath: StixExportedIndicators.firstSeen
-  description: Indicator first appearance
+  description: Indicator first use
   type: date
 - contextPath: StixExportedIndicators.source
   description: Source system for this indicator
   type: string
 - contextPath: StixExportedIndicators.type
-  description: Indicator type
+  description: Type always exported as indicator
   type: string
 - contextPath: StixExportedIndicators.pattern
-  description: STIX pattern
+  description: type and value of indicators (URL, IPv4, domain, email, etc)
   type: string
 - contextPath: StixExportedIndicators.score
   description: STIX impact score can be High, Medium or empty
