@@ -1182,6 +1182,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
@@ -1343,6 +1347,7 @@
         "RSA NetWitness v11.1": "might be dynamic test",
         "Signal Sciences WAF": "error with certificate",
         "Zscaler": "might be dynamic test",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }
