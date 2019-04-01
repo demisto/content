@@ -672,7 +672,7 @@ script:
       description: Summary of ticket
     - contextPath: Ticket.Status
       description: Status of ticket
-    description: Query Jira issues
+    description: Query Jira issues (Deprecated)
   - name: jira-get-issue
     arguments:
     - name: issueId
@@ -694,7 +694,7 @@ script:
       description: Summary of ticket
     - contextPath: Ticket.Status
       description: Status of ticket
-    description: Fetch issue from Jira
+    description: Fetch issue from Jira (Deprecated)
   - name: jira-create-issue
     arguments:
     - name: issueJson
@@ -731,7 +731,7 @@ script:
       description: Id of ticket
     - contextPath: Ticket.Key
       description: Key of ticket
-    description: Create a new issue on Jira
+    description: Create a new issue on Jira (Deprecated)
   - name: jira-issue-upload-file
     arguments:
     - name: issueId
@@ -739,7 +739,7 @@ script:
       description: Issue id
     - name: upload
       description: Entry id to upload
-    description: Upload a file attachments to an issue
+    description: Upload a file attachments to an issue (Deprecated)
   - name: jira-issue-add-comment
     arguments:
     - name: issueId
@@ -751,7 +751,7 @@ script:
       description: Comment - the actual comment body
     - name: visibility
       description: Make comment visible only to a certain role - like Administrators
-    description: Add new comment to existing Jira issue
+    description: Add new comment to existing Jira issue (Deprecated)
   - name: jira-issue-add-link
     arguments:
     - name: globalId
@@ -770,7 +770,7 @@ script:
     - name: issueId
       required: true
       description: Issue Id
-    description: Creates (or updates) issue link
+    description: Creates (or updates) issue link (Deprecated)
   - name: jira-edit-issue
     arguments:
     - name: issueId
@@ -805,7 +805,7 @@ script:
       description: Summary of ticket
     - contextPath: Ticket.Status
       description: Status of ticket
-    description: Edit JIRA issue
+    description: Edit JIRA issue (Deprecated)
   - name: jira-get-comments
     arguments:
     - name: issueId
@@ -821,13 +821,13 @@ script:
     - contextPath: Ticket.Comment.User
       description: The user that created the comment
       type: string
-    description: Gets the comments added to a ticket
+    description: Gets the comments added to a ticket (Deprecated)
   - name: jira-delete-issue
     arguments:
     - name: issueIdOrKey
       required: true
       description: issue ID or Key
-    description: deletes an issue
+    description: deletes an issue (Deprecated)
   isfetch: true
   runonce: false
 releaseNotes: "Deprecated"
