@@ -101,7 +101,7 @@ script:
         uri = BASE_URL+'result/{}'.format(uuid)
 
         ready = poll(
-            lambda: requests.get(uri).status_code == 200,
+            lambda: requests.get(uri, verify=INSECURE).status_code == 200,
             step=5,
             ignore_exceptions=(requests.exceptions.ConnectionError),
             timeout=int(TIMEOUT)
@@ -733,5 +733,6 @@ script:
     description: Submit a url to scan
   runonce: false
 fromversion: 3.5.0
+releaseNotes: "Fixed issue where insecure setting was ignored during polling"
 tests:
   - urlscan_malicious_Test
