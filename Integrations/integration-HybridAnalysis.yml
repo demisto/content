@@ -1,7 +1,7 @@
 commonfields:
   id: Hybrid Analysis
   version: -1
-defaultEnabled: true
+defaultEnabled: false
 fromversion: 3.6.1
 name: Hybrid Analysis
 display: Hybrid Analysis

@@ -624,7 +624,7 @@ script:
 
     function submitUrl(url, environmentID) {
         var cmdUrl = '/api/v2/submit/url-for-analysis';
-        var body = 'url=' + url + '&environment_id=' + environmentID;
+        var body = 'url=' + encodeURIComponent(url) + '&environment_id=' + environmentID;
         HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
         return sendRequest('POST', cmdUrl, body);
     }
@@ -1428,6 +1428,7 @@ script:
       type: string
     description: Submit a file by URL for analysis (Supported only in v2).
   runonce: false
+releaseNotes: Fixes mistake in how URLs were being submitted to CrowdStrike
 tests:
 - VxStream Test
 - detonate_file_-_generic_test

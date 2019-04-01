@@ -1,0 +1,245 @@
+commonfields:
+  id: Fidelis Elevate Network
+  version: -1
+name: Fidelis Elevate Network
+display: Fidelis Elevate Network
+category: Network Security
+description: Automate Detection and Response to Network Threats and data leakage in
+  your organization with Fidelis Elevate Network Integration.
+configuration:
+- display: Server URL
+  name: server_url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3     months,
+    1 year)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: fidelis-get-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: Fidelis.Alert.ThreatScore
+      description: Alert threat score
+      type: number
+    - contextPath: Fidelis.Alert.Time
+      description: Alert time
+      type: date
+    - contextPath: Fidelis.Alert.RuleID
+      description: Related rule ID
+      type: string
+    - contextPath: Fidelis.Alert.RuleName
+      description: Related rule name
+      type: string
+    - contextPath: Fidelis.Alert.Summary
+      description: Alert summary
+      type: string
+    - contextPath: Fidelis.Alert.PolicyName
+      description: Related policy name
+      type: string
+    - contextPath: Fidelis.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: Fidelis.Alert.Protocol
+      description: Protocol involved in the alert
+      type: string
+    - contextPath: Fidelis.Alert.Type
+      description: Alert type
+      type: string
+    - contextPath: Fidelis.Alert.AssignedUser
+      description: Assigned user ID
+      type: string
+    description: Gets alert details from Fidelis Elevate.
+  - name: fidelis-delete-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID of the alert to delete
+      isArray: true
+    description: Deletes an alert from Fidelis Elevate.
+  - name: fidelis-get-malware-data
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Name
+      description: Malware name
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Type
+      description: Malware type
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Behavior
+      description: Malware behavior
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Platform
+      description: Malware platform
+      type: string
+    - contextPath: Fidelis.Alert.Malware.DetailName
+      description: Malware detail name from Fidelis Elevate
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Variant
+      description: Malware variant
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Description
+      description: Malware description from Fidelis Elevate
+      type: string
+    description: Retrieves malware data related to a "Malware" type alert.
+  - name: fidelis-get-alert-pcap
+    deprecated: true
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    description: Retrieves the alert pcap from Fidelis Elevate.
+  - name: fidelis-get-alert-report
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    description: Downloads a PDF report for a specified alert.
+  - name: fidelis-sandbox-upload
+    arguments:
+    - name: upload_item
+      required: true
+      description: File or URL to upload
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID generated from the upload
+      type: string
+    description: Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
+  - name: fidelis-list-alerts
+    arguments:
+    - name: time_frame
+      auto: PREDEFINED
+      predefined:
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
+      description: Filter by time frame, e.g., Last 48 Hours
+    - name: start_time
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g., 2017-06-01T12:48:16.734
+    - name: end_time
+      description: If time_frame is Custom, specify the end time for the time range,
+        e.g., 2017-06-01T12:48:16.734
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: Filter by the alert's severity
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - Endpoint
+      - DSI
+      - DPI
+      - DNS
+      - Malware
+      - Mail
+      - File Upload
+      - Collector Feed
+      - Analytics
+      description: Filter by Alert type
+    - name: threat_score
+      description: Filter by Alert Threat Score Threshold (Higher than)
+    - name: ioc
+      description: Filter Alerts that are related to a specified IOC
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: Fidelis.Alert.Time
+      description: Alert time
+      type: date
+    - contextPath: Fidelis.Alert.Summary
+      description: Alert summary
+      type: string
+    - contextPath: Fidelis.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: Fidelis.Alert.Type
+      description: Alert type
+      type: string
+    description: Returns a list of open Alerts from Fidelis Elevate.
+  - name: fidelis-upload-pcap
+    arguments:
+    - name: component_ip
+      required: true
+      description: Component IP
+    - name: entry_id
+      required: true
+      description: War Room entry ID of the PCAP file, e.g., 3245@6
+    description: Uploads a PCAP file for analysis in Fidelis Elevate.
+  - name: fidelis-list-pcap-components
+    arguments: []
+    outputs:
+    - contextPath: Fidelis.Component.Name
+      description: Component name
+      type: string
+    - contextPath: Fidelis.Component.IP
+      description: Component IP
+      type: string
+    description: Gets PCAP components.
+  - name: fidelis-run-pcap
+    arguments:
+    - name: component_ip
+      required: true
+      description: Component IP. Use 'fidelis-list-pcap-components' to get this value
+    - name: files
+      required: true
+      description: CSV list of PCAP file names in Fidelis Elevate
+    description: Runs PCAP file analysis in Fidelis Elevate.
+  isfetch: true
+  runonce: false
+releaseNotes: "Added a command to support PCAP upload and analyze in Fidelis Elevate Network"
+tests:
+  - Fidelis-Test

@@ -1,0 +1,153 @@
+id: DocumentationTest
+version: 2
+name: DocumentationTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6be27b4d-b75b-4cb4-8e6f-23cbbb687f57
+    type: start
+    task:
+      id: 6be27b4d-b75b-4cb4-8e6f-23cbbb687f57
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 83f4d032-2d4a-4877-8dde-703a4b7883dd
+    type: regular
+    task:
+      id: 83f4d032-2d4a-4877-8dde-703a4b7883dd
+      version: -1
+      name: Download Ipinfo integration
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: '{ENCRYPTED}DHE4wxi5Rhfbf/hom8IoiHsM23L+y4na46w5limTjwtiIzV1c5DmdqqWKfY4HDbzTO5Yc3LPH89Rzfyl43AWqQ=='
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/Integrations/integration-Ipinfo.yml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 308bf576-3a59-40a0-85d7-53ed855f9de9
+    type: regular
+    task:
+      id: 308bf576-3a59-40a0-85d7-53ed855f9de9
+      version: -1
+      name: Generate Docs
+      scriptName: DocumentationAutomation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      addInfo: {}
+      commands:
+        simple: |-
+          !ipinfo_field ip=8.8.8.8 field=city
+          !ip ip=8.8.8.8 using-brand=ipinfo
+      entryID:
+        simple: ${File.EntryID}
+      fetchedData: {}
+      limit: {}
+      overview: {}
+      setupOnIntegration: {}
+      troubleshooting: {}
+      useCases: {}
+      withErrors:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 2123fa51-37f7-40e9-83ae-a2eefc463435
+    type: regular
+    task:
+      id: 2123fa51-37f7-40e9-83ae-a2eefc463435
+      version: -1
+      name: Start Clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -127,6 +127,7 @@
       "version": -1,
       "regex": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
       "details": "Email",
+      "reputationCommand": "email",
       "contextValue": "Address",
       "contextPath": "Account.Email(val.Address && val.Address === obj.Address)",
       "enhancementScriptNames": [
@@ -251,5 +252,5 @@
       "fromVersion": "3.6"
     }
   ],
-  "releaseNotes": "Added reputation value and context paths for IPs, escaped IPs, domains, MD5, SHA1, URL and escaped URL. Removed unnecessary scripts."
+  "releaseNotes": "-"
 }

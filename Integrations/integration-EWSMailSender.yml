@@ -157,9 +157,9 @@ script:
     def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                    attachIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
         account = get_account(from_mailbox or ACCOUNT_EMAIL)
-        bcc = bcc.split(",") if bcc is not None else None
-        cc = cc.split(",") if cc is not None else None
-        to = to.split(",") if to is not None else None
+        bcc = bcc.split(",") if bcc else None
+        cc = cc.split(",") if cc else None
+        to = to.split(",") if to else None
         manualAttachObj = manualAttachObj if manualAttachObj is not None else []
 
         file_entries_for_attachments = []
@@ -170,7 +170,7 @@ script:
                 attachments_names = attachNames.split(",")
             else:
                 for att_id in file_entries_for_attachments:
-                    att_name = demisto.dt(demisto.context(), "File(val.EntryID === '%s').Name" % att_id)
+                    att_name = demisto.getFilePath(att_id)['name']
                     if isinstance(att_name, list):
                         att_name = att_name[0]
                     attachments_names.append(att_name)
@@ -315,5 +315,7 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+releaseNotes: "-"
 tests:
   - "EWS Mail Sender Test"
+  - "EWS Mail Sender Test 2"

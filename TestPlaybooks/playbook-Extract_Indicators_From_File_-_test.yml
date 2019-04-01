@@ -1,8 +1,14 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
-description: "A test playbook for extracting indicators from EML files.\nIndicators:
-  \n- Email addresses"
+fromversion: 4.1.0
+description: |-
+  A test playbook for extracting indicators from a file.
+  Supported file types:
+  PDF
+  TXT
+  HTM, HTML
+  DOC, DOCX
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -65,7 +71,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": 50,
           "y": 570
         }
       }
@@ -73,10 +79,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 620415d6-33b2-4055-8d76-ce93d7b8aedb
+    taskid: 389f0a8f-5d83-4c4e-8985-b63942105268
     type: condition
     task:
-      id: 620415d6-33b2-4055-8d76-ce93d7b8aedb
+      id: 389f0a8f-5d83-4c4e-8985-b63942105268
       version: -1
       name: Were the correct indicators extracted?
       description: Checks whether specific indicators were extracted from each one
@@ -133,11 +139,21 @@ tasks:
           right:
             value:
               simple: http://www.docxtesturl.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://tpb.crushus.com/www.paperstreetcash.com
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1065
+          "x": 280,
+          "y": 980
         }
       }
     note: false
@@ -158,8 +174,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1565
+          "x": 50,
+          "y": 1400
         }
       }
     note: false
@@ -189,33 +205,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 0e90c3d8-c63c-4222-8f9d-4121d997dc9f
-    type: playbook
-    task:
-      id: 0e90c3d8-c63c-4222-8f9d-4121d997dc9f
-      version: -1
-      name: Extract Indicators From File - Generic
-      playbookName: Extract Indicators From File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 889
+          "x": 600,
+          "y": 1220
         }
       }
     note: false
@@ -237,6 +228,7 @@ tasks:
       - "9"
       - "1"
       - "11"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -262,7 +254,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -283,7 +275,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 1010,
           "y": 570
         }
       }
@@ -304,7 +296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -325,7 +317,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
+          "x": 530,
           "y": 570
         }
       }
@@ -346,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "16"
     scriptarguments:
       body: {}
       filename: {}
@@ -367,7 +359,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
+          "x": -430,
           "y": 570
         }
       }
@@ -407,17 +399,195 @@ tasks:
       }
     note: false
     timertriggers: []
+  "14":
+    id: "14"
+    taskid: 86e50667-958b-4156-8a5a-f2055b42080c
+    type: condition
+    task:
+      id: 86e50667-958b-4156-8a5a-f2055b42080c
+      version: -1
+      name: Did the PDF file return outputs?
+      description: |-
+        Checks if the PDF returned all of the expected outputs, except for title.
+        Checks for the following outputs:
+        - File.Text
+        - File.Producer
+        - File.xap
+        - File.Author
+        - File.dc
+        - File.xapmm
+        - File.ModDate
+        - File.CreationDate
+        - File.Pages
+
+        File.Title is not being checked because it doesn't exist in the test PDF provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Producer
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: xap
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Author
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: dc
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: xapmm
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: ModDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: CreationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Pages
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 92125e06-aaf4-4afc-8a7e-ba7f63a3f6c9
+    type: regular
+    task:
+      id: 92125e06-aaf4-4afc-8a7e-ba7f63a3f6c9
+      version: -1
+      name: Download EML file
+      description: Downloads an EML file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Inline_malicious_url.eml
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: b6dd871e-0d86-4dec-81c2-30ba4aeae03d
+    type: playbook
+    task:
+      id: b6dd871e-0d86-4dec-81c2-30ba4aeae03d
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_4_yes": 0.65,
+      "3_4_yes": 0.65
+    },
     "paper": {
       "dimensions": {
-        "height": 1580,
-        "width": 1820,
-        "x": -660,
+        "height": 1415,
+        "width": 2300,
+        "x": -910,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+releaseNotes: "update 'Extract Indicators From File - test' playbook' version"

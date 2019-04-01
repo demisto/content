@@ -1,6 +1,6 @@
 commonfields:
   id: PWObservationPcapDownload
-  version: 1
+  version: -1
 name: PWObservationPcapDownload
 script: |
   from time import sleep
@@ -57,3 +57,5 @@ dependson:
   must:
   - ProtectWise|||observation-pcap-download
 timeout: 3.6µs
+tests:
+- Protectwise-Test

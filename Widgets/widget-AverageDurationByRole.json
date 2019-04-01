@@ -6,7 +6,7 @@
   "dataType": "incidents",
   "widgetType": "column",
   "size": 5,
-  "query": "-category:job and status:closed",
+  "query": "status:closed",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
