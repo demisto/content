@@ -552,7 +552,7 @@ script: |-
       :rtype: ``any``
       """
       def func_wrapper(*args, **kwargs):
-          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
           return func(*args, **kwargs)
 
       return func_wrapper
