@@ -708,7 +708,7 @@ script:
 
         dbotScore = 0
         ec_url = {}
-        if (positives >= threshold or is_enough_preferred_vendors(vt_response)):
+        if (positives >= threshold or is_enough_preferred_vendors(response)):
             ec_url.update({
                 'Data': url,
                 'Malicious': {
