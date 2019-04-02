@@ -1259,6 +1259,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
