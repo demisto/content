@@ -65,6 +65,9 @@
             "playbookID": "ThreatMiner-Test"
         },
         {
+            "playbookID": "StixCreator-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test",
             "nightly": true
