@@ -105,7 +105,7 @@ script:
         if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
             return True
         if PREFERRED_VENDORS and not PREFERRED_VENDORS_THRESHOLD:
-            return_error("Error: If you entered PREFERRED_VENDORS you must also enter PREFERRED_VENDORS_THRESHOLD")
+            return_error("Error: If you entered Preferred Vendors you must also enter Preferred Vendors Threshold")
         if "scans" not in scan_results:
             return False
 
