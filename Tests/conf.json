@@ -1236,6 +1236,7 @@
         "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
+        "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
         "iDefense": "DevOps investigation",
