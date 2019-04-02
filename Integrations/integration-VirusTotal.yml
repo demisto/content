@@ -96,7 +96,7 @@ script:
     function isEnoughPreferredVendors(scanResults) {
 
         if (!(PREFERRED_VENDORS && PREFERRED_VENDORS_THRESHOLD)) {
-            return true;
+            return false;
         }
         if (PREFERRED_VENDORS && !(PREFERRED_VENDORS_THRESHOLD)) {
             return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendors Threshold")
