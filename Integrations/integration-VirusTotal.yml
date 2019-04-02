@@ -99,7 +99,7 @@ script:
             return true;
         }
         if (PREFERRED_VENDORS && !(PREFERRED_VENDORS_THRESHOLD)) {
-            return("Error: If you entered PREFERRED_VENDORS you must also enter PREFERRED_VENDORS_THRESHOLD")
+            return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendors Threshold")
         }
         if (!("scans" in scanResults)) {
             return false;
