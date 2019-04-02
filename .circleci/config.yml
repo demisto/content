@@ -93,6 +93,18 @@ jobs:
                 ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
             fi
       - run:
+          name: Setup Instance
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                python ./Tests/scripts/run_content_installation.py
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+
+              else
+                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
+            fi
+      - run:
           name: Instance Test
           command: ./Tests/scripts/instance_test.sh
           when: always
