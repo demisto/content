@@ -1239,7 +1239,7 @@
         "BitDam": "Changes in service (issue #16247)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota."
     },
     "nigthly_integrations": [
         "Lastline",
