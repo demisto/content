@@ -1630,6 +1630,6 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
-releaseNotes: "Adding malicious attribute based on preferred vendors on File and URL"
+releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands, fix of Dbot score in ip-report command. Adding malicious attribute based on preferred vendors on File and URL"
 tests:
 - virusTotalPrivateAPI-test-playbook
