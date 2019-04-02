@@ -55,7 +55,7 @@ script: |-
       elif demisto_score.lower() == "suspicious":
           demisto_score = "Medium"
       elif demisto_score.lower() == "good":
-          demisto_score = "none"
+          demisto_score = "None"
       else:
           demisto_score = "Not Specified"
 
@@ -112,7 +112,7 @@ outputs:
   description: type and value of indicators (URL, IPv4, domain, email, etc)
   type: string
 - contextPath: StixExportedIndicators.score
-  description: STIX impact score can be High, Medium or empty
+  description: STIX impact score can be High, Medium, None or Not Specified
   type: string
 - contextPath: StixExportedIndicators.modified
   description: Indicator last appearance
