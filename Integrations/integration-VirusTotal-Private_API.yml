@@ -103,7 +103,7 @@ script:
 
     def is_enough_preferred_vendors(scan_results):
         if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
-            return True
+            return False
         if PREFERRED_VENDORS and not PREFERRED_VENDORS_THRESHOLD:
             return_error("Error: If you entered Preferred Vendors you must also enter Preferred Vendors Threshold")
         if "scans" not in scan_results:
