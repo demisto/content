@@ -1274,11 +1274,12 @@ script: |-
       if error:
           LOG(error)
       LOG.print_log()
-      demisto.results({
-          'Type': entryTypes['error'],
-          'ContentsFormat': formats['text'],
-          'Contents': str(message)
-      })
+      if not demisto.command() == 'fetch-incidents':
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': str(message)
+        })
       sys.exit(0)
 
 
