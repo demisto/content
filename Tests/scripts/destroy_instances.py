@@ -1,7 +1,7 @@
 import sys
 from threading import Thread
 
-from Tests.test_utils import run_command
+from Tests.test_utils import run_command, run_threads_list
 
 
 def main():
@@ -25,12 +25,7 @@ def main():
                                ami_instance_name.replace(' ', '')
                            )), kwargs={'is_silenced': False})
                 threads_list.append(t)
-    # run each command in a seperate thread
-    for t in threads_list:
-        t.start()
-    # wait for the commands to complete
-    for t in threads_list:
-        t.join()
+    run_threads_list(threads_list)
 
 
 if __name__ == "__main__":
