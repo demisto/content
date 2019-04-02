@@ -100,7 +100,12 @@ def run_query(query, start_at='', max_results=None):
         params=query_params
     )
     try:
-        return result.json()
+        rj = result.json()
+        if rj.get('issues'):
+            return rj
+
+        errors = ",".join(rj.get("errorMessages"))
+        return_error(f'No issues were found, error message from Jira: {errors}')
 
     except ValueError as ve:
         demisto.debug(str(ve))
@@ -566,9 +571,9 @@ def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
 
     incidents, max_results = [], 50
     if id_offset:
-        query += f' AND id >= {id_offset}'
+        query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
-        query += ' and created>-1m'
+        query = f'{query} AND created>-1m'
     res = run_query(query, '', max_results)
     for ticket in res.get('issues'):
         id_offset = max(id_offset, ticket.get("id"))
