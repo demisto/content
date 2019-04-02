@@ -104,7 +104,7 @@ def run_query(query, start_at='', max_results=None):
         if rj.get('issues'):
             return rj
 
-        errors = ",".join(rj.get("errorMessages"))
+        errors = ",".join(rj.get("errorMessages", ['could not fetch any issues, please check your query']))
         return_error(f'No issues were found, error message from Jira: {errors}')
 
     except ValueError as ve:
