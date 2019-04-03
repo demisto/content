@@ -409,10 +409,10 @@ tasks:
       id: 5d9f899c-ad54-4dcd-89ba-5a5aee8ee7c7
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler_copy|||ip
+      script: Zscaler|||ip
       type: regular
       iscommand: true
-      brand: Zscaler_copy
+      brand: Zscaler
     scriptarguments:
       ip:
         simple: 1.1.1.2
