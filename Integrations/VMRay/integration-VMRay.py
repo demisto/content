@@ -20,8 +20,6 @@ if not demisto.params().get("proxy"):
     del os.environ["http_proxy"]
     del os.environ["https_proxy"]
 
-url_dict = {"get_job_sample": "job/sample/%s"}
-
 """ HELPER DICTS """
 SEVERITY_DICT = {
     "malicious": "Malicious",
