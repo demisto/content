@@ -1209,7 +1209,6 @@
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Jask": "Cannot access instance token not valid (issue 12900)",
-        "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1239,6 +1238,7 @@
         "BitDam": "Changes in service (issue #16247)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
+        "Lastline": "Out of quota",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota."
     },
     "nigthly_integrations": [
