@@ -1221,6 +1221,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
