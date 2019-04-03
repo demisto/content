@@ -6,12 +6,13 @@ from CommonServerPython import *
 API_KEY = demisto.params()["api_key"]
 SERVER = (
     demisto.params()["server"][:-1]
-    if (demisto.params().get("server") and demisto.params()["server"].endswith("/"))
-    else demisto.params().get("server")
+    if (demisto.params()["server"] and demisto.params()["server"].endswith("/"))
+    else demisto.params()["server"]
 )
 
-SERVER = SERVER + "/rest/"
+SERVER += "/rest/"
 USE_SSL = not demisto.params().get("insecure", False)
+HEADERS = {"Authorization": "api_key " + API_KEY}
 
 # Remove proxy
 if not demisto.params().get("proxy"):
@@ -43,8 +44,7 @@ DBOTSCORE = {
 
 
 def http_request(method, url_suffix, body=None, params=None, files=None):
-    """
-
+    """ General HTTP request.
     Args:
         method: (str) "GET", "POST", "DELETE' "PUT"
         url_suffix: (str)
@@ -55,7 +55,6 @@ def http_request(method, url_suffix, body=None, params=None, files=None):
     Returns:
         dict: response json
     """
-    headers = {"Authorization": "api_key " + API_KEY}
 
     url = SERVER + url_suffix
     r = requests.request(
@@ -63,13 +62,19 @@ def http_request(method, url_suffix, body=None, params=None, files=None):
         url,
         json=body,
         params=params,
-        headers=headers,
+        headers=HEADERS,
         files=files,
         verify=USE_SSL,
     )
     if r.status_code not in {200, 201, 202, 204}:
+        error = str()
+        try:
+            js = r.json()
+            error += js.get("error_msg")
+        except ValueError:
+            error = r.text
         return_error(
-            "Error in API call to VMRay [{}] - {}".format(r.status_code, r.text)
+            "Error in API call to VMRay [{}] - {}".format(r.status_code, error)
         )
     return r.json()
 
@@ -114,6 +119,7 @@ def upload_sample(path):
 
 def upload_sample_command():
     """Uploads a file to vmray
+    TODO: add password to file
     """
     file_id = demisto.args().get("file_id")
     path = demisto.getFilePath(file_id).get("path")
@@ -131,6 +137,7 @@ def upload_sample_command():
                 job_entry["SampleID"] = job.get("job_sample_id")
                 job_entry["VMName"] = job.get("job_vm_name")
                 job_entry["VMID"] = job.get("job_vm_id")
+                job_entry["JobRuleSampleType"] = job.get("job_jobrule_sampletype")
                 jobs_list.append(job_entry)
 
     samples_list = list()
@@ -141,6 +148,10 @@ def upload_sample_command():
                 sample_entry = dict()
                 sample_entry["SampleID"] = sample.get("sample_id")
                 sample_entry["Created"] = sample.get("sample_created")
+                sample_entry["FileName"] = sample.get("submission_filename")
+                sample_entry["FileSize"] = sample.get("sample_filesize")
+                sample_entry["SSDeep"] = sample.get("sample_ssdeephash")
+                sample_entry["SHA1"] = sample.get("sample_sha1hash")
                 samples_list.append(sample_entry)
 
     submissions_list = list()
@@ -353,14 +364,46 @@ def get_job_sample_command():
     return_outputs(md, ec, raw_response=raw_response)
 
 
+def get_threat_indicators(sample_id):
+    suffix = "sample/{}/threat_indicators".format(sample_id)
+    response = http_request("GET", suffix).get("data")
+    return response.get("threat_indicators")
+
+
+def get_threat_indicators_command():
+    sample_id = demisto.args().get("sample_id")
+    raw_response = get_threat_indicators(sample_id)
+
+    # Build Entry Context TODO: EntryContext
+    if raw_response and isinstance(raw_response, list):
+        ec_list = list()
+        for indicator in raw_response:
+            entry = dict()
+            entry["AnalysisIDs"] = indicator.get("analysis_ids")
+            entry["Category"] = indicator.get("category")
+            entry["Classifications"] = indicator.get("classifications")
+            entry["ID"] = indicator.get("id")
+            entry["Operation"] = indicator.get("operation")
+            ec_list.append(entry)
+
+        md = tableToMarkdown(
+            "Threat indicators for sample ID: {}. Showing first indicator:".format(sample_id),
+            ec_list[0],
+            headers=["AnalysisIDs", "Category", "Classifications", "Operation"]
+        )
+
+        ec = {"VMRay.ThreatIndicators(obj.ID === val.ID)": ec_list}
+        return_outputs(md, ec, raw_response={"threat_indicators": raw_response})
+    return_outputs("No threat indicators for sample ID: {}".format(sample_id), {})
+
+
 try:
     COMMAND = demisto.command()
-    # The command demisto.command() holds the command sent from the user.
     if COMMAND == "test-module":
         # This is the call made when pressing the integration test button.
         # demisto.results('ok')
         test_module()
-    elif COMMAND in ("upload_sample", "vmray-upload-sample"):
+    elif COMMAND in ("upload_sample", "vmray-upload-sample", "file"):
         upload_sample_command()
     elif COMMAND == "vmray-get-submission":
         get_submission_command()
@@ -370,5 +413,7 @@ try:
         get_sample_command()
     elif COMMAND in ("vmray-get-job-sample", "get_job_sample"):
         get_job_sample_command()
+    elif COMMAND == "vmray-get-threat-indicators":
+        get_threat_indicators_command()
 except Exception as exc:
     return_error(exc.message)
