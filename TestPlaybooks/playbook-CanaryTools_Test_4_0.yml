@@ -1,7 +1,7 @@
 id: CanaryTools Test
 version: -1
 name: CanaryTools Test
-toversion: 4.0.0
+toversion: 4.0.9
 starttaskid: "0"
 tasks:
   "0":
