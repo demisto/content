@@ -5,7 +5,7 @@ jobs:
       - image: devdemisto/content-build-2and3:1.0.0.197 # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.4.0"
+      CONTENT_VERSION: "19.4.0a"
       GIT_SHA1: "eae9e2c8c301dc8d01e450f4c334fe90dc84d995" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
