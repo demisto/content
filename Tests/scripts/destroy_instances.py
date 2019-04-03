@@ -22,7 +22,7 @@ def main():
                                circle_aritfact,
                                ami_instance_id,
                                ami_instance_ip,
-                               ami_instance_name.replace(' ', ''), )
+                               ami_instance_name.replace(' ', '')),
                            ), kwargs={'is_silenced': False})
                 threads_list.append(t)
     run_threads_list(threads_list)
