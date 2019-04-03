@@ -1225,7 +1225,7 @@ script: |-
       return True
 
 
-  def return_outputs(readable_output, outputs, raw_response=None):
+  def return_outputs(readable_output, outputs=None, raw_response=None):
       """
       This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1233,11 +1233,12 @@ script: |-
       :param readable_output: markdown string that will be presented in the warroom, should be human readable - (HumanReadable)
 
       :type outputs: ``dict``
-      :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
+      :param outputs: the outputs that will be returned to playbook/investigation context. If not provided then will be equal to
+      None (when nothing is returned to outputs. (originally EntryContext)
 
       :type raw_response: ``dict``
       :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
-      raw response from the 3rd party service (originally Contents)
+      raw response from the 3rd party service. (originally Contents)
 
       :return: None
       :rtype: ``None``
