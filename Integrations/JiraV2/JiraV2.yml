@@ -39,7 +39,7 @@ configuration:
   required: false
 - display: Query for fetching incident in JQL
   name: query
-  defaultvalue: status=open
+  defaultvalue: status!=done
   type: 0
   required: false
 - display: Issue index to start fetching incidents from
