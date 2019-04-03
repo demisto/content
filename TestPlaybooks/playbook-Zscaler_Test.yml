@@ -434,10 +434,10 @@ tasks:
       id: f46376e9-ea37-45d5-80f2-436e58c677f1
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler_copy|||ip
+      script: Zscaler|||ip
       type: regular
       iscommand: true
-      brand: Zscaler_copy
+      brand: Zscaler
     scriptarguments:
       ip:
         simple: 1.1.1.2
@@ -459,10 +459,10 @@ tasks:
       id: d27c8712-96fe-453b-801e-2e7c305b2d51
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler_copy|||ip
+      script: Zscaler|||ip
       type: regular
       iscommand: true
-      brand: Zscaler_copy
+      brand: Zscaler
     scriptarguments:
       ip:
         simple: 1.1.1.2
@@ -484,10 +484,10 @@ tasks:
       id: 0060808d-6d47-4928-811f-25649d4fda0a
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler_copy|||ip
+      script: Zscaler|||ip
       type: regular
       iscommand: true
-      brand: Zscaler_copy
+      brand: Zscaler
     scriptarguments:
       ip:
         simple: 1.1.1.2
@@ -509,10 +509,10 @@ tasks:
       id: 785f7a4f-1c69-463a-8359-af8300cfa5b5
       version: -1
       name: Check IP with Zscaler
-      script: Zscaler_copy|||ip
+      script: Zscaler|||ip
       type: regular
       iscommand: true
-      brand: Zscaler_copy
+      brand: Zscaler
     scriptarguments:
       ip:
         simple: 1.1.1.2
