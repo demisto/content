@@ -339,3 +339,4 @@ outputs:
   type: string
 tests:
   - Test-Detonate URL - Phish.AI
+releaseNotes: Fix logic of playbook, add outputs
