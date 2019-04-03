@@ -3166,10 +3166,8 @@ def extract_address(s):
 def extract_address_eml(eml, s):
     addresses = getaddresses(eml.get_all(s, []))
     if addresses:
-        res = ''
-        for item in addresses:
-            res += item[1] + ', '
-        return res[:-2]
+        res = [item[1] for item in addresses]
+        return '| '.join(res)
     else:
         return ''
 
