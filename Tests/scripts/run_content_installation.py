@@ -28,7 +28,7 @@ def main():
     threads_list = []
     for ami_instance_name, ami_instance_id in ami_instances:
         t = Thread(target=run_command,
-                   args=("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id])),
+                   args=("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id]), ),
                    kwargs={'is_silenced': False})
         threads_list.append(t)
         # copy_content_data.sh also starts the server
