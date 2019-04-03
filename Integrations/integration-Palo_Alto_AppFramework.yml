@@ -1028,7 +1028,7 @@ script:
     - contextPath: Cortex.Logging.severity
       description: Threat Severity
     description: Query Cortex Logging service according to pre-set queries
-  dockerimage: demisto/python_pancloud:1.0.0.170
+  dockerimage: demisto/python_pancloud:latest
   isfetch: true
   runonce: false
 tests:
