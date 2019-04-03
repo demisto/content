@@ -79,6 +79,12 @@ script:
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/v1'
 
+    DEFAULT_STATUS_CODES = {
+        429,
+        472,
+        473
+    }
+
     ''' HELPER FUNCTIONS '''
 
     def get_headers():
@@ -99,7 +105,7 @@ script:
 
         url = '{}/{}'.format(SERVER_URL, path)
         res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)
-        if res.status_code < 200 or res.status_code >= 300:
+        if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
             try:
                 error_body = res.json()
                 if 'errors' in error_body and isinstance(error_body['errors'], list):
@@ -170,8 +176,9 @@ script:
 
     def list_secrets_command():
         engine = demisto.args()['engine']
+        version = demisto.args().get('version')
 
-        res = list_secrets(engine)
+        res = list_secrets(engine, version)
 
         if not res or 'data' not in res:
             return_error('Secrets not found')
@@ -192,8 +199,11 @@ script:
         })
 
 
-    def list_secrets(engine_path):
-        path = engine_path + '/metadata'
+    def list_secrets(engine_path, version):
+        path = engine_path
+
+        if version == '2':
+            path += '/metadata'
 
         params = {
             'list': 'true'
@@ -602,12 +612,15 @@ script:
 
         for engine_type in ENGINES:
             engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
-            if len(engines_to_fetch) == 0:
-                return_error('Engine type not configured, please use the configure-engine command to configure a secrets engine.')
             engines_to_fetch_from += engines_to_fetch
+
+        if len(engines_to_fetch_from) == 0:
+                return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
         for engine in engines_to_fetch_from:
             if engine['type'] == 'KV':
+                if 'version' not in engine:
+                    return_error('Version not configured for KV engine, Re-configure the engine')
                 if engine['version'] == '1':
                     credentials += get_kv1_secrets(engine['path'])
                 elif engine['version'] == '2':
@@ -781,11 +794,18 @@ script:
       default: true
       description: Engine path, e.g.,"secret/". Use the list-secrets-engines command
         to retrieve the engine path. command.
+    - name: version
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      description: The version of the KV engine
+      defaultValue: "1"
     outputs:
     - contextPath: HashiCorp.Secret.Path
       description: Secret path
       type: string
-    description: List secrets (names) for a specified KV V2 engine
+    description: List secrets (names) for a specified KV engine
   - name: hashicorp-get-secret-metadata
     arguments:
     - name: engine_path
@@ -883,10 +903,10 @@ script:
       description: Human-friendly description of the mount
     - name: default_lease_ttl
       description: The default lease duration, specified as a string duration, e.g.,
-                     "5s" or "30m"
+        "5s" or "30m"
     - name: max_lease_ttl
       description: The maximum lease duration, specified as a string duration, e.g.,
-                     "5s" or "30m"
+        "5s" or "30m"
     - name: force_no_cache
       description: Disable caching
     - name: audit_non_hmac_request_keys
@@ -903,7 +923,7 @@ script:
       - unauth
       - hidden
       description: Whether to show this mount in the UI-specific listing endpoint;
-                     "unauth" or "hidden", default is "hidden" Default is hidden.
+        "unauth" or "hidden", default is "hidden" Default is hidden.
     - name: passthrough_request_headers
       description: CSV list of headers to whitelist and pass from the request to the
         backend
@@ -1011,8 +1031,8 @@ script:
       - "true"
       - "false"
       description: If set to false, the token cannot be renewed past its initial TTL.
-                     If set to true, the token can be renewed up to the system/mount maximum TTL.
-                     "true" or "false"
+        If set to true, the token can be renewed up to the system/mount maximum TTL.
+        "true" or "false"
     - name: ttl
       description: The TTL(lease duration) period of the token, provided as "10m"
         or "1h", where hour is the largest suffix. If not provided, the token is valid
@@ -1044,5 +1064,6 @@ script:
     description: Creates a new authentication token
   dockerimage: demisto/hashicorp:1.0.0.39
   runonce: false
+releaseNotes: "Fixed integration test error messages along with some bugs in credentials fetching. Now supporting KV1 engines in the list-secrets command"
 tests:
   - hashicorp_test
