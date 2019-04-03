@@ -1,5 +1,5 @@
 import requests
-
+import demistomock as demisto
 from CommonServerPython import *
 
 """ GLOBAL PARAMS """
@@ -7,7 +7,7 @@ API_KEY = demisto.params()["api_key"]
 SERVER = (
     demisto.params()["server"][:-1]
     if (demisto.params().get("server") and demisto.params()["server"].endswith("/"))
-    else demisto.params()["server"]
+    else demisto.params().get("server")
 )
 
 SERVER = SERVER + "/rest/"
