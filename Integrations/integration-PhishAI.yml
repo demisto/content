@@ -42,6 +42,7 @@ script:
         var report = JSON.parse(res.Body);
 
         md = tableToMarkdown('Phish.AI Scan report ' + scan_id, report);
+
         return {
             Type: entryTypes.note,
             Contents: report,
@@ -269,9 +270,6 @@ script:
     outputs:
     - contextPath: URL.Data
       description: URL's Address
-      type: string
-    - contextPath: URL.Status
-      description: URL's Status
       type: string
     - contextPath: PhishAI.Status
       description: Scan status
