@@ -170,8 +170,46 @@ script:
   isfetch: false
   runonce: false
   script: |-
+    import json
+    import os
+
     import requests
 
+    outputPaths = {}
+
+
+    def tableToMarkdown(a, t, headers=None):
+        return "Bulbul"
+
+
+    def return_error(msg, msg2=None):
+        exit(1)
+
+
+    def return_outputs(readable_output, outputs, raw_response=None):
+        pass
+
+
+    class demisto():
+        @staticmethod
+        def params():
+            return {}
+
+        @staticmethod
+        def args():
+            return {}
+
+        @staticmethod
+        def command():
+            return "blala"
+
+        @staticmethod
+        def results(a, b=None, c=None):
+            pass
+
+        @staticmethod
+        def getFilePath(st):
+            return {}
 
 
     """ GLOBAL PARAMS """

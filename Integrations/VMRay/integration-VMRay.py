@@ -115,6 +115,8 @@ def upload_sample(path):
 
 
 def upload_sample_command():
+    """Uploads a file to vmray
+    """
     file_id = demisto.args().get("file_id")
     path = demisto.getFilePath(file_id).get("path")
 
@@ -343,14 +345,12 @@ def get_job_sample_command():
     entry["JobVMName"] = raw_response.get("job_vm_name")
     entry["JobVMID"] = raw_response.get("job_vm_id")
 
-    ec = {
-        "VMRay.Jobs(val.JobID === obj.JobID)": entry
-    }
+    ec = {"VMRay.Jobs(val.JobID === obj.JobID)": entry}
 
     md = tableToMarkdown(
         "Results for job sample id: {}".format(sample_id),
         entry,
-        headers=["JobID", "SampleID", "JobVMName", "JobVMID"]
+        headers=["JobID", "SampleID", "JobVMName", "JobVMID"],
     )
     return_outputs(md, ec, raw_response=raw_response)
 
