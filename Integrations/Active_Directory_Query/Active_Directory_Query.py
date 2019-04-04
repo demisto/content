@@ -884,6 +884,10 @@ def main():
     UNSECURE = demisto.params().get('unsecure', False)
     PORT = demisto.params().get('port')
 
+    if PORT:
+        # port was configured, cast to int
+        PORT = int(PORT)
+
     try:
         server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
     except Exception as e:

@@ -202,6 +202,6 @@ script:
     description: Fetches a Canary Token file from the Canary Tools server.
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Fixed issue with canarytools-list-tokens, where it skipped the last token, and failed when there were no tokens"
 tests:
 - CanaryTools Test
