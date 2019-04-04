@@ -1,8 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import requests
-
 """ GLOBAL PARAMS """
 API_KEY = demisto.params()["api_key"]
 SERVER = (
@@ -121,8 +116,7 @@ def upload_sample(path, params=None):
 def upload_sample_command():
     """Uploads a file to vmray
     """
-    # Backwards compatibility
-    file_id = demisto.args().get("file_id") if demisto.args().get("file_id") else demisto.args().get("entry_id")
+    file_id = demisto.args().get("file_id")
     path = demisto.getFilePath(file_id).get("path")
 
     # additional params

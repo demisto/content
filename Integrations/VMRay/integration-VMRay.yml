@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: vmray
+  id:
   version: -1
 configuration:
 - defaultvalue: https://cloud.vmray.com/
@@ -27,9 +27,9 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The file id to submit
+      description: Entry id  of file to submit
       isArray: false
-      name: file_id
+      name: entry_id
       required: true
       secret: false
     - default: false
@@ -416,11 +416,6 @@ script:
   isfetch: false
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
-    import requests
-
     """ GLOBAL PARAMS """
     API_KEY = demisto.params()["api_key"]
     SERVER = (
