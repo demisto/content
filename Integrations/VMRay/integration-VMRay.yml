@@ -305,12 +305,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of analysis to add tag to
-      isArray: false
-      name: analysis_id
-      required: false
-      secret: false
-    - default: false
       description: ID of submission to add tag to
       isArray: false
       name: submission_id
@@ -327,14 +321,16 @@ script:
     execution: false
     name: vmray-add-tag
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      defaultValue: submission_id
+    - default: false
       description: ID of analysis to delete tag from
       isArray: false
       name: analysis_id
-      predefined:
-      - ID of analysis to delete tag from
+      required: false
+      secret: false
+    - default: false
+      description: ID of submission to delete tag from
+      isArray: false
+      name: submission_id
       required: false
       secret: false
     - default: false
@@ -415,21 +411,6 @@ script:
       type: Number
     - contextPath: VMRay.Samples.IOCs.Mutexes.Type
       description: Type of mutex
-      type: String
-    - contextPath: VMRay.Samples.IOCs.Registry.AnalysisIDs
-      description: IDs of other analyses conatining given IP
-      type: Number
-    - contextPath: VMRay.Samples.IOCs.Registry.Name
-      description: Name of registry
-      type: String
-    - contextPath: VMRay.Samples.IOCs.Registry.Operations
-      description: Operation of given registry
-      type: String
-    - contextPath: VMRay.Samples.IOCs.Registry.ID
-      description: ID of registry
-      type: Number
-    - contextPath: VMRay.Samples.IOCs.Registry.Type
-      description: Type of registry
       type: String
   dockerimage: demisto/python
   isfetch: false
@@ -964,7 +945,6 @@ script:
         raw_response = get_iocs(sample_id)
         data = raw_response.get("data").get("iocs")
 
-        # TODO: domains
         domains = data.get("domains")
         domain_list = list()
         if domains:
