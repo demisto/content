@@ -32,6 +32,12 @@ script:
     import requests
     requests.packages.urllib3.disable_warnings()
 
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     # removes the last / from the url
     def fix_url(url):
         if url.endswith("/"):
@@ -136,12 +142,6 @@ script:
             'ReadableContentsFormat': formats['markdown']
         })
 
-    before = os.environ['HTTP_PROXY']
-    handle_proxy()
-    after = os.environ['HTTP_PROXY']
-
-    demisto.results("Before: {0}\nAfter: {1}".format(before, after))
-    sys.exit(0)
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         get_accounts_request()

@@ -1263,7 +1263,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
-        "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
@@ -1291,7 +1290,6 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
-        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
@@ -1340,6 +1338,7 @@
         "RSA NetWitness v11.1": "might be dynamic test",
         "Signal Sciences WAF": "error with certificate",
         "Zscaler": "might be dynamic test",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Skyformation": "Failure to connect to proxy",
+        "Remedy AR": "Failure to connect to proxy"
     }
 }
