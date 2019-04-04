@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "McAfee Active Response",
+            "playbookID": "Endpoint data collection test 2000",
+            "timeout": 2000
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "Endpoint data collection test 4000",
+            "timeout": 4000
+        },
+        {
             "integrations": "Tufin",
             "playbookID": "Tufin Test"
         },
@@ -1195,6 +1205,16 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "MAR - Endpoint data collection test 2000",
+            "timeout": 2000
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "MAR - Endpoint data collection test 4000",
+            "timeout": 4000
         }
     ],
     "skipped_tests": {
