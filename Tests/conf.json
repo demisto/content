@@ -1361,6 +1361,6 @@
         "Zscaler": "might be dynamic test",
         "Whois": "Integration socks proxy on tcp connection not http/s",
         "Snowflake": "Isn't working with mocking enabled - needs investigation",
-        "VirusTotal ": "proxy error"
+        "VirusTotal - Private API": "proxy error"
     }
 }
