@@ -227,9 +227,9 @@ def build_analysis_data(analyses):
     ec["VMRay.Analysis(val.AnalysisID === obj.AnalysisID)"] = [
         {
             "AnalysisID": analysis.get("analysis_id"),
-            "AnalysisSampleID": analysis.get("analysis_sample_id"),
+            "SampleID": analysis.get("analysis_sample_id"),
             "Severity": SEVERITY_DICT.get(analysis.get("analysis_severity")),
-            "Created": analysis.get("analysis_job_started"),
+            "JobCreated": analysis.get("analysis_job_started"),
             "SHA1": analysis.get("analysis_sample_sha1"),
             "MD5": analysis.get("analysis_sample_md5"),
             "SHA256": analysis.get("analysis_sample_sha25"),
@@ -278,10 +278,11 @@ def get_submission_command():
     entry["SHA256"] = data.get("submission_sample_sha256")
     entry["SSDeep"] = data.get("submission_sample_ssdeep")
     entry["Severity"] = SEVERITY_DICT.get(data.get("submission_severity"))
+    entry["SampleID"] = data.get("submission_sample_id")
     scores = score_by_hash(entry)
 
     ec = {
-        "VMRay.Submission(val.SubmissionID === obj.SubmissionID)": entry,
+        "VMRay.Submissions(val.SubmissionID === obj.SubmissionID)": entry,
         outputPaths.get("dbotscore"): scores,
     }
 
@@ -322,6 +323,7 @@ def get_sample_command():
     sample_id = demisto.args().get("sample_id")
     raw_response = get_sample(sample_id)
     data = raw_response.get("data")
+
     entry = dict()
     entry["SampleID"] = data.get("sample_id")
     entry["FileName"] = data.get("sample_filename")
@@ -514,6 +516,103 @@ def delete_tags():
             )
 
 
+def get_iocs(sample_id):
+    suffix = "sample/{}/iocs".format(sample_id)
+    response = http_request("GET", suffix)
+    return response
+
+
+def get_iocs_command():
+    sample_id = demisto.args().get("sample_id")
+    raw_response = get_iocs(sample_id)
+    data = raw_response.get("data").get("iocs")
+
+    domains = data.get("domains")
+    domain_list = list()
+    if domains:
+        for domain in domains:
+            entry = dict()
+            entry["AnalysisIDs"] = domain.get("analysis_ids")
+            entry["Domain"] = domain.get("domain")
+            entry["ID"] = domain.get("id")
+            entry["Type"] = domain.get("type")
+            domain_list.append(entry)
+
+    ips = data.get("ips")
+    ip_list = list()
+    if ips:
+        for ip in ips:
+            entry = dict()
+            entry["AnalysisIDs"] = ip.get("analysis_ids")
+            entry["IP"] = ip.get("ip_address")
+            entry["ID"] = ip.get("id")
+            entry["Type"] = ip.get("type")
+            ip_list.append(entry)
+
+    mutexes = data.get("mutexes")
+    mutex_list = list()
+    if mutexes:
+        for mutex in mutexes:
+            entry = dict()
+            entry["AnalysisIDs"] = mutex.get("analysis_ids")
+            entry["Name"] = mutex.get("mutex_name")
+            entry["Operations"] = mutex.get("operations")
+            entry["ID"] = mutex.get("id")
+            entry["Type"] = mutex.get("type")
+            mutex_list.append(entry)
+
+    registry = data.get("registry")
+    registry_list = list()
+    if registry:
+        for reg in registry:
+            entry = dict()
+            entry["AnalysisIDs"] = reg.get("analysis_ids")
+            entry["Name"] = reg.get("reg_key_name")
+            entry["Operations"] = reg.get("operations")
+            entry["ID"] = reg.get("id")
+            entry["Type"] = reg.get("type")
+            registry_list.append(entry)
+
+    urls = data.get("urls")
+    urls_list = list()
+    if urls:
+        for url in urls:
+            entry = dict()
+            entry["AnalysisIDs"] = url.get("analysis_ids")
+            entry["URL"] = url.get("url")
+            entry["Operations"] = url.get("operations")
+            entry["ID"] = url.get("id")
+            entry["Type"] = url.get("type")
+            urls_list.append(entry)
+
+    iocs = {
+        "URLs": urls_list,
+        "Mutexes": mutex_list,
+        "Domains": domain_list,
+        "Registry": registry_list,
+        "IPs": ip_list
+    }
+
+    ec = {
+        "VMRay.Samples(val.SampleID == {}).IOCs".format(sample_id): iocs,
+    }
+
+    # Get total size of iocs for HumanReadable
+    iocs_size_table = dict()
+    iocs_size = 0
+    for k, v in iocs.items():
+        sizeof_key = len(v)
+        iocs_size_table[k] = sizeof_key
+        iocs_size += sizeof_key
+
+    md = tableToMarkdown(
+        "Total of {} IOCs found in VMRay by sample {}".format(iocs_size, sample_id),
+        iocs_size_table,
+        headers=["URLs", "IPs", "Domains", "Mutexes", "Registry"]
+    )
+    return_outputs(md, ec, raw_response=raw_response)
+
+
 try:
     COMMAND = demisto.command()
     if COMMAND == "test-module":
@@ -536,5 +635,7 @@ try:
         post_tags()
     elif COMMAND == "vmray-delete-tag":
         delete_tags()
+    elif COMMAND == "vmray-get-iocs":
+        get_iocs_command()
 except Exception as exc:
     return_error(exc.message)
