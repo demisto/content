@@ -1,15 +1,15 @@
 id: Jask_Test
 version: -1
 name: Jask Test
-fromversion: 4.1.0
+toversion: 4.0.9
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 678f8187-a095-4d5f-83ae-e8e831a2a589
+    taskid: f6789f0d-0545-4e48-829d-56ab30dfb8a4
     type: start
     task:
-      id: 678f8187-a095-4d5f-83ae-e8e831a2a589
+      id: f6789f0d-0545-4e48-829d-56ab30dfb8a4
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: ca722df1-ae4c-4833-82b4-612a31a83782
+    taskid: c75f152b-1757-423e-8b98-7117fd110624
     type: regular
     task:
-      id: ca722df1-ae4c-4833-82b4-612a31a83782
+      id: c75f152b-1757-423e-8b98-7117fd110624
       version: -1
       name: Get insights for a given date
       description: 'Search insights using the given filters. '
@@ -66,12 +67,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 1ec3d686-e17f-4fe0-882e-0d757e18a625
+    taskid: 86955a6c-2a06-496e-8a78-983a1976ff6b
     type: regular
     task:
-      id: 1ec3d686-e17f-4fe0-882e-0d757e18a625
+      id: 86955a6c-2a06-496e-8a78-983a1976ff6b
       version: -1
       name: VerifyContext
       description: |-
@@ -104,12 +106,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 7ddcfa71-18d1-4d9d-8f29-d301b6c15c4b
+    taskid: 6a3831b3-4def-4bfb-8627-d6219e05322c
     type: regular
     task:
-      id: 7ddcfa71-18d1-4d9d-8f29-d301b6c15c4b
+      id: 6a3831b3-4def-4bfb-8627-d6219e05322c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -122,7 +125,6 @@ tasks:
       - "1"
       - "11"
       - "13"
-      - "21"
     scriptarguments:
       all:
         simple: "yes"
@@ -137,12 +139,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 635180e0-8791-410b-85d5-34ac802968ca
+    taskid: cc888623-d78a-4439-8d80-8dc79b2923ef
     type: regular
     task:
-      id: 635180e0-8791-410b-85d5-34ac802968ca
+      id: cc888623-d78a-4439-8d80-8dc79b2923ef
       version: -1
       name: Get details for the first one
       description: Get Insight details for a specific Insight ID. Insight details
@@ -170,12 +173,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: dad73ec9-8ce3-4495-8481-5b515caa03b4
+    taskid: 8e623c35-b3b4-44f7-81f2-33bc9808b468
     type: regular
     task:
-      id: dad73ec9-8ce3-4495-8481-5b515caa03b4
+      id: 8e623c35-b3b4-44f7-81f2-33bc9808b468
       version: -1
       name: Get entity details for first related entity
       description: Get entity details for a specific entity ID
@@ -199,12 +203,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: b4aee240-34bd-4f39-8089-38b1f80b3cea
+    taskid: 90fe953e-0142-4107-8995-07a79c49c466
     type: regular
     task:
-      id: b4aee240-34bd-4f39-8089-38b1f80b3cea
+      id: 90fe953e-0142-4107-8995-07a79c49c466
       version: -1
       name: Get signal details for first related signal
       description: Get Signal details for a specific Signal ID. Signal details command
@@ -230,12 +235,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: ea8ac176-6bb8-438c-8cff-e7be8730bac7
+    taskid: 61c8b9c8-00ca-4d03-8200-acd259231d48
     type: regular
     task:
-      id: ea8ac176-6bb8-438c-8cff-e7be8730bac7
+      id: 61c8b9c8-00ca-4d03-8200-acd259231d48
       version: -1
       name: Verify we have an entity
       description: |-
@@ -266,12 +272,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: f42ee86f-ae12-4353-88b3-42a191e2d6fb
+    taskid: c9497b8d-b882-4f79-8ea8-315c87c23019
     type: regular
     task:
-      id: f42ee86f-ae12-4353-88b3-42a191e2d6fb
+      id: c9497b8d-b882-4f79-8ea8-315c87c23019
       version: -1
       name: Verify we have a signal
       description: |-
@@ -302,12 +309,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 1d238657-12b3-4e75-8705-1de07404f1f3
+    taskid: d15b42eb-c8e6-4ade-8b78-9d7ed8a41448
     type: regular
     task:
-      id: 1d238657-12b3-4e75-8705-1de07404f1f3
+      id: d15b42eb-c8e6-4ade-8b78-9d7ed8a41448
       version: -1
       name: Get entities related to the given entity
       description: Get entities related to a specific entity ID.
@@ -331,12 +339,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 8def6ad7-7830-4e4a-87b0-3640f55cfdee
+    taskid: b6471c0e-775f-4ef1-8abd-2806328b86bf
     type: regular
     task:
-      id: 8def6ad7-7830-4e4a-87b0-3640f55cfdee
+      id: b6471c0e-775f-4ef1-8abd-2806328b86bf
       version: -1
       name: Get signals for a given date
       description: 'Search signals using the given filters. '
@@ -369,12 +378,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 080435e0-c995-461b-853b-e192f8bff262
+    taskid: ae62261c-a0f7-4926-8139-a85315820e9d
     type: regular
     task:
-      id: 080435e0-c995-461b-853b-e192f8bff262
+      id: ae62261c-a0f7-4926-8139-a85315820e9d
       version: -1
       name: VerifyContext
       description: |-
@@ -406,12 +416,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 6277ceda-4a62-460f-8b2d-0b50e9e473c0
+    taskid: a52da956-e147-4e40-8769-2fd902911fdd
     type: regular
     task:
-      id: 6277ceda-4a62-460f-8b2d-0b50e9e473c0
+      id: a52da956-e147-4e40-8769-2fd902911fdd
       version: -1
       name: Get entities for a given date
       description: Search entities using the given filters.
@@ -443,12 +454,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 4363c2f7-8591-464f-83d2-6ee65a901afb
+    taskid: 8c6d778c-6e82-46bb-8c98-c0373abdd8c7
     type: regular
     task:
-      id: 4363c2f7-8591-464f-83d2-6ee65a901afb
+      id: 8c6d778c-6e82-46bb-8c98-c0373abdd8c7
       version: -1
       name: VerifyContext
       description: |-
@@ -480,12 +492,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 8d0d3eff-6517-484f-88a8-5b20ed6f38d6
+    taskid: d1b5ae23-623f-4fa7-80ae-1a854f3d6095
     type: regular
     task:
-      id: 8d0d3eff-6517-484f-88a8-5b20ed6f38d6
+      id: d1b5ae23-623f-4fa7-80ae-1a854f3d6095
       version: -1
       name: jask-get-insight-comments
       description: Get comments for a specific Insight ID. (Users can post and update
@@ -510,12 +523,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: a925e98a-4535-4d4b-840a-f72fd4863f81
+    taskid: dcdfa43d-49ec-43c0-8198-fbf44392eae6
     type: regular
     task:
-      id: a925e98a-4535-4d4b-840a-f72fd4863f81
+      id: dcdfa43d-49ec-43c0-8198-fbf44392eae6
       version: -1
       name: closeInvestigation
       description: Close the current investigation
@@ -538,83 +552,15 @@ tasks:
       }
     note: false
     timertriggers: []
-  "21":
-    id: "21"
-    taskid: 106d1f90-6828-4d80-8755-44f1a2a251d0
-    type: regular
-    task:
-      id: 106d1f90-6828-4d80-8755-44f1a2a251d0
-      version: -1
-      name: Test Fetch Incidents
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      add_to_context:
-        simple: "true"
-      brand_name:
-        simple: Jask
-      expect_data: {}
-      instance_name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "22":
-    id: "22"
-    taskid: 5fd796c9-aa02-449a-8aac-f29baae8a9f4
-    type: condition
-    task:
-      id: 5fd796c9-aa02-449a-8aac-f29baae8a9f4
-      version: -1
-      name: VerifyContext
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: FetchedIncidents.id
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: FetchedIncidents.severity
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1465,
-        "width": 2530,
-        "x": 50,
+        "width": 2100,
+        "x": 480,
         "y": 50
       }
     }
