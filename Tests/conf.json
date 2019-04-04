@@ -1252,6 +1252,7 @@
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
+        "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "Out of quota",
