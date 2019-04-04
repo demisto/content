@@ -5,33 +5,33 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c2fdb80f-d9ba-41d7-8fb8-15a770dabfe7
+    taskid: e3393036-84e4-44ed-8600-56e48f9e0008
     type: start
     task:
-      id: c2fdb80f-d9ba-41d7-8fb8-15a770dabfe7
+      id: e3393036-84e4-44ed-8600-56e48f9e0008
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -510
         }
       }
     note: false
     timertriggers: []
   "1":
     id: "1"
-    taskid: cb996a01-c0e3-447c-83d1-6328a0dcefbb
+    taskid: dd227d7d-df8d-4bdf-81fe-212ddf120b24
     type: regular
     task:
-      id: cb996a01-c0e3-447c-83d1-6328a0dcefbb
+      id: dd227d7d-df8d-4bdf-81fe-212ddf120b24
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,10 +58,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: deae3ffc-3937-4a5e-83d0-96bb78723bf0
+    taskid: 07508a80-84db-4b42-8438-f8ab9c1bd4c2
     type: title
     task:
-      id: deae3ffc-3937-4a5e-83d0-96bb78723bf0
+      id: 07508a80-84db-4b42-8438-f8ab9c1bd4c2
       version: -1
       name: Done
       type: title
@@ -79,10 +79,10 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: 3a154399-9055-486c-8328-e52bd4f78894
+    taskid: 8a49aaec-df75-4adb-8c38-01f00e92c6ad
     type: regular
     task:
-      id: 3a154399-9055-486c-8328-e52bd4f78894
+      id: 8a49aaec-df75-4adb-8c38-01f00e92c6ad
       version: -1
       name: vt-get-domain-report
       description: Retrieves a report on a given domain (including the information
@@ -111,10 +111,10 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: 411efc82-26ce-48f6-819f-89e8aa236a49
+    taskid: af52b87a-914c-4a6a-803a-f2fdb142c61d
     type: condition
     task:
-      id: 411efc82-26ce-48f6-819f-89e8aa236a49
+      id: af52b87a-914c-4a6a-803a-f2fdb142c61d
       version: -1
       name: Verify Domain Whois Contains
       description: "Checks whether substring is within string. Returns: \nyes - string
@@ -153,10 +153,10 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 18f5ac65-12c7-4ec6-88bf-9b5431308e2b
+    taskid: bb671564-4062-4936-85c7-f664632b3e21
     type: regular
     task:
-      id: 18f5ac65-12c7-4ec6-88bf-9b5431308e2b
+      id: bb671564-4062-4936-85c7-f664632b3e21
       version: -1
       name: vt-get-file-report
       description: Retrieves a concluded url scan report for a given url.
@@ -185,10 +185,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 54d72653-d27b-4549-8619-daabc2e14f1a
+    taskid: 0082b3fd-f2df-40e2-8863-44886ba8d734
     type: condition
     task:
-      id: 54d72653-d27b-4549-8619-daabc2e14f1a
+      id: 0082b3fd-f2df-40e2-8863-44886ba8d734
       version: -1
       name: Verify File Malicious
       description: |-
@@ -225,10 +225,10 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: 99c0783e-3341-4ff2-893b-733447e200fe
+    taskid: 367b3d73-077c-4e6e-8eac-933e7a3c7ff8
     type: regular
     task:
-      id: 99c0783e-3341-4ff2-893b-733447e200fe
+      id: 367b3d73-077c-4e6e-8eac-933e7a3c7ff8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -255,10 +255,10 @@ tasks:
     timertriggers: []
   "20":
     id: "20"
-    taskid: c0d85491-fc4a-4912-8a48-9611b94a80d6
+    taskid: 738b0761-af47-450c-8e99-999fcf1c44bc
     type: regular
     task:
-      id: c0d85491-fc4a-4912-8a48-9611b94a80d6
+      id: 738b0761-af47-450c-8e99-999fcf1c44bc
       version: -1
       name: vt-private-get-url-report
       description: Retrieves a concluded url scan report for a given url.
@@ -290,10 +290,10 @@ tasks:
     timertriggers: []
   "21":
     id: "21"
-    taskid: 0e538c1a-778d-4a3c-8be0-e455d29d1649
+    taskid: e28a600d-edba-497e-8c04-5f8427462fa9
     type: regular
     task:
-      id: 0e538c1a-778d-4a3c-8be0-e455d29d1649
+      id: e28a600d-edba-497e-8c04-5f8427462fa9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -323,10 +323,10 @@ tasks:
     timertriggers: []
   "22":
     id: "22"
-    taskid: 95324590-ddd8-40c5-83ef-f108df7255df
+    taskid: f5b93cf3-ecec-4dbc-8810-f5977bce56d8
     type: regular
     task:
-      id: 95324590-ddd8-40c5-83ef-f108df7255df
+      id: f5b93cf3-ecec-4dbc-8810-f5977bce56d8
       version: -1
       name: vt-private-get-ip-report
       description: Retrieves a report on a given IP address (including the information
@@ -355,10 +355,10 @@ tasks:
     timertriggers: []
   "23":
     id: "23"
-    taskid: f4854eef-e673-4943-8b2e-5aa5d7f62e99
+    taskid: 08de22ac-69ff-4e08-8938-dacf11de84d6
     type: condition
     task:
-      id: f4854eef-e673-4943-8b2e-5aa5d7f62e99
+      id: 08de22ac-69ff-4e08-8938-dacf11de84d6
       version: -1
       name: Verify DBot Score of ip
       type: condition
@@ -392,10 +392,10 @@ tasks:
     timertriggers: []
   "24":
     id: "24"
-    taskid: 4dc0b7d1-7450-4308-8c50-35888456b6c5
+    taskid: 9c0f4d1b-70d6-4dc0-8430-3888ada6e8f6
     type: regular
     task:
-      id: 4dc0b7d1-7450-4308-8c50-35888456b6c5
+      id: 9c0f4d1b-70d6-4dc0-8430-3888ada6e8f6
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -421,10 +421,10 @@ tasks:
     timertriggers: []
   "25":
     id: "25"
-    taskid: 1193046c-e6e9-4190-8ca0-de86abea0703
+    taskid: f749615b-d766-4b3a-852f-98ed6ac5ed34
     type: regular
     task:
-      id: 1193046c-e6e9-4190-8ca0-de86abea0703
+      id: f749615b-d766-4b3a-852f-98ed6ac5ed34
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -452,15 +452,113 @@ tasks:
       }
     note: false
     timertriggers: []
+  "26":
+    id: "26"
+    taskid: 60938377-851a-4ced-89fb-1cd8a94f923f
+    type: regular
+    task:
+      id: 60938377-851a-4ced-89fb-1cd8a94f923f
+      version: -1
+      name: Get info on file
+      script: '|||vt-private-get-file-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      allInfo: {}
+      resource:
+        simple: 8de4b0e8bab8fc35375e20650eae4230
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 636a6a0b-d42a-4661-8d4e-d365425c5bee
+    type: regular
+    task:
+      id: 636a6a0b-d42a-4661-8d4e-d365425c5bee
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 07cfcabc-56c6-41f5-8a3d-05c1600e2a35
+    type: condition
+    task:
+      id: 07cfcabc-56c6-41f5-8a3d-05c1600e2a35
+      version: -1
+      name: 'Verify file is malicious '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2335,
+        "height": 2895,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -510
       }
     }
   }
