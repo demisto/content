@@ -301,7 +301,7 @@ script:
             outputs.Network.UDP.Port = udp_port;
         }
         if (tcp_ip.length) {
-            outputs.Network.TCP.IP = tcp_ip;
+            outputs.Network = {"TCP": {"IP": tcp_ip}};
         }
         if (tcp_port.length) {
             outputs.Network.TCP.Port = tcp_port;
@@ -712,3 +712,4 @@ script:
   runonce: false
 tests:
 - Wildfire Test
+releaseNotes: Fix of context handling at wildfire-report regarding hashes conataining network data
