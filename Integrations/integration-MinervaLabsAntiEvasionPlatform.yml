@@ -271,7 +271,11 @@ script:
       description: data
     - name: type
       required: true
-      description: type
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - path
+      description: The exclusion type
     - name: appliedGroupsIds
       description: Applied groups ids
       isArray: true
