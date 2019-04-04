@@ -275,6 +275,5 @@ script:
       type: string
     description: initiates a cyber triage collection on an endpoint
   runonce: false
-releaseNotes: "updated to be compitable with Cyber Triage 2.6."
 tests:
   - No test - no instance

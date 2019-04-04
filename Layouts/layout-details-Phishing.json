@@ -1,7 +1,6 @@
 {
 	"typeId": "Phishing",
 	"kind": "details",
-	"releaseNotes": "Remove 'Email Body HTML' from default Phishing incident type summary layout",
 	"fromVersion": "4.1.0",
 	"layout": {
 		"id": "Phishing",
