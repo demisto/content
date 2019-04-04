@@ -6,6 +6,7 @@ jobs:
     resource_class: medium+
     environment:
       CONTENT_VERSION: "19.4.0"
+      SERVER_VERSION: "5.0.0"
       GIT_SHA1: "eae9e2c8c301dc8d01e450f4c334fe90dc84d995" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
