@@ -127,7 +127,7 @@ class FilesValidator(object):
 
         return modified_files, added_files
 
-    def validate_modified_files(self, modified_files):
+    def validate_modified_files(self, modified_files, is_backward_check=True):
         """Validate the modified files from your branch.
 
         In case we encounter an invalid file we set the self._is_valid param to False.
@@ -141,7 +141,7 @@ class FilesValidator(object):
                 old_file_path, file_path = file_path
 
             print("Validating {}".format(file_path))
-            structure_validator = StructureValidator(file_path, is_added_file=False,
+            structure_validator = StructureValidator(file_path, is_added_file=not(False or is_backward_check),
                                                      is_renamed=True if old_file_path else False)
             if not structure_validator.is_file_valid():
                 self._is_valid = False
@@ -161,12 +161,12 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
-                if not integration_validator.is_backward_compatible():
+                if is_backward_check and not integration_validator.is_backward_compatible():
                     self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path)
-                if not script_validator.is_backward_compatible():
+                if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
@@ -175,7 +175,7 @@ class FilesValidator(object):
 
                 yml_path, _ = get_script_package_data(os.path.dirname(file_path))
                 script_validator = ScriptValidator(yml_path)
-                if not script_validator.is_backward_compatible():
+                if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
@@ -235,7 +235,7 @@ class FilesValidator(object):
         if secrets_found:
             self._is_valid = False
 
-    def validate_committed_files(self, branch_name):
+    def validate_committed_files(self, branch_name, is_backward_check=True):
         """Validate that all the committed files in your branch are valid
 
         Args:
@@ -244,7 +244,7 @@ class FilesValidator(object):
         modified_files, added_files = self.get_modified_and_added_files(branch_name, self.is_circle)
 
         self.validate_no_secrets_found(branch_name)
-        self.validate_modified_files(modified_files)
+        self.validate_modified_files(modified_files, is_backward_check)
         self.validate_added_files(added_files)
 
     def validate_all_files(self):
@@ -273,7 +273,7 @@ class FilesValidator(object):
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False
 
-    def is_valid_structure(self, branch_name):
+    def is_valid_structure(self, branch_name, is_backward_check=True):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
 
         Args:
@@ -287,7 +287,7 @@ class FilesValidator(object):
 
         if branch_name != 'master':
             # validates only committed files
-            self.validate_committed_files(branch_name)
+            self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
         else:
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
@@ -309,14 +309,16 @@ def main():
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
+    parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
     options = parser.parse_args()
     is_circle = options.circle
+    is_backward_check = options.backwardComp
 
     logging.basicConfig(level=logging.CRITICAL)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)
-    if not files_validator.is_valid_structure(branch_name):
+    if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check):
         sys.exit(1)
 
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
