@@ -121,7 +121,8 @@ def upload_sample(path, params=None):
 def upload_sample_command():
     """Uploads a file to vmray
     """
-    file_id = demisto.args().get("file_id")
+    # Backwards compatibility
+    file_id = demisto.args().get("file_id") if demisto.args().get("file_id") else demisto.args().get("entry_id")
     path = demisto.getFilePath(file_id).get("path")
 
     # additional params
