@@ -1,7 +1,7 @@
 id: CanaryTools Test
 version: -1
 name: CanaryTools Test
-toversion: 4.0.0
+toversion: 4.0.9
 starttaskid: "0"
 tasks:
   "0":
@@ -78,7 +78,7 @@ tasks:
       - "21"
     scriptarguments:
       alert_id:
-        simple: incident:canarytoken:6229a4c578d513d17c804e7f:94.188.164.68:1551105771
+        simple: incident:canarytoken:aabf05edc0eaaadd1ecbdc2c::1554285907
       alertID:
         simple: incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719
       status:
@@ -201,7 +201,7 @@ tasks:
       - "22"
     scriptarguments:
       alert_id:
-        simple: incident:canarytoken:6229a4c578d513d17c804e7f:94.188.164.68:1551105771
+        simple: incident:canarytoken:aabf05edc0eaaadd1ecbdc2c::1554285907
       alertID:
         simple: incident:canarytoken:6229a4c578d513d17c804e7f:94.188.164.68:1551117488
       status:
