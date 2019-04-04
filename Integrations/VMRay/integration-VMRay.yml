@@ -267,27 +267,48 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of analysis to add tags to
+      description: ID of analysis to add tag to
       isArray: false
       name: analysis_id
       required: false
       secret: false
     - default: false
-      description: ID of submission to add tags to
+      description: ID of submission to add tag to
       isArray: false
       name: submission_id
       required: false
       secret: false
     - default: false
-      description: Tags to add, comma seperated
+      description: Tag to add
       isArray: false
-      name: tags
+      name: tag
       required: false
       secret: false
     deprecated: false
-    description: Adds a tag to analysis or analysis
+    description: Adds a tag to analysis and/or submission
     execution: false
-    name: vmray-add-tags
+    name: vmray-add-tag
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: submission_id
+      description: ID of analysis to delete tag from
+      isArray: false
+      name: analysis_id
+      predefined:
+      - ID of analysis to delete tag from
+      required: false
+      secret: false
+    - default: false
+      description: Tag to delete
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete tags from analysis and/or submission
+    execution: false
+    name: vmray-delete-tag
   dockerimage: demisto/python
   isfetch: false
   runonce: false
@@ -406,7 +427,7 @@ script:
         suffix = "sample/submit"
         files = {"sample_file": open(path, "rb")}
         results = http_request("POST", url_suffix=suffix, files=files, params=params)
-        return results.get("data")
+        return results
 
 
     def upload_sample_command():
@@ -440,10 +461,11 @@ script:
         if tags:
             params["tags"] = tags
 
+        # Request call
         raw_response = upload_sample(path, params=params)
-
+        data = raw_response.get("data")
         jobs_list = list()
-        jobs = raw_response.get("jobs")
+        jobs = data.get("jobs")
         if jobs:
             for job in jobs:
                 if isinstance(job, dict):
@@ -457,7 +479,7 @@ script:
                     jobs_list.append(job_entry)
 
         samples_list = list()
-        samples = raw_response.get("samples")
+        samples = data.get("samples")
         if samples:
             for sample in samples:
                 if isinstance(sample, dict):
@@ -471,7 +493,7 @@ script:
                     samples_list.append(sample_entry)
 
         submissions_list = list()
-        submissions = raw_response.get("submissions")
+        submissions = data.get("submissions")
         if submissions:
             for submission in submissions:
                 if isinstance(submission, dict):
@@ -539,31 +561,32 @@ script:
         params = {"_limit": limit}
 
         raw_response = get_analysis(sample_id, params)
-        ec = build_analysis_data(raw_response)
+        data = raw_response.get("data")
+        ec = build_analysis_data(data)
         md = json.dumps(ec, indent=4)
-        return_outputs(md, ec, raw_response=raw_response)
+        return_outputs(md, ec, raw_response=data)
 
 
     def get_analysis(sample, params=None):
         suffix = "analysis/sample/{}".format(sample)
         response = http_request("GET", suffix, params=params)
-        return response.get("data")
+        return response
 
 
     def get_submission_command():
         submission_id = demisto.args().get("submission_id")
         raw_response = get_submission(submission_id)
-
+        data = raw_response.get("data")
         # Build entry
         entry = dict()
-        entry["IsFinished"] = raw_response.get("submission_finished")
-        entry["HasErrors"] = raw_response.get("submission_has_errors")
-        entry["SubmissionID"] = raw_response.get("submission_id")
-        entry["MD5"] = raw_response.get("submission_sample_md5")
-        entry["SHA1"] = raw_response.get("submission_sample_sha1")
-        entry["SHA256"] = raw_response.get("submission_sample_sha256")
-        entry["SSDeep"] = raw_response.get("submission_sample_ssdeep")
-        entry["Severity"] = SEVERITY_DICT.get(raw_response.get("submission_severity"))
+        entry["IsFinished"] = data.get("submission_finished")
+        entry["HasErrors"] = data.get("submission_has_errors")
+        entry["SubmissionID"] = data.get("submission_id")
+        entry["MD5"] = data.get("submission_sample_md5")
+        entry["SHA1"] = data.get("submission_sample_sha1")
+        entry["SHA256"] = data.get("submission_sample_sha256")
+        entry["SSDeep"] = data.get("submission_sample_ssdeep")
+        entry["Severity"] = SEVERITY_DICT.get(data.get("submission_severity"))
         scores = score_by_hash(entry)
 
         ec = {
@@ -601,24 +624,24 @@ script:
         """
         suffix = "submission/{}".format(submission_id)
         response = http_request("GET", url_suffix=suffix)
-        return response.get("data")
+        return response
 
 
     def get_sample_command():
         sample_id = demisto.args().get("sample_id")
         raw_response = get_sample(sample_id)
-
+        data = raw_response.get("data")
         entry = dict()
-        entry["SampleID"] = raw_response.get("sample_id")
-        entry["FileName"] = raw_response.get("sample_filename")
-        entry["MD5"] = raw_response.get("sample_md5hash")
-        entry["SHA1"] = raw_response.get("sample_sha1hash")
-        entry["SHA256"] = raw_response.get("sample_sha256hash")
-        entry["SSDeep"] = raw_response.get("sample_ssdeephash")
-        entry["Severity"] = SEVERITY_DICT.get(raw_response.get("sample_severity"))
-        entry["Type"] = raw_response.get("sample_type")
-        entry["Created"] = raw_response.get("sample_created")
-        entry["Classifications"] = raw_response.get("sample_classifications")
+        entry["SampleID"] = data.get("sample_id")
+        entry["FileName"] = data.get("sample_filename")
+        entry["MD5"] = data.get("sample_md5hash")
+        entry["SHA1"] = data.get("sample_sha1hash")
+        entry["SHA256"] = data.get("sample_sha256hash")
+        entry["SSDeep"] = data.get("sample_ssdeephash")
+        entry["Severity"] = SEVERITY_DICT.get(data.get("sample_severity"))
+        entry["Type"] = data.get("sample_type")
+        entry["Created"] = data.get("sample_created")
+        entry["Classifications"] = data.get("sample_classifications")
         scores = score_by_hash(entry)
 
         ec = {
@@ -646,7 +669,8 @@ script:
             dict: data from response
         """
         suffix = "sample/{}".format(sample_id)
-        return http_request("GET", suffix).get("data")
+        response = http_request("GET", suffix)
+        return response
 
 
     def get_job_sample(sample_id):
@@ -659,23 +683,24 @@ script:
         """
         suffix = "job/sample/{}".format(sample_id)
         response = http_request("GET", suffix)
-        return response.get("data")
+        return response
 
 
     def get_job_sample_command():
         sample_id = demisto.args().get("sample_id")
         raw_response = get_job_sample(sample_id)
+        data = raw_response.get("data")
 
         entry = dict()
-        entry["JobID"] = raw_response.get("job_id")
-        entry["SampleID"] = raw_response.get("job_sample_id")
-        entry["SubmissionID"] = raw_response.get("job_submission_id")
-        entry["MD5"] = raw_response.get("job_sample_md5")
-        entry["SHA1"] = raw_response.get("job_sample_sha1")
-        entry["SHA256"] = raw_response.get("job_sample_sha256")
-        entry["SSDeep"] = raw_response.get("job_sample_ssdeep")
-        entry["JobVMName"] = raw_response.get("job_vm_name")
-        entry["JobVMID"] = raw_response.get("job_vm_id")
+        entry["JobID"] = data.get("job_id")
+        entry["SampleID"] = data.get("job_sample_id")
+        entry["SubmissionID"] = data.get("job_submission_id")
+        entry["MD5"] = data.get("job_sample_md5")
+        entry["SHA1"] = data.get("job_sample_sha1")
+        entry["SHA256"] = data.get("job_sample_sha256")
+        entry["SSDeep"] = data.get("job_sample_ssdeep")
+        entry["JobVMName"] = data.get("job_vm_name")
+        entry["JobVMID"] = data.get("job_vm_id")
 
         ec = {"VMRay.Jobs(val.JobID === obj.JobID)": entry}
 
@@ -690,17 +715,17 @@ script:
     def get_threat_indicators(sample_id):
         suffix = "sample/{}/threat_indicators".format(sample_id)
         response = http_request("GET", suffix).get("data")
-        return response.get("threat_indicators")
+        return response
 
 
     def get_threat_indicators_command():
         sample_id = demisto.args().get("sample_id")
         raw_response = get_threat_indicators(sample_id)
-
+        data = raw_response.get("threat_indicators")
         # Build Entry Context TODO: EntryContext
-        if raw_response and isinstance(raw_response, list):
+        if data and isinstance(data, list):
             ec_list = list()
-            for indicator in raw_response:
+            for indicator in data:
                 entry = dict()
                 entry["AnalysisIDs"] = indicator.get("analysis_ids")
                 entry["Category"] = indicator.get("category")
@@ -718,36 +743,84 @@ script:
             )
 
             ec = {"VMRay.ThreatIndicators(obj.ID === val.ID)": ec_list}
-            return_outputs(md, ec, raw_response={"threat_indicators": raw_response})
-        return_outputs("No threat indicators for sample ID: {}".format(sample_id), {})
+            return_outputs(md, ec, raw_response={"threat_indicators": data})
+        return_outputs(
+            "No threat indicators for sample ID: {}".format(sample_id),
+            {},
+            raw_response=raw_response,
+        )
 
 
-    def post_tags_to_analysis(analysis_id, tags):
-        suffix = "analysis/{}/tag/{}".format(analysis_id, tags)
+    def post_tags_to_analysis(analysis_id, tag):
+        suffix = "analysis/{}/tag/{}".format(analysis_id, tag)
         response = http_request("POST", suffix)
-        return response.get("result") == "ok"
+        return response
 
 
-    def post_tags_to_submission(submission_id, tags):
-        suffix = "submission/{}/tag/{}".format(submission_id, tags)
+    def post_tags_to_submission(submission_id, tag):
+        suffix = "submission/{}/tag/{}".format(submission_id, tag)
         response = http_request("POST", suffix)
-        return response.get("result") == "ok"
+        return response
 
 
     def post_tags():
         analysis_id = demisto.args().get("analysis_id")
         submission_id = demisto.args().get("submission_id")
-        tags = demisto.args().get("tags")
+        tag = demisto.args().get("tag")
         if not submission_id and not analysis_id:
             return_error("No submission ID or analysis ID has been provided")
         if analysis_id:
-            analysis_status = post_tags_to_analysis(analysis_id, tags)
-            if analysis_status:
-                return_outputs("Tags: {} has been added to analysis:".format(tags, analysis_id), {})
+            analysis_status = post_tags_to_analysis(analysis_id, tag)
+            if analysis_status.get("result") == "ok":
+                return_outputs(
+                    "Tags: {} has been added to analysis:".format(tag, analysis_id),
+                    {},
+                    raw_response=analysis_status,
+                )
         if submission_id:
-            submission_status = post_tags_to_submission(submission_id, tags)
-            if submission_status:
-                return_outputs("Tags: {} has been added to submission:".format(tags, submission_id), {})
+            submission_status = post_tags_to_submission(submission_id, tag)
+            if submission_status.get("result") == "ok":
+                return_outputs(
+                    "Tags: {} has been added to submission:".format(tag, submission_id),
+                    {},
+                    raw_response=submission_status,
+                )
+
+
+    def delete_tags_from_analysis(analysis_id, tag):
+        suffix = "analysis/{}/tag/{}".format(analysis_id, tag)
+        response = http_request("DELETE", suffix)
+        return response
+
+
+    def delete_tags_from_submission(submission_id, tag):
+        suffix = "submission/{}/tag/{}".format(submission_id, tag)
+        response = http_request("DELETE", suffix)
+        return response
+
+
+    def delete_tags():
+        analysis_id = demisto.args().get("analysis_id")
+        submission_id = demisto.args().get("submission_id")
+        tag = demisto.args().get("tags")
+        if not submission_id and not analysis_id:
+            return_error("No submission ID or analysis ID has been provided")
+        if analysis_id:
+            analysis_status = delete_tags_from_analysis(analysis_id, tag)
+            if analysis_status.get("result") == "ok":
+                return_outputs(
+                    "Tags: {} has been added to analysis:".format(tag, analysis_id),
+                    {},
+                    raw_response=analysis_status,
+                )
+        if submission_id:
+            submission_status = delete_tags_from_submission(submission_id, tag)
+            if submission_status.get("result") == "ok":
+                return_outputs(
+                    "Tags: {} has been added to submission:".format(tag, submission_id),
+                    {},
+                    raw_response=submission_status,
+                )
 
 
     try:
@@ -768,8 +841,10 @@ script:
             get_job_sample_command()
         elif COMMAND == "vmray-get-threat-indicators":
             get_threat_indicators_command()
-        elif COMMAND == "vmray-add-tags":
+        elif COMMAND == "vmray-add-tag":
             post_tags()
+        elif COMMAND == "vmray-delete-tag":
+            delete_tags()
     except Exception as exc:
         return_error(exc.message)
   type: python
