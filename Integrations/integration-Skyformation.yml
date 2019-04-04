@@ -28,7 +28,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |-
     import requests
     requests.packages.urllib3.disable_warnings()
 
@@ -136,9 +136,12 @@ script:
             'ReadableContentsFormat': formats['markdown']
         })
 
-
+    before = os.environ['HTTP_PROXY']
     handle_proxy()
+    after = os.environ['HTTP_PROXY']
 
+    demisto.results("Before: {0}\nAfter: {1}".format(before, after))
+    sys.exit(0)
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         get_accounts_request()
