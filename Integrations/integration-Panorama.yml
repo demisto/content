@@ -3493,7 +3493,6 @@ script:
       description: Password for Panorama, needed for dlp-pcap only.
     description: Returns a list of pcap names
   runonce: false
-releaseNotes: added panorama-get-pcap, panorama-list-pcaps commands, refactor error messages, handle of invalid inputs, catch move-rule errors and display them as message.
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb

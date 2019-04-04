@@ -1592,4 +1592,3 @@ script:
 tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
-releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands, fix of Dbot score in ip-report command"
