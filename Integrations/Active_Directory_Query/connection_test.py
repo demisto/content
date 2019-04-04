@@ -89,4 +89,3 @@ def test_faulty_server(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
-    assert 'SSL error' in err_msg
