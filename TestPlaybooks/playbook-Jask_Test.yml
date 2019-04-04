@@ -54,7 +54,7 @@ tasks:
       time-from:
         simple: 12/1/2018
       time-to:
-        simple: 12/29/2018
+        simple: 12/29/2019
     separatecontext: false
     view: |-
       {
