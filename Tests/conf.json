@@ -1358,7 +1358,6 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Whois": "Integration socks proxy on tcp connection not http/s",
         "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }
