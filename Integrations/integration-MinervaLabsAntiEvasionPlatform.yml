@@ -91,6 +91,7 @@ script:
                             json={'username': USERNAME,
                                   'password': PASSWORD})
 
+
     @logger
     def logout():
         session.post(BASE_URL + '/api/login/logout')
@@ -118,12 +119,27 @@ script:
 
 
     @logger
+    def get_groups():
+        response = session.get(BASE_URL + '/api/groups', params={'_limit': '1000'})
+        if response.status_code is not 200:
+            return_error('Error while fetching groups. More information: {}, {}'.format(response.status_code, response.reason))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Available groups', t=response.json(), headerTransform=pascalToSpace, removeNull=True)
+        })
+
+
+    @logger
     def add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_id):
+        groups_ids_list = [group_id.strip() for group_id in groups_id.split(',')]
         json_params = {
             'type': exclusion_type,
             'description': exclusion_description,
             'data': exclusion_data,
-            'appliedGroupsIds': groups_id
+            'appliedGroupsIds': groups_ids_list
         }
         response = session.post(BASE_URL + '/api/exclusions',
                                 json=json_params)
@@ -133,7 +149,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), removeNull=True)
+            'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), headerTransform=pascalToSpace, removeNull=True)
         })
 
 
@@ -151,7 +167,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), removeNull=True)
+            'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), headerTransform=pascalToSpace, removeNull=True)
         })
 
 
@@ -169,7 +185,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Search results for \'{}\''.format(search_url.split('/')[-1]), response.json(), removeNull=True)
+            'HumanReadable': tableToMarkdown('Search results for \'{}\''.format(search_url.split('/')[-1]), response.json(), headerTransform=pascalToSpace, removeNull=True)
         }
 
         if response.json():
@@ -181,17 +197,17 @@ script:
     ''' EXECUTION '''
     session = get_session()
     try:
+        args = demisto.args()
+
         def add_exclusion_command():
-            args = demisto.args()
             exclusion_type = args.get('type')
             exclusion_data = args.get('data')
             exclusion_description = args.get('description')
-            groups_id = args.get('appliedGroupsId')
+            groups_id = args.get('appliedGroupsIds')
             add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_id)
 
 
         def add_vaccine_command():
-            args = demisto.args()
             vaccine_name = args.get('name')
             vaccine_desc = args.get('description')
             monitor_only = args.get('isMonitorOnly')
@@ -200,7 +216,6 @@ script:
 
         def search_process_command():
             processes_search_url = BASE_URL + '/api/processes'
-            args = demisto.args()
             search_param = args.get('param')
             search_condition = args.get('condition')
             search_value = args.get('value')
@@ -209,11 +224,14 @@ script:
 
         def search_endpoint_command():
             endpoint_search_url = BASE_URL + '/api/endpoints'
-            args = demisto.args()
             search_param = args.get('param')
             search_condition = args.get('condition')
             search_value = args.get('value')
             search(endpoint_search_url, search_param, search_condition, search_value)
+
+
+        def get_groups_command():
+            get_groups()
 
 
         LOG('Command is {}'.format(demisto.command()))
@@ -236,6 +254,8 @@ script:
             search_process_command()
         if demisto.command() == 'minerva-search-endpoint':
             search_endpoint_command()
+        if demisto.command() == 'minerva-get-groups':
+            get_groups_command()
     except Exception, e:
         LOG('Cannot perform the command: {}. Error: {}'.format(demisto.command(), e.message))
         LOG.print_log()
@@ -254,6 +274,8 @@ script:
       description: type
     - name: appliedGroupsIds
       description: Applied groups ids
+      isArray: true
+      defaultValue: All Groups
     - name: description
       required: true
       description: description
@@ -366,5 +388,33 @@ script:
       description: The endpoint Operating System
       type: string
     description: Search Minerva for an endpoint
+  - name: minerva-get-groups
+    arguments: []
+    outputs:
+    - contextPath: Group.Id
+      description: The id of the group
+      type: string
+    - contextPath: Group.Name
+      description: The name of the group
+      type: string
+    - contextPath: Group.Policy
+      description: The policy applied on the group
+      type: string
+    - contextPath: Group.PolicyVersion
+      description: The policy version applied on the group
+      type: string
+    - contextPath: Group.EndpointSettings
+      description: The settings applied on the group
+      type: string
+    - contextPath: Group.Endpoints
+      description: The amount of endpoints in the group
+      type: number
+    - contextPath: Group.Comment
+      description: The comment the group creator added
+      type: string
+    - contextPath: Group.CreationTime
+      description: The time the group was created on
+      type: date
+    description: Fetches all the groups defined in Minerva Management Console
   isfetch: true
   runonce: false
