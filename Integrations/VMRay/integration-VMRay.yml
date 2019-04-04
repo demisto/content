@@ -32,6 +32,56 @@ script:
       name: file_id
       required: true
       secret: false
+    - default: false
+      description: Password of the document
+      isArray: false
+      name: document_password
+      required: false
+      secret: false
+    - default: false
+      description: password of an archive
+      isArray: false
+      name: archive_password
+      required: false
+      secret: false
+    - default: false
+      description: Force type of file
+      isArray: false
+      name: sample_type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Make the file shareable
+      isArray: false
+      name: shareable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Analyze no matter if analyses already exist
+      isArray: false
+      name: reanalyze
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Maximum jobs to be created (number)
+      isArray: false
+      name: max_jobs
+      required: false
+      secret: false
+    - default: false
+      description: Tags to add to sample (comma seperated)
+      isArray: false
+      name: tags
+      required: false
+      secret: false
     deprecated: false
     description: Submit sample to VMRay
     execution: false
@@ -60,9 +110,6 @@ script:
       type: Date
     - contextPath: VMRay.Submissions.SubmissionID
       description: Submission ID
-      type: Number
-    - contextPath: VMRay.Submissions.SampleiD
-      description: ID of sample
       type: Number
   - arguments:
     - default: false
@@ -93,8 +140,33 @@ script:
     execution: false
     name: vmray_get_job_sample
     outputs:
-    - contextPath: VMRay.
-      type: Unknown
+    - contextPath: VMRay.Jobs.JobID
+      description: ID of job
+      type: Number
+    - contextPath: VMRay.Jobs.SampleID
+      description: Sample ID of job
+      type: Number
+    - contextPath: VMRay.Jobs.SubmissionID
+      description: ID of submission
+      type: Number
+    - contextPath: VMRay.Jobs.MD5
+      description: MD5 of sample in job
+      type: String
+    - contextPath: VMRay.Jobs.SHA1
+      description: SHA1 of sample in job
+      type: String
+    - contextPath: VMRay.Jobs.SHA256
+      description: SHA256 of sample in job
+      type: String
+    - contextPath: VMRay.Jobs.SSDeep
+      description: SSDeep of sample in job
+      type: String
+    - contextPath: VMRay.Jobs.JobVMName
+      description: Name of virtual machine
+      type: String
+    - contextPath: VMRay.Jobs.JobVMID
+      description: ID of virtual machine
+      type: Number
   - arguments:
     - default: false
       description: ID of submission (can be aquired from vmray-upload-sample)
@@ -166,13 +238,61 @@ script:
       type: Date
     - contextPath: VMRay.Samples.Classifications
       type: Unknown
+  - arguments:
+    - default: false
+      description: ID of sample (can get from VMRay.Samples.ID)
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get threat indicators (VTI)
+    execution: false
+    name: vmray-get-threat-indicators
+    outputs:
+    - contextPath: VMRay.ThreatIndicators.AnalysisIDs
+      description: List of connected analyses ids
+      type: Number
+    - contextPath: VMRay.ThreatIndicators.Category
+      description: Category of threat indicators
+      type: String
+    - contextPath: VMRay.ThreatIndicators.Classifications
+      description: Classifications of threat indicators
+      type: String
+    - contextPath: VMRay.ThreatIndicators.ID
+      description: ID of threat indicator
+      type: Number
+    - contextPath: VMRay.ThreatIndicators.Operation
+      description: Operation the indicators caused
+      type: String
+  - arguments:
+    - default: false
+      description: ID of analysis to add tags to
+      isArray: false
+      name: analysis_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of submission to add tags to
+      isArray: false
+      name: submission_id
+      required: false
+      secret: false
+    - default: false
+      description: Tags to add, comma seperated
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a tag to analysis or analysis
+    execution: false
+    name: vmray-add-tags
   dockerimage: demisto/python
   isfetch: false
   runonce: false
   script: |-
     import requests
-
-
 
     """ GLOBAL PARAMS """
     API_KEY = demisto.params()["api_key"]
@@ -282,21 +402,45 @@ script:
         demisto.results("ok")
 
 
-    def upload_sample(path):
+    def upload_sample(path, params=None):
         suffix = "sample/submit"
         files = {"sample_file": open(path, "rb")}
-        results = http_request("POST", url_suffix=suffix, files=files)
-        return results
+        results = http_request("POST", url_suffix=suffix, files=files, params=params)
+        return results.get("data")
 
 
     def upload_sample_command():
         """Uploads a file to vmray
-        TODO: add password to file
         """
         file_id = demisto.args().get("file_id")
         path = demisto.getFilePath(file_id).get("path")
 
-        raw_response = upload_sample(path).get("data")
+        # additional params
+        doc_pass = demisto.args().get("document_password")
+        arch_pass = demisto.args().get("archive_password")
+        sample_type = demisto.args().get("sample_type")
+        shareable = demisto.args().get("shareable")
+        reanalyze = demisto.args().get("reanalyze")
+        max_jobs = demisto.args().get("max_jobs")
+        tags = demisto.args().get("tags")
+
+        params = dict()
+        if doc_pass:
+            params["document_password"] = doc_pass
+        if arch_pass:
+            params["archive_password"] = arch_pass
+        if sample_type:
+            params["sample_type"] = sample_type
+        if shareable == "true":
+            params["shareable"] = shareable
+        if reanalyze == "true":
+            params["reanalyze"] = reanalyze
+        if max_jobs:
+            params["max_jobs"] = max_jobs
+        if tags:
+            params["tags"] = tags
+
+        raw_response = upload_sample(path, params=params)
 
         jobs_list = list()
         jobs = raw_response.get("jobs")
@@ -506,6 +650,13 @@ script:
 
 
     def get_job_sample(sample_id):
+        """
+        Args:
+            sample_id:
+
+        Returns:
+
+        """
         suffix = "job/sample/{}".format(sample_id)
         response = http_request("GET", suffix)
         return response.get("data")
@@ -559,23 +710,53 @@ script:
                 ec_list.append(entry)
 
             md = tableToMarkdown(
-                "Threat indicators for sample ID: {}. Showing first indicator:".format(sample_id),
+                "Threat indicators for sample ID: {}. Showing first indicator:".format(
+                    sample_id
+                ),
                 ec_list[0],
-                headers=["AnalysisIDs", "Category", "Classifications", "Operation"]
+                headers=["AnalysisIDs", "Category", "Classifications", "Operation"],
             )
 
-            ec = {"VMRay.ThreatIndicators(obj.ID === val.ID)"}
+            ec = {"VMRay.ThreatIndicators(obj.ID === val.ID)": ec_list}
             return_outputs(md, ec, raw_response={"threat_indicators": raw_response})
+        return_outputs("No threat indicators for sample ID: {}".format(sample_id), {})
+
+
+    def post_tags_to_analysis(analysis_id, tags):
+        suffix = "analysis/{}/tag/{}".format(analysis_id, tags)
+        response = http_request("POST", suffix)
+        return response.get("result") == "ok"
+
+
+    def post_tags_to_submission(submission_id, tags):
+        suffix = "submission/{}/tag/{}".format(submission_id, tags)
+        response = http_request("POST", suffix)
+        return response.get("result") == "ok"
+
+
+    def post_tags():
+        analysis_id = demisto.args().get("analysis_id")
+        submission_id = demisto.args().get("submission_id")
+        tags = demisto.args().get("tags")
+        if not submission_id and not analysis_id:
+            return_error("No submission ID or analysis ID has been provided")
+        if analysis_id:
+            analysis_status = post_tags_to_analysis(analysis_id, tags)
+            if analysis_status:
+                return_outputs("Tags: {} has been added to analysis:".format(tags, analysis_id), {})
+        if submission_id:
+            submission_status = post_tags_to_submission(submission_id, tags)
+            if submission_status:
+                return_outputs("Tags: {} has been added to submission:".format(tags, submission_id), {})
 
 
     try:
         COMMAND = demisto.command()
-        # The command demisto.command() holds the command sent from the user.
         if COMMAND == "test-module":
             # This is the call made when pressing the integration test button.
             # demisto.results('ok')
             test_module()
-        elif COMMAND in ("upload_sample", "vmray-upload-sample"):
+        elif COMMAND in ("upload_sample", "vmray-upload-sample", "file"):
             upload_sample_command()
         elif COMMAND == "vmray-get-submission":
             get_submission_command()
@@ -587,6 +768,8 @@ script:
             get_job_sample_command()
         elif COMMAND == "vmray-get-threat-indicators":
             get_threat_indicators_command()
+        elif COMMAND == "vmray-add-tags":
+            post_tags()
     except Exception as exc:
         return_error(exc.message)
   type: python

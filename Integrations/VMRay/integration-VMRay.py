@@ -1,6 +1,7 @@
-import requests
 import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
+import requests
 
 """ GLOBAL PARAMS """
 API_KEY = demisto.params()["api_key"]
@@ -110,21 +111,45 @@ def test_module():
     demisto.results("ok")
 
 
-def upload_sample(path):
+def upload_sample(path, params=None):
     suffix = "sample/submit"
     files = {"sample_file": open(path, "rb")}
-    results = http_request("POST", url_suffix=suffix, files=files)
-    return results
+    results = http_request("POST", url_suffix=suffix, files=files, params=params)
+    return results.get("data")
 
 
 def upload_sample_command():
     """Uploads a file to vmray
-    TODO: add password to file
     """
     file_id = demisto.args().get("file_id")
     path = demisto.getFilePath(file_id).get("path")
 
-    raw_response = upload_sample(path).get("data")
+    # additional params
+    doc_pass = demisto.args().get("document_password")
+    arch_pass = demisto.args().get("archive_password")
+    sample_type = demisto.args().get("sample_type")
+    shareable = demisto.args().get("shareable")
+    reanalyze = demisto.args().get("reanalyze")
+    max_jobs = demisto.args().get("max_jobs")
+    tags = demisto.args().get("tags")
+
+    params = dict()
+    if doc_pass:
+        params["document_password"] = doc_pass
+    if arch_pass:
+        params["archive_password"] = arch_pass
+    if sample_type:
+        params["sample_type"] = sample_type
+    if shareable == "true":
+        params["shareable"] = shareable
+    if reanalyze == "true":
+        params["reanalyze"] = reanalyze
+    if max_jobs:
+        params["max_jobs"] = max_jobs
+    if tags:
+        params["tags"] = tags
+
+    raw_response = upload_sample(path, params=params)
 
     jobs_list = list()
     jobs = raw_response.get("jobs")
@@ -334,6 +359,13 @@ def get_sample(sample_id):
 
 
 def get_job_sample(sample_id):
+    """
+    Args:
+        sample_id:
+
+    Returns:
+
+    """
     suffix = "job/sample/{}".format(sample_id)
     response = http_request("GET", suffix)
     return response.get("data")
@@ -387,14 +419,44 @@ def get_threat_indicators_command():
             ec_list.append(entry)
 
         md = tableToMarkdown(
-            "Threat indicators for sample ID: {}. Showing first indicator:".format(sample_id),
+            "Threat indicators for sample ID: {}. Showing first indicator:".format(
+                sample_id
+            ),
             ec_list[0],
-            headers=["AnalysisIDs", "Category", "Classifications", "Operation"]
+            headers=["AnalysisIDs", "Category", "Classifications", "Operation"],
         )
 
         ec = {"VMRay.ThreatIndicators(obj.ID === val.ID)": ec_list}
         return_outputs(md, ec, raw_response={"threat_indicators": raw_response})
     return_outputs("No threat indicators for sample ID: {}".format(sample_id), {})
+
+
+def post_tags_to_analysis(analysis_id, tags):
+    suffix = "analysis/{}/tag/{}".format(analysis_id, tags)
+    response = http_request("POST", suffix)
+    return response.get("result") == "ok"
+
+
+def post_tags_to_submission(submission_id, tags):
+    suffix = "submission/{}/tag/{}".format(submission_id, tags)
+    response = http_request("POST", suffix)
+    return response.get("result") == "ok"
+
+
+def post_tags():
+    analysis_id = demisto.args().get("analysis_id")
+    submission_id = demisto.args().get("submission_id")
+    tags = demisto.args().get("tags")
+    if not submission_id and not analysis_id:
+        return_error("No submission ID or analysis ID has been provided")
+    if analysis_id:
+        analysis_status = post_tags_to_analysis(analysis_id, tags)
+        if analysis_status:
+            return_outputs("Tags: {} has been added to analysis:".format(tags, analysis_id), {})
+    if submission_id:
+        submission_status = post_tags_to_submission(submission_id, tags)
+        if submission_status:
+            return_outputs("Tags: {} has been added to submission:".format(tags, submission_id), {})
 
 
 try:
@@ -415,5 +477,7 @@ try:
         get_job_sample_command()
     elif COMMAND == "vmray-get-threat-indicators":
         get_threat_indicators_command()
+    elif COMMAND == "vmray-add-tags":
+        post_tags()
 except Exception as exc:
     return_error(exc.message)
