@@ -352,7 +352,9 @@ def re_create_id_set():
 
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-    for arr in pool.map(process_integration, glob.glob(os.path.join('Integrations', '*'))):
+    integration_files = glob.glob(os.path.join('Integrations', '*'))
+    integration_files.extend(glob.glob(os.path.join('Beta_Integrations', '*')))
+    for arr in pool.map(process_integration, integration_files):
         integration_list.extend(arr)
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
     for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*'))):
