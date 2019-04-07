@@ -189,9 +189,9 @@ def upload_sample_command():
                 submissions_list.append(submission_entry)
 
     ec = dict()
-    ec["VMRay.Jobs(val.JobID === obj.JobID)"] = jobs_list
-    ec["VMRay.Samples(val.SampleID === obj.SampleID)"] = samples_list
-    ec["VMRay.Submissions(val.SubmissionID === obj.SubmissionID)"] = submissions_list
+    ec["VMRay.Job(val.JobID === obj.JobID)"] = jobs_list
+    ec["VMRay.Sample(val.SampleID === obj.SampleID)"] = samples_list
+    ec["VMRay.Submission(val.SubmissionID === obj.SubmissionID)"] = submissions_list
 
     table = {
         "Jobs ID": [job.get("JobID") for job in jobs_list],
@@ -277,7 +277,7 @@ def get_submission_command():
     scores = score_by_hash(entry)
 
     ec = {
-        "VMRay.Submissions(val.SubmissionID === obj.SubmissionID)": entry,
+        "VMRay.Submission(val.SubmissionID === obj.SubmissionID)": entry,
         outputPaths.get("dbotscore"): scores,
     }
 
@@ -329,11 +329,11 @@ def get_sample_command():
     entry["Severity"] = SEVERITY_DICT.get(data.get("sample_severity"))
     entry["Type"] = data.get("sample_type")
     entry["Created"] = data.get("sample_created")
-    entry["Classifications"] = data.get("sample_classifications")
+    entry["Classification"] = data.get("sample_classifications")
     scores = score_by_hash(entry)
 
     ec = {
-        "VMRay.Samples(var.SampleID === obj.SampleID)": entry,
+        "VMRay.Sample(var.SampleID === obj.SampleID)": entry,
         outputPaths.get("dbotscore"): scores,
     }
 
@@ -390,7 +390,7 @@ def get_job_sample_command():
     entry["JobVMName"] = data.get("job_vm_name")
     entry["JobVMID"] = data.get("job_vm_id")
 
-    ec = {"VMRay.Jobs(val.JobID === obj.JobID)": entry}
+    ec = {"VMRay.Job(val.JobID === obj.JobID)": entry}
 
     md = tableToMarkdown(
         "Results for job sample id: {}".format(sample_id),
@@ -415,9 +415,9 @@ def get_threat_indicators_command():
         ec_list = list()
         for indicator in data:
             entry = dict()
-            entry["AnalysisIDs"] = indicator.get("analysis_ids")
+            entry["AnalysisID"] = indicator.get("analysis_ids")
             entry["Category"] = indicator.get("category")
-            entry["Classifications"] = indicator.get("classifications")
+            entry["Classification"] = indicator.get("classifications")
             entry["ID"] = indicator.get("id")
             entry["Operation"] = indicator.get("operation")
             ec_list.append(entry)
@@ -427,10 +427,10 @@ def get_threat_indicators_command():
                 sample_id
             ),
             ec_list[0],
-            headers=["AnalysisIDs", "Category", "Classifications", "Operation"],
+            headers=["AnalysisID", "Category", "Classification", "Operation"],
         )
 
-        ec = {"VMRay.ThreatIndicators(obj.ID === val.ID)": ec_list}
+        ec = {"VMRay.ThreatIndicator(obj.ID === val.ID)": ec_list}
         return_outputs(md, ec, raw_response={"threat_indicators": data})
     return_outputs(
         "No threat indicators for sample ID: {}".format(sample_id),
@@ -527,7 +527,7 @@ def get_iocs_command():
     if domains:
         for domain in domains:
             entry = dict()
-            entry["AnalysisIDs"] = domain.get("analysis_ids")
+            entry["AnalysisID"] = domain.get("analysis_ids")
             entry["Domain"] = domain.get("domain")
             entry["ID"] = domain.get("id")
             entry["Type"] = domain.get("type")
@@ -538,7 +538,7 @@ def get_iocs_command():
     if ips:
         for ip in ips:
             entry = dict()
-            entry["AnalysisIDs"] = ip.get("analysis_ids")
+            entry["AnalysisID"] = ip.get("analysis_ids")
             entry["IP"] = ip.get("ip_address")
             entry["ID"] = ip.get("id")
             entry["Type"] = ip.get("type")
@@ -549,9 +549,9 @@ def get_iocs_command():
     if mutexes:
         for mutex in mutexes:
             entry = dict()
-            entry["AnalysisIDs"] = mutex.get("analysis_ids")
+            entry["AnalysisID"] = mutex.get("analysis_ids")
             entry["Name"] = mutex.get("mutex_name")
-            entry["Operations"] = mutex.get("operations")
+            entry["Operation"] = mutex.get("operations")
             entry["ID"] = mutex.get("id")
             entry["Type"] = mutex.get("type")
             mutex_list.append(entry)
@@ -561,9 +561,9 @@ def get_iocs_command():
     if registry:
         for reg in registry:
             entry = dict()
-            entry["AnalysisIDs"] = reg.get("analysis_ids")
+            entry["AnalysisID"] = reg.get("analysis_ids")
             entry["Name"] = reg.get("reg_key_name")
-            entry["Operations"] = reg.get("operations")
+            entry["Operation"] = reg.get("operations")
             entry["ID"] = reg.get("id")
             entry["Type"] = reg.get("type")
             registry_list.append(entry)
@@ -573,23 +573,23 @@ def get_iocs_command():
     if urls:
         for url in urls:
             entry = dict()
-            entry["AnalysisIDs"] = url.get("analysis_ids")
+            entry["AnalysisID"] = url.get("analysis_ids")
             entry["URL"] = url.get("url")
-            entry["Operations"] = url.get("operations")
+            entry["Operation"] = url.get("operations")
             entry["ID"] = url.get("id")
             entry["Type"] = url.get("type")
             urls_list.append(entry)
 
     iocs = {
-        "URLs": urls_list,
-        "Mutexes": mutex_list,
-        "Domains": domain_list,
+        "URL": urls_list,
+        "Mutex": mutex_list,
+        "Domain": domain_list,
         "Registry": registry_list,
-        "IPs": ip_list
+        "IP": ip_list
     }
 
     ec = {
-        "VMRay.Samples(val.SampleID == {}).IOCs".format(sample_id): iocs,
+        "VMRay.Sample(val.SampleID == {}).IOC".format(sample_id): iocs,
     }
 
     # Get total size of iocs for HumanReadable
