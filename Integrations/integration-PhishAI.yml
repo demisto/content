@@ -283,8 +283,8 @@ script:
     - name: scan_id
       required: true
       description: Scan ID of the URL to dispute
-    description: DIspute the result of the scan
+    description: Dispute the result of the scan
   runonce: false
 tests:
 - PhishAi-Test
-releaseNotes: fix logic of check-status command and add proper outputs to initiate successfully the Detonate URL playbook
+releaseNotes: Replaced the _url_ argument with the  _scan_id_ argument in the ___phish-ai-check-status___ command. You must replace the _url_ argument with the _scan_id_ argument in automations and playbooks. Backward compatibility is not supported. Added outputs that enable the Detonate URL playbook to initiate as expected.
