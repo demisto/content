@@ -19,7 +19,7 @@ def http_request(url, params_dict=None):
 
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         raise e
 
 

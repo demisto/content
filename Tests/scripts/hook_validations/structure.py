@@ -10,7 +10,7 @@ from Tests.test_utils import print_error, print_warning, run_command, get_yaml, 
 try:
     from pykwalify.core import Core
 except ImportError:
-    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
+    print("Please install pykwalify, you can do it by running: `pip3 install -I pykwalify`")
     sys.exit(1)
 
 
@@ -119,8 +119,8 @@ class StructureValidator(object):
                     print_error(str(err))
                     self._is_valid = False
             else:
-                print(self.file_path + " doesn't match any of the known supported file prefix/suffix,"
-                                       " please make sure that its naming is correct.")
+                print((self.file_path + " doesn't match any of the known supported file prefix/suffix,"
+                                       " please make sure that its naming is correct."))
                 self._is_valid = False
 
         return self._is_valid

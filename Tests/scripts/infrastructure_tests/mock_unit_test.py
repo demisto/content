@@ -4,8 +4,8 @@ from Tests.test_content import organize_tests
 
 
 def test_clean_filename():
-    assert clean_filename(u'th)))i(s) is a (test8)8   8') == 'th___i_s__is_a__test8_8___8'
-    assert clean_filename(u'n&%ew $r#eplac@es', replace='&%$#@') == 'n__ew _r_eplac_es'
+    assert clean_filename('th)))i(s) is a (test8)8   8') == 'th___i_s__is_a__test8_8___8'
+    assert clean_filename('n&%ew $r#eplac@es', replace='&%$#@') == 'n__ew _r_eplac_es'
 
 
 def test_silence_output():
@@ -14,7 +14,7 @@ def test_silence_output():
 
 
 def test_get_paths():
-    test_playbook_id = u'test_playbook'
+    test_playbook_id = 'test_playbook'
     assert get_mock_file_path(test_playbook_id) == 'test_playbook/test_playbook.mock'
     assert get_log_file_path(test_playbook_id) == 'test_playbook/test_playbook_playback.log'
     assert get_log_file_path(test_playbook_id, record=True) == 'test_playbook/test_playbook_record.log'

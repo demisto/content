@@ -140,7 +140,7 @@ class FilesValidator(object):
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
 
-            print("Validating {}".format(file_path))
+            print(("Validating {}".format(file_path)))
             structure_validator = StructureValidator(file_path, is_added_file=not(False or is_backward_check),
                                                      is_renamed=True if old_file_path else False)
             if not structure_validator.is_file_valid():
@@ -192,7 +192,7 @@ class FilesValidator(object):
             added_files (set): A set of the modified files in the current branch.
         """
         for file_path in added_files:
-            print("Validating {}".format(file_path))
+            print(("Validating {}".format(file_path)))
 
             structure_validator = StructureValidator(file_path, is_added_file=True)
             if not structure_validator.is_file_valid():
@@ -260,7 +260,7 @@ class FilesValidator(object):
                     if file_name.startswith('.'):
                         continue
 
-                    print("Validating " + file_name)
+                    print(("Validating " + file_name))
                     structure_validator = StructureValidator(file_path)
                     if not structure_validator.is_valid_scheme():
                         self._is_valid = False
@@ -268,7 +268,7 @@ class FilesValidator(object):
                 if root in PACKAGE_SUPPORTING_DIRECTORIES:
                     for inner_dir in dirs:
                         file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
-                        print("Validating " + file_path)
+                        print(("Validating " + file_path))
                         structure_validator = StructureValidator(file_path)
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False

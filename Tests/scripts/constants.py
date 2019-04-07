@@ -14,7 +14,7 @@ CONNECTIONS_DIR = "Connections"
 BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 
 # file types regexes
-PIPFILE_REGEX = r".*\Pipfile"
+PIPFILE_REGEX = r".*Pipfile"
 TEST_DATA_REGEX = r".*test_data.*"
 DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"

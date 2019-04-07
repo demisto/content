@@ -39,13 +39,13 @@ class ConfJsonValidator(object):
             checked_dict (dict): Dictionary from conf.json file.
         """
         problematic_instances = []
-        for instance, description in checked_dict.items():
+        for instance, description in list(checked_dict.items()):
             if description == "":
                 problematic_instances.append(instance)
 
         if problematic_instances:
             self._is_valid = False
-            print("Those instances don't have description:\n{0}".format('\n'.join(problematic_instances)))
+            print(("Those instances don't have description:\n{0}".format('\n'.join(problematic_instances))))
 
         return self._is_valid
 

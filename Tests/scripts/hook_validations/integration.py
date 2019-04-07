@@ -121,15 +121,15 @@ class IntegrationValidator(object):
         Returns:
             bool. Whether the new dictionary is a sub set of the old dictionary.
         """
-        for arg, required in old_dict.items():
-            if arg not in new_dict.keys():
+        for arg, required in list(old_dict.items()):
+            if arg not in list(new_dict.keys()):
                 return False
 
             if required != new_dict[arg] and new_dict[arg]:
                 return False
 
-        for arg, required in new_dict.items():
-            if arg not in old_dict.keys() and required:
+        for arg, required in list(new_dict.items()):
+            if arg not in list(old_dict.keys()) and required:
                 return False
 
         return True
@@ -143,8 +143,8 @@ class IntegrationValidator(object):
         current_command_to_args = self._get_command_to_args(self.current_integration)
         old_command_to_args = self._get_command_to_args(self.old_integration)
 
-        for command, args_dict in old_command_to_args.items():
-            if command not in current_command_to_args.keys() or \
+        for command, args_dict in list(old_command_to_args.items()):
+            if command not in list(current_command_to_args.keys()) or \
                     not self.is_subset_dictionary(current_command_to_args[command], args_dict):
                 print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
                             " the file {0} please undo, the command was:\n{1}".format(self.file_path, command))
@@ -190,8 +190,8 @@ class IntegrationValidator(object):
         current_command_to_context_paths = self._get_command_to_context_paths(self.current_integration)
         old_command_to_context_paths = self._get_command_to_context_paths(self.old_integration)
 
-        for old_command, old_context_paths in old_command_to_context_paths.items():
-            if old_command in current_command_to_context_paths.keys() and \
+        for old_command, old_context_paths in list(old_command_to_context_paths.items()):
+            if old_command in list(current_command_to_context_paths.keys()) and \
                     not self._is_sub_set(current_command_to_context_paths[old_command],
                                          old_context_paths):
                 print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
@@ -222,9 +222,9 @@ class IntegrationValidator(object):
         current_field_to_required = self._get_field_to_required_dict(self.current_integration)
         old_field_to_required = self._get_field_to_required_dict(self.old_integration)
 
-        for field, required in current_field_to_required.items():
-            if (field not in old_field_to_required.keys() and required) or \
-                    (required and field in old_field_to_required.keys() and required != old_field_to_required[field]):
+        for field, required in list(current_field_to_required.items()):
+            if (field not in list(old_field_to_required.keys()) and required) or \
+                    (required and field in list(old_field_to_required.keys()) and required != old_field_to_required[field]):
                 print_error("You've added required fields in the integration "
                             "file '{}', the field is '{}'".format(self.file_path, field))
                 self._is_valid = False

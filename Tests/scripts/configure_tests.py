@@ -130,8 +130,8 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     for test_playbook in test_playbooks_set:
         detected_usage = False
-        test_playbook_id = test_playbook.keys()[0]
-        test_playbook_data = test_playbook.values()[0]
+        test_playbook_id = list(test_playbook.keys())[0]
+        test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
@@ -147,8 +147,8 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
         if integration_to_command:
             command_to_integration = test_playbook_data.get('command_to_integration', {})
-            for command in test_playbook_data.get('command_to_integration', {}).keys():
-                for integration_id, integration_commands in integration_to_command.items():
+            for command in list(test_playbook_data.get('command_to_integration', {}).keys()):
+                for integration_id, integration_commands in list(integration_to_command.items()):
                     if command in integration_commands:
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
@@ -194,8 +194,8 @@ def get_test_ids(check_nightly_status=False):
 def get_integration_commands(integration_ids, integration_set):
     integration_to_command = {}
     for integration in integration_set:
-        integration_id = integration.keys()[0]
-        integration_data = integration.values()[0]
+        integration_id = list(integration.keys())[0]
+        integration_data = list(integration.values())[0]
         if integration_id in integration_ids:
             integration_to_command[integration_id] = integration_data.get('commands', [])
 
@@ -286,7 +286,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                              catched_playbooks, tests_set)
 
     integration_to_command = get_integration_commands(integration_ids, integration_set)
-    for integration_id, integration_commands in integration_to_command.items():
+    for integration_id, integration_commands in list(integration_to_command.items()):
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
                                   script_set, playbook_set, playbook_names, script_names, updated_script_names,
                                   updated_playbook_names, catched_scripts, catched_playbooks, tests_set)
@@ -309,7 +309,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     if integration_ids:
         affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n\n'
 
-    print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
+    print(('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string)))
     return tests_set, catched_scripts, catched_playbooks
 
 
@@ -332,12 +332,12 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     :param tests_set: The names of the caught tests.
     """
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
         command_to_integration = playbook_data.get('command_to_integration', {})
-        implementing_commands = command_to_integration.keys()
+        implementing_commands = list(command_to_integration.keys())
         for integration_command in integration_commands:
             if integration_command in implementing_commands and playbook_toversion >= given_version[1]:
                 if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
@@ -355,14 +355,14 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                                                updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
         script_name = script_data.get('name')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         command_to_integration = script_data.get('command_to_integration', {})
         for integration_command in integration_commands:
             if integration_command in script_data.get('depends_on', []) and not script_data.get('deprecated'):
-                if integration_command in command_to_integration.keys() and \
+                if integration_command in list(command_to_integration.keys()) and \
                         command_to_integration[integration_command] == integration_id and \
                         script_toversion >= given_version[1]:
 
@@ -382,7 +382,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
 def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, script_set, playbook_set,
                            updated_playbook_names, catched_playbooks, tests_set):
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -404,7 +404,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
 def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
         script_name = script_data.get('name')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
@@ -423,7 +423,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                      tests_set)
 
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -529,7 +529,7 @@ def create_test_file(is_nightly):
         branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
-        print("Getting changed files from the branch: {0}".format(branch_name))
+        print(("Getting changed files from the branch: {0}".format(branch_name)))
         if branch_name != 'master':
             files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
@@ -542,7 +542,7 @@ def create_test_file(is_nightly):
 
         tests_string = '\n'.join(tests)
         if tests_string:
-            print('Collected the following tests:\n{0}\n'.format(tests_string))
+            print(('Collected the following tests:\n{0}\n'.format(tests_string)))
         else:
             print('No filter configured, running all tests')
 

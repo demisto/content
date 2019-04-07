@@ -47,7 +47,7 @@ def run_command(command, is_silenced=True):
     if err:
         print_error("Failed to run command " + command)
         sys.exit(1)
-    return output
+    return output.decode("utf-8")
 
 
 def get_yaml(file_path):

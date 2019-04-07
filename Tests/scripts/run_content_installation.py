@@ -12,7 +12,7 @@ def main():
 
     id_to_ip = {}
     for ami_instance_name, ami_instance_id in ami_instances:
-        print "Validating ami instance: {}".format(ami_instance_name)
+        print("Validating ami instance: {}".format(ami_instance_name))
         run_command("./Tests/scripts/get_instance_ip.sh {}".format(ami_instance_id))
         # get_instance_ip.sh script is writing the ip to instance_ips.txt because we couldn't get the ip
         # from the output of the aws script
@@ -20,7 +20,7 @@ def main():
             instance_ip = instance_file.read()
             instance_ip = instance_ip.strip()
 
-        print("The IP of the instance is {}\n".format(instance_ip))
+        print(("The IP of the instance is {}\n".format(instance_ip)))
         id_to_ip[ami_instance_id] = instance_ip
 
     print("Waiting 90 Seconds for SSH to start\n")

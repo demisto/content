@@ -42,10 +42,10 @@ def main():
                     c = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
                     res = c.Login()
                     if res.status_code == 200:
-                        print "[{}] {} is ready for use".format(datetime.datetime.now(), ami_instance_name)
+                        print("[{}] {} is ready for use".format(datetime.datetime.now(), ami_instance_name))
                         ready_ami_list.append(ami_instance_name)
                     elif i % 30 == 0:  # printing the message every 30 seconds
-                        print "{} is not ready yet - waiting for it to start".format(ami_instance_name)
+                        print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
 
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)

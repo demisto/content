@@ -87,9 +87,9 @@ def docker_image_create(docker_base_image, requirements):
     images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
                                          '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
     if images_ls == target_image:
-        print('Using already existing docker image: {}'.format(target_image))
+        print(('Using already existing docker image: {}'.format(target_image)))
         return target_image
-    print("Creating docker image: {} (this may take a minute or two...)".format(target_image))
+    print(("Creating docker image: {} (this may take a minute or two...)".format(target_image)))
     try:
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
@@ -104,9 +104,9 @@ def docker_image_create(docker_base_image, requirements):
         print_v(subprocess.check_output(['docker', 'rm', container_id], stderr=subprocess.STDOUT,
                                         universal_newlines=True))
     except subprocess.CalledProcessError as err:
-        print("Failed executing command with  error: {} Output: \n{}".format(err, err.output))
+        print(("Failed executing command with  error: {} Output: \n{}".format(err, err.output)))
         raise err
-    print('Done creating docker image: {}'.format(target_image))
+    print(('Done creating docker image: {}'.format(target_image)))
     return target_image
 
 
@@ -136,7 +136,7 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
         if not keep_container:
             subprocess.check_output(['docker', 'rm', container_id])
         else:
-            print("Test container [{}] was left available".format(container_id))
+            print(("Test container [{}] was left available".format(container_id)))
 
 
 def main():
@@ -169,7 +169,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         script_obj = script_obj.get('script')
     script_type = script_obj.get('type')
     if script_type != 'python':
-        print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
+        print(('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type)))
         return 1
     docker = get_docker_image(script_obj)
     print_v("Using docker image: {}".format(docker))

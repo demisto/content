@@ -284,7 +284,7 @@ def get_white_list():
         final_white_list = []
         ioc_white_list = []
         secrets_white_list_file = json.load(secrets_white_list_file)
-        for name, white_list in secrets_white_list_file.iteritems():
+        for name, white_list in secrets_white_list_file.items():
             if name == 'iocs':
                 for sublist in white_list:
                     ioc_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]
@@ -316,7 +316,7 @@ def extract_text_from_pdf(file_path):
         pdf_file_obj = open('./' + file_path, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
     except PyPDF2.utils.PdfReadError:
-        print('ERROR: Could not parse PDF file in path: {} - ***Review Manually***'.format(file_path))
+        print(('ERROR: Could not parse PDF file in path: {} - ***Review Manually***'.format(file_path)))
         return file_contents
     num_pages = pdf_reader.numPages
 
