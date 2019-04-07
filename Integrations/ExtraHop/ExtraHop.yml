@@ -159,7 +159,7 @@ script:
       description: The Server Zero Wnd.
       type: Number
     - contextPath: ExtraHop.Query.Source.server.type
-      description: Type of item found
+      description: The type of item found.
       type: String
     - contextPath: ExtraHop.Query.Source.server.value
       description: The ID of server found.
