@@ -1,7 +1,6 @@
 import copy
 import time
 from pprint import pformat
-import uuids
 import urllib.parse
 
 from Tests.test_utils import print_error
