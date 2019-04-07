@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import print_function
+
 import os
 import io
 import sys
@@ -133,8 +133,7 @@ def get_code_file(package_path, script_type):
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
     if not package_path.endswith('/'):
         package_path += '/'
-    script_path = list(filter(lambda x: not re.search(ignore_regex, x),
-                              glob.glob(package_path + '*' + script_type)))[0]
+    script_path = list([x for x in glob.glob(package_path + '*' + script_type) if not re.search(ignore_regex, x)])[0]
     return script_path
 
 
@@ -146,8 +145,8 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     clean_code = clean_python_code(script_code)
 
     lines = ['|-']
-    lines.extend(u'    {}'.format(line) for line in clean_code.split('\n'))
-    script_code = u'\n'.join(lines)
+    lines.extend('    {}'.format(line) for line in clean_code.split('\n'))
+    script_code = '\n'.join(lines)
 
     if dir_name == 'Scripts':
         if yml_data.get('script'):
@@ -196,7 +195,7 @@ def get_package_path():
         package_path = package_path + '/'
 
     directory_name = ""
-    for dir_name in DIR_TO_PREFIX.keys():
+    for dir_name in list(DIR_TO_PREFIX.keys()):
         if dir_name in package_path:
             directory_name = dir_name
 

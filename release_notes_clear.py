@@ -6,8 +6,8 @@ import os
 import glob
 import sys
 
-from Tests.test_utils import server_version_compare
-from Tests.test_utils import print_error
+from .Tests.test_utils import server_version_compare
+from .Tests.test_utils import print_error
 
 
 def yml_remove_releaseNote_record(file_path, current_server_version):
@@ -28,8 +28,8 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
             v = line[len(version_key[0]) + 1:].strip()
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print "keeping release notes for (%s)\nto be published on %s version release " \
-                      % (file_path, current_server_version)
+                print("keeping release notes for (%s)\nto be published on %s version release " \
+                      % (file_path, current_server_version))
                 clear_release_notes = False
                 break
 
@@ -76,8 +76,8 @@ def json_remove_releaseNote_record(file_path, current_server_version):
             v = line.strip()[len(version_key[0]) + 1:]
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print "keeping release notes for (%s)\nto be published on %s version release " \
-                      % (file_path, current_server_version)
+                print("keeping release notes for (%s)\nto be published on %s version release " \
+                      % (file_path, current_server_version))
                 clear_release_notes = False
                 break
 
@@ -133,7 +133,7 @@ def remove_releaseNotes_folder(folder_path, files_extension,
         if FILE_EXTRACTER_DICT[files_extension](path, current_server_version):
             count += 1
 
-    print '--> Changed %d out of %d files' % (count, len(scan_files), )
+    print('--> Changed %d out of %d files' % (count, len(scan_files), ))
 
 
 def main(argv):
@@ -149,11 +149,11 @@ def main(argv):
                             'Classifiers', 'Layouts', 'IncidentFields']  # json
 
     for folder in yml_folders_to_scan:
-        print 'Scanning directory: "%s"' % (folder, )
+        print('Scanning directory: "%s"' % (folder, ))
         remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml', current_server_version)
 
     for folder in json_folders_to_scan:
-        print 'Scanning directory: "%s"' % (folder, )
+        print('Scanning directory: "%s"' % (folder, ))
         remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json', current_server_version)
 
 

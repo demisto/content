@@ -9,8 +9,8 @@ from time import sleep
 import demisto
 from slackclient import SlackClient
 
-from test_integration import test_integration
-from mock_server import MITMProxy, AMIConnection
+from Tests.test_integration import test_integration
+from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 
@@ -56,7 +56,7 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
     unmocklable_integrations_count = len(unmocklable_integrations)
 
     print('\nTEST RESULTS:')
-    print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
+    print(('\t Number of playbooks tested - ' + str(succeed_count + failed_count)))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
 
     if failed_count > 0:
@@ -70,12 +70,12 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
             print_warning('\t - ' + playbook_id)
 
     if empty_mocks_count > 0:
-        print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
-        print '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+        print(('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'))
+        print('\t (either there were no http requests or no traffic is passed through the proxy.\n' \
               '\t Investigate the playbook and the integrations.\n' \
-              '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
+              '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)')
         for playbook_id in proxy.empty_files:
-            print('\t - ' + playbook_id)
+            print(('\t - ' + playbook_id))
 
     if len(skipped_integration) > 0:
         print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
@@ -89,7 +89,7 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
 
     if unmocklable_integrations_count > 0:
         print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
-        for playbook_id, reason in unmocklable_integrations.iteritems():
+        for playbook_id, reason in unmocklable_integrations.items():
             print_warning('\t - ' + playbook_id + ' - ' + reason)
 
 
@@ -104,22 +104,22 @@ def update_test_msg(integrations, test_message):
 
 
 def has_unmockable_integration(integrations, unmockable_integrations):
-    return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.iterkeys()))
+    return list(set(x['name'] for x in integrations).intersection(iter(unmockable_integrations.keys())))
 
 
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     if status == PB_Status.COMPLETED:
-        print 'PASS: %s succeed' % (test_message,)
+        print('PASS: %s succeed' % (test_message,))
         succeed_playbooks.append(playbook_id)
 
     elif status == PB_Status.NOT_SUPPORTED_VERSION:
-        print 'PASS: %s skipped - not supported version' % (test_message,)
+        print('PASS: %s skipped - not supported version' % (test_message,))
         succeed_playbooks.append(playbook_id)
 
     else:
-        print 'Failed: %s failed' % (test_message,)
+        print('Failed: %s failed' % (test_message,))
         playbook_id_with_mock = playbook_id
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
@@ -150,31 +150,31 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
-        print start_message + ' (Mock: Playback)'
+        print(start_message + ' (Mock: Playback)')
         proxy.start(playbook_id)
         # run test
         status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
-            print 'PASS: %s succeed' % (test_message,)
+            print('PASS: %s succeed' % (test_message,))
             succeed_playbooks.append(playbook_id)
-            print '------ Test %s end ------' % (test_message,)
+            print('------ Test %s end ------' % (test_message,))
 
             return
 
         elif status == PB_Status.NOT_SUPPORTED_VERSION:
-            print 'PASS: %s skipped - not supported version' % (test_message,)
+            print('PASS: %s skipped - not supported version' % (test_message,))
             succeed_playbooks.append(playbook_id)
-            print '------ Test %s end ------' % (test_message,)
+            print('------ Test %s end ------' % (test_message,))
 
             return
 
         else:
-            print "Test failed with mock, recording new mock file."
+            print("Test failed with mock, recording new mock file.")
             rerecord = True
     else:
-        print start_message + ' (Mock: Recording)'
+        print(start_message + ' (Mock: Recording)')
 
     # Mock recording - no mock file or playback failure.
     succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
@@ -182,7 +182,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
-    print '------ Test %s end ------' % (test_message,)
+    print('------ Test %s end ------' % (test_message,))
 
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
@@ -190,10 +190,10 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
     start_message = '------ Test %s start ------' % (test_message,)
 
     if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
-        print start_message + ' (Mock: Disabled)'
+        print(start_message + ' (Mock: Disabled)')
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
                        slack, circle_ci, build_number, server_url, build_name)
-        print '------ Test %s end ------' % (test_message,)
+        print('------ Test %s end ------' % (test_message,))
 
         return
 
@@ -212,7 +212,7 @@ def http_request(url, params_dict=None):
 
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         raise e
 
 
@@ -304,7 +304,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     is_nightly_integration = False
     has_skipped_integration = False
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf.keys():
+        if integration in list(skipped_integrations_conf.keys()):
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
 
@@ -399,9 +399,9 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
     # Skip nightly test
     if skip_nightly_test:
-        print '------ Test %s start ------' % (test_message,)
-        print 'Skip test'
-        print '------ Test %s end ------' % (test_message,)
+        print('------ Test %s start ------' % (test_message,))
+        print('Skip test')
+        print('------ Test %s end ------' % (test_message,))
 
         return
 
@@ -411,7 +411,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
             return
 
     # Skip bad test
-    if playbook_id in skipped_tests_conf.keys():
+    if playbook_id in list(skipped_tests_conf.keys()):
         skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
         return
 
@@ -510,11 +510,11 @@ def execute_testing(server, server_ip, server_version):
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name)
 
-    print "\nRunning mock-disabled tests"
+    print("\nRunning mock-disabled tests")
     proxy.configure_proxy_in_demisto('')
-    print "Restarting demisto service"
+    print("Restarting demisto service")
     restart_demisto_service(ami)
-    print "Demisto service restarted\n"
+    print("Demisto service restarted\n")
 
     for t in mockless_tests:
         run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
@@ -530,7 +530,7 @@ def execute_testing(server, server_ip, server_version):
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
     if build_name == 'master':
-        print "Pushing new/updated mock files to mock git repo."
+        print("Pushing new/updated mock files to mock git repo.")
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
@@ -551,9 +551,9 @@ def main():
         with open('./Tests/images_data.txt', 'r') as image_data_file:
             image_data = [line for line in image_data_file if line.startswith(server_version)]
             if len(image_data) != 1:
-                print('Did not get one image data for server version, got {}'.format(image_data))
+                print(('Did not get one image data for server version, got {}'.format(image_data)))
             else:
-                print('Server image info: {}'.format(image_data[0]))
+                print(('Server image info: {}'.format(image_data[0])))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
@@ -562,7 +562,7 @@ def main():
             if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
                 # TODO: remove the and condition once version 4.5 is out
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                print("Starts tests with server url - https://{}".format(ami_instance_ip))
+                print(("Starts tests with server url - https://{}".format(ami_instance_ip)))
                 server = SERVER_URL.format(ami_instance_ip)
                 execute_testing(server, ami_instance_ip, server_version)
                 sleep(8)

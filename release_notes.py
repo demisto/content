@@ -5,8 +5,8 @@ import sys
 import yaml
 import os
 
-from Tests.test_utils import print_error
-from Tests.test_utils import server_version_compare
+from .Tests.test_utils import print_error
+from .Tests.test_utils import server_version_compare
 
 contentLibPath = "./"
 limitedVersion = False
@@ -54,9 +54,7 @@ def release_notes_item(header, body):
     return '- __' + header + '__\n' + add_dot(body) + '\n'
 
 
-class Content:
-    __metaclass__ = abc.ABCMeta
-
+class Content(metaclass=abc.ABCMeta):
     def __init__(self):
         self.modified_store = []  # holds modified file paths
         self.added_store = []  # holds added file paths
@@ -71,7 +69,7 @@ class Content:
         elif change_type == "D":
             self.deleted_store.append(data)
         else:
-            print "Unknown change type " + change_type
+            print("Unknown change type " + change_type)
 
     @abc.abstractmethod
     def get_header(self):
@@ -98,13 +96,13 @@ class Content:
             new_count = 0
             for path in store:
                 with open(path, 'r') as f:
-                    print " - adding release notes (%s) for file - [%s]... " % (path, title_prefix),
+                    print(" - adding release notes (%s) for file - [%s]... " % (path, title_prefix), end=' ')
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
 
                     from_version = cnt.get("fromversion")
                     if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
-                        print "Skipped because of version differences"
+                        print("Skipped because of version differences")
                         continue
 
                     if title_prefix == NEW_RN:
@@ -122,9 +120,9 @@ class Content:
                     elif ans:
                         new_count += 1
                         new_str += ans
-                        print "Success"
+                        print("Success")
                     else:
-                        print "Skipped"
+                        print("Skipped")
 
             if len(new_str) > 0:
                 if self.show_secondary_header:
@@ -144,7 +142,7 @@ class Content:
         res = ""
 
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
-            print "starting %s RN" % (self.get_header(),)
+            print("starting %s RN" % (self.get_header(),))
 
             # Added files
             add_rn = self.release_notes_section(self.added_store, NEW_RN, current_server_version)
@@ -161,9 +159,9 @@ class Content:
             if len(self.deleted_store) > 0:
                 section_body += "\n##### Removed " + self.get_header() + "\n"
                 for name in self.deleted_store:
-                    print " - adding release notes (Removed) for - [%s]" % (name,),
+                    print(" - adding release notes (Removed) for - [%s]" % (name,), end=' ')
                     section_body += "- __" + name + "__\n"
-                    print "Success"
+                    print("Success")
 
             if len(section_body) > 0:
                 res = "### " + self.get_header() + "\n"
@@ -537,7 +535,7 @@ def create_file_release_notes(file_name, delete_file_path):
             file_suffix = base_name.split(".")[-1]
         file_type_mapping = release_note_generator.get(file_type)
         if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
-            print("Unsupported file type: {}".format(full_file_name))
+            print(("Unsupported file type: {}".format(full_file_name)))
             return
 
         if change_type == "D":

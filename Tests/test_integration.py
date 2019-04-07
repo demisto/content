@@ -1,10 +1,10 @@
 import copy
 import time
 from pprint import pformat
-import uuid
-import urllib
+import uuids
+import urllib.parse
 
-from test_utils import print_error
+from Tests.test_utils import print_error
 from Tests.scripts.constants import PB_Status
 
 # ----- Constants ----- #
@@ -54,7 +54,7 @@ def __test_integration_instance(client, module_instance):
 
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_params, is_byoi):
-    print('Configuring instance for {}'.format(integration_name))
+    print(('Configuring instance for {}'.format(integration_name)))
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
@@ -176,7 +176,7 @@ def __get_investigation_playbook_state(client, inv_id):
     res = client.req('GET', '/inv-playbook/' + inv_id, {})
     investigation_playbook = res.json()
 
-    if 'state' in investigation_playbook.keys():
+    if 'state' in list(investigation_playbook.keys()):
         return investigation_playbook['state']
 
     else:
@@ -201,7 +201,7 @@ def __delete_incident(client, incident):
 
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
-    res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
+    res = client.req('DELETE', '/settings/integration/' + urllib.parse.quote(instance_id), {})
     if res.status_code != 200:
         print_error('delete integration instance failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
@@ -218,7 +218,7 @@ def __delete_integrations_instances(client, module_instances):
 
 
 def __print_investigation_error(client, playbook_id, investigation_id):
-    res = client.req('POST', '/investigation/' + urllib.quote(investigation_id), {})
+    res = client.req('POST', '/investigation/' + urllib.parse.quote(investigation_id), {})
     if res.status_code == 200:
         entries = res.json()['entries']
         print_error('Playbook ' + playbook_id + ' has failed:')
@@ -269,7 +269,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration %s succeed' % (integration_name, ))
+        print(('Create integration %s succeed' % (integration_name, )))
 
     # create incident with playbook
     incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
@@ -305,7 +305,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             break
 
         if i % DEFAULT_INTERVAL == 0:
-            print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
+            print('loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state)
         i = i + 1
 
     __disable_integrations_instances(client, module_instances)

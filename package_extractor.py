@@ -25,15 +25,15 @@ def extract_code(yml_path, output_path, demisto_mock, commonserver=None, yml_typ
         if yml_type == INTEGRATION:  # in integration the script is stored at a second level
             script = script['script']
         if type(script) == str:  # pyyaml may return either a unicode or str depending upon the content of script
-            script = unicode(script)
+            script = str(script)
     with open(output_path, 'w', encoding='utf-8') as code_file:
         if demisto_mock:
-            code_file.write(u"import demistomock as demisto\n")
+            code_file.write("import demistomock as demisto\n")
         if commonserver:
-            code_file.write(u"from CommonServerPython import *\n")
+            code_file.write("from CommonServerPython import *\n")
         code_file.write(script)
-        if script[-1] != u'\n':  # make sure files end with a new line (pyml seems to strip the last newline)
-            code_file.write(u"\n")
+        if script[-1] != '\n':  # make sure files end with a new line (pyml seems to strip the last newline)
+            code_file.write("\n")
 
 
 def str2bool(val):
