@@ -8,7 +8,6 @@
   "type": "pdf",
   "orientation": "portrait",
   "recipients": [],
-  "releaseNotes": "changed occurred time format in decoder",
   "system": true,
   "reportType": "investigation",
   "decoder": {

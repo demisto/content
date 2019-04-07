@@ -172,6 +172,5 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
-releaseNotes: "Adding proper error msg for failing on reading encrypted files"
 tests:
   - Extract Indicators From File - test

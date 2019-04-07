@@ -697,7 +697,7 @@ script:
         1. human readable string.
         2. url entry context.
         3. dbot entry context.
-        """
+        """BTW
         positives = demisto.get(response, 'positives')
         md = ''
         md += '## VirusTotal URL report for: ' + url + '\n'
@@ -1630,6 +1630,6 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
-releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands, fix of Dbot score in ip-report command. Adding malicious attribute based on preferred vendors on File and URL"
+releaseNotes: "implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands, fix of Dbot score in ip-report command. Added mechanism that determines a file or URL are malicious based on trusted vendors."
 tests:
 - virusTotalPrivateAPI-test-playbook

@@ -28,6 +28,5 @@
     }
   },
   "size": 0,
-  "description": "",
-  "releaseNotes": "EOL in 5.0, as we support partitions"
+  "description": ""
 }

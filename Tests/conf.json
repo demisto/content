@@ -1222,7 +1222,6 @@
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
-        "Jask": "Cannot access instance token not valid (issue 12900)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
@@ -1252,6 +1251,7 @@
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
+        "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "Out of quota",
@@ -1263,6 +1263,8 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Devo": "Pending Check",
+        "Jask": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
