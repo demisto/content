@@ -779,6 +779,5 @@ script:
       type: string
     description: Submit a url to scan
   runonce: false
-releaseNotes: "Add RediredctedURLs, EffectiveURL data from '!url' to context, add threshold parameter"
 tests:
   - urlscan_malicious_Test
