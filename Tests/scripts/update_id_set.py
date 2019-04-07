@@ -291,7 +291,8 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
     else:  # In case we encountered a package
