@@ -419,4 +419,3 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
-releaseNotes: "Displays better errors (no traceback), added FQDN parameter"
