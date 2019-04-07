@@ -1127,6 +1127,5 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "Added validation of deleting indictors from miners of type localDB, Added defaults to threat intel commands"
 tests:
   - minemeld_test
