@@ -22,10 +22,11 @@ INC_CREATION_ERR = 'Failed to create incident. Possible reasons are:\nMismatch b
 # get integration configuration
 def __get_integration_config(client, integration_name):
     res = client.req('POST', '/settings/integration/search', {
-        'page': 0, 'size': 100, 'query': 'name:' + integration_name
+        'page': 0, 'size': 200, 'query': 'name:' + integration_name
     })
 
     res = res.json()
+    print(res)
     all_configurations = res['configurations']
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
