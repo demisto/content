@@ -73,4 +73,3 @@ outputs:
 scripttarget: 0
 tests:
 - "Test-IsMaliciousIndicatorFound"
-releaseNotes: "Fix to only depend on DBotScore.Score"
