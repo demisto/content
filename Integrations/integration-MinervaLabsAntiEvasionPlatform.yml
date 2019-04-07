@@ -65,20 +65,30 @@ script:
     def create_entry_context(context_id, data):
         if context_id.endswith('processes'):
             return {
-                'Endpoint': data['endpoint'],
-                'SHA256': data['fileHash'],
-                'CommandLine': data['processCommandLine'],
-                'Username': data['username'],
-                'CreateTime': data['startTime'],
-                'Pid': data['processId']
+                'Minerva.Process.Endpoint': data['endpoint'],
+                'Minerva.Process.SHA256': data['fileHash'],
+                'Minerva.Process.CommandLine': data['processCommandLine'],
+                'Minerva.Process.Username': data['username'],
+                'Minerva.Process.CreateTime': data['startTime'],
+                'Minerva.Process.Pid': data['processId']
             }
         elif context_id.endswith('endpoints'):
             return {
-                'Group': data['group'],
-                'Name': data['endpoint'],
-                'Users': data['loggedOnUsers'],
-                'IP': data['reportedIpAddress'],
-                'OS': data['operatingSystem']
+                'Minerva.Endpoint.Group': data['group'],
+                'Minerva.Endpoint.Name': data['endpoint'],
+                'Minerva.Endpoint.Users': data['loggedOnUsers'],
+                'Minerva.Endpoint.IP': data['reportedIpAddress'],
+                'Minerva.Endpoint.OS': data['operatingSystem']
+            }
+        elif context_id.endswith('groups'):
+            return {
+                'Minerva.Group.Name': data['name'],
+                'Minerva.Group.Id': data['id'],
+                'Minerva.Group.Policy': data['policy'],
+                'Minerva.Group.PolicyVersion': data['policyVersion'],
+                'Minerva.Group.SimulationStatus': data['endpointSettings'],
+                'Minerva.Group.Endpoints': data['endpoints'],
+                'Minerva.Group.CreationTime': data['creationTime']
             }
         else:
             LOG('Failed to create entry context for {}'.format(context_id))
@@ -120,16 +130,22 @@ script:
 
     @logger
     def get_groups():
-        response = session.get(BASE_URL + '/api/groups', params={'_limit': '1000'})
+        get_groups_url = BASE_URL + '/api/groups'
+        response = session.get(get_groups_url, params={'_limit': '1000'})
         if response.status_code is not 200:
             return_error('Error while fetching groups. More information: {}, {}'.format(response.status_code, response.reason))
 
-        demisto.results({
+        results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
             'HumanReadable': tableToMarkdown('Available groups', t=response.json(), headerTransform=pascalToSpace, removeNull=True)
-        })
+        }
+
+        if response.json():
+            results['EntryContext'] = create_entry_context(get_groups_url, response.json()[0])
+
+        demisto.results(results)
 
 
     @logger
