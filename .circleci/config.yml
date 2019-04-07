@@ -5,8 +5,9 @@ jobs:
       - image: devdemisto/content-build-2and3:1.0.0.197 # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.3.1"
-      GIT_SHA1: "eae9e2c8c301dc8d01e450f4c334fe90dc84d995" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.4.0"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "3e4ecb7ab0e0b995b5c8b5449d792caa85220946" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -14,7 +15,7 @@ jobs:
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV              
+              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
@@ -22,14 +23,14 @@ jobs:
               chmod +x ./Tests/lastest_server_build_scripts/*
               pyenv versions
               python --version
-              python3 --version              
+              python3 --version
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
               - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
           name: Infrastucture testing
-          command: |            
+          command: |
             pytest ./Tests/scripts/hook_validations/tests/ -v
             pytest ./Tests/scripts/infrastructure_tests/ -v
       - run:
@@ -50,7 +51,7 @@ jobs:
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
       - run:
           name: Common Server Documentation
           command: ./Documentation/commonServerDocs.sh

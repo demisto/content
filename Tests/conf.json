@@ -65,6 +65,9 @@
             "playbookID": "ThreatMiner-Test"
         },
         {
+            "playbookID": "StixCreator-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test",
             "nightly": true
@@ -1107,8 +1110,13 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
-
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
             "integrations": "mysql",
@@ -1147,7 +1155,8 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "MAR - Endpoint data collection test"
+            "playbookID": "MAR - Endpoint data collection test",
+            "timeout": 500
         },
         {
 
@@ -1182,6 +1191,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
@@ -1208,7 +1221,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Jask": "Cannot access instance token not valid (issue 12900)",
+        "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
@@ -1232,11 +1245,13 @@
         "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
+        "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
+        "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "Out of quota",
@@ -1248,6 +1263,9 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Devo": "Pending Check",
+        "Jask": "Integration requires SSL",
+        "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
@@ -1343,6 +1361,7 @@
         "RSA NetWitness v11.1": "might be dynamic test",
         "Signal Sciences WAF": "error with certificate",
         "Zscaler": "might be dynamic test",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }
