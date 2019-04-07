@@ -43,7 +43,7 @@ tasks:
       Domain:
         simple: demisto.int
       Email:
-        simple: ${Account.Email.Address}
+        simple: ${Account.Email.Address}w
     separatecontext: false
     loop:
       iscommand: false
