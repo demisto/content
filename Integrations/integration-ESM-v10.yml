@@ -1158,7 +1158,7 @@ script:
             LOG.print_log()
             raise
         else:
-            return_error(str(ex))
+            return_error(str(ex), error=traceback.format_exc(ex))
     finally:
         esm.logout()
   type: python
