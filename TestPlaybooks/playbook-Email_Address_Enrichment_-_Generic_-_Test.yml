@@ -37,8 +37,8 @@ tasks:
     task:
       id: 4181b3ee-0d7b-446f-81d0-0597eaecb22d
       version: -1
-      name: Email Address Enrichment - Generic_dev
-      playbookName: Email Address Enrichment - Generic_dev
+      name: Email Address Enrichment - Generic
+      playbookName: Email Address Enrichment - Generic
       type: playbook
       iscommand: false
       brand: ""
