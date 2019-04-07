@@ -29,6 +29,10 @@ if [ -z "${PYTEST_SKIP}" -a -z "${PYTEST_FAIL_NO_TESTS}" ]; then
     echo "collecting tests..."
     collect_res=$(python -m pytest --collect-only 2>&1)
     case "$collect_res" in
+        *"errors"*)
+            echo "========== Errors while collecting tests. Will execute tests anyway... ========="
+            echo "$collect_res"
+        ;;
         *"collected 0 items"*)
             echo "========= No tests found. Skipping. ========"
             echo "========= Output of: pytest --collect-only ========"
