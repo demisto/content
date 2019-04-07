@@ -294,29 +294,47 @@ script:
             'SHA256': reportResponse.info.sha256,
         };
 
-        if (udp_ip.length) {
-            outputs.Network = {"UDP": {"IP": udp_ip}};
+        if (udp_ip.length || udp_port.length || tcp_ip.length || tcp_port.length || dns_query || dns_response) {
+
+            outputs.Network = {};
+
+            if (udp_ip.length || udp_port.length) {
+                outputs.Network.UDP = {};
+                if (udp_ip.length) {
+                    outputs.Network.UDP.IP = udp_ip;
+                }
+                if (udp_port.length) {
+                    outputs.Network.UDP.Port = udp_port;
+                }
+            }
+            if (tcp_ip.length || tcp_port.length) {
+                outputs.Network.TCP = {};
+                if (tcp_ip.length) {
+                    outputs.Network.TCP.IP = tcp_ip;
+                }
+                if (tcp_port.length) {
+                    outputs.Network.TCP.Port = tcp_port;
+                }
+            }
+            if (dns_query.length || dns_response.length) {
+                outputs.Network.DNS = {};
+                if (dns_query.length) {
+                    outputs.Network.DNS.Query = dns_query;
+                }
+                if (dns_response.length) {
+                    outputs.Network.DNS.Response = dns_response;
+                }
+            }
         }
-        if (udp_port.length) {
-            outputs.Network.UDP.Port = udp_port;
-        }
-        if (tcp_ip.length) {
-            outputs.Network.TCP.IP = tcp_ip;
-        }
-        if (tcp_port.length) {
-            outputs.Network.TCP.Port = tcp_port;
-        }
-        if (dns_query.length) {
-            outputs.Network.DNS = {Query: dns_query};
-        }
-        if (dns_response.length) {
-            outputs.Network.DNS.Response = dns_response;
-        }
-        if (evidence_md5.length) {
-            outputs.Evidence = {md5: evidence_md5};
-        }
-        if (evidence_text.length) {
-            outputs.Evidence.Text = evidence_text;
+
+        if (evidence_md5.length || evidence_text.length) {
+            outputs.Evidence = {};
+            if (evidence_md5.length) {
+                outputs.Evidence.md5 = evidence_md5;
+            }
+            if (evidence_text.length) {
+                outputs.Evidence.Text = evidence_text;
+            }
         }
 
         context["WildFire.Report(val.SHA256===obj.SHA256)"] = outputs;
@@ -712,3 +730,4 @@ script:
   runonce: false
 tests:
 - Wildfire Test
+releaseNotes: Fix of context handling at wildfire-report regarding hashes conataining network data
