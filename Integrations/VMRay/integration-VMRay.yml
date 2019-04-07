@@ -200,7 +200,7 @@ script:
       name: submission_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Gets a submission result
     execution: false
     name: vmray-get-submission
