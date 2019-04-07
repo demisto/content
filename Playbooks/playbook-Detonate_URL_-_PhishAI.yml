@@ -222,6 +222,7 @@ tasks:
         complex:
           root: PhishAI
           accessor: ScanID
+      url: {}
     separatecontext: false
     view: |-
       {
@@ -337,6 +338,18 @@ outputs:
 - contextPath: URL.Data
   description: URL's Address
   type: string
+- contextPath: URL
+  description: URL object
+  type: unknown
+- contextPath: URL.Malicious
+  description: URL malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBot score object
+  type: unknown
+- contextPath: IP
+  description: IP object
+  type: unknown
 tests:
   - Test-Detonate URL - Phish.AI
 releaseNotes: Fix logic of playbook, add outputs
