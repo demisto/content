@@ -155,10 +155,14 @@ script:
 
     def test():
         config = get_client_config()
+        demisto.info('######## config created ########')
         with DxlClient(config) as client:
             client.connect()
+            demisto.info('######## client connected ########')
             client.disconnect()
+            demisto.info('######## client disconnected ########')
             mar_client = MarClient(client)
+            demisto.info('######## client MAR client created ########')
 
     def extract_item_output(item, capitalize):
         output = item['output']
