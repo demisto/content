@@ -15,3 +15,5 @@ langdetect
 pyVim
 pyVmomi
 pytest
+requests
+pykwalify
