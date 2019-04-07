@@ -298,7 +298,6 @@ def process_integration(file_path):
         for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
             print("adding {0} to id_set".format(yml_file))
             res.append(get_integration_data(yml_file))
-        return res
     return res
 
 
