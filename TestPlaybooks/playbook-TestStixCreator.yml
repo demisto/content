@@ -1,0 +1,239 @@
+id: StixCreator-Test
+version: -1
+name: StixCreator-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f9f1d774-3ac7-4435-8c44-2b444d029d49
+    type: start
+    task:
+      id: f9f1d774-3ac7-4435-8c44-2b444d029d49
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8a12022b-7167-4248-8ea2-c7c87b0f8d1b
+    type: regular
+    task:
+      id: 8a12022b-7167-4248-8ea2-c7c87b0f8d1b
+      version: -1
+      name: Stix2Creator with Email
+      scriptName: StixCreator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      indicators:
+        simple: |-
+          {"0": {"firstSeen": "2019-03-13T11:39:11+02:00", "id": "320", "indicator_type":
+                    "Email", "investigationIDs": "101, 128, 237, 283, 343, 462, 466", "lastSeen":
+                    "2019-03-25T17:08:25+02:00", "source": "DBot", "timestamp": "2019-03-13T11:39:11+02:00",
+                    "value": "koko@demisto.com"}}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 02757b9e-54af-4a37-82ed-69e01d07f7f7
+    type: condition
+    task:
+      id: 02757b9e-54af-4a37-82ed-69e01d07f7f7
+      version: -1
+      name: Check STIX Export Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: StixExportedIndicators.pattern
+            iscontext: true
+          right:
+            value:
+              simple: '[email:value = ''koko@demisto.com'']'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d92eca7a-d4c9-4f3a-8137-93d8d5d71d3d
+    type: title
+    task:
+      id: d92eca7a-d4c9-4f3a-8137-93d8d5d71d3d
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 64502c1f-1f1e-4625-83cc-9702839f9836
+    type: regular
+    task:
+      id: 64502c1f-1f1e-4625-83cc-9702839f9836
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 2b0408ca-5d9c-4a68-898e-24d1d0d4e21c
+    type: regular
+    task:
+      id: 2b0408ca-5d9c-4a68-898e-24d1d0d4e21c
+      version: -1
+      name: Stix2Creator with IP
+      scriptName: StixCreator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      indicators:
+        simple: |-
+          {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
+                    "IP", "investigationIDs": "237, 283, 466", "lastSeen": "2019-03-24T10:33:42+02:00",
+                    "score": "Bad", "source": "DBot", "timestamp": "2019-03-13T12:06:27+02:00",
+                    "value": "1.2.3.4"}}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: d3de77e6-3356-4a05-8ce1-bb2b01337874
+    type: condition
+    task:
+      id: d3de77e6-3356-4a05-8ce1-bb2b01337874
+      version: -1
+      name: Check STIX Export Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: StixExportedIndicators.pattern
+            iscontext: true
+          right:
+            value:
+              simple: '[ipv4-addr:value = ''1.2.3.4'']'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.39
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
