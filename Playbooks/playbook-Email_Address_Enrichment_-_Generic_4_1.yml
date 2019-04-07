@@ -619,4 +619,4 @@ outputs:
   type: number
 releaseNotes: "Multiple fixes to enrichment uniqueness and to performance, fixed a bug where domains were not sent as inputs to the playbook, and removed reputation tasks."
 tests:
-  -
+  - Email Address Enrichment - Test
