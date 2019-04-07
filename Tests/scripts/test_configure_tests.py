@@ -6,6 +6,7 @@ from Tests.scripts.configure_tests import get_modified_files, get_test_list
 
 FILTER_CONF = "Tests/filter_file.txt"
 
+
 class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
     def run_git_command(self, command):
         if 'git branch' in command:
