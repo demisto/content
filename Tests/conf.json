@@ -1195,6 +1195,9 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "playbookID": "Email Address Enrichment - Test"
         }
     ],
     "skipped_tests": {
