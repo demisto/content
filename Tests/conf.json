@@ -1283,6 +1283,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",

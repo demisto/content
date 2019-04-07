@@ -19,34 +19,12 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     var DONT_CHECK_CERTIFICATE = false;
 
-    function checkStatus(url, apiKey){
-        var initialRes = http(
-            'https://app.phish.ai/api/url/scan',
-            {
-                Method: 'POST',
-                Headers: {
-                    'Content-Type': ['application/json'],
-                    'Accept': ['application/json'],
-                    'Authorization': [apiKey]
-                },
-                Body: JSON.stringify({'url': url})
-            },
-            DONT_CHECK_CERTIFICATE,
-            params.proxy
-        );
-
-        // check status code is valid
-        if (initialRes.StatusCode !== 200 && initialRes.StatusCode !== 201) {
-            throw 'Failed to send url ' + url + ' for scan. Response error: ' + initialRes.Body;
-        }
-
-        var scanId = JSON.parse(initialRes.Body).scan_id;
-
+    function checkStatus(scan_id, apiKey){
         var res = http(
-            'https://app.phish.ai/api/url/report?scan_id=' + scanId,
+            'https://app.phish.ai/api/url/report?scan_id=' + scan_id,
             {
                 Method: 'GET',
                 Headers: {
@@ -59,10 +37,12 @@ script:
         );
 
         if (res.StatusCode !== 200) {
-            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scanId + '. Response error: ' + res.Body;
+            throw 'Failed to get scan results for scan_id: ' + scan_id + '. Response error: ' + res.Body;
         }
         var report = JSON.parse(res.Body);
-        md = tableToMarkdown('Phish.AI Scan report ' + url, report);
+
+        md = tableToMarkdown('Phish.AI Scan report ' + scan_id, report);
+
         return {
             Type: entryTypes.note,
             Contents: report,
@@ -70,22 +50,25 @@ script:
             HumanReadable: md,
             EntryContext: {
                 'URL(val.Data === obj.Data)' : {
-                    'Data': url,
-                    'Status': report.status
+                    'Data': report.url,
                 },
+                'PhishAI(val.ScanID === obj.ScanID)': {
+                    'ScanID': scan_id,
+                    'Status': report.status
+                }
             }
         };
     }
 
 
-    function analayzeResult(report, url, scanId) {
+    function analayzeResult(report, url, scan_id) {
         delete report.user_email;
         var DBotScore = {
             Indicator: url,
             Score: 0,
             Type: 'url',
             Vendor: 'Phish.AI',
-            ScanID: scanId
+            ScanID: scan_id
         };
         if (report.verdict == 'malicious') {
             DBotScore.Score = 3;
@@ -106,7 +89,7 @@ script:
             delete report.url;
 
         }
-        md = tableToMarkdown('Phish.AI Scan report ' + url + '. Scan ID: ' + scanId, report);
+        md = tableToMarkdown('Phish.AI Scan report ' + url + '. Scan ID: ' + scan_id, report);
         return {
             Type: entryTypes.note,
             Contents: report,
@@ -123,7 +106,12 @@ script:
                         'Country':report.iso_code
                     }
                 },
-                'DBotScore' : DBotScore
+                'DBotScore' : DBotScore,
+                'PhishAI(val.ScanID === obj.ScanID)': {
+                    'ScanID': scan_id,
+                    'URL': url,
+                    'Status': report.status
+                }
             }
         };
     }
@@ -150,9 +138,9 @@ script:
             throw 'Failed to send url ' + url + ' for scan. Response error: ' + initialRes.Body;
         }
 
-        var scanId = JSON.parse(initialRes.Body).scan_id;
+        var scan_id = JSON.parse(initialRes.Body).scan_id;
         var res = http(
-            'https://app.phish.ai/api/url/report?scan_id=' + scanId,
+            'https://app.phish.ai/api/url/report?scan_id=' + scan_id,
             {
                 Method: 'GET',
                 Headers: {
@@ -165,12 +153,12 @@ script:
         );
 
         if (res.StatusCode !== 200) {
-            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scanId + '. Response error: ' + res.Body;
+            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scan_id + '. Response error: ' + res.Body;
         }
 
         var report = JSON.parse(res.Body);
 
-        return analayzeResult(report, url, scanId);
+        return analayzeResult(report, url, scan_id);
     }
 
 
@@ -220,7 +208,7 @@ script:
             return phishAiScan(args.url, params.apiKey);
 
         case 'phish-ai-check-status':
-            return checkStatus(args.url, params.apiKey);
+            return checkStatus(args.scan_id, params.apiKey);
 
         case 'phish-ai-dispute-url':
             return phishAiDispute(args.scan_id, params.apiKey);
@@ -263,27 +251,40 @@ script:
     - contextPath: IP.Geo.Country
       description: Geo location of the url
       type: string
-    - contextPath: DBotScore.ScanID
-      description: Phish AI scan ID
+    - contextPath: PhishAI.ScanID
+      description: Phish.AI scan ID
+      type: string
+    - contextPath: PhishAI.Status
+      description: Scan status
+      type: string
+    - contextPath: PhishAI.URL
+      description: URL address
       type: string
     description: Check if url is phishing and get details about the brand that is
       being phished
   - name: phish-ai-check-status
     arguments:
-    - name: url
-      description: url to check status for
+    - name: scan_id
+      required: true
+      description: Scan ID of the URL to check its status
     outputs:
     - contextPath: URL.Data
       description: URL's Address
-    - contextPath: URL.Status
-      description: URL's Status
-    description: Checks on url's status, e.g. completed/in progress
+      type: string
+    - contextPath: PhishAI.Status
+      description: Scan status
+      type: string
+    - contextPath: PhishAI.ScanID
+      description: Phish.AI scan ID
+      type: string
+    description: Checks on url's status, e.g. completed, in progress
   - name: phish-ai-dispute-url
     arguments:
     - name: scan_id
       required: true
       description: Scan ID of the URL to dispute
-    description: DIspute the result of the scan
+    description: Dispute the result of the scan
   runonce: false
 tests:
 - PhishAi-Test
+releaseNotes: Replaced the _url_ argument with the  _scan_id_ argument in the ___phish-ai-check-status___ command. You must replace the _url_ argument with the _scan_id_ argument in automations and playbooks. Backward compatibility is not supported. Added outputs that enable the Detonate URL playbook to initiate as expected.
