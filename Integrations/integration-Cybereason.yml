@@ -1959,6 +1959,5 @@ script:
     description: Query users as part of investigation
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - Cybereason Test

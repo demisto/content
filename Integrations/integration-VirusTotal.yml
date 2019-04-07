@@ -1301,6 +1301,6 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes: "Adding malicious attribute based on preferred vendors on File and URL"
+releaseNotes: "Added mechanism that determines a file or URL are malicious based on trusted vendors."
 tests:
 - virusTotal-test-playbook

@@ -826,6 +826,5 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-releaseNotes: "Improved attached email detection"
 tests:
   - No test
