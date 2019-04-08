@@ -1195,6 +1195,14 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "integrations": "nmap",
+            "playbookID": "af2f5a99-d70b-48c1-8c25-519732b733f2"
+        },
+        {
+            "integrations": "Zoom",
+            "playbookID": "Zoom_Test"
         }
     ],
     "skipped_tests": {
@@ -1207,7 +1215,9 @@
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
-        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
+        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
+        "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
+        "Zoom_test": "Added here because test existed but was not configured - need to review the test"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1249,6 +1259,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
+        "Zoom": "Added here because test existed but was not configured - need to review the test",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
