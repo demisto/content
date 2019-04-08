@@ -65,6 +65,9 @@
             "playbookID": "ThreatMiner-Test"
         },
         {
+            "playbookID": "StixCreator-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test",
             "nightly": true
@@ -1107,8 +1110,13 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
-
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
             "integrations": "mysql",
@@ -1147,7 +1155,8 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "MAR - Endpoint data collection test"
+            "playbookID": "MAR - Endpoint data collection test",
+            "timeout": 500
         },
         {
 
@@ -1182,6 +1191,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
@@ -1208,7 +1221,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Jask": "Cannot access instance token not valid (issue 12900)",
+        "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1221,6 +1234,7 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
         "IntSights": "Account Expired (issue #16351)",
+        "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
@@ -1230,11 +1244,13 @@
         "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
+        "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
+        "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1246,6 +1262,8 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Jask": "Integration requires SSL",
+        "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
@@ -1262,7 +1280,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
-        "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
@@ -1290,7 +1307,6 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
-        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
@@ -1339,6 +1355,8 @@
         "RSA NetWitness v11.1": "might be dynamic test",
         "Signal Sciences WAF": "error with certificate",
         "Zscaler": "might be dynamic test",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Skyformation": "Failure to connect to proxy",
+        "Remedy AR": "Failure to connect to proxy",
+        "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }

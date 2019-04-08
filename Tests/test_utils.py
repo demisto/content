@@ -139,3 +139,52 @@ def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False
+
+
+def server_version_compare(v1, v2):
+    """compare Demisto versions
+
+    Args:
+        v1 (string): string representing Demisto version (first comparable)
+        v2 (string): string representing Demisto version (second comparable)
+
+
+    Returns:
+        int.
+        0 for equal versions.
+        positive if v1 later version than v2.
+        negative if v2 later version than v1.
+    """
+
+    v1 = re.sub('[\'\"]', '', v1)
+    v2 = re.sub('[\'\"]', '', v2)
+
+    if v1 == "" or v2 == "":
+        return 0
+
+    v1_nums = [int(d) for d in v1.split(".")]
+    v2_nums = [int(d) for d in v2.split(".")]
+
+    for i in range(min(len(v1_nums), len(v2_nums))):
+        if v1_nums[i] != v2_nums[i]:
+            return v1_nums[i] - v2_nums[i]
+
+    # versions are equal to the i th number
+
+    # versions are equal
+    return 0
+
+
+def run_threads_list(threads_list):
+    """
+    Start a list of threads and wait for completion (join)
+
+    Arguments:
+        threads_list (list of threads) -- list of threads to start and wait for join
+    """
+    # run each command in a seperate thread
+    for t in threads_list:
+        t.start()
+    # wait for the commands to complete
+    for t in threads_list:
+        t.join()

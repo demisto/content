@@ -166,7 +166,7 @@ def list_tokens():
     """
     res = http_request('GET', SERVER + 'canarytokens/fetch')
     new_tokens = []
-    for token in res['tokens'][:-1]:
+    for token in res['tokens']:
         new_tokens.append({new_key: token[old_key] if old_key in token else None for old_key, new_key in
                            RELEVANT_TOKEN_ENTRIES.items()})
     return res, new_tokens
@@ -177,7 +177,7 @@ def list_tokens_command():
     Retrieve all Canary Tokens available in Canary Tools
     """
     res_json, new_tokens = list_tokens()
-    headers = sorted(new_tokens[0].keys())
+    headers = sorted(new_tokens[0].keys()) if new_tokens else None
     context = createContext(new_tokens, removeNull=True)
 
     contents = res_json
