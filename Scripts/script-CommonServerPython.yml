@@ -1537,5 +1537,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "add python3 support in LOG"
 tests:
   - TestPYCommonServer
