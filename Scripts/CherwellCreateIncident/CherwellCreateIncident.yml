@@ -1,0 +1,13 @@
+commonfields:
+  id: f4f79428-3008-45de-a60f-2cd60534dc63
+  version: -1
+enabled: false
+name: CherwellCreateIncident
+script: '-'
+system: false
+timeout: '0'
+type: python
+tags: []
+comment: This script is an example script of how to create an incident in Cherwell. The scruot wraps the create business
+  bject command in the cherwell integration. When writing your own script to creat a business object, follow the
+  instructions in the configuration part, leace the execution part untouched
