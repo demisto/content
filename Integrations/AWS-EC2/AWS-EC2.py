@@ -1700,10 +1700,43 @@ def create_network_acl(args):
         entries = [entry, entry]
     hr_entries = tableToMarkdown('AWS EC2 ACL Entries', entries)
 
-    ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
-    hr_acl = tableToMarkdown('AWS EC2 Instances', data)
+    ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).ACL': data}
+    hr_acl = tableToMarkdown('AWS EC2 Instance ACL', data)
     human_readable = hr_acl + hr_entries
     return_outputs(human_readable, ec)
+
+
+def create_network_acl_entry(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'Egress': args.get('Egress'),
+        'NetworkAclId': args.get('NetworkAclId'),
+        'Protocol': args.get('Protocol'),
+        'RuleAction': args.get('RuleAction'),
+        'RuleNumber': args.get('RuleNumber')
+    }
+
+    if args.get('CidrBlock') is not None:
+        kwargs.update({'CidrBlock': args.get('CidrBlock')})
+    if args.get('Code') is not None:
+        kwargs.update({'IcmpTypeCode': {'Code': args.get('Code')}})
+    if args.get('Type') is not None:
+        kwargs.update({'IcmpTypeCode': {'Type': args.get('Type')}})
+    if args.get('Ipv6CidrBlock') is not None:
+        kwargs.update({'Ipv6CidrBlock': args.get('Ipv6CidrBlock')})
+    if args.get('From') is not None:
+        kwargs.update({'PortRange': {'From': args.get('From')}})
+    if args.get('To') is not None:
+        kwargs.update({'PortRange': {'To': args.get('To')}})
+
+    response = client.create_network_acl_entry(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results("The Instance ACL was successfully modified")
 
 
 """COMMAND BLOCK"""
@@ -1869,7 +1902,7 @@ try:
     elif demisto.command() == 'aws-ec2-create-network-acl':
         create_network_acl(demisto.args())
 
-    # elif demisto.command() == 'aws-ec2-create-network-acl-entry':
-    #     create_network_acl_entry(demisto.args())
+    elif demisto.command() == 'aws-ec2-create-network-acl-entry':
+        create_network_acl_entry(demisto.args())
 except Exception as e:
     return_error('Error has occurred in the AWS EC2 Integration: {}\n {}'.format(type(e), e.message))
