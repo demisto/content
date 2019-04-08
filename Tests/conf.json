@@ -1262,6 +1262,7 @@
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
+        "Zoom": "Added here because test existed but was not configured - need to review the test",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "Out of quota",
