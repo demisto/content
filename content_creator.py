@@ -42,7 +42,7 @@ def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
         zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w',
                                zipfile.ZIP_DEFLATED)
-        zipf.comment = '{ "system": true }'
+        zipf.comment = b'{ "system": true }'
         for root, _, files in os.walk(d):
             for file in files:
                 zipf.write(os.path.join(root, file), file)
