@@ -1033,4 +1033,3 @@ script:
   runonce: false
 tests:
   - No test - OAUTH2
-releaseNotes: "Implemented OAUTH2"
