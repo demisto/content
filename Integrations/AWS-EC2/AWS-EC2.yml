@@ -4348,6 +4348,184 @@ script:
       action.
     execution: true
     name: aws-ec2-modify-instance-attribute
+  - arguments:
+    - default: false
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
+      isArray: false
+      name: DryRun
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the VPC.
+      isArray: false
+      name: VpcId
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a network ACL in a VPC. Network ACLs provide an optional
+      layer of security (in addition to security groups) for the instances in your
+      VPC.
+    execution: false
+    name: aws-ec2-create-network-acl
+    outputs:
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId
+      description: The ID of the association between a network ACL and a subnet.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclId
+      description: The ID of the network ACL.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.SubnetId
+      description: The ID of the subnet.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.CidrBlock
+      description: The IPv4 network range to allow or deny, in CIDR notation.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Egress
+      description: Indicates whether the rule is an egress rule (applied to traffic
+        leaving the subnet).
+      type: Boolean
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Code
+      description: The ICMP code. A value of -1 means all codes for the specified
+        ICMP type.
+      type: Number
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Type
+      description: The ICMP type. A value of -1 means all types.
+      type: Number
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Ipv6CidrBlock
+      description: The IPv6 network range to allow or deny, in CIDR notation.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.From
+      description: The first port in the range.
+      type: Number
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.To
+      description: The last port in the range.
+      type: Number
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Protocol
+      description: The protocol number. A value of "-1" means all protocols.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.RuleAction
+      description: Indicates whether to allow or deny the traffic that matches the
+        rule.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.RuleNumber
+      description: The rule number for the entry. ACL entries are processed in ascending
+        order by rule number.
+      type: Number
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.NetworkAclId
+      description: The ID of the network ACL.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.VpcId
+      description: The ID of the VPC for the network ACL.
+      type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.OwnerId
+      description: The ID of the AWS account that owns the network ACL.
+      type: String
+  - arguments:
+    - default: false
+      description: The IPv4 network range to allow or deny, in CIDR notation (for
+        example 172.16.0.0/24 ).
+      isArray: false
+      name: CidrBlock
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
+      isArray: false
+      name: DryRun
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether this is an egress rule (rule is applied to traffic
+        leaving the subnet).
+      isArray: false
+      name: Egress
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    - default: false
+      description: The ICMP code. A value of -1 means all codes for the specified
+        ICMP type.
+      isArray: false
+      name: Code
+      required: false
+      secret: false
+    - default: false
+      description: The ICMP type. A value of -1 means all types.
+      isArray: false
+      name: Type
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 network range to allow or deny, in CIDR notation (for
+        example 2001:db8:1234:1a00::/64 ). # disable-secrets-detection
+      isArray: false
+      name: Ipv6CidrBlock
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the network ACL.
+      isArray: false
+      name: NetworkAclId
+      required: true
+      secret: false
+    - default: false
+      description: The first port in the range.
+      isArray: false
+      name: From
+      required: false
+      secret: false
+    - default: false
+      description: The last port in the range.
+      isArray: false
+      name: To
+      required: false
+      secret: false
+    - default: false
+      description: The protocol number. A value of "-1" means all protocols. If you
+        specify "-1" or a protocol number other than "6" (TCP), "17" (UDP), or "1"
+        (ICMP), traffic on all ports is allowed, regardless of any ports or ICMP types
+        or codes that you specify. If you specify protocol "58" (ICMPv6) and specify
+        an IPv4 CIDR block, traffic for all ICMP types and codes allowed, regardless
+        of any that you specify. If you specify protocol "58" (ICMPv6) and specify
+        an IPv6 CIDR block, you must specify an ICMP type and code.
+      isArray: false
+      name: Protocol
+      required: true
+      secret: false
+    - default: false
+      description: Indicates whether to allow or deny the traffic that matches the
+        rule.
+      isArray: false
+      name: RuleAction
+      required: true
+      secret: false
+    - default: false
+      description: The rule number for the entry (for example, 100). ACL entries are
+        processed in ascending order by rule number.
+      isArray: false
+      name: RuleNumber
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an entry (a rule) in a network ACL with the specified rule
+      number.
+    execution: false
+    name: aws-ec2-create-network-acl-entry
   dockerimage: demisto/boto3:1.9.55
   isfetch: false
   runonce: false

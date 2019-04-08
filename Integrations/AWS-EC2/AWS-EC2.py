@@ -1683,7 +1683,7 @@ def create_network_acl(args):
     kwargs = {'VpcId': args.get('VpcId')}
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('groups')})
+        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
 
     response = client.create_network_acl(**kwargs)
     network_acl = response['NetworkAcl']
@@ -1696,11 +1696,11 @@ def create_network_acl(args):
         'VpcId': network_acl['VpcId'],
         'Timestamp': datetime.datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
     }
+    entries = []
     for entry in network_acl['Entries']:
-        entries = [entry, entry]
+        entries.append(entry)
     hr_entries = tableToMarkdown('AWS EC2 ACL Entries', entries)
-
-    ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).ACL': data}
+    ec = {'AWS.EC2.VpcId(val.VpcId === obj.VpcId).NetworkAcl': data}
     hr_acl = tableToMarkdown('AWS EC2 Instance ACL', data)
     human_readable = hr_acl + hr_entries
     return_outputs(human_readable, ec)
@@ -1714,25 +1714,27 @@ def create_network_acl_entry(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        'Egress': args.get('Egress'),
+        'Egress': True if args.get('Egress') == 'True' else False,
         'NetworkAclId': args.get('NetworkAclId'),
         'Protocol': args.get('Protocol'),
         'RuleAction': args.get('RuleAction'),
-        'RuleNumber': args.get('RuleNumber')
+        'RuleNumber': int(args.get('RuleNumber'))
     }
 
     if args.get('CidrBlock') is not None:
         kwargs.update({'CidrBlock': args.get('CidrBlock')})
     if args.get('Code') is not None:
-        kwargs.update({'IcmpTypeCode': {'Code': args.get('Code')}})
+        kwargs.update({'IcmpTypeCode': {'Code': int(args.get('Code'))}})
     if args.get('Type') is not None:
-        kwargs.update({'IcmpTypeCode': {'Type': args.get('Type')}})
+        kwargs.update({'IcmpTypeCode': {'Type': int(args.get('Type'))}})
     if args.get('Ipv6CidrBlock') is not None:
         kwargs.update({'Ipv6CidrBlock': args.get('Ipv6CidrBlock')})
     if args.get('From') is not None:
-        kwargs.update({'PortRange': {'From': args.get('From')}})
+        kwargs.update({'PortRange': {'From': int(args.get('From'))}})
     if args.get('To') is not None:
-        kwargs.update({'PortRange': {'To': args.get('To')}})
+        kwargs.update({'PortRange': {'To': int(args.get('To'))}})
+    if args.get('DryRun') is not None:
+        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
 
     response = client.create_network_acl_entry(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
