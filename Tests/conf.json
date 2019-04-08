@@ -3,9 +3,17 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tufin",
+            "playbookID": "Tufin Test"
+        },
+        {
+            "integrations": "Vertica",
+            "playbookID": "Vertica Test"
+        },
+        {
             "integrations": "Server Message Block (SMB)",
             "playbookID": "SMB test"
-        },        
+        },
         {
             "playbookID": "TestParseEmailHeaders"
         },
@@ -57,6 +65,9 @@
             "playbookID": "ThreatMiner-Test"
         },
         {
+            "playbookID": "StixCreator-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test",
             "nightly": true
@@ -89,6 +100,10 @@
         {
             "integrations": "ServiceNow",
             "playbookID": "servicenow_test_new"
+        },
+        {
+            "integrations": "ExtraHop",
+            "playbookID": "ExtraHop-Test"
         },
         {
             "playbookID": "Test CommonServer"
@@ -302,7 +317,7 @@
         },
         {
           "integrations": "Signal Sciences WAF",
-          "playbookID": "SignalSciences Test"
+          "playbookID": "SignalSciences-Test"
         },
         {
             "integrations": "RTIR",
@@ -469,7 +484,9 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
-        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
+        {
+          "playbookID": "ContextGetters_Test"
+        },
         {
             "integrations": [
                 "Mail Sender (New)",
@@ -488,6 +505,10 @@
         {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
+        },
+        {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test 2"
         },
         {
             "playbookID": "decodemimeheader_-_test"
@@ -566,6 +587,10 @@
         {
           "integrations": "FalconHost",
           "playbookID": "crowdstrike_falconhost_test"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test - CrowdStrike Falcon"
         },
         {
             "integrations": [
@@ -755,6 +780,11 @@
             "nightly": true
         },
         {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
+            "nightly": true
+        },
+        {
             "integrations": "Cisco Meraki",
             "playbookID": "Cisco-Meraki-Test"
         },
@@ -911,6 +941,9 @@
             "playbookID": "Centreon-Test-Playbook"
         },
         {
+            "playbookID": "ReadFile test"
+        },
+        {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
         },
@@ -984,6 +1017,9 @@
              "WildFire",
              "Lastline"
            ]
+        },
+        {
+            "playbookID": "STIXParserTest"
         },
         {
            "playbookID": "Detonate URL - Generic Test",
@@ -1074,8 +1110,13 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
-
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
             "integrations": "mysql",
@@ -1114,7 +1155,8 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "MAR - Endpoint data collection test"
+            "playbookID": "MAR - Endpoint data collection test",
+            "timeout": 500
         },
         {
 
@@ -1140,10 +1182,19 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
-            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
+            "playbookID": "EmailReputationTest",
+            "integrations": "Pwned"
         },
         {
-            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
+            "integrations": "Symantec Deepsight Intelligence",
+            "playbookID": "Symantec Deepsight Test"
+        },
+        {
+            "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "integrations": "Snowflake",
+            "playbookID": "Snowflake-Test"
         }
     ],
     "skipped_tests": {
@@ -1151,61 +1202,71 @@
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Need to check the reason for skipping",
-        "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "tenable-sc-test": "Unstable instance = flaky test",
-        "XFE Test": "License expired",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
-        "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
-        "SalesforceTestPlaybook": "User and password expired (issue 15901)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
-        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
-        "2142f8de-29d5-4288-8426-0db39abe988b": "Deprecated AWS integration",
-        "d66e5f86-e045-403f-819e-5058aa603c32": "Deprecated AWS integration"
+        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)"
     },
     "skipped_integrations": {
-        "RSA Archer": "Server not responding (issue 16085)",
-        "Jask": "Cannot access instance token not valid (issue 12900)",
-        "FortiGate": "License expired, in the process of getting new one (issue 14723)",
+      "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
+        "FortiGate": "License expired, and not going to get one (issue 14723)",
+        "Attivo Botsink": "no instance, not going to get it",
+        "VMware": "no License, and probably not going to get it",
+        "AWS Sagemaker": "License expired, and probably not going to get it",
+        "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
+
+
+      "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
-        "icebrg": "Requires BD (issue 14312)",
-        "VMware": "We don't have a license for VMWare, and probably not going to get it",
-        "Farsight DNSDB": "No instance (issue 15512)",
-        "Symantec MSS": "No instance (issue 15513)",
-        "Remedy AR": "DevOps investigation (issue 15514)",
-        "iDefense": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "Service Manager": "Expired license",
-        "Signal Sciences WAF": "API problems, not returning the correct data",
-        "ServiceNow": "Instance goes to hibernate every few hours",
         "MimecastV2": "Several issues with instance",
-        "AWS Sagemaker": "License expired, no renewal in the near future",
-        "Attivo Botsink": "no instance, @Arian will update",
-        "carbonblackprotection": "License expired",
-        "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota",
-        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
+        "Farsight DNSDB": "No instance (issue 15512)",
+        "Service Manager": "Expired license",
+        "carbonblackprotection": "License expired",
+        "icebrg": "Requires BD (issue 14312)",
         "Freshdesk": "Trial account expired",
-        "Tanium": "Instance is not stable (issue 15497)",
+        "Threat Grid": "instance problem (issue 16197)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
+        "IntSights": "Account Expired (issue #16351)",
+        "Remedy AR": "getting 'Not Found' in test button",
+        "XFE": "License expired",
+        "RedLock": "Credentials and API problems (issue 15493)",
+        "Salesforce": "User and password expired (issue 15901)",
+
+      "_comment": "~~~ UNSTABLE ~~~",
+        "ServiceNow": "Instance goes to hibernate every few hours",
+        "Tanium": "Instance is not stable (issue 15497)",
         "Whois": "Host periodically bans connection",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "AWS - EC2": "Not testing yet",
-        "Amazon Web Services": "Deprecated, will not be testing",
-        "Threat Grid": "instance problem (issue 16197)",
-        "BitDam": "Changes in service (issue #16247)"
+        "Tenable.sc": "unstable instance",
+        "Tenable.io": "Unstable instance (issue 16115)",
+
+      "_comment": "~~~ OTHER ~~~",
+        "iDefense": "DevOps investigation",
+        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
+        "BitDam": "Changes in service (issue #16247)",
+        "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
+
+      "_comment": "~~~ QUOTA ISSUES ~~~",
+        "Lastline": "Out of quota",
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota",
+        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st"
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Devo": "Pending Check",
+        "Jask": "Integration requires SSL",
+        "CrowdstrikeFalcon": "Mock recording fails, and fails while trying to record a new recording",
+        "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
         "Autofocus": "JS integration, problem listed in issue 15544",
@@ -1223,16 +1284,17 @@
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
+        "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
-        "OpenPhish": "JS integration, problem listed in issue 15544",
-        "VxStream": "JS integration, problem listed in issue 15544. Detonate URL: Large mock file.",
-        "ThreatExchange": "JS integration, problem listed in issue 15544",
-        "wildfire": "JS integration, problem listed in issue 15544",
-        "FalconHost": "JS integration, problem listed in issue 15544",
-        "VirusTotal": "JS integration, problem listed in issue 15544",
-        "carbonblack-v2": "JS integration, problem listed in issue 15544",
+        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
         "epo": "Pending merge of branch proxy-unsecure-checks",
@@ -1250,6 +1312,7 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
+        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
@@ -1285,11 +1348,21 @@
         "Tenable.io": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
         "Intezer": "Nightly - Checking",
-        "Archer": "Nightly - Checking",
+        "RSA Archer": "Nightly - Checking",
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "RedCanary": "Nightly - Checking",
         "McAfee Active Response": "Nightly - Checking",
-        "Whois": "Integration socks proxy on tcp connection not http/s"
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "SCADAfence CNM": "might be dynamic test",
+        "Recorded Future": "might be dynamic test",
+        "QRadar": "might be dynamic test",
+        "Centreon": "might be dynamic test",
+        "Cisco pxGrid ISE": "might be dynamic test",
+        "RSA NetWitness v11.1": "might be dynamic test",
+        "Signal Sciences WAF": "error with certificate",
+        "Zscaler": "might be dynamic test",
+        "Whois": "Integration socks proxy on tcp connection not http/s",
+        "Snowflake": "Isn't working with mocking enabled - needs investigation"
     }
 }
