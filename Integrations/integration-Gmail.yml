@@ -11,7 +11,7 @@ detaileddescription: "This API enables the usage of Google Admin API. In order t
   enable it, you will need to create an account service private key json file and
   copy its content.\nFollow the steps here to create such a private key and authorize
   the API for usage: [https://developers.google.com/admin-sdk/directory/v1/guides/delegation](https://developers.google.com/admin-sdk/directory/v1/guides/delegation)\n\nIt
-  is necessary to authorize the next API’s for that service account:\n[https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly)\n\nIn
+  is necessary to authorize the next API's for that service account:\n[https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly)\n\nIn
   order to fetch user roles, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly](https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly)\n\nIn
   order to revoke user roles, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.rolemanagement](https://www.googleapis.com/auth/admin.directory.rolemanagement)\n\nIn
   order to search user mailboxes, please authorize this api too: [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly)\n\nIn
@@ -235,16 +235,18 @@ script:
         return context, headers
 
 
+    TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
     def parse_time(t):
-        m = re.match('([\w,\d: ]*) ([+-]{1})(\d{2})(\d{2})[\s\w\(\)]*', t)
-        if m is None:
-            return datetime.datetime.strptime(t, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
-        else:
-            base_time, sign, hours, minutes = m.groups()
+        # there is only one time refernce is the string
+        base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
+
+        if all([sign, hours, minutes]):
             seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
             parsed_time = datetime.datetime.strptime(
                 base_time, '%a, %d %b %Y %H:%M:%S') + datetime.timedelta(seconds=seconds)
             return parsed_time.isoformat() + 'Z'
+        else:
+            return datetime.datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
 
     def create_incident_labels(parsed_msg, headers):
@@ -303,10 +305,6 @@ script:
             command_args['id'] = attachment['ID']
             result = service.users().messages().attachments().get(**command_args).execute()
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-            try:
-                file_data = unicode(file_data, 'utf-8')
-            except:
-                pass
 
             # save the attachment
             file_result = fileResult(attachment['Name'], file_data)
@@ -341,6 +339,7 @@ script:
                 'UserName': user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get('name') else None,
                 'DisplayName': user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get('name') else None,
                 'Email': {'Address': user_data.get('primaryEmail')},
+                'Gmail': {'Address': user_data.get('primaryEmail')},
                 'Group': user_data.get('kind'),
                 'CustomerId': user_data.get('customerId'),
             })
@@ -422,7 +421,7 @@ script:
             'Contents': context,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'Gmail.Filter(val.ID && val.ID == obj.ID)': context}
+            'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
         }
 
 
@@ -1034,7 +1033,7 @@ script:
 
     def fetch_incidents():
         params = demisto.params()
-        user_key = params['queryUserKey']
+        user_key = params.get('queryUserKey')
         user_key = user_key if user_key else ADMIN_EMAIL
         query = '' if params['query'] is None else params['query']
         last_run = demisto.getLastRun()
@@ -1076,7 +1075,7 @@ script:
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
-
+        demisto.info('extract {} incidents'.format(len(incidents)))
         demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
         return incidents
 
@@ -1205,6 +1204,9 @@ script:
       type: string
     - contextPath: Account.Group
       description: Group associated with current account
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
       type: string
     description: Fetch info on specific user
   - name: gmail-get-user-roles
@@ -1879,15 +1881,15 @@ script:
       description: How the message size in bytes should be in relation to the size
         field.
     outputs:
-    - contextPath: Gmail.Filter.ID
+    - contextPath: GmailFilter.ID
       description: Filter ID
       type: string
-    - contextPath: Gmail.Filter.Mailbox
+    - contextPath: GmailFilter.Mailbox
       description: Mailbox containing the filter
       type: string
-    - contextPath: Gmail.Filter.Criteria
+    - contextPath: GmailFilter.Criteria
       description: Filter Criteria
-    - contextPath: Gmail.Filter.Action
+    - contextPath: GmailFilter.Action
       description: Filter Action
     description: Add a new filter.
   - name: gmail-list-filters
@@ -1901,15 +1903,15 @@ script:
     - name: address
       description: Show only filters associated with address
     outputs:
-    - contextPath: Gmail.Filter.ID
+    - contextPath: GmailFilter.ID
       description: Filter ID
       type: string
-    - contextPath: Gmail.Filter.Mailbox
+    - contextPath: GmailFilter.Mailbox
       description: Mailbox containing the filter
       type: string
-    - contextPath: Gmail.Filter.Criteria
+    - contextPath: GmailFilter.Criteria
       description: Filter Criteria
-    - contextPath: Gmail.Filter.Action
+    - contextPath: GmailFilter.Action
       description: Filter Action
     description: List all filters in a user's mailbox.
   - name: gmail-remove-filter
