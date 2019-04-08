@@ -114,7 +114,7 @@ def get_data(dir_name, package_path, extension):
     if dir_name == 'Integrations' and data_path:
         found_data_path = data_path[0]
         with open(found_data_path, 'rb') as data_file:
-            data = data_file.read().decode("utf-8")
+            data = data_file.read().decode("ascii")
 
     return data, found_data_path
 
