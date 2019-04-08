@@ -76,7 +76,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_data, found_img_path = get_data(dir_name, package_path, "*png")
-    image_data = IMAGE_PREFIX + base64.b64encode(image_data)
+    image_data = IMAGE_PREFIX + base64.b64encode(image_data).decode("ascii")
 
     if yml_data.get('image'):
         yml_text = yml_text.replace(yml_data['image'], image_data)
@@ -114,7 +114,7 @@ def get_data(dir_name, package_path, extension):
     if dir_name == 'Integrations' and data_path:
         found_data_path = data_path[0]
         with open(found_data_path, 'rb') as data_file:
-            data = data_file.read().decode("ascii")
+            data = data_file.read()
 
     return data, found_data_path
 
