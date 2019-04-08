@@ -5,8 +5,8 @@ import yaml
 import os
 from abc import ABCMeta, abstractmethod
 
-from .Tests.test_utils import print_error
-from .Tests.test_utils import server_version_compare
+from Tests.test_utils import print_error
+from Tests.test_utils import server_version_compare
 
 contentLibPath = "./"
 limitedVersion = False

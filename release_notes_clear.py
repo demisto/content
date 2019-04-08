@@ -6,8 +6,8 @@ import os
 import glob
 import sys
 
-from .Tests.test_utils import server_version_compare
-from .Tests.test_utils import print_error
+from Tests.test_utils import server_version_compare
+from Tests.test_utils import print_error
 
 
 def yml_remove_releaseNote_record(file_path, current_server_version):
