@@ -1706,9 +1706,12 @@ def create_network_acl(args):
         'Timestamp': datetime.datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
     }
     for entry in network_acl['Entries']:
+        entries = [entry, entry]
+    hr_entries = tableToMarkdown('AWS EC2 ACL Entries', entries)
 
     ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
-    human_readable = tableToMarkdown('AWS EC2 Instances', data)
+    hr_acl = tableToMarkdown('AWS EC2 Instances', data)
+    human_readable = hr_acl + hr_entries
     return_outputs(human_readable, ec)
 
 
@@ -1875,7 +1878,7 @@ try:
     elif demisto.command() == 'aws-ec2-create-network-acl':
         create_network_acl(demisto.args())
 
-    elif demisto.command() == 'aws-ec2-create-network-acl-entry':
-        create_network_acl_entry(demisto.args())
+    # elif demisto.command() == 'aws-ec2-create-network-acl-entry':
+    #     create_network_acl_entry(demisto.args())
 except Exception as e:
     return_error('Error has occurred in the AWS EC2 Integration: {}\n {}'.format(type(e), e.message))
