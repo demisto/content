@@ -136,7 +136,7 @@ def parse_tag_field(tags_str):
 
 
 class DatetimeEncoder(json.JSONEncoder):
-    # pylint: disable=overrides-method
+    # pylint: disable=method-hidden
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
