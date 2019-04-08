@@ -1,9 +1,56 @@
+args:
+- default: false
+  description: Incident description
+  isArray: false
+  name: description
+  predefined:
+  - ''
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Incident priority
+  isArray: false
+  name: priority
+  predefined:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  required: true
+  secret: false
+- default: false
+  description: The incident customer
+  isArray: false
+  name: customer_display_name
+  required: true
+  secret: false
+- default: false
+  description: Owner of the incident
+  isArray: false
+  name: owned_by
+  required: false
+  secret: false
+- default: false
+  description: Service needed
+  isArray: false
+  name: service
+  required: false
+  secret: false
 commonfields:
-  id: f4f79428-3008-45de-a60f-2cd60534dc63
+  id: c5307c85-4435-4612-8bbc-198611caa4c2
   version: -1
 enabled: false
 name: CherwellCreateIncident
-script: '-'
+outputs:
+- contextPath: Cherwell.BusinessObjects.IncidentPublicID
+  description: Incident public ID
+  type: String
+- contextPath: Cherwell.BusinessObjects.IncidentRecordID
+  description: Incident record ID
+  type: String
 system: false
 timeout: '0'
 type: python
