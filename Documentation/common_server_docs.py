@@ -25,14 +25,12 @@ def readJsonFile(filepath):
     with open(filepath, 'r') as f:
         out = json.load(f)
         return out
-    return []
 
 
 def readYmlFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.safe_load(f)
         return out
-    return []
 
 
 def reformatPythonOutput(output, origin, language):
