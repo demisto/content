@@ -2,6 +2,7 @@ id: domain_enrichment_generic
 version: -1
 name: Domain Enrichment - Generic
 fromversion: 3.6.0
+toversion: 4.0.9
 description: |-
   Enrich Domain using one or more integrations.
 
@@ -328,3 +329,4 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
+releaseNotes: "Changed version."
