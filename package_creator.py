@@ -98,10 +98,12 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'
                          ' in the package: {}'.format(package_path))
     if desc_data:
-        if not desc_data.startswith('"'):
+        if not desc_data.startswith(b'"'):
             # for multiline detailed-description, if it's not wrapped in quotation marks
             # add | to the beginning of the description, and shift everything to the right
-            desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
+            desc_data = b'|\n  ' + desc_data.replace(b'\n', b'\n  ')
+
+        desc_data = desc_data.decode("ascii")
         yml_text = "detaileddescription: " + desc_data + '\n' + yml_text
 
     return yml_text, found_desc_path
