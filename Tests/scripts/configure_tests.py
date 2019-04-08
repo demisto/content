@@ -309,7 +309,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     if integration_ids:
         affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n\n'
 
-    print(('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string)))
+    print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
     return tests_set, catched_scripts, catched_playbooks
 
 
@@ -529,7 +529,7 @@ def create_test_file(is_nightly):
         branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
-        print(("Getting changed files from the branch: {0}".format(branch_name)))
+        print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
@@ -542,7 +542,7 @@ def create_test_file(is_nightly):
 
         tests_string = '\n'.join(tests)
         if tests_string:
-            print(('Collected the following tests:\n{0}\n'.format(tests_string)))
+            print('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             print('No filter configured, running all tests')
 

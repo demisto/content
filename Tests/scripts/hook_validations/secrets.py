@@ -316,7 +316,7 @@ def extract_text_from_pdf(file_path):
         pdf_file_obj = open('./' + file_path, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
     except PyPDF2.utils.PdfReadError:
-        print(('ERROR: Could not parse PDF file in path: {} - ***Review Manually***'.format(file_path)))
+        print('ERROR: Could not parse PDF file in path: {} - ***Review Manually***'.format(file_path))
         return file_contents
     num_pages = pdf_reader.numPages
 

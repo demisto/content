@@ -56,7 +56,7 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
     unmocklable_integrations_count = len(unmocklable_integrations)
 
     print('\nTEST RESULTS:')
-    print(('\t Number of playbooks tested - ' + str(succeed_count + failed_count)))
+    print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
 
     if failed_count > 0:
@@ -70,12 +70,12 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
             print_warning('\t - ' + playbook_id)
 
     if empty_mocks_count > 0:
-        print(('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'))
+        print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
         print('\t (either there were no http requests or no traffic is passed through the proxy.\n' \
               '\t Investigate the playbook and the integrations.\n' \
               '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)')
         for playbook_id in proxy.empty_files:
-            print(('\t - ' + playbook_id))
+            print('\t - ' + playbook_id)
 
     if len(skipped_integration) > 0:
         print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
@@ -551,9 +551,9 @@ def main():
         with open('./Tests/images_data.txt', 'r') as image_data_file:
             image_data = [line for line in image_data_file if line.startswith(server_version)]
             if len(image_data) != 1:
-                print(('Did not get one image data for server version, got {}'.format(image_data)))
+                print('Did not get one image data for server version, got {}'.format(image_data))
             else:
-                print(('Server image info: {}'.format(image_data[0])))
+                print('Server image info: {}'.format(image_data[0]))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
@@ -562,7 +562,7 @@ def main():
             if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
                 # TODO: remove the and condition once version 4.5 is out
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                print(("Starts tests with server url - https://{}".format(ami_instance_ip)))
+                print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
                 execute_testing(server, ami_instance_ip, server_version)
                 sleep(8)

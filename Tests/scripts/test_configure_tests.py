@@ -19,7 +19,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
         branch_name_reg = re.search("(?<=\* )\w+", branches)
         branch_name = branch_name_reg.group(0)
 
-        print(("Getting changed files from the branch: {0}".format(branch_name)))
+        print("Getting changed files from the branch: {0}".format(branch_name))
         tests_string = ''
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
@@ -28,7 +28,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
 
             tests = get_test_list(modified_files, modified_tests_list)
             tests_string = '\n'.join(tests)
-            print(('Collected the following tests:\n{0}'.format(tests_string)))
+            print('Collected the following tests:\n{0}'.format(tests_string))
 
         print("Creating filter_file.txt")
         with open(FILTER_CONF, "w") as filter_file:
@@ -59,7 +59,7 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
         branch_name_reg = re.search("(?<=\* )\w+", branches)
         branch_name = branch_name_reg.group(0)
 
-        print(("Getting changed files from the branch: {0}".format(branch_name)))
+        print("Getting changed files from the branch: {0}".format(branch_name))
         tests_string = ''
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
@@ -68,7 +68,7 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
 
             tests = get_test_list(modified_files, modified_tests_list)
             tests_string = '\n'.join(tests)
-            print(('Collected the following tests:\n{0}'.format(tests_string)))
+            print('Collected the following tests:\n{0}'.format(tests_string))
 
         print("Creating filter_file.txt")
         with open(FILTER_CONF, "w") as filter_file:
@@ -99,7 +99,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
         branch_name_reg = re.search("(?<=\* )\w+", branches)
         branch_name = branch_name_reg.group(0)
 
-        print(("Getting changed files from the branch: {0}".format(branch_name)))
+        print("Getting changed files from the branch: {0}".format(branch_name))
         tests_string = ''
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
@@ -108,7 +108,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
 
             tests = get_test_list(modified_files, modified_tests_list)
             tests_string = '\n'.join(tests)
-            print(('Collected the following tests:\n{0}'.format(tests_string)))
+            print('Collected the following tests:\n{0}'.format(tests_string))
 
         print("Creating filter_file.txt")
         with open(FILTER_CONF, "w") as filter_file:
@@ -139,7 +139,7 @@ class TestConfigureTests_AllTesting(unittest.TestCase):
         branch_name_reg = re.search("(?<=\* )\w+", branches)
         branch_name = branch_name_reg.group(0)
 
-        print(("Getting changed files from the branch: {0}".format(branch_name)))
+        print("Getting changed files from the branch: {0}".format(branch_name))
         tests_string = ''
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
@@ -148,7 +148,7 @@ class TestConfigureTests_AllTesting(unittest.TestCase):
 
             tests = get_test_list(modified_files, modified_tests_list)
             tests_string = '\n'.join(tests)
-            print(('Collected the following tests:\n{0}'.format(tests_string)))
+            print('Collected the following tests:\n{0}'.format(tests_string))
 
         print("Creating filter_file.txt")
         with open(FILTER_CONF, "w") as filter_file:

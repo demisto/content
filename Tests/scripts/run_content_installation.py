@@ -20,7 +20,7 @@ def main():
             instance_ip = instance_file.read()
             instance_ip = instance_ip.strip()
 
-        print(("The IP of the instance is {}\n".format(instance_ip)))
+        print("The IP of the instance is {}\n".format(instance_ip))
         id_to_ip[ami_instance_id] = instance_ip
 
     print("Waiting 90 Seconds for SSH to start\n")

@@ -535,7 +535,7 @@ def create_file_release_notes(file_name, delete_file_path):
             file_suffix = base_name.split(".")[-1]
         file_type_mapping = release_note_generator.get(file_type)
         if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
-            print(("Unsupported file type: {}".format(full_file_name)))
+            print("Unsupported file type: {}".format(full_file_name))
             return
 
         if change_type == "D":
