@@ -57,7 +57,7 @@ def http_request(method, url_suffix, body=None, params=None, files=None, ignore_
     Returns:
         dict: response json
     """
-
+    error_format = "Error in API call to VMRay [{}] - {}"
     url = SERVER + url_suffix
     r = requests.request(
         method,
@@ -68,17 +68,22 @@ def http_request(method, url_suffix, body=None, params=None, files=None, ignore_
         files=files,
         verify=USE_SSL,
     )
-    if r.status_code not in {200, 201, 202, 204} and not ignore_error:
-        error = str()
-        try:
-            js = r.json()
-            error += js.get("error_msg")
-        except ValueError:
-            error = r.text
-        return_error(
-            "Error in API call to VMRay [{}] - {}".format(r.status_code, error)
-        )
-    return r.json()
+    # Handle errors
+    try:
+        response = r.json()
+        # Check for error of quota
+        errors = response.get("data", {}).get("errors")
+        if response.get("result") != "ok" or errors:
+            error = errors if errors else response.get("error_msg")
+            return_error(error_format.format(r.status_code, error))
+        else:
+            return response
+    except ValueError:
+        # If no JSON is present, must be an error
+        if r.status_code not in {200, 201, 202, 204} and not ignore_error:
+            return_error(
+                error_format.format(r.status_code, r.text)
+            )
 
 
 def score_by_hash(analysis):
@@ -302,7 +307,6 @@ def get_submission_command():
     raw_response = get_submission(submission_id)
     data = raw_response.get("data")
     if data:
-        demisto.results(data)
         # Build entry
         entry = dict()
         entry["IsFinished"] = data.get("submission_finished")
@@ -431,7 +435,7 @@ def get_job_command():
     data = raw_response.get("data")
     if raw_response.get("result") == "error" or not data:
         entry = build_finished_job(job_id=job_id, sample_id=sample_id)
-        human_readable = "Jobs for {} id {} is finished/not exists".format(title, vmray_id)
+        human_readable = "#### Jobs for {} id {} is finished/not exists".format(title, vmray_id)
     else:
         entry = build_job_data(data)
         sample = entry[0] if isinstance(entry, list) else entry
@@ -441,7 +445,7 @@ def get_job_command():
             headers=["JobID", "SampleID", "VMName", "VMID"],
         )
 
-    entry_context = {"VMRay.Job(val.JobID === obj.JobID || val.SampleID === obj.SampleID)": entry}
+    entry_context = {"VMRay.Job(val.JobID === obj.JobID && val.SampleID === obj.SampleID)": entry}
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -539,14 +543,6 @@ def delete_tags():
     tag = demisto.args().get("tags")
     if not submission_id and not analysis_id:
         return_error("No submission ID or analysis ID has been provided")
-    if analysis_id:
-        analysis_status = delete_tags_from_analysis(analysis_id, tag)
-        if analysis_status.get("result") == "ok":
-            return_outputs(
-                "Tags: {} has been added to analysis:".format(tag, analysis_id),
-                {},
-                raw_response=analysis_status,
-            )
     if submission_id:
         submission_status = delete_tags_from_submission(submission_id, tag)
         if submission_status.get("result") == "ok":
@@ -554,6 +550,14 @@ def delete_tags():
                 "Tags: {} has been added to submission:".format(tag, submission_id),
                 {},
                 raw_response=submission_status,
+            )
+    if analysis_id:
+        analysis_status = delete_tags_from_analysis(analysis_id, tag)
+        if analysis_status.get("result") == "ok":
+            return_outputs(
+                "Tags: {} has been added to analysis:".format(tag, analysis_id),
+                {},
+                raw_response=analysis_status,
             )
 
 

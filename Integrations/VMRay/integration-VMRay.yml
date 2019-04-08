@@ -421,6 +421,48 @@ script:
     - contextPath: VMRay.Sample.IOC.Mutex.Type
       description: Type of mutex
       type: String
+  - arguments:
+    - default: false
+      description: if of a job
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get job by id
+    execution: false
+    name: vmray-get-job-by-id
+    outputs:
+    - contextPath: VMRay.Job.JobID
+      description: ID of job
+      type: Number
+    - contextPath: VMRay.Job.SampleID
+      description: Sample ID of job
+      type: Number
+    - contextPath: VMRay.Job.SubmissionID
+      description: ID of submission
+      type: Number
+    - contextPath: VMRay.Job.MD5
+      description: MD5 of sample in job
+      type: String
+    - contextPath: VMRay.Job.SHA1
+      description: SHA1 of sample in job
+      type: String
+    - contextPath: VMRay.Job.SHA256
+      description: SHA256 of sample in job
+      type: String
+    - contextPath: VMRay.Job.SSDeep
+      description: SSDeep of sample in job
+      type: String
+    - contextPath: VMRay.Job.VMName
+      description: Name of virtual machine
+      type: String
+    - contextPath: VMRay.Job.VMID
+      description: ID of virtual machine
+      type: Number
+    - contextPath: VMRay.Job.Status
+      description: Status of job
+      type: String
   dockerimage: demisto/python
   isfetch: false
   runonce: false
@@ -495,6 +537,7 @@ script:
             files=files,
             verify=USE_SSL,
         )
+        return_error(r.text)
         if r.status_code not in {200, 201, 202, 204} and not ignore_error:
             error = str()
             try:
@@ -729,7 +772,6 @@ script:
         raw_response = get_submission(submission_id)
         data = raw_response.get("data")
         if data:
-            demisto.results(data)
             # Build entry
             entry = dict()
             entry["IsFinished"] = data.get("submission_finished")
@@ -858,7 +900,7 @@ script:
         data = raw_response.get("data")
         if raw_response.get("result") == "error" or not data:
             entry = build_finished_job(job_id=job_id, sample_id=sample_id)
-            human_readable = "Jobs for {} id {} is finished/not exists".format(title, vmray_id)
+            human_readable = "#### Jobs for {} id {} is finished/not exists".format(title, vmray_id)
         else:
             entry = build_job_data(data)
             sample = entry[0] if isinstance(entry, list) else entry
@@ -868,7 +910,7 @@ script:
                 headers=["JobID", "SampleID", "VMName", "VMID"],
             )
 
-        entry_context = {"VMRay.Job(val.JobID === obj.JobID || val.SampleID === obj.SampleID)": entry}
+        entry_context = {"VMRay.Job(val.JobID === obj.JobID && val.SampleID === obj.SampleID)": entry}
         return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -966,14 +1008,6 @@ script:
         tag = demisto.args().get("tags")
         if not submission_id and not analysis_id:
             return_error("No submission ID or analysis ID has been provided")
-        if analysis_id:
-            analysis_status = delete_tags_from_analysis(analysis_id, tag)
-            if analysis_status.get("result") == "ok":
-                return_outputs(
-                    "Tags: {} has been added to analysis:".format(tag, analysis_id),
-                    {},
-                    raw_response=analysis_status,
-                )
         if submission_id:
             submission_status = delete_tags_from_submission(submission_id, tag)
             if submission_status.get("result") == "ok":
@@ -981,6 +1015,14 @@ script:
                     "Tags: {} has been added to submission:".format(tag, submission_id),
                     {},
                     raw_response=submission_status,
+                )
+        if analysis_id:
+            analysis_status = delete_tags_from_analysis(analysis_id, tag)
+            if analysis_status.get("result") == "ok":
+                return_outputs(
+                    "Tags: {} has been added to analysis:".format(tag, analysis_id),
+                    {},
+                    raw_response=analysis_status,
                 )
 
 
