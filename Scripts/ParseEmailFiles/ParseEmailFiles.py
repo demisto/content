@@ -30,6 +30,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import getaddresses
 
 from olefile import OleFileIO, isOleFile
 
@@ -3162,6 +3163,15 @@ def extract_address(s):
         return s
 
 
+def extract_address_eml(eml, s):
+    addresses = getaddresses(eml.get_all(s, []))
+    if addresses:
+        res = [item[1] for item in addresses]
+        return ', '.join(res)
+    else:
+        return ''
+
+
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
     md = "### Results:\n"
     if email_file_name:
@@ -3324,14 +3334,18 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             else:
                 headers_map[item[0]] = convert_to_unicode(item[1])
 
+        eml = message_from_string(file_data)
+        if not eml:
+            raise Exception("Could not parse eml file!")
+
+        headers_map['From'] = extract_address_eml(eml, 'from')
+        headers_map['To'] = extract_address_eml(eml, 'to')
+        headers_map['Cc'] = extract_address_eml(eml, 'cc')
+
         if parse_only_headers:
             return {
                 "HeadersMap": headers_map
             }, []
-
-        eml = message_from_string(file_data)
-        if not eml:
-            raise Exception("Could not parse eml file!")
 
         html = ''
         text = ''
@@ -3418,9 +3432,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
 
         email_data = {
-            'To': extract_address(eml['To']),
-            'CC': extract_address(eml['Cc']),
-            'From': extract_address(eml['From']),
+            'To': extract_address_eml(eml, 'to'),
+            'CC': extract_address_eml(eml, 'cc'),
+            'From': extract_address_eml(eml, 'from'),
             'Subject': convert_to_unicode(eml['Subject']),
             'HTML': convert_to_unicode(html),
             'Text': convert_to_unicode(text),

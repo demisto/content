@@ -1655,4 +1655,3 @@ script:
     description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
-releaseNotes: "Fetch incidents fixed. ESM Timezone now supported. esm-get-cases-list now support filtering by time range. Added time format parameter"
