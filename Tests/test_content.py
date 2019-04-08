@@ -71,8 +71,8 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
 
     if empty_mocks_count > 0:
         print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
-        print('\t (either there were no http requests or no traffic is passed through the proxy.\n' \
-              '\t Investigate the playbook and the integrations.\n' \
+        print('\t (either there were no http requests or no traffic is passed through the proxy.\n'
+              '\t Investigate the playbook and the integrations.\n'
               '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)')
         for playbook_id in proxy.empty_files:
             print('\t - ' + playbook_id)

@@ -28,7 +28,7 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
             v = line[len(version_key[0]) + 1:].strip()
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print("keeping release notes for (%s)\nto be published on %s version release " \
+                print("keeping release notes for (%s)\nto be published on %s version release "
                       % (file_path, current_server_version))
                 clear_release_notes = False
                 break
@@ -76,7 +76,7 @@ def json_remove_releaseNote_record(file_path, current_server_version):
             v = line.strip()[len(version_key[0]) + 1:]
             # compare server versions
             if server_version_compare(current_server_version, v) < 0:
-                print("keeping release notes for (%s)\nto be published on %s version release " \
+                print("keeping release notes for (%s)\nto be published on %s version release "
                       % (file_path, current_server_version))
                 clear_release_notes = False
                 break

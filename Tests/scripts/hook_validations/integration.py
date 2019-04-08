@@ -224,7 +224,8 @@ class IntegrationValidator(object):
 
         for field, required in list(current_field_to_required.items()):
             if (field not in list(old_field_to_required.keys()) and required) or \
-                    (required and field in list(old_field_to_required.keys()) and required != old_field_to_required[field]):
+                    (required and field in list(old_field_to_required.keys())
+                     and required != old_field_to_required[field]):
                 print_error("You've added required fields in the integration "
                             "file '{}', the field is '{}'".format(self.file_path, field))
                 self._is_valid = False
