@@ -110,7 +110,7 @@ tasks:
       id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
-      description: "Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts the indicators from the email message."
+      description: "Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages."
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -265,7 +265,7 @@ tasks:
       id: 9d6defc4-5ef1-4523-8136-08372aa15544
       version: -1
       name: Set incident with the Email object data
-      description: "Update incident fields from the email. Also extracts the indicators from the email message."
+      description: "Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message."
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -712,7 +712,7 @@ tasks:
       name: Set incident with the Email object data
       script: Builtin|||setIncident
       type: regular
-      description: "Update incident fields from the email."
+      description: "Updates Demisto incident fields using data from the email object."
       iscommand: true
       brand: Builtin
     nexttasks:
