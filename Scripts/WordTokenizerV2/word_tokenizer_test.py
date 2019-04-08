@@ -5,6 +5,8 @@ from collections import defaultdict
 def get_args():
     args = defaultdict(lambda: "yes")
     args['encoding'] = 'utf8'
+    args['encoding'] = 'utf8'
+    args['removeNonEnglishWords'] = 'no'
     return args
 
 
@@ -27,9 +29,9 @@ def test_clean_html():
 
 def test_tokenize_text():
     text = "test@demisto.com is 100 going to http://google.com bla bla"
-    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN" == tokenize_text(text)
+    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == tokenize_text(text)
 
 
 def test_word_tokenize():
     text = "test@demisto.com is 100 going to http://google.com bla bla"
-    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN" == word_tokenize(text)['Contents']
+    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == word_tokenize(text)['Contents']
