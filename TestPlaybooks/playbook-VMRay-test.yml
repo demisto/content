@@ -15,12 +15,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 50
         }
       }
@@ -62,8 +62,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 370
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -87,7 +87,6 @@ tasks:
       - "3"
       - "4"
       - "5"
-      - "8"
     scriptarguments:
       File:
         simple: ${File}
@@ -103,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 545
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -112,10 +111,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 99d88d47-0035-4c52-83cc-a4f507a9783f
+    taskid: d944b2d5-c972-4940-8780-657656150a87
     type: regular
     task:
-      id: 99d88d47-0035-4c52-83cc-a4f507a9783f
+      id: d944b2d5-c972-4940-8780-657656150a87
       version: -1
       name: Get analysis by sample
       description: Get all analysis details about a specific sample.
@@ -130,13 +129,13 @@ tasks:
       limit:
         simple: "1"
       sample_id:
-        simple: ${VMRay.Jobs.SampleID}
+        simple: ${VMRay.Job.SampleID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -144,10 +143,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 6df0f771-6420-4042-8cc4-684d2f946cb5
+    taskid: d706f9f4-0b55-43ca-84f4-5582e93533ce
     type: regular
     task:
-      id: 6df0f771-6420-4042-8cc4-684d2f946cb5
+      id: d706f9f4-0b55-43ca-84f4-5582e93533ce
       version: -1
       name: get-threat-indicators
       description: Get threat indicators (VTI)
@@ -157,74 +156,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
-    scriptarguments:
-      sample_id:
-        simple: ${VMRay.Analysis.SampleID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 74b953f7-83a8-4f3f-8297-d631b830bccd
-    type: regular
-    task:
-      id: 74b953f7-83a8-4f3f-8297-d631b830bccd
-      version: -1
-      name: Get IOCs
-      description: getting iocs of given sample
-      script: '|||vmray-get-iocs'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      sample_id:
-        simple: ${VMRay.Samples.SampleID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 2d23161b-a44a-4170-896d-4458f4af0ab9
-    type: regular
-    task:
-      id: 2d23161b-a44a-4170-896d-4458f4af0ab9
-      version: -1
-      name: Add tag
-      description: Adds a tag to analysis and/or submission
-      script: '|||vmray-add-tag'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
       - "7"
     scriptarguments:
-      analysis_id:
-        simple: ${VMRay.Analysis.AnalysisID}
-      submission_id:
-        simple: ${VMRay.Submissions.SubmissionID}
-      tag:
-        simple: test_tag
+      sample_id:
+        simple: ${VMRay.Sample.SampleID}
     separatecontext: false
     view: |-
       {
@@ -236,12 +171,98 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: d55d0f83-3389-4b1c-8beb-8e345a812c17
+  "5":
+    id: "5"
+    taskid: ce231981-b7be-4a1b-8433-e0b0a66f4da5
     type: regular
     task:
-      id: d55d0f83-3389-4b1c-8beb-8e345a812c17
+      id: ce231981-b7be-4a1b-8433-e0b0a66f4da5
+      version: -1
+      name: Get IOCs
+      description: getting iocs of given sample
+      script: '|||vmray-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        simple: ${VMRay.Sample.SampleID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 38328f86-7a51-4215-84e4-ee9c60ee5366
+    type: regular
+    task:
+      id: 38328f86-7a51-4215-84e4-ee9c60ee5366
+      version: -1
+      name: Add tag
+      description: Adds a tag to analysis and/or submission
+      script: '|||vmray-add-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      analysis_id:
+        simple: ${VMRay.Analysis.AnalysisID}
+      submission_id:
+        simple: ${VMRay.Submission.SubmissionID}
+      tag:
+        simple: test_task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ed6b816a-c46f-45bf-8cb3-13595b97800f
+    type: title
+    task:
+      id: ed6b816a-c46f-45bf-8cb3-13595b97800f
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 53c445f1-a166-4df9-823f-430688d8b4c9
+    type: regular
+    task:
+      id: 53c445f1-a166-4df9-823f-430688d8b4c9
       version: -1
       name: Remove tag
       description: Delete tags from analysis and/or submission
@@ -251,106 +272,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "7"
     scriptarguments:
       analysis_id:
         simple: ${VMRay.Analysis.AnalysisID}
       submission_id:
-        simple: ${VMRay.Submissions.SubmissionID}
+        simple: ${VMRay.Submission.SubmissionID}
       tag:
-        simple: test_tag
+        simple: test_task
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 3a898722-da75-4a0a-8144-b246dbb56a4f
-    type: regular
-    task:
-      id: 3a898722-da75-4a0a-8144-b246dbb56a4f
-      version: -1
-      name: Get Job by sample
-      description: Get all jobs details about a specific sample.
-      script: '|||vmray_get_job_sample'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      sample_id:
-        simple: ${VMRay.Jobs.SampleID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: f7dad3be-ab06-498b-893a-073fc06ff7a2
-    type: title
-    task:
-      id: f7dad3be-ab06-498b-893a-073fc06ff7a2
-      version: -1
-      name: Test end
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 93bea8bc-3b81-4184-8ea7-bcdf04a90d27
-    type: regular
-    task:
-      id: 93bea8bc-3b81-4184-8ea7-bcdf04a90d27
-      version: -1
-      name: Delete context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 195
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -361,8 +296,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 1670,
+        "height": 1085,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
@@ -370,4 +305,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 1.0

@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: b2c6b7ac-08fa-4a60-875f-493cd3a91deb
+    taskid: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
     type: playbook
     task:
-      id: b2c6b7ac-08fa-4a60-875f-493cd3a91deb
+      id: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
       version: -1
       name: GenericPolling
       description: |-
@@ -54,7 +54,7 @@ tasks:
       - "8"
     scriptarguments:
       Ids:
-        simple: ${VMRay.Submissions.SubmissionID}
+        simple: ${VMRay.Submission.SubmissionID}
       Interval:
         simple: ${inputs.interval}
       PollingCommandArgName:
@@ -64,7 +64,7 @@ tasks:
       Timeout:
         simple: ${inputs.timeout}
       dt:
-        simple: VMRay.Submissions(val.IsFinished == true).SubmissionID
+        simple: VMRay.Submission(val.IsFinished == true).SubmissionID
     separatecontext: true
     loop:
       iscommand: false
@@ -265,10 +265,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 72592005-2258-4391-8f2e-a82c1d4ef1c2
+    taskid: ca3caa5c-0828-41e1-8b12-77771fdaf140
     type: regular
     task:
-      id: 72592005-2258-4391-8f2e-a82c1d4ef1c2
+      id: ca3caa5c-0828-41e1-8b12-77771fdaf140
       version: -1
       name: Get submission
       description: Gets a submission result
@@ -281,7 +281,7 @@ tasks:
       - "1"
     scriptarguments:
       submission_id:
-        simple: ${VMRay.Submissions.SubmissionID}
+        simple: ${VMRay.Submission.SubmissionID}
     separatecontext: false
     view: |-
       {
@@ -399,4 +399,3 @@ outputs:
 - contextPath: VMRay.Samples.Classifications
   description: Classifications of sample
   type: string
-fromversion: 1.0
