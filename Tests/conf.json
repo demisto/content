@@ -1265,6 +1265,7 @@
     "unmockable_integrations": {
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
+        "CrowdstrikeFalcon": "Mock recording fails, and fails while trying to record a new recording",
         "TCPIPUtils": "Integration requires SSL",
         "Palo Alto Minemeld": "Pending check: issue 16072",
         "PagerDuty v2": "Integration requires SSL",
