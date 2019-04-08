@@ -8,7 +8,7 @@ def get_args():
 
 demistomock.args = get_args
 
-from WordTokenizer import remove_line_breaks, clean_html, tokenize_text  # noqa
+from WordTokenizer import remove_line_breaks, clean_html, tokenize_text, word_tokenize  # noqa
 
 
 def test_remove_line_breaks():
@@ -26,3 +26,8 @@ def test_clean_html():
 def test_tokenize_text():
     text = "test@demisto.com is 100 going to http://google.com bla bla"
     assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN" == tokenize_text(text)
+
+
+def test_word_tokenize():
+    text = "test@demisto.com is 100 going to http://google.com bla bla"
+    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN" == word_tokenize(text)['Contents']
