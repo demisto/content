@@ -110,14 +110,14 @@ tasks:
       id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
-      description: ""
+      description: "Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages."
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "19"
     scriptarguments:
       entryid:
         simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||  
@@ -265,7 +265,7 @@ tasks:
       id: 9d6defc4-5ef1-4523-8136-08372aa15544
       version: -1
       name: Set incident with the Email object data
-      description: ""
+      description: "Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message."
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -593,7 +593,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
+          "x": 350,
           "y": 820
         }
       }
@@ -701,6 +701,350 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 25b31351-c536-4730-8d45-d94bac0fb343
+    type: regular
+    task:
+      id: 25b31351-c536-4730-8d45-d94bac0fb343
+      version: -1
+      name: Set incident with the Email object data
+      script: Builtin|||setIncident
+      type: regular
+      description: "Updates Demisto incident fields using data from the email object."
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      1longtexttest: {}
+      aaaa: {}
+      addLabels: {}
+      adgroupname: {}
+      alertlevel: {}
+      amarkdownsection: {}
+      anothernumberpleasejusttomakesure: {}
+      app: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attach: {}
+      attachamenthash: {}
+      attachmentcount:
+        complex:
+          root: Email
+          accessor: |
+            Attachment.Count
+      attachmentextension:
+        complex:
+          root: Email
+          accessor: Attachment.Extension
+      attachmenthash:
+        complex:
+          root: Email
+          accessor: Attachment.Hash
+      attachmentid:
+        complex:
+          root: Email
+          accessor: Attachment.ID
+      attachmentitem:
+        complex:
+          root: Email
+          accessor: Attachment.Item
+      attachmentname:
+        complex:
+          root: Email
+          accessor: Attachment.Name
+      attachmentsize:
+        complex:
+          root: Email
+          accessor: Attachment.Size
+      attachmenttype:
+        complex:
+          root: Email
+          accessor: Attachment.Type
+      awsinstancename: {}
+      backupowner: {}
+      bbb: {}
+      blah: {}
+      bool1: {}
+      bool2: {}
+      booleansummary: {}
+      booleantest: {}
+      boolfield: {}
+      booltest: {}
+      bugtraq: {}
+      casenumber: {}
+      ccc: {}
+      ccipaddress: {}
+      cleanname: {}
+      compliance: {}
+      constvalue: {}
+      customFields: {}
+      customfield: {}
+      cve: {}
+      cvss: {}
+      date2: {}
+      datepicker: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField:
+        simple: "True"
+      department: {}
+      departmentadmin: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dstip: {}
+      duration: {}
+      emailbcc:
+        complex:
+          root: Email
+          accessor: BCC
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailbody:
+        complex:
+          root: Email
+          accessor: Text
+          transformers:
+          - operator: Stringify
+      emailbodyformat:
+        complex:
+          root: Email
+          accessor: BodyFormat
+      emailbodyhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: Stringify
+      emailcc:
+        complex:
+          root: Email
+          accessor: CC
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailclientname:
+        complex:
+          root: Email
+          accessor: ClientName
+      emailfrom:
+        complex:
+          root: Email
+          accessor: From
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailimage:
+        complex:
+          root: Email
+          accessor: Image
+      emailinreplyto:
+        complex:
+          root: Email
+          accessor: InReplyTo
+      emailkeywords:
+        complex:
+          root: Email
+          accessor: Keywords
+      emailmessageid:
+        complex:
+          root: Email
+          accessor: ID
+      emailreceived:
+        complex:
+          root: Email
+          accessor: Received
+      emailreplyto:
+        complex:
+          root: Email
+          accessor: ReplyTo
+      emailreturnpath:
+        complex:
+          root: Email
+          accessor: ReturnPath
+      emailsenderip:
+        complex:
+          root: Email
+          accessor: SenderIP
+      emailsize:
+        complex:
+          root: Email
+          accessor: Size
+      emailsource:
+        complex:
+          root: Email
+          accessor: Source
+      emailsubject:
+        complex:
+          root: Email
+          accessor: Subject
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailto:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      emailtocount:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+          - operator: count
+      emailurlclicked:
+        complex:
+          root: EmailUrlClicked
+      enisacategory: {}
+      escalationdate: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      fwlogs: {}
+      gatenumber: {}
+      hash: {}
+      hjhj: {}
+      host: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      htmltypefield: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      infectedhost: {}
+      intelblockcomment: {}
+      intelblockurl: {}
+      internalemail: {}
+      internalusage: {}
+      itaytestfield: {}
+      jiraticketid: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      longtextone: {}
+      longtexttoo: {}
+      mailbody: {}
+      malwarefamily: {}
+      mdtest: {}
+      mitigated: {}
+      mttd: {}
+      multilinetext: {}
+      mydate: {}
+      myfield: {}
+      myname: {}
+      myseverity: {}
+      name: {}
+      newmarkdownfield: {}
+      newtextfield: {}
+      noatext: {}
+      numberplease: {}
+      objecttype: {}
+      occurred: {}
+      originalhtml: {}
+      oriwithspace: {}
+      owner: {}
+      phase: {}
+      phishingsender: {}
+      phishingsenderdomain: {}
+      priority: {}
+      qradaroffenceid: {}
+      queues: {}
+      relatedincidentssummary: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      riskmitigationactionrequirements: {}
+      riskscore: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      sender: {}
+      sensitive: {}
+      severity: {}
+      shift: {}
+      shiftnotes: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      sourceip1: {}
+      src: {}
+      srcip: {}
+      srcntdomain: {}
+      srcuser: {}
+      subcat: {}
+      subcategory: {}
+      summary: {}
+      systems: {}
+      targethostname: {}
+      team: {}
+      telefield: {}
+      teleselect: {}
+      test: {}
+      test2: {}
+      test111: {}
+      testassociationdumpme: {}
+      testfield: {}
+      testguy: {}
+      testhtml: {}
+      thisismysuperlongfield: {}
+      tier2owner: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      timetomitigate: {}
+      timetotriage: {}
+      tldr: {}
+      tlp: {}
+      tttttt: {}
+      type: {}
+      uniquefiled: {}
+      user: {}
+      useremail: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      vvvv: {}
+      zattachmentsgeneric: {}
+      zmaltegoimage: {}
+      zvtfirstseen: {}
+      zvtother: {}
+      zvtvendorcount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -712,7 +1056,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2015,
-        "width": 1070,
+        "width": 1310,
         "x": -60,
         "y": -280
       }
@@ -828,3 +1172,4 @@ outputs:
   type: unknown
 tests:
   - No test
+releaseNotes: "fix bug - process Email is extracting indicators twice on the same data"
