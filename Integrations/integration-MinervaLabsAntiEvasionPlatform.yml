@@ -66,32 +66,32 @@ script:
         ec = {}
         if context_id.endswith('processes'):
             context = {
-                'Minerva.Process.Endpoint': data['endpoint'],
-                'Minerva.Process.SHA256': data['fileHash'],
-                'Minerva.Process.CommandLine': data['processCommandLine'],
-                'Minerva.Process.Username': data['username'],
-                'Minerva.Process.CreateTime': data['startTime'],
-                'Minerva.Process.Pid': data['processId']
+                'Endpoint': data['endpoint'],
+                'SHA256': data['fileHash'],
+                'CommandLine': data['processCommandLine'],
+                'Username': data['username'],
+                'CreateTime': data['startTime'],
+                'Pid': data['processId']
             }
             ec['Minerva.Process(val.CreateTime === obj.CreateTime && val.Pid === val.Pid)'] = context
         elif context_id.endswith('endpoints'):
             context = {
-                'Minerva.Endpoint.Group': data['group'],
-                'Minerva.Endpoint.Name': data['endpoint'],
-                'Minerva.Endpoint.Users': data['loggedOnUsers'],
-                'Minerva.Endpoint.IP': data['reportedIpAddress'],
-                'Minerva.Endpoint.OS': data['operatingSystem']
+                'Group': data['group'],
+                'Name': data['endpoint'],
+                'Users': data['loggedOnUsers'],
+                'IP': data['reportedIpAddress'],
+                'OS': data['operatingSystem']
             }
             ec['Minerva.Endpoint(val.IP === obj.IP)'] = context
         elif context_id.endswith('groups'):
             context = {
-                'Minerva.Group.Name': data['name'],
-                'Minerva.Group.Id': data['id'],
-                'Minerva.Group.Policy': data['policy'],
-                'Minerva.Group.PolicyVersion': data['policyVersion'],
-                'Minerva.Group.SimulationStatus': data['endpointSettings'],
-                'Minerva.Group.Endpoints': data['endpoints'],
-                'Minerva.Group.CreationTime': data['creationTime']
+                'Name': data['name'],
+                'Id': data['id'],
+                'Policy': data['policy'],
+                'PolicyVersion': data['policyVersion'],
+                'SimulationStatus': data['endpointSettings'],
+                'Endpoints': data['endpoints'],
+                'CreationTime': data['creationTime']
             }
             ec['Minerva.Group(val.Id === obj.Id)'] = context
         else:
