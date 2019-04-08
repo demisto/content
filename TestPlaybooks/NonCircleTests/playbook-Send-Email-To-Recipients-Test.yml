@@ -1,0 +1,92 @@
+id: Send Email To Recipients
+version: 45
+name: Send Email To Recipients
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d0949410-ccba-40b0-8441-d1b40cbd12c3
+    type: start
+    task:
+      id: d0949410-ccba-40b0-8441-d1b40cbd12c3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: c02acb76-a021-4b8a-8b6b-3fd506922181
+    type: regular
+    task:
+      id: c02acb76-a021-4b8a-8b6b-3fd506922181
+      version: -1
+      name: Send Mail
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    scriptarguments:
+      attachIDs:
+        simple: ${inputs.attIDs}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc:
+        simple: ${inputs.cc}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: EWS Mail Sender Test - UT8uFQBBVcJeqAC4t4XvzZ9bBvfLYSk1zST8Fkx7rtHs4SfjvtYzCv1ElFGsX10gNWZlH7XpHGgWv31KI3LbDGBGPLPckyPaZvujMZRa6JloV22SIH0wqvPGYiFcYPm9muVjDyj75R4QTyatXimGcdOcdKwt2Rofv0UFDAKW2W2EU9tKoeGIy5p2DEvKk12qgiCxqNFd4mqCXoR1P9rypsuYlQ3OaIa6hzvoZMrH0qWSqL43wjGbM25d8OhKcoda
+      to:
+        simple: ${inputs.to}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: to
+  value: {}
+  required: false
+  description: ""
+- key: cc
+  value: {}
+  required: false
+  description: ""
+- key: attIDs
+  value: {}
+  required: false
+  description: ""
+outputs: []
+tests:
+- No test

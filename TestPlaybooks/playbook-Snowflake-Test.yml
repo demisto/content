@@ -1,0 +1,185 @@
+id: Snowflake-Test
+version: -1
+name: Snowflake-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a3244a3d-eb9a-4b61-86ae-cef683fcca3a
+    type: start
+    task:
+      id: a3244a3d-eb9a-4b61-86ae-cef683fcca3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: dacc063e-50f7-43d1-812f-1c1d0a433380
+    type: regular
+    task:
+      id: dacc063e-50f7-43d1-812f-1c1d0a433380
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 8694012b-4bb5-4056-8480-faef40999716
+    type: regular
+    task:
+      id: 8694012b-4bb5-4056-8480-faef40999716
+      version: -1
+      name: snowflake-query
+      description: Execute a SELECT query and retrieve the data
+      script: Snowflake|||snowflake-query
+      type: regular
+      iscommand: true
+      brand: Snowflake
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      columns: {}
+      database:
+        simple: demo_db
+      query:
+        simple: select * from test where ID = 8 and NAME = 'blah'
+      role:
+        simple: sysadmin
+      rows: {}
+      schema:
+        simple: public
+      warehouse:
+        simple: demo_wh
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: af19262d-c556-4f70-8e64-4aa726540bce
+    type: title
+    task:
+      id: af19262d-c556-4f70-8e64-4aa726540bce
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: b6ec06ad-ace2-45ec-8cf8-102810f05f03
+    type: condition
+    task:
+      id: b6ec06ad-ace2-45ec-8cf8-102810f05f03
+      version: -1
+      name: Verify Query Output
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Snowflake
+                accessor: Result.TS
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: 2019-03-26 11:14:18.574000
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
