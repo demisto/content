@@ -58,7 +58,6 @@ mapping:
             - include: timertriggers_schema
           ignoreworker:
             type: bool
-            allowempty: True
           task:
             type: map
             required: yes

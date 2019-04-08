@@ -1,0 +1,569 @@
+id: Jask_Test
+version: -1
+name: Jask Test
+toversion: 4.0.9
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f6789f0d-0545-4e48-829d-56ab30dfb8a4
+    type: start
+    task:
+      id: f6789f0d-0545-4e48-829d-56ab30dfb8a4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c75f152b-1757-423e-8b98-7117fd110624
+    type: regular
+    task:
+      id: c75f152b-1757-423e-8b98-7117fd110624
+      version: -1
+      name: Get insights for a given date
+      description: 'Search insights using the given filters. '
+      script: '|||jask-search-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assigned-team: {}
+      assigned-user: {}
+      last-seen: {}
+      limit: {}
+      offset: {}
+      rating: {}
+      sort: {}
+      status: {}
+      time-from:
+        simple: 12/1/2018
+      time-to:
+        simple: 12/29/2019
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 86955a6c-2a06-496e-8a78-983a1976ff6b
+    type: regular
+    task:
+      id: 86955a6c-2a06-496e-8a78-983a1976ff6b
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "19"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: Jask.Insight=>val.length >= 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 6a3831b3-4def-4bfb-8627-d6219e05322c
+    type: regular
+    task:
+      id: 6a3831b3-4def-4bfb-8627-d6219e05322c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "11"
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: cc888623-d78a-4439-8d80-8dc79b2923ef
+    type: regular
+    task:
+      id: cc888623-d78a-4439-8d80-8dc79b2923ef
+      version: -1
+      name: Get details for the first one
+      description: Get Insight details for a specific Insight ID. Insight details
+        command references SmartAlerts, which are the highest level abstractions in
+        JASK SIEM consisting of multiple signals, and records and relating to one
+        or more assets.
+      script: '|||jask-get-insight-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    scriptarguments:
+      insight-id:
+        simple: ${Jask.Insight.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 8e623c35-b3b4-44f7-81f2-33bc9808b468
+    type: regular
+    task:
+      id: 8e623c35-b3b4-44f7-81f2-33bc9808b468
+      version: -1
+      name: Get entity details for first related entity
+      description: Get entity details for a specific entity ID
+      script: '|||jask-get-entity-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entity-id:
+        simple: ${Jask.Insight.RelatedEntityList.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 90fe953e-0142-4107-8995-07a79c49c466
+    type: regular
+    task:
+      id: 90fe953e-0142-4107-8995-07a79c49c466
+      version: -1
+      name: Get signal details for first related signal
+      description: Get Signal details for a specific Signal ID. Signal details command
+        references signals in JASK which are created when records exhibit suspicious
+        properties and mate with patterns or other detection logic.
+      script: '|||jask-get-signal-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      signal-id:
+        simple: ${Jask.Insight.SignalList.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 61c8b9c8-00ca-4d03-8200-acd259231d48
+    type: regular
+    task:
+      id: 61c8b9c8-00ca-4d03-8200-acd259231d48
+      version: -1
+      name: Verify we have an entity
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Jask.Entity.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c9497b8d-b882-4f79-8ea8-315c87c23019
+    type: regular
+    task:
+      id: c9497b8d-b882-4f79-8ea8-315c87c23019
+      version: -1
+      name: Verify we have a signal
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Jask.Signal.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: d15b42eb-c8e6-4ade-8b78-9d7ed8a41448
+    type: regular
+    task:
+      id: d15b42eb-c8e6-4ade-8b78-9d7ed8a41448
+      version: -1
+      name: Get entities related to the given entity
+      description: Get entities related to a specific entity ID.
+      script: '|||jask-get-related-entities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity-id:
+        simple: ${Jask.Entity.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: b6471c0e-775f-4ef1-8abd-2806328b86bf
+    type: regular
+    task:
+      id: b6471c0e-775f-4ef1-8abd-2806328b86bf
+      version: -1
+      name: Get signals for a given date
+      description: 'Search signals using the given filters. '
+      script: '|||jask-search-signals'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      category: {}
+      last-seen: {}
+      limit:
+        simple: "10"
+      offset: {}
+      sort: {}
+      source: {}
+      time-from:
+        simple: 12/20/2018
+      time-to:
+        simple: 12/29/2018
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: ae62261c-a0f7-4926-8139-a85315820e9d
+    type: regular
+    task:
+      id: ae62261c-a0f7-4926-8139-a85315820e9d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: Jask.Signal=>val.length >= 10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: a52da956-e147-4e40-8769-2fd902911fdd
+    type: regular
+    task:
+      id: a52da956-e147-4e40-8769-2fd902911fdd
+      version: -1
+      name: Get entities for a given date
+      description: Search entities using the given filters.
+      script: '|||jask-search-entities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entity-type: {}
+      last-seen: {}
+      limit:
+        simple: "10"
+      offset: {}
+      sort: {}
+      time-from:
+        simple: 12/20/2018
+      time-to:
+        simple: 12/29/2018
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 8c6d778c-6e82-46bb-8c98-c0373abdd8c7
+    type: regular
+    task:
+      id: 8c6d778c-6e82-46bb-8c98-c0373abdd8c7
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: Jask.Entity=>val.length == 10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: d1b5ae23-623f-4fa7-80ae-1a854f3d6095
+    type: regular
+    task:
+      id: d1b5ae23-623f-4fa7-80ae-1a854f3d6095
+      version: -1
+      name: jask-get-insight-comments
+      description: Get comments for a specific Insight ID. (Users can post and update
+        comments on the JASK SIEM portal for any Insight ID.)
+      script: '|||jask-get-insight-comments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      insight-id:
+        simple: ${Jask.Insight.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: dcdfa43d-49ec-43c0-8198-fbf44392eae6
+    type: regular
+    task:
+      id: dcdfa43d-49ec-43c0-8198-fbf44392eae6
+      version: -1
+      name: closeInvestigation
+      description: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 2100,
+        "x": 480,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

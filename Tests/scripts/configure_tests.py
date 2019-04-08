@@ -67,10 +67,6 @@ def get_modified_files(files_string):
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
 
-            # docs does not influence tests
-            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
-                continue
-
             # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
@@ -82,6 +78,14 @@ def get_modified_files(files_string):
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+
+            # docs and test files does not influence integration tests filtering
+            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR):
+                if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
+                    continue
+
+            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
+                continue
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
