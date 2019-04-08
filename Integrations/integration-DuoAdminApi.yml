@@ -370,6 +370,5 @@ script:
     description: Associates a device to a user
   dockerimage: demisto/duoadmin:1.0.0.147 #disable-secrets-detection
   runonce: false
-releaseNotes: "Changed naming of 1_minutes_ago to 1_minute_ago"
 tests:
   - DuoAdmin API test playbook

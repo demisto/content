@@ -173,3 +173,18 @@ def server_version_compare(v1, v2):
 
     # versions are equal
     return 0
+
+
+def run_threads_list(threads_list):
+    """
+    Start a list of threads and wait for completion (join)
+
+    Arguments:
+        threads_list (list of threads) -- list of threads to start and wait for join
+    """
+    # run each command in a seperate thread
+    for t in threads_list:
+        t.start()
+    # wait for the commands to complete
+    for t in threads_list:
+        t.join()

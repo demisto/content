@@ -1036,6 +1036,5 @@ script:
       type: string
     description: Returns Zscaler default whitelist
   runonce: false
-releaseNotes: "Fixed rate limit error bug - now several requests in short interval will produce a retry in case of failure"
 tests:
   - Zscaler Test
