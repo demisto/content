@@ -227,7 +227,7 @@ script: |-
       if not REMOVE_LINE_BREAKS:
           return text
 
-      return re.sub(r"\s+", " ", text.replace("\r"," ").replace("\n"," ")).strip()
+      return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
 
 
   def word_tokenize(text):
@@ -263,6 +263,6 @@ type: python
 dockerimage: demisto/dl:1.2
 runas: DBotWeakRole
 runonce: true
-releaseNotes: "Add new script"
+releaseNotes: Add new script
 tests:
-  - No test
+- No test
