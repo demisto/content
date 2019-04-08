@@ -9,7 +9,6 @@ try:
     import PyPDF2
 except ImportError:
     import pip._internal as pip
-
     pip.main(['install', 'PyPDF2'])
     import PyPDF2
 
@@ -51,8 +50,6 @@ IPV4_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0
 DATES_REGEX = r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,10})?([+-]\d{2}:?\d{2})?Z?)?)'
 # false positives
 UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
-
-
 # disable-secrets-detection-end
 
 
