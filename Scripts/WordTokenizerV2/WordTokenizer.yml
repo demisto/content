@@ -141,10 +141,10 @@ args:
   secret: false
 comment: Tokenize the words in a input text.
 commonfields:
-  id: WordTokenizer
+  id: WordTokenizerNLP
   version: -1
 enabled: true
-name: WordTokenizer
+name: WordTokenizerNLP
 outputs:
 - contextPath: WordTokenizeOutput
   description: Output text
