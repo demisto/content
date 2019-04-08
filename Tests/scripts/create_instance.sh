@@ -16,7 +16,7 @@ IMAGE_ID=$(aws ec2 describe-images \
 
 echo $IMAGE_ID > image_id.txt
 
-python ./Tests/scripts/update_image_id.py -i image_id.txt -c $CONFFILE
+python3 ./Tests/scripts/update_image_id.py -i image_id.txt -c $CONFFILE
 
 #create instance
 REQUEST_ID=$(aws ec2 request-spot-instances \
