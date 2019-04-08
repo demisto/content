@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import formats, hash_djb2
-import spacy, re, json
+import spacy
+import re
+import json
 from HTMLParser import HTMLParser
 
 CLEAN_HTML = (demisto.args()['cleanHtml'] == 'yes')
@@ -82,7 +84,7 @@ def word_tokenize(text):
     if VALUE_IS_JSON:
         try:
             text = json.loads(text)
-        except:
+        except Exception:
             pass
 
     if type(text) is not list:
