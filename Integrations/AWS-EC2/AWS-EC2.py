@@ -30,13 +30,6 @@ else:
 """HELPER FUNCTIONS"""
 
 
-def overrides(interface_class):
-    def overrider(method):
-        assert(method.__name__ in dir(interface_class))
-        return method
-    return overrider
-
-
 def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
                 rolePolicy=None):
     kwargs = {}
@@ -143,7 +136,7 @@ def parse_tag_field(tags_str):
 
 
 class DatetimeEncoder(json.JSONEncoder):
-    @overrides(json.JSONEncoder)
+    # pylint: disable=overrides-method
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
@@ -151,8 +144,6 @@ class DatetimeEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d')
         elif isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):
-            return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
