@@ -1270,16 +1270,28 @@ script: |-
           :return: Error entry object
           :rtype: ``dict``
       """
-      LOG(message)
+      # first, try handling the error as an exception
+      try:
+          # log the exception's message
+          LOG(str(message))
+          if isinstance(message, Exception):
+              # log tracback
+              LOG("Traceback:\n{traceback}".format(traceback=traceback.format_exc()))
+              traceback.format_exc()
+
+      except:
+          # if treating the message as an exception didn't work, just log the message as always
+          LOG(message)
+
       if error:
           LOG(error)
       LOG.print_log()
       if not demisto.command() == 'fetch-incidents':
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': str(message)
-        })
+          demisto.results({
+              'Type': entryTypes['error'],
+              'ContentsFormat': formats['text'],
+              'Contents': str(message)
+          })
       sys.exit(0)
 
 
@@ -1538,6 +1550,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Logger support for Python3."
+releaseNotes: "Logger support for Python3. + improved return_error"
 tests:
   - TestPYCommonServer
