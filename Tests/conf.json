@@ -1198,7 +1198,7 @@
         },
         {
             "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Domain Enrichment Generic - Test"
+            "playbookID": "Domain Enrichment - Generic - Test"
         }
     ],
     "skipped_tests": {
