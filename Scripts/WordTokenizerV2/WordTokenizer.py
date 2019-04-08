@@ -1,5 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import formats, hash_djb2
+from CommonServerPython import *
+
 import spacy
 import re
 import json
@@ -44,7 +45,11 @@ def clean_html(text):
 
 
 def tokenize_text(text):
-    doc = nlp(unicode(text))
+    try:
+        unicode_text = unicode(text)
+    except Exception:
+        unicode_text = text
+    doc = nlp(unicode(unicode_text))
     words = []
     for token in doc:
         if token.is_space:
@@ -87,20 +92,20 @@ def word_tokenize(text):
         except Exception:
             pass
 
-    if type(text) is not list:
+    if not isinstance(text, list):
         text = [text]
     result = map(remove_line_breaks, map(tokenize_text, map(clean_html, text)))
 
     if len(result) == 1:
         result = result[0]
 
-    demisto.results({
+    return {
         'Contents': result,
         'ContentsFormat': formats['json'] if type(result) is list else formats['text'],
         'EntryContext': {
             'WordTokenizeOutput': result
         }
-    })
+    }
 
 
-word_tokenize(demisto.args()['value'])
+demisto.results(word_tokenize(demisto.args()['value']))
