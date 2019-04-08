@@ -347,8 +347,6 @@ def is_secrets_disabled(line, skip_secrets):
         skip_secrets = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
         skip_secrets = False
-    elif not skip_secrets:
-        skip_secrets = False
 
     return skip_secrets
 
