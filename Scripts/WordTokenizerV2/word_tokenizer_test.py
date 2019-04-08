@@ -1,13 +1,14 @@
 import demistomock
 from collections import defaultdict
 
+
 def get_args():
     return defaultdict(lambda: "yes")
+
 
 demistomock.args = get_args
 
 from WordTokenizer import remove_line_breaks, clean_html, tokenize_text
-
 
 
 def test_remove_line_breaks():
