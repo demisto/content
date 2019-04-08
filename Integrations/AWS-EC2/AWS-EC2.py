@@ -30,6 +30,13 @@ else:
 """HELPER FUNCTIONS"""
 
 
+def overrides(interface_class):
+    def overrider(method):
+        assert(method.__name__ in dir(interface_class))
+        return method
+    return overrider
+
+
 def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
                 rolePolicy=None):
     kwargs = {}
@@ -136,6 +143,7 @@ def parse_tag_field(tags_str):
 
 
 class DatetimeEncoder(json.JSONEncoder):
+    @overrides(json.JSONEncoder)
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
@@ -1674,6 +1682,36 @@ def modify_instance_attribute(args):
         demisto.results("The Instance attribute was successfully modified")
 
 
+def create_network_acl(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'VpcId': args.get('VpcId')}
+
+    if args.get('DryRun') is not None:
+        kwargs.update({'DryRun': args.get('groups')})
+
+    response = client.create_network_acl(**kwargs)
+    network_acl = response['NetworkAcl']
+
+    data = {
+        'Associations': network_acl['Associations'],
+        'IsDefault': network_acl['IsDefault'],
+        'NetworkAclId': network_acl['NetworkAclId'],
+        'Tags': network_acl['Tags'],
+        'VpcId': network_acl['VpcId'],
+        'Timestamp': datetime.datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+    }
+    for entry in network_acl['Entries']:
+
+    ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
+    human_readable = tableToMarkdown('AWS EC2 Instances', data)
+    return_outputs(human_readable, ec)
+
+
 """COMMAND BLOCK"""
 try:
     LOG('Command being called is {}'.format(demisto.command()))
@@ -1833,7 +1871,11 @@ try:
 
     elif demisto.command() == 'aws-ec2-modify-instance-attribute':
         modify_instance_attribute(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-create-network-acl':
+        create_network_acl(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-create-network-acl-entry':
+        create_network_acl_entry(demisto.args())
 except Exception as e:
     return_error('Error has occurred in the AWS EC2 Integration: {}\n {}'.format(type(e), e.message))
-finally:
-    enable_proxy()
