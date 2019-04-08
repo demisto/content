@@ -32,8 +32,8 @@ jobs:
       - run:
           name: Infrastucture testing
           command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
-            pytest ./Tests/scripts/infrastructure_tests/ -v
+            python3 -m pytest ./Tests/scripts/hook_validations/tests/ -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
       - run:
           name: Create ID Set
           command: |
