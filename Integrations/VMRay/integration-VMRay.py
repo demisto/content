@@ -1,5 +1,7 @@
 import os
 import requests
+from CommonServerPython import *
+import demistomock as demisto
 
 """ GLOBAL PARAMS """
 API_KEY = demisto.params()["api_key"]
@@ -102,6 +104,69 @@ def score_by_hash(analysis):
                 }
             )
     return scores
+
+
+def build_job_data(data):
+    def build_entry(entry_data):
+        entry = dict()
+        entry["JobID"] = entry_data.get("job_id")
+        entry["SampleID"] = entry_data.get("job_sample_id")
+        entry["SubmissionID"] = entry_data.get("job_submission_id")
+        entry["MD5"] = entry_data.get("job_sample_md5")
+        entry["SHA1"] = entry_data.get("job_sample_sha1")
+        entry["SHA256"] = entry_data.get("job_sample_sha256")
+        entry["SSDeep"] = entry_data.get("job_sample_ssdeep")
+        entry["VMName"] = entry_data.get("job_vm_name")
+        entry["VMID"] = entry_data.get("job_vm_id")
+        entry["Status"] = entry_data.get("job_status")
+        return entry
+
+    jobs_list = list()
+    if isinstance(data, list):
+        for entry in data:
+            jobs_list.append(build_entry(entry))
+    elif isinstance(data, dict):
+        jobs_list = build_entry(data)
+    return jobs_list
+
+
+def build_finished_job(job_id, sample_id):
+    entry = dict()
+    entry["JobID"] = job_id
+    entry["SampleID"] = sample_id
+    entry["Status"] = "Finished/NotExists"
+    return entry
+
+
+def build_analysis_data(analyses):
+    """
+
+    Args:
+        analyses: (dict) of analysis
+
+    Returns:
+        dict: formatted entry context
+    """
+    entry_context = dict()
+    entry_context["VMRay.Analysis(val.AnalysisID === obj.AnalysisID)"] = [
+        {
+            "AnalysisID": analysis.get("analysis_id"),
+            "SampleID": analysis.get("analysis_sample_id"),
+            "Severity": SEVERITY_DICT.get(analysis.get("analysis_severity")),
+            "JobCreated": analysis.get("analysis_job_started"),
+            "SHA1": analysis.get("analysis_sample_sha1"),
+            "MD5": analysis.get("analysis_sample_md5"),
+            "SHA256": analysis.get("analysis_sample_sha25"),
+        }
+        for analysis in analyses
+    ]
+
+    scores = list()
+    for analysis in entry_context:
+        scores.extend(score_by_hash(analysis))
+    entry_context[outputPaths.get("dbotscore")] = scores
+
+    return entry_context
 
 
 def test_module():
@@ -213,37 +278,6 @@ def upload_sample_command():
     )
 
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
-
-
-def build_analysis_data(analyses):
-    """
-
-    Args:
-        analyses: (dict) of analysis
-
-    Returns:
-        dict: formatted entry context
-    """
-    entry_context = dict()
-    entry_context["VMRay.Analysis(val.AnalysisID === obj.AnalysisID)"] = [
-        {
-            "AnalysisID": analysis.get("analysis_id"),
-            "SampleID": analysis.get("analysis_sample_id"),
-            "Severity": SEVERITY_DICT.get(analysis.get("analysis_severity")),
-            "JobCreated": analysis.get("analysis_job_started"),
-            "SHA1": analysis.get("analysis_sample_sha1"),
-            "MD5": analysis.get("analysis_sample_md5"),
-            "SHA256": analysis.get("analysis_sample_sha25"),
-        }
-        for analysis in analyses
-    ]
-
-    scores = list()
-    for analysis in entry_context:
-        scores.extend(score_by_hash(analysis))
-    entry_context[outputPaths.get("dbotscore")] = scores
-
-    return entry_context
 
 
 def get_analysis_command():
@@ -376,7 +410,11 @@ def get_job_sample(sample_id):
         sample_id:
 
     Returns:
-
+        dict of response, if not exists returns:
+        {
+            "error_msg": "No such element"
+            "result": "error"
+        }
     """
     suffix = "job/sample/{}".format(sample_id)
     response = http_request("GET", suffix, ignore_error=True)
@@ -388,31 +426,46 @@ def get_job_sample_command():
     raw_response = get_job_sample(sample_id)
     data = raw_response.get("data")
 
-    entry = dict()
-    if isinstance(data, dict) and data.get("result") != "error":
-        entry["JobID"] = data.get("job_id")
-        entry["SampleID"] = data.get("job_sample_id")
-        entry["SubmissionID"] = data.get("job_submission_id")
-        entry["MD5"] = data.get("job_sample_md5")
-        entry["SHA1"] = data.get("job_sample_sha1")
-        entry["SHA256"] = data.get("job_sample_sha256")
-        entry["SSDeep"] = data.get("job_sample_ssdeep")
-        entry["VMName"] = data.get("job_vm_name")
-        entry["VMID"] = data.get("job_vm_id")
-        entry["Status"] = data.get("job_status")
-
+    if raw_response.get("result") == "error":
+        entry = build_finished_job(job_id=None, sample_id=sample_id)
+        human_readable = "Jobs for sample id {} is finished/not exists".format(sample_id)
+    else:
+        entry = build_job_data(data)
+        sample = entry[0] if isinstance(entry, list) else entry
         human_readable = tableToMarkdown(
             "Results for job sample id: {}".format(sample_id),
-            entry,
+            sample,
             headers=["JobID", "SampleID", "VMName", "VMID"],
         )
-    else:
-        entry["JobID"] = sample_id
-        entry["Status"] = "Finished/NotExists"
-        human_readable = "Jobs for sample id {} is finished/not exists".format(sample_id)
 
     entry_context = {"VMRay.Job(val.JobID === obj.JobID)": entry}
 
+    return_outputs(human_readable, entry_context, raw_response=raw_response)
+
+
+def get_job_by_id(job_id):
+    suffix = "job/{}".format(job_id)
+    response = http_request("GET", suffix, ignore_error=True)
+    return response
+
+
+def get_job_by_id_command():
+    job_id = demisto.args().get("job_id")
+    raw_response = get_job_by_id(job_id)
+    if raw_response.get("result") == "error":
+        entry = build_finished_job(job_id, sample_id=None)
+        human_readable = "Jobs for job id {} is finished/not exists".format(job_id)
+    else:
+        data = raw_response.get("data")
+        entry = build_job_data(data)
+        sample = entry[0] if isinstance(entry, list) else entry
+        human_readable = tableToMarkdown(
+            "Results for job sample id: {}".format(job_id),
+            sample,
+            headers=["JobID", "SampleID", "VMName", "VMID"],
+        )
+
+    entry_context = {"VMRay.Job(val.JobID === obj.JobID)": entry}
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -426,7 +479,8 @@ def get_threat_indicators_command():
     sample_id = demisto.args().get("sample_id")
     raw_response = get_threat_indicators(sample_id)
     data = raw_response.get("threat_indicators")
-    # Build Entry Context TODO: EntryContext
+
+    # Build Entry Context
     if data and isinstance(data, list):
         entry_context_list = list()
         for indicator in data:
@@ -638,8 +692,10 @@ try:
         get_analysis_command()
     elif COMMAND == "vmray-get-sample":
         get_sample_command()
-    elif COMMAND in ("vmray-get-job-sample", "get_job_sample"):
+    elif COMMAND in ("vmray-get-job-by-sample", "get_job_sample"):
         get_job_sample_command()
+    elif COMMAND == "vmray-get-job-by-id":
+        get_job_by_id_command()
     elif COMMAND == "vmray-get-threat-indicators":
         get_threat_indicators_command()
     elif COMMAND == "vmray-add-tag":
@@ -649,4 +705,4 @@ try:
     elif COMMAND == "vmray-get-iocs":
         get_iocs_command()
 except Exception as exc:
-    return_error(exc)
+    return_error(exc.message)
