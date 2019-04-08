@@ -425,10 +425,9 @@ script:
   isfetch: false
   runonce: false
   script: |-
-    import os
     import requests
-    from CommonServerPython import *
-    import demistomock as demisto
+
+
 
     """ GLOBAL PARAMS """
     API_KEY = demisto.params()["api_key"]
@@ -550,8 +549,8 @@ script:
 
         jobs_list = list()
         if isinstance(data, list):
-            for entry in data:
-                jobs_list.append(build_entry(entry))
+            for item in data:
+                jobs_list.append(build_entry(item))
         elif isinstance(data, dict):
             jobs_list = build_entry(data)
         return jobs_list
@@ -831,11 +830,11 @@ script:
         return response
 
 
-    def get_job_sample(sample_id):
+    def get_job(job_id=None, sample_id=None):
         """
         Args:
             sample_id:
-
+            job_id:
         Returns:
             dict of response, if not exists returns:
             {
@@ -843,56 +842,33 @@ script:
                 "result": "error"
             }
         """
-        suffix = "job/sample/{}".format(sample_id)
+        suffix = "job/{}".format(job_id) if isinstance(job_id, str) else "job/sample/{}".format(sample_id)
         response = http_request("GET", suffix, ignore_error=True)
         return response
 
 
-    def get_job_sample_command():
-        sample_id = demisto.args().get("sample_id")
-        raw_response = get_job_sample(sample_id)
-        data = raw_response.get("data")
-
-        if raw_response.get("result") == "error":
-            entry = build_finished_job(job_id=None, sample_id=sample_id)
-            human_readable = "Jobs for sample id {} is finished/not exists".format(sample_id)
-        else:
-            entry = build_job_data(data)
-            sample = entry[0] if isinstance(entry, list) else entry
-            human_readable = tableToMarkdown(
-                "Results for job sample id: {}".format(sample_id),
-                sample,
-                headers=["JobID", "SampleID", "VMName", "VMID"],
-            )
-
-        entry_context = {"VMRay.Job(val.JobID === obj.JobID)": entry}
-
-        return_outputs(human_readable, entry_context, raw_response=raw_response)
-
-
-    def get_job_by_id(job_id):
-        suffix = "job/{}".format(job_id)
-        response = http_request("GET", suffix, ignore_error=True)
-        return response
-
-
-    def get_job_by_id_command():
+    def get_job_command():
         job_id = demisto.args().get("job_id")
-        raw_response = get_job_by_id(job_id)
-        if raw_response.get("result") == "error":
-            entry = build_finished_job(job_id, sample_id=None)
-            human_readable = "Jobs for job id {} is finished/not exists".format(job_id)
+        sample_id = demisto.args().get("sample_id")
+
+        vmray_id = job_id if job_id else sample_id
+        title = "job" if job_id else "sample"
+
+        raw_response = get_job(job_id=job_id, sample_id=sample_id)
+        data = raw_response.get("data")
+        if raw_response.get("result") == "error" or not data:
+            entry = build_finished_job(job_id=job_id, sample_id=sample_id)
+            human_readable = "Jobs for {} id {} is finished/not exists".format(title, vmray_id)
         else:
-            data = raw_response.get("data")
             entry = build_job_data(data)
             sample = entry[0] if isinstance(entry, list) else entry
             human_readable = tableToMarkdown(
-                "Results for job sample id: {}".format(job_id),
+                "Job results for {} id: {}".format(title, vmray_id),
                 sample,
                 headers=["JobID", "SampleID", "VMName", "VMID"],
             )
 
-        entry_context = {"VMRay.Job(val.JobID === obj.JobID)": entry}
+        entry_context = {"VMRay.Job(val.JobID === obj.JobID || val.SampleID === obj.SampleID)": entry}
         return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -1119,10 +1095,8 @@ script:
             get_analysis_command()
         elif COMMAND == "vmray-get-sample":
             get_sample_command()
-        elif COMMAND in ("vmray-get-job-by-sample", "get_job_sample"):
-            get_job_sample_command()
-        elif COMMAND == "vmray-get-job-by-id":
-            get_job_by_id_command()
+        elif COMMAND in ("vmray-get-job-by-sample", "get_job_sample", "vmray-get-job-by-id"):
+            get_job_command()
         elif COMMAND == "vmray-get-threat-indicators":
             get_threat_indicators_command()
         elif COMMAND == "vmray-add-tag":
