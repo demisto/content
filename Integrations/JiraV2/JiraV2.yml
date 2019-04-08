@@ -5,9 +5,9 @@ name: jira-v2
 display: Atlassian Jira (v2)
 fromversion: 2.6.0
 category: Case Management
-description: Issue tracking product, developed by Atlassian
+description: Use the Jira integration to manage issues and create Demisto incidents from the projects.
 configuration:
-- display: Jira URL, in the format https://demisto.atlassian.net/
+- display: ' Jira URL, for example: https://demisto.atlassian.net/ '
   name: url
   defaultvalue: ""
   type: 0
@@ -37,7 +37,7 @@ configuration:
   defaultvalue: ""
   type: 14
   required: false
-- display: Query for fetching incident in JQL
+- display: Query (in JQL) for fetching incidents
   name: query
   defaultvalue: status!=done
   type: 0
@@ -86,216 +86,216 @@ script:
     - name: query
       required: true
       default: true
-      description: JQL query string
+      description: The JQL query string.
     - name: startAt
-      description: The index of the first issue to return (0-based) - format int
+      description: The index (integer) of the first issue to return (0-based).
     - name: maxResults
-      description: the maximum number of issues to return (defaults to 50). The maximum
-        allowable value is dictated by the JIRA property 'jira.search.views.default.max'.
+      description: The maximum number of issues to return (default is 50). The maximum
+        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
         If you specify a value that is higher than this number, your search results
         will be truncated.
     - name: headers
-      description: Headers to display in Human readable format
+      description: The headers to display in human readable format.
     outputs:
     - contextPath: Ticket.Id
-      description: Id of ticket
+      description: The ID of the ticket.
     - contextPath: Ticket.Key
-      description: Key of ticket
+      description: The key of the ticket.
     - contextPath: Ticket.Assignee
-      description: User assigned to ticket
+      description: The user assigned to the ticket.
     - contextPath: Ticket.Creator
-      description: User who created the ticket
+      description: The user who created the ticket.
     - contextPath: Ticket.Summary
-      description: Summary of ticket
+      description: The summary of the ticket.
     - contextPath: Ticket.Status
-      description: Status of ticket
-    description: Query Jira issues
+      description: The status of the ticket.
+    description: Queries Jira issues.
   - name: jira-get-issue
     arguments:
     - name: issueId
       required: true
       default: true
-      description: Issue id
+      description: The ID of the issue.
     - name: headers
-      description: Headers to display in Human readable format
+      description: Headers to display in human readable format.
     - name: getAttachments
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       defaultValue: "false"
-      description: If "true", retrives issues attachment
+      description: If "true", retrives the issue's attachments.
     - name: expandLinks
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       defaultValue: "false"
-      description: If "true", expands issue's links
+      description: If "true", expands the issue's links.
     outputs:
     - contextPath: Ticket.Id
-      description: Id of ticket
+      description: The ID of the ticket.
     - contextPath: Ticket.Key
-      description: Key of ticket
+      description: The key of ticket.
     - contextPath: Ticket.Assignee
-      description: User assigned to ticket
+      description: The user assigned to the ticket.
     - contextPath: Ticket.Creator
-      description: User who created the ticket
+      description: The user who created the ticket.
     - contextPath: Ticket.Summary
-      description: Summary of ticket
+      description: The summary of the ticket.
     - contextPath: Ticket.Status
-      description: Status of ticket
+      description: The status of the ticket.
     - contextPath: File.Size
-      description: File size
+      description: The size of the file.
     - contextPath: File.SHA256
-      description: File SHA256
+      description: The SHA256 hash of the file.
     - contextPath: File.Name
-      description: File name
+      description: The name of the file.
     - contextPath: File.SHA1
-      description: File SHA1
-    description: Fetch issue from Jira
+      description: The SHA1 hash of the file.
+    description: Fetches an issue from Jira.
   - name: jira-create-issue
     arguments:
     - name: issueJson
-      description: Issue object in json format
+      description: The issue object (in JSON format).
     - name: summary
       required: true
-      description: Summary of the issue, a mandatory field
+      description: The summary of the issue.
     - name: projectKey
-      description: Project key to associate the issue
+      description: The project key with which to associate the issue.
     - name: issueTypeName
-      description: Choose issue type by name - e.g. Problem
+      description: ' Select an issue type by name, for example: "Problem". '
     - name: issueTypeId
-      description: Choose issue type by its numeric ID
+      description: Select an issue type by its numeric ID.
     - name: projectName
-      description: Project name to associate the issue
+      description: The project name with which to associate the issue.
     - name: description
-      description: Issue description
+      description: A description of the issue.
     - name: labels
-      description: 'comma separated list of label '
+      description: 'A CSV list of labels. '
     - name: priority
-      description: priorty name , like High/Medium
+      description: ' The priorty name, for example: "High" or "Medium". '
     - name: dueDate
-      description: DueDate for the issue, in format of 2018-03-11
+      description: ' The due date for the issue (in the format: 2018-03-11). '
     - name: assignee
-      description: assignee name
+      description: The name of the assignee.
     - name: reporter
-      description: reporter name
+      description: The name of the reporter.
     - name: parentIssueKey
-      description: Parent issue key if you create a sub-task
+      description: The parent issue key (if you create a sub-task).
     - name: parentIssueId
-      description: Parent issue ID if you create a sub-task
+      description: The parent issue ID (if you create a sub-task).
     outputs:
     - contextPath: Ticket.Id
-      description: Id of ticket
+      description: The ID of the ticket.
     - contextPath: Ticket.Key
-      description: Key of ticket
-    description: Create a new issue on Jira
+      description: The key of the ticket.
+    description: Creates a new issue in Jira.
   - name: jira-issue-upload-file
     arguments:
     - name: issueId
       required: true
-      description: Issue id
+      description: The ID of the issue.
     - name: upload
-      description: Entry id to upload
-    description: Upload a file attachments to an issue
+      description: The entry ID to upload.
+    description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:
     - name: issueId
       required: true
       default: true
-      description: Issue id
+      description: The ID of the issue.
     - name: comment
       required: true
-      description: Comment - the actual comment body
+      description: The actual comment body.
     - name: visibility
-      description: Make comment visible only to a certain role - like Administrators
-    description: Add new comment to existing Jira issue
+      description: ' The roles that can view the comment, for example: "Administrators". '
+    description: Adds a new comment to an existing Jira issue.
   - name: jira-issue-add-link
     arguments:
     - name: globalId
       description: If a globalId is provided and a remote issue link exists with that
-        globalId, the remote issue link is updated
+        globalId, the remote issue link is updated.
     - name: relationship
-      description: object relationship to issue , like - causes
+      description: ' The object relationship to issue, for example: "causes". '
     - name: url
       required: true
-      description: link url
+      description: The URL link.
     - name: title
       required: true
-      description: link title
+      description: The title of the link.
     - name: summary
-      description: link summary
+      description: The summary of the link.
     - name: issueId
       required: true
-      description: Issue Id
-    description: Creates (or updates) issue link
+      description: The ID of the issue.
+    description: Creates (or updates) an issue link.
   - name: jira-edit-issue
     arguments:
     - name: issueId
       required: true
-      description: The ID of the issue to edit
+      description: The ID of the issue to edit.
     - name: issueJson
-      description: Issue object in json format
+      description: The issue object (in JSON format).
     - name: summary
-      description: Summary of the issue
+      description: The summary of the issue.
     - name: description
-      description: Issue description
+      description: The description of the issue.
     - name: labels
-      description: 'comma separated list of label '
+      description: ' A CSV list of labels. '
     - name: priority
-      description: priorty name , like High/Medium
+      description: ' A priorty name, for example "High" or "Medium". '
     - name: dueDate
-      description: DueDate for the issue, in format of 2018-03-11
+      description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
-      description: assignee name
+      description: The name of the assignee.
     - name: status
-      description: status name
+      description: The name of the status.
     outputs:
     - contextPath: Ticket.Id
-      description: Id of ticket
+      description: The ID of the ticket.
     - contextPath: Ticket.Key
-      description: Key of ticket
+      description: The key of the ticket.
     - contextPath: Ticket.Assignee
-      description: User assigned to ticket
+      description: The sser assigned to the ticket.
     - contextPath: Ticket.Creator
-      description: User who created the ticket
+      description: The user who created the ticket.
     - contextPath: Ticket.Summary
-      description: Summary of ticket
+      description: The summary of the ticket.
     - contextPath: Ticket.Status
-      description: Status of ticket
-    description: Edit JIRA issue
+      description: The status of the ticket.
+    description: Modifies an issue in JIRA.
   - name: jira-get-comments
     arguments:
     - name: issueId
       required: true
-      description: The issue id to get comments of
+      description: The ID of the issue to get comments of.
     outputs:
     - contextPath: Ticket.Comment.Comment
-      description: The comment text
+      description: The text of the comment.
       type: string
     - contextPath: Ticket.Comment.Created
-      description: Creation date
+      description: The issue creation date.
       type: string
     - contextPath: Ticket.Comment.User
-      description: The user that created the comment
+      description: The user that created the comment.
       type: string
-    description: Gets the comments added to a ticket
+    description: Returns the comments added to a ticket.
   - name: jira-delete-issue
     arguments:
     - name: issueIdOrKey
       required: true
-      description: issue ID or Key
-    description: deletes an issue
+      description: The ID or key of the issue.
+    description: Deletes an issue in Jira.
   - name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
-      description: ID Offset
+      description: The ID offset.
       type: string
-    description: gets the ID Offset, i.e., the first issue id.
+    description: Returns the ID offset, for example, the first issue ID.
   dockerimage: demisto/python3:3.7.2.200
   isfetch: true
   runonce: false
 tests:
   - Jira-v2-Test
-releaseNotes: Rewritten into python; fetch fixed; better JQL support; getAttachments flag in get-issue.
+releaseNotes: Rewrote the integration in Python. Improved fetch implementation. Improved support for JQL. Added the getAttachments flag in the get-issue command.
