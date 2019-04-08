@@ -3,7 +3,9 @@ from collections import defaultdict
 
 
 def get_args():
-    return defaultdict(lambda: "yes")
+    args = defaultdict(lambda: "yes")
+    args['encoding'] = 'utf8'
+    return args
 
 
 demistomock.args = get_args
