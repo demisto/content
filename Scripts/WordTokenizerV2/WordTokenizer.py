@@ -75,7 +75,7 @@ def remove_line_breaks(text):
     if not REMOVE_LINE_BREAKS:
         return text
 
-    return re.sub(r"\s+", " ", text.replace("\r"," ").replace("\n"," ")).strip()
+    return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
 
 
 def word_tokenize(text):
@@ -102,4 +102,3 @@ def word_tokenize(text):
 
 
 word_tokenize(demisto.args()['value'])
-
