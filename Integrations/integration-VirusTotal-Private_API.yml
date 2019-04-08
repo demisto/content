@@ -697,7 +697,7 @@ script:
         1. human readable string.
         2. url entry context.
         3. dbot entry context.
-        """BTW
+        """
         positives = demisto.get(response, 'positives')
         md = ''
         md += '## VirusTotal URL report for: ' + url + '\n'
