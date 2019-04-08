@@ -1,3 +1,6 @@
+import os
+import requests
+
 """ GLOBAL PARAMS """
 API_KEY = demisto.params()["api_key"]
 SERVER = (
@@ -25,6 +28,7 @@ SEVERITY_DICT = {
     "blacklisted": "Blacklisted",
     "whitelisted": "Whitelisted",
     "unknown": "Unknown",
+    None: "Unknown"
 }
 
 DBOTSCORE = {
@@ -39,9 +43,10 @@ DBOTSCORE = {
 """ HELPER FUNCTIONS """
 
 
-def http_request(method, url_suffix, body=None, params=None, files=None):
+def http_request(method, url_suffix, body=None, params=None, files=None, ignore_error=False):
     """ General HTTP request.
     Args:
+        ignore_error:
         method: (str) "GET", "POST", "DELETE' "PUT"
         url_suffix: (str)
         body: (dict)
@@ -62,7 +67,7 @@ def http_request(method, url_suffix, body=None, params=None, files=None):
         files=files,
         verify=USE_SSL,
     )
-    if r.status_code not in {200, 201, 202, 204}:
+    if r.status_code not in {200, 201, 202, 204} and not ignore_error:
         error = str()
         try:
             js = r.json()
@@ -93,7 +98,7 @@ def score_by_hash(analysis):
                     "Indicator": analysis.get(hash_type),
                     "Type": "hash",
                     "Vendor": "VMRay",
-                    "Score": DBOTSCORE[analysis.get("Severity")],
+                    "Score": DBOTSCORE.get(analysis.get("Severity", 0)),
                 }
             )
     return scores
@@ -109,14 +114,15 @@ def test_module():
 def upload_sample(path, params=None):
     suffix = "sample/submit"
     files = {"sample_file": open(path, "rb")}
-    results = http_request("POST", url_suffix=suffix, files=files, params=params)
+    results = http_request("POST", url_suffix=suffix, params=params, files=files)
     return results
 
 
 def upload_sample_command():
     """Uploads a file to vmray
     """
-    file_id = demisto.args().get("file_id")
+    # Preserve BC
+    file_id = demisto.args().get("entry_id") if demisto.args().get("entry_id") else demisto.args().get("file_id")
     path = demisto.getFilePath(file_id).get("path")
 
     # additional params
@@ -188,10 +194,10 @@ def upload_sample_command():
                 submission_entry["SampleID"] = submission.get("submission_sample_id")
                 submissions_list.append(submission_entry)
 
-    ec = dict()
-    ec["VMRay.Job(val.JobID === obj.JobID)"] = jobs_list
-    ec["VMRay.Sample(val.SampleID === obj.SampleID)"] = samples_list
-    ec["VMRay.Submission(val.SubmissionID === obj.SubmissionID)"] = submissions_list
+    entry_context = dict()
+    entry_context["VMRay.Job(val.JobID === obj.JobID)"] = jobs_list
+    entry_context["VMRay.Sample(val.SampleID === obj.SampleID)"] = samples_list
+    entry_context["VMRay.Submission(val.SubmissionID === obj.SubmissionID)"] = submissions_list
 
     table = {
         "Jobs ID": [job.get("JobID") for job in jobs_list],
@@ -200,13 +206,13 @@ def upload_sample_command():
             submission.get("SubmissionID") for submission in submissions_list
         ],
     }
-    md = tableToMarkdown(
+    human_readable = tableToMarkdown(
         "File submitted to VMRay",
         t=table,
         headers=["Jobs ID", "Samples ID", "Submissions ID"],
     )
 
-    return_outputs(readable_output=md, outputs=ec, raw_response=raw_response)
+    return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
 
 def build_analysis_data(analyses):
@@ -218,8 +224,8 @@ def build_analysis_data(analyses):
     Returns:
         dict: formatted entry context
     """
-    ec = dict()
-    ec["VMRay.Analysis(val.AnalysisID === obj.AnalysisID)"] = [
+    entry_context = dict()
+    entry_context["VMRay.Analysis(val.AnalysisID === obj.AnalysisID)"] = [
         {
             "AnalysisID": analysis.get("analysis_id"),
             "SampleID": analysis.get("analysis_sample_id"),
@@ -233,11 +239,11 @@ def build_analysis_data(analyses):
     ]
 
     scores = list()
-    for analysis in ec:
+    for analysis in entry_context:
         scores.extend(score_by_hash(analysis))
-    ec[outputPaths.get("dbotscore")] = scores
+    entry_context[outputPaths.get("dbotscore")] = scores
 
-    return ec
+    return entry_context
 
 
 def get_analysis_command():
@@ -245,12 +251,11 @@ def get_analysis_command():
     limit = demisto.args().get("limit")
 
     params = {"_limit": limit}
-
     raw_response = get_analysis(sample_id, params)
     data = raw_response.get("data")
-    ec = build_analysis_data(data)
-    md = json.dumps(ec, indent=4)
-    return_outputs(md, ec, raw_response=data)
+    entry_context = build_analysis_data(data)
+    humam_readable = json.dumps(entry_context, indent=4)
+    return_outputs(humam_readable, entry_context, raw_response=raw_response)
 
 
 def get_analysis(sample, params=None):
@@ -263,41 +268,45 @@ def get_submission_command():
     submission_id = demisto.args().get("submission_id")
     raw_response = get_submission(submission_id)
     data = raw_response.get("data")
-    # Build entry
-    entry = dict()
-    entry["IsFinished"] = data.get("submission_finished")
-    entry["HasErrors"] = data.get("submission_has_errors")
-    entry["SubmissionID"] = data.get("submission_id")
-    entry["MD5"] = data.get("submission_sample_md5")
-    entry["SHA1"] = data.get("submission_sample_sha1")
-    entry["SHA256"] = data.get("submission_sample_sha256")
-    entry["SSDeep"] = data.get("submission_sample_ssdeep")
-    entry["Severity"] = SEVERITY_DICT.get(data.get("submission_severity"))
-    entry["SampleID"] = data.get("submission_sample_id")
-    scores = score_by_hash(entry)
+    if data:
+        demisto.results(data)
+        # Build entry
+        entry = dict()
+        entry["IsFinished"] = data.get("submission_finished")
+        entry["HasErrors"] = data.get("submission_has_errors")
+        entry["SubmissionID"] = data.get("submission_id")
+        entry["MD5"] = data.get("submission_sample_md5")
+        entry["SHA1"] = data.get("submission_sample_sha1")
+        entry["SHA256"] = data.get("submission_sample_sha256")
+        entry["SSDeep"] = data.get("submission_sample_ssdeep")
+        entry["Severity"] = SEVERITY_DICT.get(data.get("submission_severity"))
+        entry["SampleID"] = data.get("submission_sample_id")
+        scores = score_by_hash(entry)
 
-    ec = {
-        "VMRay.Submission(val.SubmissionID === obj.SubmissionID)": entry,
-        outputPaths.get("dbotscore"): scores,
-    }
+        entry_context = {
+            "VMRay.Submission(val.SubmissionID === obj.SubmissionID)": entry,
+            outputPaths.get("dbotscore"): scores,
+        }
 
-    md = tableToMarkdown(
-        "Submission results from VMRay for ID {} with severity of {}".format(
-            submission_id, entry.get("Severity")
-        ),
-        entry,
-        headers=[
-            "IsFinished",
-            "Severity",
-            "HasErrors",
-            "MD5",
-            "SHA1",
-            "SHA256",
-            "SSDeep",
-        ],
-    )
+        human_readable = tableToMarkdown(
+            "Submission results from VMRay for ID {} with severity of {}".format(
+                submission_id, entry.get("Severity", "Unknown")
+            ),
+            entry,
+            headers=[
+                "IsFinished",
+                "Severity",
+                "HasErrors",
+                "MD5",
+                "SHA1",
+                "SHA256",
+                "SSDeep",
+            ],
+        )
 
-    return_outputs(md, ec, raw_response=raw_response)
+        return_outputs(human_readable, entry_context, raw_response=raw_response)
+    else:
+        return_outputs("No submission found in VMRay for submission id: {}".format(submission_id), {})
 
 
 def get_submission(submission_id):
@@ -332,19 +341,19 @@ def get_sample_command():
     entry["Classification"] = data.get("sample_classifications")
     scores = score_by_hash(entry)
 
-    ec = {
+    entry_context = {
         "VMRay.Sample(var.SampleID === obj.SampleID)": entry,
         outputPaths.get("dbotscore"): scores,
     }
 
-    md = tableToMarkdown(
+    human_readable = tableToMarkdown(
         "Results for sample id: {} with severity {}".format(
             entry.get("SampleID"), entry.get("Severity")
         ),
         entry,
         headers=["Type", "MD5", "SHA1", "SHA256", "SSDeep"],
     )
-    return_outputs(md, ec, raw_response=raw_response)
+    return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
 def get_sample(sample_id):
@@ -370,7 +379,7 @@ def get_job_sample(sample_id):
 
     """
     suffix = "job/sample/{}".format(sample_id)
-    response = http_request("GET", suffix)
+    response = http_request("GET", suffix, ignore_error=True)
     return response
 
 
@@ -380,24 +389,31 @@ def get_job_sample_command():
     data = raw_response.get("data")
 
     entry = dict()
-    entry["JobID"] = data.get("job_id")
-    entry["SampleID"] = data.get("job_sample_id")
-    entry["SubmissionID"] = data.get("job_submission_id")
-    entry["MD5"] = data.get("job_sample_md5")
-    entry["SHA1"] = data.get("job_sample_sha1")
-    entry["SHA256"] = data.get("job_sample_sha256")
-    entry["SSDeep"] = data.get("job_sample_ssdeep")
-    entry["JobVMName"] = data.get("job_vm_name")
-    entry["JobVMID"] = data.get("job_vm_id")
+    if isinstance(data, dict) and data.get("result") != "error":
+        entry["JobID"] = data.get("job_id")
+        entry["SampleID"] = data.get("job_sample_id")
+        entry["SubmissionID"] = data.get("job_submission_id")
+        entry["MD5"] = data.get("job_sample_md5")
+        entry["SHA1"] = data.get("job_sample_sha1")
+        entry["SHA256"] = data.get("job_sample_sha256")
+        entry["SSDeep"] = data.get("job_sample_ssdeep")
+        entry["VMName"] = data.get("job_vm_name")
+        entry["VMID"] = data.get("job_vm_id")
+        entry["Status"] = data.get("job_status")
 
-    ec = {"VMRay.Job(val.JobID === obj.JobID)": entry}
+        human_readable = tableToMarkdown(
+            "Results for job sample id: {}".format(sample_id),
+            entry,
+            headers=["JobID", "SampleID", "VMName", "VMID"],
+        )
+    else:
+        entry["JobID"] = sample_id
+        entry["Status"] = "Finished/NotExists"
+        human_readable = "Jobs for sample id {} is finished/not exists".format(sample_id)
 
-    md = tableToMarkdown(
-        "Results for job sample id: {}".format(sample_id),
-        entry,
-        headers=["JobID", "SampleID", "JobVMName", "JobVMID"],
-    )
-    return_outputs(md, ec, raw_response=raw_response)
+    entry_context = {"VMRay.Job(val.JobID === obj.JobID)": entry}
+
+    return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
 def get_threat_indicators(sample_id):
@@ -412,7 +428,7 @@ def get_threat_indicators_command():
     data = raw_response.get("threat_indicators")
     # Build Entry Context TODO: EntryContext
     if data and isinstance(data, list):
-        ec_list = list()
+        entry_context_list = list()
         for indicator in data:
             entry = dict()
             entry["AnalysisID"] = indicator.get("analysis_ids")
@@ -420,18 +436,18 @@ def get_threat_indicators_command():
             entry["Classification"] = indicator.get("classifications")
             entry["ID"] = indicator.get("id")
             entry["Operation"] = indicator.get("operation")
-            ec_list.append(entry)
+            entry_context_list.append(entry)
 
-        md = tableToMarkdown(
+        human_readable = tableToMarkdown(
             "Threat indicators for sample ID: {}. Showing first indicator:".format(
                 sample_id
             ),
-            ec_list[0],
+            entry_context_list[0],
             headers=["AnalysisID", "Category", "Classification", "Operation"],
         )
 
-        ec = {"VMRay.ThreatIndicator(obj.ID === val.ID)": ec_list}
-        return_outputs(md, ec, raw_response={"threat_indicators": data})
+        entry_context = {"VMRay.ThreatIndicator(obj.ID === val.ID)": entry_context_list}
+        return_outputs(human_readable, entry_context, raw_response={"threat_indicators": data})
     return_outputs(
         "No threat indicators for sample ID: {}".format(sample_id),
         {},
@@ -588,7 +604,7 @@ def get_iocs_command():
         "IP": ip_list
     }
 
-    ec = {
+    entry_context = {
         "VMRay.Sample(val.SampleID == {}).IOC".format(sample_id): iocs,
     }
 
@@ -600,12 +616,12 @@ def get_iocs_command():
         iocs_size_table[k] = sizeof_key
         iocs_size += sizeof_key
 
-    md = tableToMarkdown(
+    human_readable = tableToMarkdown(
         "Total of {} IOCs found in VMRay by sample {}".format(iocs_size, sample_id),
         iocs_size_table,
         headers=["URLs", "IPs", "Domains", "Mutexes", "Registry"]
     )
-    return_outputs(md, ec, raw_response=raw_response)
+    return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
 try:
@@ -633,4 +649,4 @@ try:
     elif COMMAND == "vmray-get-iocs":
         get_iocs_command()
 except Exception as exc:
-    return_error(exc.message)
+    return_error(exc)
