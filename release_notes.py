@@ -1,9 +1,9 @@
-import abc
 import datetime
 import json
 import sys
 import yaml
 import os
+from abc import ABCMeta, abstractmethod
 
 from .Tests.test_utils import print_error
 from .Tests.test_utils import server_version_compare
@@ -54,7 +54,7 @@ def release_notes_item(header, body):
     return '- __' + header + '__\n' + add_dot(body) + '\n'
 
 
-class Content(metaclass=abc.ABCMeta):
+class Content(metaclass=ABCMeta):
     def __init__(self):
         self.modified_store = []  # holds modified file paths
         self.added_store = []  # holds added file paths
@@ -71,19 +71,19 @@ class Content(metaclass=abc.ABCMeta):
         else:
             print("Unknown change type " + change_type)
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_header(self):
         return
 
-    @abc.abstractmethod
+    @abstractmethod
     def added_release_notes(self, data):
         return
 
-    @abc.abstractmethod
+    @abstractmethod
     def modified_release_notes(self, data):
         return
 
-    @abc.abstractmethod
+    @abstractmethod
     def load_data(self, data):
         return
 
