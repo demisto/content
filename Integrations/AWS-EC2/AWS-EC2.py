@@ -6,6 +6,10 @@ import json
 import re
 import datetime
 from botocore.config import Config
+import urllib3.util
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 """PARAMETERS"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
@@ -15,7 +19,6 @@ AWS_roleSessionDuration = demisto.params().get('sessionDuration')
 AWS_rolePolicy = None
 AWS_access_key_id = demisto.params().get('access_key')
 AWS_secret_access_key = demisto.params().get('secret_key')
-AWS_session_token = demisto.params().get('session_token')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 if not demisto.params().get('proxy', False):
     config = Config(
@@ -83,7 +86,6 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                 region_name=region,
                 aws_access_key_id=AWS_access_key_id,
                 aws_secret_access_key=AWS_secret_access_key,
-                aws_session_token=AWS_session_token,
                 verify=VERIFY_CERTIFICATE,
                 config=config
             )
@@ -93,7 +95,6 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                 region_name=AWS_DEFAULT_REGION,
                 aws_access_key_id=AWS_access_key_id,
                 aws_secret_access_key=AWS_secret_access_key,
-                aws_session_token=AWS_session_token,
                 verify=VERIFY_CERTIFICATE,
                 config=config
             )
@@ -1693,15 +1694,14 @@ def create_network_acl(args):
         'IsDefault': network_acl['IsDefault'],
         'NetworkAclId': network_acl['NetworkAclId'],
         'Tags': network_acl['Tags'],
-        'VpcId': network_acl['VpcId'],
-        'Timestamp': datetime.datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+        'VpcId': network_acl['VpcId']
     }
     entries = []
     for entry in network_acl['Entries']:
         entries.append(entry)
-    hr_entries = tableToMarkdown('AWS EC2 ACL Entries', entries)
-    ec = {'AWS.EC2.VpcId(val.VpcId === obj.VpcId).NetworkAcl': data}
-    hr_acl = tableToMarkdown('AWS EC2 Instance ACL', data)
+    hr_entries = tableToMarkdown('AWS EC2 ACL Entries', entries, removeNull=True)
+    ec = {'AWS.EC2.VpcId(val.VpcId === obj.VpcId).NetworkAcl': network_acl}
+    hr_acl = tableToMarkdown('AWS EC2 Instance ACL', data, removeNull=True)
     human_readable = hr_acl + hr_entries
     return_outputs(human_readable, ec)
 

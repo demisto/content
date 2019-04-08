@@ -27,10 +27,6 @@ configuration:
   name: secret_key
   required: false
   type: 0
-- display: Session Token
-  name: session_token
-  required: false
-  type: 0
 - display: Use System Proxy
   name: proxy
   required: false
@@ -4349,11 +4345,15 @@ script:
     execution: true
     name: aws-ec2-modify-instance-attribute
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Checks whether you have the required permissions for the action,
         without actually making the request, and provides an error response.
       isArray: false
       name: DryRun
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -4361,6 +4361,32 @@ script:
       isArray: false
       name: VpcId
       required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
       secret: false
     deprecated: false
     description: Creates a network ACL in a VPC. Network ACLs provide an optional
@@ -4520,6 +4546,32 @@ script:
       isArray: false
       name: RuleNumber
       required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
       secret: false
     deprecated: false
     description: Creates an entry (a rule) in a network ACL with the specified rule
