@@ -22,6 +22,8 @@ jobs:
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
               pip3 install mock
+              pip3 insatll git+https://github.com/demisto/demisto-py.git@test-content
+              pip3 intall slackclient
               pyenv versions
               python --version
               python3 --version
