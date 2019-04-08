@@ -75,7 +75,7 @@ def tokenize_text(text):
                 words.append(token.lower_)
     if HASH_SEED:
         words = map(lambda x: str(hash_djb2(x, int(HASH_SEED))), words)
-    return ' '.join(words)
+    return ' '.join(words).encode(TEXT_ENCODE).strip()
 
 
 def remove_line_breaks(text):
@@ -98,7 +98,7 @@ def word_tokenize(text):
 
     if len(result) == 1:
         result = result[0]
-
+    result = result
     return {
         'Contents': result,
         'ContentsFormat': formats['json'] if type(result) is list else formats['text'],
