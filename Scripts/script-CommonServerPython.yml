@@ -1266,7 +1266,7 @@ script: |-
 
           :type error: ``str``
           :param error: The raw error message to log (optional)
-
+  
           :return: Error entry object
           :rtype: ``dict``
       """
@@ -1282,7 +1282,17 @@ script: |-
       if error:
           LOG(error)
       LOG.print_log()
-      if demisto.command() != 'fetch-incidents':
+
+      # in case function is called from an automation
+      if not hasattr(demisto, 'command'):
+          demisto.results({
+              'Type': entryTypes['error'],
+              'ContentsFormat': formats['text'],
+              'Contents': str(message)
+          })
+
+      # in case function is called from an integration, and not fetching
+      elif demisto.command() != 'fetch-incidents':
           demisto.results({
               'Type': entryTypes['error'],
               'ContentsFormat': formats['text'],
