@@ -1195,6 +1195,10 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "integrations": "Cisco Umbrella Investigate",
+            "playbookID": "Domain Enrichment Generic - Test"
         }
     ],
     "skipped_tests": {
