@@ -1270,23 +1270,19 @@ script: |-
           :return: Error entry object
           :rtype: ``dict``
       """
-      # first, try handling the error as an exception
-      try:
+      if isinstance(message, Exception):
           # log the exception's message
           LOG(str(message))
-          if isinstance(message, Exception):
-              # log tracback
-              LOG("Traceback:\n{traceback}".format(traceback=traceback.format_exc()))
-              traceback.format_exc()
+          # log tracback
+          LOG("Traceback:\n{traceback}".format(traceback=traceback.format_exc()))
 
-      except:
-          # if treating the message as an exception didn't work, just log the message as always
+      else:
           LOG(message)
 
       if error:
           LOG(error)
       LOG.print_log()
-      if not demisto.command() == 'fetch-incidents':
+      if demisto.command() != 'fetch-incidents':
           demisto.results({
               'Type': entryTypes['error'],
               'ContentsFormat': formats['text'],
