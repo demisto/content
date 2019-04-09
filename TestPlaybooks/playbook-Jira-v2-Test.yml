@@ -1,14 +1,14 @@
-id: Jira-Test
-version: -1
-name: Jira-Test
+id: Jira-v2-Test
+version: 2
+name: Jira-v2-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 866194e1-a181-4860-89c3-12c399906661
+    taskid: 3ef73c80-e9db-44e2-808f-b5a916d07c93
     type: start
     task:
-      id: 866194e1-a181-4860-89c3-12c399906661
+      id: 3ef73c80-e9db-44e2-808f-b5a916d07c93
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 3c58da08-7839-4473-8319-bf44ec6db001
+    taskid: 0c58843c-f39a-49de-8173-4930079cba47
     type: regular
     task:
-      id: 3c58da08-7839-4473-8319-bf44ec6db001
+      id: 0c58843c-f39a-49de-8173-4930079cba47
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -51,17 +51,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
     timertriggers: []
   "2":
     id: "2"
-    taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
+    taskid: e70bd6cd-8f16-4500-8b50-c1060f60ffd2
     type: regular
     task:
-      id: 1b267d2e-ce51-4d14-8248-fd63c504da3f
+      id: e70bd6cd-8f16-4500-8b50-c1060f60ffd2
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
@@ -104,10 +104,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: de36e03d-39df-47f0-8770-3814fb47309d
+    taskid: d3f8d2e2-ee51-46d3-8bc5-32599e15ca6c
     type: regular
     task:
-      id: de36e03d-39df-47f0-8770-3814fb47309d
+      id: d3f8d2e2-ee51-46d3-8bc5-32599e15ca6c
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
@@ -137,10 +137,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
+    taskid: 1fbdf37b-40bd-467e-84c4-8603602e7393
     type: regular
     task:
-      id: ef93cc85-2f16-4f5a-893a-2736c25a6508
+      id: 1fbdf37b-40bd-467e-84c4-8603602e7393
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -175,10 +175,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
+    taskid: 151e43fb-aabc-4a0c-8c08-0cf36be38050
     type: regular
     task:
-      id: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
+      id: 151e43fb-aabc-4a0c-8c08-0cf36be38050
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
@@ -207,10 +207,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
+    taskid: 1ea23c8c-dcff-4701-86bd-e2e800d38188
     type: regular
     task:
-      id: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
+      id: 1ea23c8c-dcff-4701-86bd-e2e800d38188
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
@@ -243,10 +243,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
+    taskid: 04b162b7-a79d-4b52-8761-af7f3cb9fa42
     type: regular
     task:
-      id: 9f28722d-9a90-4567-83a6-981df7a5d32e
+      id: 04b162b7-a79d-4b52-8761-af7f3cb9fa42
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
@@ -274,10 +274,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
+    taskid: 9296772d-7030-4bc5-8e68-16ac20a836fd
     type: regular
     task:
-      id: f0a00a75-2589-4912-8d4f-5db6ca467b93
+      id: 9296772d-7030-4bc5-8e68-16ac20a836fd
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -312,10 +312,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
+    taskid: 3f691c22-fcc9-4463-8769-539ebdab6161
     type: regular
     task:
-      id: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
+      id: 3f691c22-fcc9-4463-8769-539ebdab6161
       version: -1
       name: jira-issue-query
       description: Query Jira issues
@@ -344,10 +344,10 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
+    taskid: df0a90a2-4410-44ce-8d89-07e75a55c40f
     type: regular
     task:
-      id: 94503749-9577-49e0-843c-f1ec13b3e38f
+      id: df0a90a2-4410-44ce-8d89-07e75a55c40f
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -376,10 +376,10 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
+    taskid: 75002cc4-453f-4dc7-80e2-883358efaba9
     type: regular
     task:
-      id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
+      id: 75002cc4-453f-4dc7-80e2-883358efaba9
       version: -1
       name: jira-edit-issue
       script: '|||jira-edit-issue'
@@ -414,10 +414,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
+    taskid: 5a40beb6-f9af-43c5-8b56-d15d2a4ecc98
     type: regular
     task:
-      id: 4c264332-3528-4f2b-812c-bd29fc08cfe6
+      id: 5a40beb6-f9af-43c5-8b56-d15d2a4ecc98
       version: -1
       name: VerifyContext - Summary
       scriptName: VerifyContext
@@ -445,10 +445,10 @@ tasks:
     timertriggers: []
   "21":
     id: "21"
-    taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
+    taskid: 52962537-8a8c-45fa-836b-df9a2a5c9b14
     type: regular
     task:
-      id: 4f94c3a0-5c82-473f-8604-2f010861a7a7
+      id: 52962537-8a8c-45fa-836b-df9a2a5c9b14
       version: -1
       name: VerifyContext - Status
       scriptName: VerifyContext
@@ -476,10 +476,10 @@ tasks:
     timertriggers: []
   "22":
     id: "22"
-    taskid: 178e2167-e603-4868-8920-20489b8227e4
+    taskid: e6b8c279-faab-4b6c-8b2c-dbcefde06a6a
     type: regular
     task:
-      id: 178e2167-e603-4868-8920-20489b8227e4
+      id: e6b8c279-faab-4b6c-8b2c-dbcefde06a6a
       version: -1
       name: jira-get-comments
       script: '|||jira-get-comments'
@@ -504,10 +504,10 @@ tasks:
     timertriggers: []
   "23":
     id: "23"
-    taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
+    taskid: 8d40873a-dc3d-4421-8131-cf241914412a
     type: regular
     task:
-      id: 44df5166-91cf-498c-88b6-66dc581ffcb1
+      id: 8d40873a-dc3d-4421-8131-cf241914412a
       version: -1
       name: VerifyContext - comment
       scriptName: VerifyContext
@@ -535,10 +535,10 @@ tasks:
     timertriggers: []
   "24":
     id: "24"
-    taskid: de947b49-a588-4983-8176-b3677c8575cd
+    taskid: 4851d018-28df-44db-8dee-b5506fc03a20
     type: regular
     task:
-      id: de947b49-a588-4983-8176-b3677c8575cd
+      id: 4851d018-28df-44db-8dee-b5506fc03a20
       version: -1
       name: delete-issue
       script: '|||jira-delete-issue'
