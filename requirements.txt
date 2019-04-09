@@ -17,3 +17,6 @@ pyVmomi
 pytest
 requests
 pykwalify
+mock
+git+https://github.com/demisto/demisto-py.git@test-content
+slackclient
