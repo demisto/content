@@ -69,7 +69,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: PhishAI(val.status != 'completed').ScanID
+        simple: PhishAI(val.status !== 'completed').ScanID
     separatecontext: true
     loop:
       iscommand: false
