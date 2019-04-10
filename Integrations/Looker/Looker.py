@@ -186,7 +186,7 @@ try:
         get_items_command()
 
 # Log exceptions
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(e)
     LOG.print_log()
     raise

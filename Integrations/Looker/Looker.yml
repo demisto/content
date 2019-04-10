@@ -71,6 +71,7 @@ script:
     - contextPath: Example.Item.CreatedDate
       description: Item creation date
       type: date
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: |-
@@ -259,8 +260,8 @@ script:
             get_items_command()
 
     # Log exceptions
-    except Exception, e:
-        LOG(e.message)
+    except Exception as e:
+        LOG(e)
         LOG.print_log()
         raise
   type: python
