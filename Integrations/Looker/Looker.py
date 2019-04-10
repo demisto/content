@@ -5,43 +5,43 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import traceback
 from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
-def split_url(url):
-    # validate url parameter format, extract port
-    server, port = url.rsplit(':', 1)
-    try:
-        assert 0 < int(port) < 65536
-    except (ValueError, AssertionError):
-        return_error("Incorrect URL format. Use the following format: https://example.looker.com:19999\n"
-                     "The default port for Looker API is 19999.")
-    return server, port
-
-
 ''' GLOBALS/PARAMS '''
 SESSION_VALIDITY_THRESHOLD = timedelta(minutes=5)
-
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
-# Split URL to server and port
-SERVER, PORT = split_url(SERVER)
+SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
+    else demisto.params()['url']
 # Should we use SSL
 USE_SSL = not demisto.params().get('unsecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/api/3.0/'
+# Request headers (preparation)
+HEADERS = {}
 
 handle_proxy()
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def verify_url(url):
+    # validate url parameter format, extract port
+    try:
+        server, port = url.rsplit(':', 1)
+        assert 0 < int(port) < 65536
+
+    except (ValueError, AssertionError):
+        return_error("Incorrect URL format. Use the following format: https://example.looker.com:19999\n"
+                     "The default port for Looker API is 19999.")
 
 
 def http_request(method, url_suffix, params=None, data=None):
@@ -51,11 +51,12 @@ def http_request(method, url_suffix, params=None, data=None):
         BASE_URL + url_suffix,
         verify=USE_SSL,
         params=params,
-        data=data
+        data=data,
+        headers=HEADERS
     )
     # Handle error responses gracefully
     if res.status_code not in {200}:
-        return_error('Error in API call to Looker [%d] - %s' % (res.status_code, res.reason))
+        raise requests.exceptions.HTTPError('Error in API call to Looker [%d] - %s' % (res.status_code, res.reason))
 
     return res.json()
 
@@ -65,7 +66,7 @@ def get_new_token():
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET
     }
-    response_json = http_request('GET', 'login', data=data)
+    response_json = http_request('POST', 'login', data=data)
 
     return {
         'token': response_json['access_token'],
@@ -74,24 +75,15 @@ def get_new_token():
 
 
 def get_session_token():
+    global HEADERS
     ic = demisto.getIntegrationContext()
     if CLIENT_ID not in ic or 'expires' not in ic[CLIENT_ID] \
-            or ic[CLIENT_ID]['expires'] > datetime.utcnow() - SESSION_VALIDITY_THRESHOLD:
+            or ic[CLIENT_ID]['expires'] + SESSION_VALIDITY_THRESHOLD > datetime.utcnow():
         ic[CLIENT_ID] = get_new_token()
+    if demisto.command() != 'test-module':
         demisto.setIntegrationContext(ic)
 
-    return ic[CLIENT_ID]['token']
-
-
-def item_to_incident(item):
-    incident = {}
-    # Incident Title
-    incident['name'] = 'Example Incident: ' + item.get('name')
-    # Incident occurrence time, usually item creation date in service
-    incident['occurred'] = item.get('createdDate')
-    # The raw response from the service, providing full info regarding the item
-    incident['rawJSON'] = json.dumps(item)
-    return incident
+    HEADERS['Authorization'] = 'token {}'.format(ic[CLIENT_ID]['token'])
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -109,7 +101,6 @@ def get_items_command():
     Gets details about a items using IDs or some other filters
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -175,8 +166,9 @@ def get_items_request(item_ids, is_active):
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
-TOKEN = get_session_token()
+verify_url(SERVER)
 try:
+    get_session_token()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
@@ -188,5 +180,6 @@ try:
 # Log exceptions
 except Exception as e:
     LOG(e)
+    LOG(traceback.format_exc())
     LOG.print_log()
     raise
