@@ -12,3 +12,4 @@ CommonServerUserPython.py
 demistomock.py
 Tests/filter_file.txt
 Tests/id_set.json
+.mypy_cache
