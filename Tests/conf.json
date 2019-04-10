@@ -1065,7 +1065,10 @@
         {
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
-
+        },
+        {
+            "playbookID": "DemistoUploadFile Test",
+            "integrations": "Demisto REST API"
         },
         {
             "playbookID": "MaxMind Test",

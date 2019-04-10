@@ -23,7 +23,7 @@ script: |
 type: javascript
 tags:
 - DemistoAPI
-comment: Upload file from incident war room to another incident's war room
+comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 enabled: true
 args:
 - name: entryID
@@ -42,4 +42,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - DemistoUploadFileToIncident Test
-releaseNotes: "Add body argument"
+releaseNotes: "Add body argument, fixed description"
