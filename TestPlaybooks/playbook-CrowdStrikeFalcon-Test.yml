@@ -208,7 +208,7 @@ tasks:
       hostname: {}
       ids:
         simple: 336474ea6a524e7c68575f6508d84781,459146dbe524472e73751a43c63324f3
-      platfrom_name: {}
+      platform_name: {}
       site_name: {}
       status: {}
     separatecontext: false
