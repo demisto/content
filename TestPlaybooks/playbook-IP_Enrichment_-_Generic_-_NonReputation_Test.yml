@@ -360,14 +360,4 @@ inputs:
   description: Determines whether the IP Enrichment - Generic playbook should convert
     IP addresses to hostnames using a DNS query. You can set this to either True or
     False.
-- key: GetReputation
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Determines whether to get reputation for the supported entities, using "!command" (such as "!ip"). Supported entities:
-    - IP
-    - File
-    - URL
-    - Domain
 outputs: []
