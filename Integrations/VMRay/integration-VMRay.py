@@ -44,13 +44,22 @@ DBOTSCORE = {
 """ HELPER FUNCTIONS """
 
 
-def http_request(method, url_suffix, body=None, params=None, files=None, ignore_error=False):
+def build_errors_string(errors):
+    if isinstance(errors, list):
+        err_str = str()
+        for error in errors:
+            err_str += error.get("error_msg") + ".\n"
+    else:
+        err_str = errors.get("error_msg")
+    return err_str
+
+
+def http_request(method, url_suffix, params=None, files=None, ignore_error=False):
     """ General HTTP request.
     Args:
         ignore_error:
         method: (str) "GET", "POST", "DELETE' "PUT"
         url_suffix: (str)
-        body: (dict)
         params: (dict)
         files: (tuple, dict)
 
@@ -62,28 +71,23 @@ def http_request(method, url_suffix, body=None, params=None, files=None, ignore_
     r = requests.request(
         method,
         url,
-        json=body,
         params=params,
         headers=HEADERS,
         files=files,
         verify=USE_SSL,
     )
+    status_code = r.status_code
     # Handle errors
+    if status_code not in {200, 201, 202, 204} and not ignore_error:
+        return_error(error_format.format(status_code, r.text))
     try:
         response = r.json()
-        # Check for error of quota
-        errors = response.get("data", {}).get("errors")
-        if response.get("result") != "ok" or errors:
-            error = errors if errors else response.get("error_msg")
-            return_error(error_format.format(r.status_code, error))
-        else:
-            return response
+        return response
     except ValueError:
-        # If no JSON is present, must be an error
-        if r.status_code not in {200, 201, 202, 204} and not ignore_error:
-            return_error(
-                error_format.format(r.status_code, r.text)
-            )
+        # If no JSON is present, must be an error that can't be ignored
+        return_error(
+            error_format.format(status_code, r.text)
+        )
 
 
 def score_by_hash(analysis):

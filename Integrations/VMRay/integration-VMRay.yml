@@ -3,7 +3,7 @@ commonfields:
   id: vmray2
   version: -1
 configuration:
-- defaultvalue: https://cloud.vmray.com/
+- defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g. https://192.168.0.1)
   name: server
   required: true
@@ -461,7 +461,7 @@ script:
       description: ID of virtual machine
       type: Number
     - contextPath: VMRay.Job.Status
-      description: Status of job
+      description: 'Status of job. '
       type: String
   dockerimage: demisto/python
   isfetch: false
@@ -513,42 +513,50 @@ script:
     """ HELPER FUNCTIONS """
 
 
-    def http_request(method, url_suffix, body=None, params=None, files=None, ignore_error=False):
+    def build_errors_string(errors):
+        if isinstance(errors, list):
+            err_str = str()
+            for error in errors:
+                err_str += error.get("error_msg") + ".\n"
+        else:
+            err_str = errors.get("error_msg")
+        return err_str
+
+
+    def http_request(method, url_suffix, params=None, files=None, ignore_error=False):
         """ General HTTP request.
         Args:
             ignore_error:
             method: (str) "GET", "POST", "DELETE' "PUT"
             url_suffix: (str)
-            body: (dict)
             params: (dict)
             files: (tuple, dict)
 
         Returns:
             dict: response json
         """
-
+        error_format = "Error in API call to VMRay [{}] - {}"
         url = SERVER + url_suffix
         r = requests.request(
             method,
             url,
-            json=body,
             params=params,
             headers=HEADERS,
             files=files,
             verify=USE_SSL,
         )
-        return_error(r.text)
-        if r.status_code not in {200, 201, 202, 204} and not ignore_error:
-            error = str()
-            try:
-                js = r.json()
-                error += js.get("error_msg")
-            except ValueError:
-                error = r.text
+        status_code = r.status_code
+        # Handle errors
+        if status_code not in {200, 201, 202, 204} and not ignore_error:
+            return_error(error_format.format(status_code, r.text))
+        try:
+            response = r.json()
+            return response
+        except ValueError:
+            # If no JSON is present, must be an error that can't be ignored
             return_error(
-                "Error in API call to VMRay [{}] - {}".format(r.status_code, error)
+                error_format.format(status_code, r.text)
             )
-        return r.json()
 
 
     def score_by_hash(analysis):
