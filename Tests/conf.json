@@ -1221,7 +1221,8 @@
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
-        "Zoom_test": "Added here because test existed but was not configured - need to review the test"
+        "Zoom_test": "Added here because test existed but was not configured - need to review the test",
+        "SignalSciences-Test": "Test is failing due to it not being able to pull any events (issue 16512)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
