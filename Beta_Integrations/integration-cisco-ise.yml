@@ -39,11 +39,24 @@ script:
     from requests.auth import HTTPBasicAuth
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-    if not demisto.params()['proxy']:
+    # Handle proxy
+    proxies = {}
+    if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+    else:
+        def get_env_var(key):
+            for k in (key.lower(), key.upper()):
+                if k in os.environ:
+                    return os.environ[k]
+            return None
+
+        proxies = {
+            'http': get_env_var('http_proxy'),
+            'https': get_env_var('https_proxy')
+        }
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -64,6 +77,7 @@ script:
     ISE.verify = USE_SSL
     ISE.disable_warnings = True
     ISE.timeout = 5
+    ISE.proxies = proxies
 
     ''' HELPER FUNCTIONS '''
 
@@ -620,5 +634,6 @@ script:
       description: Name of the new group for the endpoint
     description: Updates the group of an endpoint
   runonce: false
+releaseNotes: "-"
 tests:
   - cisco-ise-test-playbook

@@ -908,4 +908,3 @@ script:
     description: Gets host information from McAfee Active Response
   dockerimage: demisto/dxl
   runonce: false
-releaseNotes: Add more commands to Mcafee MAR integration

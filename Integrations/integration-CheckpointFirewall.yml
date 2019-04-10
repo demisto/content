@@ -942,7 +942,6 @@ script:
       description: e.g. Network
     description: Delete rule from firewall
   runonce: false
-releaseNotes: "Improve entries and outputs"
 tests:
 - blockip_test_playbook
 - CheckpointFW-test

@@ -331,7 +331,7 @@
     },
     "incident.occurred": {
       "type": "date",
-      "value": "02 Jan 2006"
+      "value": "Mon, 02 Jan 2006 15:04:05 MST"
     },
     "incident.openDuration": {
       "type": "duration",

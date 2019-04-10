@@ -569,4 +569,3 @@ hidden: false
 fromversion: 3.5.0
 tests:
   - Sandblast_malicious_test
-releaseNotes: "Fixed test button, so that it will fail if the user is out of quota"
