@@ -5,7 +5,7 @@ args:
   name: description
   predefined:
   - ''
-  required: true
+  required: false
   secret: false
 - auto: PREDEFINED
   default: false
@@ -19,7 +19,7 @@ args:
   - '4'
   - '5'
   - '6'
-  required: true
+  required: false
   secret: false
 - default: false
   description: Owner of the incident
@@ -34,20 +34,30 @@ args:
   required: false
   secret: false
 - default: false
-  description: Requestin customer name
+  description: Public id or record id
   isArray: false
-  name: customer_display_name
+  name: id_value
   required: true
   secret: false
-comment: This script is an example script of how to create an incident in Cherwell.
-  The scruot wraps the create business bject command in the cherwell integration.
-  When writing your own script to creat a business object, follow the instructions
-  in the configuration part, leace the execution part untouched
+- auto: PREDEFINED
+  default: false
+  description: Type of ID
+  isArray: false
+  name: id_type
+  predefined:
+  - public_id
+  - record_id
+  required: true
+  secret: false
+comment: This script is an example script of how to update an incident in Cherwell.
+  The script wraps the update-business-object command of the cherwell integration.
+  When writing your own script to update a business object, follow the instructions
+  found in the configuration section of the script, leave the execution part untouched.
 commonfields:
-  id: CherwellCreateIncident
+  id: c5307c85-4435-4612-8bbc-198611caa4c2
   version: -1
 enabled: false
-name: CherwellCreateIncident
+name: CherwellUpdateIncient
 outputs:
 - contextPath: Cherwell.BusinessObjects.IncidentPublicID
   description: Incident public ID

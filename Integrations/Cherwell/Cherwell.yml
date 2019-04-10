@@ -71,20 +71,20 @@ script:
       name: json
       required: true
       secret: false
+    - default: false
+      description: Public id or record id
+      isArray: false
+      name: id_value
+      required: true
+      secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of ID (public_id or record_id)
+      description: Type of ID
       isArray: false
       name: id_type
       predefined:
       - public_id
       - record_id
-      required: true
-      secret: false
-    - default: false
-      description: Public id or record id
-      isArray: false
-      name: id_value
       required: true
       secret: false
     deprecated: false
@@ -105,20 +105,20 @@ script:
       name: type
       required: true
       secret: false
+    - default: false
+      description: Public id or record id
+      isArray: false
+      name: id_value
+      required: true
+      secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of ID (public_id or record_id)
+      description: Type of ID
       isArray: false
       name: id_type
       predefined:
       - public_id
       - record_id
-      required: true
-      secret: false
-    - default: false
-      description: Public id or record id
-      isArray: false
-      name: id_value
       required: true
       secret: false
     deprecated: false
@@ -132,20 +132,20 @@ script:
       name: type
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Type of ID (public_id or record_id)
-      isArray: false
-      name: id_type
-      predefined:
-      - public_id
-      - record_id
-      required: true
-      secret: false
     - default: false
       description: Public id or record id
       isArray: false
       name: id_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of ID
+      isArray: false
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
       required: true
       secret: false
     deprecated: false
