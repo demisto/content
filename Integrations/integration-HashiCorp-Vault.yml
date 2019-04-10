@@ -1064,6 +1064,5 @@ script:
     description: Creates a new authentication token
   dockerimage: demisto/hashicorp:1.0.0.39
   runonce: false
-releaseNotes: "Fixed integration test error messages along with some bugs in credentials fetching. Now supporting KV1 engines in the list-secrets command"
 tests:
   - hashicorp_test
