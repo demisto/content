@@ -3,10 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import json
 import requests
 import traceback
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -91,76 +89,41 @@ def get_session_token():
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Performs basic get request to check connectivity and authentication
     """
     http_request('GET', 'user')
 
 
-def get_items_command():
-    """
-    Gets details about a items using IDs or some other filters
-    """
-    # Init main vars
-    contents = []
-    context = {}
-    context_entries = []
-    title = ''
+def run_query_command():
     # Get arguments from user
-    item_ids = argToList(demisto.args().get('item_ids', []))
-    is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
+    query_id = demisto.args()['query_id']
+    result_format = demisto.args()['result_format']
     limit = int(demisto.args().get('limit', 10))
     # Make request and get raw response
-    items = get_items_request(item_ids, is_active)
+    contents = run_query_request(query_id, result_format)
     # Parse response into context & content entries
-    if items:
-        if limit:
-            items = items[:limit]
-        title = 'Example - Getting Items Details'
-
-        for item in items:
-            contents.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'Created Date': item.get('createdDate')
-            })
-            context_entries.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'CreatedDate': item.get('createdDate')
-            })
-
-        context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
+    context = {
+        'Looker.Query(val.ID && val.ID === obj.ID)': {
+            'ID': query_id,
+            'Results': contents
+        }
+    }
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Results for query #{query_id}', contents, removeNull=True),
         'EntryContext': context
     })
 
 
-def get_items_request(item_ids, is_active):
+def run_query_request(query_id, result_format):
     # The service endpoint to request from
-    endpoint_url = 'items'
-    # Dictionary of params for the request
-    params = {
-        'ids': item_ids,
-        'isActive': is_active
-    }
+    endpoint_url = f'/queries/{query_id}/run/{result_format}'
     # Send a request using our http_request wrapper
-    response = http_request('GET', endpoint_url, params)
-    # Check if response contains errors
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    # Check if response contains any data to parse
-    if 'data' in response:
-        return response.get('data')
-    # If neither was found, return back empty results
-    return {}
+    return http_request('GET', endpoint_url)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -173,9 +136,9 @@ try:
         # This is the call made when pressing the integration test button.
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'example-get-items':
+    elif demisto.command() == 'looker-run-query':
         # An example command
-        get_items_command()
+        run_query_command()
 
 # Log exceptions
 except Exception as e:
