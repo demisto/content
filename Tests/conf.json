@@ -1188,9 +1188,7 @@
         },
         {
             "playbookID": "IP Enrichment - Generic - NonReputation Test",
-            "integrations": [
-                "Threat Crowd"
-            ]
+            "integrations": "Threat Crowd"
         }
     ],
     "skipped_tests": {
