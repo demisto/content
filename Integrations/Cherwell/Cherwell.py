@@ -469,7 +469,7 @@ def update_business_object_command():
         'IncidentPublicID': result.get('busObPublicId'),
         'IncidentRecordID': result.get('busObRecId')
     }
-    md = tableToMarkdown('New Incident was created', ids, headerTransform=pascalToSpace)
+    md = tableToMarkdown(f'Incident {object_id} was updated', ids, headerTransform=pascalToSpace)
 
     demisto.results({
         'Type': entryTypes['note'],
