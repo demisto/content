@@ -224,6 +224,7 @@ inputs:
 - key: dt
   value: {}
   required: true
-  description: DT filter for polling IDs. Will stop when no results presents (continue statement)
+  description: DT filter for polling IDs. Will stop when no results presents (continue
+    statement)
 outputs: []
 releaseNotes: "-"
