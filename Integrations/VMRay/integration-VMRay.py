@@ -54,7 +54,34 @@ def build_errors_string(errors):
     return err_str
 
 
-def http_request(method, url_suffix, params=None, files=None, ignore_error=False):
+def http_request(method, url_suffix, params=None, files=None, ignore_errors=False):
+    def find_error(may_be_error_inside):
+        """Function will search for dict with "errors" or "error_msg" key
+
+        Args:
+            may_be_error_inside: object, any object
+
+        Returns:
+            None if no error presents
+            Errors list/string if errors inside.
+        """
+        if isinstance(may_be_error_inside, list):
+            for obj in may_be_error_inside:
+                ans = find_error(obj)
+                if ans:
+                    return ans
+            return None
+        if isinstance(may_be_error_inside, dict):
+            if "error_msg" in may_be_error_inside:
+                return may_be_error_inside["error_msg"]
+            if "errors" in may_be_error_inside and len(may_be_error_inside["errors"]):
+                return may_be_error_inside["errors"]
+            for v in may_be_error_inside.values():
+                err = find_error(v)
+                if err:
+                    return err
+        return None
+
     """ General HTTP request.
     Args:
         ignore_error:
@@ -76,12 +103,17 @@ def http_request(method, url_suffix, params=None, files=None, ignore_error=False
         files=files,
         verify=USE_SSL,
     )
+
     status_code = r.status_code
     # Handle errors
-    if status_code not in {200, 201, 202, 204} and not ignore_error:
-        return_error(error_format.format(status_code, r.text))
     try:
+        if status_code not in {200, 201, 202, 204} and not ignore_errors:
+            raise ValueError
+
         response = r.json()
+        err = find_error(response)
+        if err:
+            return_error(error_format.format(status_code, err))
         return response
     except ValueError:
         # If no JSON is present, must be an error that can't be ignored
@@ -180,8 +212,8 @@ def build_analysis_data(analyses):
 def test_module():
     """Simple get request to see if connected
     """
-    http_request("GET", "analysis?_limit=1")
-    demisto.results("ok")
+    response = http_request("GET", "analysis?_limit=1")
+    demisto.results("ok") if response.get("result") == 'ok' else return_error("Can't authenticate! {}".format(response))
 
 
 def upload_sample(path, params=None):
@@ -424,7 +456,7 @@ def get_job(job_id=None, sample_id=None):
         }
     """
     suffix = "job/{}".format(job_id) if isinstance(job_id, str) else "job/sample/{}".format(sample_id)
-    response = http_request("GET", suffix, ignore_error=True)
+    response = http_request("GET", suffix, ignore_errors=True)
     return response
 
 
@@ -485,11 +517,17 @@ def get_threat_indicators_command():
         )
 
         entry_context = {"VMRay.ThreatIndicator(obj.ID === val.ID)": entry_context_list}
-        return_outputs(human_readable, entry_context, raw_response={"threat_indicators": data})
+        return_outputs(
+            human_readable,
+            entry_context,
+            raw_response={
+                "threat_indicators": data
+            }
+        )
     return_outputs(
         "No threat indicators for sample ID: {}".format(sample_id),
         {},
-        raw_response=raw_response,
+        raw_response=raw_response
     )
 
 
@@ -574,11 +612,19 @@ def get_iocs(sample_id):
 def get_iocs_command():
     sample_id = demisto.args().get("sample_id")
     raw_response = get_iocs(sample_id)
-    data = raw_response.get("data").get("iocs")
+    data = raw_response.get("data", {}).get("iocs", {})
+
+    # Initialize counters
+    iocs_size = 0
+    iocs_size_table = dict()
 
     domains = data.get("domains")
     domain_list = list()
     if domains:
+        size = len(domains)
+        iocs_size_table["Domain"] = size
+        iocs_size += size
+
         for domain in domains:
             entry = dict()
             entry["AnalysisID"] = domain.get("analysis_ids")
@@ -590,6 +636,10 @@ def get_iocs_command():
     ips = data.get("ips")
     ip_list = list()
     if ips:
+        size = len(ips)
+        iocs_size_table["IP"] = size
+        iocs_size += size
+
         for ip in ips:
             entry = dict()
             entry["AnalysisID"] = ip.get("analysis_ids")
@@ -601,6 +651,10 @@ def get_iocs_command():
     mutexes = data.get("mutexes")
     mutex_list = list()
     if mutexes:
+        size = len(mutexes)
+        iocs_size_table["Mutex"] = size
+        iocs_size += size
+
         for mutex in mutexes:
             entry = dict()
             entry["AnalysisID"] = mutex.get("analysis_ids")
@@ -613,6 +667,10 @@ def get_iocs_command():
     registry = data.get("registry")
     registry_list = list()
     if registry:
+        size = len(registry)
+        iocs_size_table["Registry"] = size
+        iocs_size += size
+
         for reg in registry:
             entry = dict()
             entry["AnalysisID"] = reg.get("analysis_ids")
@@ -625,6 +683,9 @@ def get_iocs_command():
     urls = data.get("urls")
     urls_list = list()
     if urls:
+        size = len(urls)
+        iocs_size_table["URL"] = size
+        iocs_size += size
         for url in urls:
             entry = dict()
             entry["AnalysisID"] = url.get("analysis_ids")
@@ -643,16 +704,8 @@ def get_iocs_command():
     }
 
     entry_context = {
-        "VMRay.Sample(val.SampleID == {}).IOC".format(sample_id): iocs,
+        "VMRay.Sample(val.SampleID === {}).IOC".format(sample_id): iocs,
     }
-
-    # Get total size of iocs for HumanReadable
-    iocs_size_table = dict()
-    iocs_size = 0
-    for k, v in iocs.items():
-        sizeof_key = len(v)
-        iocs_size_table[k] = sizeof_key
-        iocs_size += sizeof_key
 
     human_readable = tableToMarkdown(
         "Total of {} IOCs found in VMRay by sample {}".format(iocs_size, sample_id),
