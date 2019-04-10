@@ -1306,6 +1306,7 @@
         "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VirusTotal - Private API": "Issues with proxy name and default values",
         "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
