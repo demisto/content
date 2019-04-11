@@ -2,7 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-toversion: 4.5.0
+fromversion: 4.5.0
 script: |-
   # Common functions script
   # =======================
