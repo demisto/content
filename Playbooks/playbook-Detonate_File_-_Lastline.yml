@@ -610,12 +610,6 @@ outputs:
 - contextPath: Lastline.Submission.YaraSignatures.internal
   description: True if the signature is only for internal usage
   type: boolean
-- contextPath: URL
-  description: URL object
-  type: unknown
-- contextPath: URL.Malicious
-  description: URL Malicious object
-  type: unknown
 - contextPath: File
   description: File object
   type: unknown

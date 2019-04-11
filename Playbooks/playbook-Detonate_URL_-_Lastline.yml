@@ -478,12 +478,6 @@ outputs:
 - contextPath: URL.Malicious
   description: URL Malicious object
   type: unknown
-- contextPath: File
-  description: File object
-  type: unknown
-- contextPath: File.Malicious
-  description: File malicious object
-  type: unknown
 - contextPath: DBotScore
   description: DBot score object
   type: unknown

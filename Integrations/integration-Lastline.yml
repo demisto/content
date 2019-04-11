@@ -1001,7 +1001,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: Task UUID of the submitted Lastline analysis
+      description: Task UUID of the submitted Lastline analysis. Recieved from lastline-upload-file or lastline-upload-url.
       isArray: true
     outputs:
     - contextPath: Lastline.Submission.UUID
