@@ -31,13 +31,13 @@ script: |-
 
   ###### Fix fetching credentials from vault instances ######
   # ====================================================================================
-  credentials = demisto.params().get('credentials')
-
-  if credentials:
-      if 'credentials' in credentials:
-          vault = credentials['credentials'].get('vaultInstanceId')
-          if vault:
-              credentials['identifier'] = credentials['credentials'].get('user')
+  for k,v in demisto.params().items():
+      if isinstance(v, dict):
+          if 'credentials' in v:
+              vault = v['credentials'].get('vaultInstanceId')
+              if vault:
+                  v['identifier'] = v['credentials'].get('user')
+              break
   # ====================================================================================
 
   def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
