@@ -287,6 +287,7 @@ script:
     def search_looks_request(args):
         endpoint_url = '/looks/search/'
         params = {k: v for k, v in args.items() if v}
+        demisto.results(str(params))
         return http_request('GET', endpoint_url, params=params)
 
 

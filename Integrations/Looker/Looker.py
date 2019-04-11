@@ -11,7 +11,8 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 DEFAULT_RESULTS_LIMIT = 50
-SESSION_VALIDITY_THRESHOLD = timedelta(minutes=5)
+MAX_TIMEOUT_MINUTES = 5
+SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -67,18 +68,20 @@ def get_new_token():
 
     return {
         'token': response_json['access_token'],
-        'expires': datetime.utcnow() + timedelta(seconds=int(response_json['expires_in']))
+        'expires': datetime.utcnow().timestamp() + response_json['expires_in']
     }
 
 
 def get_session_token():
     global HEADERS
     ic = demisto.getIntegrationContext()
+
     if CLIENT_ID not in ic or 'expires' not in ic[CLIENT_ID] \
-            or ic[CLIENT_ID]['expires'] + SESSION_VALIDITY_THRESHOLD > datetime.utcnow():
+            or datetime.fromtimestamp(ic[CLIENT_ID]['expires']) < datetime.utcnow() + SESSION_VALIDITY_THRESHOLD:
         ic[CLIENT_ID] = get_new_token()
-    if demisto.command() != 'test-module':
-        demisto.setIntegrationContext(ic)
+        if demisto.command() != 'test-module':
+            demisto.results(f'new integration context: {ic}')
+            demisto.setIntegrationContext(ic)
 
     HEADERS['Authorization'] = 'token {}'.format(ic[CLIENT_ID]['token'])
 
