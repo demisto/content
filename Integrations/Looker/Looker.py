@@ -10,6 +10,7 @@ import traceback
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+DEFAULT_RESULTS_LIMIT = 50
 SESSION_VALIDITY_THRESHOLD = timedelta(minutes=5)
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
@@ -24,8 +25,6 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 BASE_URL = SERVER + '/api/3.0/'
 # Request headers (preparation)
 HEADERS = {}
-
-handle_proxy()
 
 
 ''' HELPER FUNCTIONS '''
@@ -84,6 +83,15 @@ def get_session_token():
     HEADERS['Authorization'] = 'token {}'.format(ic[CLIENT_ID]['token'])
 
 
+def get_limit():
+    try:
+        limit = int(demisto.args().get('limit', DEFAULT_RESULTS_LIMIT))
+        return None if limit == 0 else limit
+
+    except ValueError:
+        return_error("limit must be a number")
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -94,51 +102,96 @@ def test_module():
     http_request('GET', 'user')
 
 
-def run_query_command():
-    # Get arguments from user
-    query_id = demisto.args()['query_id']
+def run_look_command():
+    look_id = demisto.args()['look_id']
     result_format = demisto.args()['result_format']
-    limit = int(demisto.args().get('limit', 10))
-    # Make request and get raw response
-    contents = run_query_request(query_id, result_format)
-    # Parse response into context & content entries
-    context = {
-        'Looker.Query(val.ID && val.ID === obj.ID)': {
-            'ID': query_id,
-            'Results': contents
+    limit = get_limit()
+    fields = argToList(demisto.args().get('result_format'))
+
+    contents = run_look_request(look_id, result_format, limit, fields)
+
+    if result_format == 'json':
+        context = {
+            'Looker.look(val.ID && val.ID === obj.ID)': {
+                'ID': int(look_id),
+                'Results': contents
+            }
         }
-    }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', contents, removeNull=True),
+            'EntryContext': context
+        })
+
+    elif result_format == 'csv':
+        pass  # TODO: Return fileResult
+
+
+def run_look_request(look_id, result_format, limit, fields):
+    endpoint_url = f'/looks/{look_id}/run/{result_format}'
+    params = {}
+    if limit:
+        params['limit'] = limit
+    if fields:
+        params['fields'] = fields
+    return http_request('GET', endpoint_url, params=params)
+
+
+def search_looks_command():
+    command_args = ('title', 'space_id', 'user_id')  # Possible command arguments
+    args_dict = {k: demisto.args()[k] for k in command_args if k in demisto.args()}  # Get args that were passed
+    args_dict['limit'] = get_limit()  # Argument with special logic
+
+    # # Traditional argument collection:
+    # title = demisto.args()['title']
+    # sapce_id = demisto.args()['sapce_id']
+    # user_id = demisto.args()['user_id']
+    # limit = get_limit()
+
+    contents = search_looks_request(args_dict)
+    context = {}
+    for look in contents:
+        look_id = look['id']
+        context[f'Looker.look(val.ID && val.ID === {look_id})'] = {
+            'ID': look_id,
+            'Details': look
+        }
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'Results for query #{query_id}', contents, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Look search results', contents, removeNull=True),
         'EntryContext': context
     })
 
 
-def run_query_request(query_id, result_format):
-    # The service endpoint to request from
-    endpoint_url = f'/queries/{query_id}/run/{result_format}'
-    # Send a request using our http_request wrapper
-    return http_request('GET', endpoint_url)
+def search_looks_request(args):
+    endpoint_url = '/looks/search/'
+    params = {k: v for k, v in args.items() if v}
+    return http_request('GET', endpoint_url, params=params)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
-verify_url(SERVER)
 try:
+    handle_proxy()
+    verify_url(SERVER)
     get_session_token()
+
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'looker-run-query':
-        # An example command
-        run_query_command()
+    elif demisto.command() == 'looker-run-look':
+        run_look_command()
+    elif demisto.command() == 'looker-search-looks':
+        search_looks_command()
 
 # Log exceptions
 except Exception as e:
