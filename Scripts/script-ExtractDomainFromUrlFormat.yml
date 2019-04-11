@@ -52,7 +52,7 @@ script: |
       is_email = validate_email(the_input)
       if is_email:
           # Take the entire part after the @ of the email
-          domain_from_mail = inp.split('@')[1]
+          domain_from_mail = the_input.split('@')[1]
       else:
           # Test if URL, else proceed as domain
 
