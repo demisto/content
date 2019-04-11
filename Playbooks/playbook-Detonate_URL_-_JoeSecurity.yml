@@ -495,10 +495,10 @@ outputs:
   description: Joe analysis object
   type: unknown
 - contextPath: DBotScore
-  description: DBot score object
+  description: DBotScore object
   type: unknown
 - contextPath: DBotScore.Malicious
-  description: DBot score malicious object
+  description: DBotScore malicious object
   type: unknown
 releaseNotes: Added missing outputs
 tests:

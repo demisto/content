@@ -507,12 +507,6 @@ outputs:
 - contextPath: File.EntryID
   description: The Entry ID of the sample
   type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
-  type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
-  type: string
 - contextPath: DBotScore.Indicator
   description: The indicator we tested (only in case of report type=json)
   type: string
@@ -553,7 +547,7 @@ outputs:
   description: File Malicious object
   type: unknown
 - contextPath: DBotScore
-  description: DBot Score object
+  description: DBotScore object
   type: unknown
 - contextPath: InfoFile
   description: Report file object

@@ -187,7 +187,7 @@ tasks:
       id: 93fac7de-168e-4b60-8172-1d0d8cc46702
       version: -1
       name: Done
-      description: Detonates a file using HybridAnalysis
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -501,10 +501,10 @@ outputs:
   description: Joe Analysis object
   type: unknown
 - contextPath: DBotScore
-  description: DBot Score object
+  description: DBotScore object
   type: unknown
 - contextPath: DBotScore.Malicious
-  description: DBot Score Malicious object
+  description: DBotScore Malicious object
   type: unknown
 releaseNotes: Added missing outputs
 tests:

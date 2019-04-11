@@ -670,9 +670,6 @@ outputs:
 - contextPath: InfoFile
   description: Report file object
   type: unknown
-- contextPath: URL.Malicious
-  description: URL Malicious object
-  type: unknown
 releaseNotes: Added missing outputs
 tests:
 - Test Playbook McAfee ATD
