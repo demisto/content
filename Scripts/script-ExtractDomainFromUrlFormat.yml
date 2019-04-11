@@ -47,11 +47,12 @@ script: |
 
 
   def extract_domain(the_input):
+      is_url = None
+      domain_from_mail = None
       is_email = validate_email(the_input)
       if is_email:
-          domain = re.search('@[\w.]+', the_input)
-          if len(domain.group()) > 0:
-              return(domain.group()[1:])
+          # Take the entire part after the @ of the email
+          domain_from_mail = inp.split('@')[1]
       else:
           # Test if URL, else proceed as domain
 
