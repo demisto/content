@@ -742,10 +742,6 @@ script:
       name: group
       required: false
       secret: false
-    - default: false
-      isArray: false
-      required: false
-      secret: false
     deprecated: false
     description: 'Search for notifications. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#notification'
     execution: false
@@ -1187,6 +1183,387 @@ script:
     description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
     execution: false
     name: cbp-serverConfig-search
+    outputs:
+    - contextPath: CBPServerConfig.ID
+      description: CBP internal ID of the server config
+      type: String
+    - contextPath: CBPServerConfig.Name
+      description: Name of the server config
+      type: String
+    - contextPath: CBPServerConfig.Value
+      description: Value of the server config
+      type: String
+  - arguments:
+    - default: false
+      description: 'A condition contains three parts: name, operator and value. Name
+        is any valid field in the object that is being queried. Operator (: LIKE,
+        ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
+        values) is any of valid operators (see below). All operators consist of a
+        single character. Value is compared with operator and depends on field type.
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Is maximum number of results to retrieve. If not specified:
+        First 1000 results will be returned. If set to -1: Only result count will
+        be returned, without actual results. Offset parameter is ignored in this case.
+        If set to 0: All results will be returned. Offset parameter is ignored in
+        this case. Note that some result sets could be very large, resulting in query
+        timeout. Therefore, unless you know that query will not return more than 1000
+        results, it is recommended to retrieve data in chunks using offset and limit.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Offset in data set
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Grouping is optional and can be defined with a single attribute:
+        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting is optional and can be defined with a single attribute:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
+        (if omitted) is ASC. xyz is field name from the result set.'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: cbp-publisher-search
+    outputs:
+    - contextPath: CBPPublisher.Description
+      description: Description of the publisher
+      type: String
+    - contextPath: CBPPublisher.ID
+      description: CBP internal ID of the publisher
+      type: String
+    - contextPath: CBPPublisher.Name
+      description: Name of the publisher
+      type: String
+    - contextPath: CBPPublisher.Reputation
+      description: The reputation of the publisher
+      type: String
+    - contextPath: CBPPublisher.SignedCertificatesCount
+      description: Number of certificates from the publisher
+      type: Number
+    - contextPath: CBPPublisher.SignedFilesCount
+      description: Number of signed files from publisher
+      type: Number
+    - contextPath: CBPPublisher.State
+      description: The state of the publisher
+      type: String
+  - arguments:
+    - default: false
+      description: (Int32)Unique fileAnalysis id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns object instance of this class
+    execution: false
+    name: cbp-fileAnalysis-get
+    outputs:
+    - contextPath: CbP.FileAnalysis.Priority
+      description: File analysis priority in range [-2, 2], where 2 is highest priority.
+        Default priority is 0
+      type: Number
+    - contextPath: CbP.FileAnalysis.FileName
+      description: Name of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileAnalysis.PathName
+      description: Path of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileAnalysis.ComputerId
+      description: Id of computer entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileAnalysis.DateModified
+      description: Date/Time when fileAnalysis request was last modified (UTC)
+      type: Date
+    - contextPath: CbP.FileAnalysis.ID
+      description: Unique fileAnalysis id
+      type: String
+    - contextPath: CbP.FileAnalysis.FileCatalogId
+      description: Id of fileCatalog entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileAnalysis.DateCreated
+      description: Date/Time when fileAnalysis request was created (UTC)
+      type: Date
+    - contextPath: CbP.FileAnalysis.CreatedBy
+      description: User that requested this analysis
+      type: String
+    - contextPath: File.FileCatalogId
+      description: Id of fileCatalog entry associated with this analysis
+      type: String
+    - contextPath: File.FileName
+      description: Name of the file where file exists on the endpoint
+      type: String
+    - contextPath: File.Malicious
+      description: Vendor and description of malicious file
+      type: String
+    - contextPath: File.PathName
+      description: Path of the file where file exists on the endpoint
+      type: Unknown
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls
+      type: String
+    - contextPath: File.MD5
+      description: MD5 Hash of the file
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 Hash of the file
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: String
+  - arguments:
+    - default: false
+      description: (Int32)Id of fileCatalog entry for which analysis is requested
+      isArray: false
+      name: fileCatalogId
+      required: true
+      secret: false
+    - default: false
+      description: (Int32)Id of target connector for the analysis
+      isArray: false
+      name: connectorId
+      required: true
+      secret: false
+    - default: false
+      description: (Int32)Id of computer from which to upload the file. If 0, system
+        will find best computer to get the file from
+      isArray: false
+      name: computerId
+      required: false
+      secret: false
+    - default: false
+      description: (Int32)Analysis priority in range [-2, 2], where 2 is highest priority.
+        Default priority is 0
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: (Int32)Status of analysis. Status of analysis in progress can be
+        changed to 5 (Cancelled)
+      isArray: false
+      name: analysisStatus
+      required: false
+      secret: false
+    - default: false
+      description: (String)Target of the analysis (Optional). It has to be one of
+        possible analysisTarget options defined for the given connector object, or
+        empty for connectors without defined analysisTargets.
+      isArray: false
+      name: analysisTarget
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates or updates file analysis request
+    execution: false
+    name: cbp-fileAnalysis-createOrUpdate
+    outputs:
+    - contextPath: CbP.FileAnalysis.Priority
+      description: File analysis priority in range [-2, 2], where 2 is highest priority.
+        Default priority is 0
+      type: Number
+    - contextPath: CbP.FileAnalysis.FileName
+      description: Name of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileAnalysis.PathName
+      description: Path of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileAnalysis.ComputerID
+      description: Id of computer entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileAnalysis.DateModified
+      description: Date/Time when fileAnalysis request was last modified (UTC)
+      type: Date
+    - contextPath: CbP.FileAnalysis.FileCatalogId
+      description: Id of fileCatalog entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileAnalysis.DateCreated
+      description: Date/Time when fileAnalysis request was created (UTC)
+      type: Date
+    - contextPath: CbP.FileAnalysis.ID
+      description: Unique fileAnalysis id
+      type: String
+    - contextPath: CbP.FileAnalysis.CreatedBy
+      description: User that requested this analysis
+      type: String
+  - arguments:
+    - default: false
+      description: 'A condition contains three parts: name, operator and value. Name
+        is any valid field in the object that is being queried. Operator (: LIKE,
+        ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
+        values) is any of valid operators (see below). All operators consist of a
+        single character. Value is compared with operator and depends on field type.
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Is maximum number of results to retrieve. If not specified:
+        First 1000 results will be returned. If set to -1: Only result count will
+        be returned, without actual results. Offset parameter is ignored in this case.
+        If set to 0: All results will be returned. Offset parameter is ignored in
+        this case. Note that some result sets could be very large, resulting in query
+        timeout. Therefore, unless you know that query will not return more than 1000
+        results, it is recommended to retrieve data in chunks using offset and limit.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Offset in data set
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Grouping is optional and can be defined with a single attribute:
+        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting is optional and can be defined with a single attribute:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
+        (if omitted) is ASC. xyz is field name from the result set.'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns objects that match given criteria
+    execution: false
+    name: cbp-fileAnalysis-search
+    outputs:
+    - contextPath: CbP.FileAnalysis.Priority
+      description: File analysis priority in range [-2, 2], where 2 is highest priority.
+        Default priority is 0
+      type: Number
+    - contextPath: CbP.FileAnalysis.FileName
+      description: Name of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileAnalysis.PathName
+      description: Path of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileAnalysis.ComputerID
+      description: Id of computer entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileAnalysis.DateModified
+      description: Date/Time when fileAnalysis request was last modified (UTC)
+      type: Date
+    - contextPath: CbP.FileAnalysis.FileCatalogId
+      description: Id of fileCatalog entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileAnalysis.DateCreated
+      description: Date/Time when fileAnalysis request was created (UTC)
+      type: Date
+    - contextPath: CbP.FileAnalysis.ID
+      description: Unique fileAnalysis id
+      type: String
+    - contextPath: CbP.FileAnalysis.CreatedBy
+      description: User that requested this analysis
+      type: String
+  - arguments:
+    - default: false
+      description: (Int32)Unique id of this fileUpload
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns object instance of this class
+    execution: false
+    name: cbp-fileUpload-get
+    outputs:
+    - contextPath: CbP.FileUpload.Priority
+      description: File analysis priority in range [-2, 2], where 2 is highest priority.
+        Default priority is 0
+      type: Number
+    - contextPath: CbP.FileUpload.FileName
+      description: Name of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileUpload.UploadPath
+      description: Local upload path for this file on the server (can be a shared
+        network path). Note that file is compressed in a ZIP archive
+      type: String
+    - contextPath: CbP.FileUpload.ComputerId
+      description: Id of computer entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileUpload.DateModified
+      description: Date/Time when fileAnalysis request was last modified (UTC)
+      type: Date
+    - contextPath: CbP.FileUpload.ID
+      description: Unique fileAnalysis id
+      type: String
+    - contextPath: CbP.FileUpload.FileCatalogId
+      description: Id of fileCatalog entry associated with this analysis
+      type: String
+    - contextPath: CbP.FileUpload.DateCreated
+      description: Date/Time when fileAnalysis request was created (UTC)
+      type: Date
+    - contextPath: CbP.FileUpload.CreatedBy
+      description: User that requested this analysis
+      type: String
+    - contextPath: CbP.FileUpload.PathName
+      description: Path of the file where file exists on the endpoint
+      type: String
+    - contextPath: CbP.FileUpload.UploadStatus
+      description: Status of upload. Can be one of:[0-6]
+      type: Number
+    - contextPath: CbP.FileUpload.UploadedFileSize
+      description: Size of uploaded file. This will be 0 unless uploadStatus is 3
+        (Completed)
+      type: String
+    - contextPath: CbP.FileUpload.CreatedBy
+      description: User that requested this analysis
+      type: String
   dockerimage: demisto/python3
   isfetch: false
   runonce: false
