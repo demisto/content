@@ -1540,4 +1540,4 @@ dependson: {}
 timeout: 0s
 releaseNotes: "Logger support for Python3."
 tests:
-  - TestPYCommonServer
+  - TestCommonPython
