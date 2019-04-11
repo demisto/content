@@ -112,7 +112,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: general.isExists
           left:
             value:
               complex:
@@ -175,13 +175,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: general.isExists
           left:
             value:
               complex:
                 root: modules
                 filters:
-                - - operator: isEqualString
+                - - operator: string.isEqual
                     left:
                       value:
                         simple: modules.brand
@@ -190,7 +190,7 @@ tasks:
                       value:
                         simple: Cylance Protect v2
                     ignorecase: true
-                - - operator: isEqualString
+                - - operator: string.isEqual
                     left:
                       value:
                         simple: modules.state
