@@ -3425,6 +3425,145 @@ script:
       description: URL filter rule name
       type: string
     description: Deletes a URL filtering rule
+  - name: panorama-list-edls
+    arguments: []
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.Type
+      description: EDL type
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Returns a list of external dynamic lists
+  - name: panorama-get-edl
+    arguments:
+    - name: name
+      required: true
+      description: EDL name
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.Type
+      description: EDL type
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Get information for an external dynamic list
+  - name: panorama-create-edl
+    arguments:
+    - name: name
+      required: true
+      description: EDL name
+    - name: url
+      required: true
+      description: URL to pull the EDL from
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      description: EDL type
+    - name: recurring
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - five-minute
+      - hourly
+      description: Pull time of the EDL from the URL
+    - name: certificate_profile
+      description: Certificate Profile name for the URL that was previously uploaded
+        to PAN OS
+    - name: description
+      description: EDL description
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.Type
+      description: EDL type
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Creates an external dynamic list
+  - name: panorama-edit-edl
+    arguments:
+    - name: name
+      required: true
+      description: Name of the external dynamic list to edit
+    - name: element_to_change
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - url
+      - recurring
+      - certificate_profile
+      - description
+      description: Element to change; "url","recurring","certificate_profile","description"
+    - name: element_value
+      required: true
+      description: Element value
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Edit an external dynamic list
+  - name: panorama-delete-edl
+    arguments:
+    - name: name
+      required: true
+      description: Name of the EDL to delete
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: Name of the EDL that was deleted
+      type: string
+    description: Deletes an EDL
   - name: panorama-create-rule
     arguments:
     - name: rulename
@@ -3806,145 +3945,6 @@ script:
     - name: password
       description: Password for Panorama, needed for dlp-pcap only.
     description: Returns a list of pcap names
-  - name: panorama-get-edl
-    arguments:
-    - name: name
-      required: true
-      description: EDL name
-    outputs:
-    - contextPath: Panorama.EDLs.Name
-      description: EDL name
-      type: string
-    - contextPath: Panorama.EDLs.Type
-      description: EDL type
-      type: string
-    - contextPath: Panorama.EDLs.URL
-      description: URL in which the EDL is stored
-      type: string
-    - contextPath: Panorama.EDLs.Description
-      description: EDL description
-      type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
-      description: EDL certificate profile
-      type: string
-    - contextPath: Panorama.EDLs.Recurring
-      description: EDL recurring time
-      type: string
-    description: Get information for an external dynamic list
-  - name: panorama-create-edl
-    arguments:
-    - name: name
-      required: true
-      description: EDL name
-    - name: url
-      required: true
-      description: URL to pull the EDL from
-    - name: type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - ip
-      - url
-      - domain
-      description: EDL type
-    - name: recurring
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - five-minute
-      - hourly
-      description: Pull time of the EDL from the URL
-    - name: certificate_profile
-      description: Certificate Profile name for the URL that was previously uploaded
-        to PAN OS
-    - name: description
-      description: EDL description
-    outputs:
-    - contextPath: Panorama.EDLs.Name
-      description: EDL name
-      type: string
-    - contextPath: Panorama.EDLs.Type
-      description: EDL type
-      type: string
-    - contextPath: Panorama.EDLs.URL
-      description: URL in which the EDL is stored
-      type: string
-    - contextPath: Panorama.EDLs.Description
-      description: EDL description
-      type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
-      description: EDL certificate profile
-      type: string
-    - contextPath: Panorama.EDLs.Recurring
-      description: EDL recurring time
-      type: string
-    description: Creates an external dynamic list
-  - name: panorama-edit-edl
-    arguments:
-    - name: name
-      required: true
-      description: Name of the external dynamic list to edit
-    - name: element_to_change
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - url
-      - recurring
-      - certificate_profile
-      - description
-      description: Element to change; "url","recurring","certificate_profile","description"
-    - name: element_value
-      required: true
-      description: Element value
-    outputs:
-    - contextPath: Panorama.EDLs.Name
-      description: EDL name
-      type: string
-    - contextPath: Panorama.EDLs.URL
-      description: URL in which the EDL is stored
-      type: string
-    - contextPath: Panorama.EDLs.Description
-      description: EDL description
-      type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
-      description: EDL certificate profile
-      type: string
-    - contextPath: Panorama.EDLs.Recurring
-      description: EDL recurring time
-      type: string
-    description: Edit an external dynamic list
-  - name: panorama-delete-edl
-    arguments:
-    - name: name
-      required: true
-      description: Name of the EDL to delete
-    outputs:
-    - contextPath: Panorama.EDLs.Name
-      description: Name of the EDL that was deleted
-      type: string
-    description: Deletes an EDL
-  - name: panorama-list-edls
-    arguments: []
-    outputs:
-    - contextPath: Panorama.EDLs.Name
-      description: EDL name
-      type: string
-    - contextPath: Panorama.EDLs.Type
-      description: EDL type
-      type: string
-    - contextPath: Panorama.EDLs.URL
-      description: URL in which the EDL is stored
-      type: string
-    - contextPath: Panorama.EDLs.Description
-      description: EDL description
-      type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
-      description: EDL certificate profile
-      type: string
-    - contextPath: Panorama.EDLs.Recurring
-      description: EDL recuuring time
-      type: string
-    description: Returns a list of external dynamic lists
   runonce: false
 tests:
 - palo_alto_firewall_test_pb
