@@ -1,6 +1,5 @@
 {
 	"typeId": "Access",
-	"releaseNotes": "Apply incident source fields",
 	"fromVersion": "4.1.0",
 	"kind": "details",
 	"layout": {

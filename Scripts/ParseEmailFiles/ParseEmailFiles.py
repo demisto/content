@@ -5,11 +5,11 @@ from email import message_from_string
 from email.header import decode_header
 from base64 import b64decode
 
-import sys
 import email.utils
 from email.parser import HeaderParser
 import traceback
 import tempfile
+import sys
 
 
 # -*- coding: utf-8 -*-
@@ -30,6 +30,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import getaddresses
 
 from olefile import OleFileIO, isOleFile
 
@@ -38,7 +39,7 @@ from datetime import datetime, timedelta
 from struct import unpack
 
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
 
@@ -224,22 +225,22 @@ class DataModel(object):
     @staticmethod
     def PtypMultipleInteger16(data_value):
         entry_count = len(data_value) / 2
-        return [unpack('h', bytes[i * 2:(i + 1) * 2])[0] for i in range(entry_count)]
+        return [unpack('h', data_value[i * 2:(i + 1) * 2])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleInteger32(data_value):
         entry_count = len(data_value) / 4
-        return [unpack('i', bytes[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
+        return [unpack('i', data_value[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleFloating32(data_value):
         entry_count = len(data_value) / 4
-        return [unpack('f', bytes[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
+        return [unpack('f', data_value[i * 4:(i + 1) * 4])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleFloating64(data_value):
         entry_count = len(data_value) / 8
-        return [unpack('d', bytes[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
+        return [unpack('d', data_value[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleCurrency(data_value):
@@ -248,12 +249,12 @@ class DataModel(object):
     @staticmethod
     def PtypMultipleFloatingTime(data_value):
         entry_count = len(data_value) / 8
-        return [get_floating_time(bytes[i * 8:(i + 1) * 8]) for i in range(entry_count)]
+        return [get_floating_time(data_value[i * 8:(i + 1) * 8]) for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleInteger64(data_value):
         entry_count = len(data_value) / 8
-        return [unpack('q', bytes[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
+        return [unpack('q', data_value[i * 8:(i + 1) * 8])[0] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleString(data_value):
@@ -271,12 +272,12 @@ class DataModel(object):
     @staticmethod
     def PtypMultipleTime(data_value):
         entry_count = len(data_value) / 8
-        return [get_time(bytes[i * 8:(i + 1) * 8]) for i in range(entry_count)]
+        return [get_time(data_value[i * 8:(i + 1) * 8]) for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleGuid(data_value):
         entry_count = len(data_value) / 16
-        return [bytes[i * 16:(i + 1) * 16] for i in range(entry_count)]
+        return [data_value[i * 16:(i + 1) * 16] for i in range(entry_count)]
 
     @staticmethod
     def PtypMultipleBinary(data_value):
@@ -305,7 +306,7 @@ def get_multi_value_offsets(data_value):
     if ul_count == 1:
         rgul_data_offsets = [8]
     else:
-        rgul_data_offsets = [unpack('Q', bytes[4 + i * 8:4 + (i + 1) * 8])[0] for i in range(ul_count)]
+        rgul_data_offsets = [unpack('Q', data_value[4 + i * 8:4 + (i + 1) * 8])[0] for i in range(ul_count)]
 
     rgul_data_offsets.append(len(data_value))
 
@@ -3162,6 +3163,15 @@ def extract_address(s):
         return s
 
 
+def extract_address_eml(eml, s):
+    addresses = getaddresses(eml.get_all(s, []))
+    if addresses:
+        res = [item[1] for item in addresses]
+        return ', '.join(res)
+    else:
+        return ''
+
+
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
     md = "### Results:\n"
     if email_file_name:
@@ -3204,7 +3214,8 @@ def save_attachments(attachments, root_email_file_name, max_depth):
 
                     inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name,
                                                                   max_depth=max_depth)
-                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name))
+                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
+                                   outputs=None)
                     attached_emls.append(inner_eml)
                     attached_emls.extend(attached_inner_emails)
                 finally:
@@ -3240,13 +3251,18 @@ def get_utf_string(text, field):
 def convert_to_unicode(s):
     global ENCODINGS_TYPES
     try:
-        encoded_s, encoding = decode_header(s)[0]
-        s = encoded_s.decode(encoding).encode('utf-8').strip()
-        ENCODINGS_TYPES.add(encoding)
+        res = ''  # utf encoded result
+        for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
+            if encoding:
+                res += decoded_s.decode(encoding).encode('utf-8')
+                ENCODINGS_TYPES.add(encoding)
+            else:
+                res += decoded_s
+        return res.strip()
     except Exception:
         for file_data in ENCODINGS_TYPES:
             try:
-                s = s.decode(encoding).encode(file_data).strip()
+                s = s.decode(file_data).encode('utf-8').strip()
                 break
             except:     # noqa: E722
                 pass
@@ -3256,7 +3272,7 @@ def convert_to_unicode(s):
 
 def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     if max_depth == 0:
-        return None
+        return None, []
 
     msg = MsOxMessage(file_path)
     if not msg:
@@ -3267,7 +3283,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     if parse_only_headers:
         return {
             "HeadersMap": email_data.get("HeadersMap")
-        }
+        }, []
 
     attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
@@ -3283,7 +3299,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
     global ENCODINGS_TYPES
 
     if max_depth == 0:
-        return None
+        return None, []
 
     with open(file_path, 'rb') as emlFile:
 
@@ -3318,14 +3334,18 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             else:
                 headers_map[item[0]] = convert_to_unicode(item[1])
 
-        if parse_only_headers:
-            return {
-                "HeadersMap": headers_map
-            }
-
         eml = message_from_string(file_data)
         if not eml:
             raise Exception("Could not parse eml file!")
+
+        headers_map['From'] = extract_address_eml(eml, 'from')
+        headers_map['To'] = extract_address_eml(eml, 'to')
+        headers_map['Cc'] = extract_address_eml(eml, 'cc')
+
+        if parse_only_headers:
+            return {
+                "HeadersMap": headers_map
+            }, []
 
         html = ''
         text = ''
@@ -3412,9 +3432,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
 
         email_data = {
-            'To': extract_address(eml['To']),
-            'CC': extract_address(eml['Cc']),
-            'From': extract_address(eml['From']),
+            'To': extract_address_eml(eml, 'to'),
+            'CC': extract_address_eml(eml, 'cc'),
+            'From': extract_address_eml(eml, 'from'),
             'Subject': convert_to_unicode(eml['Subject']),
             'HTML': convert_to_unicode(html),
             'Text': convert_to_unicode(text),
@@ -3467,23 +3487,32 @@ def main():
         if 'composite document file v2 document' in file_type_lower \
                 or 'cdfv2 microsoft outlook message' in file_type_lower:
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
+
+            # for backward compatibility if there are no attached files we return single dict
+            # if there are attached files then we will return array of all the emails
+            output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
             return_outputs(
                 readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
                 outputs={
-                    'Email': [email_data] + attached_emails
+                    'Email': output
                 },
-                raw_response=[email_data] + attached_emails
+                raw_response=output
             )
             return
 
         elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower:
             email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
+
+            # for backward compatibility if there are no attached files we return single dict
+            # if there are attached files then we will return array of all the emails
+            output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
+
             return_outputs(
                 readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
                 outputs={
-                    'Email': [email_data] + attached_emails
+                    'Email': output
                 },
-                raw_response=[email_data] + attached_emails
+                raw_response=output
             )
             return
 
@@ -3497,12 +3526,16 @@ def main():
                     email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
                                                              parse_only_headers=parse_only_headers, max_depth=max_depth)
 
+                    # for backward compatibility if there are no attached files we return single dict
+                    # if there are attached files then we will return array of all the emails
+                    output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
+
                     return_outputs(
                         readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
                         outputs={
-                            'Email': [email_data] + attached_emails
+                            'Email': output
                         },
-                        raw_response=[email_data] + attached_emails
+                        raw_response=output
                     )
                     return
                 else:
@@ -3513,12 +3546,16 @@ def main():
                                                                  parse_only_headers=parse_only_headers,
                                                                  max_depth=max_depth)
 
+                        # for backward compatibility if there are no attached files we return single dict
+                        # if there are attached files then we will return array of all the emails
+                        output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
+
                         return_outputs(
                             readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
                             outputs={
-                                'Email': [email_data] + attached_emails
+                                'Email': output
                             },
-                            raw_response=[email_data] + attached_emails
+                            raw_response=output
                         )
                         return
                     else:
