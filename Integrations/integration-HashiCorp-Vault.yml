@@ -630,7 +630,7 @@ script:
                 credentials += get_ch_secrets(engine['path'])
 
         if identifier:
-            credentials = list(filter(lambda c: c['name'] == identifier, credentials))
+            credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
 
         demisto.credentials(credentials)
 
