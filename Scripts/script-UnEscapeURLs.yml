@@ -2,7 +2,7 @@ commonfields:
   id: UnEscapeURLs
   version: -1
 name: UnEscapeURLs
-script: |
+script: |-
   function format_url(input) {
       // Check if it is a Microsoft ATP Safe Link
       var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url=/;
@@ -42,9 +42,9 @@ script: |
       }
       // Not Proofpoint so just un-escape
       if (v === 0) {
-          var url = input.toLowerCase().replace(/\[\.\]/g, '.').replace('hxxp', 'http').replace(/&amp;/g, '&');
+          var url = input.replace(/\[\.\]/g, '.').replace(/hxxp/i, 'http').replace(/&amp;/g, '&');
           // Normalize the URL with http prefix
-          if (url.indexOf('http') !== 0 && url.indexOf('ftp') !== 0) {
+          if (url.search(/http/i) !== 0 && url.search(/ftp/i) !== 0) {
               return 'http://' + url;
           }
           return url;
@@ -56,7 +56,7 @@ script: |
       try {
           clean = decodeURI(clean);
       } catch (e) {
-          // Ignore if can't decodeURI
+        // Ignore if can't decodeURI
       }
 
       return clean;
