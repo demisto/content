@@ -103,10 +103,10 @@ def generate_pagination():
 
 
 def to_fidelis_time_format(t):
-    if isinstance(t, basestring):
+    if isinstance(t, STRING_TYPES):
         try:
             t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
-        except:
+        except ValueError:
             t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
 
     return datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
