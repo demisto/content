@@ -492,7 +492,7 @@ def fetch_incidents():
             'Type': 'Fidelis',
             'name': '{} {}'.format(item['ALERT_ID'], item['SUMMARY']),
             'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(get_alert(item['ALERT_ID'])),
+            'rawJSON': json.dumps(item),
         }
         latest = max(latest, incident_date)
         incidents.append(incident)
