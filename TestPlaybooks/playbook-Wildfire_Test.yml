@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 045845dd-6b2e-4948-8ad8-89378227f041
+    taskid: e35653ae-3a8e-4e65-83d1-e7a62d57c47c
     type: start
     task:
-      id: 045845dd-6b2e-4948-8ad8-89378227f041
+      id: e35653ae-3a8e-4e65-83d1-e7a62d57c47c
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +29,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 3dab52fe-52c4-490a-852c-3eb6c31fe6e9
+    taskid: 9182d3ee-ef7d-4ab8-84f0-1aa3c2dc23be
     type: regular
     task:
-      id: 3dab52fe-52c4-490a-852c-3eb6c31fe6e9
+      id: 9182d3ee-ef7d-4ab8-84f0-1aa3c2dc23be
       version: -1
       name: wildfire-upload-file-remote
       description: Upload a file hosted on a website to WildFire for analysis
@@ -58,12 +59,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 6bd25682-ddee-4692-88b5-0de2176f00ee
+    taskid: dd35305c-f729-4b38-89a0-9c17f9679ec1
     type: regular
     task:
-      id: 6bd25682-ddee-4692-88b5-0de2176f00ee
+      id: dd35305c-f729-4b38-89a0-9c17f9679ec1
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
@@ -90,12 +92,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 51cc970f-a998-4289-856e-be8e9848d11b
+    taskid: 98f8d685-7a75-4e1e-8872-c6b418a30378
     type: regular
     task:
-      id: 51cc970f-a998-4289-856e-be8e9848d11b
+      id: 98f8d685-7a75-4e1e-8872-c6b418a30378
       version: -1
       name: Verify Context
       description: Verifies context
@@ -122,12 +125,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 09a9e9df-64fe-4a95-8d81-f53ab89db5a4
+    taskid: 51764f7e-a3c7-4e2c-80fa-0008cfbf33d7
     type: regular
     task:
-      id: 09a9e9df-64fe-4a95-8d81-f53ab89db5a4
+      id: 51764f7e-a3c7-4e2c-80fa-0008cfbf33d7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -155,12 +159,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 18c083f5-57b6-4b8f-8b7a-7281abd85d3f
+    taskid: 849adf88-df30-4619-8e11-2bfc68c6c47e
     type: regular
     task:
-      id: 18c083f5-57b6-4b8f-8b7a-7281abd85d3f
+      id: 849adf88-df30-4619-8e11-2bfc68c6c47e
       version: -1
       name: wildfire-upload
       description: Upload file to WildFire for analysis.
@@ -184,12 +189,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 57c8720f-c143-41c7-81cf-48b544ca1956
+    taskid: 3642558f-e84d-4e68-8df8-5b6b5750f301
     type: regular
     task:
-      id: 57c8720f-c143-41c7-81cf-48b544ca1956
+      id: 3642558f-e84d-4e68-8df8-5b6b5750f301
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
@@ -218,12 +224,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 2c10cfaa-77a0-4809-820c-c410f3ef879b
+    taskid: 81149747-06f4-4753-8d74-1540f4ff58e6
     type: title
     task:
-      id: 2c10cfaa-77a0-4809-820c-c410f3ef879b
+      id: 81149747-06f4-4753-8d74-1540f4ff58e6
       version: -1
       name: Done
       type: title
@@ -234,17 +241,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: eb3c86b1-30b3-4b04-82d7-f7ddaf5d8b26
+    taskid: 9a535e69-a07c-43b3-8d43-389a0c8b13f9
     type: condition
     task:
-      id: eb3c86b1-30b3-4b04-82d7-f7ddaf5d8b26
+      id: 9a535e69-a07c-43b3-8d43-389a0c8b13f9
       version: -1
       name: Search for hashes for report download
       type: condition
@@ -281,12 +289,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 50753e7f-69ae-4714-8629-ca6f541667c3
+    taskid: 7cdb9c8d-fcb3-4613-8c06-b0fb1b1345cd
     type: regular
     task:
-      id: 50753e7f-69ae-4714-8629-ca6f541667c3
+      id: 7cdb9c8d-fcb3-4613-8c06-b0fb1b1345cd
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
@@ -321,12 +330,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 9fdb81be-2736-498a-8b6d-694a462d0796
+    taskid: f1f2e408-c855-47cb-8e4e-7cf126ccf10a
     type: regular
     task:
-      id: 9fdb81be-2736-498a-8b6d-694a462d0796
+      id: f1f2e408-c855-47cb-8e4e-7cf126ccf10a
       version: -1
       name: wildfire-report - no network data
       description: Retrieve results for a file hash using WildFire
@@ -336,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "21"
     scriptarguments:
       format: {}
       hash:
@@ -353,12 +363,80 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: ef8b11de-dbbc-4a20-80e4-c716a6daa0ef
+    type: regular
+    task:
+      id: ef8b11de-dbbc-4a20-80e4-c716a6daa0ef
+      version: -1
+      name: wildfire-report - with TCP data
+      description: Retrieve results for a file hash using WildFire
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      format:
+        simple: xml
+      hash:
+        simple: f6de41b01aa340613e87bbd93e4c2c061b4c37b7fc10fa7bf2b7d94c63748145
+      md5: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: a5a6df33-719e-4b9e-8a05-56f7dd840a82
+    type: condition
+    task:
+      id: a5a6df33-719e-4b9e-8a05-56f7dd840a82
+      version: -1
+      name: Check context contains TCP object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.Network.TCP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1960,
         "width": 810,
         "x": 50,
         "y": 50
