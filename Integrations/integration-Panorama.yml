@@ -1830,6 +1830,7 @@ script:
             }
         })
 
+
     @logger
     def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element = None):
 
@@ -2299,6 +2300,300 @@ script:
         })
 
 
+    ''' External Dynamic Lists Commands '''
+    def prettify_edls_arr(edls_arr):
+        pretty_edls_arr = []
+        for edl in edls_arr:
+            pretty_edl = {
+                'Name': edl['@name'],
+                'Type': ''.join(edl['type'].keys())
+            }
+            edl_type = pretty_edl['Type']
+
+            if edl['type'][edl_type]:
+                if 'url' in edl['type'][edl_type]:
+                    pretty_edl['URL'] = edl['type'][edl_type]['url']
+                if 'certificate-profile' in edl['type'][edl_type]:
+                    pretty_edl['CertificateProfile'] = edl['type'][edl_type]['certificate-profile']
+                if 'recurring' in edl['type'][edl_type]:
+                    pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'].keys())
+                if 'description' in edl['type'][edl_type]:
+                    pretty_edl['Description'] = edl['type'][edl_type]['description']
+
+            pretty_edls_arr.append(pretty_edl)
+
+        return pretty_edls_arr
+
+
+    @logger
+    def panorama_list_edls():
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "external-list/entry",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+        return result['response']['result']['entry']
+
+
+    def panorama_list_edls_command():
+        ''' Get all EDLs '''
+        edls_arr = panorama_list_edls()
+        edls_output = prettify_edls_arr(edls_arr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': edls_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('External Dynamic Lists:', edls_output, ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.EDLs(val.Name == obj.Name)": edls_output
+            }
+        })
+
+
+    def prettify_edl(edl):
+        pretty_edl = {
+            'Name': edl['@name'],
+            'Type': ''.join(edl['type'].keys())
+        }
+        edl_type = pretty_edl['Type']
+
+        if edl['type'][edl_type]:
+            if 'url' in edl['type'][edl_type]:
+                pretty_edl['URL'] = edl['type'][edl_type]['url']
+            if 'certificate-profile' in edl['type'][edl_type]:
+                pretty_edl['CertificateProfile'] = edl['type'][edl_type]['certificate-profile']
+            if 'recurring' in edl['type'][edl_type]:
+                pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'].keys())
+            if 'description' in edl['type'][edl_type]:
+                pretty_edl['Description'] = edl['type'][edl_type]['description']
+
+        return pretty_edl
+
+
+    @logger
+    def panorama_get_edl(edl_name):
+        params = {
+            'action': 'show',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_edl_command():
+        ''' Get an EDL '''
+        edl_name = demisto.args()['name']
+        edl = panorama_get_edl(edl_name)
+        edl_output = prettify_edl(edl)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': edl,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('External Dynamic List:', edl_output, ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+            }
+        })
+
+
+    @logger
+    def panorama_create_edl(edl_name, url, type_, recurring, certificate_profile = None, description = None):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + type_,
+            'key': API_KEY
+        }
+        params['element'] = add_argument(url, 'url', False) + '<recurring><' + recurring + '/></recurring>' + add_argument(certificate_profile, 'certificate-profile', False) + add_argument(description, 'description', False)
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+        return result
+
+
+    def panorama_create_edl_command():
+        ''' Create an edl object '''
+        edl_name = demisto.args().get('name')
+        url = demisto.args().get('url')
+        type_ = demisto.args().get('type')
+        recurring = demisto.args().get('recurring')
+        certificate_profile = demisto.args().get('certificate_profile')
+        description = demisto.args().get('description')
+
+        edl = panorama_create_edl(edl_name, url, type_, recurring, certificate_profile, description)
+
+        edl_output = {
+            'Name': edl_name,
+            'URL': url,
+            'Type': type_,
+            'Recurring': recurring
+        }
+        if description:
+            edl_output['Description'] = description
+        if certificate_profile:
+            edl_output['CertificateProfile'] = certificate_profile
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': edl,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'EXternal Dynamic List was added successfully',
+            'EntryContext': {
+                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+            }
+        })
+
+
+    @logger
+    def panorama_edit_edl(edl_name, element_to_change, element_value):
+
+        edl_prev = panorama_get_edl(edl_name)
+        if '@dirtyId' in edl_prev:
+            return_error('Please commit the instance prior to editing the External Dynamic List')
+        edl_type = ''.join(edl_prev['type'].keys())
+        edl_output = {'Name': edl_name}
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY,
+        }
+
+        if element_to_change == 'url':
+            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+            params['element'] = add_argument_open(element_value, 'url', False)
+            result = http_request(URL, 'POST', params = params)
+            edl_output['URL'] = element_value
+
+        elif element_to_change == 'certificate_profile':
+            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+            params['element'] = add_argument_open(element_value, 'certificate-profile', False)
+            result = http_request(URL, 'POST', params = params)
+            edl_output['CertificateProfile'] = element_value
+
+        elif element_to_change == 'description':
+            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+            params['element'] = add_argument_open(element_value, 'description', False)
+            result = http_request(URL, 'POST', params = params)
+            edl_output['Description'] = element_value
+
+        # element_to_change == 'recurring'
+        else:
+            if element_value not in ['five-minute', 'hourly']:
+                return_error('Recurring segment must be five-minute or hourly')
+            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+            params['element'] = '<recurring><' + element_value + '/></recurring>'
+            result = http_request(URL, 'POST', params = params)
+            edl_output['Recurring'] = element_value
+
+        return result, edl_output
+
+
+    def panorama_edit_edl_command():
+        ''' Edit an EDL '''
+        edl_name = demisto.args()['name']
+        element_to_change = demisto.args()['element_to_change']
+        element_value = demisto.args()['element_value']
+
+        result, edl_output = panorama_edit_edl(edl_name, element_to_change, element_value)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'External Dynamic List was editted successfully',
+            'EntryContext': {
+                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+            }
+        })
+
+    @logger
+    def panorama_delete_edl(edl_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']",
+            'element': "<entry name='" + edl_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_edl_command():
+        ''' Delete an EDL '''
+        edl_name = demisto.args()['name']
+
+        edl = panorama_delete_edl(edl_name)
+        edl_output = {'Name': edl_name}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': edl,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'External Dynamic List was deleted successfully',
+            'EntryContext': {
+                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+            }
+        })
+
+
+    # def panorama_pull_edl(edl_name):
+    #     params = {
+    #         'type': 'op',
+    #           #### missing params#####
+    #         'key': API_KEY
+    #     }
+    #     result = http_request(
+    #         URL,
+    #         'POST',
+    #         params = params,
+    #     )
+
+    #     return result
+
+
+    # def panorama_pull_edl_command():
+    #     ''' Initiate a pull of an EDL '''
+    #     edl_name = demisto.args()['name']
+
+    #     edl = panorama_pull_edl(edl_name)
+
+    #     demisto.results({
+    #         'Type': entryTypes['note'],
+    #         'ContentsFormat': formats['json'],
+    #         'Contents': edl,
+    #         'ReadableContentsFormat': formats['text'],
+    #         'HumanReadable': 'Pulled External Dynamic List successfully',
+    #     })
+
+
     ''' EXECUTION '''
     LOG('command is %s' % (demisto.command(), ))
     try:
@@ -2410,6 +2705,25 @@ script:
         elif demisto.command() == 'panorama-delete-url-filter':
             panorama_delete_url_filter_command()
 
+        # EDL
+        elif demisto.command() == 'panorama-list-edls':
+            panorama_list_edls_command()
+
+        elif demisto.command() == 'panorama-get-edl':
+            panorama_get_edl_command()
+
+        elif demisto.command() == 'panorama-create-edl':
+            panorama_create_edl_command()
+
+        elif demisto.command() == 'panorama-edit-edl':
+            panorama_edit_edl_command()
+
+        elif demisto.command() == 'panorama-delete-edl':
+            panorama_delete_edl_command()
+
+        elif demisto.command() == 'panorama-pull-edl':
+            panorama_pull_edl_command()
+
         # Security Rules Managing
         elif demisto.command() == 'panorama-move-rule':
             panorama_move_rule_command()
@@ -2424,8 +2738,8 @@ script:
         elif demisto.command() == 'panorama-edit-rule':
             panorama_edit_rule_command()
 
-        elif demisto.command() == 'panorama-delete-rule':
-            panorama_delete_rule_command()
+        # elif demisto.command() == 'panorama-delete-rule':
+        #     panorama_delete_rule_command()
 
         # Pcaps
         elif demisto.command() == 'panorama-list-pcaps':
@@ -3492,7 +3806,147 @@ script:
     - name: password
       description: Password for Panorama, needed for dlp-pcap only.
     description: Returns a list of pcap names
+  - name: panorama-get-edl
+    arguments:
+    - name: name
+      required: true
+      description: EDL name
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.Type
+      description: EDL type
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Get information for an external dynamic list
+  - name: panorama-create-edl
+    arguments:
+    - name: name
+      required: true
+      description: EDL name
+    - name: url
+      required: true
+      description: URL to pull the EDL from
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      description: EDL type
+    - name: recurring
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - five-minute
+      - hourly
+      description: Pull time of the EDL from the URL
+    - name: certificate_profile
+      description: Certificate Profile name for the URL that was previously uploaded
+        to PAN OS
+    - name: description
+      description: EDL description
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.Type
+      description: EDL type
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Creates an external dynamic list
+  - name: panorama-edit-edl
+    arguments:
+    - name: name
+      required: true
+      description: Name of the external dynamic list to edit
+    - name: element_to_change
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - url
+      - recurring
+      - certificate_profile
+      - description
+      description: Element to change; "url","recurring","certificate_profile","description"
+    - name: element_value
+      required: true
+      description: Element value
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recurring time
+      type: string
+    description: Edit an external dynamic list
+  - name: panorama-delete-edl
+    arguments:
+    - name: name
+      required: true
+      description: Name of the EDL to delete
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: Name of the EDL that was deleted
+      type: string
+    description: Deletes an EDL
+  - name: panorama-list-edls
+    arguments: []
+    outputs:
+    - contextPath: Panorama.EDLs.Name
+      description: EDL name
+      type: string
+    - contextPath: Panorama.EDLs.Type
+      description: EDL type
+      type: string
+    - contextPath: Panorama.EDLs.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDLs.Description
+      description: EDL description
+      type: string
+    - contextPath: Panorama.EDLs.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDLs.Recurring
+      description: EDL recuuring time
+      type: string
+    description: Returns a list of external dynamic lists
   runonce: false
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
+releaseNotes: Add support for panorama-list/get/create/edit/delete-edl commands.
