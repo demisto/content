@@ -644,9 +644,6 @@ script:
                 var entries = [];
                 for (var i=0; i < uuids.length; i++) {
                     var reportResponse = CheckStatus(uuids[i]);
-                    if (reportResponse.error){
-                        return reportResponse.error;
-                    }
                     entries.push(reportResponse);
                 }
                 return entries;
