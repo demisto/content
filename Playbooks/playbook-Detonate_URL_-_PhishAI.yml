@@ -69,7 +69,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: PhishAI(val.Status === 'in progress')
+        simple: PhishAI(val.Status === 'in progress').ScanID
     separatecontext: true
     loop:
       iscommand: false
