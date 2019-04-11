@@ -31,13 +31,16 @@ script: |-
 
   ###### Fix fetching credentials from vault instances ######
   # ====================================================================================
-  for k,v in demisto.params().items():
-      if isinstance(v, dict):
-          if 'credentials' in v:
-              vault = v['credentials'].get('vaultInstanceId')
-              if vault:
-                  v['identifier'] = v['credentials'].get('user')
-              break
+  try:
+      for k, v in demisto.params().items():
+          if isinstance(v, dict):
+              if 'credentials' in v:
+                  vault = v['credentials'].get('vaultInstanceId')
+                  if vault:
+                      v['identifier'] = v['credentials'].get('user')
+                  break
+  except:
+      pass
   # ====================================================================================
 
   def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
@@ -1549,6 +1552,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Logger support for Python3."
+releaseNotes: "Logger support for Python3; Fix fetching credentials from vault instances"
 tests:
   - TestCommonPython
