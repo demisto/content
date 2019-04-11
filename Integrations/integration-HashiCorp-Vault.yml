@@ -606,6 +606,7 @@ script:
         credentials = []
         engines_to_fetch_from = []
         ENGINES = argToList(demisto.params().get('engines', []))
+        identifier = demisto.args().get('identifier')
 
         if len(ENGINES) == 0:
             return_error('No secrets engines specified')
@@ -620,13 +621,16 @@ script:
         for engine in engines_to_fetch_from:
             if engine['type'] == 'KV':
                 if 'version' not in engine:
-                    return_error('Version not configured for KV engine, Re-configure the engine')
+                    return_error('Version not configured for KV engine, re-configure the engine')
                 if engine['version'] == '1':
                     credentials += get_kv1_secrets(engine['path'])
                 elif engine['version'] == '2':
                     credentials += get_kv2_secrets(engine['path'])
             elif engine['type'] == 'Cubbyhole':
                 credentials += get_ch_secrets(engine['path'])
+
+        if identifier:
+            credentials = list(filter(lambda c: c['name'] == identifier, credentials))
 
         demisto.credentials(credentials)
 
@@ -662,7 +666,7 @@ script:
 
     def get_kv2_secrets(engine_path):
         secrets = []
-        res = list_secrets(engine_path)
+        res = list_secrets(engine_path, '2')
         if not res or 'data' not in res:
             return []
 
@@ -1064,5 +1068,6 @@ script:
     description: Creates a new authentication token
   dockerimage: demisto/hashicorp:1.0.0.39
   runonce: false
+releaseNotes: "Fixed fetching credentials"
 tests:
   - hashicorp_test
