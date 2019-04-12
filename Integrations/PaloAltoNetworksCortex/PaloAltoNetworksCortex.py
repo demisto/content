@@ -494,8 +494,8 @@ def fetch_incidents():
         service_start_date_epoch = int(last_fetched_event_timestamp.strftime('%s'))
         if 'WHERE' in FETCH_QUERY:
             where_index = FETCH_QUERY.index('WHERE')
-            before_where = FETCH_QUERY[:where_index+5]
-            after_where = FETCH_QUERY[where_index+5:]
+            before_where = FETCH_QUERY[:where_index + 5]
+            after_where = FETCH_QUERY[where_index + 5:]
             FETCH_QUERY = f'{before_where} receive_time>{service_start_date_epoch} AND {after_where}'
         else:
             FETCH_QUERY += f' WHERE receive_time>{service_start_date_epoch}'
@@ -503,8 +503,8 @@ def fetch_incidents():
         service_start_date_iso = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         if 'WHERE' in FETCH_QUERY:
             where_index = FETCH_QUERY.index('WHERE')
-            before_where = FETCH_QUERY[:where_index+5]
-            after_where = FETCH_QUERY[where_index+5:]
+            before_where = FETCH_QUERY[:where_index + 5]
+            after_where = FETCH_QUERY[where_index + 5:]
             FETCH_QUERY = f"{before_where} serverTime>'{service_start_date_iso}' AND {after_where}"
         else:
             FETCH_QUERY += f" WHERE serverTime>'{service_start_date_iso}'"

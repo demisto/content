@@ -1,6 +1,7 @@
 import demistomock as demisto
 from datetime import datetime, timedelta
 
+
 def test_get_start_time(mocker):
     integration_context = {
         'stored': int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds()),
