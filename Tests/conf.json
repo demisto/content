@@ -1210,6 +1210,10 @@
         {
             "integrations": "Zoom",
             "playbookID": "Zoom_Test"
+        },
+        {
+            "integrations": "Palo Alto AppFramework",
+            "playbookID": "Palo Alto Networks Cortex Test"
         }
     ],
     "skipped_tests": {
