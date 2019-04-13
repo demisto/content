@@ -552,10 +552,9 @@ try:
     session = requests.Session()
     session.verify = USE_SSL
     session.headers.update({
-            'Accept': 'application/json',
-            'User-Agent': 'Demisto'
-        }
-    )
+        'Accept': 'application/json',
+        'User-Agent': 'Demisto'
+    })
     credentials = Credentials(
         access_token=ACCESS_TOKEN,
         session=session
