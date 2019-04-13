@@ -1,7 +1,7 @@
 commonfields:
-  id: Palo Alto AppFramework
+  id: Palo Alto Networks Cortex
   version: -1
-name: Palo Alto AppFramework
+name: Palo Alto Networks Cortex
 display: Palo Alto Networks Cortex
 category: Analytics & SIEM
 description: This framework manages all PA's cloud managed products
