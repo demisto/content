@@ -551,6 +551,11 @@ try:
     API_URL = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
     session = requests.Session()
     session.verify = USE_SSL
+    session.headers.update({
+            'Accept': 'application/json',
+            'User-Agent': 'Demisto'
+        }
+    )
     credentials = Credentials(
         access_token=ACCESS_TOKEN,
         session=session
