@@ -550,8 +550,7 @@ try:
     ACCESS_TOKEN = get_access_token()
     API_URL = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
     credentials = Credentials(
-        access_token=ACCESS_TOKEN,
-        verify=USE_SSL
+        access_token=ACCESS_TOKEN
     )
 
     if demisto.command() == 'test-module':
