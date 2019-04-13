@@ -549,15 +549,9 @@ LOG('command is %s' % (demisto.command(), ))
 try:
     ACCESS_TOKEN = get_access_token()
     API_URL = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
-    session = requests.Session()
-    session.verify = USE_SSL
-    session.headers.update({
-        'Accept': 'application/json',
-        'User-Agent': 'Demisto'
-    })
     credentials = Credentials(
         access_token=ACCESS_TOKEN,
-        session=session
+        verify=USE_SSL
     )
 
     if demisto.command() == 'test-module':
