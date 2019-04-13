@@ -624,4 +624,4 @@ outputs:
   type: unknown
 releaseNotes: Added missing outputs
 tests:
-- Lastline - testplaybook
+- Detonate File - Generic Test

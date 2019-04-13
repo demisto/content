@@ -485,6 +485,5 @@ outputs:
   description: Lastline submission object
   type: unknown
 tests:
-- Lastline - testplaybook
 - Detonate URL - Generic Test
 releaseNotes: Added missing outputs

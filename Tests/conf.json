@@ -143,26 +143,6 @@
             "playbookID": "Fortigate Test"
         },
         {
-            "integrations": [
-                "Lastline",
-                "WildFire",
-                "SNDBOX",
-                "VxStream"
-            ],
-            "playbookID" : "Detonate File - Generic Test",
-            "timeout" : 2400,
-            "nightly" : true
-        },
-        {
-            "integrations": [
-                "Lastline",
-                "WildFire",
-                "SNDBOX",
-                "VxStream"
-            ],
-            "playbookID" : "detonate_file_-_generic_test"
-        },
-        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
@@ -722,10 +702,6 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Detonate File - Generic Test",
-            "timeout": 500
-        },
-        {
             "playbookID": "Test-IsMaliciousIndicatorFound"
         },
         {
@@ -1012,15 +988,29 @@
             "timeout" : 1200
         },
         {
-           "playbookID": "Detonate File - Generic Test",
-           "timeout": 2000,
-           "nightly": true,
-           "integrations": [
-             "VxStream",
-             "McAfee Advanced Threat Defense",
-             "WildFire",
-             "Lastline"
-           ]
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 500
+        },
+        {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX",
+                "VxStream",
+                "McAfee Advanced Threat Defense"
+            ],
+            "playbookID" : "Detonate File - Generic Test",
+            "timeout" : 2400,
+            "nightly" : true
+        },
+        {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX",
+                "VxStream"
+            ],
+            "playbookID" : "detonate_file_-_generic_test"
         },
         {
             "playbookID": "STIXParserTest"
@@ -1213,7 +1203,7 @@
         }
     ],
     "skipped_tests": {
-        "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the quota",
+        "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",

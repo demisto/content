@@ -1010,7 +1010,6 @@ script:
     description: Check submissions status
   runonce: false
 tests:
-- Lastline - testplaybook
 - Detonate URL - Generic Test
 - Detonate File - Generic Test
 releaseNotes: Add ___lastline-check-status___ command
