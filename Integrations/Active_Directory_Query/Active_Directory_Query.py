@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls
-from ldap3.core.exceptions import LDAPSocketOpenError
 from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
+import traceback
 
 
 # global connection
@@ -912,9 +912,10 @@ def main():
             demisto.info(message)
             return_error(message)
             return
-    except LDAPSocketOpenError as e:
+    except Exception as e:
         exc_msg = str(e)
-        demisto.info(exc_msg)
+        demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
+                     + "\nTrace:\n{}".format(traceback.format_exc())))
         message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
         if 'ssl wrapping error' in exc_msg:
             message = "Failed to access LDAP server. SSL error."
