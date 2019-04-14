@@ -826,7 +826,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7450
+          "y": 7625
         }
       }
     note: false
@@ -876,7 +876,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6110
+          "y": 6285
         }
       }
     note: false
@@ -970,7 +970,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6255
+          "y": 6430
         }
       }
     note: false
@@ -1007,7 +1007,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6605
+          "y": 6780
         }
       }
     note: false
@@ -1040,7 +1040,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6780
+          "y": 6955
         }
       }
     note: false
@@ -1184,7 +1184,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6430
+          "y": 6605
         }
       }
     note: false
@@ -1209,7 +1209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6955
+          "y": 7130
         }
       }
     note: false
@@ -1246,7 +1246,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7275
+          "y": 7450
         }
       }
     note: false
@@ -1277,7 +1277,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7100
+          "y": 7275
         }
       }
     note: false
@@ -1291,7 +1291,6 @@ tasks:
       id: 0c9a4b25-a6e3-4c3d-89d8-2ae32fc2c89c
       version: -1
       name: EDL
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1338,10 +1337,10 @@ tasks:
     ignoreworker: false
   "85":
     id: "85"
-    taskid: 176410ea-eafe-4aa1-8516-38122fd481ec
+    taskid: 459ae6db-7842-4a42-8fe2-09aca3cdd909
     type: regular
     task:
-      id: 176410ea-eafe-4aa1-8516-38122fd481ec
+      id: 459ae6db-7842-4a42-8fe2-09aca3cdd909
       version: -1
       name: panorama-get-edl
       description: Get information for an external dynamic list
@@ -1379,7 +1378,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "60"
+      - "87"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1404,14 +1403,45 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "87":
+    id: "87"
+    taskid: 65242911-a557-4ec6-806b-1d49d067be1c
+    type: regular
+    task:
+      id: 65242911-a557-4ec6-806b-1d49d067be1c
+      version: -1
+      name: panorama-refresh-edl
+      description: Refresh a given external dynamic list
+      script: '|||panorama-refresh-edl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      name:
+        simple: test_pb_domain_edl_DONT_DEL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "27_28_yes": 0.9
+      "27_28_yes": 0.9,
+      "86_87_yes": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 7465,
+        "height": 7640,
         "width": 380,
         "x": 50,
         "y": 50

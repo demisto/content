@@ -2564,34 +2564,37 @@ script:
         })
 
 
-    # def panorama_pull_edl(edl_name):
-    #     params = {
-    #         'type': 'op',
-    #           #### missing params#####
-    #         'key': API_KEY
-    #     }
-    #     result = http_request(
-    #         URL,
-    #         'POST',
-    #         params = params,
-    #     )
+    def panorama_refresh_edl(edl_name):
+        edl = panorama_get_edl(edl_name)
+        edl_type = ''.join(edl['type'].keys())
 
-    #     return result
+        params = {
+            'type': 'op',
+            'cmd': '<request><system><external-list><refresh><type><' + edl_type + '><name>' + edl_name + '</name></' + edl_type + '></type></refresh></external-list></system></request>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
 
 
-    # def panorama_pull_edl_command():
-    #     ''' Initiate a pull of an EDL '''
-    #     edl_name = demisto.args()['name']
+    def panorama_refresh_edl_command():
+        ''' Refresh an EDL '''
+        edl_name = demisto.args()['name']
 
-    #     edl = panorama_pull_edl(edl_name)
+        result = panorama_refresh_edl(edl_name)
 
-    #     demisto.results({
-    #         'Type': entryTypes['note'],
-    #         'ContentsFormat': formats['json'],
-    #         'Contents': edl,
-    #         'ReadableContentsFormat': formats['text'],
-    #         'HumanReadable': 'Pulled External Dynamic List successfully',
-    #     })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Refreshed External Dynamic List successfully',
+        })
 
 
     ''' EXECUTION '''
@@ -2721,8 +2724,8 @@ script:
         elif demisto.command() == 'panorama-delete-edl':
             panorama_delete_edl_command()
 
-        elif demisto.command() == 'panorama-pull-edl':
-            panorama_pull_edl_command()
+        elif demisto.command() == 'panorama-refresh-edl':
+            panorama_refresh_edl_command()
 
         # Security Rules Managing
         elif demisto.command() == 'panorama-move-rule':
@@ -3444,7 +3447,7 @@ script:
       description: EDL certificate profile
       type: string
     - contextPath: Panorama.EDLs.Recurring
-      description: EDL recurring time
+      description: EDL recuuring time
       type: string
     description: Returns a list of external dynamic lists
   - name: panorama-get-edl
@@ -3564,6 +3567,12 @@ script:
       description: Name of the EDL that was deleted
       type: string
     description: Deletes an EDL
+  - name: panorama-refresh-edl
+    arguments:
+    - name: name
+      required: true
+      description: EDL name
+    description: Refresh a given external dynamic list
   - name: panorama-create-rule
     arguments:
     - name: rulename
@@ -3949,4 +3958,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: Add support for panorama-list/get/create/edit/delete-edl commands.
+releaseNotes: Add support for panorama-list/get/create/edit/delete/refresh-edl commands.
