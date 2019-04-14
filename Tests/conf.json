@@ -1195,6 +1195,10 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "integrations": "AWS EC2",
+            "playbookID": "EC2-Test-Read"
         }
     ],
     "skipped_tests": {
