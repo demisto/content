@@ -163,7 +163,8 @@ class IDSetValidator(object):
                             is_duplicated = True
                             break
 
-                    elif LooseVersion(obj_fromversion) <= LooseVersion(instance_to_version):
+                    elif (LooseVersion(obj_fromversion) <= LooseVersion(instance_to_version)
+                          and (LooseVersion(obj_toversion) >= LooseVersion(instance_from_version))):
                         is_duplicated = True
                         break
 
