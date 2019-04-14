@@ -662,7 +662,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if not data:
+      if data is None:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1540,3 +1540,4 @@ timeout: 0s
 releaseNotes: "Logger support for Python3."
 tests:
   - TestPYCommonServer
+releaseNotes: "-"
