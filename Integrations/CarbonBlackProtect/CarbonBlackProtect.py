@@ -74,6 +74,33 @@ FILE_INSTANCE_TRANS_DICT = {
     'pathName': 'Path'
 }
 
+EVENT_TRANS_DICT = {
+    'pathName': 'FilePath',
+    'param1': 'Param1',
+    'param2': 'Param2',
+    'param3': 'Param3',
+    'subtypeName': 'SubTypeName',
+    'computerName': 'ComputerName',
+    'fileName': 'FileName',
+    'ruleName': 'RuleName',
+    'processFileCatalogId': 'ProcessFileCatalogID',
+    'stringId': 'StringID',
+    'ipAddress': 'IPAddress',
+    'policyId': 'PolicyID',
+    'timestamp': 'Timestamp',
+    'userName': 'Username',
+    'computerId': 'ComputerID',
+    'processFileName': 'ProcessFileName',
+    'indicatorName': 'IndicatorName',
+    'subtype': 'SubType',
+    'type': 'Type',
+    'id': 'ID',
+    'description': 'Description',
+    'severity': 'Severity',
+    'commandLine': 'CommandLine',
+    'processPathName': 'ProcessPathName'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -194,7 +221,7 @@ def generic_search_command(search_function, trans_dict, hr_title, ec_key):
     ec = []
     for entry in raw_res:
         ec.append(get_trasnformed_dict(entry, trans_dict))
-    hr = tableToMarkdown(hr_title, ec, headers)
+    hr = tableToMarkdown(hr_title, ec, headers, removeNull=True)
     demisto.results(create_entry_object(raw_res, {ec_key: ec}, hr))
 
 
@@ -316,6 +343,28 @@ def search_file_instance(url_params):
     return http_request('GET', '/fileInstance', params=url_params)
 
 
+def search_event_command():
+    """
+    Searches for file instance
+    :return: EntryObject of the file instance
+    """
+    generic_search_command(
+        search_function=search_event,
+        trans_dict=EVENT_TRANS_DICT,
+        hr_title='CarbonBlack Protect Event Search',
+        ec_key='CBPEvent(val.ID === obj.ID)'
+    )
+
+
+def search_event(url_params):
+    """
+    Sends the request for file instance, and returns the result json
+    :param url_params: url parameters for the request
+    :return: File instance response json
+    """
+    return http_request('GET', '/event', params=url_params)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -333,6 +382,8 @@ try:
         search_computer_command()
     elif demisto.command() == 'cbp-fileInstance-search':
         search_file_instance_command()
+    elif demisto.command() == 'cbp-event-search':
+        search_event_command()
     elif demisto.command() == 'cbp-computer-get':
         get_computer_command()
     else:

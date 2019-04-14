@@ -714,6 +714,85 @@ script:
     description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#event'
     execution: false
     name: cbp-event-search
+    outputs:
+    - contextPath: CBPEvent.FilePath
+      description: File path of the event
+      type: String
+    - contextPath: CBPEvent.Param1
+      description: First event parameter
+      type: String
+    - contextPath: CBPEvent.Param2
+      description: Second event parameter
+      type: String
+    - contextPath: CBPEvent.Param3
+      description: Third event parameter
+      type: String
+    - contextPath: CBPEvent.SubTypeName
+      description: Name of the sub type
+      type: String
+    - contextPath: CBPEvent.ComputerName
+      description: Name of the computer related to the event
+      type: String
+    - contextPath: CBPEvent.FileName
+      description: Name of the file related to the event
+      type: String
+    - contextPath: CBPEvent.RuleName
+      description: Name of the rule related to the event
+      type: String
+    - contextPath: CBPEvent.ProcessFileCatalogID
+      description: ID of the process file catalog id
+      type: String
+    - contextPath: CBPEvent.StringID
+      description: ID of the event string
+      type: String
+    - contextPath: CBPEvent.IPAddress
+      description: IP address of the event
+      type: String
+    - contextPath: CBPEvent.PolicyID
+      description: Policy ID of the event
+      type: String
+    - contextPath: CBPEvent.Timestamp
+      description: Timestamp of the event
+      type: Date
+    - contextPath: CBPEvent.Username
+      description: Event's username
+      type: String
+    - contextPath: CBPEvent.ComputerID
+      description: ID of the event computer
+      type: String
+    - contextPath: CBPEvent.ProcessFileName
+      description: FileName of the process
+      type: String
+    - contextPath: CBPEvent.FileCatalogID
+      description: ID of the file catalog
+      type: String
+    - contextPath: CBPEvent.ProcessFileName
+      description: File name of the process
+      type: String
+    - contextPath: CBPEvent.IndicatorName
+      description: Event's indicator name
+      type: String
+    - contextPath: CBPEvent.SubType
+      description: The id of the subtype
+      type: Number
+    - contextPath: CBPEvent.Type
+      description: Type of the event
+      type: Number
+    - contextPath: CBPEvent.ID
+      description: Event's ID
+      type: Number
+    - contextPath: CBPEvent.Description
+      description: Event's description
+      type: String
+    - contextPath: CBPEvent.Severity
+      description: Severity of the event
+      type: String
+    - contextPath: CBPEvent.CommandLine
+      description: Command line executed in the event
+      type: String
+    - contextPath: CBPEvent.ProcessPathName
+      description: Path name of the process
+      type: String
   - arguments:
     - default: false
       description: 'A condition contains three parts: name, operator and value. Name
@@ -936,7 +1015,6 @@ script:
     - contextPath: CBPFileRule.ReportOnly
       description: Is this rule reporting only or also enforcing
       type: String
-    - type: Unknown
   - arguments:
     - default: false
       description: 'A condition contains three parts: name, operator and value. Name
