@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-
+BASE_URL = "https://www.googleapis.com/bigquery/v2/"
 
 
 USERNAME = demisto.params().get('credentials').get('identifier')
