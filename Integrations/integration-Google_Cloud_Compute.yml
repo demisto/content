@@ -277,8 +277,8 @@ script:
     def test_module():
 
         project = SERVICE_ACT_PROJECT_ID
-        tes = list_regions(demisto.args())
-        result = 'ok'
+        compute = build_and_authenticate(GSERVICE)
+        demisto.results('ok')
 
 
     #instances()
