@@ -240,6 +240,6 @@ script:
     description: Runs PCAP file analysis in Fidelis Elevate.
   isfetch: true
   runonce: false
-releaseNotes: "Added a command to support PCAP upload and analyze in Fidelis Elevate Network"
+releaseNotes: "fixed fetch-incident"
 tests:
   - Fidelis-Test

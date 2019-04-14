@@ -44,6 +44,17 @@ def clean_html(text):
     return html_parser.unescape(cleaned).strip()
 
 
+def remove_line_breaks(text):
+    if not REMOVE_LINE_BREAKS:
+        return text
+
+    return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
+
+
+def hash_word(word):
+    return str(hash_djb2(word, int(HASH_SEED)))
+
+
 def tokenize_text(text):
     try:
         unicode_text = unicode(text)
@@ -73,16 +84,13 @@ def tokenize_text(text):
                 words.append(token.lemma_)
             else:
                 words.append(token.lower_)
+    hashed_words = []
     if HASH_SEED:
-        words = map(lambda x: str(hash_djb2(x, int(HASH_SEED))), words)
-    return ' '.join(words).encode(TEXT_ENCODE).strip()
+        for word in words:
+            word_hashed = hash_word(word)
+            hashed_words.append(word_hashed)
 
-
-def remove_line_breaks(text):
-    if not REMOVE_LINE_BREAKS:
-        return text
-
-    return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
+    return ' '.join(words).encode(TEXT_ENCODE).strip(), ' '.join(hashed_words) if len(hashed_words) > 0 else None
 
 
 def word_tokenize(text):
@@ -94,16 +102,29 @@ def word_tokenize(text):
 
     if not isinstance(text, list):
         text = [text]
-    result = map(remove_line_breaks, map(tokenize_text, map(clean_html, text)))
 
-    if len(result) == 1:
-        result = result[0]
-    result = result
+    result = []
+    for t in text:
+        original_text = t
+        t = remove_line_breaks(t)
+        t = clean_html(t)
+        tokenized_text, hash_tokenized_text = tokenize_text(t)
+        text_result = {
+            'originalText': original_text,
+            'tokenizedText': tokenized_text,
+        }
+        if hash_tokenized_text:
+            text_result['hashedTokenizedText'] = hash_tokenized_text
+
+        result.append(text_result)
+
     return {
         'Contents': result,
-        'ContentsFormat': formats['json'] if type(result) is list else formats['text'],
+        'ContentsFormat': formats['json'],
+        'HumanReadable': tableToMarkdown('Tokenized Text', result, headers=['tokenizedText']),
+        'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
-            'WordTokenizeOutput': result
+            'WordTokenizeNLPOutput': result
         }
     }
 
