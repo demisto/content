@@ -77,7 +77,13 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "UnEscapeURLs-Test"
+            "playbookID": "UnEscapeURL-Test"
+        },
+        {
+            "playbookID": "UnEscapeIPs-Test"
+        },
+        {
+            "playbookID": "ExtractDomainFromUrlAndEmail-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -1290,7 +1296,6 @@
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
-        "Symantec Deepsight Intelligence": "Issues related to id_set.json (issue 16461)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
