@@ -53,6 +53,18 @@ FILE_CATALOG_TRANS_DICT = {
     'fileExtension': 'Extension'
 }
 
+COMPUTER_TRANS_DICT = {
+    'memorySize': 'Memory',
+    'processorCount': 'Processors',
+    'processorModel': 'Processor',
+    'osShortName': 'OS',
+    'osName': 'OSVersion',
+    'macAddress': 'MACAddress',
+    'machineModel': 'Model',
+    'ipAddress': 'IPAddress',
+    'name': 'Hostname',
+    'id': 'ID'
+}
 
 ''' HELPER FUNCTIONS '''
 
@@ -151,6 +163,34 @@ def get_trasnformed_dict(old_dict, transformation_dict):
     return new_dict
 
 
+def generic_search_command(search_function, trans_dict, hr_title, ec_key):
+    """
+    Searches for an item.
+
+    :param search_function: Function to call search endpoint
+    :param trans_dict: Transformation dict for result
+    :param hr_title: Title of human readable
+    :param ec_key: Entry Context key
+    :return: EntryObject of the item
+    """
+    args = demisto.args()
+    url_params = {
+        "limit": args.get('limit'),
+        "offset": args.get('offset'),
+        "q": args.get('query'),
+        "sort": args.get('sort'),
+        "group": args.get('group')
+    }
+    headers = args.get('headers')
+    raw_res = search_function(url_params)
+    ec = []
+    for entry in raw_res:
+        demisto.info(entry)
+        ec.append(get_trasnformed_dict(entry, trans_dict))
+    hr = tableToMarkdown(hr_title, ec, headers)
+    demisto.results(create_entry_object(raw_res, {ec_key: ec}, hr))
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -166,22 +206,12 @@ def search_file_catalog_command():
     Searches for file catalog
     :return: EntryObject of the file catalog
     """
-    args = demisto.args()
-    url_params = {
-        "limit": args.get('limit'),
-        "offset": args.get('offset'),
-        "query": args.get('query'),
-        "sort": args.get('sort'),
-        "group": args.get('group')
-    }
-    headers = args.get('headers')
-    raw_res = search_file_catalog(url_params)
-    ec = []
-    for entry in raw_res:
-        demisto.info(entry)
-        ec.append(get_trasnformed_dict(entry, FILE_CATALOG_TRANS_DICT))
-    hr = tableToMarkdown("CarbonBlack Protect File Catalog Search", ec, headers)
-    demisto.results(create_entry_object(raw_res, {'File(val.SHA1 === obj.SHA1)': ec}, hr))
+    generic_search_command(
+        search_function=search_file_catalog,
+        trans_dict=FILE_CATALOG_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Catalog Search',
+        ec_key='File(val.SHA1 === obj.SHA1)'
+    )
 
 
 def search_file_catalog(url_params):
@@ -191,6 +221,28 @@ def search_file_catalog(url_params):
     :return: File catalog response json
     """
     return http_request('GET', '/fileCatalog', params=url_params)
+
+
+def search_computer_command():
+    """
+    Searches for file catalog
+    :return: EntryObject of the file catalog
+    """
+    generic_search_command(
+        search_function=search_computer,
+        trans_dict=COMPUTER_TRANS_DICT,
+        hr_title='CarbonBlack Protect Computer Search',
+        ec_key='Endpoint(val.ID === obj.ID)'
+    )
+
+
+def search_computer(url_params):
+    """
+    Sends the request for computer, and returns the result json
+    :param url_params: url parameters for the request
+    :return: Computer response json
+    """
+    return http_request('GET', '/Computer', params=url_params)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -206,7 +258,10 @@ try:
         demisto.results('ok')
     elif demisto.command() == 'cbp-fileCatalog-search':
         search_file_catalog_command()
-
+    elif demisto.command() == 'cbp-computer-search':
+        search_computer_command()
+    else:
+        return_error("Command {} is not supported.".format(demisto.command()))
 # Log exceptions
 except Exception as e:
     return_error(str(e))

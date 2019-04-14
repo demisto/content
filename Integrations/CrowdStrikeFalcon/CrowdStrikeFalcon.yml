@@ -46,8 +46,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose
-  API), enables fetching and resolving detections, searching devices, getting behaviors
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
+  enables fetching and resolving detections, searching devices, getting behaviors
   by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -185,7 +185,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: IDs of the detections to search. If provided, will override other arguments.
+      description: IDs of the detections to search. If provided, will override other
+        arguments.
       isArray: true
       name: ids
       required: false
@@ -201,7 +202,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
+    description: Search for details of specific detections, either using a filter
+      query, or by providing the IDs of the detections.
     execution: false
     name: cs-falcon-search-detection
     outputs:
@@ -298,8 +300,8 @@ script:
     name: cs-falcon-resolve-detection
   - arguments:
     - default: false
-      description: The host agent ID (AID) of the host to contain. Get an
-        agent ID from a detection.
+      description: The host agent ID (AID) of the host to contain. Get an agent ID
+        from a detection.
       isArray: true
       name: ids
       required: true
@@ -319,14 +321,16 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Lifts containment on the host, which returns its network communications to normal.
+    description: Lifts containment on the host, which returns its network communications
+      to normal.
     execution: false
     name: cs-falcon-lift-host-containment
   dockerimage: demisto/python3:3.7.2.200
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   type: python
-releaseNotes: "Updated descriptions and fixed a typo for argument in cs-falcon-search-device command"
+releaseNotes: Updated descriptions and fixed a typo for argument in cs-falcon-search-device
+  command
 tests:
-  - Test - CrowdStrike Falcon
+- Test - CrowdStrike Falcon

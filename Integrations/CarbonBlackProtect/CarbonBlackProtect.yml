@@ -176,15 +176,9 @@ script:
     execution: false
     name: cbp-computer-search
     outputs:
-    - contextPath: Endpoint.Memory
-      description: Amount of memory for the endpoint
-      type: Number
     - contextPath: Endpoint.Processors
       description: The number of processors
       type: Number
-    - contextPath: Endpoint.OS
-      description: The short OS name running on the endpoint
-      type: String
     - contextPath: Endpoint.MACAddress
       description: MAC address of the endpoint
       type: String
@@ -206,36 +200,12 @@ script:
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retreiving the endpoint
       type: String
-    - contextPath: Endpoint.Memory
-      description: Amount of memory for the endpoint
-      type: String
-    - contextPath: Endpoint.Processors
-      description: The number of processors
-      type: Number
     - contextPath: Endpoint.OS
       description: The short OS name running on the endpoint
       type: String
-    - contextPath: Endpoint.MACAddress
-      description: MAC address of the endpoint
-      type: String
-    - contextPath: Endpoint.Model
-      description: The machine model, if available
-      type: String
-    - contextPath: Endpoint.IPAddress
-      description: The IP address of the endpoint
-      type: String
-    - contextPath: Endpoint.Processor
-      description: The model of the processor
-      type: String
-    - contextPath: Endpoint.Hostname
-      description: Hostname of the endpoint
-      type: String
-    - contextPath: Endpoint.OSVersion
-      description: The full OS name for the endpoint
-      type: String
-    - contextPath: Endpoint.ID
-      description: The unique ID within the tool retreiving the endpoint
-      type: String
+    - contextPath: Memory
+      description: Amount of memory for the endpoint
+      type: Number
   - arguments:
     - default: true
       description: (Int32) Unique computer id
@@ -498,15 +468,9 @@ script:
     execution: false
     name: cbp-computer-update
     outputs:
-    - contextPath: Endpoint.Memory
-      description: Amount of memory for the endpoint
-      type: Number
     - contextPath: Endpoint.Processors
       description: The number of processors
       type: Number
-    - contextPath: Endpoint.OS
-      description: The short OS name running on the endpoint
-      type: String
     - contextPath: Endpoint.MACAddress
       description: MAC address of the endpoint
       type: String
@@ -527,9 +491,6 @@ script:
       type: String
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retreiving the endpoint
-      type: String
-    - contextPath: Endpoint.Memory
-      description: Amount of memory for the endpoint
       type: String
     - contextPath: Endpoint.Processors
       description: The number of processors
@@ -576,15 +537,9 @@ script:
     execution: false
     name: cbp-computer-get
     outputs:
-    - contextPath: Endpoint.Memory
-      description: Amount of memory for the endpoint
-      type: Number
     - contextPath: Endpoint.Processors
       description: The number of processors
       type: Number
-    - contextPath: Endpoint.OS
-      description: The short OS name running on the endpoint
-      type: String
     - contextPath: Endpoint.MACAddress
       description: MAC address of the endpoint
       type: String
@@ -605,9 +560,6 @@ script:
       type: String
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retreiving the endpoint
-      type: String
-    - contextPath: Endpoint.Memory
-      description: Amount of memory for the endpoint
       type: String
     - contextPath: Endpoint.Processors
       description: The number of processors
