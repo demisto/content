@@ -77,7 +77,13 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "UnEscapeURLs-Test"
+            "playbookID": "UnEscapeURL-Test"
+        },
+        {
+            "playbookID": "UnEscapeIPs-Test"
+        },
+        {
+            "playbookID": "ExtractDomainFromUrlAndEmail-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -1131,7 +1137,8 @@
         },
         {
             "integrations": "Phishme Intelligence",
-            "playbookID": "Test - PhishMe Intelligence"
+            "playbookID": "Test - PhishMe Intelligence",
+            "timeout": 500
         },
         {
             "integrations": "Google Resource Manager",
@@ -1304,7 +1311,8 @@
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
-        "SignalSciences-Test": "Test is failing due to it not being able to pull any events (issue 16512)"
+        "SignalSciences-Test": "Test is failing due to it not being able to pull any events (issue 16512)",
+        "Cybereason Test": "Test is failing due to connection issues though it's in unmockable (issue 16555)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
