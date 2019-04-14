@@ -616,6 +616,7 @@
         },
         {
             "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
             "playbookID": "domain_enrichment_generic_test"
         },
         {
@@ -1063,6 +1064,7 @@
                 "urlscan.io",
                 "activedir"
             ],
+            "instance_names": "virus_total_general",
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
@@ -1206,6 +1208,7 @@
         },
         {
             "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
             "playbookID": "File Enrichment - Generic Test"
         },
         {
