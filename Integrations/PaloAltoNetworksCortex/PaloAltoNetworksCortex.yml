@@ -2,6 +2,7 @@ commonfields:
   id: Palo Alto Networks Cortex
   version: -1
 name: Palo Alto Networks Cortex
+fromversion: 4.1.0
 display: Palo Alto Networks Cortex
 category: Analytics & SIEM
 description: This framework manages all PA's cloud managed products
@@ -34,8 +35,11 @@ configuration:
 - display: Query for fetching events
   name: fetch_query
   defaultvalue: SELECT * FROM tms.threat
-  type: 0
+  type: 15
   required: false
+  options:
+  - SELECT * FROM tms.threat
+  - SELECT * FROM panw.threat
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
     1 year)
   name: first_fetch_timestamp
