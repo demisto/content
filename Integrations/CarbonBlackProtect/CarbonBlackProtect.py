@@ -66,6 +66,14 @@ COMPUTER_TRANS_DICT = {
     'id': 'ID'
 }
 
+FILE_INSTANCE_TRANS_DICT = {
+    'fileCatalogId': 'CatalogID',
+    'computerId': 'ComputerID',
+    'id': 'ID',
+    'fileName': 'Name',
+    'pathName': 'Path'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -165,7 +173,7 @@ def get_trasnformed_dict(old_dict, transformation_dict):
 
 def generic_search_command(search_function, trans_dict, hr_title, ec_key):
     """
-    Searches for an item.
+    Searches for an item from search_function.
 
     :param search_function: Function to call search endpoint
     :param trans_dict: Transformation dict for result
@@ -185,8 +193,26 @@ def generic_search_command(search_function, trans_dict, hr_title, ec_key):
     raw_res = search_function(url_params)
     ec = []
     for entry in raw_res:
-        demisto.info(entry)
         ec.append(get_trasnformed_dict(entry, trans_dict))
+    hr = tableToMarkdown(hr_title, ec, headers)
+    demisto.results(create_entry_object(raw_res, {ec_key: ec}, hr))
+
+
+def generic_get_command(get_function, trans_dict, hr_title, ec_key):
+    """
+    Gets an item from get_function as an entry object.
+
+    :param get_function: Function to call get endpoint
+    :param trans_dict: Transformation dict for result
+    :param hr_title: Title of human readable
+    :param ec_key: Entry Context key
+    :return: EntryObject of the item
+    """
+    args = demisto.args()
+    id = args.get('id')
+    headers = args.get('headers')
+    raw_res = get_function(id)
+    ec = get_trasnformed_dict(raw_res, trans_dict)
     hr = tableToMarkdown(hr_title, ec, headers)
     demisto.results(create_entry_object(raw_res, {ec_key: ec}, hr))
 
@@ -245,6 +271,51 @@ def search_computer(url_params):
     return http_request('GET', '/Computer', params=url_params)
 
 
+def get_computer_command():
+    """
+    Gets the requested computer
+    :return: EntryObject of the file catalog
+    """
+    generic_get_command(
+        get_function=get_computer,
+        trans_dict=COMPUTER_TRANS_DICT,
+        hr_title='CarbonBlack Protect Computer Get for {}'.format(demisto.args().get('id')),
+        ec_key='Endpoint(val.ID === obj.ID)'
+    )
+
+
+def get_computer(id):
+    """
+    Sends get computer request
+    :param id: Computer ID
+    :return: Result json of the request
+    """
+    url = '/Computer/{}'.format(id)
+    return http_request('GET', url)
+
+
+def search_file_instance_command():
+    """
+    Searches for file instance
+    :return: EntryObject of the file instance
+    """
+    generic_search_command(
+        search_function=search_file_instance,
+        trans_dict=FILE_INSTANCE_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Instance Search',
+        ec_key='CBPFileInstance(val.ID === obj.ID)'
+    )
+
+
+def search_file_instance(url_params):
+    """
+    Sends the request for file instance, and returns the result json
+    :param url_params: url parameters for the request
+    :return: File instance response json
+    """
+    return http_request('GET', '/fileInstance', params=url_params)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -260,6 +331,10 @@ try:
         search_file_catalog_command()
     elif demisto.command() == 'cbp-computer-search':
         search_computer_command()
+    elif demisto.command() == 'cbp-fileInstance-search':
+        search_file_instance_command()
+    elif demisto.command() == 'cbp-computer-get':
+        get_computer_command()
     else:
         return_error("Command {} is not supported.".format(demisto.command()))
 # Log exceptions
