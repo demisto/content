@@ -1,0 +1,81 @@
+args:
+- default: false
+  description: The model name (or list name) in Demisto.
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+- default: false
+  description: If the words is hash - the hash seed
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+- default: false
+  description: Email subject
+  isArray: false
+  name: emailSubject
+  required: false
+  secret: false
+- default: false
+  description: Email body
+  isArray: false
+  name: emailBody
+  required: false
+  secret: false
+- default: false
+  defaultValue: '50'
+  description: 'Maximum number of positive \ negative words when try to explain model
+    decision '
+  isArray: false
+  name: topWordsLimit
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.1'
+  description: Threshold for word importance (range 0-1)
+  isArray: false
+  name: wordThreshold
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: list
+  description: The way the model stored in Demisto.
+  isArray: false
+  name: modelStoreType
+  predefined:
+  - list
+  - mlModel
+  required: false
+  secret: false
+- default: false
+  defaultValue: '20'
+  description: Minimum text length (charecters) for prediction
+  isArray: false
+  name: minTextLength
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.8'
+  description: Label probability threshold
+  isArray: false
+  name: labelProbabilityThreshold
+  required: false
+  secret: false
+comment: Predict text label using pre-trained machine learning phishing model, and
+  get important words to the classification decision.
+commonfields:
+  id: DBotPredictPhishingWords
+  version: -1
+enabled: false
+name: DBotPredictPhishingWords
+script: '-'
+system: false
+tags:
+- ml
+- phishing
+timeout: '0'
+type: python
+dockerimage: demisto/dl:1.3
+releaseNotes: "Add new script"
