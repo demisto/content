@@ -350,22 +350,22 @@ script:
       required: true
       description: value
     outputs:
-    - contextPath: Process.Endpoint
+    - contextPath: Minerva.Process.Endpoint
       description: The name of the endpoint the process was run
       type: string
-    - contextPath: Process.SHA256
+    - contextPath: Minerva.Process.SHA256
       description: The SHA256 has of the process
       type: string
-    - contextPath: Process.CommandLine
+    - contextPath: Minerva.Process.CommandLine
       description: The process command line
       type: string
-    - contextPath: Process.Username
+    - contextPath: Minerva.Process.Username
       description: The user name with which the process was executed with
       type: string
-    - contextPath: Process.Createtime
+    - contextPath: Minerva.Process.Createtime
       description: The creation time of the process
       type: date
-    - contextPath: Process.Pid
+    - contextPath: Minerva.Process.Pid
       description: The process id
       type: number
     description: Search process with Minerva
@@ -398,47 +398,47 @@ script:
       required: true
       description: value
     outputs:
-    - contextPath: Endpoint.Group
+    - contextPath: Minerva.Endpoint.Group
       description: The group to which the endpoint belongs to
       type: string
-    - contextPath: Endpoint.Name
+    - contextPath: Minerva.Endpoint.Name
       description: The endpoint name
       type: string
-    - contextPath: Endpoint.Users
+    - contextPath: Minerva.Endpoint.Users
       description: The list of logged on users
       type: string
-    - contextPath: Endpoint.IP
+    - contextPath: Minerva.Endpoint.IP
       description: The reported IP address
       type: string
-    - contextPath: Endpoint.OS
+    - contextPath: Minerva.Endpoint.OS
       description: The endpoint Operating System
       type: string
     description: Search Minerva for an endpoint
   - name: minerva-get-groups
     arguments: []
     outputs:
-    - contextPath: Group.Id
+    - contextPath: Minerva.Group.Id
       description: The id of the group
       type: string
-    - contextPath: Group.Name
+    - contextPath: Minerva.Group.Name
       description: The name of the group
       type: string
-    - contextPath: Group.Policy
+    - contextPath: Minerva.Group.Policy
       description: The policy applied on the group
       type: string
-    - contextPath: Group.PolicyVersion
+    - contextPath: Minerva.Group.PolicyVersion
       description: The policy version applied on the group
       type: string
-    - contextPath: Group.EndpointSettings
+    - contextPath: Minerva.Group.EndpointSettings
       description: The settings applied on the group
       type: string
-    - contextPath: Group.Endpoints
+    - contextPath: Minerva.Group.Endpoints
       description: The amount of endpoints in the group
       type: number
-    - contextPath: Group.Comment
+    - contextPath: Minerva.Group.Comment
       description: The comment the group creator added
       type: string
-    - contextPath: Group.CreationTime
+    - contextPath: Minerva.Group.CreationTime
       description: The time the group was created on
       type: date
     description: Fetches all the groups defined in Minerva Management Console
