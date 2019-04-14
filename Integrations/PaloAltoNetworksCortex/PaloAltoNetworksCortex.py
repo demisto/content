@@ -12,7 +12,6 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 
 DEMISTO_APP_TOKEN = demisto.params().get('token')
-FETCH_QUERY = demisto.params().get('fetch_query')
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 USE_SSL = not demisto.params().get('insecure', False)
 
@@ -22,6 +21,12 @@ if not demisto.params().get('proxy', False):
     os.environ.pop('http_proxy', '')
     os.environ.pop('https_proxy', '')
 
+FETCH_QUERY_DICT = {
+    'Traps Threats': 'SELECT * FROM tms.threat',
+    'Firewall Threats': 'SELECT * FROM panw.threat'
+}
+
+FETCH_QUERY = FETCH_QUERY_DICT[demisto.params().get('fetch_query')]
 
 THREAT_TABLE_HEADERS = [
     'id', 'score', 'risk-of-app', 'type', 'action', 'app', 'pcap_id', 'proto', 'dst', 'reportid',

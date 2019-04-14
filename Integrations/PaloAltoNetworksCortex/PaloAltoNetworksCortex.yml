@@ -34,12 +34,12 @@ configuration:
   required: false
 - display: Query for fetching events
   name: fetch_query
-  defaultvalue: SELECT * FROM tms.threat
+  defaultvalue: Traps Threats
   type: 15
   required: false
   options:
-  - SELECT * FROM tms.threat
-  - SELECT * FROM panw.threat
+  - Traps Threats
+  - Firewall Threats
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
     1 year)
   name: first_fetch_timestamp
