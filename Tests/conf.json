@@ -408,9 +408,17 @@
         },
         {
             "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
             "playbookID": "virusTotal-test-playbook",
-            "nightly": true,
-            "timeout": 1400
+            "timeout": 1400,
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_preferred_vendors",
+            "playbookID": "virusTotaI-test-preferred-vendors",
+            "timeout": 1400,
+            "nightly": true
         },
         {
             "integrations": "Preempt",
@@ -776,12 +784,22 @@
         },
         {
             "integrations": "VirusTotal - Private API",
-            "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "instance_names": "virus_total_private_api_general",
+            "playbookID": "File Enrichment - Virus Total Private API Test",
             "nightly": true
         },
         {
             "integrations": "VirusTotal - Private API",
-            "playbookID": "File Enrichment - Virus Total Private API Test",
+            "instance_names": "virus_total_private_api_general",
+            "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "timeout": 1400,
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "instance_names": "virus_total_private_api_preferred_vendors",
+            "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
+            "timeout": 1400,
             "nightly": true
         },
         {
