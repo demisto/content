@@ -604,6 +604,7 @@
             "integrations": [
                 "VirusTotal"
             ],
+            "instance_names": "virus_total_general",
             "playbookID": "ip_enrichment_generic_test"
         },
         {
