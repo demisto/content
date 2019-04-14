@@ -77,7 +77,13 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "UnEscapeURLs-Test"
+            "playbookID": "UnEscapeURL-Test"
+        },
+        {
+            "playbookID": "UnEscapeIPs-Test"
+        },
+        {
+            "playbookID": "ExtractDomainFromUrlAndEmail-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
