@@ -26,7 +26,7 @@ FETCH_QUERY_DICT = {
     'Firewall Threats': 'SELECT * FROM panw.threat'
 }
 
-FETCH_QUERY = FETCH_QUERY_DICT[demisto.params().get('fetch_query')]
+FETCH_QUERY = FETCH_QUERY_DICT[demisto.params().get('fetch_query', 'Traps Threats')]
 
 THREAT_TABLE_HEADERS = [
     'id', 'score', 'risk-of-app', 'type', 'action', 'app', 'pcap_id', 'proto', 'dst', 'reportid',
