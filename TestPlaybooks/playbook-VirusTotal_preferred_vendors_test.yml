@@ -1,8 +1,8 @@
 id: virusTotaI-test-preferred-vendors
-version: -1
+version: 9
 name: virusTotaI-test-preferred-vendors
 description: |
-  Test playbook for vt preferred vendors feature.
+  Test playbook for vt.
 
   vt has a quota of requests per minute that we exceed in the test playbook.
 
@@ -23,13 +23,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "85"
+      - "86"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -480
+          "y": -720
         }
       }
     note: false
@@ -48,6 +48,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
     scriptarguments:
       all:
         simple: "yes"
@@ -178,15 +181,72 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "86":
+    id: "86"
+    taskid: 85fa1dd8-58dc-480b-81b6-8ae9fecb7b6f
+    type: regular
+    task:
+      id: 85fa1dd8-58dc-480b-81b6-8ae9fecb7b6f
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: d4aab463-ba1c-4fb1-8545-871c76ce62da
+    type: regular
+    task:
+      id: d4aab463-ba1c-4fb1-8545-871c76ce62da
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 770,
+        "height": 1195,
         "width": 380,
         "x": 265,
-        "y": -480
+        "y": -720
       }
     }
   }
