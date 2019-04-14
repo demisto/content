@@ -5,8 +5,8 @@ from collections import defaultdict
 def get_args():
     args = defaultdict(lambda: "yes")
     args['encoding'] = 'utf8'
-    args['encoding'] = 'utf8'
     args['removeNonEnglishWords'] = 'no'
+    args['hashWordWithSeed'] = "5381"
     return args
 
 
@@ -29,9 +29,12 @@ def test_clean_html():
 
 def test_tokenize_text():
     text = "test@demisto.com is 100 going to http://google.com bla bla"
-    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == tokenize_text(text)
+    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == tokenize_text(text)[0]
 
 
 def test_word_tokenize():
     text = "test@demisto.com is 100 going to http://google.com bla bla"
-    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == word_tokenize(text)['Contents']
+    entry = word_tokenize(text)
+    assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == entry['Contents'][0]['tokenizedText']
+    assert "2074773130 1320446219 5863419 1810208405 193487380 193487380" == entry['Contents'][0][
+        'hashedTokenizedText']
