@@ -1210,6 +1210,81 @@
         {
             "integrations": "Zoom",
             "playbookID": "Zoom_Test"
+        },
+        {
+            "integrations": "AWS - S3v2",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+        },
+        {
+            "integrations": "AWS - CloudWatchLogs",
+            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
+        },
+        {
+            "integrations": "AWS - CloudTrail",
+            "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
+        },
+        {
+            "playbookID": "5dc848e5-a649-4394-8300-386770d39d75"
+        },
+        {
+            "integrations": "carbonblackprotection",
+            "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
+        },
+        {
+            "integrations": "carbonblack",
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": [
+                "AWS - EC2",
+                "AWS - EC2_copy"
+            ],
+            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
+        },
+        {
+            "integrations": "DomainTools",
+            "playbookID": "DomainTools-Test"
+        },
+        {
+            "integrations": "Cisco Spark",
+            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
+        },
+        {
+            "integrations": "EWS_most_updated",
+            "playbookID": "EWS test"
+        },
+        {
+            "playbookID": "Get File Sample By Hash - Generic - Test"
+        },
+        {
+            "playbookID": "Get File Sample From Hash - Generic - Test"
+        },
+        {
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
+        },
+        {
+            "integrations": "carbonblack",
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test"
+        },
+        {
+            "playbookID": "get_file_sample_from_path_-_d2_-_test"
+        },
+        {
+            "integrations": "carbonblack",
+            "playbookID": "get_file_sample_from_path_-_generic_-_test"
+        },
+        {
+            "integrations": "Remedy On-Demand",
+            "playbookID": "Remedy-On-Demand-Test"
+        },
+        {
+            "playbookID": "Search Endpoints By Hash - Carbon Black Response - Test"
+        },
+        {
+            "playbookID": "ssdeepreputationtest"
+        },
+        {
+            "playbookID": "TestIsEmailAddressInternal"
         }
     ],
     "skipped_tests": {
