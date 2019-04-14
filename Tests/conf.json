@@ -1004,15 +1004,6 @@
             "nightly" : true
         },
         {
-            "integrations": [
-                "Lastline",
-                "WildFire",
-                "SNDBOX",
-                "VxStream"
-            ],
-            "playbookID" : "detonate_file_-_generic_test"
-        },
-        {
             "playbookID": "STIXParserTest"
         },
         {
