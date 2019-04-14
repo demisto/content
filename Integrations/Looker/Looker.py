@@ -42,7 +42,7 @@ def verify_url(url):
                      "The default port for Looker API is 19999.")
 
 
-def http_request(method, url_suffix, params=None, data=None):
+def http_request(method, url_suffix, params=None, data=None, response_type='json'):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
@@ -56,7 +56,7 @@ def http_request(method, url_suffix, params=None, data=None):
     if res.status_code not in {200}:
         raise requests.exceptions.HTTPError('Error in API call to Looker [%d] - %s' % (res.status_code, res.reason))
 
-    return res.json()
+    return res.json() if response_type == 'json' else res.content
 
 
 def get_new_token():
@@ -131,7 +131,7 @@ def run_look_command():
         })
 
     elif result_format == 'csv':
-        pass  # TODO: Return fileResult
+        demisto.results(fileResult('look_result.csv', contents, 'entryInfoFile'))
 
 
 def run_look_request(look_id, result_format, limit, fields):
@@ -141,7 +141,7 @@ def run_look_request(look_id, result_format, limit, fields):
         params['limit'] = limit
     if fields:
         params['fields'] = fields
-    return http_request('GET', endpoint_url, params=params)
+    return http_request('GET', endpoint_url, params=params, response_type=result_format)
 
 
 def search_looks_command():
