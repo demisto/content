@@ -229,7 +229,7 @@ script:
     function uploadFile(upload) {
         uploadUrl = URL + URL_DICT.upload;
         var body = {
-            'apikey': TOKEN
+            'apikey': TOKEN,
             'file' : upload
         };
         var result = sendMultipartRequest(uploadUrl, DEFAULT_HEADERS, upload, body);
