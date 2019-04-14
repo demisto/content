@@ -41,12 +41,12 @@ class FilesValidator(object):
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
 
-    def __init__(self, is_circle=False):
+    def __init__(self, is_circle=True):
         self._is_valid = True
-        self.is_circle = is_circle
+        self.is_circle = True
 
         self.conf_json_validator = ConfJsonValidator()
-        self.id_set_validator = IDSetValidator(is_circle)
+        self.id_set_validator = IDSetValidator(True)
 
     @staticmethod
     def get_modified_files(files_string):
