@@ -1278,13 +1278,17 @@
             "playbookID": "Remedy-On-Demand-Test"
         },
         {
-            "playbookID": "Search Endpoints By Hash - Carbon Black Response - Test"
-        },
-        {
             "playbookID": "ssdeepreputationtest"
         },
         {
             "playbookID": "TestIsEmailAddressInternal"
+        },
+        {
+            "integrations": "AWS - S3",
+            "playbookID": "113aca8a-ee52-419f-89a6-150ee232d0d1"
+        },
+        {
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
         }
     ],
     "skipped_tests": {
