@@ -2741,8 +2741,8 @@ script:
         elif demisto.command() == 'panorama-edit-rule':
             panorama_edit_rule_command()
 
-         elif demisto.command() == 'panorama-delete-rule':
-             panorama_delete_rule_command()
+        elif demisto.command() == 'panorama-delete-rule':
+            panorama_delete_rule_command()
 
         # Pcaps
         elif demisto.command() == 'panorama-list-pcaps':
