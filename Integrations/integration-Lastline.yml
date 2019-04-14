@@ -1009,7 +1009,4 @@ script:
       type: string
     description: Check submissions status
   runonce: false
-tests:
-- Detonate URL - Generic Test
-- Detonate File - Generic Test
 releaseNotes: Add ___lastline-check-status___ command
