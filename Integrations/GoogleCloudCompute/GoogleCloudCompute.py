@@ -44,6 +44,8 @@ HELPER FUNCTIONS
 def parse_resource_ids(resource_id):
     """
     Split the resource ids to a list
+    parameter: (string) resource_id
+    Return the resource_ids as a list
     """
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
@@ -53,6 +55,9 @@ def parse_resource_ids(resource_id):
 def parse_firewall_rule(rule_str):
     """
     Transforms a string of multiple inputes to a dictionary list
+    parameter: (string) rules
+        A firewall rule in the specified project
+    Return firewall rules as dictionary list
     """
     rules = []
     regex = re.compile(r'ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)', flags=re.I)
@@ -73,6 +78,9 @@ def parse_firewall_rule(rule_str):
 def parse_metadata_items(tags_str):
     """
     Transforms a string of multiple inputes to a dictionary list
+    parameter: (string) metadata_items
+
+    Return metadata items as a dictionary list
     """
     tags = []
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
@@ -93,6 +101,9 @@ def parse_metadata_items(tags_str):
 def parse_named_ports(tags_str):
     """
     Transforms a string of multiple inputes to a dictionary list
+    parameter: (string) namedPorts
+
+    Return named ports as a dictionary list
     """
     tags = []
     regex = re.compile(r'name=([\w\d_:.-]+),port=([ /\w\d@_,.\*-]+)', flags=re.I)
@@ -113,6 +124,9 @@ def parse_named_ports(tags_str):
 def parse_labels(tags_str):
     """
     Transforms a string of multiple inputes to a dictionary list
+    parameter: (string) labels
+
+    Return labels as a dictionary list
     """
     tags = {}
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
@@ -148,6 +162,11 @@ def build_and_authenticate(googleservice):
 def wait_for_zone_operation(args):
     """
     This command will block until an operation has been marked as complete.
+
+    parameter: (string) zone
+        Name of the zone for this request.
+    parameter: (string) name
+        Name of the operations resource.
     """
     project = SERVICE_ACT_PROJECT_ID
     zone = args.get('zone')
@@ -179,6 +198,11 @@ def wait_for_zone_operation(args):
 def wait_for_region_operation(args):
     """
     This command will block until an operation has been marked as complete.
+
+    parameter: (string) region
+        Name of the region for this request.
+    parameter: (string) name
+        Name of the operations resource.
     """
     project = SERVICE_ACT_PROJECT_ID
     region = args.get('region')
@@ -210,6 +234,9 @@ def wait_for_region_operation(args):
 def wait_for_global_operation(args):
     """
     This command will block until an operation has been marked as complete.
+
+    parameter: (string) name
+        Name of the operations resource.
     """
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
@@ -250,6 +277,56 @@ def test_module():
 def create_instance(args):
     """
     Creates an instance resource in the specified project using the data included in the request.
+    parameter: (string) name
+    parameter: (string) description
+    parameter: (boolean) canIpForward (true/false)
+    parameter: (list) tags
+    parameter: (string) tagsFingerprint
+    parameter: (string) zone
+    parameter: (string) machine_type
+    parameter: (string) network
+    parameter: (string) sub_network
+    parameter: (string) networkIP
+    parameter: (string) networkInterfacesfingerprint
+    parameter: (boolean) externalInternetAccess (true/false)
+    parameter: (string) externalNatIP
+    parameter: (boolean) setPublicPtr (true/false)
+    parameter: (string) publicPtrDomainName
+    parameter: (string) networkTier (PREMIUM,STANDARD)
+    parameter: (string) ipCidrRange
+    parameter: (string) subnetworkRangeName
+    parameter: (string) diskType (PERSISTENT,SCRATCH)
+    parameter: (string) diskMode (READ_WRITE,READ_ONLY)
+    parameter: (string) diskSource
+    parameter: (string) diskDeviceName
+    parameter: (boolean) diskBoot (true/false)
+    parameter: (string) initializeParamsDiskName
+    parameter: (string) initializeParamsSourceImage
+    parameter: (int) initializeParamsdiskSizeGb
+    parameter: (string) initializeParamsDiskType
+    parameter: (string) initializeParamsSourceImageEncryptionKeyRawKey
+    parameter: (string) initializeParamsSourceImageEncryptionKeykmsKeyName
+    parameter: (string) initializeParamsDiskLabels
+    parameter: (string) initializeParamsDiskDescription
+    parameter: (boolean) diskAutodelete (true/false)
+    parameter: (string) diskInterface (SCSI,NVME)
+    parameter: (list) diskGuestOsFeatures
+    parameter: (string) diskEncryptionKeyRawKey
+    parameter: (string) diskEncryptionKeyKmsKeyName
+    parameter: (dict) metadataItems
+    parameter: (string) serviceAccountEmail
+    parameter: (list) serviceAccountscopes
+    parameter: (string) schedulingOnHostMaintenance (MIGRATE,TERMINATE)
+    parameter: (boolean) schedulingAutomaticRestart (true/false)
+    parameter: (boolean) schedulingPreemptible (true/false)
+    parameter: (dict) labels
+    parameter: (string) labelFingerprint
+    parameter: (string) minCpuPlatform
+    parameter: (string) guestAcceleratorsAcceleratorType
+    parameter: (integer) guestAcceleratorsAcceleratorCount
+    parameter: (boolean) deletionProtection (true/false)
+
+    Return the created instance to the war room
     """
     config = {}
     if args.get('name'):
@@ -656,7 +733,7 @@ def aggregated_list_instances(args):
         if 'items' in response.keys():
             for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
-                    for inst in instances_scoped_list['instances']:
+                    for inst in instances_scoped_list.get('instances', []):
                         output.append(inst)
                         data_res_item = {
                             'id': inst.get('id'),
@@ -1278,7 +1355,7 @@ def insert_image(args):
     }
 
     ec = {
-        'GoogleClouCompute.Operations(val.id === obj.id)': response
+        'GoogleCloudCompute.Operations(val.id === obj.id)': response
     }
     return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
 
@@ -1815,7 +1892,7 @@ def aggregated_list_addresses(args):
         if 'items' in response.keys():
             for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
-                    for addr in instances_scoped_list['addresses']:
+                    for addr in instances_scoped_list.get('addresses'):
                         output.append(addr)
                         data_res_item = {
                             'id': addr.get('id'),
