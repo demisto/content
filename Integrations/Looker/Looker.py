@@ -23,7 +23,7 @@ USE_SSL = not demisto.params().get('unsecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
-BASE_URL = SERVER + '/api/3.0/'
+BASE_URL = SERVER + '/api/3.0'
 # Request headers (preparation)
 HEADERS = {}
 
@@ -64,7 +64,7 @@ def get_new_token():
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET
     }
-    response_json = http_request('POST', 'login', data=data)
+    response_json = http_request('POST', '/login', data=data)
 
     return {
         'token': response_json['access_token'],
@@ -80,7 +80,6 @@ def get_session_token():
             or datetime.fromtimestamp(ic[CLIENT_ID]['expires']) < datetime.utcnow() + SESSION_VALIDITY_THRESHOLD:
         ic[CLIENT_ID] = get_new_token()
         if demisto.command() != 'test-module':
-            demisto.results(f'new integration context: {ic}')
             demisto.setIntegrationContext(ic)
 
     HEADERS['Authorization'] = 'token {}'.format(ic[CLIENT_ID]['token'])
@@ -102,7 +101,7 @@ def test_module():
     """
     Performs basic get request to check connectivity and authentication
     """
-    http_request('GET', 'user')
+    http_request('GET', '/user')
 
 
 def run_look_command():
@@ -131,7 +130,7 @@ def run_look_command():
         })
 
     elif result_format == 'csv':
-        demisto.results(fileResult('look_result.csv', contents, 'entryInfoFile'))
+        demisto.results(fileResult('look_result.csv', contents, entryTypes['entryInfoFile']))
 
 
 def run_look_request(look_id, result_format, limit, fields):
@@ -175,7 +174,7 @@ def search_looks_command():
 
 
 def search_looks_request(args):
-    endpoint_url = '/looks/search/'
+    endpoint_url = '/looks/search'
     params = {k: v for k, v in args.items() if v}
     return http_request('GET', endpoint_url, params=params)
 
