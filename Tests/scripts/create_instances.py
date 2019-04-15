@@ -4,7 +4,7 @@ from Tests.test_utils import str2bool, run_command
 from Tests.scripts.constants import FILTER_CONF, RUN_ALL_TESTS_FORMAT
 
 
-SERVER_GA = "Demisto-Circle-CI-Content-GA*"
+SERVER_GA = "Demisto-Circle-CI-Content-GA-4.1-37373"
 SERVER_MASTER = "Demisto-Circle-CI-Content-Master*"
 SERVER_ONE_BEFORE_GA = "Demisto-Circle-CI-Content-OneBefore-GA*"
 SERVER_TWO_BEFORE_GA = "Demisto-Circle-CI-Content-TwoBefore-GA*"
