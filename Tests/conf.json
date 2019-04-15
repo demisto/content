@@ -1163,6 +1163,10 @@
             "playbookID": "Kafka Test"
         },
         {
+            "integrations": "GoogleCloudCompute",
+            "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500

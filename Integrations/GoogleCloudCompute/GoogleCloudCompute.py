@@ -3,7 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-''' IMPORTS '''
+""" IMPORTS """
+
 
 from googleapiclient import discovery
 import googleapiclient
@@ -11,7 +12,7 @@ from google.oauth2 import service_account
 import json
 import time
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
 SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id').encode('utf-8')
@@ -31,14 +32,14 @@ AUTH_JSON = {
     'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
     'token_uri': 'https://oauth2.googleapis.com/token',
     'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
-    'client_x509_cert_url': CLIENT_X509_CERT_URL
+    'client_x509_cert_url': CLIENT_X509_CERT_URL,
 }
 
 # Params for constructing googleapiclient service object
 API_VERSION = 'v1'
 GSERVICE = 'compute'
 SCOPE = ['https://www.googleapis.com/auth/cloud-platform']
-SERVICE = None   # variable set by build_and_authenticate() function
+SERVICE = None  # variable set by build_and_authenticate() function
 
 
 """
@@ -52,8 +53,8 @@ def parse_resource_ids(resource_id):
     parameter: (string) resource_id
     Return the resource_ids as a list
     """
-    id_list = resource_id.replace(" ", "")
-    resource_ids = id_list.split(",")
+    id_list = resource_id.replace('' '', '''''')
+    resource_ids = id_list.split('','')
     return resource_ids
 
 
@@ -66,16 +67,13 @@ def parse_firewall_rule(rule_str):
     """
     rules = []
     regex = re.compile(r'ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in rule_str.split(';'):
+    for f in rule_str.split('';''):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: %s' % (f, ))
+            raise ValueError('Could not parse field: %s' % (f,))
             continue
 
-        rules.append({
-            'IPProtocol': match.group(1),
-            'ports': match.group(2).split(',')
-        })
+        rules.append({'IPProtocol': match.group(1), 'ports': match.group(2).split('','')})
 
     return rules
 
@@ -89,16 +87,13 @@ def parse_metadata_items(tags_str):
     """
     tags = []
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in tags_str.split(';'):
+    for f in tags_str.split('';''):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: %s' % (f, ))
+            raise ValueError('Could not parse field: %s' % (f,))
             continue
 
-        tags.append({
-            'key': match.group(1),
-            'value': match.group(2)
-        })
+        tags.append({'key': match.group(1), 'value': match.group(2)})
 
     return tags
 
@@ -112,16 +107,13 @@ def parse_named_ports(tags_str):
     """
     tags = []
     regex = re.compile(r'name=([\w\d_:.-]+),port=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in tags_str.split(';'):
+    for f in tags_str.split('';''):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: %s' % (f, ))
+            raise ValueError('Could not parse field: %s' % (f,))
             continue
 
-        tags.append({
-            'name': match.group(1).lower(),
-            'port': match.group(2)
-        })
+        tags.append({'name': match.group(1).lower(), 'port': match.group(2)})
 
     return tags
 
@@ -135,7 +127,7 @@ def parse_labels(tags_str):
     """
     tags = {}
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in tags_str.split(';'):
+    for f in tags_str.split('';''):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: ' + f)
@@ -157,9 +149,11 @@ def build_and_authenticate(googleservice):
         integration will make API calls
     """
 
-    auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace("\\\\", "\\")
+    auth_json_string = str(AUTH_JSON).replace(''', '').replace('\\\\'', '\\'')
     service_account_info = json.loads(auth_json_string)
-    service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+    service_credentials = service_account.Credentials.from_service_account_info(
+        service_account_info, scopes=SCOPE
+    )
     service = discovery.build(GSERVICE, API_VERSION, credentials=service_credentials)
     return service
 
@@ -177,7 +171,11 @@ def wait_for_zone_operation(args):
     zone = args.get('zone')
     name = args.get('name')
     while True:
-        result = compute.zoneOperations().get(project=project, zone=zone, operation=name).execute()
+        result = (
+            compute.zoneOperations()
+            .get(project=project, zone=zone, operation=name)
+            .execute()
+        )
         if result.get('status') == 'DONE':
             if 'error' in result:
                 raise Exception(result['error'])
@@ -189,12 +187,17 @@ def wait_for_zone_operation(args):
                 'id': operation.get('id'),
                 'progress': operation.get('progress'),
                 'startTime': operation.get('startTime'),
-                'operationType': operation.get('operationType')
+                'operationType': operation.get('operationType'),
             }
-            ec = {
-                'GoogleCloudCompute.Operations(val.id === obj.id)': operation
-            }
-            return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True) if data_res else 'No results were found', ec)
+            ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
+            return_outputs(
+                tableToMarkdown(
+                    'Google Cloud Compute Operations', data_res, removeNull=True
+                )
+                if data_res
+                else 'No results were found',
+                ec,
+            )
             break
 
         time.sleep(2)
@@ -213,7 +216,11 @@ def wait_for_region_operation(args):
     region = args.get('region')
     name = args.get('name')
     while True:
-        result = compute.regionOperations().get(project=project, region=region, operation=name).execute()
+        result = (
+            compute.regionOperations()
+            .get(project=project, region=region, operation=name)
+            .execute()
+        )
         if result.get('status') == 'DONE':
             if 'error' in result:
                 raise Exception(result['error'])
@@ -225,12 +232,15 @@ def wait_for_region_operation(args):
                 'id': operation.get('id'),
                 'progress': operation.get('progress'),
                 'startTime': operation.get('startTime'),
-                'operationType': operation.get('operationType')
+                'operationType': operation.get('operationType'),
             }
-            ec = {
-                'GoogleCloudCompute.Operations(val.id === obj.id)': operation
-            }
-            return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec)
+            ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
+            return_outputs(
+                tableToMarkdown(
+                    'Google Cloud Compute Operations', data_res, removeNull=True
+                ),
+                ec,
+            )
             break
 
         time.sleep(2)
@@ -246,7 +256,9 @@ def wait_for_global_operation(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
     while True:
-        result = compute.globalOperations().get(project=project, operation=name).execute()
+        result = (
+            compute.globalOperations().get(project=project, operation=name).execute()
+        )
         if result.get('status') == 'DONE':
             if 'error' in result:
                 raise Exception(result['error'])
@@ -259,13 +271,16 @@ def wait_for_global_operation(args):
                 'id': operation.get('id'),
                 'progress': operation.get('progress'),
                 'startTime': operation.get('startTime'),
-                'operationType': operation.get('operationType')
+                'operationType': operation.get('operationType'),
             }
-            ec = {
-                'GoogleCloudCompute.Operations(val.id === obj.id)': operation
-            }
+            ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
 
-            return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec)
+            return_outputs(
+                tableToMarkdown(
+                    'Google Cloud Compute Operations', data_res, removeNull=True
+                ),
+                ec,
+            )
             break
 
         time.sleep(2)
@@ -278,7 +293,7 @@ def test_module():
     demisto.results('ok')
 
 
-#instances()
+# instances()
 def create_instance(args):
     """
     Creates an instance resource in the specified project using the data included in the request.
@@ -335,7 +350,7 @@ def create_instance(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -346,7 +361,7 @@ def create_instance(args):
     if args.get('tags'):
         tags = args.get('tags')
         if 'tags' not in config.keys():
-            config.update({'tags':[{}]})
+            config.update({'tags': [{}]})
         config['tags'][0].update({'items': parse_resource_ids(tags)})
 
     if args.get('canIpForward'):
@@ -356,19 +371,19 @@ def create_instance(args):
     if args.get('tagsFingerprint'):
         tags_fingerprint = args.get('tagsFingerprint')
         if 'tags' not in config.keys():
-            config.update({'tags':[{}]})
+            config.update({'tags': [{}]})
         config['tags'][0].update({'fingerprint': tags_fingerprint})
 
     zone = args.get('zone')
     machine_type = args.get('machine_type')
 
-    zone_machine_type = 'zones/' + zone + '/machineTypes/' + machine_type
+    zone_machine_type = 'zones/' + zone + ''/machineTypes/'' + machine_type
     config.update({'machineType': zone_machine_type})
 
     if args.get('network'):
         network = args.get('network')
         if 'networkInterfaces' not in config.keys():
-            config.update({"networkInterfaces": [{}]})
+            config.update({'networkInterfaces': [{}]})
         config['networkInterfaces'][0].update({'network': network})
 
     if args.get('subnetwork'):
@@ -387,16 +402,22 @@ def create_instance(args):
         network_interfaces_fingerprint = args.get('networkInterfacesfingerprint')
         if 'networkInterfaces' not in config.keys():
             config.update({'networkInterfaces': [{}]})
-        config['networkInterfaces'][0].update({'fingerprint': network_interfaces_fingerprint})
+        config['networkInterfaces'][0].update(
+            {'fingerprint': network_interfaces_fingerprint}
+        )
 
     if args.get('externalInternetAccess'):
-        external_network = True if args.get('externalInternetAccess') == 'true'  else False
+        external_network = (
+            True if args.get('externalInternetAccess') == 'true' else False
+        )
         if external_network:
             if 'networkInterfaces' not in config.keys():
                 config.update({'networkInterfaces': [{}]})
             if 'accessConfigs' not in config['networkInterfaces'][0].keys():
                 config['networkInterfaces'][0].update({'accessConfigs': [{}]})
-            config['networkInterfaces'][0]['accessConfigs'][0].update({'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT'})
+            config['networkInterfaces'][0]['accessConfigs'][0].update(
+                {'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT'}
+            )
 
     if args.get('externalNatIP'):
         nat_ip = args.get('externalNatIP')
@@ -405,7 +426,7 @@ def create_instance(args):
         if 'accessConfigs' not in config['networkInterfaces'][0].keys():
             config['networkInterfaces'][0].update({'accessConfigs': [{}]})
 
-        config['networkInterfaces'][0]["accessConfigs"][0].update({'natIP': nat_ip})
+        config['networkInterfaces'][0]['accessConfigs'][0].update({'natIP': nat_ip})
 
     if args.get('setPublicPtr'):
         set_public_ptr = True if args.get('setPublicPtr') == 'true' else False
@@ -414,7 +435,9 @@ def create_instance(args):
         if 'accessConfigs' not in config['networkInterfaces'][0].keys():
             config['networkInterfaces'][0].update({'accessConfigs': [{}]})
 
-        config['networkInterfaces'][0]['accessConfigs'][0].update({'setPublicPtr': set_public_ptr})
+        config['networkInterfaces'][0]['accessConfigs'][0].update(
+            {'setPublicPtr': set_public_ptr}
+        )
 
     if args.get('publicPtrDomainName'):
         public_ptr_domain_name = args.get('setPublicPtr')
@@ -423,7 +446,9 @@ def create_instance(args):
         if 'accessConfigs' not in config['networkInterfaces'][0].keys():
             config['networkInterfaces'][0].update({'accessConfigs': [{}]})
 
-        config['networkInterfaces'][0]['accessConfigs'][0].update({'publicPtrDomainName': public_ptr_domain_name})
+        config['networkInterfaces'][0]['accessConfigs'][0].update(
+            {'publicPtrDomainName': public_ptr_domain_name}
+        )
 
     if args.get('networkTier'):
         network_tier = args.get('networkTier')
@@ -432,7 +457,9 @@ def create_instance(args):
         if 'accessConfigs' not in config['networkInterfaces'][0].keys():
             config['networkInterfaces'][0].update({'accessConfigs': [{}]})
 
-        config['networkInterfaces'][0]['accessConfigs'][0].update({'networkTier': network_tier})
+        config['networkInterfaces'][0]['accessConfigs'][0].update(
+            {'networkTier': network_tier}
+        )
 
     if args.get('ipCidrRange'):
         ip_cidr_range = args.get('ipCidrRange')
@@ -441,7 +468,9 @@ def create_instance(args):
         if 'aliasIpRanges' not in config['networkInterfaces'][0].keys():
             config['networkInterfaces'][0].update({'aliasIpRanges': [{}]})
 
-        config['networkInterfaces'][0]['aliasIpRanges'][0].update({'ipCidrRange': ip_cidr_range})
+        config['networkInterfaces'][0]['aliasIpRanges'][0].update(
+            {'ipCidrRange': ip_cidr_range}
+        )
 
     if args.get('subnetworkRangeName'):
         subnet_work_range_name = args.get('subnetworkRangeName')
@@ -450,123 +479,153 @@ def create_instance(args):
         if 'aliasIpRanges' not in config['networkInterfaces'][0].keys():
             config['networkInterfaces'][0].update({'aliasIpRanges': [{}]})
 
-        config['networkInterfaces'][0]['aliasIpRanges'][0].update({'subnetworkRangeName': subnet_work_range_name})
+        config['networkInterfaces'][0]['aliasIpRanges'][0].update(
+            {'subnetworkRangeName': subnet_work_range_name}
+        )
 
     if args.get('diskType'):
         disk_type = args.get('diskType')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'type': disk_type})
 
     if args.get('diskMode'):
         disk_mode = args.get('diskMode')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'mode': disk_mode})
 
     if args.get('diskSource'):
         disk_source = args.get('diskSource')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'source': disk_source})
 
     if args.get('diskDeviceName'):
         disk_device_name = args.get('diskDeviceName')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'deviceName': disk_device_name})
 
     if args.get('diskBoot') is not None:
         disk_boot = True if args.get('diskBoot') == 'true' else False
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'boot': disk_boot})
 
     if args.get('initializeParamsDiskName'):
         initialize_params_disk_name = args.get('initializeParamsDiskName')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        config['disks'][0]['initializeParams'].update({'diskName': initialize_params_disk_name})
+            config['disks'][0].update({'initializeParams': {}})
+        config['disks'][0]['initializeParams'].update(
+            {'diskName': initialize_params_disk_name}
+        )
 
     if args.get('initializeParamsSourceImage'):
         image = args.get('initializeParamsSourceImage')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
+            config['disks'][0].update({'initializeParams': {}})
         config['disks'][0]['initializeParams'].update({'sourceImage': image})
 
     if args.get('initializeParamsdiskSizeGb'):
         initialize_params_disk_size_gb = args.get('initializeParamsdiskSizeGb')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        config['disks'][0]['initializeParams'].update({'diskSizeGb': int(initialize_params_disk_size_gb)})
+            config['disks'][0].update({'initializeParams': {}})
+        config['disks'][0]['initializeParams'].update(
+            {'diskSizeGb': int(initialize_params_disk_size_gb)}
+        )
 
     if args.get('initializeParamsDiskType'):
         initialize_params_disk_type = args.get('initializeParamsDiskType')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        config['disks'][0]['initializeParams'].update({'diskType': initialize_params_disk_type})
+            config['disks'][0].update({'initializeParams': {}})
+        config['disks'][0]['initializeParams'].update(
+            {'diskType': initialize_params_disk_type}
+        )
 
     if args.get('initializeParamsSourceImageEncryptionKeyRawKey'):
-        initialize_params_source_image_encryption_key_raw_key = args.get('initializeParamsSourceImageEncryptionKeyRawKey')
+        initialize_params_source_image_encryption_key_raw_key = args.get(
+            'initializeParamsSourceImageEncryptionKeyRawKey'
+        )
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        if 'sourceImageEncryptionKey' not in config['disks'][0]['initializeParams'].keys():
-            config['disks'][0]['initializeParams'].update({'sourceImageEncryptionKey':{}})
-        config['disks'][0]['initializeParams']['sourceImageEncryptionKey'].update({'rawKey': initialize_params_source_image_encryption_key_raw_key})
+            config['disks'][0].update({'initializeParams': {}})
+        if (
+            'sourceImageEncryptionKey'
+            not in config['disks'][0]['initializeParams'].keys()
+        ):
+            config['disks'][0]['initializeParams'].update(
+                {'sourceImageEncryptionKey': {}}
+            )
+        config['disks'][0]['initializeParams']['sourceImageEncryptionKey'].update(
+            {'rawKey': initialize_params_source_image_encryption_key_raw_key}
+        )
 
     if args.get('initializeParamsSourceImageEncryptionKeykmsKeyName'):
-        initialize_params_source_image_encryption_key_kms_key_name = args.get('initializeParamsSourceImageEncryptionKeykmsKeyName')
+        initialize_params_source_image_encryption_key_kms_key_name = args.get(
+            'initializeParamsSourceImageEncryptionKeykmsKeyName'
+        )
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        if 'sourceImageEncryptionKey' not in config['disks'][0]['initializeParams'].keys():
-            config['disks'][0]['initializeParams'].update({'sourceImageEncryptionKey':{}})
-        config['disks'][0]['initializeParams']['sourceImageEncryptionKey'].update({'kmsKeyName': initialize_params_source_image_encryption_key_kms_key_name})
+            config['disks'][0].update({'initializeParams': {}})
+        if (
+            'sourceImageEncryptionKey'
+            not in config['disks'][0]['initializeParams'].keys()
+        ):
+            config['disks'][0]['initializeParams'].update(
+                {'sourceImageEncryptionKey': {}}
+            )
+        config['disks'][0]['initializeParams']['sourceImageEncryptionKey'].update(
+            {'kmsKeyName': initialize_params_source_image_encryption_key_kms_key_name}
+        )
 
     if args.get('initializeParamsDiskLabels'):
         initialize_params_disk_labels = args.get('initializeParamsDiskLabels')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        config['disks'][0]['initializeParams'].update({'labels': parse_labels(initialize_params_disk_labels)})
+            config['disks'][0].update({'initializeParams': {}})
+        config['disks'][0]['initializeParams'].update(
+            {'labels': parse_labels(initialize_params_disk_labels)}
+        )
 
     if args.get('initializeParamsDiskDescription'):
         initialize_params_disk_description = args.get('initializeParamsDiskDescription')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'initializeParams' not in config['disks'][0].keys():
-            config['disks'][0].update({'initializeParams':{}})
-        config['disks'][0]['initializeParams'].update({'description': initialize_params_disk_description})
+            config['disks'][0].update({'initializeParams': {}})
+        config['disks'][0]['initializeParams'].update(
+            {'description': initialize_params_disk_description}
+        )
 
     if args.get('diskAutodelete'):
-        disk_auto_delete = True if args.get('diskAutodelete') == 'true'  else False
+        disk_auto_delete = True if args.get('diskAutodelete') == 'true' else False
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'autoDelete': disk_auto_delete})
 
     if args.get('diskInterface'):
         disk_interface = args.get('diskInterface')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'interface': disk_interface})
 
     if args.get('diskGuestOsFeatures'):
         disk_guest_os_features = args.get('diskGuestOsFeatures')
         disk_guest_os_features = parse_resource_ids(disk_guest_os_features)
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         config['disks'][0].update({'guestOsFeatures': []})
         for f in disk_guest_os_features:
             config['disks'][0]['guestOsFeatures'].append({'type': f})
@@ -574,18 +633,22 @@ def create_instance(args):
     if args.get('diskEncryptionKeyRawKey'):
         disk_encryption_key_raw_key = args.get('diskEncryptionKeyRawKey')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'diskEncryptionKey' not in config['disks'][0].keys():
-            config['disks'][0].update({'diskEncryptionKey':{}})
-        config['disks'][0]['diskEncryptionKey'].update({'rawKey': disk_encryption_key_raw_key})
+            config['disks'][0].update({'diskEncryptionKey': {}})
+        config['disks'][0]['diskEncryptionKey'].update(
+            {'rawKey': disk_encryption_key_raw_key}
+        )
 
     if args.get('diskEncryptionKeyKmsKeyName'):
         disk_encryption_key_kms_key_name = args.get('diskEncryptionKeyKmsKeyName')
         if 'disks' not in config.keys():
-            config.update({'disks':[{}]})
+            config.update({'disks': [{}]})
         if 'diskEncryptionKey' not in config['disks'][0].keys():
-            config['disks'][0].update({'diskEncryptionKey':{}})
-        config['disks'][0]['diskEncryptionKey'].update({'kmsKeyName': disk_encryption_key_kms_key_name})
+            config['disks'][0].update({'diskEncryptionKey': {}})
+        config['disks'][0]['diskEncryptionKey'].update(
+            {'kmsKeyName': disk_encryption_key_kms_key_name}
+        )
 
     meta_data = {}
     if args.get('metadataItems'):
@@ -593,26 +656,42 @@ def create_instance(args):
         config.update({'metadata': meta_data})
 
     service_accounts = {}
-    if args.get('serviceAccountEmail') is not None and args.get('serviceAccountscopes') is not None:
-        service_accounts = {'serviceAccounts': [{'email': args.get('serviceAccountEmail'), 'scopes': parse_resource_ids(args.get('serviceAccountscopes'))}]}
+    if (
+        args.get('serviceAccountEmail') is not None
+        and args.get('serviceAccountscopes') is not None
+    ):
+        service_accounts = {
+            'serviceAccounts': [
+                {
+                    'email': args.get('serviceAccountEmail'),
+                    'scopes': parse_resource_ids(args.get('serviceAccountscopes')),
+                }
+            ]
+        }
         config.update({'serviceAccounts': service_accounts})
 
     if args.get('schedulingOnHostMaintenance'):
         scheduling_on_host_maintenance = args.get('schedulingOnHostMaintenance')
         if 'scheduling' not in config.keys():
-            config.update({'scheduling':{}})
-        config['scheduling'].update({'onHostMaintenance': scheduling_on_host_maintenance})
+            config.update({'scheduling': {}})
+        config['scheduling'].update(
+            {'onHostMaintenance': scheduling_on_host_maintenance}
+        )
 
     if args.get('schedulingAutomaticRestart'):
-        scheduling_automatic_restart = True if args.get('schedulingAutomaticRestart') == 'true'  else False
+        scheduling_automatic_restart = (
+            True if args.get('schedulingAutomaticRestart') == 'true' else False
+        )
         if 'scheduling' not in config.keys():
-            config.update({'scheduling':{}})
+            config.update({'scheduling': {}})
         config['scheduling'].update({'automaticRestart': scheduling_automatic_restart})
 
     if args.get('schedulingPreemptible'):
-        scheduling_preemptible = True if args.get('schedulingPreemptible') == 'true'  else False
+        scheduling_preemptible = (
+            True if args.get('schedulingPreemptible') == 'true' else False
+        )
         if 'scheduling' not in config.keys():
-            config.update({'scheduling':{}})
+            config.update({'scheduling': {}})
         config['scheduling'].update({'preemptible': scheduling_preemptible})
 
     if args.get('labels'):
@@ -628,24 +707,36 @@ def create_instance(args):
         config.update({'minCpuPlatform': min_cpu_platform})
 
     if args.get('guestAcceleratorsAcceleratorType'):
-        guest_accelerators_accelerator_type = args.get('guestAcceleratorsAcceleratorType')
+        guest_accelerators_accelerator_type = args.get(
+            'guestAcceleratorsAcceleratorType'
+        )
         if 'guestAccelerators' not in config.keys():
-            config.update({'guestAccelerators':[{}]})
-        config['guestAccelerators'][0].update({'acceleratorType': guest_accelerators_accelerator_type})
+            config.update({'guestAccelerators': [{}]})
+        config['guestAccelerators'][0].update(
+            {'acceleratorType': guest_accelerators_accelerator_type}
+        )
 
     if args.get('guestAcceleratorsAcceleratorCount'):
-        guest_accelerators_accelerator_count = args.get('guestAcceleratorsAcceleratorCount')
+        guest_accelerators_accelerator_count = args.get(
+            'guestAcceleratorsAcceleratorCount'
+        )
         if 'guestAccelerators' not in config.keys():
-            config.update({'guestAccelerators':[{}]})
-        config['guestAccelerators'][0].update({'acceleratorCount': int(guest_accelerators_accelerator_count)})
+            config.update({'guestAccelerators': [{}]})
+        config['guestAccelerators'][0].update(
+            {'acceleratorCount': int(guest_accelerators_accelerator_count)}
+        )
 
     if args.get('deletionProtection'):
-        deletion_protection = True if args.get('deletionProtection') == 'true' else False
+        deletion_protection = (
+            True if args.get('deletionProtection') == 'true' else False
+        )
         config.update({'deletionProtection': deletion_protection})
 
     project = SERVICE_ACT_PROJECT_ID
 
-    operation = compute.instances().insert(project=project, zone=zone, body=config).execute()
+    operation = (
+        compute.instances().insert(project=project, zone=zone, body=config).execute()
+    )
 
     data_res = {
         'status': operation.get('status'),
@@ -654,13 +745,15 @@ def create_instance(args):
         'id': operation.get('id'),
         'progress': operation.get('progress'),
         'startTime': operation.get('startTime'),
-        'operationType': operation.get('operationType')
+        'operationType': operation.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': operation
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, operation)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        operation,
+    )
 
 
 def list_instances(args):
@@ -686,7 +779,14 @@ def list_instances(args):
     order_by = args.get('orderBy')
     page_token = args.get('pageToken')
 
-    request = compute.instances().list(project=project, zone=zone, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.instances().list(
+        project=project,
+        zone=zone,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     output = []
     data_res = []
     while request:
@@ -698,16 +798,20 @@ def list_instances(args):
                     'id': instance.get('id'),
                     'name': instance.get('name'),
                     'machineType': instance.get('machineType'),
-                    'zone': instance.get('zone')
+                    'zone': instance.get('zone'),
                 }
                 data_res.append(data_res_item)
 
-        request = compute.instances().list_next(previous_request=request, previous_response=response)
+        request = compute.instances().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Instances(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Instances(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def aggregated_list_instances(args):
@@ -732,7 +836,13 @@ def aggregated_list_instances(args):
     output = []
     data_res = []
 
-    request = compute.instances().aggregatedList(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.instances().aggregatedList(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -744,16 +854,20 @@ def aggregated_list_instances(args):
                             'id': inst.get('id'),
                             'name': inst.get('name'),
                             'machineType': inst.get('machineType'),
-                            'zone': inst.get('zone')
+                            'zone': inst.get('zone'),
                         }
                         data_res.append(data_res_item)
 
-        request = compute.instances().aggregatedList_next(previous_request=request, previous_response=response)
+        request = compute.instances().aggregatedList_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Instances(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Instances(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def set_instance_metadata(args):
@@ -775,7 +889,9 @@ def set_instance_metadata(args):
     if args.get('metadataItems'):
         meta_data.update({'items': parse_metadata_items(args.get('metadataItems'))})
 
-    request = compute.instances().setMetadata(project=project, zone=zone, instance=instance, body=meta_data)
+    request = compute.instances().setMetadata(
+        project=project, zone=zone, instance=instance, body=meta_data
+    )
     response = request.execute()
 
     data_res = {
@@ -784,13 +900,15 @@ def set_instance_metadata(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_instance(args):
@@ -809,27 +927,29 @@ def get_instance(args):
     request = compute.instances().get(project=project, zone=zone, instance=instance)
     response = request.execute()
     data_res = {
-        'id':response.get('id'),
-        'name':response.get('name'),
-        'machineType':response.get('machineType'),
-        'zone':response.get('zone')
+        'id': response.get('id'),
+        'name': response.get('name'),
+        'machineType': response.get('machineType'),
+        'zone': response.get('zone'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Instances(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Instances(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_instance(args):
-    """
+    ''''''
     Deletes the specified Instance resource
 
     parameter: (string) zone
         Name of the zone for request.
     parameter: (string) instance
         Name of the instance scoping this request.
-    """
+    ''''''
     project = SERVICE_ACT_PROJECT_ID
     instance = args.get('instance')
     zone = args.get('zone')
@@ -843,13 +963,15 @@ def delete_instance(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def start_instance(args):
@@ -874,13 +996,15 @@ def start_instance(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def stop_instance(args):
@@ -905,13 +1029,15 @@ def stop_instance(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def reset_instance(args):
@@ -936,13 +1062,15 @@ def reset_instance(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def set_instance_labels(args):
@@ -954,7 +1082,7 @@ def set_instance_labels(args):
     parameter: (string) instance
         Name of the instance scoping this request.
     parameter: (dict) labels
-        An object containing a list of "key": value pairs
+        An object containing a list of 'key': value pairs
     parameter: (string) labelFingerprint
         Fingerprint of the previous set of labels for this resource.
     """
@@ -964,14 +1092,14 @@ def set_instance_labels(args):
     labels = args.get('labels')
 
     labels = parse_labels(labels)
-    body = {
-        'labels':labels
-    }
+    body = {'labels': labels}
 
     if args.get('labelFingerprint'):
         body.update({'labelFingerprint': args.get('labelFingerprint')})
 
-    request = compute.instances().setLabels(project=project, zone=zone, instance=instance, body=body)
+    request = compute.instances().setLabels(
+        project=project, zone=zone, instance=instance, body=body
+    )
     response = request.execute()
 
     data_res = {
@@ -980,13 +1108,15 @@ def set_instance_labels(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def set_instance_machine_type(args):
@@ -1007,7 +1137,9 @@ def set_instance_machine_type(args):
 
     body = {'machineType': machine_type}
 
-    request = compute.instances().setMachineType(project=project, zone=zone, instance=instance, body=body)
+    request = compute.instances().setMachineType(
+        project=project, zone=zone, instance=instance, body=body
+    )
     response = request.execute()
 
     data_res = {
@@ -1016,16 +1148,18 @@ def set_instance_machine_type(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
-#images()
+# images()
 def get_image(args):
     """
     Returns the specified image.
@@ -1045,15 +1179,14 @@ def get_image(args):
     request = compute.images().get(project=project, image=image)
     response = request.execute()
 
-    data_res = {
-        'id': response.get('id'),
-        'name': response.get('name')
-    }
+    data_res = {'id': response.get('id'), 'name': response.get('name')}
 
-    ec = {
-        'GoogleCloudCompute.Images(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Images', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Images(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Images', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_image_from_family(args):
@@ -1074,13 +1207,15 @@ def get_image_from_family(args):
     data_res = {
         'id': response.get('id'),
         'name': response.get('name'),
-        'family': response.get('family')
+        'family': response.get('family'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Images(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Images', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Images(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Images', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def list_images(args):
@@ -1114,24 +1249,31 @@ def list_images(args):
 
     output = []
     data_res = []
-    request = compute.images().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.images().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
             for image in response['items']:
                 output.append(image)
-                data_res_item = {
-                    'id': image.get('id'),
-                    'name': image.get('name'),
-                }
+                data_res_item = {'id': image.get('id'), 'name': image.get('name')}
                 data_res.append(data_res_item)
 
-        request = compute.images().list_next(previous_request=request, previous_response=response)
+        request = compute.images().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Images(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Images', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Images(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Images', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_image(args):
@@ -1153,13 +1295,15 @@ def delete_image(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def set_image_labels(args):
@@ -1179,10 +1323,7 @@ def set_image_labels(args):
     label_fingerprint = args.get('labelFingerprint')
 
     labels = parse_labels(labels)
-    body = {
-        'labels': labels,
-        'labelFingerprint': label_fingerprint
-    }
+    body = {'labels': labels, 'labelFingerprint': label_fingerprint}
 
     request = compute.images().setLabels(project=project, resource=image, body=body)
     response = request.execute()
@@ -1193,13 +1334,15 @@ def set_image_labels(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def insert_image(args):
@@ -1208,7 +1351,7 @@ def insert_image(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -1222,24 +1365,24 @@ def insert_image(args):
 
     if args.get('rawDiskSource'):
         raw_disk_source = args.get('rawDiskSource')
-        config.update({'rawDisk':{}})
+        config.update({'rawDisk': {}})
         config['rawDisk'].update({'source': raw_disk_source})
 
     if args.get('rawDiskSha1Checksum'):
         raw_disk_sha1_checksum = args.get('rawDiskSha1Checksum')
         if 'rawDisk' not in config.keys():
-            config.update({'rawDisk':{}})
+            config.update({'rawDisk': {}})
         config['rawDisk'].update({'sha1Checksum': raw_disk_sha1_checksum})
 
     if args.get('rawDiskContainerType'):
         raw_disk_container_type = args.get('rawDiskContainerType')
         if 'rawDisk' not in config.keys():
-            config.update({'rawDisk':{}})
-        config['rawDisk'].update({"containerType": raw_disk_container_type})
+            config.update({'rawDisk': {}})
+        config['rawDisk'].update({'containerType': raw_disk_container_type})
 
     if args.get('deprecatedState'):
         deprecated_state = args.get('deprecatedState')
-        config.update({'deprecated':{}})
+        config.update({'deprecated': {}})
         config['deprecated'].update({'state': deprecated_state})
 
     if args.get('deprecatedReplacement'):
@@ -1270,29 +1413,33 @@ def insert_image(args):
 
     if args.get('imageEncryptionKeyRawKey'):
         image_encryption_key_raw_key = args.get('imageEncryptionKeyRawKey')
-        config.update({
-            'imageEncryptionKey': {
-                'rawKey': image_encryption_key_raw_key
-            }
-        })
+        config.update({'imageEncryptionKey': {'rawKey': image_encryption_key_raw_key}})
 
     if args.get('imageEncryptionKeyKmsKeyName'):
         image_encryption_key_kms_key_name = args.get('imageEncryptionKeyKmsKeyName')
         if 'imageEncryptionKey' not in config.keys():
-            config.update({'imageEncryptionKey':{}})
-        config['imageEncryptionKey'].update({'kmsKeyName': image_encryption_key_kms_key_name})
+            config.update({'imageEncryptionKey': {}})
+        config['imageEncryptionKey'].update(
+            {'kmsKeyName': image_encryption_key_kms_key_name}
+        )
 
     if args.get('sourceDiskEncryptionKeyRawKey'):
         source_disk_encryption_key_raw_key = args.get('sourceDiskEncryptionKeyRawKey')
         if 'sourceDiskEncryptionKey' not in config.keys():
-            config.update({'sourceDiskEncryptionKey':{}})
-        config['sourceDiskEncryptionKey'].update({'rawKey': source_disk_encryption_key_raw_key})
+            config.update({'sourceDiskEncryptionKey': {}})
+        config['sourceDiskEncryptionKey'].update(
+            {'rawKey': source_disk_encryption_key_raw_key}
+        )
 
     if args.get('sourceDiskEncryptionKeyKmsKeyName'):
-        source_disk_encryption_key_kms_key_name = args.get('sourceDiskEncryptionKeyKmsKeyName')
+        source_disk_encryption_key_kms_key_name = args.get(
+            'sourceDiskEncryptionKeyKmsKeyName'
+        )
         if 'sourceDiskEncryptionKey' not in config.keys():
-            config.update({'sourceDiskEncryptionKey':{}})
-        config['sourceDiskEncryptionKey'].update({'kmsKeyName': source_disk_encryption_key_kms_key_name})
+            config.update({'sourceDiskEncryptionKey': {}})
+        config['sourceDiskEncryptionKey'].update(
+            {'kmsKeyName': source_disk_encryption_key_kms_key_name}
+        )
 
     if args.get('labels'):
         labels = args.get('labels')
@@ -1305,50 +1452,62 @@ def insert_image(args):
     if args.get('guestOsFeatures'):
         guest_os_features = args.get('guestOsFeatures')
         guest_os_features = parse_resource_ids(guest_os_features)
-        config.update({"guestOsFeatures": []})
+        config.update({'guestOsFeatures': []})
         for f in guest_os_features:
-            config["guestOsFeatures"].append({'type': f})
+            config['guestOsFeatures'].append({'type': f})
 
     if args.get('licenseCodes'):
         license_codes = args.get('licenseCodes')
-        config.update({"licenseCodes": parse_resource_ids(license_codes)})
+        config.update({'licenseCodes': parse_resource_ids(license_codes)})
 
     if args.get('sourceImage'):
         source_image = args.get('sourceImage')
-        config.update({"sourceImage": source_image})
+        config.update({'sourceImage': source_image})
 
     if args.get('imageEncryptionKeyRawKey'):
         image_encryption_key_raw_key = args.get('imageEncryptionKeyRawKey')
-        config.update({
-            'imageEncryptionKey': {
-                'rawKey': image_encryption_key_raw_key
-            }
-        })
+        config.update({'imageEncryptionKey': {'rawKey': image_encryption_key_raw_key}})
 
     if args.get('sourceImageEncryptionKeyKmsKeyName'):
-        source_image_encryption_key_kms_key_name = args.get('sourceImageEncryptionKeyKmsKeyName')
+        source_image_encryption_key_kms_key_name = args.get(
+            'sourceImageEncryptionKeyKmsKeyName'
+        )
         if 'sourceImageEncryptionKey' not in config.keys():
-            config.update({'sourceImageEncryptionKey':{}})
-        config['sourceImageEncryptionKey'].update({'kmsKeyName': source_image_encryption_key_kms_key_name})
+            config.update({'sourceImageEncryptionKey': {}})
+        config['sourceImageEncryptionKey'].update(
+            {'kmsKeyName': source_image_encryption_key_kms_key_name}
+        )
 
     if args.get('sourceSnapshot'):
         source_snapshot = args.get('sourceSnapshot')
         config.update({'sourceSnapshot': source_snapshot})
 
     if args.get('sourceSnapshotEncryptionKeyRawKey'):
-        source_snapshot_encryption_key_raw_key = args.get('sourceSnapshotEncryptionKeyRawKey')
+        source_snapshot_encryption_key_raw_key = args.get(
+            'sourceSnapshotEncryptionKeyRawKey'
+        )
         if 'sourceSnapshotEncryptionKey' not in config.keys():
-            config.update({'sourceSnapshotEncryptionKey':{}})
-        config['sourceSnapshotEncryptionKey'].update({'rawKey': source_snapshot_encryption_key_raw_key})
+            config.update({'sourceSnapshotEncryptionKey': {}})
+        config['sourceSnapshotEncryptionKey'].update(
+            {'rawKey': source_snapshot_encryption_key_raw_key}
+        )
 
     if args.get('sourceSnapshotEncryptionKeyKmsKeyName'):
-        source_snapshot_encryption_key_kms_key_name = args.get('sourceSnapshotEncryptionKeyKmsKeyName')
+        source_snapshot_encryption_key_kms_key_name = args.get(
+            'sourceSnapshotEncryptionKeyKmsKeyName'
+        )
         if 'sourceSnapshotEncryptionKey' not in config.keys():
-            config.update({'sourceSnapshotEncryptionKey':{}})
-        config['sourceSnapshotEncryptionKey'].update({'kmsKeyName': source_snapshot_encryption_key_kms_key_name})
+            config.update({'sourceSnapshotEncryptionKey': {}})
+        config['sourceSnapshotEncryptionKey'].update(
+            {'kmsKeyName': source_snapshot_encryption_key_kms_key_name}
+        )
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.images().insert(project=project, forceCreate=force_create, body=config).execute()
+    response = (
+        compute.images()
+        .insert(project=project, forceCreate=force_create, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -1356,13 +1515,15 @@ def insert_image(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def networks_add_peering(args):
@@ -1373,7 +1534,7 @@ def networks_add_peering(args):
     network = args.get('network')
 
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -1382,28 +1543,36 @@ def networks_add_peering(args):
         config.update({'peerNetwork': peer_network})
 
     if args.get('autoCreateRoutes'):
-        auto_create_routes = True if args.get('autoCreateRoutes') == 'true'  else False
+        auto_create_routes = True if args.get('autoCreateRoutes') == 'true' else False
         config.update({'autoCreateRoutes': auto_create_routes})
 
     if args.get('networkPeeringName'):
         network_peering_name = args.get('networkPeeringName')
-        config.update({'networkPeering':{}})
+        config.update({'networkPeering': {}})
         config['networkPeering'].update({'name': network_peering_name})
 
     if args.get('networkPeeringNetwork'):
         network_peering_network = args.get('networkPeeringNetwork')
         if 'networkPeering' not in config.keys():
-            config.update({'networkPeering':{}})
+            config.update({'networkPeering': {}})
         config['networkPeering'].update({'network': network_peering_network})
 
     if args.get('networkPeeringExchangeSubnetRoutes'):
-        network_peering_exchange_subnet_routes = True if args.get('networkPeeringExchangeSubnetRoutes') == 'True'  else False
+        network_peering_exchange_subnet_routes = (
+            True if args.get('networkPeeringExchangeSubnetRoutes') == 'True' else False
+        )
         if 'networkPeering' not in config.keys():
-            config.update({'networkPeering':{}})
-        config['networkPeering'].update({'exchangeSubnetRoutes': network_peering_exchange_subnet_routes})
+            config.update({'networkPeering': {}})
+        config['networkPeering'].update(
+            {'exchangeSubnetRoutes': network_peering_exchange_subnet_routes}
+        )
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.networks().addPeering(project=project, network=network, body=config).execute()
+    response = (
+        compute.networks()
+        .addPeering(project=project, network=network, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -1411,13 +1580,15 @@ def networks_add_peering(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_network(args):
@@ -1439,13 +1610,15 @@ def delete_network(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_network(args):
@@ -1461,15 +1634,14 @@ def get_network(args):
     request = compute.networks().get(project=project, network=network)
     response = request.execute()
 
-    data_res = {
-        'name': response.get('name'),
-        'id': response.get('id'),
-    }
+    data_res = {'name': response.get('name'), 'id': response.get('id')}
 
-    ec = {
-        'GoogleCloudCompute.Networks(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Networks', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Networks(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Networks', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def insert_network(args):
@@ -1479,7 +1651,7 @@ def insert_network(args):
     config = {}
 
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -1488,7 +1660,9 @@ def insert_network(args):
         config.update({'description': description})
 
     if args.get('autoCreateSubnetworks'):
-        auto_create_sub_networks = True if args.get('autoCreateSubnetworks') == 'true' else False
+        auto_create_sub_networks = (
+            True if args.get('autoCreateSubnetworks') == 'true' else False
+        )
         config.update({'autoCreateSubnetworks': auto_create_sub_networks})
 
     if args.get('routingConfigRoutingMode'):
@@ -1504,13 +1678,15 @@ def insert_network(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def list_networks(args):
@@ -1534,24 +1710,31 @@ def list_networks(args):
 
     output = []
     data_res = []
-    request = compute.networks().list(project=project,filter=filters , maxResults=max_results , orderBy=order_by, pageToken=page_token)
+    request = compute.networks().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
-                data_res_item = {
-                    'name': item.get('name'),
-                    'id': item.get('id')
-                }
+                data_res_item = {'name': item.get('name'), 'id': item.get('id')}
                 data_res.append(data_res_item)
 
-        request = compute.networks().list_next(previous_request=request, previous_response=response)
+        request = compute.networks().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Networks(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Networks', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Networks(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Networks', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def networks_removepeering(args):
@@ -1567,11 +1750,15 @@ def networks_removepeering(args):
     network = args.get('network')
 
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         config.update({'name': name})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.networks().removePeering(project=project, network=network, body=config).execute()
+    response = (
+        compute.networks()
+        .removePeering(project=project, network=network, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -1579,13 +1766,15 @@ def networks_removepeering(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_global_operation(args):
@@ -1607,13 +1796,15 @@ def get_global_operation(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_zone_operation(args):
@@ -1638,13 +1829,15 @@ def get_zone_operation(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_region_operation(args):
@@ -1660,7 +1853,9 @@ def get_region_operation(args):
     name = args.get('name')
     region = args.get('region')
 
-    request = compute.regionOperations().get(project=project, region=region, operation=name)
+    request = compute.regionOperations().get(
+        project=project, region=region, operation=name
+    )
     response = request.execute()
 
     data_res = {
@@ -1669,13 +1864,15 @@ def get_region_operation(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def list_zone_operation(args):
@@ -1702,7 +1899,14 @@ def list_zone_operation(args):
 
     output = []
     data_res = []
-    request = compute.zoneOperations().list(project=project, zone=zone, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.zoneOperations().list(
+        project=project,
+        zone=zone,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -1715,16 +1919,20 @@ def list_zone_operation(args):
                     'id': operation.get('id'),
                     'progress': operation.get('progress'),
                     'startTime': operation.get('startTime'),
-                    'operationType': operation.get('operationType')
+                    'operationType': operation.get('operationType'),
                 }
                 data_res.append(data_res_item)
 
-        request = compute.zoneOperations().list_next(previous_request=request, previous_response=response)
+        request = compute.zoneOperations().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_zone_operation(args):
@@ -1740,10 +1948,12 @@ def delete_zone_operation(args):
     name = args.get('name')
     zone = args.get('zone')
 
-    request = compute.zoneOperations().delete(project=project, zone=zone, operation=name)
+    request = compute.zoneOperations().delete(
+        project=project, zone=zone, operation=name
+    )
     request.execute()
 
-    return "success"
+    return 'success'
 
 
 def list_region_operation(args):
@@ -1770,7 +1980,14 @@ def list_region_operation(args):
 
     output = []
     data_res = []
-    request = compute.regionOperations().list(project=project, region=region, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.regionOperations().list(
+        project=project,
+        region=region,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -1783,16 +2000,20 @@ def list_region_operation(args):
                     'id': operation.get('id'),
                     'progress': operation.get('progress'),
                     'startTime': operation.get('startTime'),
-                    'operationType': operation.get('operationType')
+                    'operationType': operation.get('operationType'),
                 }
                 data_res.append(data_res_item)
 
-        request = compute.regionOperations().list_next(previous_request=request, previous_response=response)
+        request = compute.regionOperations().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_region_operation(args):
@@ -1808,10 +2029,12 @@ def delete_region_operation(args):
     name = args.get('name')
     region = args.get('region')
 
-    request = compute.regionOperations().delete(project=project, region=region, operation=name)
+    request = compute.regionOperations().delete(
+        project=project, region=region, operation=name
+    )
     request.execute()
 
-    return "success"
+    return 'success'
 
 
 def list_global_operation(args):
@@ -1835,7 +2058,13 @@ def list_global_operation(args):
 
     output = []
     data_res = []
-    request = compute.globalOperations().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.globalOperations().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -1848,16 +2077,20 @@ def list_global_operation(args):
                     'id': operation.get('id'),
                     'progress': operation.get('progress'),
                     'startTime': operation.get('startTime'),
-                    'operationType': operation.get('operationType')
+                    'operationType': operation.get('operationType'),
                 }
                 data_res.append(data_res_item)
 
-        request = compute.globalOperations().list_next(previous_request=request, previous_response=response)
+        request = compute.globalOperations().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_global_operation(args):
@@ -1867,7 +2100,7 @@ def delete_global_operation(args):
     request = compute.globalOperations().delete(project=project, operation=name)
     request.execute()
 
-    return "success"
+    return 'success'
 
 
 def aggregated_list_addresses(args):
@@ -1891,7 +2124,13 @@ def aggregated_list_addresses(args):
 
     output = []
     data_res = []
-    request = compute.addresses().aggregatedList(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.addresses().aggregatedList(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -1902,16 +2141,20 @@ def aggregated_list_addresses(args):
                         data_res_item = {
                             'id': addr.get('id'),
                             'name': addr.get('name'),
-                            'address': addr.get('address')
+                            'address': addr.get('address'),
                         }
                         data_res.append(data_res_item)
 
-        request = compute.addresses().aggregatedList_next(previous_request=request, previous_response=response)
+        request = compute.addresses().aggregatedList_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Addresses(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Addresses(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_address(args):
@@ -1927,7 +2170,9 @@ def delete_address(args):
     address = args.get('address')
     region = args.get('region')
 
-    request = compute.addresses().delete(project=project, region=region, address=address)
+    request = compute.addresses().delete(
+        project=project, region=region, address=address
+    )
     response = request.execute()
 
     data_res = {
@@ -1936,13 +2181,15 @@ def delete_address(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_address(args):
@@ -1963,12 +2210,14 @@ def get_address(args):
     data_res = {
         'id': response.get('id'),
         'name': response.get('name'),
-        'address': response.get('address')
+        'address': response.get('address'),
     }
-    ec = {
-        'GoogleCloudCompute.Addresses(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Addresses(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def insert_address(args):
@@ -1977,7 +2226,7 @@ def insert_address(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -2016,7 +2265,11 @@ def insert_address(args):
         config.update({'network': network})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.addresses().insert(project=project, region=region, body=config).execute()
+    response = (
+        compute.addresses()
+        .insert(project=project, region=region, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -2024,13 +2277,15 @@ def insert_address(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def list_addresses(args):
@@ -2057,7 +2312,14 @@ def list_addresses(args):
 
     output = []
     data_res = []
-    request = compute.addresses().list(project=project, region=region, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.addresses().list(
+        project=project,
+        region=region,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2070,12 +2332,16 @@ def list_addresses(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.addresses().list_next(previous_request=request, previous_response=response)
+        request = compute.addresses().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Addresses(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Addresses(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_global_address(args):
@@ -2097,13 +2363,15 @@ def delete_global_address(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_global_address(args):
@@ -2122,13 +2390,15 @@ def get_global_address(args):
     data_res = {
         'id': response.get('id'),
         'name': response.get('name'),
-        'address': response.get('address')
+        'address': response.get('address'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Addresses(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Addresses(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def insert_global_address(args):
@@ -2137,7 +2407,7 @@ def insert_global_address(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -2159,7 +2429,7 @@ def insert_global_address(args):
 
     if args.get('ipVersion'):
         ip_version = args.get('ipVersion')
-        config.update({"ipVersion": ip_version})
+        config.update({'ipVersion': ip_version})
 
     if args.get('addressType'):
         address_type = args.get('addressType')
@@ -2178,7 +2448,7 @@ def insert_global_address(args):
         config.update({'network': network})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.globalAddresses().insert(project=project,body=config).execute()
+    response = compute.globalAddresses().insert(project=project, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -2186,13 +2456,15 @@ def insert_global_address(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def list_global_addresses(args):
@@ -2216,7 +2488,13 @@ def list_global_addresses(args):
 
     output = []
     data_res = []
-    request = compute.globalAddresses().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.globalAddresses().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2229,15 +2507,19 @@ def list_global_addresses(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.globalAddresses().list_next(previous_request=request, previous_response=response)
+        request = compute.globalAddresses().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Addresses(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Addresses(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Addresses', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
-#disks()
+# disks()
 def aggregated_list_disks(args):
     """
     parameter: (number) maxResults
@@ -2259,7 +2541,13 @@ def aggregated_list_disks(args):
 
     output = []
     data_res = []
-    request = compute.disks().aggregatedList(project=project , filter=filters , maxResults=max_results , orderBy=order_by,pageToken=page_token)
+    request = compute.disks().aggregatedList(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2273,16 +2561,20 @@ def aggregated_list_disks(args):
                             'sizeGb': disk.get('sizeGb'),
                             'zone': disk.get('zone'),
                             'status': disk.get('status'),
-                            'type': disk.get('type')
+                            'type': disk.get('type'),
                         }
                         data_res.append(data_res_item)
 
-        request = compute.disks().aggregatedList_next(previous_request=request, previous_response=response)
+        request = compute.disks().aggregatedList_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Disks(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Disks', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Disks(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Disks', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def create_disk_snapshot(args):
@@ -2301,7 +2593,7 @@ def create_disk_snapshot(args):
 
     config = {}
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -2312,37 +2604,41 @@ def create_disk_snapshot(args):
     if args.get('snapshotEncryptionKeyRawKey'):
         raw_key = args.get('snapshotEncryptionKeyRawKey')
         if 'snapshotEncryptionKey' not in config.keys():
-            config.update({'snapshotEncryptionKey':{}})
+            config.update({'snapshotEncryptionKey': {}})
         config['snapshotEncryptionKey'].update({'rawKey': raw_key})
 
     if args.get('snapshotEncryptionKeyKmsKeyName'):
         kms_key_name = args.get('snapshotEncryptionKeyKmsKeyName')
         if 'snapshotEncryptionKey' not in config.keys():
-            config.update({'snapshotEncryptionKey':{}})
+            config.update({'snapshotEncryptionKey': {}})
         config['snapshotEncryptionKey'].update({'kmsKeyName': kms_key_name})
 
     if args.get('sourceDiskEncryptionKeyRawKey'):
         raw_key = args.get('sourceDiskEncryptionKeyRawKey')
         if 'sourceDiskEncryptionKey' not in config.keys():
-            config.update({'sourceDiskEncryptionKey':{}})
+            config.update({'sourceDiskEncryptionKey': {}})
         config['sourceDiskEncryptionKey'].update({'rawKey': raw_key})
 
     if args.get('sourceDiskEncryptionKeyKmsKeyName'):
         kms_key_name = args.get('sourceDiskEncryptionKeyKmsKeyName')
         if 'sourceDiskEncryptionKey' not in config.keys():
-            config.update({'sourceDiskEncryptionKey':{}})
+            config.update({'sourceDiskEncryptionKey': {}})
         config['sourceDiskEncryptionKey'].update({'kmsKeyName': kms_key_name})
 
     if args.get('labels'):
         labels = args.get('labels')
         config.update({'labels': parse_labels(labels)})
 
-    if args.get('labelFingerprint') :
+    if args.get('labelFingerprint'):
         label_fingerprint = args.get('labelFingerprint')
         config.update({'labelFingerprint': label_fingerprint})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.disks().createSnapshot(project=project, zone=zone, disk=disk, body=config).execute()
+    response = (
+        compute.disks()
+        .createSnapshot(project=project, zone=zone, disk=disk, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -2350,13 +2646,15 @@ def create_disk_snapshot(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def delete_disk(args):
@@ -2381,24 +2679,26 @@ def delete_disk(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def get_disk(args):
-    """
+    ''''''
     Returns a specified persistent disk.
 
     parameter: (string) disk
         Name or id of the resource for this request.
     parameter: (string) zone
         Name of the zone for this request.
-    """
+    ''''''
     project = SERVICE_ACT_PROJECT_ID
     disk = args.get('disk')
     zone = args.get('zone')
@@ -2412,13 +2712,15 @@ def get_disk(args):
         'sizeGb': response.get('sizeGb'),
         'zone': response.get('zone'),
         'status': response.get('status'),
-        'type': response.get('type')
+        'type': response.get('type'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Disks(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Disks', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Disks(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Disks', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def insert_disk(args):
@@ -2427,7 +2729,7 @@ def insert_disk(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '')
+        name = args.get('name', '''''')
         name = name.lower()
         config.update({'name': name})
 
@@ -2452,7 +2754,7 @@ def insert_disk(args):
 
     if args.get('sourceImage'):
         source_image = args.get('sourceImage')
-        config.update({"sourceImage": source_image})
+        config.update({'sourceImage': source_image})
 
     if args.get('licenses'):
         licenses = args.get('licenses')
@@ -2461,9 +2763,9 @@ def insert_disk(args):
     if args.get('guestOsFeatures'):
         guest_os_features = args.get('guestOsFeatures')
         guest_os_features = parse_resource_ids(guest_os_features)
-        config.update({"guestOsFeatures": []})
+        config.update({'guestOsFeatures': []})
         for f in guest_os_features:
-            config["guestOsFeatures"].append({'type': f})
+            config['guestOsFeatures'].append({'type': f})
 
     if args.get('diskEncryptionKeyRawKey'):
         disk_encryption_key_raw_key = args.get('diskEncryptionKeyRawKey')
@@ -2474,33 +2776,43 @@ def insert_disk(args):
         disk_encryption_key_kms_key_name = args.get('diskEncryptionKeyKmsKeyName')
         if 'diskEncryptionKey' not in config.keys():
             config.update({'diskEncryptionKey': {}})
-        config['diskEncryptionKey'].update({'kmsKeyName': disk_encryption_key_kms_key_name})
+        config['diskEncryptionKey'].update(
+            {'kmsKeyName': disk_encryption_key_kms_key_name}
+        )
 
     if args.get('imageEncryptionKeyRawKey'):
         image_encryption_key_raw_key = args.get('imageEncryptionKeyRawKey')
-        config.update({
-            'imageEncryptionKey': {
-                'rawKey': image_encryption_key_raw_key
-            }
-        })
+        config.update({'imageEncryptionKey': {'rawKey': image_encryption_key_raw_key}})
 
     if args.get('sourceImageEncryptionKeyKmsKeyName'):
-        source_image_encryption_key_kms_key_name = args.get('sourceImageEncryptionKeyKmsKeyName')
+        source_image_encryption_key_kms_key_name = args.get(
+            'sourceImageEncryptionKeyKmsKeyName'
+        )
         if 'sourceImageEncryptionKey' not in config.keys():
             config.update({'sourceImageEncryptionKey': {}})
-        config['sourceImageEncryptionKey'].update({'kmsKeyName': source_image_encryption_key_kms_key_name})
+        config['sourceImageEncryptionKey'].update(
+            {'kmsKeyName': source_image_encryption_key_kms_key_name}
+        )
 
     if args.get('sourceSnapshotEncryptionKeyRawKey'):
-        source_snapshot_encryption_key_raw_key = args.get('sourceSnapshotEncryptionKeyRawKey')
+        source_snapshot_encryption_key_raw_key = args.get(
+            'sourceSnapshotEncryptionKeyRawKey'
+        )
         if 'sourceSnapshotEncryptionKey' not in config.keys():
             config.update({'sourceSnapshotEncryptionKey': {}})
-        config['sourceSnapshotEncryptionKey'].update({'rawKey': source_snapshot_encryption_key_raw_key})
+        config['sourceSnapshotEncryptionKey'].update(
+            {'rawKey': source_snapshot_encryption_key_raw_key}
+        )
 
     if args.get('sourceSnapshotEncryptionKeyKmsKeyName'):
-        source_snapshot_encryption_key_kms_key_name = args.get('sourceSnapshotEncryptionKeyKmsKeyName')
+        source_snapshot_encryption_key_kms_key_name = args.get(
+            'sourceSnapshotEncryptionKeyKmsKeyName'
+        )
         if 'sourceSnapshotEncryptionKey' not in config.keys():
             config.update({'sourceSnapshotEncryptionKey': {}})
-        config['sourceSnapshotEncryptionKey'].update({'kmsKeyName': source_snapshot_encryption_key_kms_key_name})
+        config['sourceSnapshotEncryptionKey'].update(
+            {'kmsKeyName': source_snapshot_encryption_key_kms_key_name}
+        )
 
     if args.get('labels'):
         labels = args.get('labels')
@@ -2531,13 +2843,15 @@ def insert_disk(args):
         'name': response.get('name'),
         'id': response.get('id'),
         'progress': response.get('progress'),
-        'operationType': response.get('operationType')
+        'operationType': response.get('operationType'),
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response,
+    )
 
 
 def list_disks(args):
@@ -2564,7 +2878,14 @@ def list_disks(args):
 
     output = []
     data_res = []
-    request = compute.disks().list(project=project, zone=zone, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.disks().list(
+        project=project,
+        zone=zone,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2580,12 +2901,16 @@ def list_disks(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.disks().list_next(previous_request=request, previous_response=response)
+        request = compute.disks().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Disks(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Disks', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Disks(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Disks', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def resize_disk(args):
@@ -2609,7 +2934,11 @@ def resize_disk(args):
         config.update({'sizeGb': int(size_gb)})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.disks().resize(project=project, zone=zone, disk=disk, body=config).execute()
+    response = (
+        compute.disks()
+        .resize(project=project, zone=zone, disk=disk, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -2620,10 +2949,12 @@ def resize_disk(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def set_disk_labels(args):
@@ -2647,14 +2978,14 @@ def set_disk_labels(args):
         label_fingerprint = args.get('labelFingerprint')
 
     labels = parse_labels(labels)
-    body = {
-        'labels':labels
-    }
+    body = {'labels': labels}
 
     if args.get('labelFingerprint') is not None:
         body.update({'labelFingerprint': label_fingerprint})
 
-    request = compute.disks().setLabels(project=project, zone=zone, resource=disk, body=body)
+    request = compute.disks().setLabels(
+        project=project, zone=zone, resource=disk, body=body
+    )
     response = request.execute()
 
     data_res = {
@@ -2666,13 +2997,15 @@ def set_disk_labels(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-#diskTypes()
+# diskTypes()
 def aggregated_list_disk_types(args):
     """
     parameter: (number) maxResults
@@ -2694,7 +3027,13 @@ def aggregated_list_disk_types(args):
 
     output = []
     data_res = []
-    request = compute.diskTypes().aggregatedList(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.diskTypes().aggregatedList(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2708,12 +3047,16 @@ def aggregated_list_disk_types(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.diskTypes().aggregatedList_next(previous_request=request, previous_response=response)
+        request = compute.diskTypes().aggregatedList_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.DiskTypes(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute DiskTypes', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.DiskTypes(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute DiskTypes', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def get_disk_type(args):
@@ -2733,10 +3076,12 @@ def get_disk_type(args):
         'zone': response.get('zone')
     }
 
-    ec = {
-        'GoogleCloudCompute.DiskTypes(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute DiskTypes', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.DiskTypes(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute DiskTypes', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def list_disks_types(args):
@@ -2763,7 +3108,14 @@ def list_disks_types(args):
 
     output = []
     data_res = []
-    request = compute.diskTypes().list(project=project, zone=zone, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.diskTypes().list(
+        project=project,
+        zone=zone,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2775,15 +3127,19 @@ def list_disks_types(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.diskTypes().list_next(previous_request=request, previous_response=response)
+        request = compute.diskTypes().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.DiskTypes(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute DiskTypes', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.DiskTypes(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute DiskTypes', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-#instanceGroups()
+# instanceGroups()
 def instance_groups_add_instances(args):
     """
     Adds a list of instances to the specified instance group.
@@ -2808,9 +3164,11 @@ def instance_groups_add_instances(args):
         instarry.append({'instance': inst})
 
     body = {}
-    body.update({"instances":instarry})
+    body.update({'instances': instarry})
 
-    request = compute.instanceGroups().addInstances(project=project, zone=zone, instanceGroup=instance_group, body=body)
+    request = compute.instanceGroups().addInstances(
+        project=project, zone=zone, instanceGroup=instance_group, body=body
+    )
     response = request.execute()
 
     data_res = {
@@ -2822,10 +3180,12 @@ def instance_groups_add_instances(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def aggregated_list_instance_groups(args):
@@ -2849,7 +3209,13 @@ def aggregated_list_instance_groups(args):
 
     output = []
     data_res = []
-    request = compute.instanceGroups().aggregatedList(project=project , filter=filters , maxResults=max_results , orderBy=order_by,pageToken=page_token)
+    request = compute.instanceGroups().aggregatedList(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -2865,12 +3231,18 @@ def aggregated_list_instance_groups(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.instanceGroups().aggregatedList_next(previous_request=request, previous_response=response)
+        request = compute.instanceGroups().aggregatedList_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.InstanceGroups(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instance Groups', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.InstanceGroups(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Instance Groups', data_res, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def delete_instance_group(args):
@@ -2886,7 +3258,9 @@ def delete_instance_group(args):
     instance_group = args.get('instanceGroup')
     zone = args.get('zone')
 
-    request = compute.instanceGroups().delete(project=project, zone=zone, instanceGroup=instance_group)
+    request = compute.instanceGroups().delete(
+        project=project, zone=zone, instanceGroup=instance_group
+    )
     response = request.execute()
 
     data_res = {
@@ -2898,10 +3272,12 @@ def delete_instance_group(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def get_instance_group(args):
@@ -2917,7 +3293,9 @@ def get_instance_group(args):
     instance_group = args.get('instanceGroup')
     zone = args.get('zone')
 
-    request = compute.instanceGroups().get(project=project, zone=zone, instanceGroup=instance_group)
+    request = compute.instanceGroups().get(
+        project=project, zone=zone, instanceGroup=instance_group
+    )
     response = request.execute()
     data_res = {
         'id': response.get('id'),
@@ -2926,10 +3304,14 @@ def get_instance_group(args):
         'network': response.get('network')
     }
 
-    ec = {
-        'GoogleCloudCompute.InstanceGroups(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instance Groups', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.InstanceGroups(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Instance Groups', data_res, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def insert_instance_group(args):
@@ -2968,7 +3350,11 @@ def insert_instance_group(args):
         config.update({'network': network})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.instanceGroups().insert(project=project,zone=zone,body=config).execute()
+    response = (
+        compute.instanceGroups()
+        .insert(project=project, zone=zone, body=config)
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -2979,10 +3365,12 @@ def insert_instance_group(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def list_instance_groups(args):
@@ -3008,19 +3396,32 @@ def list_instance_groups(args):
     page_token = args.get('pageToken')
 
     output = []
-    request = compute.instanceGroups().list(project=project, zone=zone ,filter=filters , maxResults=max_results , orderBy=order_by,pageToken=page_token)
+    request = compute.instanceGroups().list(
+        project=project,
+        zone=zone,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
 
-        request = compute.instanceGroups().list_next(previous_request=request, previous_response=response)
+        request = compute.instanceGroups().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.InstanceGroups(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instance Groups', output, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.InstanceGroups(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Instance Groups', output, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def list_instance_groups_instances(args):
@@ -3049,11 +3450,20 @@ def list_instance_groups_instances(args):
 
     if args.get('instanceState'):
         instance_state = args.get('instanceState')
-        config.update({"instanceState": instance_state})
+        config.update({'instanceState': instance_state})
 
     output = []
     data_res = []
-    request = compute.instanceGroups().listInstances(project=project, zone=zone ,instanceGroup=instance_group,filter=filters , maxResults=max_results , orderBy=order_by , pageToken=page_token , body=config)
+    request = compute.instanceGroups().listInstances(
+        project=project,
+        zone=zone,
+        instanceGroup=instance_group,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+        body=config
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3065,13 +3475,19 @@ def list_instance_groups_instances(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.instanceGroups().listInstances_next(previous_request=request, previous_response=response)
-    output = {'Group': instance_group , 'Instances': output}
+        request = compute.instanceGroups().listInstances_next(
+            previous_request=request, previous_response=response
+        )
+    output = {'Group': instance_group, 'Instances': output}
 
-    ec = {
-        'GoogleCloudCompute.InstanceGroupsInstances': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Instance Groups', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.InstanceGroupsInstances': output}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Instance Groups', data_res, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def instance_groups_remove_instances(args):
@@ -3095,11 +3511,11 @@ def instance_groups_remove_instances(args):
     for inst in instances:
         instarry.append({'instance': inst})
 
-    body = {
-        "instances":instarry
-    }
+    body = {'instances': instarry}
 
-    request = compute.instanceGroups().removeInstances(project=project, zone=zone, instanceGroup=instance_group, body=body)
+    request = compute.instanceGroups().removeInstances(
+        project=project, zone=zone, instanceGroup=instance_group, body=body
+    )
     response = request.execute()
 
     data_res = {
@@ -3111,10 +3527,12 @@ def instance_groups_remove_instances(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def set_instance_group_named_ports(args):
@@ -3143,10 +3561,16 @@ def set_instance_group_named_ports(args):
 
     if args.get('fingerprint'):
         fingerprint = args.get('fingerprint')
-        config.update({"fingerprint": fingerprint})
+        config.update({'fingerprint': fingerprint})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.instanceGroups().setNamedPorts(project=project, zone=zone, instanceGroup=instance_group, body=config).execute()
+    response = (
+        compute.instanceGroups()
+        .setNamedPorts(
+            project=project, zone=zone, instanceGroup=instance_group, body=config
+        )
+        .execute()
+    )
 
     data_res = {
         'status': response.get('status'),
@@ -3157,13 +3581,15 @@ def set_instance_group_named_ports(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-#regions()
+# regions()
 def get_region(args):
     """
     Get a specified region resource.
@@ -3183,10 +3609,12 @@ def get_region(args):
         'status': response.get('status')
     }
 
-    ec = {
-        'GoogleCloudCompute.Regions(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Regions', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Regions(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Regions', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def list_regions(args):
@@ -3210,7 +3638,13 @@ def list_regions(args):
 
     output = []
     data_res = []
-    request = compute.regions().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.regions().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3223,15 +3657,18 @@ def list_regions(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.regions().list_next(previous_request=request, previous_response=response)
+        request = compute.regions().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Regions(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Regions', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Regions(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Regions', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-#zones()
 def get_zone(args):
 
     """
@@ -3253,10 +3690,12 @@ def get_zone(args):
         'status': response.get('status')
     }
 
-    ec = {
-        'GoogleCloudCompute.Zones(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Zones', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Zones(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Zones', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def list_zones(args):
@@ -3283,8 +3722,14 @@ def list_zones(args):
     page_token = args.get('pageToken')
 
     output = []
-    data_res =[]
-    request = compute.zones().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    data_res = []
+    request = compute.zones().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3297,15 +3742,18 @@ def list_zones(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.zones().list_next(previous_request=request, previous_response=response)
+        request = compute.zones().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Zones(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Zones', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Zones(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Zones', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-#machineTypes()
 def aggregated_list_machine_types(args):
 
     """
@@ -3331,7 +3779,13 @@ def aggregated_list_machine_types(args):
 
     output = []
     data_res = []
-    request = compute.machineTypes().aggregatedList(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.machineTypes().aggregatedList(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3340,19 +3794,25 @@ def aggregated_list_machine_types(args):
                     for item in instances_scoped_list.get('machineTypes', []):
                         output.append(item)
                         data_res_item = {
-                            'id':item.get('id'),
-                            'name':item.get('name'),
-                            'memoryMb':item.get('memoryMb'),
-                            'guestCpus':item.get('guestCpus')
+                            'id': item.get('id'),
+                            'name': item.get('name'),
+                            'memoryMb': item.get('memoryMb'),
+                            'guestCpus': item.get('guestCpus')
                         }
                         data_res.append(data_res_item)
 
-        request = compute.machineTypes().aggregatedList(previous_request=request, previous_response=response)
+        request = compute.machineTypes().aggregatedList(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.MachineTypes(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Machine Types', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.MachineTypes(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Machine Types', data_res, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def get_machine_type(args):
@@ -3371,7 +3831,9 @@ def get_machine_type(args):
     machine_type = args.get('machineType')
     zone = args.get('zone')
 
-    request = compute.machineTypes().get(project=project, zone=zone, machineType=machine_type)
+    request = compute.machineTypes().get(
+        project=project, zone=zone, machineType=machine_type
+    )
     response = request.execute()
 
     data_res = {
@@ -3381,10 +3843,14 @@ def get_machine_type(args):
         'guestCpus': response.get('guestCpus')
     }
 
-    ec = {
-        'GoogleCloudCompute.MachineTypes(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Machine Types', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.MachineTypes(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Machine Types', data_res, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def list_machine_types(args):
@@ -3413,7 +3879,14 @@ def list_machine_types(args):
 
     output = []
     data_res = []
-    request = compute.machineTypes().list(project=project, zone=zone, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.machineTypes().list(
+        project=project,
+        zone=zone,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3427,12 +3900,18 @@ def list_machine_types(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.machineTypes().list_next(previous_request=request, previous_response=response)
+        request = compute.machineTypes().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.MachineTypes(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Machine Types', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.MachineTypes(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown(
+            'Google Cloud Compute Machine Types', data_res, removeNull=True
+        ),
+        ec,
+        response
+    )
 
 
 def insert_firewall(args):
@@ -3443,51 +3922,65 @@ def insert_firewall(args):
 
     config = {}
     if args.get('name'):
-        config.update({'name':args.get('name')})
+        config.update({'name': args.get('name')})
 
     if args.get('description'):
-        config.update({'description':args.get('description')})
+        config.update({'description': args.get('description')})
 
     if args.get('network'):
-        config.update({'network':args.get('network')})
+        config.update({'network': args.get('network')})
 
     if args.get('priority'):
-        config.update({'priority':int(args.get('priority'))})
+        config.update({'priority': int(args.get('priority'))})
 
     if args.get('sourceRanges'):
-        config.update({'sourceRanges':parse_resource_ids(args.get('sourceRanges'))})
+        config.update({'sourceRanges': parse_resource_ids(args.get('sourceRanges'))})
 
     if args.get('destinationRanges'):
-        config.update({'destinationRanges':parse_resource_ids(args.get('destinationRanges'))})
+        config.update(
+            {'destinationRanges': parse_resource_ids(args.get('destinationRanges'))}
+        )
 
     if args.get('sourceTags'):
-        config.update({'sourceTags':parse_resource_ids(args.get('sourceTags'))})
+        config.update({'sourceTags': parse_resource_ids(args.get('sourceTags'))})
 
     if args.get('targetTags'):
-        config.update({'targetTags':parse_resource_ids(args.get('targetTags'))})
+        config.update({'targetTags': parse_resource_ids(args.get('targetTags'))})
 
     if args.get('sourceServiceAccounts'):
-        config.update({'sourceServiceAccounts':parse_resource_ids(args.get('sourceServiceAccounts'))})
+        config.update(
+            {
+                'sourceServiceAccounts': parse_resource_ids(
+                    args.get('sourceServiceAccounts')
+                )
+            }
+        )
 
     if args.get('targetServiceAccounts'):
-        config.update({'targetServiceAccounts':parse_resource_ids(args.get('targetServiceAccounts'))})
+        config.update(
+            {
+                'targetServiceAccounts': parse_resource_ids(
+                    args.get('targetServiceAccounts')
+                )
+            }
+        )
 
     if args.get('allowed'):
-        config.update({'allowed':parse_firewall_rule(args.get('allowed'))})
+        config.update({'allowed': parse_firewall_rule(args.get('allowed'))})
 
     if args.get('denied'):
-        config.update({'denied':parse_firewall_rule(args.get('denied'))})
+        config.update({'denied': parse_firewall_rule(args.get('denied'))})
 
     if args.get('direction'):
-        config.update({'direction':args.get('direction')})
+        config.update({'direction': args.get('direction')})
 
     if args.get('logConfigEnable'):
-        log_config_enable = True if args.get('logConfigEnable') == 'true'  else False
-        config.update({'logConfig':{"enable":log_config_enable}})
+        log_config_enable = True if args.get('logConfigEnable') == 'true' else False
+        config.update({'logConfig': {'enable': log_config_enable}})
 
     if args.get('disabled'):
         disabled = args.get('disabled') == 'true'
-        config.update({'disabled':disabled})
+        config.update({'disabled': disabled})
 
     request = compute.firewalls().insert(project=project, body=config)
     response = request.execute()
@@ -3501,10 +3994,12 @@ def insert_firewall(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def patch_firewall(args):
@@ -3531,7 +4026,9 @@ def patch_firewall(args):
         config.update({'sourceRanges': parse_resource_ids(args.get('sourceRanges'))})
 
     if args.get('destinationRanges'):
-        config.update({'destinationRanges': parse_resource_ids(args.get('destinationRanges'))})
+        config.update(
+            {'destinationRanges': parse_resource_ids(args.get('destinationRanges'))}
+        )
 
     if args.get('sourceTags'):
         config.update({'sourceTags': parse_resource_ids(args.get('sourceTags'))})
@@ -3540,10 +4037,22 @@ def patch_firewall(args):
         config.update({'targetTags': parse_resource_ids(args.get('targetTags'))})
 
     if args.get('sourceServiceAccounts'):
-        config.update({'sourceServiceAccounts': parse_resource_ids(args.get('sourceServiceAccounts'))})
+        config.update(
+            {
+                'sourceServiceAccounts': parse_resource_ids(
+                    args.get('sourceServiceAccounts')
+                )
+            }
+        )
 
     if args.get('targetServiceAccounts'):
-        config.update({'targetServiceAccounts': parse_resource_ids(args.get('targetServiceAccounts'))})
+        config.update(
+            {
+                'targetServiceAccounts': parse_resource_ids(
+                    args.get('targetServiceAccounts')
+                )
+            }
+        )
 
     if args.get('allowed'):
         config.update({'allowed': parse_firewall_rule(args.get('allowed'))})
@@ -3555,11 +4064,11 @@ def patch_firewall(args):
         config.update({'direction': args.get('direction')})
 
     if args.get('logConfigEnable'):
-        log_config_enable = True if args.get('logConfigEnable') == 'true'  else False
-        config.update({'logConfig':{"enable":log_config_enable}})
+        log_config_enable = True if args.get('logConfigEnable') == 'true' else False
+        config.update({'logConfig': {'enable': log_config_enable}})
 
     if args.get('disabled'):
-        disabled = True if args.get('disabled') == 'true'  else False
+        disabled = True if args.get('disabled') == 'true' else False
         config.update({'disabled': disabled})
 
     request = compute.firewalls().patch(project=project, firewall=name, body=config)
@@ -3574,10 +4083,12 @@ def patch_firewall(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def list_firewalls(args):
@@ -3604,7 +4115,13 @@ def list_firewalls(args):
 
     output = []
     data_res = []
-    request = compute.firewalls().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.firewalls().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3617,12 +4134,16 @@ def list_firewalls(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.firewalls().list_next(previous_request=request, previous_response=response)
+        request = compute.firewalls().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Firewalls(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Firewalls', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Firewalls(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Firewalls', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def get_firewall(args):
@@ -3644,10 +4165,12 @@ def get_firewall(args):
         'priority': response.get('priority')
     }
 
-    ec = {
-        'GoogleCloudCompute.Firewalls(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Firewalls', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Firewalls(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Firewalls', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def delete_firewall(args):
@@ -3672,13 +4195,15 @@ def delete_firewall(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-#snapshots()
+# snapshots()
 def delete_snapshot(args):
     """
     Delete a specified snapshot.
@@ -3701,10 +4226,12 @@ def delete_snapshot(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def get_snapshot(args):
@@ -3720,10 +4247,12 @@ def get_snapshot(args):
         'creationTimestamp': response.get('creationTimestamp')
     }
 
-    ec = {
-        'GoogleCloudCompute.Snapshots(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Snapshots', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Snapshots(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Snapshots', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def list_snapshots(args):
@@ -3749,7 +4278,13 @@ def list_snapshots(args):
 
     output = []
     data_res = []
-    request = compute.snapshots().list(project=project, filter=filters, maxResults=max_results, orderBy=order_by, pageToken=page_token)
+    request = compute.snapshots().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token
+    )
     while request:
         response = request.execute()
         if 'items' in response.keys():
@@ -3762,16 +4297,20 @@ def list_snapshots(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.snapshots().list_next(previous_request=request, previous_response=response)
+        request = compute.snapshots().list_next(
+            previous_request=request, previous_response=response
+        )
 
-    ec = {
-        'GoogleCloudCompute.Snapshots(val.id === obj.id)': output
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Snapshots', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Snapshots(val.id === obj.id)': output}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Snapshots', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
 def set_snapshot_labels(args):
-    """
+    """"
     parameter: (dict) labels
         A list of labels to apply for this resource.
     parameter: (number) labelFingerprint
@@ -3784,12 +4323,10 @@ def set_snapshot_labels(args):
     labels = args.get('labels')
 
     labels = parse_labels(labels)
-    body = {
-        'labels': labels
-    }
+    body = {'labels': labels}
 
     if args.get('labelFingerprint'):
-        body.update({'labelFingerprint':args.get('labelFingerprint')})
+        body.update({'labelFingerprint': args.get('labelFingerprint')})
 
     request = compute.snapshots().setLabels(project=project, resource=name, body=body)
     response = request.execute()
@@ -3803,15 +4340,17 @@ def set_snapshot_labels(args):
         'operationType': response.get('operationType')
     }
 
-    ec = {
-        'GoogleCloudCompute.Operations(val.id === obj.id)': response
-    }
-    return_outputs(tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True), ec, response)
+    ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': response}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        ec,
+        response
+    )
 
 
-'''
+"""
 EXECUTION CODE
-'''
+"""
 
 try:
     compute = build_and_authenticate(GSERVICE)
