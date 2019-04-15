@@ -32,7 +32,7 @@ AUTH_JSON = {
     'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
     'token_uri': 'https://oauth2.googleapis.com/token',
     'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
-    'client_x509_cert_url': CLIENT_X509_CERT_URL,
+    'client_x509_cert_url': CLIENT_X509_CERT_URL
 }
 
 # Params for constructing googleapiclient service object
@@ -53,8 +53,8 @@ def parse_resource_ids(resource_id):
     parameter: (string) resource_id
     Return the resource_ids as a list
     """
-    id_list = resource_id.replace('' '', '''''')
-    resource_ids = id_list.split('','')
+    id_list = resource_id.replace(" ", "")
+    resource_ids = id_list.split(",")
     return resource_ids
 
 
@@ -73,7 +73,7 @@ def parse_firewall_rule(rule_str):
             raise ValueError('Could not parse field: %s' % (f,))
             continue
 
-        rules.append({'IPProtocol': match.group(1), 'ports': match.group(2).split('','')})
+        rules.append({'IPProtocol': match.group(1), 'ports': match.group(2).split(',')})
 
     return rules
 
@@ -149,7 +149,7 @@ def build_and_authenticate(googleservice):
         integration will make API calls
     """
 
-    auth_json_string = str(AUTH_JSON).replace(''', '').replace('\\\\'', '\\'')
+    auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace('\\\\'', '\\'')
     service_account_info = json.loads(auth_json_string)
     service_credentials = service_account.Credentials.from_service_account_info(
         service_account_info, scopes=SCOPE
@@ -187,7 +187,7 @@ def wait_for_zone_operation(args):
                 'id': operation.get('id'),
                 'progress': operation.get('progress'),
                 'startTime': operation.get('startTime'),
-                'operationType': operation.get('operationType'),
+                'operationType': operation.get('operationType')
             }
             ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
             return_outputs(
@@ -196,7 +196,7 @@ def wait_for_zone_operation(args):
                 )
                 if data_res
                 else 'No results were found',
-                ec,
+                ec
             )
             break
 
@@ -232,14 +232,14 @@ def wait_for_region_operation(args):
                 'id': operation.get('id'),
                 'progress': operation.get('progress'),
                 'startTime': operation.get('startTime'),
-                'operationType': operation.get('operationType'),
+                'operationType': operation.get('operationType')
             }
             ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
             return_outputs(
                 tableToMarkdown(
                     'Google Cloud Compute Operations', data_res, removeNull=True
                 ),
-                ec,
+                ec
             )
             break
 
@@ -271,7 +271,7 @@ def wait_for_global_operation(args):
                 'id': operation.get('id'),
                 'progress': operation.get('progress'),
                 'startTime': operation.get('startTime'),
-                'operationType': operation.get('operationType'),
+                'operationType': operation.get('operationType')
             }
             ec = {'GoogleCloudCompute.Operations(val.id === obj.id)': operation}
 
@@ -279,7 +279,7 @@ def wait_for_global_operation(args):
                 tableToMarkdown(
                     'Google Cloud Compute Operations', data_res, removeNull=True
                 ),
-                ec,
+                ec
             )
             break
 
@@ -350,7 +350,7 @@ def create_instance(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -1351,7 +1351,7 @@ def insert_image(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -1534,7 +1534,7 @@ def networks_add_peering(args):
     network = args.get('network')
 
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -1651,7 +1651,7 @@ def insert_network(args):
     config = {}
 
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -1750,7 +1750,7 @@ def networks_removepeering(args):
     network = args.get('network')
 
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         config.update({'name': name})
 
     project = SERVICE_ACT_PROJECT_ID
@@ -2226,7 +2226,7 @@ def insert_address(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -2407,7 +2407,7 @@ def insert_global_address(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -2593,7 +2593,7 @@ def create_disk_snapshot(args):
 
     config = {}
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
@@ -2729,7 +2729,7 @@ def insert_disk(args):
     """
     config = {}
     if args.get('name'):
-        name = args.get('name', '''''')
+        name = args.get('name', '')
         name = name.lower()
         config.update({'name': name})
 
