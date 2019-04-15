@@ -12,7 +12,7 @@ AMI_NAME=$2
 #Get nightly image of the server
 aws ec2 describe-images --filters 'Name=name,Values=$AMI_NAME' --owners 676921422616 --query 'Images[*].[ImageId,Name,CreationDate]' --output text | sort -k2 -r | head -n1 > image_id.txt
 
-echo $IMAGE_ID > image_id.txt
+#echo $IMAGE_ID > image_id.txt
 
 python ./Tests/scripts/update_image_id.py -i image_id.txt -c $CONFFILE
 
