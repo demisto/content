@@ -1163,7 +1163,7 @@
             "playbookID": "Kafka Test"
         },
         {
-            "integrations": "GoogleCloudCompute",
+            "integrations": "Google Cloud Compute",
             "playbookID": "GoogleCloudCompute-Test"
         },
         {
@@ -1390,6 +1390,6 @@
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
         "Snowflake": "Isn't working with mocking enabled - needs investigation",
-        "GoogleCloudCompute": "checking"
+        "Google Cloud Compute": "checking"
     }
 }
