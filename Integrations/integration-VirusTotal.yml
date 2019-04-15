@@ -96,10 +96,10 @@ script:
     function isEnoughPreferredVendors(scanResults) {
 
         if (!(PREFERRED_VENDORS && PREFERRED_VENDORS_THRESHOLD)) {
-            return true;
+            return false;
         }
         if (PREFERRED_VENDORS && !(PREFERRED_VENDORS_THRESHOLD)) {
-            return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendor Threshold")
+            return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendors Threshold")
         }
         if (!("scans" in scanResults)) {
             return false;
@@ -118,7 +118,6 @@ script:
                 vendorNameLowercase = vendorName.toLowerCase();
 
                 if (listOfPrefferedVendors.indexOf(vendorNameLowercase) != -1) {
-                    // "detected" is a key in each vendor's scan with a boolean value
                     if ("detected" in curVendorScan && curVendorScan["detected"]) {
                         counter++;
                     }
@@ -278,7 +277,7 @@ script:
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             var dbotScore = 0;
 
-            if (r[i].positives >= threshold && isEnoughPreferredVendors(r[i])) {
+            if (r[i].positives >= threshold || isEnoughPreferredVendors(r[i])) {
                 dbotScore = 3;
                 var malFile = {};
                 addMalicious(malFile, outputPaths.file, {
@@ -543,7 +542,7 @@ script:
             md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
 
             var dbotScore = 0;
-            if (o.positives >= threshold  && isEnoughPreferredVendors(o)) {
+            if (o.positives >= threshold  || isEnoughPreferredVendors(o)) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
@@ -1302,5 +1301,6 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
+releaseNotes: "Added mechanism that determines a file or URL are malicious based on trusted vendors."
 tests:
 - virusTotal-test-playbook
