@@ -11329,6 +11329,8 @@ script:
         snapshots, the data will be moved to the next corresponding snapshot.
   dockerimage: demisto/google-api:1.0.0.235 # disable-secrets-detection
   runonce: false
+  script: ''
+  type: python
 releaseNotes: "Fixes and added docstrings"
 tests:
-  - No tests
+  - GoogleCloudCompute-Test
