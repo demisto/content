@@ -67,7 +67,7 @@ def parse_firewall_rule(rule_str):
     """
     rules = []
     regex = re.compile(r'ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in rule_str.split('';''):
+    for f in rule_str.split(';'):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: %s' % (f,))
@@ -87,7 +87,7 @@ def parse_metadata_items(tags_str):
     """
     tags = []
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in tags_str.split('';''):
+    for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: %s' % (f,))
@@ -107,7 +107,7 @@ def parse_named_ports(tags_str):
     """
     tags = []
     regex = re.compile(r'name=([\w\d_:.-]+),port=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in tags_str.split('';''):
+    for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: %s' % (f,))
@@ -127,7 +127,7 @@ def parse_labels(tags_str):
     """
     tags = {}
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
-    for f in tags_str.split('';''):
+    for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: ' + f)
@@ -942,14 +942,14 @@ def get_instance(args):
 
 
 def delete_instance(args):
-    ''''''
+    """
     Deletes the specified Instance resource
 
     parameter: (string) zone
         Name of the zone for request.
     parameter: (string) instance
         Name of the instance scoping this request.
-    ''''''
+    """
     project = SERVICE_ACT_PROJECT_ID
     instance = args.get('instance')
     zone = args.get('zone')
@@ -2691,14 +2691,14 @@ def delete_disk(args):
 
 
 def get_disk(args):
-    ''''''
+    """
     Returns a specified persistent disk.
 
     parameter: (string) disk
         Name or id of the resource for this request.
     parameter: (string) zone
         Name of the zone for this request.
-    ''''''
+    """
     project = SERVICE_ACT_PROJECT_ID
     disk = args.get('disk')
     zone = args.get('zone')
