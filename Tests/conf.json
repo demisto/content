@@ -149,26 +149,6 @@
             "playbookID": "Fortigate Test"
         },
         {
-            "integrations": [
-                "Lastline",
-                "WildFire",
-                "SNDBOX",
-                "VxStream"
-            ],
-            "playbookID" : "Detonate File - Generic Test",
-            "timeout" : 2400,
-            "nightly" : true
-        },
-        {
-            "integrations": [
-                "Lastline",
-                "WildFire",
-                "SNDBOX",
-                "VxStream"
-            ],
-            "playbookID" : "detonate_file_-_generic_test"
-        },
-        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
@@ -738,10 +718,6 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Detonate File - Generic Test",
-            "timeout": 500
-        },
-        {
             "playbookID": "Test-IsMaliciousIndicatorFound"
         },
         {
@@ -1038,15 +1014,23 @@
             "timeout" : 1200
         },
         {
-           "playbookID": "Detonate File - Generic Test",
-           "timeout": 2000,
-           "nightly": true,
-           "integrations": [
-             "VxStream",
-             "McAfee Advanced Threat Defense",
-             "WildFire",
-             "Lastline"
-           ]
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 500
+        },
+        {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX",
+                "VxStream",
+                "McAfee Advanced Threat Defense"
+            ],
+            "playbookID" : "Detonate File - Generic Test",
+            "timeout" : 2400,
+            "nightly" : true
+        },
+        {
+            "playbookID": "detonate_file_-_generic_test"
         },
         {
             "playbookID": "STIXParserTest"
@@ -1246,6 +1230,8 @@
         }
     ],
     "skipped_tests": {
+        "detonate_file_-_generic_test": "relevant only for v3.6",
+        "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
@@ -1304,7 +1290,6 @@
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "Lastline": "Out of quota",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota."
     },
     "nigthly_integrations": [
@@ -1337,6 +1322,7 @@
         "CVE Search": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
+        "Lastline": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
         "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
