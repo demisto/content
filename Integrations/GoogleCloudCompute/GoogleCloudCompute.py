@@ -11,6 +11,10 @@ from google.oauth2 import service_account
 import json
 import time
 
+# disable weak-typing warnings by pylint.
+# See: https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/iam/api-client/quickstart.py#L36
+# pylint: disable=no-member
+
 """ GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
@@ -4599,7 +4603,7 @@ try:
 except Exception as e:
     LOG(e)
     try:
-        response = json.loads(e.content)
+        response = json.loads(response.content)
         response = response['error']
         status_code = response.get('code')
         err_message = response.get('message')
