@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 DEMISTO_APP_TOKEN = demisto.params().get('token')
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 USE_SSL = not demisto.params().get('insecure', False)
+TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
 
 if not demisto.params().get('proxy', False):
     os.environ.pop('HTTP_PROXY', '')
@@ -75,15 +76,24 @@ def get_access_token():
         'Authorization': DEMISTO_APP_TOKEN,
         'Accept': 'application/json'
     }
-    token_retrieval_url = 'https://demistobot.demisto.com/panw-token'
     dbot_response = requests.get(
-        token_retrieval_url,
+        TOKEN_RETRIEVAL_URL,
         headers=headers,
         params={'token': DEMISTO_APP_TOKEN},
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
-        raise Exception('Error in authentication with the application. Try checking the credentials you entered.')
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response: [{}]. Exception: {}'.format(err_response.content, ex))
+        raise Exception(msg)
     try:
         parsed_response = dbot_response.json()
     except ValueError:
@@ -108,9 +118,12 @@ def query_loggings(query_data):
     '''
     This function handles all the querying of Cortex Logging service
     '''
-
+    api_url = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
+    credentials = Credentials(
+        access_token=get_access_token()
+    )
     logging_service = LoggingService(
-        url=API_URL,
+        url=api_url,
         credentials=credentials
     )
 
@@ -483,6 +496,13 @@ def search_by_file_hash_command():
     return entry
 
 
+def process_incident_pairs(incident_pairs, max_incidents):
+    sorted_pairs = sorted(incident_pairs, key=lambda x: x[1])
+    sorted_pairs = sorted_pairs[:max_incidents]
+    max_timestamp = sorted_pairs[-1][1]
+    return list(map(lambda x: x[0], sorted_pairs)), max_timestamp
+
+
 def fetch_incidents():
 
     last_fetched_event_timestamp = demisto.getLastRun().get('last_fetched_event_timestamp')
@@ -517,60 +537,62 @@ def fetch_incidents():
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
 
-    incidents = []
+    incident_pairs = []
 
     max_fetched_event_timestamp = last_fetched_event_timestamp
-
     for page in pages:
         incident, time_received = convert_log_to_incident(page)
-        incidents.append(incident)
         if 'panw.' in FETCH_QUERY:
             time_received_dt = datetime.fromtimestamp(time_received)
         elif 'tms.' in FETCH_QUERY:
             time_received_dt = datetime.strptime(time_received, '%Y-%m-%dT%H:%M:%S.%fZ')
-        if time_received_dt > max_fetched_event_timestamp:
-            max_fetched_event_timestamp = time_received_dt
-    demisto.setLastRun({
-        'last_fetched_event_timestamp': max_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f')
-    })
-    demisto.incidents(incidents)
+        incident_pairs.append((incident, time_received_dt))
+    if incident_pairs:
+        incidents, max_fetched_event_timestamp = process_incident_pairs(incident_pairs, 100)  # max 100 per run
+        demisto.setLastRun({
+            'last_fetched_event_timestamp': max_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f')
+        })
+        demisto.incidents(incidents)
+    else:
+        demisto.incidents([])
 
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(), ))
-try:
-    ACCESS_TOKEN = get_access_token()
-    API_URL = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
-    credentials = Credentials(
-        access_token=ACCESS_TOKEN
-    )
 
-    if demisto.command() == 'test-module':
-        test_args = {
-            "query": "SELECT * FROM panw.threat LIMIT 1",
-            "startTime": 0,
-            "endTime": 1609459200,
-        }
-        if query_loggings(test_args):
-            demisto.results('ok')
+def main():
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            test_args = {
+                "query": "SELECT * FROM panw.threat LIMIT 1",
+                "startTime": 0,
+                "endTime": 1609459200,
+            }
+            if query_loggings(test_args):
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+        elif demisto.command() == 'cortex-query-logs':
+            demisto.results(query_logs_command())
+        elif demisto.command() == 'cortex-get-critical-threat-logs':
+            demisto.results(get_critical_logs_command())
+        elif demisto.command() == 'cortex-get-social-applications':
+            demisto.results(get_social_applications_command())
+        elif demisto.command() == 'cortex-search-by-file-hash':
+            demisto.results(search_by_file_hash_command())
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+    except Exception as e:
+        error_message = str(e)
+        if demisto.command() == 'fetch-incidents':
+            LOG(error_message)
+            LOG.print_log()
+            raise
         else:
-            demisto.results('test failed')
-    elif demisto.command() == 'cortex-query-logs':
-        demisto.results(query_logs_command())
-    elif demisto.command() == 'cortex-get-critical-threat-logs':
-        demisto.results(get_critical_logs_command())
-    elif demisto.command() == 'cortex-get-social-applications':
-        demisto.results(get_social_applications_command())
-    elif demisto.command() == 'cortex-search-by-file-hash':
-        demisto.results(search_by_file_hash_command())
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-except Exception as e:
-    error_message = str(e)
-    if demisto.command() == 'fetch-incidents':
-        LOG(error_message)
-        LOG.print_log()
-        raise
-    else:
-        return_error(error_message)
+            return_error(error_message)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
