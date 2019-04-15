@@ -1239,6 +1239,10 @@
         {
             "integrations": "Zoom",
             "playbookID": "Zoom_Test"
+        },
+        {
+            "integrations": "Palo Alto Networks Cortex",
+            "playbookID": "Palo Alto Networks Cortex Test"
         }
     ],
     "skipped_tests": {
@@ -1308,6 +1312,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
         "CrowdstrikeFalcon": "Mock recording fails, and fails while trying to record a new recording",
