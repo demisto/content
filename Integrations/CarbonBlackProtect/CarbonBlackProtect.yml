@@ -1217,6 +1217,7 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '0'
       description: (Int32)Id of computer from which to upload the file. If 0, system
         will find best computer to get the file from
       isArray: false
@@ -1224,6 +1225,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: (Int32)Analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       isArray: false
@@ -1243,6 +1245,12 @@ script:
         empty for connectors without defined analysisTargets.
       isArray: false
       name: analysisTarget
+      required: false
+      secret: false
+    - default: false
+      description: If provided, will try to update the file analysis with this id
+      isArray: false
+      name: id
       required: false
       secret: false
     deprecated: false
@@ -1388,9 +1396,6 @@ script:
     - contextPath: CBP.FileUpload.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CBP.FileUpload.CreatedBy
-      description: User that requested this analysis
-      type: String
     - contextPath: CBP.FileUpload.PathName
       description: Path of the file where file exists on the endpoint
       type: String
@@ -1423,6 +1428,7 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '0'
       description: (Int32)Id of computer entry associated with this analysis
       isArray: false
       name: computerId
@@ -1486,9 +1492,6 @@ script:
       description: Size of uploaded file. This will be 0 unless uploadStatus is 3
         (Completed)
       type: Number
-    - contextPath: CBP.FileUpload.CreatedBy
-      description: User that requested this analysis
-      type: String
   - arguments:
     - default: false
       description: 'A condition contains three parts: name, operator and value. Name
@@ -1579,9 +1582,6 @@ script:
       description: Size of uploaded file. This will be 0 unless uploadStatus is 3
         (Completed)
       type: Number
-    - contextPath: CBP.FileUpload.CreatedBy
-      description: User that requested this analysis
-      type: String
   - arguments:
     - default: true
       description: (Int32)Unique connector Id

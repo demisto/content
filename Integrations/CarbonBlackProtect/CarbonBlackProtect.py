@@ -124,6 +124,21 @@ FILE_INSTANCE_TRANS_DICT = {
     'pathName': 'Path'
 }
 
+FILE_UPLOAD_TRANS_DICT = {
+    'priority': 'Priority',
+    'fileName': 'FileName',
+    'uploadPath': 'UploadPath',
+    'computerId': 'ComputerId',
+    'dateModified': 'DateModified',
+    'id': 'ID',
+    'fileCatalogId': 'FileCatalogId',
+    'dateCreated': 'DateCreated',
+    'createdBy': 'CreatedBy',
+    'pathName': 'PathName',
+    'uploadStatus': 'UploadStatus',
+    'uploadedFileSize': 'UploadedFileSize',
+}
+
 FILE_RULE_TRANS_DICT = {
     'id': 'ID',
     'fileCatalogId': 'CatalogID',
@@ -198,8 +213,8 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :return: Returns the http request response json
         :rtype: ``dict``
     """
+    # url = 'http://httpbin.org/get'
     url = SERVER + url_suffix
-    demisto.info("#####" + url)
     try:
         res = requests.request(
             method,
@@ -586,7 +601,7 @@ def search_publisher_command():
         search_function=search_publisher,
         trans_dict=PUBLISHER_TRANS_DICT,
         hr_title='CarbonBlack Protect Publisher Search',
-        ec_key='CBPServerConfig(val.ID === obj.ID)'
+        ec_key='CBPPublisher(val.ID === obj.ID)'
     )
 
 
@@ -607,24 +622,140 @@ def get_file_analysis_command():
     args = demisto.args()
     id = args.get('id')
     raw_res = get_file_analysis(id)
+    cbp_ec_key = 'CBP.FileAnalysis(val.ID === obj.ID)'
     ec = {
-        'CBP.FileAnalysis(val.ID === obj.ID)': get_trasnformed_dict(raw_res, FILE_ANALYSIS_TRANS_DICT),
+        cbp_ec_key: get_trasnformed_dict(raw_res, FILE_ANALYSIS_TRANS_DICT),
         # File doesn't have dt since the api doesn't return hashes
         'File': get_trasnformed_dict(raw_res, FILE_ANALYSIS_FILE_OUTPUT_TRANS_DICT)
     }
-    hr = tableToMarkdown('CarbonBlack Protect File Analysis Get for {}'.format(id))
+    hr = tableToMarkdown(
+        'CarbonBlack Protect Get File Analysis for {}'.format(id),
+        ec[cbp_ec_key],
+        removeNull=True,
+        headerTransform=pascalToSpace
+    )
     demisto.results(create_entry_object(raw_res, ec, hr))
 
 
 def get_file_analysis(id):
     """
-    Sends get file rule analysis
+    Sends get file analysis
     :param id: File analysis ID
     :return: Result json of the request
     """
     url = '/fileAnalysis/{}'.format(id)
     return http_request('GET', url)
 
+
+def update_file_analysis_command():
+    """
+    Creates or update a file analysis
+    :return: Entry object of the created file analysis
+    """
+    args = demisto.args()
+    raw_res = update_file_analysis(args)
+    ec = get_trasnformed_dict(raw_res, FILE_ANALYSIS_TRANS_DICT)
+    hr = tableToMarkdown('CarbonBlack Protect File Analysis Created successfully', ec)
+    demisto.results(create_entry_object(raw_res, {'CBP.FileAnalysis(val.ID === obj.ID)': ec}, hr))
+
+
+def update_file_analysis(body_params):
+    """
+    Update file analysis
+    :param body_params: URL parameters for the request
+    :return: Result json of the request
+    """
+    return http_request('POST', '/fileAnalysis', data=json.dumps(body_params))
+
+
+def update_file_upload_command():
+    """
+    Creates or update a file upload
+    :return: Entry object of the created file upload
+    """
+    args = demisto.args()
+    raw_res = update_file_upload(args)
+    ec = get_trasnformed_dict(raw_res, FILE_UPLOAD_TRANS_DICT)
+    hr = tableToMarkdown('CarbonBlack Protect File Upload Created successfully', ec)
+    demisto.results(create_entry_object(raw_res, {'CBP.FileUpload(val.ID === obj.ID)': ec}, hr))
+
+
+def update_file_upload(body_params):
+    """
+    Update file upload
+    :param body_params: URL parameters for the request
+    :return: Result json of the request
+    """
+    return http_request('POST', '/fileUpload', data=json.dumps(body_params))
+
+
+def download_file_upload_command():
+    """
+    Downloads file upload
+    :return: File result of file upload
+    """
+    id = demisto.args().get('id')
+    raw_res = download_file_upload(id)
+    # TODO: Check for proper name of file
+    demisto.results(fileResult('CB_File_'.format(id), raw_res))
+
+
+def download_file_upload(id):
+    """
+    Downloads file upload from server
+    :param id: ID of the requested file upload
+    :return: File upload binary file
+    """
+    url = '/fileUpload/{}'.format(id)
+    params = {
+        'downloadFile': 'true'
+    }
+    return http_request('GET', url, params=params)
+
+
+def search_file_analysis_command():
+    """
+    Searches for file analysis
+    :return: EntryObject of the file analysis
+    """
+    generic_search_command(
+        search_function=search_file_analysis,
+        trans_dict=FILE_ANALYSIS_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Analysis Search',
+        ec_key='CBP.FileAnalysis(val.ID === obj.ID)'
+    )
+
+
+def search_file_analysis(url_params):
+    """
+    Sends the request for server confing, and returns the result json
+    :param url_params: url parameters for the request
+    :return: Server config response json
+    """
+    return http_request('GET', '/fileAnalysis', params=url_params)
+
+
+def get_file_upload_command():
+    """
+    Gets the requested file upload
+    :return: EntryObject of the file upload
+    """
+    generic_get_command(
+        get_function=get_file_upload,
+        trans_dict=FILE_UPLOAD_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Upload Get for {}'.format(demisto.args().get('id')),
+        ec_key='CBP.FileUpload(val.ID === obj.ID)'
+    )
+
+
+def get_file_upload(id):
+    """
+    Sends get file upload request
+    :param id: File upload ID
+    :return: Result json of the request
+    """
+    url = '/fileUpload/{}'.format(id)
+    return http_request('GET', url)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -660,8 +791,18 @@ try:
         search_server_config_command()
     elif demisto.command() == 'cbp-publisher-search':
         search_publisher_command()
+    elif demisto.command() == 'cbp-fileAnalysis-search':
+        search_file_analysis_command()
     elif demisto.command() == 'cbp-fileAnalysis-get':
         get_file_analysis_command()
+    elif demisto.command() == 'cbp-fileAnalysis-createOrUpdate':
+        update_file_analysis_command()
+    elif demisto.command() == 'cbp-fileUpload-createOrUpdate':
+        update_file_upload_command()
+    elif demisto.command() == 'cbp-fileUpload-download':
+        download_file_upload_command()
+    elif demisto.command() == 'cbp-fileUpload-get':
+        get_file_upload_command()
     elif demisto.command() == 'cbp-computer-get':
         get_computer_command()
     else:
