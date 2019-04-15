@@ -55,6 +55,16 @@ COMPUTER_TRANS_DICT = {
     'id': 'ID'
 }
 
+CONNECTOR_TRANS_DICT = {
+    'analysisEnabled': 'AnalysisEnabled',
+    'analysisName': 'AnalysisName',
+    'analysisTargets': 'AnalysisTargets',
+    'canAnalyze': 'CanAnalyze',
+    'connectorVersion': 'ConnectorVersion',
+    'enabled': 'Enabled',
+    'id': 'ID'
+}
+
 EVENT_TRANS_DICT = {
     'pathName': 'FilePath',
     'param1': 'Param1',
@@ -713,6 +723,28 @@ def download_file_upload(id):
     return http_request('GET', url, params=params)
 
 
+def search_file_upload_command():
+    """
+    Searches for file upload
+    :return: EntryObject of the file upload
+    """
+    generic_search_command(
+        search_function=search_file_upload,
+        trans_dict=FILE_UPLOAD_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Upload Search',
+        ec_key='CBP.FileUpload(val.ID === obj.ID)'
+    )
+
+
+def search_file_upload(url_params):
+    """
+    Sends the request for file upload, and returns the result json
+    :param url_params: url parameters for the request
+    :return: File upload response json
+    """
+    return http_request('GET', '/fileUpload', params=url_params)
+
+
 def search_file_analysis_command():
     """
     Searches for file analysis
@@ -728,9 +760,9 @@ def search_file_analysis_command():
 
 def search_file_analysis(url_params):
     """
-    Sends the request for server confing, and returns the result json
+    Sends the request for file analysis, and returns the result json
     :param url_params: url parameters for the request
-    :return: Server config response json
+    :return: File analysis response json
     """
     return http_request('GET', '/fileAnalysis', params=url_params)
 
@@ -756,6 +788,51 @@ def get_file_upload(id):
     """
     url = '/fileUpload/{}'.format(id)
     return http_request('GET', url)
+
+
+def get_connector_command():
+    """
+    Gets the requested file upload
+    :return: EntryObject of the file upload
+    """
+    generic_get_command(
+        get_function=get_connector,
+        trans_dict=CONNECTOR_TRANS_DICT,
+        hr_title='CarbonBlack Protect Connector Get for {}'.format(demisto.args().get('id')),
+        ec_key='CBP.Connector(val.ID === obj.ID)'
+    )
+
+
+def get_connector(id):
+    """
+    Sends get connector request
+    :param id: Connector ID
+    :return: Result json of the request
+    """
+    url = '/connector/{}'.format(id)
+    return http_request('GET', url)
+
+
+def search_connector_command():
+    """
+    Searches for file analysis
+    :return: EntryObject of the file analysis
+    """
+    generic_search_command(
+        search_function=search_connector,
+        trans_dict=CONNECTOR_TRANS_DICT,
+        hr_title='CarbonBlack Protect Connector Search',
+        ec_key='CBP.Connector(val.ID === obj.ID)'
+    )
+
+
+def search_connector(url_params):
+    """
+    Sends the request for file analysis, and returns the result json
+    :param url_params: url parameters for the request
+    :return: File analysis response json
+    """
+    return http_request('GET', '/connector', params=url_params)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -801,10 +878,16 @@ try:
         update_file_upload_command()
     elif demisto.command() == 'cbp-fileUpload-download':
         download_file_upload_command()
+    elif demisto.command() == 'cbp-fileUpload-search':
+        search_file_upload_command()
     elif demisto.command() == 'cbp-fileUpload-get':
         get_file_upload_command()
     elif demisto.command() == 'cbp-computer-get':
         get_computer_command()
+    elif demisto.command() == 'cbp-connector-get':
+        get_connector_command()
+    elif demisto.command() == 'cbp-connector-search':
+        search_connector_command()
     else:
         return_error("Command {} is not supported.".format(demisto.command()))
 # Log exceptions
