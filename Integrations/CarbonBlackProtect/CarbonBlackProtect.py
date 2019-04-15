@@ -38,19 +38,8 @@ if not demisto.params().get('proxy'):
 ''' OUTPUT KEY DICTIONARY '''
 
 
-FILE_CATALOG_TRANS_DICT = {
-    'fileSize': 'Size',
-    'pathName': 'Path',
-    'sha1': 'SHA1',
-    'sha256': 'SHA256',
-    'md5': 'MD5',
-    'fileName': 'Name',
-    'fileType': 'Type',
-    'productName': 'ProductName',
-    'id': 'ID',
-    'publisher': 'Publisher',
-    'company': 'Company',
-    'fileExtension': 'Extension'
+APPROVAL_REQUEST_TRANS_DICT = {
+    'id': 'ID'
 }
 
 COMPUTER_TRANS_DICT = {
@@ -64,14 +53,6 @@ COMPUTER_TRANS_DICT = {
     'ipAddress': 'IPAddress',
     'name': 'Hostname',
     'id': 'ID'
-}
-
-FILE_INSTANCE_TRANS_DICT = {
-    'fileCatalogId': 'CatalogID',
-    'computerId': 'ComputerID',
-    'id': 'ID',
-    'fileName': 'Name',
-    'pathName': 'Path'
 }
 
 EVENT_TRANS_DICT = {
@@ -99,6 +80,40 @@ EVENT_TRANS_DICT = {
     'severity': 'Severity',
     'commandLine': 'CommandLine',
     'processPathName': 'ProcessPathName'
+}
+
+FILE_CATALOG_TRANS_DICT = {
+    'fileSize': 'Size',
+    'pathName': 'Path',
+    'sha1': 'SHA1',
+    'sha256': 'SHA256',
+    'md5': 'MD5',
+    'fileName': 'Name',
+    'fileType': 'Type',
+    'productName': 'ProductName',
+    'id': 'ID',
+    'publisher': 'Publisher',
+    'company': 'Company',
+    'fileExtension': 'Extension'
+}
+
+FILE_INSTANCE_TRANS_DICT = {
+    'fileCatalogId': 'CatalogID',
+    'computerId': 'ComputerID',
+    'id': 'ID',
+    'fileName': 'Name',
+    'pathName': 'Path'
+}
+
+FILE_RULE_TRANS_DICT = {
+    'id': 'ID',
+    'fileCatalogId': 'CatalogID',
+    'description': 'Description',
+    'fileState': 'FileState',
+    'hash': 'Hash',
+    'name': 'Name',
+    'policyIds': 'PolicyIDs',
+    'reportOnly': 'ReportOnly'
 }
 
 ''' HELPER FUNCTIONS '''
@@ -221,8 +236,9 @@ def generic_search_command(search_function, trans_dict, hr_title, ec_key):
     ec = []
     for entry in raw_res:
         ec.append(get_trasnformed_dict(entry, trans_dict))
-    hr = tableToMarkdown(hr_title, ec, headers, removeNull=True)
-    demisto.results(create_entry_object(raw_res, {ec_key: ec}, hr))
+    hr = tableToMarkdown(hr_title, ec, headers, removeNull=True, headerTransform=pascalToSpace)
+    ec = {ec_key: ec} if ec else None
+    demisto.results(create_entry_object(raw_res, ec, hr))
 
 
 def generic_get_command(get_function, trans_dict, hr_title, ec_key):
@@ -240,8 +256,9 @@ def generic_get_command(get_function, trans_dict, hr_title, ec_key):
     headers = args.get('headers')
     raw_res = get_function(id)
     ec = get_trasnformed_dict(raw_res, trans_dict)
-    hr = tableToMarkdown(hr_title, ec, headers)
-    demisto.results(create_entry_object(raw_res, {ec_key: ec}, hr))
+    hr = tableToMarkdown(hr_title, ec, headers, removeNull=True, headerTransform=pascalToSpace)
+    ec = {ec_key: ec} if ec else None
+    demisto.results(create_entry_object(raw_res, ec, hr))
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -279,7 +296,7 @@ def search_file_catalog(url_params):
 def search_computer_command():
     """
     Searches for file catalog
-    :return: EntryObject of the file catalog
+    :return: EntryObject of the computer
     """
     generic_search_command(
         search_function=search_computer,
@@ -365,6 +382,73 @@ def search_event(url_params):
     return http_request('GET', '/event', params=url_params)
 
 
+def search_approval_request_command():
+    """
+    Searches for approval requests
+    :return: EntryObject of the approval requests
+    """
+    generic_search_command(
+        search_function=search_approval_request,
+        trans_dict=APPROVAL_REQUEST_TRANS_DICT,
+        hr_title='CarbonBlack Protect Approval Request Search',
+        ec_key='CBPApprovalRequest(val.ID === obj.ID)'
+    )
+
+
+def search_approval_request(url_params):
+    """
+    Sends the request for approval request, and returns the result json
+    :param url_params: url parameters for the request
+    :return: Approval request response json
+    """
+    return http_request('GET', '/approvalRequest', params=url_params)
+
+
+def search_file_rule_command():
+    """
+    Searches for file rules
+    :return: EntryObject of the file rules
+    """
+    generic_search_command(
+        search_function=search_file_rule,
+        trans_dict=FILE_RULE_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Rule Search',
+        ec_key='CBPFileRule(val.ID === obj.ID)'
+    )
+
+
+def search_file_rule(url_params):
+    """
+    Sends the request for file rule, and returns the result json
+    :param url_params: url parameters for the request
+    :return: File rule response json
+    """
+    return http_request('GET', '/fileRule', params=url_params)
+
+
+def get_file_rule_command():
+    """
+    Gets the requested file rule
+    :return: EntryObject of the file catalog
+    """
+    generic_get_command(
+        get_function=get_file_rule,
+        trans_dict=FILE_RULE_TRANS_DICT,
+        hr_title='CarbonBlack Protect File Rule Get for {}'.format(demisto.args().get('id')),
+        ec_key='CBPFileRule(val.ID === obj.ID)'
+    )
+
+
+def get_file_rule(id):
+    """
+    Sends get file rule request
+    :param id: File rule ID
+    :return: Result json of the request
+    """
+    url = '/fileRule/{}'.format(id)
+    return http_request('GET', url)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -384,6 +468,12 @@ try:
         search_file_instance_command()
     elif demisto.command() == 'cbp-event-search':
         search_event_command()
+    elif demisto.command() == 'cbp-approvalRequest-search':
+        search_approval_request_command()
+    elif demisto.command() == 'cbp-fileRule-search':
+        search_file_rule_command()
+    elif demisto.command() == 'cbp-fileRule-get':
+        get_file_rule_command()
     elif demisto.command() == 'cbp-computer-get':
         get_computer_command()
     else:

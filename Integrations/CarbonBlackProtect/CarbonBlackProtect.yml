@@ -848,6 +848,10 @@ script:
     description: 'Search for approval requests. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#approvalrequest'
     execution: false
     name: cbp-approvalRequest-search
+    outputs:
+    - contextPath: CBPApprovalRequest.ID
+      description: ID of the approval request
+      type: Number
   - arguments:
     - default: false
       description: 'A condition contains three parts: name, operator and value. Name
