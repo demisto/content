@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 
 
 from googleapiclient import discovery
-import googleapiclient
 from google.oauth2 import service_account
 import json
 import time
@@ -288,8 +287,7 @@ def wait_for_global_operation(args):
 
 def test_module():
 
-    project = SERVICE_ACT_PROJECT_ID
-    compute = build_and_authenticate(GSERVICE)
+    build_and_authenticate(GSERVICE)
     demisto.results('ok')
 
 
@@ -1385,10 +1383,9 @@ def insert_image(args):
         config.update({'deprecated': {}})
         config['deprecated'].update({'state': deprecated_state})
 
-    if args.get('deprecatedReplacement'):
-        deprecated_replacement = args.get('deprecatedReplacement')
-        if 'deprecated' not in config.keys():
-            config.update({'deprecated': {}})
+
+    if 'deprecated' not in config.keys():
+        config.update({'deprecated': {}})
         config['deprecated'].update({'replacement': replacement})
 
     if args.get('archiveSizeBytes'):
@@ -2749,7 +2746,7 @@ def insert_disk(args):
         config.update({'sizeGb': int(size_gb)})
 
     if args.get('sourceSnapshot'):
-        prefix_length = args.get('sourceSnapshot')
+        sourceSnapshot = args.get('sourceSnapshot')
         config.update({'sourceSnapshot': sourceSnapshot})
 
     if args.get('sourceImage'):
