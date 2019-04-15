@@ -2,7 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-fromversion: 4.5.0
+toversion: 4.1.0
 script: |-
   # Common functions script
   # =======================
@@ -28,6 +28,20 @@ script: |-
   providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
+
+  ###### Fix fetching credentials from vault instances ######
+  # ====================================================================================
+  try:
+      for k, v in demisto.params().items():
+          if isinstance(v, dict):
+              if 'credentials' in v:
+                  vault = v['credentials'].get('vaultInstanceId')
+                  if vault:
+                      v['identifier'] = v['credentials'].get('user')
+                  break
+  except:
+      pass
+  # ====================================================================================
 
   def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
       """
@@ -663,7 +677,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if data is None:
+      if not data:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1538,6 +1552,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Logger support for Python3."
+releaseNotes: "Logger support for Python3; Fix fetching credentials from vault instances"
 tests:
   - TestCommonPython
