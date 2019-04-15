@@ -1422,14 +1422,24 @@ script:
         }
 
 
-    def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None):
+    def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         limit = int(limit)
+        get_internal_item = (get_internal_item == 'yes')
         is_public = is_default_folder(folder_path, is_public)
         folder = get_folder_by_path(account, folder_path, is_public)
         qs = folder.filter().order_by('-datetime_created')[:limit]
         items = get_limited_number_of_messages_from_qs(qs, limit)
-        items_result = map(lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True), items)
+        items_result = []
+        for item in items:
+            item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True)
+            for attachment in item.attachments:
+                if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item, Message):
+                    # if found item attachment - switch item to the attchment
+                    item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True, compact_fields=True)
+                    break
+            items_result.append(item_attachment)
+
         hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
                       'receivedBy', 'author', 'toRecipients', ]
         if exchangelib.__version__ == "1.12.0":   # Docker BC
@@ -2185,6 +2195,14 @@ script:
       - "True"
       - "False"
       description: Is the folder a Public Folder?
+    - name: get-internal-item
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: If the email item contains another email as attachment - get the
+        internal email attachment
+      defaultValue: "no"
     outputs:
     - contextPath: EWS.Items.itemId
       description: The email item id.
@@ -2438,6 +2456,7 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "ews-get-items-from-folder command - support fetching item attachment"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
