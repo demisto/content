@@ -1383,8 +1383,10 @@ def insert_image(args):
         config.update({'deprecated': {}})
         config['deprecated'].update({'state': deprecated_state})
 
-    if 'deprecated' not in config.keys():
-        config.update({'deprecated': {}})
+    if args.get('deprecatedReplacement'):
+        deprecated_replacement = args.get('deprecatedReplacement')
+        if 'deprecated' not in config.keys():
+            config.update({'deprecated': {}})
         config['deprecated'].update({'replacement': replacement})
 
     if args.get('archiveSizeBytes'):
