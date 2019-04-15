@@ -444,7 +444,6 @@ while True:
         # finish executing python
         break
 
-
     contextJSON = json.loads(contextString)
 
     code_string = contextJSON['script']
