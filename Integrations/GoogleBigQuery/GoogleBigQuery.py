@@ -13,6 +13,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 BASE_URL = "https://www.googleapis.com/bigquery/v2/"
+QUERY_URL = "projects/{0}/queries"
 
 
 USERNAME = demisto.params().get('credentials').get('identifier')
@@ -41,6 +42,60 @@ if not demisto.params().get('proxy'):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+{
+  "kind": "bigquery#queryRequest",
+  "query": string,
+  "maxResults": unsigned integer,
+  "defaultDataset": {
+    "datasetId": string,
+    "projectId": string
+  },
+  "timeoutMs": unsigned integer,
+  "dryRun": boolean,
+  "preserveNulls": boolean,
+  "useQueryCache": boolean,
+  "useLegacySql": boolean,
+  "parameterMode": string,
+  "queryParameters": [
+    {
+      "name": string,
+      "parameterType": {
+        "type": string,
+        "arrayType": (QueryParameterType),
+        "structTypes": [
+          {
+            "name": string,
+            "type": (QueryParameterType),
+            "description": string
+          }
+        ]
+      },
+      "parameterValue": {
+        "value": string,
+        "arrayValues": [
+          (QueryParameterValue)
+        ],
+        "structValues": {
+          (key): (QueryParameterValue)
+        }
+      }
+    }
+  ],
+  "location": string
+}
+
+
+def build_query_request_data(query, max_results, default_dataset, timeout_ms, dry_run, preserve_nulls, use_query_cache, use_legacy_sql, parameter_mode, query_parameters, location):
+    validate_args_for_query_request(query, max_results, default_dataset, timeout_ms, dry_run, preserve_nulls, use_query_cache, use_legacy_sql, parameter_mode, query_parameters, location)
+    data_for_query_request = {
+        query: query,
+
+        default_dataset: build_default_dataset_data_dict(default_dataset),
+
+    }
+
 
 
 def http_request(method, url_suffix, params=None, data=None):
