@@ -1,5 +1,5 @@
 id: virusTotal-test-playbook
-version: 3
+version: -1
 name: virusTotal-test-playbook
 description: |
   Test playbook for vt.
