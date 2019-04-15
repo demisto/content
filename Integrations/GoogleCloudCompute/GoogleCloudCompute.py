@@ -4603,7 +4603,7 @@ try:
 except Exception as e:
     LOG(e)
     try:
-        response = json.loads(response.content)
+        response = json.loads(e.content)
         response = response['error']
         status_code = response.get('code')
         err_message = response.get('message')
