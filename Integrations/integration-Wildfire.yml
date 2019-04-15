@@ -624,7 +624,7 @@ script:
             var response = uploadFileRemote(args.upload);
             var uploadData = response.data;
             var result = response.res;
-            return createUploadEntry(uploadData, 'WildFire Upload File Remote', result);
+            return createUploadEntry(uploadData, 'WildFire Upload File URL', result);
 
         // case 'wildfire-upload-url':
         //     inputs = argToList(args.upload);
@@ -963,7 +963,7 @@ script:
     - contextPath: WildFire.Report.Status
       description: The status of the submission
       type: string
-    description: Deprecated, use wildfire-uploaf-file-url instead.
+    description: Deprecated, use wildfire-upload-file-url instead.
   - name: detonate-file
     deprecated: true
     arguments:
