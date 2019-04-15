@@ -149,7 +149,7 @@ def build_and_authenticate(googleservice):
         integration will make API calls
     """
 
-    auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace('\\\\'', '\\'')
+    auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace("\\\\", "\\")
     service_account_info = json.loads(auth_json_string)
     service_credentials = service_account.Credentials.from_service_account_info(
         service_account_info, scopes=SCOPE
@@ -377,7 +377,7 @@ def create_instance(args):
     zone = args.get('zone')
     machine_type = args.get('machine_type')
 
-    zone_machine_type = 'zones/' + zone + ''/machineTypes/'' + machine_type
+    zone_machine_type = 'zones/' + zone + '/machineTypes/' + machine_type
     config.update({'machineType': zone_machine_type})
 
     if args.get('network'):
