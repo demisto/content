@@ -280,8 +280,8 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
                         found_matching_instance = True
 
                 if not found_matching_instance:
-                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in
-                                               integration_params]
+                    optional_instance_names = [optional_integration.get('instance_name', 'None')
+                                               for optional_integration in integration_params]
                     print_error(FAILED_MATCH_INSTANCE_MSG.format(playbook_id, len(integration_params),
                                                                  integration['name'],
                                                                  '\n'.join(optional_instance_names)))
