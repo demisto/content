@@ -65,7 +65,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         'Contents': explain_result,
         'ContentsFormat': formats['json'],
         'HumanReadable': tableToMarkdown('DBot Predict Phihsing Words', explain_result,
-                                         headers=['TextTokensHighlighted', 'Label', 'Probability', 'PositiveWords', 'NegativeWords']),
+                                         headers=['TextTokensHighlighted', 'Label', 'Probability',
+                                                  'PositiveWords', 'NegativeWords']),
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPredictPhishingWords': explain_result
