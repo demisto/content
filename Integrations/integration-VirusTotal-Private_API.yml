@@ -100,7 +100,6 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-
     def is_enough_preferred_vendors(scan_results):
         if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
             return False
@@ -109,23 +108,23 @@ script:
         if "scans" not in scan_results:
             return False
 
-        counter = 0
+        counter_of_malicious_detections = 0
 
         vendors_scans_dict = scan_results["scans"]
         list_of_preferred_vendors = PREFERRED_VENDORS.split(',')
 
         for i in range(len(list_of_preferred_vendors)):
-            list_of_preferred_vendors[i] = list_of_preferred_vendors[i].lower()
+            list_of_preferred_vendors[i] = list_of_preferred_vendors[i].lower().strip()
 
         for vendor_name in vendors_scans_dict:
             cur_vendor_scan = vendors_scans_dict[vendor_name]
             vendor_name_in_lowercase = vendor_name.lower()
 
             if vendor_name_in_lowercase in list_of_preferred_vendors:
-                if "detected" in cur_vendor_scan and cur_vendor_scan["detected"]:
-                    counter += 1
+                if cur_vendor_scan.get("detected"):
+                    counter_of_malicious_detections += 1
 
-        return int(PREFERRED_VENDORS_THRESHOLD) <= counter
+        return int(PREFERRED_VENDORS_THRESHOLD) <= counter_of_malicious_detections
 
 
     def http_request(method, url_suffix, params_dict, headers):
