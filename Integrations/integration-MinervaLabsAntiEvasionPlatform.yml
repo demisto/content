@@ -94,6 +94,16 @@ script:
                 'CreationTime': data['creationTime']
             }
             ec['Minerva.Group(val.Id === obj.Id)'] = context
+        elif context_id.endswith('vaccination'):
+            context = {
+                'Id': data['id'],
+                'Name': data['name'],
+                'Description': data['description'],
+                "IsMonitorOnly": data['isMonitorOnly'],
+                'Last modified by': data['lastModifiedBy'],
+                'Last modified on': data['lastModifiedOn']
+            }
+            ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
         else:
             LOG('Failed to create entry context for {}'.format(context_id))
 
@@ -183,6 +193,9 @@ script:
                        'type': 'mutex'}
         response = session.post(BASE_URL + '/api/vaccination',
                                 json=json_params)
+        if response.status_code == 409 and response.reason == 'Conflict':
+            demisto.results('Vaccination already exists')
+            return
         if response.status_code is not 200:
             return_error('Error while adding a vaccine. More information: {}, {}'.format(response.status_code, response.reason))
         demisto.results({
@@ -191,6 +204,35 @@ script:
             'Contents': response.json(),
             'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), headerTransform=pascalToSpace, removeNull=True)
         })
+
+
+    @logger
+    def get_vaccines():
+        response = session.get(BASE_URL + '/api/vaccination')
+        if response.status_code is not 200:
+            return_error('Error while fetching vaccination. More information: {}, {}'.format(response.status_code, response.reason))
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Vaccinations', response.json(), headerTransform=pascalToSpace, removeNull=True)
+        }
+
+        if response.json():
+            results['EntryContext'] = create_entry_context('vaccination', response.json()[0])
+
+        demisto.results(results)
+
+
+    @logger
+    def delete_vaccines(vaccine_ids):
+        # demisto.log(vaccine_ids)
+        vaccine_ids_list = [vaccine_id.strip() for vaccine_id in vaccine_ids.split(',')]
+        response = session.delete(BASE_URL + '/api/vaccination', params={'ids': vaccine_ids_list})
+        if response.status_code is not 200:
+            return_error('Error while deleting vaccination ids: {}. More information: {}, {}'.format(vaccine_ids, response.status_code, response.reason))
+        demisto.results('Vaccines {} were deleted'.format(vaccine_ids))
 
 
     @logger
@@ -235,6 +277,9 @@ script:
             monitor_only = args.get('isMonitorOnly')
             add_vaccine(vaccine_name, vaccine_desc, monitor_only)
 
+        def delete_vaccines_command():
+            vaccine_ids = args.get('vaccine_ids')
+            delete_vaccines(vaccine_ids)
 
         def search_process_command():
             processes_search_url = BASE_URL + '/api/processes'
@@ -270,13 +315,17 @@ script:
                 return_error('Failed to log in. More information: {}, {}', minerva_login.status_code, minerva_login.reason)
         elif demisto.command() == 'minerva-add-exclusion':
             add_exclusion_command()
-        if demisto.command() == "minerva-add-vaccine":
+        elif demisto.command() == 'minerva-add-vaccine':
             add_vaccine_command()
-        if demisto.command() == 'minerva-search-process':
+        elif demisto.command() == 'minerva-get-vaccines':
+            get_vaccines()
+        elif demisto.command() == 'minerva-delete-vaccine':
+            delete_vaccines_command()
+        elif demisto.command() == 'minerva-search-process':
             search_process_command()
-        if demisto.command() == 'minerva-search-endpoint':
+        elif demisto.command() == 'minerva-search-endpoint':
             search_endpoint_command()
-        if demisto.command() == 'minerva-get-groups':
+        elif demisto.command() == 'minerva-get-groups':
             get_groups_command()
     except Exception, e:
         LOG('Cannot perform the command: {}. Error: {}'.format(demisto.command(), e.message))
@@ -442,5 +491,30 @@ script:
       description: The time the group was created on
       type: date
     description: Fetches all the groups defined in Minerva Management Console
+  - name: minerva-get-vaccines
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Vaccine.Name
+      description: Mutex vaccination name
+      type: string
+    - contextPath: MInerva.Vaccine.Description
+      description: Mutex vaccination description
+      type: string
+    - contextPath: MInerva.Vaccine.isMonitorOnly
+      description: Whether this mutex vaccination is only monitored without simulation
+      type: boolean
+    - contextPath: MInerva.Vaccine.lastModifiedBy
+      description: The user that was the last to modify this mutex vaccination
+      type: string
+    - contextPath: MInerva.Vaccine.lastModifiedOn
+      description: The date this mutex vaccination was modified on
+      type: date
+    description: Retrieves all the mutex vaccines
+  - name: minerva-delete-vaccine
+    arguments:
+    - name: vaccine_ids
+      required: true
+      isArray: true
+    description: Deletes given vaccines
   isfetch: true
   runonce: false
