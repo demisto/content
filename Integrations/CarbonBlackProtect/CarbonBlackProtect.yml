@@ -37,12 +37,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
-    - default: false
       description: '(Int32) Is maximum number of results to retrieve. If not specified:
         First 1000 results will be returned. If set to -1: Only result count will
         be returned, without actual results. Offset parameter is ignored in this case.
@@ -90,12 +84,6 @@ script:
     - contextPath: File.Path
       description: Path on the found hostname
       type: String
-    - contextPath: File.SHA1
-      description: SHA1 has of the file
-      type: String
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
-      type: String
     - contextPath: File.Name
       description: Name of the file
       type: String
@@ -113,9 +101,6 @@ script:
       type: String
     - contextPath: File.Company
       description: The company for the product
-      type: String
-    - contextPath: File.MD5
-      description: MD5 hash of the file
       type: String
     - contextPath: File.Extension
       description: Extension of the file
@@ -151,12 +136,6 @@ script:
         (if omitted) is ASC. xyz is field name from the result set.'
       isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
       required: false
       secret: false
     - default: false
@@ -419,12 +398,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
-    - default: false
       description: (Boolean) Optional flag, defaults to false. If set to true, debug
         and CC properties of computer will be updated from the object sent in the
         body the request. This action requires ‘Change advanced options’ permission.
@@ -525,12 +498,6 @@ script:
       isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
       secret: false
     deprecated: false
     description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
@@ -633,12 +600,6 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#fileinstance'
     execution: false
@@ -702,12 +663,6 @@ script:
         (if omitted) is ASC. xyz is field name from the result set.'
       isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
       required: false
       secret: false
     deprecated: false
@@ -838,12 +793,6 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: 'Search for approval requests. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#approvalrequest'
     execution: false
@@ -897,12 +846,6 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
     execution: false
@@ -939,12 +882,6 @@ script:
       isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
       secret: false
     deprecated: false
     description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -983,42 +920,10 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-delete
-    outputs:
-    - contextPath: CBPFileRule.CatalogID
-      description: The file catalog ID for the rule
-      type: String
-    - contextPath: CBPFileRule.Description
-      description: |
-        The rule description
-      type: String
-    - contextPath: CBPFileRule.FileState
-      description: The file state for the rule
-      type: String
-    - contextPath: CBPFileRule.Hash
-      description: The hash for the rule
-      type: String
-    - contextPath: CBPFileRule.ID
-      description: The rule ID
-      type: String
-    - contextPath: CBPFileRule.Name
-      description: The rule name
-      type: String
-    - contextPath: CBPFileRule.PolicyIDs
-      description: The policies this rule is part of
-      type: String
-    - contextPath: CBPFileRule.ReportOnly
-      description: Is this rule reporting only or also enforcing
-      type: String
   - arguments:
     - default: false
       description: 'A condition contains three parts: name, operator and value. Name
@@ -1062,12 +967,6 @@ script:
         (if omitted) is ASC. xyz is field name from the result set.'
       isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
       required: false
       secret: false
     deprecated: false
@@ -1168,12 +1067,6 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
     execution: false
@@ -1233,12 +1126,6 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     execution: false
     name: cbp-publisher-search
@@ -1271,49 +1158,40 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Returns object instance of this class
     execution: false
     name: cbp-fileAnalysis-get
     outputs:
-    - contextPath: CbP.FileAnalysis.Priority
+    - contextPath: CBP.FileAnalysis.Priority
       description: File analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       type: Number
-    - contextPath: CbP.FileAnalysis.FileName
-      description: Name of the file where file exists on the endpoint
-      type: String
-    - contextPath: CbP.FileAnalysis.PathName
+    - contextPath: CBP.FileAnalysis.PathName
       description: Path of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileAnalysis.ComputerId
+    - contextPath: CBP.FileAnalysis.ComputerId
       description: Id of computer entry associated with this analysis
       type: String
-    - contextPath: CbP.FileAnalysis.DateModified
+    - contextPath: CBP.FileAnalysis.DateModified
       description: Date/Time when fileAnalysis request was last modified (UTC)
       type: Date
-    - contextPath: CbP.FileAnalysis.ID
+    - contextPath: CBP.FileAnalysis.ID
       description: Unique fileAnalysis id
       type: String
-    - contextPath: CbP.FileAnalysis.FileCatalogId
+    - contextPath: CBP.FileAnalysis.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CbP.FileAnalysis.DateCreated
+    - contextPath: CBP.FileAnalysis.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CbP.FileAnalysis.CreatedBy
+    - contextPath: CBP.FileAnalysis.CreatedBy
       description: User that requested this analysis
       type: String
     - contextPath: File.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: File.FileName
+    - contextPath: CBP.FileName
       description: Name of the file where file exists on the endpoint
       type: String
     - contextPath: File.Malicious
@@ -1324,15 +1202,6 @@ script:
       type: Unknown
     - contextPath: File.Name
       description: Full Filename e.g. data.xls
-      type: String
-    - contextPath: File.MD5
-      description: MD5 Hash of the file
-      type: String
-    - contextPath: File.SHA1
-      description: SHA1 Hash of the file
-      type: String
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
       type: String
   - arguments:
     - default: false
@@ -1376,43 +1245,34 @@ script:
       name: analysisTarget
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Creates or updates file analysis request
     execution: false
     name: cbp-fileAnalysis-createOrUpdate
     outputs:
-    - contextPath: CbP.FileAnalysis.Priority
+    - contextPath: CBP.FileAnalysis.Priority
       description: File analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       type: Number
-    - contextPath: CbP.FileAnalysis.FileName
-      description: Name of the file where file exists on the endpoint
-      type: String
-    - contextPath: CbP.FileAnalysis.PathName
+    - contextPath: CBP.FileAnalysis.PathName
       description: Path of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileAnalysis.ComputerID
+    - contextPath: CBP.FileAnalysis.ComputerID
       description: Id of computer entry associated with this analysis
       type: String
-    - contextPath: CbP.FileAnalysis.DateModified
+    - contextPath: CBP.FileAnalysis.DateModified
       description: Date/Time when fileAnalysis request was last modified (UTC)
       type: Date
-    - contextPath: CbP.FileAnalysis.FileCatalogId
+    - contextPath: CBP.FileAnalysis.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CbP.FileAnalysis.DateCreated
+    - contextPath: CBP.FileAnalysis.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CbP.FileAnalysis.ID
+    - contextPath: CBP.FileAnalysis.ID
       description: Unique fileAnalysis id
       type: String
-    - contextPath: CbP.FileAnalysis.CreatedBy
+    - contextPath: CBP.FileAnalysis.CreatedBy
       description: User that requested this analysis
       type: String
   - arguments:
@@ -1460,43 +1320,34 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Returns objects that match given criteria
     execution: false
     name: cbp-fileAnalysis-search
     outputs:
-    - contextPath: CbP.FileAnalysis.Priority
+    - contextPath: CBP.FileAnalysis.Priority
       description: File analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       type: Number
-    - contextPath: CbP.FileAnalysis.FileName
-      description: Name of the file where file exists on the endpoint
-      type: String
-    - contextPath: CbP.FileAnalysis.PathName
+    - contextPath: CBP.FileAnalysis.PathName
       description: Path of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileAnalysis.ComputerID
+    - contextPath: CBP.FileAnalysis.ComputerID
       description: Id of computer entry associated with this analysis
       type: String
-    - contextPath: CbP.FileAnalysis.DateModified
+    - contextPath: CBP.FileAnalysis.DateModified
       description: Date/Time when fileAnalysis request was last modified (UTC)
       type: Date
-    - contextPath: CbP.FileAnalysis.FileCatalogId
+    - contextPath: CBP.FileAnalysis.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CbP.FileAnalysis.DateCreated
+    - contextPath: CBP.FileAnalysis.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CbP.FileAnalysis.ID
+    - contextPath: CBP.FileAnalysis.ID
       description: Unique fileAnalysis id
       type: String
-    - contextPath: CbP.FileAnalysis.CreatedBy
+    - contextPath: CBP.FileAnalysis.CreatedBy
       description: User that requested this analysis
       type: String
   - arguments:
@@ -1505,58 +1356,52 @@ script:
       isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
       secret: false
     deprecated: false
     description: Returns object instance of this class
     execution: false
     name: cbp-fileUpload-get
     outputs:
-    - contextPath: CbP.FileUpload.Priority
+    - contextPath: CBP.FileUpload.Priority
       description: File analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       type: Number
-    - contextPath: CbP.FileUpload.FileName
+    - contextPath: CBP.FileUpload.FileName
       description: Name of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileUpload.UploadPath
+    - contextPath: CBP.FileUpload.UploadPath
       description: Local upload path for this file on the server (can be a shared
         network path). Note that file is compressed in a ZIP archive
       type: String
-    - contextPath: CbP.FileUpload.ComputerId
+    - contextPath: CBP.FileUpload.ComputerId
       description: Id of computer entry associated with this analysis
       type: String
-    - contextPath: CbP.FileUpload.DateModified
+    - contextPath: CBP.FileUpload.DateModified
       description: Date/Time when fileAnalysis request was last modified (UTC)
       type: Date
-    - contextPath: CbP.FileUpload.ID
+    - contextPath: CBP.FileUpload.ID
       description: Unique fileAnalysis id
       type: String
-    - contextPath: CbP.FileUpload.FileCatalogId
+    - contextPath: CBP.FileUpload.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CbP.FileUpload.DateCreated
+    - contextPath: CBP.FileUpload.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CbP.FileUpload.CreatedBy
+    - contextPath: CBP.FileUpload.CreatedBy
       description: User that requested this analysis
       type: String
-    - contextPath: CbP.FileUpload.PathName
+    - contextPath: CBP.FileUpload.PathName
       description: Path of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileUpload.UploadStatus
+    - contextPath: CBP.FileUpload.UploadStatus
       description: Status of upload. Can be one of:[0-6]
       type: Number
-    - contextPath: CbP.FileUpload.UploadedFileSize
+    - contextPath: CBP.FileUpload.UploadedFileSize
       description: Size of uploaded file. This will be 0 unless uploadStatus is 3
         (Completed)
       type: String
-    - contextPath: CbP.FileUpload.CreatedBy
+    - contextPath: CBP.FileUpload.CreatedBy
       description: User that requested this analysis
       type: String
   - arguments:
@@ -1565,12 +1410,6 @@ script:
       isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
       secret: false
     deprecated: false
     description: Returns object instance of this class
@@ -1603,57 +1442,51 @@ script:
       name: uploadStatus
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Creates or updates file upload request
     execution: false
     name: cbp-fileUpload-createOrUpdate
     outputs:
-    - contextPath: CbP.FileUpload.Priority
+    - contextPath: CBP.FileUpload.Priority
       description: File analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       type: Number
-    - contextPath: CbP.FileUpload.CreatedByUserId
+    - contextPath: CBP.FileUpload.CreatedByUserId
       description: User Id that requested this analysis
       type: String
-    - contextPath: CbP.FileUpload.UploadPath
+    - contextPath: CBP.FileUpload.UploadPath
       description: Local upload path for this file on the server (can be a shared
         network path). Note that file is compressed in a ZIP archive
       type: String
-    - contextPath: CbP.FileUpload.FileName
+    - contextPath: CBP.FileUpload.FileName
       description: Name of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileUpload.PathName
+    - contextPath: CBP.FileUpload.PathName
       description: Path of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileUpload.UploadStatus
+    - contextPath: CBP.FileUpload.UploadStatus
       description: Status of upload. Can be one of:[0-6]
       type: Number
-    - contextPath: CbP.FileUpload.ComputerID
+    - contextPath: CBP.FileUpload.ComputerID
       description: Id of computer entry associated with this analysis
       type: String
-    - contextPath: CbP.FileUpload.DateModified
+    - contextPath: CBP.FileUpload.DateModified
       description: Date/Time when fileAnalysis request was last modified (UTC)
       type: Date
-    - contextPath: CbP.FileUpload.FileCatalogId
+    - contextPath: CBP.FileUpload.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CbP.FileUpload.DateCreated
+    - contextPath: CBP.FileUpload.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CbP.FileUpload.ID
+    - contextPath: CBP.FileUpload.ID
       description: Unique fileAnalysis id
       type: String
-    - contextPath: CbP.FileUpload.UploadedFileSize
+    - contextPath: CBP.FileUpload.UploadedFileSize
       description: Size of uploaded file. This will be 0 unless uploadStatus is 3
         (Completed)
       type: Number
-    - contextPath: CbP.FileUpload.CreatedBy
+    - contextPath: CBP.FileUpload.CreatedBy
       description: User that requested this analysis
       type: String
   - arguments:
@@ -1701,58 +1534,52 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Returns objects that match given criteria
     execution: false
     name: cbp-fileUpload-search
     outputs:
-    - contextPath: CbP.FileUpload.Priority
+    - contextPath: CBP.FileUpload.Priority
       description: File analysis priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       type: Number
-    - contextPath: CbP.FileUpload.CreatedByUserId
+    - contextPath: CBP.FileUpload.CreatedByUserId
       description: |
         User Id that requested this analysis
       type: String
-    - contextPath: CbP.FileUpload.UploadPath
+    - contextPath: CBP.FileUpload.UploadPath
       description: Local upload path for this file on the server (can be a shared
         network path). Note that file is compressed in a ZIP archive
       type: String
-    - contextPath: CbP.FileUpload.FileName
+    - contextPath: CBP.FileUpload.FileName
       description: Name of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileUpload.PathName
+    - contextPath: CBP.FileUpload.PathName
       description: Path of the file where file exists on the endpoint
       type: String
-    - contextPath: CbP.FileUpload.UploadStatus
+    - contextPath: CBP.FileUpload.UploadStatus
       description: Status of upload. Can be one of:[0-6]
       type: Number
-    - contextPath: CbP.FileUpload.ComputerID
+    - contextPath: CBP.FileUpload.ComputerID
       description: Id of computer entry associated with this analysis
       type: String
-    - contextPath: CbP.FileUpload.DateModified
+    - contextPath: CBP.FileUpload.DateModified
       description: Date/Time when fileAnalysis request was last modified (UTC)
       type: Date
-    - contextPath: CbP.FileUpload.FileCatalogId
+    - contextPath: CBP.FileUpload.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CbP.FileUpload.DateCreated
+    - contextPath: CBP.FileUpload.DateCreated
       description: Date/Time when fileAnalysis request was created (UTC)
       type: Date
-    - contextPath: CbP.FileUpload.ID
+    - contextPath: CBP.FileUpload.ID
       description: Unique fileAnalysis id
       type: String
-    - contextPath: CbP.FileUpload.UploadedFileSize
+    - contextPath: CBP.FileUpload.UploadedFileSize
       description: Size of uploaded file. This will be 0 unless uploadStatus is 3
         (Completed)
       type: Number
-    - contextPath: CbP.FileUpload.CreatedBy
+    - contextPath: CBP.FileUpload.CreatedBy
       description: User that requested this analysis
       type: String
   - arguments:
@@ -1762,39 +1589,33 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Returns object instance of this class
     execution: false
     name: cbp-connector-get
     outputs:
-    - contextPath: CbP.Connector.AnalysisEnabled
+    - contextPath: CBP.Connector.AnalysisEnabled
       description: True if analysis component of this connector is enabled
       type: Boolean
-    - contextPath: CbP.Connector.AnalysisName
+    - contextPath: CBP.Connector.AnalysisName
       description: Name for analysis component of the connector (can be same as the
         name field)
       type: String
-    - contextPath: CbP.Connector.AnalysisTargets
+    - contextPath: CBP.Connector.AnalysisTargets
       description: Array of possible analysis targets. Analysis targets are required
         when creating new fileAnalysis. They usualy represent different OS and configurations
         and are available only for some internal connectors.
       type: String
-    - contextPath: CbP.Connector.CanAnalyze
+    - contextPath: CBP.Connector.CanAnalyze
       description: True if this connector can analyze files
       type: Boolean
-    - contextPath: CbP.Connector.ConnectorVersion
+    - contextPath: CBP.Connector.ConnectorVersion
       description: Version of this connector
       type: String
-    - contextPath: CbP.Connector.Enabled
+    - contextPath: CBP.Connector.Enabled
       description: True if connector is enabled
       type: Boolean
-    - contextPath: CbP.Connector.ID
+    - contextPath: CBP.Connector.ID
       description: Unique fileAnalysis id
       type: String
   - arguments:
@@ -1842,39 +1663,33 @@ script:
       name: sort
       required: false
       secret: false
-    - default: false
-      description: Headers to present of returned table
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Returns objects that match given criteria
     execution: false
     name: cbp-connector-search
     outputs:
-    - contextPath: CbP.Connector.AnalysisEnabled
+    - contextPath: CBP.Connector.AnalysisEnabled
       description: True if analysis component of this connector is enabled
       type: Boolean
-    - contextPath: CbP.Connector.AnalysisName
+    - contextPath: CBP.Connector.AnalysisName
       description: Name for analysis component of the connector (can be same as the
         name field)
       type: String
-    - contextPath: CbP.Connector.AnalysisTargets
+    - contextPath: CBP.Connector.AnalysisTargets
       description: Array of possible analysis targets. Analysis targets are required
         when creating new fileAnalysis. They usualy represent different OS and configurations
         and are available only for some internal connectors.
       type: String
-    - contextPath: CbP.Connector.CanAnalyze
+    - contextPath: CBP.Connector.CanAnalyze
       description: True if this connector can analyze files
       type: Boolean
-    - contextPath: CbP.Connector.ConnectorVersion
+    - contextPath: CBP.Connector.ConnectorVersion
       description: Version of this connector
       type: String
-    - contextPath: CbP.Connector.Enabled
+    - contextPath: CBP.Connector.Enabled
       description: True if connector is enabled
       type: Boolean
-    - contextPath: CbP.Connector.ID
+    - contextPath: CBP.Connector.ID
       description: Unique fileAnalysis id
       type: String
   dockerimage: demisto/python3:3.7.2.200

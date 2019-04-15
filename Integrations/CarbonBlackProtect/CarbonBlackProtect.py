@@ -82,6 +82,25 @@ EVENT_TRANS_DICT = {
     'processPathName': 'ProcessPathName'
 }
 
+FILE_ANALYSIS_TRANS_DICT = {
+    'priority': 'Priority',
+    'fileName': 'FileName',
+    'pathName': 'PathName',
+    'computerId': 'ComputerId',
+    'dateModified': 'DateModified',
+    'id': 'ID',
+    'fileCatalogId': 'FileCatalogId',
+    'dateCreated': 'DateCreated',
+    'createdBy': 'CreatedBy'
+}
+
+FILE_ANALYSIS_FILE_OUTPUT_TRANS_DICT = {
+    'fileCatalogId': 'FileCatalogId',
+    'fileName': 'Name',
+    'Malicious': 'Malicious',  # This key will be added manually if file is malicious
+    'pathName': 'PathName',
+}
+
 FILE_CATALOG_TRANS_DICT = {
     'fileSize': 'Size',
     'pathName': 'Path',
@@ -116,6 +135,41 @@ FILE_RULE_TRANS_DICT = {
     'reportOnly': 'ReportOnly'
 }
 
+POLICY_TRANS_DICT = {
+    'readOnly': 'ReadOnly',
+    'enforcementLevel': 'EnforcementLevel',
+    'reputationEnabled': 'ReputationEnabled',
+    'atEnforcementComputers': 'AtEnforcementComputers',
+    'automatic': 'Automatic',
+    'name': 'Name',
+    'fileTrackingEnabled': 'FileTrackingEnabled',
+    'connectedComputers': 'ConnectedComputers',
+    'packageName': 'PackageName',
+    'allowAgentUpgrades': 'AllowAgentUpgrades',
+    'totalComputers': 'TotalComputers',
+    'loadAgentInSafeMode': 'LoadAgentInSafeMode',
+    'automaticApprovalsOnTransition': 'AutomaticApprovalsOnTransition',
+    'id': 'ID',
+    'description': 'Description',
+    'disconnectedEnforcementLevel': 'DisconnectedEnforcementLevel'
+}
+
+PUBLISHER_TRANS_DICT = {
+    'description': 'Description',
+    'id': 'ID',
+    'name': 'Name',
+    'publisherReputation': 'Reputation',
+    'signedCertificateCount': 'SignedCertificateCount',
+    'signedFilesCount': 'SignedFilesCount',
+    'publisherState': 'State'
+}
+
+SERVER_CONFIG_DICT = {
+    'id': 'ID',
+    'value': 'Value',
+    'name': 'Name'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -146,7 +200,6 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
     """
     url = SERVER + url_suffix
     demisto.info("#####" + url)
-    demisto.info(USE_SSL)
     try:
         res = requests.request(
             method,
@@ -183,7 +236,7 @@ def create_entry_object(contents='', ec=None, hr=''):
         :return: Entry object
         :rtype: ``dict``
     """
-    return {
+    res =  {
         'Type': entryTypes['note'],
         'Contents': contents,
         'ContentsFormat': formats['json'],
@@ -191,6 +244,8 @@ def create_entry_object(contents='', ec=None, hr=''):
         'HumanReadable': hr,
         'EntryContext': ec
     }
+    demisto.info(res)
+    return res
 
 
 def get_trasnformed_dict(old_dict, transformation_dict):
@@ -449,6 +504,129 @@ def get_file_rule(id):
     return http_request('GET', url)
 
 
+def delete_file_rule_command():
+    """
+    Deletes the requested file rule
+    :return: EntryObject of the file catalog
+    """
+    demisto.info("delete_file_rule_command CALLED")
+    args = demisto.args()
+    id = args.get('id')
+    delete_file_rule(id)
+    hr = "File Result {} deleted successfully".format(id)
+    demisto.results(hr)
+
+
+def delete_file_rule(id):
+    """
+    Sends delete file rule request
+    :param id: File rule ID
+    :return: Result of the request
+    """
+    url = SERVER + '/fileRule/{}'.format(id)
+    res = requests.request(
+        'DELETE',
+        url,
+        verify=USE_SSL,
+        headers=HEADERS
+    )
+    return res
+
+
+def search_policy_command():
+    """
+    Searches for policy
+    :return: EntryObject of the policies
+    """
+    generic_search_command(
+        search_function=search_policy,
+        trans_dict=POLICY_TRANS_DICT,
+        hr_title='CarbonBlack Protect Policy Search',
+        ec_key='CBPPolicy(val.ID === obj.ID)'
+    )
+
+
+def search_policy(url_params):
+    """
+    Sends the request for file rule, and returns the result json
+    :param url_params: url parameters for the request
+    :return: File rule response json
+    """
+    return http_request('GET', '/policy', params=url_params)
+
+
+def search_server_config_command():
+    """
+    Searches for server config
+    :return: EntryObject of the server configurations
+    """
+    generic_search_command(
+        search_function=search_server_config,
+        trans_dict=SERVER_CONFIG_DICT,
+        hr_title='CarbonBlack Protect Server Config Search',
+        ec_key='CBPServerConfig(val.ID === obj.ID)'
+    )
+
+
+def search_server_config(url_params):
+    """
+    Sends the request for server confing, and returns the result json
+    :param url_params: url parameters for the request
+    :return: Server config response json
+    """
+    return http_request('GET', '/serverConfig', params=url_params)
+
+
+def search_publisher_command():
+    """
+    Searches for publisher
+    :return: EntryObject of the publishers
+    """
+    generic_search_command(
+        search_function=search_publisher,
+        trans_dict=PUBLISHER_TRANS_DICT,
+        hr_title='CarbonBlack Protect Publisher Search',
+        ec_key='CBPServerConfig(val.ID === obj.ID)'
+    )
+
+
+def search_publisher(url_params):
+    """
+    Sends the request for publisher, and returns the result json
+    :param url_params: url parameters for the request
+    :return: Publisher response json
+    """
+    return http_request('GET', '/publisher', params=url_params)
+
+
+def get_file_analysis_command():
+    """
+    Gets the requested file analysis
+    :return: EntryObject of the file analysis
+    """
+    args = demisto.args()
+    id = args.get('id')
+    raw_res = get_file_analysis(id)
+    ec = {
+        'CBP.FileAnalysis(val.ID === obj.ID)': get_trasnformed_dict(raw_res, FILE_ANALYSIS_TRANS_DICT),
+        # File doesn't have dt since the api doesn't return hashes
+        'File': get_trasnformed_dict(raw_res, FILE_ANALYSIS_FILE_OUTPUT_TRANS_DICT)
+    }
+    hr = tableToMarkdown('CarbonBlack Protect File Analysis Get for {}'.format(id))
+    demisto.results(create_entry_object(raw_res, ec, hr))
+
+
+def get_file_analysis(id):
+    """
+    Sends get file rule analysis
+    :param id: File analysis ID
+    :return: Result json of the request
+    """
+    url = '/fileAnalysis/{}'.format(id)
+    return http_request('GET', url)
+
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -474,6 +652,16 @@ try:
         search_file_rule_command()
     elif demisto.command() == 'cbp-fileRule-get':
         get_file_rule_command()
+    elif demisto.command() == 'cbp-fileRule-delete':
+        delete_file_rule_command()
+    elif demisto.command() == 'cbp-policy-search':
+        search_policy_command()
+    elif demisto.command() == 'cbp-serverConfig-search':
+        search_server_config_command()
+    elif demisto.command() == 'cbp-publisher-search':
+        search_publisher_command()
+    elif demisto.command() == 'cbp-fileAnalysis-get':
+        get_file_analysis_command()
     elif demisto.command() == 'cbp-computer-get':
         get_computer_command()
     else:
