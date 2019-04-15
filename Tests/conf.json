@@ -1389,6 +1389,7 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Snowflake": "Isn't working with mocking enabled - needs investigation"
+        "Snowflake": "Isn't working with mocking enabled - needs investigation",
+        "GoogleCloudCompute": "checking"
     }
 }
