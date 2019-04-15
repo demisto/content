@@ -3684,7 +3684,7 @@ def get_zone(args):
 
     data_res = {
         'id': response.get('id'),
-        'name': responseget('name'),
+        'name': response.get('name'),
         'status': response.get('status')
     }
 
