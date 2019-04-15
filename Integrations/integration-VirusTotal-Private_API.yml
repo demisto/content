@@ -58,8 +58,8 @@ configuration:
   defaultvalue: ""
   type: 12
   required: false
-- display: 'Preferred Vendor Threshold. The minimal number of highly trusted vendors
-    needed to consider a domain, IP, URL or file as malicious. '
+- display: Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file as malicious.
   name: preferredVendorsThreshold
   defaultvalue: ""
   type: 0
