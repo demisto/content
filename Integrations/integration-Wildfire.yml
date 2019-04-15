@@ -38,10 +38,11 @@ script:
   script: |+
     //DICTIONARIES//
     var URL_DICT = {
+        verdict: '/get/verdicts',
         upload: '/submit/file',
         report: '/get/report',
         remoteFile: '/submit/url'
-      };
+    };
 
     var ERROR_DICT = {
         401 : 'Unauthorized API key invalid',
@@ -53,9 +54,31 @@ script:
         420 : 'Insufficient arguments',
         421 : 'Invalid arguments',
         500 : 'Internal error',
+        502 : 'Bad Gateway',
         513 : 'File upload failed'
+    };
 
-      };
+    var VERDICTS_DICT = {
+        '0': 'benign',
+        '1': 'malware',
+        '2': 'grayware',
+        '4': 'phishing',
+        '-100': 'pending, the sample exists, but there is currently no verdict',
+        '-101': 'error',
+        '-102': 'unknown, cannot find sample record in the database',
+        '-103': 'invalid hash value'
+    };
+
+    var VERDICTS_TO_DBOTSCORE = {
+        '0': 1,
+        '1': 3,
+        '2': 2,
+        '4': 3,
+        '-100': 0,
+        '-101': 0,
+        '-102': 0,
+        '-103': 0
+    };
 
     //GLOBALS//
     var URL = params.server.replace(/[\/]+$/, '');
@@ -78,19 +101,18 @@ script:
             params.insecure,
             params.proxy
         );
-        if (res.StatusCode !==200) {
-          if(res.StatusCode === 404){
-            return undefined;
-          }
-          else{
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + ' ' + ERROR_DICT[res.StatusCode] + '.\nBody: ' + JSON.stringify(res) + '.';
-          }
+        if (res.StatusCode !== 200) {
+            if (res.StatusCode === 404) {
+                return undefined;
+            } else {
+                throw 'Request Failed.\nStatus code: ' + res.StatusCode + ' ' + ERROR_DICT[res.StatusCode] + '.\nBody: ' + JSON.stringify(res) + '.';
+            }
         }
-
         return res;
     }
 
-    var sendMultipartRequest = function(url, headers, file, body) {
+
+    function sendMultipartRequest(url, headers, file, body) {
         var res = httpMultipart(
           url,
           file,
@@ -103,11 +125,12 @@ script:
           params.proxy
         );
 
-        if (res.StatusCode !==200) {
+        if (res.StatusCode !== 200) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + ' ' + ERROR_DICT[res.StatusCode] + '.\nBody: ' + JSON.stringify(res) + '.';
         }
         return JSON.parse(x2j(res.Body));
-    };
+    }
+
 
     function prettifyUploadBody(body) {
         var prettyUploadBody = {
@@ -119,6 +142,41 @@ script:
         };
         return prettyUploadBody;
     }
+
+
+    function prettifyVerdicts(verdictsData) {
+        var prettyVerdictsArr = [];
+        for (var i = 0; i < verdictsData.length; i++) {
+            var prettyVerdict = {};
+            if (verdictsData[i].md5) {
+                prettyVerdict.MD5 = verdictsData[i].md5;
+            }
+            if (verdictsData[i].sha256) {
+                prettyVerdict.SHA256 = verdictsData[i].sha256;
+            }
+            prettyVerdict.Verdict = Number(verdictsData[i].verdict);
+            prettyVerdict.VerdictDescription = VERDICTS_DICT[verdictsData[i].verdict];
+
+            prettyVerdictsArr.push(prettyVerdict);
+        }
+        return prettyVerdictsArr;
+    }
+
+
+    function createDBotScoreFromVerdicts(prettyVerdicts) {
+        var DbotScoreArr = [];
+        for (var i = 0; i < prettyVerdicts.length; i++) {
+            var DbotScore = {
+                'Indicator': prettyVerdicts[i].SHA256? prettyVerdicts[i].SHA256 : prettyVerdicts[i].MD5,
+                'Type': 'hash',
+                'Vendor': 'WildFire',
+                'Score': VERDICTS_TO_DBOTSCORE[prettyVerdicts[i].Verdict]
+            };
+        DbotScoreArr.push(DbotScore);
+        }
+        return DbotScoreArr;
+    }
+
 
     function createUploadEntry(body, title, result) {
         var md = tableToMarkdown(title, body);
@@ -132,6 +190,7 @@ script:
             }
         };
     }
+
 
     function createEntry(body, title, result, verbose, report, ec) {
         var md = tableToMarkdown(title, body, Object.keys(body));
@@ -148,6 +207,7 @@ script:
                 EntryContext: ec
         };
     }
+
 
     function GetReportArgsHandler(md5, hash, file) {
         if(file) {
@@ -185,6 +245,34 @@ script:
         return returnObj;
     }
 
+
+    function uploadFileVerdict(EntryID) {
+        uploadUrl = URL + URL_DICT.verdict;
+        var body = {'apikey': TOKEN};
+        var result = sendMultipartRequest(uploadUrl, DEFAULT_HEADERS, EntryID, body);
+
+        var verdictsData = dq(result, 'wildfire.get-verdict-info');
+
+        var prettyVerdicts = prettifyVerdicts(verdictsData);
+        var md = tableToMarkdown('WildFire Verdicts', prettyVerdicts);
+
+        var dbotScore = createDBotScoreFromVerdicts(prettyVerdicts);
+        var ec = {
+            "WildFire.Verdicts(val.SHA256 === obj.SHA256 || val.MD5 === obj.MD5)": prettyVerdicts,
+            "DBotScore(val.Indicator === obj.Indicator)": dbotScore
+        };
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            ReadableContentsFormat: formats.markdown,
+            EntryContext: ec
+        };
+    }
+
+
     function uploadFileRemote(upload) {
         linkUrl = URL + URL_DICT.remoteFile;
         var body = {
@@ -199,6 +287,7 @@ script:
         };
         return returnObj;
     }
+
 
     function getReport(hash) {
         var reportUrl = URL + URL_DICT.report;
@@ -221,8 +310,8 @@ script:
             info: file_info
         };
         return returnObj;
-
     }
+
 
     function createReport(reportResponse, format, verbose) {
         var reportUrl = URL + URL_DICT.report;
@@ -337,7 +426,7 @@ script:
             }
         }
 
-        context["WildFire.Report(val.SHA256===obj.SHA256)"] = outputs;
+        context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs;
 
         if (file_info) {
             if (file_info.malware === 'yes') {
@@ -373,11 +462,13 @@ script:
         }
     }
 
+
     function detonate(type, upload, format, delay, timeout, verbose) {
+        var uploadData;
         if (type === 'file') {
-            var uploadData = uploadFile(upload).data;
+            uploadData = uploadFile(upload).data;
         } else { //type is remote file
-            var uploadData = uploadFileRemote(upload).data;
+            uploadData = uploadFileRemote(upload).data;
         }
         var sha = uploadData.sha256;
         delayTime = parseInt(delay);
@@ -411,10 +502,10 @@ script:
                 params.insecure,
                 params.proxy
                 );
-            if(res.StatusCode===200){
+            if (res.StatusCode ===200 ) {
                 return 'ok';
             }
-            else{
+            else {
                 return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
             }
             break;
@@ -438,7 +529,7 @@ script:
 
         case 'file':
         case 'wildfire-report':
-            inputs = GetReportArgsHandler(args.md5, args.hash, args.file);
+            var inputs = GetReportArgsHandler(args.md5, args.hash, args.file);
             entries = [];
             for (i=0; i < inputs.length; i++) {
                 var reportResponse = getReport(inputs[i]);
@@ -446,6 +537,15 @@ script:
                     return reportResponse.error;
                 }
                 entries.push(createReport(reportResponse, args.format, args.verbose));
+            }
+            return entries;
+
+        case 'wildfire-get-verdicts':
+            var inputs = argToList(args.EntryID);
+            var entries = [];
+            for (i=0; i < inputs.length; i++) {
+                var entry = uploadFileVerdict(args.EntryID);
+                entries.push(entry);
             }
             return entries;
 
@@ -727,7 +827,40 @@ script:
       description: The status of the submission
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
+  - name: wildfire-get-verdicts
+    arguments:
+    - name: EntryID
+      required: true
+      description: EntryID of the text file that contains multiple hashes. Limit is
+        500 hashes.
+      isArray: true
+    outputs:
+    - contextPath: WildFire.Verdicts.MD5
+      description: File MD5
+      type: string
+    - contextPath: WildFire.Verdicts.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: WildFire.Verdicts.Verdict
+      description: File verdict
+      type: number
+    - contextPath: WildFire.Verdicts.VerdictDescription
+      description: File verdict description
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: Get a verdict regarding multiple hashes
   runonce: false
 tests:
 - Wildfire Test
-releaseNotes: Fix of context handling at wildfire-report regarding hashes conataining network data
+releaseNotes: Add wildfire-get-verdicts command

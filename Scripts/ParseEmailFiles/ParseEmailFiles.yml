@@ -94,6 +94,6 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "-"
+releaseNotes: "Email file type detection improvements"
 tests:
 - ParseEmailFiles-test
