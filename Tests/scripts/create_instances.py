@@ -29,6 +29,7 @@ def options_handler():
 def create_instance(ami_name):
     print("Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name]))
     run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
+    print('Ran Command')
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         instance_id = instance_file.read()
         print('Instance ID is {}'.format(instance_id))
@@ -38,6 +39,7 @@ def create_instance(ami_name):
         with open("./Tests/images_data.txt", "a") as image_data_file:
             image_data_file.write(
                 '{name} Image info is: {data}\n'.format(name=AMI_NAME_TO_READABLE[ami_name], data=image_data))
+            print('{name} Image info is: {data}\n'.format(name=AMI_NAME_TO_READABLE[ami_name], data=image_data))
     return instance_id
 
 
