@@ -19,12 +19,6 @@ PROXY = demisto.params()['proxy']
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 SESSION_ID = None
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -109,8 +103,11 @@ def generate_pagination():
 
 
 def to_fidelis_time_format(t):
-    if isinstance(t, basestring):
-        t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+    if isinstance(t, STRING_TYPES):
+        try:
+            t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError:
+            t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
 
     return datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
 
@@ -494,7 +491,7 @@ def fetch_incidents():
         incident = {
             'Type': 'Fidelis',
             'name': '{} {}'.format(item['ALERT_ID'], item['SUMMARY']),
-            'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%S'),
+            'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item),
         }
         latest = max(latest, incident_date)
@@ -509,6 +506,7 @@ def fetch_incidents():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 try:
+    handle_proxy()
     command = demisto.command()
     LOG('Command being called is {}'.format(command))
     login()

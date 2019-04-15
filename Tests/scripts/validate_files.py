@@ -253,6 +253,8 @@ class FilesValidator(object):
             splitted_regex = regex.split(".*")
             directory = splitted_regex[0]
             for root, dirs, files in os.walk(directory):
+                if root not in DIR_LIST:  # Skipping in case we entered a package
+                    continue
                 print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
                 for file_name in files:
                     file_path = os.path.join(root, file_name)
