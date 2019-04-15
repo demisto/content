@@ -398,9 +398,14 @@ script:
         if(!resXMLBody){
           return {error: 'No results yet'};
         }
+
         var result = JSON.parse(x2j(resXMLBody));
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
+        if (!report || !file_info) {
+            return {error: 'No results yet'};
+        }
+
         var returnObj = {
             hash: hash,
             result: result,
