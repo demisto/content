@@ -1,0 +1,380 @@
+category: Endpoint
+commonfields:
+  id: SymantecManagementCenter
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: https://
+  display: Server URL (e.g. https://)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Management Center provides a unified management environment for the Symantec
+  Security Platform portfolio of products.
+display: Symantec Management Center
+name: SymantecManagementCenter
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Query Filter parameter to filter by by the OS build number, e.g.,
+        "GT 227900"
+      isArray: true
+      name: build
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by description, e.g., "CONTAINS
+        desc"
+      isArray: false
+      name: description
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by model, e.g., "EQ VSWG-SE"
+      isArray: false
+      name: model
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by name, e.g., "STARTSWITH CAS"
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by OS version, e.g., "LT 2.3"
+      isArray: false
+      name: osVersion
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by platform, e.g., "CONTAINS CAS"
+      isArray: false
+      name: platform
+      required: false
+      secret: false
+    - default: false
+      description: String parameter to filter by device type, e.g., "cas"
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    deprecated: false
+    description: List devices in Mangement Center
+    execution: false
+    name: management-center-list-devices
+    outputs:
+    - contextPath: ManagementCenter.Device.UUID
+      description: Device UUID
+      type: String
+    - contextPath: ManagementCenter.Device.Name
+      description: Device name
+      type: String
+    - contextPath: ManagementCenter.Device.LastChanged
+      description: Device last changed date
+      type: Date
+    - contextPath: ManagementCenter.Device.Type
+      description: Device type
+      type: String
+    - contextPath: ManagementCenter.Device.Host
+      description: Device host address
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID
+      isArray: false
+      name: UUID
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a device from Management Center.
+    execution: false
+    name: management-center-get-device
+    outputs:
+    - contextPath: ManagementCenter.Device.UUID
+      description: Device UUID
+      type: String
+    - contextPath: ManagementCenter.Device.Name
+      description: Device name
+      type: String
+    - contextPath: ManagementCenter.Device.LastChanged
+      description: Device last changed
+      type: String
+    - contextPath: ManagementCenter.Device.LastChangedBy
+      description: Device last changed by
+      type: String
+    - contextPath: ManagementCenter.Device.Description
+      description: Device description
+      type: String
+    - contextPath: ManagementCenter.Device.Model
+      description: Device model
+      type: String
+    - contextPath: ManagementCenter.Device.Platform
+      description: Device platform
+      type: String
+    - contextPath: ManagementCenter.Device.Type
+      description: Device type
+      type: String
+    - contextPath: ManagementCenter.Device.OSVersion
+      description: Device OS version
+      type: String
+    - contextPath: ManagementCenter.Device.Build
+      description: Device build number
+      type: Number
+    - contextPath: ManagementCenter.Device.SerialNumber
+      description: Device serial number
+      type: Number
+    - contextPath: ManagementCenter.Device.Host
+      description: Device host address
+      type: String
+    - contextPath: ManagementCenter.Device.ManagementStatus
+      description: Device management status
+      type: String
+    - contextPath: ManagementCenter.Device.DeploymentStatus
+      description: Device deployment status
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID
+      isArray: false
+      name: UUID
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the health information for a device in Management Center.
+    execution: false
+    name: management-center-get-device-health
+    outputs:
+    - contextPath: ManagementCenter.Device.UUID
+      description: Device UUID
+      type: String
+    - contextPath: ManagementCenter.Device.Name
+      description: Device Name
+      type: String
+    - contextPath: ManagementCenter.Device.Health.Category
+      description: Device health category
+      type: String
+    - contextPath: ManagementCenter.Device.Health.Name
+      description: Device health name
+      type: String
+    - contextPath: ManagementCenter.Device.Health.State
+      description: Device health state
+      type: String
+    - contextPath: ManagementCenter.Device.Health.Message
+      description: Device health message
+      type: String
+    - contextPath: ManagementCenter.Device.Health.Status
+      description: Device health status
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID
+      isArray: false
+      name: UUID
+      required: true
+      secret: false
+    deprecated: false
+    description: Get license information for a device in Management Center.
+    execution: false
+    name: management-center-get-device-license
+    outputs:
+    - contextPath: ManagementCenter.Device.UUID
+      description: Device UUID
+      type: String
+    - contextPath: ManagementCenter.Device.Name
+      description: Device name
+      type: String
+    - contextPath: ManagementCenter.Device.Type
+      description: Device type
+      type: String
+    - contextPath: ManagementCenter.Device.License.Status
+      description: Device license status
+      type: String
+    - contextPath: ManagementCenter.Device.License.Component.Name
+      description: Device license component name
+      type: String
+    - contextPath: ManagementCenter.Device.License.Component.ActivationDate
+      description: Device license component activation date
+      type: Date
+    - contextPath: ManagementCenter.Device.License.Component.ExpirationDate
+      description: Device license component expiration date
+      type: Date
+    - contextPath: ManagementCenter.Device.License.Component.Validity
+      description: Device license component validity
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Device UUID
+      isArray: false
+      name: UUID
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the status of a device in Management Center.
+    execution: false
+    name: management-center-get-device-status
+    outputs:
+    - contextPath: ManagementCenter.Device.UUID
+      description: Device UUID
+      type: String
+    - contextPath: ManagementCenter.Device.Name
+      description: Device name
+      type: String
+    - contextPath: ManagementCenter.Device.CheckDate
+      description: Device check date
+      type: Date
+    - contextPath: ManagementCenter.Device.StartDate
+      description: Device start date
+      type: Date
+    - contextPath: ManagementCenter.Device.MonitorState
+      description: Device monitor state
+      type: String
+  - arguments:
+    - default: false
+      description: Query Filter parameter to filter by author, e.g., "EQ admin"
+      isArray: false
+      name: author
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by content type of policy, e.g.,
+        "ENDSWITH URL"
+      isArray: false
+      name: content_type
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by description, e.g., "CONTAINS
+        desc"
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by name, e.g., "STARTSWITH my_list"
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by referenceId, e.g., "EQ my_list"
+      isArray: false
+      name: reference_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Parameter to filter based on if the policy is shared or not shared.
+      isArray: false
+      name: shared
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter parameter to filter by tenant.
+      isArray: false
+      name: tenant
+      required: false
+      secret: false
+    deprecated: false
+    description: List policies in Management Center.
+    execution: false
+    name: management-center-list-policies
+    outputs:
+    - contextPath: ManagementCenter.Policy.UUID
+      description: Policy UUID
+      type: String
+    - contextPath: ManagementCenter.Policy.Name
+      description: Policy name
+      type: String
+    - contextPath: ManagementCenter.Policy.ContentType
+      description: Policy content type
+      type: String
+    - contextPath: ManagementCenter.Policy.Author
+      description: Policy author
+      type: String
+    - contextPath: ManagementCenter.Policy.Shared
+      description: Policy shared
+      type: Boolean
+    - contextPath: ManagementCenter.Policy.ReferenceID
+      description: Policy reference ID
+      type: String
+    - contextPath: ManagementCenter.Policy.Tenant
+      description: Policy tenant
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Policy UUID
+      isArray: false
+      name: UUID
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a policy from Management Center
+    execution: false
+    name: management-center-get-policy
+    outputs:
+    - contextPath: ManagementCenter.Policy.Name
+      description: Policy name
+      type: String
+    - contextPath: ManagementCenter.Policy.SchemaVersion
+      description: Policy content schema version
+      type: Number
+    - contextPath: ManagementCenter.Policy.RevisionInfo.Number
+      description: Management Center policy content revision number
+      type: Number
+    - contextPath: ManagementCenter.Policy.RevisionInfo.Description
+      description: Management Center policy content revision description
+      type: String
+    - contextPath: ManagementCenter.Policy.RevisionInfo.Author
+      description: Management Center policy content revision author
+      type: String
+    - contextPath: ManagementCenter.Policy.RevisionInfo.Date
+      description: Management Center policy content revision date
+      type: Date
+    - contextPath: ManagementCenter.Policy.IP.Address
+      description: Management Center policy IP address
+      type: String
+    - contextPath: ManagementCenter.Policy.IP.Description
+      description: Management Center policy IP description
+      type: String
+    - contextPath: ManagementCenter.Policy.IP.Enabled
+      description: 'Management Center policy '
+      type: Boolean
+    - contextPath: ManagementCenter.Policy.URL.Address
+      description: 'Management Center Policy URL '
+      type: String
+    - contextPath: ManagementCenter.Policy.URL.Description
+      description: Management Center policy URL description
+      type: String
+    - contextPath: ManagementCenter.Policy.URL.Enabled
+      description: Management Center policy URL enabled
+      type: Boolean
+    - contextPath: ManagementCenter.Policy.Category.Name
+      description: Management Center policy category name
+      type: String
+  - deprecated: false
+    description: Create a policy in Management Center
+    execution: false
+    name: management-center-create-policy
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
