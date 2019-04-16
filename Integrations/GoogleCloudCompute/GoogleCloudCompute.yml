@@ -11322,4 +11322,4 @@ script:
   type: python
 releaseNotes: "Fixes and added docstrings"
 tests:
-  - GoogleCloudCompute-Test
+  - No tests
