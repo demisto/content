@@ -17,6 +17,7 @@ if not demisto.params().get('proxy', False):
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+
 def get_server_url():
     url = demisto.params()['url']
     url = re.sub('/[\/]+$/', '', url)
@@ -117,13 +118,19 @@ DEFAULTS = {
     'fetch_limit':10
 }
 
-SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history', 'approval_set', 'assigned_to', 'assignment_group',
-     'business_duration', 'business_service', 'business_stc', 'calendar_duration', 'calendar_stc', 'caller_id', 'caused_by', 'close_code', 'close_notes',
-     'closed_at', 'closed_by', 'cmdb_ci', 'comments', 'comments_and_work_notes', 'company', 'contact_type', 'correlation_display', 'correlation_id',
-     'delivery_plan', 'delivery_task', 'description', 'due_date', 'expected_start', 'follow_up', 'group_list', 'hold_reason', 'impact', 'incident_state',
-     'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority', 'problem_id', 'resolved_at', 'resolved_by', 'rfc',
-     'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list',
-     'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
+SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
+             'approval_set', 'assigned_to', 'assignment_group',
+             'business_duration', 'business_service', 'business_stc', 'calendar_duration', 'calendar_stc', 'caller_id',
+             'caused_by', 'close_code', 'close_notes',
+             'closed_at', 'closed_by', 'cmdb_ci', 'comments', 'comments_and_work_notes', 'company', 'contact_type',
+             'correlation_display', 'correlation_id',
+             'delivery_plan', 'delivery_task', 'description', 'due_date', 'expected_start', 'follow_up', 'group_list',
+             'hold_reason', 'impact', 'incident_state',
+             'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority',
+             'problem_id', 'resolved_at', 'resolved_by', 'rfc',
+             'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input',
+             'watch_list', 'work_end', 'work_notes', 'work_notes_list',
+             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
 
 
 # Every table in ServiceNow should have those fields
@@ -142,6 +149,7 @@ DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
 
 ''' HELPER FUNCTIONS '''
 
+
 def send_request(path, method='get', body=None, params=None, headers=None, file=None):
     body = body if body is not None else {}
     params = params if params is not None else {}
@@ -149,8 +157,8 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
     url = '{}{}'.format(SERVER_URL, path)
     if not headers:
         headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         }
     if file:
         # Not supported in v2
@@ -161,14 +169,14 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
             shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
             with open(file_name, 'rb') as f:
                 files = {'file': f}
-                res = requests.request(method, url, headers=headers, params=params, data=body,files=files, auth=(USERNAME, PASSWORD),
-                verify=VERIFY_SSL)
+                res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
+                                       auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
             shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
         except Exception as e:
             raise Exception('Failed to upload file - ' + e.message)
     else:
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params,
+                               auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
 
     try:
         obj = res.json()
@@ -188,9 +196,11 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
         raise Exception('ServiceNow Error: {}, details: {}'.format(message, details))
 
     if res.status_code < 200 or res.status_code >= 300:
-        raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, str(res.content), str(res.headers)))
+        raise Exception('Got status code {} with url {} with body {} with headers {}'
+                        .format(str(res.status_code), url, str(res.content), str(res.headers)))
 
     return obj
+
 
 def get_table_name(ticket_type=None):
     if ticket_type:
@@ -201,8 +211,9 @@ def get_table_name(ticket_type=None):
         else:
             return 'incident'
 
+
 def create_ticket_context(data, ticket_type):
-    context =  {
+    context = {
         'ID': data.get('sys_id'),
         'Summary': data.get('short_description'),
         'Number': data.get('number'),
@@ -224,11 +235,11 @@ def create_ticket_context(data, ticket_type):
 
     # Try to map fields
     if 'priority' in data:
-            # Backward compatibility
-            if demisto.command() in DEPRECATED_COMMANDS:
-                context['Priority'] = data['priority']
-            else:
-                context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
+        # Backward compatibility
+        if demisto.command() in DEPRECATED_COMMANDS:
+            context['Priority'] = data['priority']
+        else:
+            context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
     if 'state' in data:
         mapped_state = data['state']
         # Backward compatibility
@@ -239,6 +250,7 @@ def create_ticket_context(data, ticket_type):
 
     return createContext(context, removeNull=True)
 
+
 def get_ticket_context(data, ticket_type):
     if not isinstance(data, list):
         return create_ticket_context(data, ticket_type)
@@ -247,6 +259,7 @@ def get_ticket_context(data, ticket_type):
     for d in data:
         tickets.append(create_ticket_context(d, ticket_type))
     return tickets
+
 
 def get_ticket_human_readable(tickets, ticket_type):
     if not isinstance(tickets, list):
@@ -267,7 +280,8 @@ def get_ticket_human_readable(tickets, ticket_type):
             'Opened At': ticket.get('opened_at'),
             'Due Date': ticket.get('due_date'),
             # This field refers to a record in the database, the value is its system ID.
-            'Resolved By': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict) else ticket.get('closed_by'),
+            'Resolved By': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict)
+            else ticket.get('closed_by'),
             'Resolved At': ticket.get('resolved_at'),
             'SLA Due': ticket.get('sla_due'),
             'Short Description': ticket.get('short_description'),
@@ -290,6 +304,7 @@ def get_ticket_human_readable(tickets, ticket_type):
             hr['State'] = mapped_state
         result.append(hr)
     return result
+
 
 def get_ticket_fields(template, ticket_type):
     # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
@@ -315,7 +330,8 @@ def get_ticket_fields(template, ticket_type):
 
     return body
 
-def get_body(template, fields, custom_fields):
+
+def get_body(fields, custom_fields):
     body = {}
 
     if fields:
@@ -359,6 +375,8 @@ def get_snow_time(minutes_offset):
     return snow_time.strftime('%Y-%m-%d %H:%M:%S')
 
 ''' FUNCTIONS '''
+
+
 def get_template(name):
     query_params={}
     query_params['sysparm_limit'] = 1
@@ -366,7 +384,7 @@ def get_template(name):
 
     ticket_type = 'sys_template'
     path = 'table/' + ticket_type
-    res = send_request('GET',path,params=query_params)
+    res = send_request('GET', path, params=query_params)
 
     if len(res['result']) == 0:
         raise ValueError("Incorrect template name")
@@ -376,10 +394,11 @@ def get_template(name):
 
     for i in range(len(template) - 1):
         template_value = template[i].split('=')
-        if (len(template_value) > 1):
+        if len(template_value) > 1:
             dic_template[template_value[0]] = template_value[1]
 
     return dic_template
+
 
 def get_ticket_command():
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
@@ -406,9 +425,10 @@ def get_ticket_command():
     hr = get_ticket_human_readable(ticket, ticket_type)
     context = get_ticket_context(ticket, ticket_type)
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
-
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
@@ -417,14 +437,15 @@ def get_ticket_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, headers=headers, removeNull=True),
         'EntryContext': {
-              'Ticket(val.ID===obj.ID)': context,
-              'ServiceNow.Ticket(val.ID===obj.ID)': context
+            'Ticket(val.ID===obj.ID)': context,
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
     entries.append(entry)
 
     return entries
+
 
 def get_record_command():
     table_name = demisto.args()['table_name']
@@ -456,7 +477,7 @@ def get_record_command():
             fields.append('sys_id')
         # filter the record for the required fields
         record = dict(filter(lambda kv_pair: kv_pair[0] in fields, record.items()))
-        for k,v in record.iteritems():
+        for k, v in record.iteritems():
             if isinstance(v, dict):
                 # For objects that refer to a record in the database, take their value(system ID).
                 record[k] = v.get('value', record[k])
@@ -477,7 +498,7 @@ def get_record_command():
     return entry
 
 
-def get(table_name, record_id, number = None):
+def get(table_name, record_id, number=None):
     path = None
     query_params = {}
     if record_id:
@@ -492,6 +513,7 @@ def get(table_name, record_id, number = None):
         raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number')
 
     return send_request(path, 'get', params=query_params)
+
 
 def get_ticket_attachments(ticket_id):
     path = 'attachment'
@@ -517,6 +539,7 @@ def get_ticket_attachment_entries(ticket_id):
 
     return entries
 
+
 def update_ticket_command():
     custom_fields = split_fields(demisto.args().get('custom_fields'))
     template = demisto.args().get('template')
@@ -524,10 +547,10 @@ def update_ticket_command():
     ticket_id = demisto.args()['id']
 
     if template:
-        template = get_template(template_name)
+        template = get_template(template)
     fields = get_ticket_fields(template, ticket_type)
 
-    res = update(ticket_type, ticket_id ,fields, custom_fields, template)
+    res = update(ticket_type, ticket_id, fields, custom_fields)
 
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
@@ -540,13 +563,15 @@ def update_ticket_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type, hr, removeNull=True),
+        'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type,
+                                         hr, removeNull=True),
         'EntryContext': {
             'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
     return entry
+
 
 def update_record_command():
     table_name = demisto.args()['table_name']
@@ -580,14 +605,13 @@ def update_record_command():
 
     return entry
 
-    res = update(table_name, record_id, fields, custom_fields)
 
-
-def update(table_name, record_id, fields, custom_fields, template=None):
-    body = get_body(template, fields, custom_fields)
+def update(table_name, record_id, fields, custom_fields):
+    body = get_body(fields, custom_fields)
     path = 'table/' + table_name + '/' + record_id
 
-    return send_request(path, 'patch', body = body)
+    return send_request(path, 'patch', body=body)
+
 
 def create_ticket_command():
     custom_fields = split_fields(demisto.args().get('custom_fields'))
@@ -595,10 +619,10 @@ def create_ticket_command():
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
     if template:
-        template = get_template(template_name)
+        template = get_template(template)
     fields = get_ticket_fields(template, ticket_type)
 
-    res = create(ticket_type, fields, custom_fields, template)
+    res = create(ticket_type, fields, custom_fields)
 
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
@@ -606,22 +630,26 @@ def create_ticket_command():
     hr = get_ticket_human_readable(res['result'], ticket_type)
     context = get_ticket_context(res['result'], ticket_type)
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr,
+                                         headers=headers, removeNull=True),
         'EntryContext': {
-              'Ticket(val.ID===obj.ID)': context,
-              'ServiceNow.Ticket(val.ID===obj.ID)': context
+            'Ticket(val.ID===obj.ID)': context,
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
     return entry
+
 
 def create_record_command():
     table_name = demisto.args()['table_name']
@@ -634,7 +662,7 @@ def create_record_command():
     if custom_fields:
         custom_fields = split_fields(custom_fields)
 
-    res = create(table_name, fields, custom_fields, template)
+    res = create(table_name, fields, custom_fields)
 
     if not res or 'result' not in res:
         return 'Could not retrieve record'
@@ -656,11 +684,12 @@ def create_record_command():
     return entry
 
 
-def create(table_name, fields, custom_fields, template):
-    body = get_body(template, fields, custom_fields)
+def create(table_name, fields, custom_fields):
+    body = get_body(fields, custom_fields)
     path = 'table/' + table_name
 
-    return send_request(path, 'post', body = body)
+    return send_request(path, 'post', body=body)
+
 
 def delete_ticket_command():
     ticket_id = demisto.args()['id']
@@ -677,6 +706,7 @@ def delete_ticket_command():
     }
 
     return entry
+
 
 def delete_record_command():
     record_id = demisto.args()['id']
@@ -705,7 +735,7 @@ def add_link_command():
     ticket_id = demisto.args()['id']
     key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
     text = demisto.args().get('text', demisto.args()['link'])
-    link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >'+text+'</a>[/code]'
+    link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >' + text + '</a>[/code]'
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
     res = add_link(ticket_id, ticket_type, key, link)
@@ -713,8 +743,10 @@ def add_link_command():
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     hr = get_ticket_human_readable(res['result'], ticket_type)
     entry = {
@@ -722,7 +754,8 @@ def add_link_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr, headers=headers, removeNull=True)
+        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr,
+                                         headers=headers, removeNull=True)
     }
 
     return entry
@@ -735,6 +768,7 @@ def add_link(ticket_id, ticket_type, key, link):
 
     return send_request(path, 'patch', body=body)
 
+
 def add_comment_command():
     ticket_id = demisto.args()['id']
     key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
@@ -746,8 +780,10 @@ def add_comment_command():
     if not res or 'result' not in res:
         return_error('Unable to retrieve response')
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     hr = get_ticket_human_readable(res['result'], ticket_type)
     entry = {
@@ -755,10 +791,12 @@ def add_comment_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr, headers=headers, removeNull=True)
+        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr,
+                                         headers=headers, removeNull=True)
     }
 
     return entry
+
 
 def add_comment(ticket_id, ticket_type, key, text):
     body = {}
@@ -766,6 +804,7 @@ def add_comment(ticket_id, ticket_type, key, text):
     path = 'table/' + ticket_type + '/' + ticket_id
 
     return send_request(path, 'patch', body=body)
+
 
 def get_ticket_notes_command():
     ticket_id = demisto.args()['id']
@@ -801,13 +840,15 @@ def get_ticket_notes_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers, headerTransform=pascalToSpace, removeNull=True),
+        'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers,
+                                         headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': {
-              'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
+            'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
         }
     }
 
     return entry
+
 
 def query_tickets_command():
     sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
@@ -815,7 +856,7 @@ def query_tickets_command():
     sysparm_offset = demisto.args().get('offset', DEFAULTS['offset'])
 
     if not sysparm_query:
-        #backward compatibility
+        # backward compatibility
         sysparm_query = demisto.args().get('sysparm_query')
     ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
@@ -827,8 +868,10 @@ def query_tickets_command():
     hr = get_ticket_human_readable(res['result'], ticket_type)
     context = get_ticket_context(res['result'], ticket_type)
 
-    headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
-               'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
@@ -837,8 +880,8 @@ def query_tickets_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
         'EntryContext': {
-              'Ticket(val.ID===obj.ID)': context,
-              'ServiceNow.Ticket(val.ID===obj.ID)': context
+            'Ticket(val.ID===obj.ID)': context,
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -874,7 +917,7 @@ def query_table_command():
         records = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
         for r in records:
             r['ID'] = r.pop('sys_id')
-            for k,v in r.iteritems():
+            for k, v in r.iteritems():
                 if isinstance(v, dict):
                     # For objects that refer to a record in the database, take their value (system ID).
                     r[k] = v.get('value', v)
@@ -903,7 +946,7 @@ def query(table_name, sysparm_limit, sysparm_offset, sysparm_query):
 
     path = 'table/' + table_name
 
-    return send_request(path, 'get', params = query_params)
+    return send_request(path, 'get', params=query_params)
 
 
 def upload_file_command():
@@ -911,7 +954,7 @@ def upload_file_command():
     ticket_id = demisto.args()['id']
     file_id = demisto.args()['file_id']
     file_name = demisto.args().get('file_name',
-                                demisto.dt(demisto.context(), "File(val.EntryID=='"+file_id+"').Name"))
+                                   demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
     res = upload_file(ticket_id, file_id, file_name, ticket_type)
@@ -940,8 +983,8 @@ def upload_file_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('File uploaded successfully', hr),
         'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)' : context,
-            'Ticket(val.ID===obj.ID)' : context
+            'ServiceNow.Ticket(val.ID===obj.ID)': context,
+            'Ticket(val.ID===obj.ID)': context
         }
     }
 
@@ -961,7 +1004,8 @@ def upload_file(ticket_id, file_id, file_name, ticket_type):
 
     path = 'attachment/upload'
 
-    return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
+    return send_request(path, 'post', headers=headers, body=body, file={'id': file_id, 'name': file_name})
+
 
 # Deprecated
 def get_computer_command():
@@ -1001,7 +1045,7 @@ def get_computer_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Computer', hr),
         'EntryContext': {
-              'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
+            'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
         }
     }
 
@@ -1037,7 +1081,8 @@ def query_computers_command():
     if len(computers) == 0:
         return 'No computers found'
 
-    headers = ['ID','AssetTag','Name','DisplayName','SupportGroup','OperatingSystem','Company','AssignedTo','State','Cost','Comments']
+    headers = ['ID', 'AssetTag', 'Name', 'DisplayName', 'SupportGroup', 'OperatingSystem', 'Company', 'AssignedTo',
+               'State', 'Cost', 'Comments']
 
     mapped_computers = [{
         'ID': computer.get('sys_id'),
@@ -1046,8 +1091,10 @@ def query_computers_command():
         'DisplayName': '{} - {}'.format(computer.get('asset_tag', ''), computer.get('name', '')),
         'SupportGroup': computer.get('support_group'),
         'OperatingSystem': computer.get('os'),
-        'Company': computer.get('company', {}).get('value') if isinstance(computer.get('company'), dict) else computer.get('company'),
-        'AssignedTo': computer.get('assigned_to', {}).get('value') if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
+        'Company': computer.get('company', {}).get('value')
+        if isinstance(computer.get('company'), dict) else computer.get('company'),
+        'AssignedTo': computer.get('assigned_to', {}).get('value')
+        if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
         'State': COMPUTER_STATUS.get(computer.get('install_status', ''), computer.get('install_status')),
         'Cost': '{} {}'.format(computer.get('cost', ''), computer.get('cost_cc', '')).rstrip(),
         'Comments': computer.get('comments')
@@ -1058,9 +1105,10 @@ def query_computers_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers,
+                                         removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
+            'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
         }
     }
 
@@ -1092,14 +1140,15 @@ def query_groups_command():
     if len(groups) == 0:
         return 'No groups found'
 
-    headers = ['ID','Description','Name','Active','Manager','Updated']
+    headers = ['ID', 'Description', 'Name', 'Active', 'Manager', 'Updated']
 
     mapped_groups = [{
         'ID': group.get('sys_id'),
         'Description': group.get('description'),
         'Name': group.get('name'),
         'Active': group.get('active'),
-        'Manager': group.get('manager', {}).get('value') if isinstance(group.get('manager'), dict) else group.get('manager'),
+        'Manager': group.get('manager', {}).get('value')
+        if isinstance(group.get('manager'), dict) else group.get('manager'),
         'Updated': group.get('sys_updated_on'),
     } for group in groups]
 
@@ -1108,9 +1157,10 @@ def query_groups_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers,
+                                         removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
+            'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
         }
     }
 
@@ -1142,7 +1192,7 @@ def query_users_command():
     if len(users) == 0:
         return 'No users found'
 
-    headers = ['ID','Name','UserName','Email','Created','Updated']
+    headers = ['ID', 'Name', 'UserName', 'Email', 'Created', 'Updated']
 
     mapped_users = [{
         'ID': user.get('sys_id'),
@@ -1158,13 +1208,15 @@ def query_users_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True,
+                                         headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
+            'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
         }
     }
 
     return entry
+
 
 # Deprecated
 def get_groups_command():
@@ -1200,11 +1252,12 @@ def get_groups_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Group', hr_groups),
         'EntryContext': {
-              'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
+            'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
         }
     }
 
     return entry
+
 
 def list_table_fields_command():
     table_name = demisto.args()['table_name']
@@ -1217,7 +1270,7 @@ def list_table_fields_command():
     if len(res['result']) == 0:
         return 'Table contains no records'
 
-    fields = [{'Name': k} for k,v in res['result'][0].iteritems()]
+    fields = [{'Name': k} for k, v in res['result'][0].iteritems()]
 
     entry = {
         'Type': entryTypes['note'],
@@ -1226,11 +1279,12 @@ def list_table_fields_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Table fields - ' + table_name, fields),
         'EntryContext': {
-              'ServiceNow.Field': createContext(fields),
+            'ServiceNow.Field': createContext(fields),
         }
     }
 
     return entry
+
 
 def get_table_fields(table_name):
     # Get one record
@@ -1238,6 +1292,7 @@ def get_table_fields(table_name):
     res = send_request(path, 'GET')
 
     return res
+
 
 def get_table_name_command():
     label = demisto.args()['label']
@@ -1269,9 +1324,10 @@ def get_table_name_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables, headers=headers, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables,
+                                         headers=headers, headerTransform=pascalToSpace),
         'EntryContext': {
-              'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
+            'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
         }
     }
 
@@ -1344,6 +1400,7 @@ def fetch_incidents():
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
 
+
 LOG('Executing command ' + demisto.command())
 raise_exception = False
 try:
@@ -1356,11 +1413,14 @@ try:
     elif demisto.command() == 'fetch-incidents':
         raise_exception = True
         fetch_incidents()
-    elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
+    elif demisto.command() == 'servicenow-get' or\
+            demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
         demisto.results(get_ticket_command())
-    elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
+    elif demisto.command() == 'servicenow-update' or\
+            demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
         demisto.results(update_ticket_command())
-    elif demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
+    elif demisto.command() == 'servicenow-create' or\
+            demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
         demisto.results(create_ticket_command())
     elif demisto.command() == 'servicenow-delete-ticket':
         demisto.results(delete_ticket_command())
@@ -1368,7 +1428,8 @@ try:
         demisto.results(add_link_command())
     elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
         demisto.results(add_comment_command())
-    elif demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
+    elif demisto.command() == 'servicenow-query' or\
+            demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
         demisto.results(query_tickets_command())
     elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
         demisto.results(upload_file_command())
