@@ -569,10 +569,10 @@ def main():
                 print('Did not get one image data for server version, got {}'.format(image_data))
             else:
                 server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-                if not server_numeric_version:
-                    server_numeric_version = '99.99.98'  # latest
-                else:
+                if server_numeric_version:
                     server_numeric_version = server_numeric_version[0]
+                else:
+                    server_numeric_version = '99.99.98'  # latest
                 print('Server image info: {}'.format(image_data[0]))
                 print('Server version: {}'.format(server_numeric_version))
 
@@ -593,7 +593,7 @@ def main():
         with open('public_ip', 'rb') as f:
             public_ip = f.read().strip()
 
-        execute_testing(server, public_ip, server_version)
+        execute_testing(server, public_ip, server_version, server_numeric_version)
 
 
 if __name__ == '__main__':
