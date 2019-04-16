@@ -870,7 +870,7 @@ def search_connector(url_params):
     return http_request('GET', '/connector', params=url_params)
 
 
-def update_approval_request_command():
+def resolve_approval_request_command():
     """
     Updates an existing approval request
     :return: EntryObject of the approval request
@@ -882,7 +882,7 @@ def update_approval_request_command():
     demisto.results(create_entry_object(raw_res, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, hr))
 
 
-def update_approval_request(body_params):
+def resolve_approval_request(body_params):
     """
     Update file analysis
     :param body_params: URL parameters for the request
@@ -944,8 +944,8 @@ try:
         get_connector_command()
     elif demisto.command() == 'cbp-connector-search':
         search_connector_command()
-    elif demisto.command() == 'cbp-approvalRequest-update':
-        update_approval_request_command()
+    elif demisto.command() == 'cbp-approvalRequest-resolve':
+        resolve_approval_request_command()
     else:
         return_error("Command {} is not supported.".format(demisto.command()))
 # Log exceptions
