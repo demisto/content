@@ -522,7 +522,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version):
                           is_filter_configured,
                           filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name)
+                          build_name, server_numeric_version)
 
     print("\nRunning mock-disabled tests")
     proxy.configure_proxy_in_demisto('')
