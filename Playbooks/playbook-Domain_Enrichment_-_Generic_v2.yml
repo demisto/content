@@ -1,7 +1,6 @@
-id: Domain Enrichment - Generic
+id: Domain Enrichment - Generic v2
 version: -1
-name: Domain Enrichment - Generic
-fromversion: 4.1.0
+name: Domain Enrichment - Generic v2
 description: |-
   Enrich domains using one or more integrations.
   Domain enrichment includes:
@@ -189,13 +188,14 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: ffd8e4da-f04a-4742-8a90-cd4b03f378c9
+    taskid: 369e9301-a4f9-415f-8c45-902304453296
     type: regular
     task:
-      id: ffd8e4da-f04a-4742-8a90-cd4b03f378c9
+      id: 369e9301-a4f9-415f-8c45-902304453296
       version: -1
       name: Get domain category
-      description: Gets the category of the domain as found in Cisco Umbrella Investigation records.
+      description: Gets the category of the domain as found in Cisco Umbrella Investigation
+        records.
       script: '|||umbrella-domain-categorization'
       type: regular
       iscommand: true
@@ -313,6 +313,6 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
-releaseNotes: "Improved indicator uniqueness, adjusted autoextract settings, fixed descriptions and task names and removed reputation command."
+releaseNotes: "Added a new playbook for domain enrichment. The new playbook features, among other things - improved indicator uniqueness, adjusted autoextract settings, fixed descriptions and task names and removed reputation command."
 tests:
-  - Domain Enrichment - Generic - Test
+  - Domain Enrichment - Generic v2 - Test

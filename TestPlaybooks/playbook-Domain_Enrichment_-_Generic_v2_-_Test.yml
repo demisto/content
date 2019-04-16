@@ -1,8 +1,7 @@
-id: Domain Enrichment - Generic - Test
+id: Domain Enrichment - Generic v2 - Test
 version: -1
-fromversion: 4.1.0
-name: Domain Enrichment - Generic - Test
-description: A test for the Domain Enrichment - Generic playbook.
+name: Domain Enrichment - Generic v2 - Test
+description: A test for the Domain Enrichment - Generic v2 playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,8 +36,8 @@ tasks:
     task:
       id: 2a204919-f35d-4c0f-85a0-83dfccccaa1d
       version: -1
-      name: Domain Enrichment - Generic
-      playbookName: Domain Enrichment - Generic
+      name: Domain Enrichment - Generic_dev
+      playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
