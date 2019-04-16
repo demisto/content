@@ -223,7 +223,6 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :return: Returns the http request response json
         :rtype: ``dict``
     """
-    # url = 'http://httpbin.org/get'
     url = SERVER + url_suffix
     try:
         res = requests.request(
@@ -269,7 +268,6 @@ def create_entry_object(contents='', ec=None, hr=''):
         'HumanReadable': hr,
         'EntryContext': ec
     }
-    demisto.info(res)
     return res
 
 
@@ -307,10 +305,14 @@ def generic_search_command(search_function, trans_dict, hr_title, ec_key):
     url_params = {
         "limit": args.get('limit'),
         "offset": args.get('offset'),
-        "q": args.get('query'),
         "sort": args.get('sort'),
         "group": args.get('group')
     }
+    q = args.get('query')
+    if isinstance(q, str):
+        # handle multi condition queries in the following formats: 1) a&b, 2) a&q=b
+        q = list(map(lambda x: remove_prefix('=q', x), q.split('&')))
+        url_params['q'] = q
     headers = args.get('headers')
     raw_res = search_function(url_params)
     ec = []
@@ -339,6 +341,18 @@ def generic_get_command(get_function, trans_dict, hr_title, ec_key):
     hr = tableToMarkdown(hr_title, ec, headers, removeNull=True, headerTransform=pascalToSpace)
     ec = {ec_key: ec} if ec else None
     demisto.results(create_entry_object(raw_res, ec, hr))
+
+
+def remove_prefix(prefix, full_str):
+    """
+    Removes prefix from beginning of full_str if found
+    :param prefix: Prefix to remove from full_str
+    :param full_str: String to have its prefix removed
+    :return: full_str without the provided prefix
+    """
+    if full_str.startswith(prefix):
+        return full_str[len(prefix):]
+    return full_str
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -534,7 +548,6 @@ def delete_file_rule_command():
     Deletes the requested file rule
     :return: EntryObject of the file catalog
     """
-    demisto.info("delete_file_rule_command CALLED")
     args = demisto.args()
     id = args.get('id')
     delete_file_rule(id)
