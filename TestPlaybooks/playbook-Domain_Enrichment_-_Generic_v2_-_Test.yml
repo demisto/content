@@ -36,7 +36,7 @@ tasks:
     task:
       id: 2a204919-f35d-4c0f-85a0-83dfccccaa1d
       version: -1
-      name: Domain Enrichment - Generic_dev
+      name: Domain Enrichment - Generic v2
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
