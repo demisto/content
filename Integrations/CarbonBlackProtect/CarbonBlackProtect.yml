@@ -605,19 +605,19 @@ script:
     execution: false
     name: cbp-fileInstance-search
     outputs:
-    - contextPath: CBPFileInstance.CatalogID
+    - contextPath: CBP.FileInstance.CatalogID
       description: The file ID in the file catalog
       type: String
-    - contextPath: CBPFileInstance.ComputerID
+    - contextPath: CBP.FileInstance.ComputerID
       description: The computer ID on which the file was found
       type: String
-    - contextPath: CBPFileInstance.ID
+    - contextPath: CBP.FileInstance.ID
       description: CBP internal ID of the file instance
       type: String
-    - contextPath: CBPFileInstance.Name
+    - contextPath: CBP.FileInstance.Name
       description: Name of the file
       type: String
-    - contextPath: CBPFileInstance.Path
+    - contextPath: CBP.FileInstance.Path
       description: Path on the found hostname
       type: String
   - arguments:
@@ -670,82 +670,82 @@ script:
     execution: false
     name: cbp-event-search
     outputs:
-    - contextPath: CBPEvent.FilePath
+    - contextPath: CBP.Event.FilePath
       description: File path of the event
       type: String
-    - contextPath: CBPEvent.Param1
+    - contextPath: CBP.Event.Param1
       description: First event parameter
       type: String
-    - contextPath: CBPEvent.Param2
+    - contextPath: CBP.Event.Param2
       description: Second event parameter
       type: String
-    - contextPath: CBPEvent.Param3
+    - contextPath: CBP.Event.Param3
       description: Third event parameter
       type: String
-    - contextPath: CBPEvent.SubTypeName
+    - contextPath: CBP.Event.SubTypeName
       description: Name of the sub type
       type: String
-    - contextPath: CBPEvent.ComputerName
+    - contextPath: CBP.Event.ComputerName
       description: Name of the computer related to the event
       type: String
-    - contextPath: CBPEvent.FileName
+    - contextPath: CBP.Event.FileName
       description: Name of the file related to the event
       type: String
-    - contextPath: CBPEvent.RuleName
+    - contextPath: CBP.Event.RuleName
       description: Name of the rule related to the event
       type: String
-    - contextPath: CBPEvent.ProcessFileCatalogID
+    - contextPath: CBP.Event.ProcessFileCatalogID
       description: ID of the process file catalog id
       type: String
-    - contextPath: CBPEvent.StringID
+    - contextPath: CBP.Event.StringID
       description: ID of the event string
       type: String
-    - contextPath: CBPEvent.IPAddress
+    - contextPath: CBP.Event.IPAddress
       description: IP address of the event
       type: String
-    - contextPath: CBPEvent.PolicyID
+    - contextPath: CBP.Event.PolicyID
       description: Policy ID of the event
       type: String
-    - contextPath: CBPEvent.Timestamp
+    - contextPath: CBP.Event.Timestamp
       description: Timestamp of the event
       type: Date
-    - contextPath: CBPEvent.Username
+    - contextPath: CBP.Event.Username
       description: Event's username
       type: String
-    - contextPath: CBPEvent.ComputerID
+    - contextPath: CBP.Event.ComputerID
       description: ID of the event computer
       type: String
-    - contextPath: CBPEvent.ProcessFileName
+    - contextPath: CBP.Event.ProcessFileName
       description: FileName of the process
       type: String
-    - contextPath: CBPEvent.FileCatalogID
+    - contextPath: CBP.Event.FileCatalogID
       description: ID of the file catalog
       type: String
-    - contextPath: CBPEvent.ProcessFileName
+    - contextPath: CBP.Event.ProcessFileName
       description: File name of the process
       type: String
-    - contextPath: CBPEvent.IndicatorName
+    - contextPath: CBP.Event.IndicatorName
       description: Event's indicator name
       type: String
-    - contextPath: CBPEvent.SubType
+    - contextPath: CBP.Event.SubType
       description: The id of the subtype
       type: Number
-    - contextPath: CBPEvent.Type
+    - contextPath: CBP.Event.Type
       description: Type of the event
       type: Number
-    - contextPath: CBPEvent.ID
+    - contextPath: CBP.Event.ID
       description: Event's ID
       type: Number
-    - contextPath: CBPEvent.Description
+    - contextPath: CBP.Event.Description
       description: Event's description
       type: String
-    - contextPath: CBPEvent.Severity
+    - contextPath: CBP.Event.Severity
       description: Severity of the event
       type: String
-    - contextPath: CBPEvent.CommandLine
+    - contextPath: CBP.Event.CommandLine
       description: Command line executed in the event
       type: String
-    - contextPath: CBPEvent.ProcessPathName
+    - contextPath: CBP.Event.ProcessPathName
       description: Path name of the process
       type: String
   - arguments:
@@ -798,8 +798,23 @@ script:
     execution: false
     name: cbp-approvalRequest-search
     outputs:
-    - contextPath: CBPApprovalRequest.ID
+    - contextPath: CBP.ApprovalRequest.ID
       description: ID of the approval request
+      type: Number
+    - contextPath: CBP.ApprovalRequest.Resolution
+      description: Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected, 2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved - Updater, 6=Resolved - Publisher, 7=Resolved - Other
+      type: Number
+    - contextPath: CBP.ApprovalRequest.FileCatalogId
+      description: Id of fileCatalog entry associated with file for this request
+      type: Number
+    - contextPath: CBP.ApprovalRequest.ComputerId
+      description: Id of computer where request originated
+      type: Number
+    - contextPath: CBP.ApprovalRequest.DateCreated
+      description: Date/time when this request was created (UTC)
+      type: Date
+    - contextPath: CBP.ApprovalRequest.Status
+      description: Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated
       type: Number
   - arguments:
     - default: false
@@ -851,29 +866,29 @@ script:
     execution: false
     name: cbp-fileRule-search
     outputs:
-    - contextPath: CBPFileRule.CatalogID
+    - contextPath: CBP.FileRule.CatalogID
       description: The file catalog ID for the rule
       type: String
-    - contextPath: CBPFileRule.Description
+    - contextPath: CBP.FileRule.Description
       description: |
         The rule description
       type: String
-    - contextPath: CBPFileRule.FileState
+    - contextPath: CBP.FileRule.FileState
       description: The file state for the rule
       type: String
-    - contextPath: CBPFileRule.Hash
+    - contextPath: CBP.FileRule.Hash
       description: The hash for the rule
       type: String
-    - contextPath: CBPFileRule.ID
+    - contextPath: CBP.FileRule.ID
       description: The rule ID
       type: String
-    - contextPath: CBPFileRule.Name
+    - contextPath: CBP.FileRule.Name
       description: The rule name
       type: String
-    - contextPath: CBPFileRule.PolicyIDs
+    - contextPath: CBP.FileRule.PolicyIDs
       description: The policies this rule is part of
       type: String
-    - contextPath: CBPFileRule.ReportOnly
+    - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule reporting only or also enforcing
       type: String
   - arguments:
@@ -888,29 +903,29 @@ script:
     execution: false
     name: cbp-fileRule-get
     outputs:
-    - contextPath: CBPFileRule.CatalogID
+    - contextPath: CBP.FileRule.CatalogID
       description: The file catalog ID for the rule
       type: String
-    - contextPath: CBPFileRule.Description
+    - contextPath: CBP.FileRule.Description
       description: |
         The rule description
       type: String
-    - contextPath: CBPFileRule.FileState
+    - contextPath: CBP.FileRule.FileState
       description: The file state for the rule
       type: String
-    - contextPath: CBPFileRule.Hash
+    - contextPath: CBP.FileRule.Hash
       description: The hash for the rule
       type: String
-    - contextPath: CBPFileRule.ID
+    - contextPath: CBP.FileRule.ID
       description: The rule ID
       type: String
-    - contextPath: CBPFileRule.Name
+    - contextPath: CBP.FileRule.Name
       description: The rule name
       type: String
-    - contextPath: CBPFileRule.PolicyIDs
+    - contextPath: CBP.FileRule.PolicyIDs
       description: The policies this rule is part of
       type: String
-    - contextPath: CBPFileRule.ReportOnly
+    - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule reporting only or also enforcing
       type: String
   - arguments:
@@ -974,52 +989,52 @@ script:
     execution: false
     name: cbp-policy-search
     outputs:
-    - contextPath: CBPPolicy.ReadOnly
+    - contextPath: CBP.Policy.ReadOnly
       description: Is this policy read only
       type: Boolean
-    - contextPath: CBPPolicy.EnforcementLevel
+    - contextPath: CBP.Policy.EnforcementLevel
       description: The level of enforcement of the policy
       type: String
-    - contextPath: CBPPolicy.ReputationEnabled
+    - contextPath: CBP.Policy.ReputationEnabled
       description: Is reputation enabled for policy
       type: Boolean
-    - contextPath: CBPPolicy.AtEnforcementComputers
+    - contextPath: CBP.Policy.AtEnforcementComputers
       description: Number of enforced computers
       type: Number
-    - contextPath: CBPPolicy.Automatic
+    - contextPath: CBP.Policy.Automatic
       description: Is this policy automatic
       type: Boolean
-    - contextPath: CBPPolicy.Name
+    - contextPath: CBP.Policy.Name
       description: Name of the policy
       type: String
-    - contextPath: CBPPolicy.FileTrackingEnabled
+    - contextPath: CBP.Policy.FileTrackingEnabled
       description: Is file tracking enabled for policy
       type: Boolean
-    - contextPath: CBPPolicy.ConnectedComputers
+    - contextPath: CBP.Policy.ConnectedComputers
       description: Number of connected computers assocuated with the policy
       type: Number
-    - contextPath: CBPPolicy.PackageName
+    - contextPath: CBP.Policy.PackageName
       description: Package name of the policy
       type: String
-    - contextPath: CBPPolicy.AllowAgentUpgrades
+    - contextPath: CBP.Policy.AllowAgentUpgrades
       description: Does the polixy allow agent upgrades
       type: Boolean
-    - contextPath: CBPPolicy.TotalComputers
+    - contextPath: CBP.Policy.TotalComputers
       description: Number of computers associated with the policy
       type: Number
-    - contextPath: CBPPolicy.LoadAgentInSafeMode
+    - contextPath: CBP.Policy.LoadAgentInSafeMode
       description: Should we load in safe mode
       type: Boolean
-    - contextPath: CBPPolicy.AutomaticApprovalsOnTransition
+    - contextPath: CBP.Policy.AutomaticApprovalsOnTransition
       description: Approve on transition
       type: String
-    - contextPath: ICBPPolicy.ID
+    - contextPath: ICBP.Policy.ID
       description: CBP internal ID of the policy
       type: String
-    - contextPath: ICBPPolicy.Description
+    - contextPath: ICBP.Policy.Description
       description: Description of the policy
       type: String
-    - contextPath: ICBPPolicy.DisconnectedEnforcementLevel
+    - contextPath: ICBP.Policy.DisconnectedEnforcementLevel
       description: The level of enforcement of the policy when disconnected
       type: String
   - arguments:
@@ -1072,13 +1087,13 @@ script:
     execution: false
     name: cbp-serverConfig-search
     outputs:
-    - contextPath: CBPServerConfig.ID
+    - contextPath: CBP.ServerConfig.ID
       description: CBP internal ID of the server config
       type: String
-    - contextPath: CBPServerConfig.Name
+    - contextPath: CBP.ServerConfig.Name
       description: Name of the server config
       type: String
-    - contextPath: CBPServerConfig.Value
+    - contextPath: CBP.ServerConfig.Value
       description: Value of the server config
       type: String
   - arguments:
@@ -1130,25 +1145,25 @@ script:
     execution: false
     name: cbp-publisher-search
     outputs:
-    - contextPath: CBPPublisher.Description
+    - contextPath: CBP.Publisher.Description
       description: Description of the publisher
       type: String
-    - contextPath: CBPPublisher.ID
+    - contextPath: CBP.Publisher.ID
       description: CBP internal ID of the publisher
       type: String
-    - contextPath: CBPPublisher.Name
+    - contextPath: CBP.Publisher.Name
       description: Name of the publisher
       type: String
-    - contextPath: CBPPublisher.Reputation
+    - contextPath: CBP.Publisher.Reputation
       description: The reputation of the publisher
       type: String
-    - contextPath: CBPPublisher.SignedCertificatesCount
+    - contextPath: CBP.Publisher.SignedCertificatesCount
       description: Number of certificates from the publisher
       type: Number
-    - contextPath: CBPPublisher.SignedFilesCount
+    - contextPath: CBP.Publisher.SignedFilesCount
       description: Number of signed files from publisher
       type: Number
-    - contextPath: CBPPublisher.State
+    - contextPath: CBP.Publisher.State
       description: The state of the publisher
       type: String
   - arguments:
@@ -1230,6 +1245,12 @@ script:
         Default priority is 0
       isArray: false
       name: priority
+      predefined:
+      - '-2'
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
       required: false
       secret: false
     - default: false
@@ -1434,11 +1455,18 @@ script:
       name: computerId
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: (Int32)Upload priority in range [-2, 2], where 2 is highest priority.
         Default priority is 0
       isArray: false
       name: priority
+      predefined:
+      - '-2'
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
       required: false
       secret: false
     - default: false
@@ -1446,6 +1474,13 @@ script:
         to 5 (Cancelled). Any upload can be changed to 6 (Deleted)
       isArray: false
       name: uploadStatus
+      required: false
+      secret: false
+    - default: false
+      description: ID of the file upload to update. If omitted, will create a new
+        file upload
+      isArray: false
+      name: id
       required: false
       secret: false
     deprecated: false
@@ -1692,9 +1727,75 @@ script:
     - contextPath: CBP.Connector.ID
       description: Unique fileAnalysis id
       type: String
+  - arguments:
+    - default: false
+      description: ID of the approval request to update
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Resolution of request. Resolution can be changed for open requests or
+        closed requests only. It can be one of:
+        0=Not Resolved
+        1=Rejected
+        2=Resolved - Approved
+        3=Resolved - Rule Change4=Resolved - Installer
+        5=Resolved - Updater
+        6=Resolved - Publisher
+        7=Resolved - Other
+      isArray: false
+      name: resolution
+      predefined:
+      - Rejected
+      - Resolved - Approved
+      - Resolved - Rule Change4=Resolved - Installer
+      - Resolved - Updater
+      - Resolved - Publisher
+      - Resolved - Other
+      required: false
+      secret: false
+    - default: false
+      description: Email of user that created this request
+      isArray: false
+      name: requestorEmail
+      required: false
+      secret: false
+    - default: false
+      description: Comments by request resolver
+      isArray: false
+      name: resolutionComments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated.
+        Prohibited transitions are from any status back to 0 or 1.'
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Open
+      - Closed
+      - Escalated
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates or updates file approval request
+    execution: false
+    name: cbp-approvalRequest-update
   dockerimage: demisto/python3:3.7.2.200
   isfetch: false
   runonce: false
   script: '-'
   type: python
-releaseNotes: Created integration
+releaseNotes: Created integration. This integration replaces the existing Carbon Black
+  Enterprise Protection integration. It is recommended to use this integration instead
+  of the original Carbon Black Protection integration, as it contains all the commands
+  from V1 (except for cbp-notification-search because it's not supported in the API
+  anymore), with the same inputs with improved features. Please note, if you switch
+  from V1 to V2, the output paths of the commands have changed - if you have a script
+  or a playbook that uses these outputs you will need to update it with the new output
+  paths.

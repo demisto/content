@@ -39,7 +39,12 @@ if not demisto.params().get('proxy'):
 
 
 APPROVAL_REQUEST_TRANS_DICT = {
-    'id': 'ID'
+    'id': 'ID',
+    'resolution': 'Resolution',
+    'fileCatalogId': 'FileCatalogId',
+    'computerId': 'ComputerId',
+    'dateCreated': 'DateCreated',
+    'status': 'Status'
 }
 
 COMPUTER_TRANS_DICT = {
@@ -441,7 +446,7 @@ def search_file_instance_command():
         search_function=search_file_instance,
         trans_dict=FILE_INSTANCE_TRANS_DICT,
         hr_title='CarbonBlack Protect File Instance Search',
-        ec_key='CBPFileInstance(val.ID === obj.ID)'
+        ec_key='CBP.FileInstance(val.ID === obj.ID)'
     )
 
 
@@ -463,7 +468,7 @@ def search_event_command():
         search_function=search_event,
         trans_dict=EVENT_TRANS_DICT,
         hr_title='CarbonBlack Protect Event Search',
-        ec_key='CBPEvent(val.ID === obj.ID)'
+        ec_key='CBP.Event(val.ID === obj.ID)'
     )
 
 
@@ -485,7 +490,7 @@ def search_approval_request_command():
         search_function=search_approval_request,
         trans_dict=APPROVAL_REQUEST_TRANS_DICT,
         hr_title='CarbonBlack Protect Approval Request Search',
-        ec_key='CBPApprovalRequest(val.ID === obj.ID)'
+        ec_key='CBP.ApprovalRequest(val.ID === obj.ID)'
     )
 
 
@@ -507,7 +512,7 @@ def search_file_rule_command():
         search_function=search_file_rule,
         trans_dict=FILE_RULE_TRANS_DICT,
         hr_title='CarbonBlack Protect File Rule Search',
-        ec_key='CBPFileRule(val.ID === obj.ID)'
+        ec_key='CBP.FileRule(val.ID === obj.ID)'
     )
 
 
@@ -529,7 +534,7 @@ def get_file_rule_command():
         get_function=get_file_rule,
         trans_dict=FILE_RULE_TRANS_DICT,
         hr_title='CarbonBlack Protect File Rule Get for {}'.format(demisto.args().get('id')),
-        ec_key='CBPFileRule(val.ID === obj.ID)'
+        ec_key='CBP.FileRule(val.ID === obj.ID)'
     )
 
 
@@ -580,7 +585,7 @@ def search_policy_command():
         search_function=search_policy,
         trans_dict=POLICY_TRANS_DICT,
         hr_title='CarbonBlack Protect Policy Search',
-        ec_key='CBPPolicy(val.ID === obj.ID)'
+        ec_key='CBP.Policy(val.ID === obj.ID)'
     )
 
 
@@ -602,7 +607,7 @@ def search_server_config_command():
         search_function=search_server_config,
         trans_dict=SERVER_CONFIG_DICT,
         hr_title='CarbonBlack Protect Server Config Search',
-        ec_key='CBPServerConfig(val.ID === obj.ID)'
+        ec_key='CBP.ServerConfig(val.ID === obj.ID)'
     )
 
 
@@ -624,7 +629,7 @@ def search_publisher_command():
         search_function=search_publisher,
         trans_dict=PUBLISHER_TRANS_DICT,
         hr_title='CarbonBlack Protect Publisher Search',
-        ec_key='CBPPublisher(val.ID === obj.ID)'
+        ec_key='CBP.Publisher(val.ID === obj.ID)'
     )
 
 
