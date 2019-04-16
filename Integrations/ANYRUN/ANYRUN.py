@@ -7,6 +7,7 @@ import json
 import requests
 from base64 import b64encode
 
+
 ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
 
 PARAMS = demisto.params()
@@ -29,8 +30,9 @@ HEADERS = {
 # Context fields that should always be uppercase
 ALWAYS_UPPER_CASE = {
     'md5', 'sha1', 'sha-1', 'sha256', 'sha-256', 'sha512', 'sha-512', 'ssdeep',
-    'pcap', 'ip', 'url'
+    'pcap', 'ip', 'url', 'id', 'pid', 'ppid', 'uuid'
 }
+
 
 ''' SETUP '''
 
@@ -44,7 +46,23 @@ if not PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+
 ''' HELPER FUNCTIONS '''
+
+
+def underscoreToCamelCase(s):
+    """
+       Convert an underscore separated string to camel case
+       This local version leaves one-word strings untouched
+       :type s: ``str``
+       :param s: The string to convert (e.g. hello_world) (required)
+       :return: The converted string (e.g. HelloWorld)
+       :rtype: ``str``
+    """
+    if not isinstance(s, STRING_TYPES):
+        return s
+    components = s.split('_')
+    return ''.join(x.title() if i != 0 else x for i, x in enumerate(components))
 
 
 def make_upper(the_string):
@@ -141,7 +159,7 @@ def argToBool(arg):
     return False
 
 
-def report_to_context(response):
+def contents_from_report(response):
     data = response.get('data', {})
     environment = data.get('environments', {})
     analysis = data.get('analysis', {})
@@ -255,16 +273,16 @@ def get_history_command():
     args = demisto.args()
     filter = args.get('filter', None)
     response = get_history(args)
+    contents = response.get('tasks', {})
 
     formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
-    formatted_response = recursive_format(response, *formatting_funcs)
+    formatted_contents = recursive_format(contents, *formatting_funcs)
     entry_context = {
-        'ANYRUN': formatted_response
+        'ANYRUN': formatted_contents
     }
     title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
-    human_readable = tableToMarkdown(title, formatted_response, removeNull=True)
+    human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
-
 
 def get_report(task_id):
     url_suffix = 'analysis/' + task_id
@@ -277,28 +295,29 @@ def get_report_command():
     task_id = args.get('task')
     response = get_report(task_id)
 
-    contents = report_to_context(response)
+    contents = contents_from_report(response)
     formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
-    contents = recursive_format(contents, *formatting_funcs)
+    formatted_contents = recursive_format(contents, *formatting_funcs)
 
-    entry_context = {'ANYRUN': contents}
+    entry_context = {'ANYRUN': formatted_contents}
 
     title = 'Report for Task {}'.format(task_id)
-    human_readable = tableToMarkdown(title, contents, removeNull=True)
+    human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
 
 
 def run_analysis(args):
     obj_type = args.get('obj_type')
+    entry_id = args.pop('file', None)
     if obj_type == 'file':
-        entry_id = args.get('file')
         cmd_res = demisto.getFilePath(entry_id)
         file_path = cmd_res.get('path')
         name = cmd_res.get('name')
         files = {
-            'file': (name, open(path, 'rb'))
+            'file': (name, open(file_path, 'rb'))
         }
-    del args['file']
+
+    # Format command arguments to API's parameter expectations
     env_bitness = int(args.get('env_bitness', 32))
     args['env_bitness'] = env_bitness
     env_version = args.get('env_version').lower()
@@ -326,7 +345,7 @@ def run_analysis_command():
     response = run_analysis(args)
     task_id = response.get('data', {}).get('taskid')
     title = 'Analysis Task ID'
-    human_readable = tableToMarkdown(title, task_id, removeNull=True)
+    human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
     entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': task_id}
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
 
