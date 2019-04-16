@@ -15,7 +15,7 @@ script: |-
   try {
       if(params && typeof params === 'object'){
           for(var key in params){
-              param = params[key]
+              param = params[key];
               if(typeof param === 'object' && 'credentials' in param  && param.credentials.vaultInstanceId){
                   param.identifier = param.credentials.user;
               }
