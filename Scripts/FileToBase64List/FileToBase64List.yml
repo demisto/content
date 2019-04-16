@@ -39,3 +39,5 @@ type: python
 runas: DBotWeakRole
 runonce: true
 fromversion: 4.1.0
+tests:
+  - No Test
