@@ -801,21 +801,56 @@ script:
     - contextPath: CBP.ApprovalRequest.ID
       description: ID of the approval request
       type: Number
+    - contextPath: CBP.ApprovalRequest.ResolutionComments
+      description: Comments by request resolver
+      type: String
     - contextPath: CBP.ApprovalRequest.Resolution
-      description: Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected, 2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved - Updater, 6=Resolved - Publisher, 7=Resolved - Other
+      description: 'Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected,
+        2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved
+        - Updater, 6=Resolved - Publisher, 7=Resolved - Other'
       type: Number
-    - contextPath: CBP.ApprovalRequest.FileCatalogId
-      description: Id of fileCatalog entry associated with file for this request
-      type: Number
-    - contextPath: CBP.ApprovalRequest.ComputerId
-      description: Id of computer where request originated
-      type: Number
-    - contextPath: CBP.ApprovalRequest.DateCreated
-      description: Date/time when this request was created (UTC)
-      type: Date
     - contextPath: CBP.ApprovalRequest.Status
-      description: Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated
+      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated'
       type: Number
+    - contextPath: CBP.ApprovalRequest.FileCatalogID
+      description: Id of fileCatalog entry associated with file for this event
+      type: Number
+    - contextPath: CBP.ApprovalRequest.ComputerID
+      description: Id of computer entry associated with this analysis
+      type: Number
+    - contextPath: CBP.ApprovalRequest.ComputerName
+      description: Name of computer associated with this event
+      type: String
+    - contextPath: CBP.ApprovalRequest.DateCreated
+      description: Date/time when notifier was created (UTC)
+      type: Date
+    - contextPath: CBP.ApprovalRequest.CreatedBy
+      description: User that created this notifier
+      type: String
+    - contextPath: CBP.ApprovalRequest.EnforcementLevel
+      description: 'Enforcement level of agent at the time of request. Can be one
+        of: 20=High (Block Unapproved), 30=Medium (Prompt Unapproved), 40=Low (Monitor
+        Unapproved), 60=None (Visibility), 80=None (Disabled)'
+      type: Number
+    - contextPath: CBP.ApprovalRequest.RequestorEmail
+      description: Email of user that created this request
+      type: String
+    - contextPath: CBP.ApprovalRequest.Priority
+      description: 'Priority of this request. Can be one of: 0=High, 1=Medium, 2=Low'
+      type: Number
+    - contextPath: CBP.ApprovalRequest.FileName
+      description: Name of file on the agent
+      type: String
+    - contextPath: CBP.ApprovalRequest.PathName
+      description: Path of the file on the agent
+      type: String
+    - contextPath: CBP.ApprovalRequest.Process
+      description: Process that attempted to execute file on the agent. This is full
+        process path
+      type: String
+    - contextPath: CBP.ApprovalRequest.Platform
+      description: Platform of this approval request
+      type: String
   - arguments:
     - default: false
       description: 'A condition contains three parts: name, operator and value. Name
@@ -1783,9 +1818,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates or updates file approval request
+    description: Resolves file approval request
     execution: false
-    name: cbp-approvalRequest-update
+    name: cbp-approvalRequest-resolve
+    outputs:
+    - contextPath: CBP.ApprovalRequest.ID
+      description: ID of the approval request
+      type: Number
+    - contextPath: CBP.ApprovalRequest.ResolutionComments
+      description: Comments by request resolver
+      type: String
+    - contextPath: CBP.ApprovalRequest.Resolution
+      description: 'Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected,
+        2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved
+        - Updater, 6=Resolved - Publisher, 7=Resolved - Other'
+      type: Number
+    - contextPath: CBP.ApprovalRequest.Status
+      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated'
+      type: Number
   dockerimage: demisto/python3:3.7.2.200
   isfetch: false
   runonce: false

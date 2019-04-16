@@ -41,10 +41,27 @@ if not demisto.params().get('proxy'):
 APPROVAL_REQUEST_TRANS_DICT = {
     'id': 'ID',
     'resolution': 'Resolution',
-    'fileCatalogId': 'FileCatalogId',
-    'computerId': 'ComputerId',
+    'status': 'Status',
+    'resolutionComments': 'ResolutionComments',
+    'fileCatalogId': 'FileCatalogID',
+    'computerId': 'ComputerID',
+    'computerName': 'ComputerName',
     'dateCreated': 'DateCreated',
-    'status': 'Status'
+    'createdBy': 'CreatedBy',
+    'enforcementLevel': 'EnforcementLevel',
+    'requestorEmail': 'RequestorEmail',
+    'priority': 'Priority',
+    'fileName': 'FileName',
+    'pathName': 'PathName',
+    'process': 'Process',
+    'platform': 'Platform'
+}
+
+APPROVAL_REQUEST_RESOLVE_TRANS_DICT = {
+    'id': 'ID',
+    'resolution': 'Resolution',
+    'status': 'Status',
+    'resolutionComments': 'ResolutionComments'
 }
 
 COMPUTER_TRANS_DICT = {
@@ -853,6 +870,27 @@ def search_connector(url_params):
     return http_request('GET', '/connector', params=url_params)
 
 
+def update_approval_request_command():
+    """
+    Updates an existing approval request
+    :return: EntryObject of the approval request
+    """
+    args = demisto.args()
+    raw_res = update_file_upload(args)
+    ec = get_trasnformed_dict(raw_res, APPROVAL_REQUEST_RESOLVE_TRANS_DICT)
+    hr = tableToMarkdown('CarbonBlack Protect Approval Request Updated successfully', ec)
+    demisto.results(create_entry_object(raw_res, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, hr))
+
+
+def update_approval_request(body_params):
+    """
+    Update file analysis
+    :param body_params: URL parameters for the request
+    :return: Result json of the request
+    """
+    return http_request('POST', '/approvalRequest', data=json.dumps(body_params))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -906,6 +944,8 @@ try:
         get_connector_command()
     elif demisto.command() == 'cbp-connector-search':
         search_connector_command()
+    elif demisto.command() == 'cbp-approvalRequest-update':
+        update_approval_request_command()
     else:
         return_error("Command {} is not supported.".format(demisto.command()))
 # Log exceptions
