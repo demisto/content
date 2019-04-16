@@ -5,22 +5,24 @@ commonfields:
 configuration:
 - display: API Key for instance
   name: apikey
-  required: true
+  defaultvalue: ""
   type: 4
-- display: Url for the Instance
-  name: url
   required: true
+- display: URL for the instance
+  name: url
+  defaultvalue: ""
   type: 0
-- defaultvalue: 'false'
-  display: Trust any certificate (Not Secure)
+  required: true
+- display: Trust any certificate (Not Secure)
   name: insecure
-  required: false
+  defaultvalue: "false"
   type: 8
-- defaultvalue: 'false'
-  display: Use System Proxy
+  required: false
+- display: Use System Proxy
   name: proxy
-  required: false
+  defaultvalue: "false"
   type: 8
+  required: false
 description: ExtraHop performs real-time stream analysis of the packets that carry
   data across a network.
 display: ExtraHop
@@ -75,7 +77,7 @@ script:
       description: The type of alert.
       type: String
     - contextPath: Extrahop.Alert.FieldOp
-      description: The type of comparison between the field_name and field_name2 fields
+      description: The type of comparison between the "field_name" and "field_name2" fields
         when applying a ratio.
       type: String
     - contextPath: Extrahop.Alert.Id
@@ -88,14 +90,14 @@ script:
       description: An optional description for the alert.
       type: String
     - contextPath: Extrahop.Alert.Severity
-      description: The severity level of the alert
+      description: The severity level of the alert.
       type: Number
     - contextPath: Extrahop.Alert.StatName
-      description: The statistic name for the alert
+      description: The statistic name for the alert.
       type: String
   - arguments:
     - default: false
-      description: The name of the field in the record to be filtered.
+      description: The name of the field in the record to filter.
       isArray: false
       name: field
       required: false
@@ -125,166 +127,166 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum amount of entries returned.
+      description: The maximum number of entries to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Query records from ExtraHop
+    description: Queries records from ExtraHop.
     execution: false
     name: extrahop-query
     outputs:
     - contextPath: ExtraHop.Query.Id
-      description: ID of the queried item
+      description: The ID of the queried item.
       type: String
     - contextPath: ExtraHop.Query.Index
-      description: Index of the queried item
+      description: The index of the queried item.
       type: String
     - contextPath: ExtraHop.Query.Sort
-      description: Sort of the queried item
+      description: The sort type for the queried item.
       type: Number
     - contextPath: ExtraHop.Query.Source.roundTripTime
-      description: Roundtrip time of the item
+      description: The roundtrip time of the item.
       type: Number
     - contextPath: ExtraHop.Query.Source.processingTime
-      description: Processing time of the item
+      description: The processing time of the item.
       type: Number
     - contextPath: ExtraHop.Query.Source.method
-      description: Method of the item
+      description: The method of the item.
       type: String
     - contextPath: ExtraHop.Query.Source.serverZeroWnd
-      description: Server Zero Wnd
+      description: The Server Zero Wnd.
       type: Number
     - contextPath: ExtraHop.Query.Source.server.type
-      description: Type of item found
+      description: The type of item found.
       type: String
     - contextPath: ExtraHop.Query.Source.server.value
-      description: ID of server found
+      description: The ID of server found.
       type: String
     - contextPath: ExtraHop.Query.Source.serverPort
-      description: Port of item
+      description: The port of item.
       type: Number
     - contextPath: ExtraHop.Query.Source.reqTimeToLastByte
-      description: Time to Last Byte
+      description: The time to Last Byte.
       type: Number
     - contextPath: ExtraHop.Query.Source.isSQLi
-      description: Is SQLi
+      description: Whether it is SQLi.
       type: Boolean
     - contextPath: ExtraHop.Query.Source.isRspCompressed
-      description: Is response compressed
+      description: Whether the response is compressed.
       type: Boolean
     - contextPath: ExtraHop.Query.Source.rspTimeToFirstHeader
-      description: Response time of first header
+      description: The response time of the first header.
       type: Number
     - contextPath: ExtraHop.Query.Source.reqL2Bytes
-      description: Request L2 Bytes
+      description: Request L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Query.Source.isRspChunked
-      description: Is response chunked
+      description: Whether the response is chunked.
       type: Boolean
     - contextPath: ExtraHop.Query.Source.query
-      description: Query of item
+      description: The query of the item.
       type: String
     - contextPath: ExtraHop.Query.Source.host
-      description: Host of item
+      description: The host of item.
       type: String
     - contextPath: ExtraHop.Query.Source.rspPkts
-      description: Number of response packets found
+      description: The number of response packets found.
       type: Number
     - contextPath: ExtraHop.Query.Source.flowId
-      description: Flow ID
+      description: The flow ID.
       type: String
     - contextPath: ExtraHop.Query.Source.rspVersion
-      description: Response version
+      description: The response version.
       type: String
     - contextPath: ExtraHop.Query.Source.isRspAborted
-      description: Was response aborted
+      description: Whether the response was aborted.
       type: Boolean
     - contextPath: ExtraHop.Query.Source.client.type
-      description: Type of client
+      description: The type of client.
       type: String
     - contextPath: ExtraHop.Query.Source.client.value
-      description: ID of client
+      description: The ID of client.
       type: String
     - contextPath: ExtraHop.Query.Source.uri
-      description: URI of the item
+      description: The URI of the item.
       type: String
     - contextPath: ExtraHop.Query.Source.clientPort
-      description: Client port
+      description: The client port.
       type: Number
     - contextPath: ExtraHop.Query.Source.reqBytes
-      description: Request size in bytes
+      description: The request size (in bytes).
       type: Number
     - contextPath: ExtraHop.Query.Source.isXSS
-      description: Is XSS?
+      description: Whether it is XSS.
       type: Boolean
     - contextPath: ExtraHop.Query.Source.reqRTO
-      description: Request RTO
+      description: The request RTO.
       type: Number
     - contextPath: ExtraHop.Query.Source.rspSize
-      description: Response size
+      description: The response size.
       type: Number
     - contextPath: ExtraHop.Query.Source.ex.isSuspicious
-      description: Is suspicious?
+      description: Whether it is suspicious?
       type: Boolean
     - contextPath: ExtraHop.Query.Source.contentType
-      description: Content type
+      description: The content type.
       type: String
     - contextPath: ExtraHop.Query.Source.serverAddr.type
-      description: Server address type
+      description: The server address type.
       type: String
     - contextPath: ExtraHop.Query.Source.serverAddr.value
-      description: Server address value
+      description: The server address value.
       type: String
     - contextPath: ExtraHop.Query.Source.rspTimeToLastByte
-      description: Resposne time to last byte
+      description: The response time to last byte.
       type: Number
     - contextPath: ExtraHop.Query.Source.rspTimeToFirstPayload
-      description: Response time to first payload
+      description: The response time to first payload.
       type: Number
     - contextPath: ExtraHop.Query.Source.timestamp
-      description: Timestamp of item
+      description: The timestamp of the item.
       type: Number
     - contextPath: ExtraHop.Query.Source.rspL2Bytes
-      description: Response L2 Bytes
+      description: The Response L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Query.Source.reqPkts
-      description: Request packets
+      description: The request packets.
       type: Number
     - contextPath: ExtraHop.Query.Source.isPipelined
-      description: Is pipelined?
+      description: Whether it is pipelined?
       type: Boolean
     - contextPath: ExtraHop.Query.Source.clientZeroWnd
       description: Client Zero Wnd
       type: Number
     - contextPath: ExtraHop.Query.Source.isReqAborted
-      description: Was request aborted
+      description: Whether the request was aborted.
       type: Boolean
     - contextPath: ExtraHop.Query.Source.clientAddr.type
-      description: Client address type
+      description: The client address type.
       type: String
     - contextPath: ExtraHop.Query.Source.clientAddr.value
-      description: Client address value
+      description: The client address value.
       type: String
     - contextPath: ExtraHop.Query.Source.rspBytes
-      description: Response Bytes
+      description: The response bytes.
       type: Number
     - contextPath: ExtraHop.Query.Source.rspRTO
-      description: Response RTO
+      description: The response RTO.
       type: Number
     - contextPath: ExtraHop.Query.Source.statusCode
-      description: Status code
+      description: The status code.
       type: Number
     - contextPath: ExtraHop.Query.Source.reqSize
-      description: Request size
+      description: The request size.
       type: Number
     - contextPath: ExtraHop.Query.Type
-      description: Type of query
+      description: The type of query.
       type: String
   - arguments:
     - default: false
-      description: The beginning timestamp for the request. Return only devices active
+      description: The beginning timestamp for the request. Returns only devices active
         after this time. Time is expressed in milliseconds since the epoch.
       isArray: false
       name: active_from
@@ -318,7 +320,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Limit the number of devices returned to the specified maximum number.
+      description: The maximum number of devices to return.
       isArray: false
       name: limit
       required: false
@@ -329,86 +331,86 @@ script:
     name: extrahop-devices
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
-      description: MAC Address of device
+      description: The MAC Address of the device.
       type: String
     - contextPath: ExtraHop.Device.DeviceClass
-      description: Class of device
+      description: The class of the device.
       type: String
     - contextPath: ExtraHop.Device.UserModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
     - contextPath: ExtraHop.Device.AutoRole
-      description: Role given automatically to device.
+      description: The role given automatically to the device.
       type: String
     - contextPath: ExtraHop.Device.ParentId
-      description: ID of parent device.
+      description: The ID of the parent device.
       type: Number
     - contextPath: ExtraHop.Device.Vendor
-      description: Device vendor
+      description: The device vendor.
       type: String
     - contextPath: ExtraHop.Device.AnalysisLevel
-      description: Analysis level of device.
+      description: The analysis level of the device.
       type: Number
     - contextPath: ExtraHop.Device.DiscoveryId
-      description: ID given by Discovery appliance.
+      description: The ID given by Discovery appliance.
       type: String
     - contextPath: ExtraHop.Device.DefaultName
-      description: Default name of device.
+      description: The default name of the device.
       type: String
     - contextPath: ExtraHop.Device.DisplayName
-      description: Display name of device.
+      description: The display name of device.
       type: String
     - contextPath: ExtraHop.Device.OnWatchlist
-      description: Is device whitelisted?
+      description: Whether the device is whitelisted.
       type: Boolean
     - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
     - contextPath: ExtraHop.Device.IsL3
-      description: Is device L3?
+      description: Indicates whether the device is an L3 device.
       type: Boolean
     - contextPath: ExtraHop.Device.ExtrahopId
-      description: ID given by ExtraHop.
+      description: The ID given by ExtraHop.
       type: String
     - contextPath: ExtraHop.Device.Role
-      description: Role of device.
+      description: The role of the device.
       type: String
     - contextPath: ExtraHop.Device.DiscoverTime
-      description: Time device was discovered.
+      description: The time that the device was discovered.
       type: Number
     - contextPath: ExtraHop.Device.Id
-      description: ID of device.
+      description: The ID of the device.
       type: Number
     - contextPath: ExtraHop.Device.Ipaddr4
-      description: IPv4 address of device.
+      description: The IPv4 address of the device.
       type: String
     - contextPath: ExtraHop.Device.Analysis
-      description: Analysis level of device.
+      description: The analysis level of the device.
       type: String
     - contextPath: ExtraHop.Device.Vlanid
-      description: ID of VLan
+      description: The ID of VLan.
       type: Number
   - arguments:
     - default: false
-      description: IDs of resources to assign
+      description: The IDs of the resources to assign.
       isArray: true
       name: add
       required: false
       secret: false
     - default: false
-      description: IDs of resources to unassign
+      description: The IDs of the resources to unassign.
       isArray: true
       name: remove
       required: false
       secret: false
     deprecated: false
-    description: Modify whitelist from ExtraHop
+    description: Modifies a whitelist from ExtraHop.
     execution: false
     name: extrahop-whitelist-modify
   - deprecated: false
-    description: Retrieve whitelist from ExtraHop
+    description: Retrieves the whitelist from ExtraHop.
     execution: false
     name: extrahop-whitelist-retrieve
     outputs:
@@ -429,10 +431,10 @@ script:
       description: 'The unique identifier for the parent device object. '
       type: Number
     - contextPath: Extrahop.Device.Vendor
-      description: The name of the vendor who created this device.
+      description: The name of the vendor that created the device.
       type: String
     - contextPath: Extrahop.Device.AnalysisLevel
-      description: Deprecated. Replaced by the analysis field.
+      description: (Deprecated) Replaced by the analysis field.
       type: Number
     - contextPath: Extrahop.Device.DiscoveryId
       description: The unique identifier for the device, which is displayed as part
@@ -455,7 +457,7 @@ script:
       description: 'Indicates whether the device is an L3 device. '
       type: Boolean
     - contextPath: Extrahop.Device.ExtrahopId
-      description: Deprecated. Use the discover_id field instead.
+      description: (Deprecated) Use the discover_id field instead.
       type: String
     - contextPath: Extrahop.Device.Role
       description: 'The role of the device. '
@@ -671,7 +673,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add Alert to ExtraHop
+    description: Adds an alert to ExtraHop.
     execution: false
     name: extrahop-add-alert-rule
   - arguments:
@@ -747,8 +749,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The length of the alert interval, expressed in seconds. Only applicable
-        to threshold alerts. '
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
       isArray: false
       name: interval_length
       predefined:
@@ -805,7 +807,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of alert. '
+      description: 'The type of alert.'
       isArray: false
       name: type
       predefined:
@@ -825,7 +827,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The list of monitored protocols. Only applicable to detection alerts
+      description: The list of monitored protocols. Only applicable to detection alerts.
       isArray: false
       name: protocols
       required: false
@@ -877,7 +879,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Modify alert in ExtraHop
+    description: Modifies an alert in ExtraHop.
     execution: false
     name: extrahop-modify-alert-rule
   dockerimage: demisto/python3:3.7.2.200

@@ -161,6 +161,7 @@ script:
         cc = cc.split(",") if cc else None
         to = to.split(",") if to else None
         manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+        subject = subject[:252] + '...' if len(subject) > 255 else subject
 
         file_entries_for_attachments = []
         attachments_names = []
