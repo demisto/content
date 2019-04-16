@@ -43,58 +43,85 @@ if not demisto.params().get('proxy'):
 
 ''' HELPER FUNCTIONS '''
 
+def represents_int(string_var):
+    if '.' in string_var:
+        return False
+    if string_var[0] in ('-', '+'):
+        return string_var[1:].isdigit()
+    return string_var.isdigit()
 
-{
-  "kind": "bigquery#queryRequest",
-  "query": string,
-  "maxResults": unsigned integer,
-  "defaultDataset": {
-    "datasetId": string,
-    "projectId": string
-  },
-  "timeoutMs": unsigned integer,
-  "dryRun": boolean,
-  "preserveNulls": boolean,
-  "useQueryCache": boolean,
-  "useLegacySql": boolean,
-  "parameterMode": string,
-  "queryParameters": [
-    {
-      "name": string,
-      "parameterType": {
-        "type": string,
-        "arrayType": (QueryParameterType),
-        "structTypes": [
-          {
-            "name": string,
-            "type": (QueryParameterType),
-            "description": string
-          }
-        ]
-      },
-      "parameterValue": {
-        "value": string,
-        "arrayValues": [
-          (QueryParameterValue)
-        ],
-        "structValues": {
-          (key): (QueryParameterValue)
-        }
-      }
+def represents_bool(string_var):
+    return string_var.lower() == 'false' or string_var.lower() == 'true'
+
+
+def validate_args_for_query_request(max_results, timeout_ms, dry_run, use_query_cache, use_legacy_sql, parameter_mode):
+    if not represents_int(max_results):
+        return_error("Error: max_results must have an integer value.")
+    if not represents_int(timeout_ms):
+        return_error("Error: timeout_ms must have an integer value.")
+    if not represents_bool(dry_run):
+        return_error("Error: dry_run must have a boolean value.")
+    if not represents_bool(use_query_cache):
+        return_error("Error: use_query_cache must have a boolean value.")
+    if not represents_bool(use_legacy_sql):
+        return_error("Error: use_legacy_sql must have a boolean value.")
+    if not (parameter_mode.lower() == 'positional' or parameter_mode.lower() == 'named'):
+        return_error("Error: parameter_mode must have a value of 'positional' or 'named'.")
+
+
+def build_default_dataset_data_dict(default_dataset_json_arg):
+    default_dataset_data_dict = {
+        'datasetId': default_dataset_json_arg['dataset_id']
     }
-  ],
-  "location": string
-}
+    if 'project_id' in default_dataset_json_arg:
+        default_dataset_data_dict['projectId'] = default_dataset_json_arg['project_id']
+    return default_dataset_data_dict
 
 
-def build_query_request_data(query, max_results, default_dataset, timeout_ms, dry_run, preserve_nulls, use_query_cache, use_legacy_sql, parameter_mode, query_parameters, location):
-    validate_args_for_query_request(query, max_results, default_dataset, timeout_ms, dry_run, preserve_nulls, use_query_cache, use_legacy_sql, parameter_mode, query_parameters, location)
+def build_parameter_type_data(parameter_type_data):
+
+
+
+
+def build_param_data_dict(param_data):
+    param_data_dict = {
+        'name': param_data.get('name', None),
+        'parameterType': build_parameter_type_data(param_data.get('parameter_type'))
+
+    }
+    return param_data_dict
+
+
+def build_query_parameters_data(query_parameters):
+    query_params_data = []
+    for param in query_parameters:
+        param_data = build_param_data_dict(param)
+        query_params_data.append(param_data)
+    return query_params_data
+
+
+def build_query_request_data(query, max_results, default_dataset, timeout_ms, dry_run, use_query_cache, use_legacy_sql, parameter_mode, query_parameters, location):
+    # currently treating parameterMode as optional
+    validate_args_for_query_request(max_results, timeout_ms, dry_run, use_query_cache, use_legacy_sql, parameter_mode)
     data_for_query_request = {
-        query: query,
-
-        default_dataset: build_default_dataset_data_dict(default_dataset),
-
+        "kind": "bigquery#queryRequest",
+        'query': query,
+        # if max_results is None does bool(dry_run) get computed before? I don't think so
+        'maxResults': int(max_results) if max_results else None,
+        'defaultDataset': build_default_dataset_data_dict(default_dataset) if default_dataset else None,
+        'timeoutMs': int(timeout_ms) if timeout_ms else None,
+        'dryRun': bool(dry_run) if dry_run else None,
+        'useQueryCache': bool(use_query_cache) if use_query_cache else None,
+        'useLegacySql': bool(use_legacy_sql) if use_legacy_sql else None,
+        'queryParameters': build_query_parameters_data(query_parameters) if query_parameters else None,
+        'location': location,
     }
+
+    if parameter_mode:
+        data_for_query_request['parameterMode'] = 'POSITIONAL' if (parameter_mode.lower() == 'positional') else 'NAMED';
+
+    data_for_query_request = {key: value for key, value in data_for_query_request.items() if value is not None}
+    return data_for_query_request
 
 
 
