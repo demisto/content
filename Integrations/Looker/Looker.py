@@ -113,10 +113,13 @@ def run_look_command():
     contents = run_look_request(look_id, result_format, limit, fields)
 
     if result_format == 'json':
+        formatted_contents = camelize(contents, delim='_')
+        if not isinstance(formatted_contents, list):
+            formatted_contents = [formatted_contents]
         context = {
             'Looker.look(val.ID && val.ID === obj.ID)': {
                 'ID': int(look_id),
-                'Results': contents
+                'Results': formatted_contents
             }
         }
 
@@ -125,7 +128,7 @@ def run_look_command():
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', contents, removeNull=True),
+            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', formatted_contents, removeNull=True),
             'EntryContext': context
         })
 
@@ -144,9 +147,13 @@ def run_look_request(look_id, result_format, limit, fields):
 
 
 def search_looks_command():
-    command_args = ('title', 'space_id', 'user_id')  # Possible command arguments
+    command_args = ('space_id', 'user_id')  # Possible command arguments
     args_dict = {k: demisto.args()[k] for k in command_args if k in demisto.args()}  # Get args that were passed
-    args_dict['limit'] = get_limit()  # Argument with special logic
+
+    # Arguments with special logic
+    args_dict['limit'] = get_limit()
+    if 'name' in demisto.args():
+        args_dict['title'] = demisto.args()['name']
 
     # # Traditional argument collection:
     # title = demisto.args()['title']
@@ -176,7 +183,21 @@ def search_looks_command():
 def search_looks_request(args):
     endpoint_url = '/looks/search'
     params = {k: v for k, v in args.items() if v}
-    return http_request('GET', endpoint_url, params=params)
+    params['fields'] = 'id, title, space, updated_at'
+    response = http_request('GET', endpoint_url, params=params)
+
+    if not isinstance(response, list):
+        response = [response]
+
+    return [
+        {
+            'ID': look['id'],
+            'Name': look['title'],
+            'spaceID': look['space']['id'],
+            'spaceName': look['space']['name'],
+            'LastUpdated': look['updated_at'].replace('+00:00', 'Z')
+        } for look in response
+    ]
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
