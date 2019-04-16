@@ -16,7 +16,7 @@ def get_file_data(file_path, zip=False):
 
 def main():
     LIST_NAME = demisto.args()['listName']
-    TO_ZIP = (demisto.args()['zikpFile'] == 'yes')
+    TO_ZIP = (demisto.args()['zipFile'] == 'yes')
 
     res = demisto.executeCommand("getFilePath", {"id": demisto.args()['entryId']})
     if isError(res):
