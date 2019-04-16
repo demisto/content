@@ -98,7 +98,7 @@ class Content:
             new_count = 0
             for path in store:
                 with open(path, 'r') as f:
-                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), end='')
+                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), ),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
 
@@ -161,7 +161,7 @@ class Content:
             if len(self.deleted_store) > 0:
                 section_body += "\n##### Removed " + self.get_header() + "\n"
                 for name in self.deleted_store:
-                    print(' - adding release notes (Removed) for - [{}]'.format(name), end='')
+                    print(' - adding release notes (Removed) for - [{}]'.format(name)),
                     section_body += "- __" + name + "__\n"
                     print("Success")
 
