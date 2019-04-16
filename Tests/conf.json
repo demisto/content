@@ -1196,7 +1196,7 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
-            "playbookID": "Account Enrichment - Generic v2",
+            "playbookID": "Account Enrichment - Generic v2 - Test",
             "integrations": "activedir"
         },
         {
