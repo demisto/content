@@ -1196,6 +1196,10 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "playbookID": "Account Enrichment - Generic v2",
+            "integrations": "activedir"
+        },
+        {
             "playbookID": "EmailReputationTest",
             "integrations": "Pwned"
         },
