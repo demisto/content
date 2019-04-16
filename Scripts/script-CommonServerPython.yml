@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+fromversion: 4.5.0
 script: |-
   # Common functions script
   # =======================
@@ -552,7 +553,7 @@ script: |-
       :rtype: ``any``
       """
       def func_wrapper(*args, **kwargs):
-          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
           return func(*args, **kwargs)
 
       return func_wrapper
@@ -662,7 +663,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if not data:
+      if data is None:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1537,5 +1538,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Logger support for Python3."
 tests:
-  - TestPYCommonServer
+  - TestCommonPython
