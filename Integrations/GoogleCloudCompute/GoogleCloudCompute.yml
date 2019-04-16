@@ -11320,6 +11320,5 @@ script:
   runonce: false
   script: ''
   type: python
-releaseNotes: "Fixes and added docstrings"
 tests:
   - No tests
