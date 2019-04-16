@@ -568,10 +568,11 @@ def main():
             if len(image_data) != 1:
                 print('Did not get one image data for server version, got {}'.format(image_data))
             else:
-                server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]-([\d.]+)-[\d]{5}', image_data[0])
-                print('debug: {}'.format(server_numeric_version))
+                server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
                 if not server_numeric_version:
                     server_numeric_version = '99.99.98'  # latest
+                else:
+                    server_numeric_version = server_numeric_version[0]
                 print('Server image info: {}'.format(image_data[0]))
                 print('Server version: {}'.format(server_numeric_version))
 
