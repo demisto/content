@@ -290,6 +290,11 @@
         },
         {
             "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 600
+        },
+        {
+            "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
         },
