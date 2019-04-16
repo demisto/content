@@ -34,7 +34,7 @@ script: |-
               self.file_path = file_res.get('Contents').get('path')
               self.file_name = file_res.get('Contents').get('name')
               file = demisto.dt(demisto.context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
-              if type(file) is list:
+              if isinstance(file, list):
                 file = file[0]
 
               self.file_type = file.get("Type")
