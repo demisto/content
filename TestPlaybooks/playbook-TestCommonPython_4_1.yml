@@ -1,15 +1,15 @@
 id: TestCommonPython
 version: -1
 name: TestCommonPython
-fromversion: 4.5.0
+toversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 31101f04-eeb5-482c-89f9-68a586ad7c51
+    taskid: e6a8ccf1-cb16-4d6a-85c1-38f7205bd551
     type: start
     task:
-      id: 31101f04-eeb5-482c-89f9-68a586ad7c51
+      id: e6a8ccf1-cb16-4d6a-85c1-38f7205bd551
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 50
         }
       }
@@ -30,13 +30,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 113cc2bd-7e9e-4a18-8efe-c56ba639c2f8
+    taskid: 0b8ac2f9-85a9-437c-8e26-e00e2503d60b
     type: regular
     task:
-      id: 113cc2bd-7e9e-4a18-8efe-c56ba639c2f8
+      id: 0b8ac2f9-85a9-437c-8e26-e00e2503d60b
       version: -1
       name: Test DQ
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -50,7 +50,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 370
         }
       }
@@ -59,14 +59,14 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 09c14edc-ff95-4bdb-8c62-7f0312e78164
+    taskid: a27e4383-2a76-4bcb-805e-2581947b4cfb
     type: regular
     task:
-      id: 09c14edc-ff95-4bdb-8c62-7f0312e78164
+      id: a27e4383-2a76-4bcb-805e-2581947b4cfb
       version: -1
       name: Test MarkDown
       description: Tests for common functions createEntry and TableToMarkDown
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -80,7 +80,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 545
         }
       }
@@ -89,14 +89,14 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: f2a72b55-a2b2-4a24-8436-7de873241a62
+    taskid: bb5a7b59-cbae-46bd-8c67-802d222a820b
     type: regular
     task:
-      id: f2a72b55-a2b2-4a24-8436-7de873241a62
+      id: bb5a7b59-cbae-46bd-8c67-802d222a820b
       version: -1
       name: Test XML JSON relations
       description: 'Tests for common functions xml2json and json2xml '
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -110,7 +110,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 195
         }
       }
@@ -119,15 +119,15 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: dd11b0ed-b00c-4d6c-8339-12255437fb12
+    taskid: c6ca16d5-588e-4279-82e6-3ddb59d7a884
     type: regular
     task:
-      id: dd11b0ed-b00c-4d6c-8339-12255437fb12
+      id: c6ca16d5-588e-4279-82e6-3ddb59d7a884
       version: -1
       name: Test tableToMarkdown
       description: Tests underscoreToCamelCase and tableToMarkDown with and without
         headerTransform
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -142,7 +142,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 895
         }
       }
@@ -151,13 +151,13 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 3a2f9153-77c1-4ec9-89bc-363897b0ae8d
+    taskid: dc9550d6-e9c8-4899-8eb0-76f14414cd9b
     type: regular
     task:
-      id: 3a2f9153-77c1-4ec9-89bc-363897b0ae8d
+      id: dc9550d6-e9c8-4899-8eb0-76f14414cd9b
       version: -1
       name: Test hash function
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -171,7 +171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 720
         }
       }
@@ -180,13 +180,13 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: dc640d22-c5e2-43a0-8ba9-e350c653595e
+    taskid: 9cf4a170-a9af-4c73-8263-b1c6ca65407e
     type: regular
     task:
-      id: dc640d22-c5e2-43a0-8ba9-e350c653595e
+      id: 9cf4a170-a9af-4c73-8263-b1c6ca65407e
       version: -1
       name: Test date_to_timestamp
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -200,7 +200,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 1245
         }
       }
@@ -209,13 +209,13 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 105ae50b-a958-4f10-8d33-4b4235ba6199
+    taskid: c8c57dc9-8ec2-42f8-8335-d159ec9ddcc2
     type: regular
     task:
-      id: 105ae50b-a958-4f10-8d33-4b4235ba6199
+      id: c8c57dc9-8ec2-42f8-8335-d159ec9ddcc2
       version: -1
       name: Test camelize
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -229,7 +229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 1070
         }
       }
@@ -238,13 +238,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 557b7662-ef40-48a9-8d25-a6b20200965c
+    taskid: c0b2f5a6-9db6-43b7-894d-8f516b2ca02e
     type: regular
     task:
-      id: 557b7662-ef40-48a9-8d25-a6b20200965c
+      id: c0b2f5a6-9db6-43b7-894d-8f516b2ca02e
       version: -1
       name: Test PascalToSpace
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -258,7 +258,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 1420
         }
       }
@@ -267,13 +267,13 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 6659e1d5-6608-4c04-876f-bd43b7cf3847
+    taskid: bbe32630-e4a0-42d6-88ce-b5bbdbaac5ee
     type: regular
     task:
-      id: 6659e1d5-6608-4c04-876f-bd43b7cf3847
+      id: bbe32630-e4a0-42d6-88ce-b5bbdbaac5ee
       version: -1
       name: Test return_outputs
-      scriptName: TestPYCommonServer
+      script: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -287,7 +287,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 1595
         }
       }
@@ -296,10 +296,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 5a4c0fa4-df67-46c9-86a3-50177f1a0800
+    taskid: dee38c81-e174-471f-812c-4365b9b5c876
     type: condition
     task:
-      id: 5a4c0fa4-df67-46c9-86a3-50177f1a0800
+      id: dee38c81-e174-471f-812c-4365b9b5c876
       version: -1
       name: check if context contain foo
       type: condition
@@ -307,7 +307,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -323,7 +323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 1770
         }
       }
@@ -332,10 +332,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: fcc0433a-dfc7-4ac9-8035-32d80f8e6fcc
+    taskid: 3bd2d4c5-e750-4373-8a65-4bc94c4c5e91
     type: title
     task:
-      id: fcc0433a-dfc7-4ac9-8035-32d80f8e6fcc
+      id: 3bd2d4c5-e750-4373-8a65-4bc94c4c5e91
       version: -1
       name: Test Success
       type: title
@@ -345,175 +345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 1935c164-87a9-4909-8c51-4ca68a872642
-    type: regular
-    task:
-      id: 1935c164-87a9-4909-8c51-4ca68a872642
-      version: -1
-      name: Test append_context
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-      - "18"
-      - "19"
-      - "20"
-    scriptarguments:
-      test_type:
-        simple: APPEND_CONTEXT
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: b3799dc5-a481-47e1-8c22-2a6648094148
-    type: condition
-    task:
-      id: b3799dc5-a481-47e1-8c22-2a6648094148
-      version: -1
-      name: check if context contain empty_string_key
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: empty_string_key
-            iscontext: true
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: f88063f9-1b73-421d-8c96-acce77a67740
-    type: condition
-    task:
-      id: f88063f9-1b73-421d-8c96-acce77a67740
-      version: -1
-      name: check if context contain empty_list_key
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: empty_list_key
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: f847a385-1229-4bb0-8353-609d7d42b333
-    type: condition
-    task:
-      id: f847a385-1229-4bb0-8353-609d7d42b333
-      version: -1
-      name: check if context contain zero_key and its value is 0
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: zero_key
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: a5f20259-d886-4a6f-8113-48f4ad0ae10f
-    type: condition
-    task:
-      id: a5f20259-d886-4a6f-8113-48f4ad0ae10f
-      version: -1
-      name: check if context does not contain none_key
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: none_key
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -524,8 +357,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 1670,
+        "height": 1960,
+        "width": 380,
         "x": 50,
         "y": 50
       }
@@ -533,4 +366,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "-"
