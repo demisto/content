@@ -226,4 +226,3 @@ inputs:
   required: true
   description: DT filter for polling IDs. Polling will stop when no results are returned.
 outputs: []
-releaseNotes: "-"
