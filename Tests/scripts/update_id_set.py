@@ -4,6 +4,8 @@ import glob
 import json
 import argparse
 from collections import OrderedDict
+from multiprocessing import Pool, cpu_count
+import time
 
 from Tests.scripts.constants import *
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
@@ -277,46 +279,95 @@ def get_script_package_data(package_path):
     return yml_path, code
 
 
+def process_integration(file_path):
+    """
+    Process integration dir or file
+
+    Arguments:
+        file_path {string} -- file path to integration file
+
+    Returns:
+        list -- integration data list (may be empty)
+    """
+    res = []
+    if os.path.isfile(file_path):
+        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            print("adding {0} to id_set".format(file_path))
+            res.append(get_integration_data(file_path))
+    else:  # In case we encountered a package
+        for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
+            print("adding {0} to id_set".format(yml_file))
+            res.append(get_integration_data(yml_file))
+    return res
+
+
+def process_script(file_path):
+    res = []
+    if os.path.isfile(file_path):
+        print("adding {0} to id_set".format(file_path))
+        res.append(get_script_data(file_path))
+    else:  # In case we encountered a package
+        yml_path, code = get_script_package_data(file_path)
+        print("adding {0} to id_set".format(file_path))
+        res.append(get_script_data(yml_path, script_code=code))
+    return res
+
+
+def process_playbook(file_path):
+    res = []
+    print("adding {0} to id_set".format(file_path))
+    res.append(get_playbook_data(file_path))
+    return res
+
+
+def process_testplaybook_path(file_path):
+    """
+    Process a yml file in the testplyabook dir. Maybe either a script or playbook
+
+    Arguments:
+        file_path {string} -- path to yaml file
+
+    Returns:
+        pair -- first element is a playbook second is a script. each may be None
+    """
+    print("adding {0} to id_set".format(file_path))
+    script = None
+    playbook = None
+    if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+        script = get_script_data(file_path)
+    elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        playbook = get_playbook_data(file_path)
+    return playbook, script
+
+
 def re_create_id_set():
+    start_time = time.time()
     scripts_list = []
     playbooks_list = []
     integration_list = []
     testplaybooks_list = []
 
+    pool = Pool(processes=cpu_count() * 2)
+
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-    for file_path in glob.glob(os.path.join('Integrations', '*')):
-        if os.path.isfile(file_path):
-            if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                print("adding {0} to id_set".format(file_path))
-                integration_list.append(get_integration_data(file_path))
-        else:  # In case we encountered a package
-            for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
-                print("adding {0} to id_set".format(yml_file))
-                integration_list.append(get_integration_data(yml_file))
-
+    integration_files = glob.glob(os.path.join('Integrations', '*'))
+    integration_files.extend(glob.glob(os.path.join('Beta_Integrations', '*')))
+    for arr in pool.map(process_integration, integration_files):
+        integration_list.extend(arr)
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for file in glob.glob(os.path.join('Playbooks', '*')):
-        print("adding {0} to id_set".format(file))
-        playbooks_list.append(get_playbook_data(file))
-
+    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*'))):
+        playbooks_list.extend(arr)
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-    for file_path in glob.glob(os.path.join('Scripts', '*')):
-        if os.path.isfile(file_path):
-            print("adding {0} to id_set".format(file_path))
-            scripts_list.append(get_script_data(file_path))
-        else:  # In case we encountered a package
-            yml_path, code = get_script_package_data(file_path)
-            print("adding {0} to id_set".format(file_path))
-            scripts_list.append(get_script_data(yml_path, script_code=code))
-
+    for arr in pool.map(process_script, glob.glob(os.path.join('Scripts', '*'))):
+        scripts_list.extend(arr)
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-    for file in glob.glob(os.path.join('TestPlaybooks', '*')):
-        print("adding {0}".format(file))
-        if re.match(TEST_SCRIPT_REGEX, file, re.IGNORECASE):
-            scripts_list.append(get_script_data(file))
-        elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
-            testplaybooks_list.append(get_playbook_data(file))
+    for pair in pool.map(process_testplaybook_path, glob.glob(os.path.join('TestPlaybooks', '*'))):
+        if pair[0]:
+            testplaybooks_list.append(pair[0])
+        if pair[1]:
+            scripts_list.append(pair[1])
 
     new_ids_dict = OrderedDict()
     # we sort each time the whole set in case someone manually changed something
@@ -326,9 +377,10 @@ def re_create_id_set():
     new_ids_dict['integrations'] = sort(integration_list)
     new_ids_dict['TestPlaybooks'] = sort(testplaybooks_list)
 
-    print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(new_ids_dict, id_set_file, indent=4)
+    exec_time = time.time() - start_time
+    print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
 
 
 def sort(data):
