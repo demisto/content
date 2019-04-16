@@ -2527,6 +2527,7 @@ script:
             }
         })
 
+
     @logger
     def panorama_delete_edl(edl_name):
         params = {
@@ -2594,6 +2595,98 @@ script:
             'Contents': result,
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Refreshed External Dynamic List successfully',
+        })
+
+
+    @logger
+    def panorama_register_ip_tag(tag, ips, persistent = 1):
+        entry = ''
+        for ip in ips:
+            entry += '<entry ip=\"' + ip + '\" persistent=\"' + persistent + '\"><tag><member>' + tag + '</member></tag></entry>'
+
+        params = {
+            'type': 'user-id',
+            'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry + '</register></payload></uid-message>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_register_ip_tag_command():
+        ''' Register IPs to a Tag '''
+        tag = demisto.args()['tag']
+        ips = argToList(demisto.args()['IPs'])
+        persistent = demisto.args()['persistent'] if 'persistent' in demisto.args() else '1'
+
+        result = panorama_register_ip_tag(tag, ips, persistent)
+
+        registered_ip = {}
+        # update context only if IPs are persistent
+        if persistent == '1':
+            # get existing IPs for this tag
+            context_ips = demisto.dt(demisto.context(), 'Panorama.DynamicTags(val.Tag ==\"' + tag + '\").IPs')
+
+            if (context_ips):
+                all_ips = ips + context_ips
+            else:
+                all_ips = ips
+
+            registered_ip = {
+                'Tag': tag,
+                'IPs': all_ips
+            }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Registered ip-tag successfully',
+            'EntryContext': {
+                "Panorama.DynamicTags(val.Tag == obj.Tag)": registered_ip
+            }
+        })
+
+
+    @logger
+    def panorama_unregister_ip_tag(tag, ips):
+        entry = ''
+        for ip in ips:
+            entry += '<entry ip=\"' + ip + '\"><tag><member>' + tag + '</member></tag></entry>'
+
+        params = {
+            'type': 'user-id',
+            'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry + '</unregister></payload></uid-message>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_unregister_ip_tag_command():
+        ''' Register IPs to a Tag '''
+        tag = demisto.args()['tag']
+        ips = argToList(demisto.args()['IPs'])
+
+        result = panorama_unregister_ip_tag(tag, ips)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Unregistered ip-tag successfully'
         })
 
 
@@ -2726,6 +2819,13 @@ script:
 
         elif demisto.command() == 'panorama-refresh-edl':
             panorama_refresh_edl_command()
+
+        # Registered IPs
+        elif demisto.command() == 'panorama-register-ip-tag':
+            panorama_register_ip_tag_command()
+
+        elif demisto.command() == 'panorama-unregister-ip-tag':
+            panorama_unregister_ip_tag_command()
 
         # Security Rules Managing
         elif demisto.command() == 'panorama-move-rule':
@@ -3954,8 +4054,42 @@ script:
     - name: password
       description: Password for Panorama, needed for dlp-pcap only.
     description: Returns a list of pcap names
+  - name: panorama-register-ip-tag
+    arguments:
+    - name: tag
+      required: true
+      description: Tag to register IPs to
+    - name: IPs
+      required: true
+      description: IPs to register
+      isArray: true
+    - name: persistent
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: '"0":non-persistent, "1":persistent. default is "1"'
+      defaultValue: "1"
+    outputs:
+    - contextPath: Panorama.DynamicTags.Tag
+      description: Tag name
+      type: string
+    - contextPath: Panorama.DynamicTags.IPs
+      description: registered IP
+      type: string
+    description: Register IPs to a tag
+  - name: panorama-unregister-ip-tag
+    arguments:
+    - name: tag
+      required: true
+      description: Tag to unregister IPs from
+    - name: IPs
+      required: true
+      description: IPs to unregister
+      isArray: true
+    description: Unregister IPs to a tag
   runonce: false
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: Add support for panorama-list/get/create/edit/delete/refresh-edl commands.
+releaseNotes: Add support for panorama-list/get/create/edit/delete/refresh-edl, panorama-register/unregister-ip-tag commands.

@@ -43,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "88"
     scriptarguments:
       action: {}
       category: {}
@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -156,7 +156,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -181,7 +181,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4275
+          "y": 4450
         }
       }
     note: false
@@ -216,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1040
         }
       }
     note: false
@@ -254,7 +254,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1215
         }
       }
     note: false
@@ -280,7 +280,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 865
         }
       }
     note: false
@@ -309,7 +309,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -335,7 +335,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 1885
         }
       }
     note: false
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2030
+          "y": 2205
         }
       }
     note: false
@@ -409,7 +409,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2205
+          "y": 2380
         }
       }
     note: false
@@ -445,7 +445,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3050
+          "y": 3225
         }
       }
     note: false
@@ -474,7 +474,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2555
+          "y": 2730
         }
       }
     note: false
@@ -503,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 2905
         }
       }
     note: false
@@ -541,7 +541,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 3575
         }
       }
     note: false
@@ -578,7 +578,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3575
+          "y": 3750
         }
       }
     note: false
@@ -616,7 +616,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3925
+          "y": 4100
         }
       }
     note: false
@@ -645,7 +645,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4100
+          "y": 4275
         }
       }
     note: false
@@ -674,7 +674,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4420
+          "y": 4595
         }
       }
     note: false
@@ -707,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4595
+          "y": 4770
         }
       }
     note: false
@@ -737,7 +737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3750
+          "y": 3925
         }
       }
     note: false
@@ -766,7 +766,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4915
+          "y": 5090
         }
       }
     note: false
@@ -804,7 +804,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5090
+          "y": 5265
         }
       }
     note: false
@@ -826,7 +826,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7625
+          "y": 7975
         }
       }
     note: false
@@ -851,7 +851,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4770
+          "y": 4945
         }
       }
     note: false
@@ -876,7 +876,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6285
+          "y": 6460
         }
       }
     note: false
@@ -901,7 +901,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 2060
         }
       }
     note: false
@@ -926,7 +926,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 3080
         }
       }
     note: false
@@ -970,7 +970,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6430
+          "y": 6605
         }
       }
     note: false
@@ -1007,7 +1007,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6780
+          "y": 6955
         }
       }
     note: false
@@ -1040,7 +1040,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6955
+          "y": 7130
         }
       }
     note: false
@@ -1070,7 +1070,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5265
+          "y": 5440
         }
       }
     note: false
@@ -1106,7 +1106,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3225
+          "y": 3400
         }
       }
     note: false
@@ -1132,7 +1132,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2380
+          "y": 2555
         }
       }
     note: false
@@ -1158,7 +1158,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1390
         }
       }
     note: false
@@ -1184,7 +1184,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6605
+          "y": 6780
         }
       }
     note: false
@@ -1209,7 +1209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7130
+          "y": 7305
         }
       }
     note: false
@@ -1230,7 +1230,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "89"
     scriptarguments:
       from:
         simple: pcap_test
@@ -1246,7 +1246,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7450
+          "y": 7625
         }
       }
     note: false
@@ -1277,7 +1277,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7275
+          "y": 7450
         }
       }
     note: false
@@ -1302,7 +1302,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5440
+          "y": 5615
         }
       }
     note: false
@@ -1329,7 +1329,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5585
+          "y": 5760
         }
       }
     note: false
@@ -1359,7 +1359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5760
+          "y": 5935
         }
       }
     note: false
@@ -1397,7 +1397,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5935
+          "y": 6110
         }
       }
     note: false
@@ -1427,7 +1427,73 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6110
+          "y": 6285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "88":
+    id: "88"
+    taskid: 5d3b6683-713c-4eac-81a1-0803cd40ffe8
+    type: regular
+    task:
+      id: 5d3b6683-713c-4eac-81a1-0803cd40ffe8
+      version: -1
+      name: panorama-register-ip-tag
+      description: Register IPs to a tag
+      script: '|||panorama-register-ip-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      IPs:
+        simple: 10.10.10.10
+      persistent:
+        simple: "1"
+      tag:
+        simple: tag01
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "89":
+    id: "89"
+    taskid: a1cfc008-1202-445e-8dd3-171318ee2459
+    type: regular
+    task:
+      id: a1cfc008-1202-445e-8dd3-171318ee2459
+      version: -1
+      name: panorama-unregister-ip-tag
+      description: Unregister IPs to a tag
+      script: '|||panorama-unregister-ip-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      IPs:
+        simple: 10.10.10.10
+      tag:
+        simple: tag01
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
         }
       }
     note: false
@@ -1441,7 +1507,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7640,
+        "height": 7990,
         "width": 380,
         "x": 50,
         "y": 50
