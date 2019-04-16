@@ -46,6 +46,7 @@ def run_command(command, is_silenced=True):
     output, err = p.communicate()
     if err:
         print_error("Failed to run command " + command)
+        print_error('error details:\n{}'.format(err))
         sys.exit(1)
     return output
 
