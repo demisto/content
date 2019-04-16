@@ -28,7 +28,7 @@ def options_handler():
 
 def create_instance(ami_name):
     print("Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name]))
-    run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
+    run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name), False)  # noqa
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         instance_id = instance_file.read()
     with open('image_id.txt', 'r') as image_id_file:
