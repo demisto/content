@@ -1,3 +1,4 @@
+import re
 import sys
 import json
 import string
@@ -11,7 +12,7 @@ from slackclient import SlackClient
 
 from Tests.test_integration import test_integration
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 
 SERVER_URL = "https://{}"
@@ -374,7 +375,8 @@ def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, ni
 def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name):
+                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                      server_numeric_version):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -411,12 +413,22 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
             return
 
     # Skip bad test
-    if playbook_id in skipped_tests_conf.keys():
+    if playbook_id in skipped_tests_conf:
         skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
         return
 
     # Skip integration
     if has_skipped_integration:
+        return
+
+    # Skip version mismatch test
+    test_from_version = t.get('fromversion', '0.0.0')
+    test_to_version = t.get('toversion', '99.99.99')
+    if (server_version_compare(test_from_version, server_numeric_version) < 0 or
+            server_version_compare(test_to_version, server_numeric_version) >= 0):
+        print('------ Test {} start ------'.format(test_message))
+        print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message, ))
+        print('------ Test {} end ------'.format(test_message))
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations,
@@ -443,7 +455,7 @@ def restart_demisto_service(ami):
     raise Exception('Timeout waiting for demisto service to restart')
 
 
-def execute_testing(server, server_ip, server_version):
+def execute_testing(server, server_ip, server_version, server_numeric_version):
     options = options_handler()
     username = options.user
     password = options.password
@@ -522,7 +534,7 @@ def execute_testing(server, server_ip, server_version):
                           is_filter_configured,
                           filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name)
+                          build_name, server_numeric_version)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy)
@@ -546,6 +558,7 @@ def main():
     server = options.server
     is_ami = options.isAMI
     server_version = options.serverVersion
+    server_numeric_version = '0.0.0'
 
     if is_ami:  # Run tests in AMI configuration
         with open('./Tests/images_data.txt', 'r') as image_data_file:
@@ -553,7 +566,11 @@ def main():
             if len(image_data) != 1:
                 print('Did not get one image data for server version, got {}'.format(image_data))
             else:
+                server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]-([\d.]+)-[\d]{5}', image_data[0])
+                if not server_numeric_version:
+                    server_numeric_version = '5.0'  # TODO: fix ami file name of master to show version number
                 print('Server image info: {}'.format(image_data[0]))
+                print('Server version: {}'.format(server_numeric_version))
 
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
@@ -565,7 +582,7 @@ def main():
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server, ami_instance_ip, server_version)
+                execute_testing(server, ami_instance_ip, server_version, server_numeric_version)
                 sleep(8)
 
     else:  # Run tests in Server build configuration

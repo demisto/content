@@ -182,7 +182,7 @@ def run_threads_list(threads_list):
     Arguments:
         threads_list (list of threads) -- list of threads to start and wait for join
     """
-    # run each command in a seperate thread
+    # run each command in a separate thread
     for t in threads_list:
         t.start()
     # wait for the commands to complete

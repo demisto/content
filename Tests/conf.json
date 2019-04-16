@@ -584,7 +584,8 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test - CrowdStrike Falcon"
+            "playbookID": "Test - CrowdStrike Falcon",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": [
@@ -959,7 +960,8 @@
         },
         {
             "integrations": "Jask",
-            "playbookID": "Jask_Test"
+            "playbookID": "Jask_Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Qualys",
