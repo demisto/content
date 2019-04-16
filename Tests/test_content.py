@@ -424,8 +424,8 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
     # Skip version mismatch test
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_numeric_version) < 0
-            or server_version_compare(test_to_version, server_numeric_version) >= 0):
+    if (server_version_compare(test_from_version, server_numeric_version) > 0
+            or server_version_compare(test_to_version, server_numeric_version) < 0):
         print('------ Test {} start ------'.format(test_message))
         print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                               test_from_version,
@@ -569,8 +569,9 @@ def main():
                 print('Did not get one image data for server version, got {}'.format(image_data))
             else:
                 server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]-([\d.]+)-[\d]{5}', image_data[0])
+                print('debug: {}'.format(server_numeric_version))
                 if not server_numeric_version:
-                    server_numeric_version = '5.0'  # TODO: fix ami file name of master to show version number
+                    server_numeric_version = '99.99.98'  # latest
                 print('Server image info: {}'.format(image_data[0]))
                 print('Server version: {}'.format(server_numeric_version))
 
