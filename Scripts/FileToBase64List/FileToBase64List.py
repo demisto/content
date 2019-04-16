@@ -30,7 +30,7 @@ def main():
     if isError(res):
         return res
 
-    return 'success store list ' + LIST_NAME + ' size: %d'.format(len(file_base64))
+    return 'success store list ' + LIST_NAME + ' size: ' + str(len(file_base64))
 
 
 if __name__ == "__builtin__" or __name__ == '__main__':
