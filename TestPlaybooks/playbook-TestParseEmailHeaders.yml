@@ -408,4 +408,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "change header validation from Shai Yaakovi <Yaakovi@demisto.com> to Yaakovi@demisto.com"
