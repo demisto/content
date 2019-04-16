@@ -1,0 +1,41 @@
+args:
+- default: false
+  description: The file entry id.
+  isArray: false
+  name: entryId
+  required: true
+  secret: false
+- default: false
+  description: The list name to store the file in. List must be exist in Demisto.
+  isArray: false
+  name: listName
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: Zip the file before store?
+  isArray: false
+  name: zipFile
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+comment: |
+  Store a file in Demisto list (as base64)
+commonfields:
+  id: e31fa2f5-3785-47e9-81ff-41e08044d8ed
+  version: -1
+enabled: true
+name: FileToList
+script: '-'
+system: false
+tags:
+- Utility
+- list
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: true
+fromversion: 4.1.0
