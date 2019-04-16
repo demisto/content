@@ -1,5 +1,6 @@
 id: Domain Enrichment - Generic v2
 version: -1
+fromversion: 4.1.0
 name: Domain Enrichment - Generic v2
 description: |-
   Enrich domains using one or more integrations.
