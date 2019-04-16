@@ -25,6 +25,7 @@ This is where you should implement the credentials retrieving logic:
 if demisto.command() == 'fetch-credentials':
    fetch_credentials()
 ```
+ 
 
 ### Creating credentials objects
 
@@ -37,10 +38,19 @@ In the `fetch_credentials` function, you should retrieve the credentials from th
 }
 ```
 
+
 In the end you should have a credentials list that contains the above objects.
+
 
 When you're done creating the credentials objects, send them to the credentials store by using:
 `demisto.credentials(credentials)`.
+
+### Runtime
+When an integration instance is configured with credentials from a vault, each time credentials are needed Demisto
+will query the vault integration with an `identifier` for the relevant integration as an argument to the `fetch_credentials` command (accessible via the `args` 
+object). `identifier` reflects the `name` property of the credentials object.
+It is important to use it to return only **one** set of credentials for the relevant integration,
+because in this case, if multiple credentials sets are returned, the process will fail and an error will be thrown.
 
 ## Result
 If everything went well you should be able to see the credentials in the Demisto credentials store:

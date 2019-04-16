@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import io
 import sys
@@ -131,6 +131,8 @@ def get_code_file(package_path, script_type):
     """
 
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    if not package_path.endswith('/'):
+        package_path += '/'
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path
@@ -199,8 +201,8 @@ def get_package_path():
             directory_name = dir_name
 
     if not directory_name:
-        print "You have failed to provide a legal file path, a legal file path " \
-              "should contain either Integrations or Scripts directories"
+        print("You have failed to provide a legal file path, a legal file path "
+              "should contain either Integrations or Scripts directories")
         sys.exit(1)
 
     return package_path, directory_name, dest_path

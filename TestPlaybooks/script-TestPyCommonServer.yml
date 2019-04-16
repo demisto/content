@@ -397,6 +397,13 @@ script: |-
 
       demisto.results('ok')
 
+  def test_append_context():
+      appendContext('empty_string_key', '')
+      appendContext('empty_list_key', [])
+      appendContext('zero_key', 0)
+      appendContext('none_key', None)
+      demisto.results("placeholder so the run would finish")
+
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
@@ -411,6 +418,7 @@ script: |-
       'ARG_TO_LIST': test_argToList,
       'RETURN_OUTPUTS': test_return_outputs,
       'REMOVE_DICTIONARY_NULLS': test_remove_nulls
+      'APPEND_CONTEXT': test_append_context
   }
 
 
@@ -506,6 +514,7 @@ args:
 - name: test_type
   required: true
   default: true
+  auto: PREDEFINED
   predefined:
   - DQ
   - ENTRY
@@ -517,9 +526,11 @@ args:
   - DATE_TO_TIMESTAMP
   - PASCAL_TO_SPACE
   - RETURN_OUTPUTS
+  - APPEND_CONTEXT
   - REMOVE_DICTIONARY_NULLS
   description: one of python common server testing features
   defaultValue: DQ
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+releaseNotes: "-"

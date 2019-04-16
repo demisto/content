@@ -552,6 +552,5 @@ script:
       type: string
     description: Check file reputation of the given hash
   runonce: false
-releaseNotes: Entry table fixes, handle htttp errors(quota, bad request, etc) gracefully.
 tests:
 - autofocus_test
