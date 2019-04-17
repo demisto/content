@@ -7,7 +7,7 @@ TestData/EmailWithNonUnicodeSubject.eml
 *.pyc
 .pytest_cache
 
-CommonServerPython.py
+./CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
 Tests/filter_file.txt
