@@ -230,35 +230,35 @@ def formatEpochDate(t):
     return ''
 
 
-def compareDates(date1, date2, dateFormat):
-    """
-       Compares two dates and returns the delta.
-       If instead of date passed string 'now' then it will be compared to current time.
-       Date format must be according to python date formats: https://docs.python.org/2/library/datetime.html
-
-       :type date1: ``int`` or ``str``
-       :param date1: First date to be compared (required)
-
-       :type date2: ``int`` or ``str``
-       :param date2: Second date tobe compared (required)
-
-       :return: The delta of the two dates
-       :rtype: ``int``
-    """
-    first = None
-    if date1 == 'now':
-        first = datetime.now(tzlocal())
-    elif isinstance(date1, STRING_TYPES):
-        first = parse(date1)
-
-    second = None
-    if date2 == 'now':
-        second = datetime.now(tzlocal())
-    elif isinstance(date2, STRING_TYPES):
-        second = parse(date2)
-    delta = first - second
-
-    return delta
+# def compareDates(date1, date2, dateFormat):
+#     """
+#        Compares two dates and returns the delta.
+#        If instead of date passed string 'now' then it will be compared to current time.
+#        Date format must be according to python date formats: https://docs.python.org/2/library/datetime.html
+#
+#        :type date1: ``int`` or ``str``
+#        :param date1: First date to be compared (required)
+#
+#        :type date2: ``int`` or ``str``
+#        :param date2: Second date tobe compared (required)
+#
+#        :return: The delta of the two dates
+#        :rtype: ``int``
+#     """
+#     first = None
+#     if date1 == 'now':
+#         first = datetime.now(tzlocal())
+#     elif isinstance(date1, STRING_TYPES):
+#         first = parse(date1)
+#
+#     second = None
+#     if date2 == 'now':
+#         second = datetime.now(tzlocal())
+#     elif isinstance(date2, STRING_TYPES):
+#         second = parse(date2)
+#     delta = first - second
+#
+#     return delta
 
 
 def shortCrowdStrike(entry):
