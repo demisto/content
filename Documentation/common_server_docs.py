@@ -4,6 +4,8 @@ import sys
 import yaml
 from parinx import parser
 
+from package_creator import clean_python_code
+
 jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
                   "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
                   "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
@@ -127,6 +129,8 @@ def createPyDocumentation(path, origin, language):
 
     with open(path, 'r') as file:
         pyScript = file.read()
+
+    pyScript = clean_python_code(pyScript)
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {}
