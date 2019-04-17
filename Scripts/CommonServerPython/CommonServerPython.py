@@ -1240,7 +1240,7 @@ def json2xml(json_data, factory=ET.Element):
         json_data = json.loads(json_data)
 
     elem = internal_to_elem(json_data, factory)
-    return ET.tostring(elem, encoding='unicode')
+    return ET.tostring(elem, encoding='utf-8')
 
 
 def get_hash_type(hash_file):
