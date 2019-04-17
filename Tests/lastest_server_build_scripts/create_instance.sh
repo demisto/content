@@ -6,14 +6,13 @@ echo "Start create_instance script"
 #configure aws
 aws configure set region us-west-2
 
-aws --profile sandbox sts assume-role --role-arn arn:aws:iam::676921422616:role/DemistoCircleCI_AssumeRole_ContentDev --role-session-name AWSCI
+#aws --profile sandbox sts assume-role --role-arn arn:aws:iam::676921422616:role/DemistoCircleCI_AssumeRole_ContentDev --role-session-name AWSCI
 
 
 CONFFILE=$1
 
 #create instance
 REQUEST_ID=$(aws ec2 request-spot-instances \
-    --profile sandbox \
     --launch-specification file://${CONFFILE} \
     --query 'SpotInstanceRequests[0].SpotInstanceRequestId' | tr -d '"')
 
