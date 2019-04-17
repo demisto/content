@@ -155,11 +155,12 @@ def createPyDocumentation(path, origin, language):
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
-    pyDoc, isErrorPy = createPyDocumentation('./Scripts/script-CommonServerPython.yml', 'CommonServerPython', 'python')
+    pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.yml',
+                                             'CommonServerPython', 'python')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 
     if isErrorJS or isErrorPy or not finalDoc:
-        print "Errors found in common server docs."
+        print("Errors found in common server docs.")
         sys.exit(1)
     with open('./Documentation/doc-CommonServer.json', 'w') as fp:
         finalDoc += jsDoc
