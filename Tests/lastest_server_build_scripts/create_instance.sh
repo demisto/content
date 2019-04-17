@@ -6,6 +6,8 @@ echo "Start create_instance script"
 #configure aws
 aws configure set region us-west-2
 
+aws assume-role --role-arn arn:aws:iam::676921422616:role/DemistoCircleCI_AssumeRole_ContentDev
+
 CONFFILE=$1
 
 #create instance
