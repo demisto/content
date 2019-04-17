@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-from Scripts.CommonServerPython.CommonServerPython import *
+from CommonServerPython import *
 
 import copy
 import unittest
 
-INFO = {'b' : 1,
+INFO = {'b': 1,
         'a': {
-            'safd' : 3,
-            'b' : [
-                {'c' : {'d' : 432}, 'd' : 2},
-                {'c' : {'f' : 1}},
-                {'b' : 1234},
-                {'c' : {'d' : 4567}},
-                {'c' : {'d' : 11}},
-                {'c' : {'d' : u'asdf'}}],
-            'c' : {'d' : 10},
+            'safd': 3,
+            'b': [
+                {'c': {'d': 432}, 'd': 2},
+                {'c': {'f': 1}},
+                {'b': 1234},
+                {'c': {'d': 4567}},
+                {'c': {'d': 11}},
+                {'c': {'d': u'asdf'}}],
+            'c': {'d': 10},
         }
         }
 
@@ -22,7 +22,8 @@ INFO = {'b' : 1,
 def test_xml():
     import json
 
-    xml = "<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name></employee></work>"
+    xml = "<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name>" \
+          "</employee></work>"
     jsonExpected = '{"work": {"employee": [{"id": "100", "name": "foo"}, {"id": "200", "name": "goo"}]}}'
 
     jsonActual = xml2json(xml)
@@ -39,11 +40,11 @@ def test_xml():
 def toEntry(table):
     return {
 
-        'Type' : entryTypes['note'],
+        'Type': entryTypes['note'],
         'Contents': table,
         'ContentsFormat': formats['table'],
-        'ReadableContentsFormat' : formats['markdown'],
-        'HumanReadable' : table
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': table
     }
 
 
@@ -79,7 +80,8 @@ def test_tbl_to_md():
     tables.append((table, expected_table, ))
 
     # header transform
-    table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
+    table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data,
+                                      headerTransform=underscoreToCamelCase)
     expected_table_transform = '''### tableToMarkdown test with headerTransform
 |Header2|Header3|Header1|
 |---|---|---|
@@ -92,8 +94,8 @@ def test_tbl_to_md():
     # escaping characters: multiline + md-chars
     data2 = copy.deepcopy(data)
     for i, d in enumerate(data2):
-        d['header_2'] = 'b%d.1\nb%d.2' % (i+1, i+1, )
-        d['header_3'] = 'c%d|1' % (i+1, )
+        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1, )
+        d['header_3'] = 'c%d|1' % (i + 1, )
 
     table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
     expected_table_multiline = '''### tableToMarkdown test with multiline
@@ -134,7 +136,7 @@ def test_tbl_to_md():
     # list values
     data4 = copy.deepcopy(data)
     for i, d in enumerate(data4):
-        d['header_3'] = [i+1, 'second item']
+        d['header_3'] = [i + 1, 'second item']
         d['header_2'] = 'hi'
     table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
     expected_table_list_field = '''### tableToMarkdown test with list field
@@ -149,9 +151,9 @@ def test_tbl_to_md():
     # all fields are empty
     data5 = [
         {
-            'a' : None,
-            'b' : None,
-            'c' : None,
+            'a': None,
+            'b': None,
+            'c': None,
         } for _ in range(3)
     ]
     table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
@@ -174,7 +176,8 @@ def test_tbl_to_md():
     # header not on first object
     data6 = copy.deepcopy(data)
     data6[1]['extra_header'] = 'sample'
-    table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data6, headers=['header_1', 'header_2', 'extra_header'])
+    table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data6,
+                                         headers=['header_1', 'header_2', 'extra_header'])
     expected_table_extra_header = '''### tableToMarkdown test with extra header
 |header_1|header_2|extra_header|
 |---|---|---|
@@ -185,17 +188,18 @@ def test_tbl_to_md():
     tables.append((table_extra_header, expected_table_extra_header, ))
 
     # no such header
-    table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', data, headers=['no', 'header', 'found'], removeNull=True)
+    table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', data,
+                                       headers=['no', 'header', 'found'], removeNull=True)
     expected_table_no_headers = '''### tableToMarkdown test with no headers
 **No entries.**
 '''
     tables.append((table_no_headers, expected_table_no_headers, ))
 
-
     # dict value
     data7 = copy.deepcopy(data)
-    data7[1]['extra_header'] = {'sample' : 'qwerty', 'sample2' : 'asdf'}
-    table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data7, headers=['header_1', 'header_2', 'extra_header'])
+    data7[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
+    table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data7,
+                                        headers=['header_1', 'header_2', 'extra_header'])
     expected_dict_record = '''### tableToMarkdown test with dict record
 |header_1|header_2|extra_header|
 |---|---|---|
@@ -228,7 +232,8 @@ def test_tbl_to_md():
     tables.append((table_string_array, expected_string_array_tbl, ))
 
     # combination: string header + string values list
-    table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header', ['foo', 'bar', 'katz'], 'header_1')
+    table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
+                                                       ['foo', 'bar', 'katz'], 'header_1')
     expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
 |header_1|
 |---|
@@ -262,19 +267,18 @@ def test_flatten_cell():
 
     returned.append((flatten_text, expected_flatten_string))
 
-
     # special character test
     special_char = u'会'
     list_of_special = [special_char, special_char]
     try:
         flattenCell(list_of_special)
         flattenCell(special_char)
-    except:
+    except Exception:
         demisto.results(toEntry('special character failure - flatten_cell'))
         demisto.results(return_error('failure'))
 
     # dictionary test
-    dict_to_flatten = { 'first' : u'会' }
+    dict_to_flatten = {'first': u'会'}
     expected_flatten_dict = u'{\n    "first": "\u4f1a"\n}'
     returned.append((dict_to_flatten, expected_flatten_dict))
 
@@ -288,8 +292,13 @@ def test_hash_djb2():
 
 
 def test_camelize():
-    assert str(camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_')) == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
-    assert str(camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_')) == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
+    non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
+    expected_output = "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
+    assert str(camelize(non_camalized, '_')) == expected_output
+
+    non_camalized2 = {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}
+    expected_output2 = "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
+    assert str(camelize(non_camalized2, '_')) == expected_output2
 
 
 def test_date_to_timestamp():
@@ -325,23 +334,24 @@ def test_argToList():
 
 
 def test_return_outputs():
-    return_outputs(readable_output="foo", outputs={"foo":"foo1"})
+    return_outputs(readable_output="foo", outputs={"foo": "foo1"})
 
-    return_outputs(readable_output='', outputs={"foo":"foo1"})
+    return_outputs(readable_output='', outputs={"foo": "foo1"})
 
     return_outputs(readable_output="foo", outputs={})
 
-    return_outputs("foo", {"foo":"foo1"}, raw_response={"raw":"response"})
+    return_outputs("foo", {"foo": "foo1"}, raw_response={"raw": "response"})
+
 
 def test_remove_nulls():
-    temp_dictionary = {"a": "b", "c": 4, "e": [], "f": {}, "g": None, "h": "", "i": [1,], "k": ()}
-    expected_dictionary = {"a": "b", "c": 4, "i": [1,]}
+    temp_dictionary = {"a": "b", "c": 4, "e": [], "f": {}, "g": None, "h": "", "i": [1], "k": ()}
+    expected_dictionary = {"a": "b", "c": 4, "i": [1]}
 
-    removeNullsFromDictionary(temp_dictionary)
+    remove_nulls_from_dictionary(temp_dictionary)
 
     assert expected_dictionary == temp_dictionary, \
-        "removeNullsFromDictionary test failed, {} is not equal to {}".format(str(temp_dictionary),
-                                                                              str(expected_dictionary))
+        "remove_nulls_from_dictionary test failed, {} is not equal to {}".format(str(temp_dictionary),
+                                                                                 str(expected_dictionary))
 
 
 def test_append_context():
@@ -350,23 +360,6 @@ def test_append_context():
     appendContext('zero_key', 0)
     appendContext('none_key', None)
     demisto.results("placeholder so the run would finish")
-
-''' MAIN TEST RUNNER '''
-TESTS = {
-    'DQ' : test_dq,
-    # 'XML' : test_xml,
-    'ENTRY' : test_entry,
-    'FLTNCL': test_flatten_cell,
-    'TBLMD' : test_tbl_to_md,
-    'HASH'  : test_hash_djb2,
-    'CAMELIZE': test_camelize,
-    'DATE_TO_TIMESTAMP': test_date_to_timestamp,
-    'PASCAL_TO_SPACE' : test_pascalToSpace,
-    'ARG_TO_LIST': test_argToList,
-    'RETURN_OUTPUTS': test_return_outputs,
-    'REMOVE_DICTIONARY_NULLS': test_remove_nulls,
-    'APPEND_CONTEXT': test_append_context
-}
 
 
 class TestIsError(unittest.TestCase):
@@ -380,7 +373,6 @@ class TestIsError(unittest.TestCase):
             }
         ]
         self.assertTrue(is_error(execute_command_results))
-
 
     def test_is_error_single_entry(self):
         execute_command_results = {
@@ -440,4 +432,5 @@ class TestGetError(unittest.TestCase):
             get_error(execute_command_results)
             self.fail("get_error should raise an error")
         except ValueError as e:
-            self.assertEquals(e.message, "execute_command_result has no error entry. before using get_error use is_error")
+            self.assertEquals(e.message,
+                              "execute_command_result has no error entry. before using get_error use is_error")
