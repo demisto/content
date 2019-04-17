@@ -4123,6 +4123,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - No test - Hibernating instance
