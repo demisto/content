@@ -368,8 +368,8 @@ def split_fields(fields):
 def get_snow_time(minutes_offset):
     now = datetime.datetime.now()
     ts = time.time()
-    utc_offset_minutes = (datetime.datetime.utcfromtimestamp(ts) -
-                          datetime.datetime.fromtimestamp(ts)).total_seconds() / 60
+    utc_offset_minutes = (
+        (datetime.datetime.utcfromtimestamp(ts) - datetime.datetime.fromtimestamp(ts)).total_seconds() / 60)
     snow_time = now + datetime.timedelta(minutes=utc_offset_minutes)
 
     if minutes_offset:
