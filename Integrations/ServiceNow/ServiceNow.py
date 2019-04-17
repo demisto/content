@@ -24,6 +24,7 @@ def get_server_url():
     url = re.sub('\/$', '', url)
     return url
 
+
 ''' GLOBAL VARIABLES '''
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
@@ -113,9 +114,9 @@ SEVERITY_MAP = {
 }
 
 DEFAULTS = {
-    'limit':10,
-    'offset':0,
-    'fetch_limit':10
+    'limit': 10,
+    'offset': 0,
+    'fetch_limit': 10
 }
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
@@ -363,24 +364,28 @@ def split_fields(fields):
 
     return dic_fields
 
+
 def get_snow_time(minutes_offset):
     now = datetime.datetime.now()
     ts = time.time()
-    utc_offset_minutes = (datetime.datetime.utcfromtimestamp(ts) - datetime.datetime.fromtimestamp(ts)).total_seconds() / 60
-    snow_time = now + datetime.timedelta(minutes = utc_offset_minutes)
+    utc_offset_minutes = (datetime.datetime.utcfromtimestamp(ts) -
+                          datetime.datetime.fromtimestamp(ts)).total_seconds() / 60
+    snow_time = now + datetime.timedelta(minutes=utc_offset_minutes)
 
     if minutes_offset:
-        snow_time = snow_time + datetime.timedelta(minutes = minutes_offset)
+        snow_time = snow_time + datetime.timedelta(minutes=minutes_offset)
 
     return snow_time.strftime('%Y-%m-%d %H:%M:%S')
+
 
 ''' FUNCTIONS '''
 
 
 def get_template(name):
-    query_params={}
-    query_params['sysparm_limit'] = 1
-    query_params['sysparm_query'] = 'name='+name
+    query_params = {
+        'sysparm_limit': 1,
+        'sysparm_query': 'name=' + name
+    }
 
     ticket_type = 'sys_template'
     path = 'table/' + ticket_type
@@ -655,7 +660,6 @@ def create_record_command():
     table_name = demisto.args()['table_name']
     fields = demisto.args().get('fields')
     custom_fields = demisto.args().get('custom_fields')
-    template = demisto.args().get('template')
 
     if fields:
         fields = split_fields(fields)
@@ -1356,12 +1360,12 @@ def fetch_incidents():
 
     path = 'table/' + ticket_type
 
-    res = send_request(path, 'get', params = query_params)
+    res = send_request(path, 'get', params=query_params)
 
     for result in res['result']:
         labels = []
 
-        for k,v in result.iteritems():
+        for k, v in result.iteritems():
             if isinstance(v, basestring):
                 labels.append({
                     'type': k,
