@@ -1601,6 +1601,9 @@ def remove_nulls_from_dictionary(dict):
 
         :type data: ``dict``
         :param data: The data to be added to the context (required)
+
+        :return: No data returned
+        :rtype: ``None``
     """
     list_of_keys = list(dict.keys())[:]
     for key in list_of_keys:
