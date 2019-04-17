@@ -246,12 +246,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Query Filter parameter to filter by author, e.g., "EQ admin"
-      isArray: false
-      name: author
-      required: false
-      secret: false
-    - default: false
       description: Query Filter parameter to filter by content type of policy, e.g.,
         "ENDSWITH URL"
       isArray: false
@@ -370,10 +364,80 @@ script:
     - contextPath: ManagementCenter.Policy.Category.Name
       description: Management Center policy category name
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Policy name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Policy content type
+      isArray: false
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - CATEGORY_LIST
+      required: true
+      secret: false
+    - default: false
+      description: Policy description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Policy reference ID
+      isArray: false
+      name: reference_id
+      required: false
+      secret: false
+    - default: false
+      description: Optional tenant associated with this policy
+      isArray: false
+      name: tenant
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Share policy
+      isArray: false
+      name: shared
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Replace variables supported
+      isArray: false
+      name: replace_variables
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Create a policy in Management Center
     execution: false
     name: management-center-create-policy
+    outputs:
+    - contextPath: ManagementCenter.Policy.UUID
+      description: Policy UUID
+      type: String
+    - contextPath: ManagementCenter.Policy.Name
+      description: Policy name
+      type: String
+    - contextPath: ManagementCenter.Policy.ContentType
+      description: Policy content type
+      type: String
+    - contextPath: ManagementCenter.Policy.Author
+      description: Policy author
+      type: String
   isfetch: false
   runonce: false
   script: '-'
