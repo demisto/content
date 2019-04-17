@@ -11,7 +11,7 @@ detaileddescription: "This API enables the usage of Google Admin API. In order t
   enable it, you will need to create an account service private key json file and
   copy its content.\nFollow the steps here to create such a private key and authorize
   the API for usage: [https://developers.google.com/admin-sdk/directory/v1/guides/delegation](https://developers.google.com/admin-sdk/directory/v1/guides/delegation)\n\nIt
-  is necessary to authorize the next API’s for that service account:\n[https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly)\n\nIn
+  is necessary to authorize the next API's for that service account:\n[https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly)\n\nIn
   order to fetch user roles, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly](https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly)\n\nIn
   order to revoke user roles, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.rolemanagement](https://www.googleapis.com/auth/admin.directory.rolemanagement)\n\nIn
   order to search user mailboxes, please authorize this api too: [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly)\n\nIn
@@ -235,16 +235,18 @@ script:
         return context, headers
 
 
+    TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
     def parse_time(t):
-        m = re.match('([\w,\d: ]*) ([+-]{1})(\d{2})(\d{2})[\s\w\(\)]*', t)
-        if m is None:
-            return datetime.datetime.strptime(t, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
-        else:
-            base_time, sign, hours, minutes = m.groups()
+        # there is only one time refernce is the string
+        base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
+
+        if all([sign, hours, minutes]):
             seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
             parsed_time = datetime.datetime.strptime(
                 base_time, '%a, %d %b %Y %H:%M:%S') + datetime.timedelta(seconds=seconds)
             return parsed_time.isoformat() + 'Z'
+        else:
+            return datetime.datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
 
     def create_incident_labels(parsed_msg, headers):
@@ -303,10 +305,6 @@ script:
             command_args['id'] = attachment['ID']
             result = service.users().messages().attachments().get(**command_args).execute()
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-            try:
-                file_data = unicode(file_data, 'utf-8')
-            except:
-                pass
 
             # save the attachment
             file_result = fileResult(attachment['Name'], file_data)
@@ -341,6 +339,7 @@ script:
                 'UserName': user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get('name') else None,
                 'DisplayName': user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get('name') else None,
                 'Email': {'Address': user_data.get('primaryEmail')},
+                'Gmail': {'Address': user_data.get('primaryEmail')},
                 'Group': user_data.get('kind'),
                 'CustomerId': user_data.get('customerId'),
             })
@@ -404,11 +403,12 @@ script:
         }
 
 
-    def filters_to_entry(title, response):
+    def filters_to_entry(title, mailbox, response):
         context = []
         for filter_data in response:
             context.append({
                 'ID': filter_data.get('id'),
+                'Mailbox': mailbox,
                 'Criteria': filter_data.get('criteria'),
                 'Action': filter_data.get('action'),
             })
@@ -421,6 +421,7 @@ script:
             'Contents': context,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
+            'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
         }
 
 
@@ -890,17 +891,19 @@ script:
         args = demisto.args()
 
         user_id = args.get('user-id', ADMIN_EMAIL)
+        user_id = user_id if user_id.lower() != 'me' else ADMIN_EMAIL
         _from = args.get('email-address')
 
         _filter = add_filter(user_id, _from=_from, add_labels=['TRASH', ])
 
-        return filters_to_entry('New filter:', [_filter])
+        return filters_to_entry('New filter:', user_id, [_filter])
 
 
     def add_filter_command():
         args = demisto.args()
 
         user_id = args.get('user-id', ADMIN_EMAIL)
+        user_id = user_id if user_id.lower() != 'me' else ADMIN_EMAIL
         _from = args.get('from')
         to = args.get('to')
         subject = args.get('subject')
@@ -927,7 +930,7 @@ script:
                              remove_labels=remove_labels,
                              )
 
-        return filters_to_entry('New filter:', [_filter])
+        return filters_to_entry('New filter:', user_id, [_filter])
 
 
     def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attachments=None, size=None, size_comparison=None, forward=None, add_labels=None, remove_labels=None):
@@ -968,9 +971,69 @@ script:
         return result
 
 
+    def list_filters_command():
+        args = demisto.args()
+
+        user_id = args.get('user-id', ADMIN_EMAIL)
+        user_id = user_id if user_id.lower() != 'me' else ADMIN_EMAIL
+        address = args.get('address')
+        limit = int(args.get('limit', 100))
+
+        filters = list_filters(
+            user_id,
+            address=address,
+            limit=limit)
+
+        return filters_to_entry('filters:', user_id, filters)
+
+
+    def list_filters(user_id, address=None, limit=100):
+        command_args = {
+            'userId': user_id,
+        }
+
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.settings.basic', ], delegated_user=user_id)
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().settings().filters().list(**command_args).execute()
+        filters = result.get('filter', [])
+        if address is not None:
+            filters = [f for f in filters if address in {f['criteria'].get('from'), f['criteria'].get('to')}]
+
+        return filters[:limit]
+
+
+    def remove_filter_command():
+        args = demisto.args()
+
+        user_id = args.get('user-id', ADMIN_EMAIL)
+        ids = args.get('filter_ids', '')
+        if isinstance(ids, STRING_TYPES):  # alternativly it could be an array
+            ids = ids.split(',')
+
+        for _id in ids:
+            remove_filter(user_id, _id)
+
+        return 'filters were removed successfully.'
+
+
+    def remove_filter(user_id, _id):
+        command_args = {
+            'userId': user_id,
+            'id': _id
+        }
+
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.settings.basic', ], delegated_user=user_id)
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().settings().filters().delete(**command_args).execute()
+
+        return result
+
+
     def fetch_incidents():
         params = demisto.params()
-        user_key = params['queryUserKey']
+        user_key = params.get('queryUserKey')
         user_key = user_key if user_key else ADMIN_EMAIL
         query = '' if params['query'] is None else params['query']
         last_run = demisto.getLastRun()
@@ -994,6 +1057,7 @@ script:
 
         result = service.users().messages().list(
             userId=user_key, maxResults=100, q=query).execute()
+
         incidents = []
         # so far, so good
         LOG('GMAIL: possible new incidents are %s' % (result, ))
@@ -1011,7 +1075,7 @@ script:
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
-
+        demisto.info('extract {} incidents'.format(len(incidents)))
         demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
         return incidents
 
@@ -1040,6 +1104,8 @@ script:
             'gmail-get-thread': get_thread_command,
             'gmail-add-filter': add_filter_command,
             'gmail-add-delete-filter': add_delete_filter_command,
+            'gmail-list-filters': list_filters_command,
+            'gmail-remove-filter': remove_filter_command,
         }
         command = demisto.command()
         LOG('GMAIL: command is %s' % (command, ))
@@ -1060,16 +1126,12 @@ script:
             else:
                 demisto.results(cmd_func())
         except Exception as e:
-            LOG('GMAIL: %s: %s' % (type(e), str(e), ))
-            LOG.print_log()
-
-            demisto.results({
-                'Type': entryTypes['error'],
-                'ContentsFormat': formats['text'],
-                'Contents': 'error has occured: %s' % (str(e), ),
-            })
-
-
+            if command == 'fetch-incidents':
+                LOG(str(e))
+                LOG.print_log()
+                raise
+            else:
+                return_error('GMAIL: {}'.format(e))
 
     if __name__ == "__builtin__":
         main()
@@ -1142,6 +1204,9 @@ script:
       type: string
     - contextPath: Account.Group
       description: Group associated with current account
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
       type: string
     description: Fetch info on specific user
   - name: gmail-get-user-roles
@@ -1815,10 +1880,55 @@ script:
       - smaller
       description: How the message size in bytes should be in relation to the size
         field.
+    outputs:
+    - contextPath: GmailFilter.ID
+      description: Filter ID
+      type: string
+    - contextPath: GmailFilter.Mailbox
+      description: Mailbox containing the filter
+      type: string
+    - contextPath: GmailFilter.Criteria
+      description: Filter Criteria
+    - contextPath: GmailFilter.Action
+      description: Filter Action
     description: Add a new filter.
+  - name: gmail-list-filters
+    arguments:
+    - name: user-id
+      required: true
+      description: User's email address. The special value "me" can be used to indicate
+        the authenticated user.
+    - name: limit
+      description: Limit of result list. default is 100.
+    - name: address
+      description: Show only filters associated with address
+    outputs:
+    - contextPath: GmailFilter.ID
+      description: Filter ID
+      type: string
+    - contextPath: GmailFilter.Mailbox
+      description: Mailbox containing the filter
+      type: string
+    - contextPath: GmailFilter.Criteria
+      description: Filter Criteria
+    - contextPath: GmailFilter.Action
+      description: Filter Action
+    description: List all filters in a user's mailbox.
+  - name: gmail-remove-filter
+    arguments:
+    - name: user-id
+      required: true
+      description: The user mailbox
+    - name: filter_ids
+      required: true
+      description: Comma separated list of filter IDs (can be retrieve using `gmail-list-filters`
+        command)
+      isArray: true
+    description: Remove a Filter
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+releaseNotes: "added gmail-list-filters and gmail-remove-filter commands"
 tests:
   - Gmail Convert Html Test
   - GmailTest

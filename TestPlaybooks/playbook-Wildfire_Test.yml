@@ -10,11 +10,11 @@ tasks:
     id: "0"
     taskid: 8f949fba-f0eb-4ae0-8037-23e82ed49f09
     type: start
-    description: ""
     task:
       id: 8f949fba-f0eb-4ae0-8037-23e82ed49f09
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -248,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2295
+          "y": 2820
         }
       }
     note: false
@@ -353,7 +353,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "25"
     scriptarguments:
       format: {}
       hash:
@@ -408,7 +408,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -438,7 +438,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -472,7 +472,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1595
+          "y": 2120
         }
       }
     note: false
@@ -507,7 +507,109 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: e549dc03-cd0a-459b-8069-d5e45793d204
+    type: regular
+    task:
+      id: e549dc03-cd0a-459b-8069-d5e45793d204
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 54e89e26-3e01-4054-8155-f76f08140477
+    type: regular
+    task:
+      id: 54e89e26-3e01-4054-8155-f76f08140477
+      version: -1
+      name: wildfire-get-verdict
+      description: Get a verdict regarding a hash
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      hash:
+        simple: afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: b9f83a7b-2bbc-476c-8203-48fc83c95621
+    type: condition
+    task:
+      id: b9f83a7b-2bbc-476c-8203-48fc83c95621
+      version: -1
+      name: test wildfire-get-verdict
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
         }
       }
     note: false
@@ -518,7 +620,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2835,
         "width": 810,
         "x": 50,
         "y": 50
