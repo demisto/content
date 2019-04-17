@@ -832,19 +832,6 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 tblToMd = tableToMarkdown
 
 
-def removeNullsFromDictionary(dict):
-    """
-        Remove Null values from a dictionary. (updating the given dictionary)
-
-        :type data: ``dict`` or ``list``
-        :param data: The data to be added to the context (required)
-    """
-    list_of_keys = list(dict.keys())[:]
-    for key in list_of_keys:
-        if dict[key] in ('', None, [], {}, ()):
-            del dict[key]
-
-
 def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     """
         Recieves a dict with flattened key values, and converts them into nested dicts
