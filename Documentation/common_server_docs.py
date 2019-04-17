@@ -155,7 +155,7 @@ def createPyDocumentation(path, origin, language):
 
 
 def main(argv):
-    # jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
+    jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
     pyDoc, isErrorPy = createPyDocumentation('./Scripts/script-CommonServerPython.yml',
                                              'CommonServerPython', 'python')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
