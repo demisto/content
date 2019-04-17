@@ -98,7 +98,7 @@ script:
     - default: true
       description: Device UUID
       isArray: false
-      name: UUID
+      name: uuid
       required: true
       secret: false
     deprecated: false
@@ -152,7 +152,7 @@ script:
     - default: true
       description: Device UUID
       isArray: false
-      name: UUID
+      name: uuid
       required: true
       secret: false
     deprecated: false
@@ -185,7 +185,7 @@ script:
     - default: true
       description: Device UUID
       isArray: false
-      name: UUID
+      name: uuid
       required: true
       secret: false
     deprecated: false
@@ -221,7 +221,7 @@ script:
     - default: true
       description: Device UUID
       isArray: false
-      name: UUID
+      name: uuid
       required: true
       secret: false
     deprecated: false
@@ -317,7 +317,7 @@ script:
     - default: true
       description: Policy UUID
       isArray: false
-      name: UUID
+      name: uuid
       required: true
       secret: false
     deprecated: false
@@ -438,6 +438,201 @@ script:
     - contextPath: ManagementCenter.Policy.Author
       description: Policy author
       type: String
+  - arguments:
+    - default: true
+      description: Policy UUID
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - default: false
+      description: The policy's new name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The policy's new description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The policy's new reference ID
+      isArray: false
+      name: reference_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Replace variables in the policy
+      isArray: false
+      name: replace_variables
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Update the metadata for a policy in Management Center
+    execution: false
+    name: management-center-update-policy
+    outputs:
+    - contextPath: ManagementCenter.Policy.UUID
+      description: Policy UUID
+      type: String
+    - contextPath: ManagementCenter.Policy.Name
+      description: Policy name
+      type: String
+  - arguments:
+    - default: true
+      description: Policy UUID
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a policy in Management Center
+    execution: true
+    name: management-center-delete-policy
+  - deprecated: false
+    description: List tenants in Management Center
+    execution: false
+    name: management-center-list-tenants
+    outputs:
+    - contextPath: ManagementCenter.Tenant.UUID
+      description: Tenant UUID
+      type: String
+    - contextPath: ManagementCenter.Tenant.Name
+      description: Tenant name
+      type: String
+    - contextPath: ManagementCenter.Tenant.ExternalID
+      description: Tenant external ID
+      type: String
+    - contextPath: ManagementCenter.Tenant.Description
+      description: Tenant description
+      type: String
+    - contextPath: ManagementCenter.Tenant.System
+      description: Is system tenant
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Policy UUID
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Policy content type
+      isArray: false
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - CATEGORY_LIST
+      required: true
+      secret: false
+    - default: false
+      description: The content to update the policy with
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    - default: false
+      description: The policy change description
+      isArray: false
+      name: change_description
+      required: true
+      secret: false
+    - default: false
+      description: The version of the schema for this content. This value will correspond
+        to the format of the content.
+      isArray: false
+      name: schema_version
+      required: false
+      secret: false
+    - default: false
+      description: IP addresses to add
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: URLs to add
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: Category names to add
+      isArray: true
+      name: category
+      required: false
+      secret: false
+    deprecated: false
+    description: Add content to a policy in Management Center
+    execution: false
+    name: management-center-add-policy-content
+  - arguments:
+    - default: false
+      description: Policy UUID
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Policy content type
+      isArray: false
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - CATEGORY_LIST
+      required: true
+      secret: false
+    - default: false
+      description: The content to update the policy with
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    - default: false
+      description: The policy change description
+      isArray: false
+      name: change_description
+      required: true
+      secret: false
+    - default: false
+      description: The version of the schema for this content. This value will correspond
+        to the format of the content.
+      isArray: false
+      name: schema_version
+      required: false
+      secret: false
+    - default: false
+      description: IP addresses to delete
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: URLs to delete
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: Category names to delete
+      isArray: true
+      name: category
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete content from a policy in Management Center
+    execution: false
+    name: management-center-delete-policy-content
   isfetch: false
   runonce: false
   script: '-'
