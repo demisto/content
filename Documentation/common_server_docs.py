@@ -124,9 +124,9 @@ def createJsDocumentation(path, origin, language):
 
 def createPyDocumentation(path, origin, language):
     isErrorPy = False
-    # create commonServerPy json doc
-    commonServerPython = readYmlFile(path)
-    pyScript = commonServerPython.get("script", "")
+
+    with open(path, 'r') as file:
+        pyScript = file.read()
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {}
@@ -155,7 +155,7 @@ def createPyDocumentation(path, origin, language):
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
-    pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.yml',
+    pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.py',
                                              'CommonServerPython', 'python')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 

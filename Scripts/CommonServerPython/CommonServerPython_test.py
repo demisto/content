@@ -432,5 +432,5 @@ class TestGetError(unittest.TestCase):
             get_error(execute_command_results)
             self.fail("get_error should raise an error")
         except ValueError as e:
-            self.assertEquals(e.message,
+            self.assertEquals(str(e),
                               "execute_command_result has no error entry. before using get_error use is_error")
