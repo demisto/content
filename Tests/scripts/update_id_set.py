@@ -261,7 +261,7 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
 
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    ignore_regex = r'^CommonServerPython\.py|^CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path
@@ -405,7 +405,7 @@ def update_id_set():
         with open('./Tests/id_set.json', 'r') as id_set_file:
             try:
                 ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
-            except ValueError, ex:
+            except ValueError as ex:
                 if "Expecting property name" in ex.message:
                     # if we got this error it means we have corrupted id_set.json
                     # usually it will happen if we merged from master and we had a conflict in id_set.json
