@@ -4,6 +4,8 @@ import sys
 import yaml
 from parinx import parser
 
+from package_creator import clean_python_code
+
 jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
                   "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
                   "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
@@ -125,9 +127,8 @@ def createJsDocumentation(path, origin, language):
 def createPyDocumentation(path, origin, language):
     isErrorPy = False
 
-    # create commonServerPy json doc
-    commonServerPython = readYmlFile(path)
-    pyScript = commonServerPython.get("script", "")
+    with open(path, 'r') as file:
+        pyScript = clean_python_code(file.read())
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {}
@@ -142,6 +143,7 @@ def createPyDocumentation(path, origin, language):
                 print("docstring for function " + a + " is empty")
                 isErrorPy = True
             else:
+                print(docstring)
                 y = parser.parse_docstring(docstring)
                 y["name"] = a
                 y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
@@ -156,7 +158,7 @@ def createPyDocumentation(path, origin, language):
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
-    pyDoc, isErrorPy = createPyDocumentation('./Scripts/script-CommonServerPython.yml',
+    pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.py',
                                              'CommonServerPython', 'python')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 
