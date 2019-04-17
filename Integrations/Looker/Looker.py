@@ -94,6 +94,36 @@ def get_limit():
         return_error("limit must be a number")
 
 
+def get_look_id_from_name(name):
+
+    looks = search_looks_request({'title': name})
+
+    if len(looks) < 1:
+        raise Exception(f'No Look found with the name {name}.')
+
+    if len(looks) > 1:
+        raise Exception(f'There is more than one Look with the name {name}.'
+                        f"Use look ID instead - It can be found in the Look's URL or by running looker-search-looks")
+
+    return looks[0]['ID']
+
+
+def full_path_headers(src_data, base_path):
+    def to_full_path(k):
+        return f"{base_path}.{k}"
+
+    def full_path_headers_for_dict(src):
+        if not isinstance(src, dict):
+            return src
+
+        return {to_full_path(k): v for k, v in src.items()}
+
+    if not isinstance(src_data, list):
+        src_data = [src_data]
+
+    return [full_path_headers_for_dict(x) for x in src_data]
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -105,7 +135,13 @@ def test_module():
 
 
 def run_look_command():
-    look_id = demisto.args()['look_id']
+    look_id = demisto.args().get('id')
+    look_name = demisto.args().get('name')
+    if not any((look_id, look_name)):
+        raise Exception(f'Provide Look id or name.')
+    if look_name and not look_id:
+        look_id = get_look_id_from_name(look_name)
+
     result_format = demisto.args()['result_format']
     limit = get_limit()
     fields = argToList(demisto.args().get('result_format'))
@@ -123,14 +159,20 @@ def run_look_command():
             }
         }
 
+        full_path_header_content = full_path_headers(formatted_contents, 'Looker.Look.Results')
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', formatted_contents, removeNull=True),
+            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', full_path_header_content, removeNull=True),
             'EntryContext': context
         })
+
+        if contents:
+            demisto.results('This command has dynamic output keys.\nTo access them in the context, '
+                            'copy the key\'s path from the column header in the results table.')
 
     elif result_format == 'csv':
         demisto.results(fileResult('look_result.csv', contents, entryTypes['entryInfoFile']))
@@ -155,20 +197,8 @@ def search_looks_command():
     if 'name' in demisto.args():
         args_dict['title'] = demisto.args()['name']
 
-    # # Traditional argument collection:
-    # title = demisto.args()['title']
-    # sapce_id = demisto.args()['sapce_id']
-    # user_id = demisto.args()['user_id']
-    # limit = get_limit()
-
     contents = search_looks_request(args_dict)
-    context = {}
-    for look in contents:
-        look_id = look['id']
-        context[f'Looker.look(val.ID && val.ID === {look_id})'] = {
-            'ID': look_id,
-            'Details': look
-        }
+    context = {f'Looker.Look(val.ID && val.ID === {look["ID"]})': look for look in contents}
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -193,8 +223,8 @@ def search_looks_request(args):
         {
             'ID': look['id'],
             'Name': look['title'],
-            'spaceID': look['space']['id'],
-            'spaceName': look['space']['name'],
+            'SpaceID': look['space']['id'],
+            'SpaceName': look['space']['name'],
             'LastUpdated': look['updated_at'].replace('+00:00', 'Z')
         } for look in response
     ]
