@@ -19,6 +19,10 @@ SERVER = "{server}{api_endpoint}".format(
     api_endpoint='/api/bit9platform/v1')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
+FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+CB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+CB_NO_MS_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+INCIDENTS_PER_FETCH = int(demisto.params().get('max_incidents_per_fetch', 15))
 # Service base URL
 BASE_URL = SERVER + '/api/v2.0/'
 # Headers to be sent in requests
@@ -377,6 +381,61 @@ def remove_prefix(prefix, full_str):
     return full_str
 
 
+def event_severity_to_dbot_score(severity):
+    """
+        Converts an severity int to DBot score representation
+        Event severity. Can be one of:
+        2 = Critical    -> 3
+        3 = Error       -> 0
+        4 = Warning     -> 2
+        5 = Notice      -> 2
+        6 = Info        -> 0
+        7 = Debug       -> 0
+
+        :type severity: ``int``
+        :param severity: Int representation of a severity
+
+        :return: DBot score representation of the severity
+        :rtype ``int``
+    """
+    if severity == '2':
+        return 3
+    elif severity in (4, 5):
+        return 2
+    return 0
+
+
+def cbp_date_to_timestamp(date):
+    """
+    Converts a date in carbon black's format to timestamp
+    :param date: Date string in cbp date format
+    :return: Timestamp of the given date
+    """
+    try:
+        ts = date_to_timestamp(date, date_format=CB_TIME_FORMAT)
+    except ValueError:
+        ts = date_to_timestamp(date, date_format=CB_NO_MS_TIME_FORMAT)
+    return ts
+
+def event_to_incident(event):
+    """
+        Creates an incident of a detection.
+
+        :type event: ``dict``
+        :param event: Single event object
+
+        :return: Incident representation of an event
+        :rtype ``dict``
+    """
+    incident = {
+        'name': 'CBP Event ID: ' + str(event.get('id')),
+        'occurred': str(event.get('timestamp')),
+        'rawJSON': json.dumps(event),
+        'severity': event_severity_to_dbot_score(event.get('severity'))
+    }
+    return incident
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -429,6 +488,27 @@ def search_computer(url_params):
     :return: Computer response json
     """
     return http_request('GET', '/Computer', params=url_params)
+
+
+def update_computer_command():
+    """
+    Updates computer
+    :return: EntryObject of the computer
+    """
+    args = demisto.args()
+    raw_res = update_computer(args)
+    ec = get_trasnformed_dict(raw_res, COMPUTER_TRANS_DICT)
+    hr = tableToMarkdown('CarbonBlack Protect computer updated successfully', ec)
+    demisto.results(create_entry_object(raw_res, {'Endpoint(val.ID === obj.ID)': ec}, hr))
+
+
+def update_computer(body_params):
+    """
+    Update computer
+    :param body_params: URL parameters for the request
+    :return: Result json of the request
+    """
+    return http_request('POST', '/computer', data=json.dumps(body_params))
 
 
 def get_computer_command():
@@ -591,6 +671,27 @@ def delete_file_rule(id):
         headers=HEADERS
     )
     return res
+
+
+def update_file_rule_command():
+    """
+    Creates or update a file rule
+    :return: Entry object of the created file analysis
+    """
+    args = demisto.args()
+    raw_res = update_file_rule(args)
+    ec = get_trasnformed_dict(raw_res, FILE_RULE_TRANS_DICT)
+    hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', ec)
+    demisto.results(create_entry_object(raw_res, {'CBP.FileRule(val.ID === obj.ID)': ec}, hr))
+
+
+def update_file_rule(body_params):
+    """
+    Update file rule
+    :param body_params: URL parameters for the request
+    :return: Result json of the request
+    """
+    return http_request('POST', '/fileRule', data=json.dumps(body_params))
 
 
 def search_policy_command():
@@ -891,11 +992,51 @@ def resolve_approval_request(body_params):
     return http_request('POST', '/approvalRequest', data=json.dumps(body_params))
 
 
+def fetch_incidents():
+    """
+        Fetches incident using the events API
+        :return: Fetched events in incident format
+    """
+    last_run = demisto.getLastRun()
+    # Get the last fetch time, if exists
+    last_fetch = last_run.get('first_event_time')
+
+    # Handle first time fetch, fetch incidents retroactively
+    if last_fetch is None:
+        last_fetch, _ = parse_date_range(FETCH_TIME, date_format=CB_TIME_FORMAT)
+    last_fetch_timestamp = cbp_date_to_timestamp(last_fetch)
+    user_query = demisto.params().get('fetch_query')
+    event_url_params = {
+        'q': "timestamp>{time}".format(time=last_fetch),
+        'limit': INCIDENTS_PER_FETCH
+    }
+    if user_query:
+        # Add user's query to default query
+        event_url_params['q'] = '{timestamp_query}&{user_query}'.format(timestamp_query=event_url_params['q'],
+                                                                        user_query=user_query)
+    events = search_event(event_url_params)
+    incidents = []
+    if events:
+        for event in events:
+            incident = event_to_incident(event)
+            incident_date = incident['occurred']
+            incident_date_timestamp = cbp_date_to_timestamp(incident_date)
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_date_timestamp > last_fetch_timestamp:
+                last_fetch = incident_date
+            incidents.append(incident)
+        demisto.setLastRun({'first_event_time': last_fetch})
+    return incidents
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 LOG('Command being called is {}'.format(demisto.command()))
 
+# should raise error in case of issue
+if demisto.command() == 'fetch-incidents':
+    demisto.incidents(fetch_incidents())
 
 try:
     if demisto.command() == 'test-module':
@@ -906,6 +1047,8 @@ try:
         search_file_catalog_command()
     elif demisto.command() == 'cbp-computer-search':
         search_computer_command()
+    elif demisto.command() == 'cbp-computer-update':
+        update_computer_command()
     elif demisto.command() == 'cbp-fileInstance-search':
         search_file_instance_command()
     elif demisto.command() == 'cbp-event-search':
@@ -918,6 +1061,8 @@ try:
         get_file_rule_command()
     elif demisto.command() == 'cbp-fileRule-delete':
         delete_file_rule_command()
+    elif demisto.command() == 'cbp-fileRule-update':
+        update_file_rule_command()
     elif demisto.command() == 'cbp-policy-search':
         search_policy_command()
     elif demisto.command() == 'cbp-serverConfig-search':
