@@ -32,6 +32,105 @@ script:
   script: ''
   type: python
   commands:
+  - name: file
+    arguments:
+      - name: file
+        required: true
+        description: file hash to check
+    outputs:
+      - contextPath: File.Name
+        description: Filename
+        type: string
+      - contextPath: File.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: File.Size
+        description: File size
+        type: string
+      - contextPath: File.MD5
+        description: MD5 hash of the file
+        type: string
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file
+        type: string
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file
+        type: string
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision
+        type: string
+      - contextPath: DBotScore.Indicator
+        description: The indicator we tested
+        type: string
+      - contextPath: DBotScore.Type
+        description: The type of the indicator
+        type: string
+      - contextPath: DBotScore.Vendor
+        description: Vendor used to calculate the score
+        type: string
+      - contextPath: DBotScore.Score
+        description: The actual score
+        type: number
+      - contextPath: WildFire.Report.Status
+        description: The status of the submission
+        type: string
+      - contextPath: WildFire.Report.SHA256
+        description: SHA256 of the submission
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report file
+      - contextPath: InfoFile.Extension
+        description: The extension of the report file
+        type: string
+      - contextPath: InfoFile.Name
+        description: The name of the report file
+        type: string
+      - contextPath: InfoFile.Info
+        description: The info of the report file
+        type: string
+      - contextPath: InfoFile.Size
+        description: The size of the report file
+        type: number
+      - contextPath: InfoFile.Type
+        description: The type of the report file
+        type: string
+    description: Retrieve results for a file hash using WildFire
+  - name: wildfire-upload
+    arguments:
+      - name: upload
+        required: true
+        description: ID of the entry containing the file to upload
+        isArray: true
+    outputs:
+      - contextPath: WildFire.Report.MD5
+        description: MD5 of the submission
+        type: string
+      - contextPath: WildFire.Report.SHA256
+        description: SHA256 of the submission
+        type: string
+      - contextPath: WildFire.Report.FileType
+        description: The type of the submission
+        type: string
+      - contextPath: WildFire.Report.Size
+        description: The size of the submission
+        type: number
+      - contextPath: WildFire.Report.Status
+        description: The status of the submission
+        type: string
+    description: Upload file to WildFire for analysis
+  - name: wildfire-upload-file-url
+    arguments:
+      - name: upload
+        required: true
+        description: URL of remote file to be uploaded
+    outputs:
+      - contextPath: WildFire.Report.MD5
+        description: MD5 of the submission
+        type: string
+      - contextPath: WildFire.Report.SHA256
+        description: SHA256 of the submission
+        type: string
+    description: URL of remote file to be uploaded
   - name: wildfire-report
     arguments:
       - name: md5
@@ -132,32 +231,24 @@ script:
         description: Submission evidence text
         type: string
     description: Retrieve results for a file hash using WildFire
-  - name: file
+  - name: wildfire-get-verdict
     arguments:
-      - name: file
+      - name: hash
         required: true
-        description: file hash to check
+        description: Hash to get verdict for
+        isArray: true
     outputs:
-      - contextPath: File.Name
-        description: Filename
+      - contextPath: WildFire.Verdicts.MD5
+        description: File MD5
         type: string
-      - contextPath: File.Type
-        description: File type e.g. "PE"
+      - contextPath: WildFire.Verdicts.SHA256
+        description: File SHA256
         type: string
-      - contextPath: File.Size
-        description: File size
-        type: string
-      - contextPath: File.MD5
-        description: MD5 hash of the file
-        type: string
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file
-        type: string
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file
-        type: string
-      - contextPath: File.Malicious.Vendor
-        description: For malicious files, the vendor that made the decision
+      - contextPath: WildFire.Verdicts.Verdict
+        description: File verdict
+        type: number
+      - contextPath: WildFire.Verdicts.VerdictDescription
+        description: File verdict description
         type: string
       - contextPath: DBotScore.Indicator
         description: The indicator we tested
@@ -171,36 +262,46 @@ script:
       - contextPath: DBotScore.Score
         description: The actual score
         type: number
-      - contextPath: WildFire.Report.Status
-        description: The status of the submission
+    description: Get a verdict regarding a hash
+  - name: wildfire-get-verdicts
+    arguments:
+      - name: EntryID
+        required: true
+        description: EntryID of the text file that contains multiple hashes. Limit is
+          500 hashes.
+        isArray: true
+    outputs:
+      - contextPath: WildFire.Verdicts.MD5
+        description: File MD5
         type: string
-      - contextPath: WildFire.Report.SHA256
-        description: SHA256 of the submission
+      - contextPath: WildFire.Verdicts.SHA256
+        description: File SHA256
         type: string
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the report file
-      - contextPath: InfoFile.Extension
-        description: The extension of the report file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the report file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the report file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the report file
+      - contextPath: WildFire.Verdicts.Verdict
+        description: File verdict
         type: number
-      - contextPath: InfoFile.Type
-        description: The type of the report file
+      - contextPath: WildFire.Verdicts.VerdictDescription
+        description: File verdict description
         type: string
-    description: Retrieve results for a file hash using WildFire
-  - name: wildfire-upload
+      - contextPath: DBotScore.Indicator
+        description: The indicator we tested
+        type: string
+      - contextPath: DBotScore.Type
+        description: The type of the indicator
+        type: string
+      - contextPath: DBotScore.Vendor
+        description: Vendor used to calculate the score
+        type: string
+      - contextPath: DBotScore.Score
+        description: The actual score
+        type: number
+    description: Get a verdict regarding multiple hashes, stored in a txt file
+  - name: wildfire-upload-file-remote
+    deprecated: true
     arguments:
       - name: upload
         required: true
-        description: ID of the entry containing the file to upload
-        isArray: true
+        description: URL of remote file to be uploaded
     outputs:
       - contextPath: WildFire.Report.MD5
         description: MD5 of the submission
@@ -217,7 +318,7 @@ script:
       - contextPath: WildFire.Report.Status
         description: The status of the submission
         type: string
-    description: Upload file to WildFire for analysis.
+    description: Deprecated, use wildfire-upload-file-url instead
   - name: detonate-file
     deprecated: true
     arguments:
@@ -259,7 +360,7 @@ script:
         description: Vendor used to calculate the score
       - contextPath: DBotScore.Score
         description: The actual score
-    description: Detonate file through WildFire
+    description: Deprecated, use detonate playbook instead.
   - name: detonate-file-remote
     deprecated: true
     arguments:
@@ -278,62 +379,7 @@ script:
           - xml
           - pdf
         description: Optional - request a structured report (formatted as XML/PDF)
-    description: Detonate file hosted on a website through WildFire
-  - name: wildfire-upload-file-remote
-    arguments:
-      - name: upload
-        required: true
-        description: URL of remote file to be uploaded
-    outputs:
-      - contextPath: WildFire.Report.MD5
-        description: MD5 of the submission
-        type: string
-      - contextPath: WildFire.Report.SHA256
-        description: SHA256 of the submission
-        type: string
-      - contextPath: WildFire.Report.FileType
-        description: The type of the submission
-        type: string
-      - contextPath: WildFire.Report.Size
-        description: The size of the submission
-        type: number
-      - contextPath: WildFire.Report.Status
-        description: The status of the submission
-        type: string
-    description: Upload a file hosted on a website to WildFire for analysis
-  - name: wildfire-get-verdicts
-    arguments:
-      - name: EntryID
-        required: true
-        description: EntryID of the text file that contains multiple hashes. Limit is
-          500 hashes.
-        isArray: true
-    outputs:
-      - contextPath: WildFire.Verdicts.MD5
-        description: File MD5
-        type: string
-      - contextPath: WildFire.Verdicts.SHA256
-        description: File SHA256
-        type: string
-      - contextPath: WildFire.Verdicts.Verdict
-        description: File verdict
-        type: number
-      - contextPath: WildFire.Verdicts.VerdictDescription
-        description: File verdict description
-        type: string
-      - contextPath: DBotScore.Indicator
-        description: The indicator we tested
-        type: string
-      - contextPath: DBotScore.Type
-        description: The type of the indicator
-        type: string
-      - contextPath: DBotScore.Vendor
-        description: Vendor used to calculate the score
-        type: string
-      - contextPath: DBotScore.Score
-        description: The actual score
-        type: number
-    description: Get a verdict regarding multiple hashes
+    description: Deprecated, use detonate playbook instead
   runonce: false
 tests:
     - Wildfire Test
