@@ -6,14 +6,11 @@ echo "Start create_instance script"
 #configure aws
 aws configure set region us-west-2
 
-aws assume-role --role-arn arn:aws:iam::676921422616:role/DemistoCircleCI_AssumeRole_ContentDev
-
 CONFFILE=$1
 
 #create instance
 REQUEST_ID=$(aws ec2 request-spot-instances \
     --launch-specification file://${CONFFILE} \
-    --owners 676921422616 \
     --query 'SpotInstanceRequests[0].SpotInstanceRequestId' | tr -d '"')
 
 if [ -z "$REQUEST_ID" ]
