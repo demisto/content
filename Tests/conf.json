@@ -606,10 +606,6 @@
             "playbookID": "email_test"
         },
         {
-            "integrations": "VirusTotal",
-            "playbookID": "domain_enrichment_generic_test"
-        },
-        {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
