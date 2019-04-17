@@ -104,7 +104,7 @@ def createJsDocumentation(path, origin, language):
                 del arg["optional"]
             if arg.get("name", "") == "" or arg.get("description", "") == "":
                 isError = True
-                print("Missing name/description for argument in JS function", y["name"], ".\n Arg name is", \
+                print("Missing name/description for argument in JS function", y["name"], ".\n Arg name is",
                       arg.get("name", ""), ", args description is", arg.get("description", ""))
         y["arguments"] = a.get("params", [])
 
