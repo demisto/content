@@ -143,7 +143,6 @@ def createPyDocumentation(path, origin, language):
                 print("docstring for function " + a + " is empty")
                 isErrorPy = True
             else:
-                print(docstring)
                 y = parser.parse_docstring(docstring)
                 y["name"] = a
                 y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
