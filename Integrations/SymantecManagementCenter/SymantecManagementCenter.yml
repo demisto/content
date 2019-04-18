@@ -16,6 +16,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Username
+  name: credentials
+  required: true
+  type: 9
 description: Management Center provides a unified management environment for the Symantec
   Security Platform portfolio of products.
 display: Symantec Management Center
@@ -52,7 +56,7 @@ script:
     - default: false
       description: Query Filter parameter to filter by OS version, e.g., "LT 2.3"
       isArray: false
-      name: osVersion
+      name: os_version
       required: false
       secret: false
     - default: false
@@ -67,24 +71,31 @@ script:
       name: type
       required: false
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of results returned
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: List devices in Mangement Center
     execution: false
-    name: management-center-list-devices
+    name: symantec-mc-list-devices
     outputs:
-    - contextPath: ManagementCenter.Device.UUID
+    - contextPath: SymantecMC.Device.UUID
       description: Device UUID
       type: String
-    - contextPath: ManagementCenter.Device.Name
+    - contextPath: SymantecMC.Device.Name
       description: Device name
       type: String
-    - contextPath: ManagementCenter.Device.LastChanged
+    - contextPath: SymantecMC.Device.LastChanged
       description: Device last changed date
       type: Date
-    - contextPath: ManagementCenter.Device.Type
+    - contextPath: SymantecMC.Device.Type
       description: Device type
       type: String
-    - contextPath: ManagementCenter.Device.Host
+    - contextPath: SymantecMC.Device.Host
       description: Device host address
       type: String
   - arguments:
@@ -97,48 +108,48 @@ script:
     deprecated: false
     description: Get a device from Management Center
     execution: false
-    name: management-center-get-device
+    name: symantec-mc-get-device
     outputs:
-    - contextPath: ManagementCenter.Device.UUID
+    - contextPath: SymantecMC.Device.UUID
       description: Device UUID
       type: String
-    - contextPath: ManagementCenter.Device.Name
+    - contextPath: SymantecMC.Device.Name
       description: Device name
       type: String
-    - contextPath: ManagementCenter.Device.LastChanged
+    - contextPath: SymantecMC.Device.LastChanged
       description: Device last changed
       type: String
-    - contextPath: ManagementCenter.Device.LastChangedBy
+    - contextPath: SymantecMC.Device.LastChangedBy
       description: Device last changed by
       type: String
-    - contextPath: ManagementCenter.Device.Description
+    - contextPath: SymantecMC.Device.Description
       description: Device description
       type: String
-    - contextPath: ManagementCenter.Device.Model
+    - contextPath: SymantecMC.Device.Model
       description: Device model
       type: String
-    - contextPath: ManagementCenter.Device.Platform
+    - contextPath: SymantecMC.Device.Platform
       description: Device platform
       type: String
-    - contextPath: ManagementCenter.Device.Type
+    - contextPath: SymantecMC.Device.Type
       description: Device type
       type: String
-    - contextPath: ManagementCenter.Device.OSVersion
+    - contextPath: SymantecMC.Device.OSVersion
       description: Device OS version
       type: String
-    - contextPath: ManagementCenter.Device.Build
+    - contextPath: SymantecMC.Device.Build
       description: Device build number
       type: Number
-    - contextPath: ManagementCenter.Device.SerialNumber
+    - contextPath: SymantecMC.Device.SerialNumber
       description: Device serial number
       type: Number
-    - contextPath: ManagementCenter.Device.Host
+    - contextPath: SymantecMC.Device.Host
       description: Device host address
       type: String
-    - contextPath: ManagementCenter.Device.ManagementStatus
+    - contextPath: SymantecMC.Device.ManagementStatus
       description: Device management status
       type: String
-    - contextPath: ManagementCenter.Device.DeploymentStatus
+    - contextPath: SymantecMC.Device.DeploymentStatus
       description: Device deployment status
       type: String
   - arguments:
@@ -149,29 +160,29 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the health information for a device in Management Center
+    description: Get the health information for a device in Symantec MC
     execution: false
-    name: management-center-get-device-health
+    name: symantec-mc-get-device-health
     outputs:
-    - contextPath: ManagementCenter.Device.UUID
+    - contextPath: SymantecMC.Device.UUID
       description: Device UUID
       type: String
-    - contextPath: ManagementCenter.Device.Name
+    - contextPath: SymantecMC.Device.Name
       description: Device Name
       type: String
-    - contextPath: ManagementCenter.Device.Health.Category
+    - contextPath: SymantecMC.Device.Health.Category
       description: Device health category
       type: String
-    - contextPath: ManagementCenter.Device.Health.Name
+    - contextPath: SymantecMC.Device.Health.Name
       description: Device health name
       type: String
-    - contextPath: ManagementCenter.Device.Health.State
+    - contextPath: SymantecMC.Device.Health.State
       description: Device health state
       type: String
-    - contextPath: ManagementCenter.Device.Health.Message
+    - contextPath: SymantecMC.Device.Health.Message
       description: Device health message
       type: String
-    - contextPath: ManagementCenter.Device.Health.Status
+    - contextPath: SymantecMC.Device.Health.Status
       description: Device health status
       type: String
   - arguments:
@@ -182,32 +193,32 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get license information for a device in Management Center
+    description: Get license information for a device in Symantec MC
     execution: false
-    name: management-center-get-device-license
+    name: symantec-mc-get-device-license
     outputs:
-    - contextPath: ManagementCenter.Device.UUID
+    - contextPath: SymantecMC.Device.UUID
       description: Device UUID
       type: String
-    - contextPath: ManagementCenter.Device.Name
+    - contextPath: SymantecMC.Device.Name
       description: Device name
       type: String
-    - contextPath: ManagementCenter.Device.Type
+    - contextPath: SymantecMC.Device.Type
       description: Device type
       type: String
-    - contextPath: ManagementCenter.Device.License.Status
+    - contextPath: SymantecMC.Device.License.Status
       description: Device license status
       type: String
-    - contextPath: ManagementCenter.Device.License.Component.Name
+    - contextPath: SymantecMC.Device.License.Component.Name
       description: Device license component name
       type: String
-    - contextPath: ManagementCenter.Device.License.Component.ActivationDate
+    - contextPath: SymantecMC.Device.License.Component.ActivationDate
       description: Device license component activation date
       type: Date
-    - contextPath: ManagementCenter.Device.License.Component.ExpirationDate
+    - contextPath: SymantecMC.Device.License.Component.ExpirationDate
       description: Device license component expiration date
       type: Date
-    - contextPath: ManagementCenter.Device.License.Component.Validity
+    - contextPath: SymantecMC.Device.License.Component.Validity
       description: Device license component validity
       type: Unknown
   - arguments:
@@ -218,23 +229,23 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the status of a device in Management Center
+    description: Get the status of a device in Symantec MC
     execution: false
-    name: management-center-get-device-status
+    name: symantec-mc-get-device-status
     outputs:
-    - contextPath: ManagementCenter.Device.UUID
+    - contextPath: SymantecMC.Device.UUID
       description: Device UUID
       type: String
-    - contextPath: ManagementCenter.Device.Name
+    - contextPath: SymantecMC.Device.Name
       description: Device name
       type: String
-    - contextPath: ManagementCenter.Device.CheckDate
+    - contextPath: SymantecMC.Device.CheckDate
       description: Device check date
       type: Date
-    - contextPath: ManagementCenter.Device.StartDate
+    - contextPath: SymantecMC.Device.StartDate
       description: Device start date
       type: Date
-    - contextPath: ManagementCenter.Device.MonitorState
+    - contextPath: SymantecMC.Device.MonitorState
       description: Device monitor state
       type: String
   - arguments:
@@ -280,30 +291,37 @@ script:
       name: tenant
       required: false
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of results returned
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
-    description: List policies in Management Center
+    description: List policies in Symantec MC
     execution: false
-    name: management-center-list-policies
+    name: symantec-mc-list-policies
     outputs:
-    - contextPath: ManagementCenter.Policy.UUID
+    - contextPath: SymantecMC.Policy.UUID
       description: Policy UUID
       type: String
-    - contextPath: ManagementCenter.Policy.Name
+    - contextPath: SymantecMC.Policy.Name
       description: Policy name
       type: String
-    - contextPath: ManagementCenter.Policy.ContentType
+    - contextPath: SymantecMC.Policy.ContentType
       description: Policy content type
       type: String
-    - contextPath: ManagementCenter.Policy.Author
+    - contextPath: SymantecMC.Policy.Author
       description: Policy author
       type: String
-    - contextPath: ManagementCenter.Policy.Shared
+    - contextPath: SymantecMC.Policy.Shared
       description: Policy shared
       type: Boolean
-    - contextPath: ManagementCenter.Policy.ReferenceID
+    - contextPath: SymantecMC.Policy.ReferenceID
       description: Policy reference ID
       type: String
-    - contextPath: ManagementCenter.Policy.Tenant
+    - contextPath: SymantecMC.Policy.Tenant
       description: Policy tenant
       type: Unknown
   - arguments:
@@ -316,45 +334,45 @@ script:
     deprecated: false
     description: Get a policy from Management Center
     execution: false
-    name: management-center-get-policy
+    name: symantec-mc-get-policy
     outputs:
-    - contextPath: ManagementCenter.Policy.Name
+    - contextPath: SymantecMC.Policy.Name
       description: Policy name
       type: String
-    - contextPath: ManagementCenter.Policy.SchemaVersion
+    - contextPath: SymantecMC.Policy.SchemaVersion
       description: Policy content schema version
       type: Number
-    - contextPath: ManagementCenter.Policy.RevisionInfo.Number
+    - contextPath: SymantecMC.Policy.RevisionInfo.Number
       description: Management Center policy content revision number
       type: Number
-    - contextPath: ManagementCenter.Policy.RevisionInfo.Description
+    - contextPath: SymantecMC.Policy.RevisionInfo.Description
       description: Management Center policy content revision description
       type: String
-    - contextPath: ManagementCenter.Policy.RevisionInfo.Author
+    - contextPath: SymantecMC.Policy.RevisionInfo.Author
       description: Management Center policy content revision author
       type: String
-    - contextPath: ManagementCenter.Policy.RevisionInfo.Date
+    - contextPath: SymantecMC.Policy.RevisionInfo.Date
       description: Management Center policy content revision date
       type: Date
-    - contextPath: ManagementCenter.Policy.IP.Address
+    - contextPath: SymantecMC.Policy.IP.Address
       description: Management Center policy IP address
       type: String
-    - contextPath: ManagementCenter.Policy.IP.Description
+    - contextPath: SymantecMC.Policy.IP.Description
       description: Management Center policy IP description
       type: String
-    - contextPath: ManagementCenter.Policy.IP.Enabled
+    - contextPath: SymantecMC.Policy.IP.Enabled
       description: 'Management Center policy '
       type: Boolean
-    - contextPath: ManagementCenter.Policy.URL.Address
+    - contextPath: SymantecMC.Policy.URL.Address
       description: 'Management Center Policy URL '
       type: String
-    - contextPath: ManagementCenter.Policy.URL.Description
+    - contextPath: SymantecMC.Policy.URL.Description
       description: Management Center policy URL description
       type: String
-    - contextPath: ManagementCenter.Policy.URL.Enabled
+    - contextPath: SymantecMC.Policy.URL.Enabled
       description: Management Center policy URL enabled
       type: Boolean
-    - contextPath: ManagementCenter.Policy.Category.Name
+    - contextPath: SymantecMC.Policy.Category.Name
       description: Management Center policy category name
       type: String
   - arguments:
@@ -388,7 +406,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Optional tenant associated with this policy
+      description: Optional tenant associated with this policy. This is the tenant
+        external ID, can be retrieved from the list-tenants command.
       isArray: false
       name: tenant
       required: false
@@ -415,20 +434,20 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a policy in Management Center
+    description: Create a policy in Symantec MC
     execution: false
-    name: management-center-create-policy
+    name: symantec-mc-create-policy
     outputs:
-    - contextPath: ManagementCenter.Policy.UUID
+    - contextPath: SymantecMC.Policy.UUID
       description: Policy UUID
       type: String
-    - contextPath: ManagementCenter.Policy.Name
+    - contextPath: SymantecMC.Policy.Name
       description: Policy name
       type: String
-    - contextPath: ManagementCenter.Policy.ContentType
+    - contextPath: SymantecMC.Policy.ContentType
       description: Policy content type
       type: String
-    - contextPath: ManagementCenter.Policy.Author
+    - contextPath: SymantecMC.Policy.Author
       description: Policy author
       type: String
   - arguments:
@@ -467,14 +486,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update the metadata for a policy in Management Center
+    description: Update the metadata for a policy in Symantec MC
     execution: false
-    name: management-center-update-policy
+    name: symantec-mc-update-policy
     outputs:
-    - contextPath: ManagementCenter.Policy.UUID
+    - contextPath: SymantecMC.Policy.UUID
       description: Policy UUID
       type: String
-    - contextPath: ManagementCenter.Policy.Name
+    - contextPath: SymantecMC.Policy.Name
       description: Policy name
       type: String
   - arguments:
@@ -485,27 +504,35 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a policy in Management Center
+    description: Delete a policy in Symantec MC
     execution: true
-    name: management-center-delete-policy
-  - deprecated: false
-    description: List tenants in Management Center
+    name: symantec-mc-delete-policy
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of results returned
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List tenants in Symantec MC
     execution: false
-    name: management-center-list-tenants
+    name: symantec-mc-list-tenants
     outputs:
-    - contextPath: ManagementCenter.Tenant.UUID
+    - contextPath: SymantecMC.Tenant.UUID
       description: Tenant UUID
       type: String
-    - contextPath: ManagementCenter.Tenant.Name
+    - contextPath: SymantecMC.Tenant.Name
       description: Tenant name
       type: String
-    - contextPath: ManagementCenter.Tenant.ExternalID
+    - contextPath: SymantecMC.Tenant.ExternalID
       description: Tenant external ID
       type: String
-    - contextPath: ManagementCenter.Tenant.Description
+    - contextPath: SymantecMC.Tenant.Description
       description: Tenant description
       type: String
-    - contextPath: ManagementCenter.Tenant.System
+    - contextPath: SymantecMC.Tenant.System
       description: Is system tenant
       type: Boolean
   - arguments:
@@ -527,12 +554,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: The content to update the policy with
-      isArray: false
-      name: content
-      required: true
-      secret: false
-    - default: false
       description: The policy change description
       isArray: false
       name: change_description
@@ -546,27 +567,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP addresses to add
+      description: CSV list of IP addresses to add
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: URLs to add
+      description: CSV list of URLs to add
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: Category names to add
+      description: CSV list of category names to add
       isArray: true
       name: category
       required: false
       secret: false
     deprecated: false
-    description: Add content to a policy in Management Center
+    description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
+      names.
     execution: false
-    name: management-center-add-policy-content
+    name: symantec-mc-add-policy-content
   - arguments:
     - default: false
       description: Policy UUID
@@ -583,12 +605,6 @@ script:
       - URL_LIST
       - IP_LIST
       - CATEGORY_LIST
-      required: true
-      secret: false
-    - default: false
-      description: The content to update the policy with
-      isArray: false
-      name: content
       required: true
       secret: false
     - default: false
@@ -623,9 +639,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Delete content from a policy in Management Center
+    description: Delete content from a policy in Symantec MC
     execution: false
-    name: management-center-delete-policy-content
+    name: symantec-mc-delete-policy-content
   - arguments:
     - default: true
       description: Policy UUID
@@ -635,27 +651,8 @@ script:
       secret: false
     deprecated: false
     description: Installs the specified policy on the set of targets associated with
-      the policy in Management Center
-    execution: false
-    name: management-center-install-policy
-  - arguments:
-    - default: true
-      description: Policy UUID
-      isArray: false
-      name: uuid
-      required: true
-      secret: false
-    deprecated: false
-    description: List the target devices for the specified policy in Management Center
-    execution: false
-    name: management-center-list-policy-targets
-    outputs:
-    - contextPath: ManagementCetner.Device.UUID
-      description: Device UUID
-      type: String
-    - contextPath: ManagementCetner.Device.Name
-      description: Device name
-      type: String
+      the policy in Symantec MC
+    execution: true
   isfetch: false
   runonce: false
   script: '-'
