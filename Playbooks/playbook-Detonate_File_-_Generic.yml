@@ -695,6 +695,5 @@ outputs:
   - contextPath: HybridAnalysis.Submit
     description: The HybridAnalysis object
     type: unknown
-releaseNotes: "-"
 tests:
 - Detonate File - Generic Test
