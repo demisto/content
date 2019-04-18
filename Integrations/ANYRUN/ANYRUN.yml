@@ -57,7 +57,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: File name or hash by which the task history will be filtered.
+      description: File name, hash or task ID by which the task history will be filtered.
       isArray: false
       name: filter
       required: false
@@ -76,21 +76,9 @@ script:
     - contextPath: ANYRUN.Task.Related
       description: ANYRUN link to related file.
       type: String
-    - contextPath: ANYRUN.Task.PCAP
-      description: ANYRUN link to download pcap file.
-      type: String
     - contextPath: ANYRUN.Task.File
       description: ANYRUN link to download the submitted file.
       type: String
-    - contextPath: ANYRUN.Task.JSON
-      description: ANYRUN link to analysis summary in json format.
-      type: String
-    - contextPath: ANYRUN.Task.MISP
-      description: ANYRUN link to analysis summary in misp format
-      type: String
-    - contextPath: ANYRUN.Task.Tag
-      description: List of tags for the submitted file.
-      type: Unknown
     - contextPath: ANYRUN.Task.Date
       description: The submission date of the file submitted for analysis.
       type: Date
@@ -129,7 +117,7 @@ script:
       name: obj_type
       predefined:
       - file
-      - link
+      - url
       - download
       required: false
       secret: false
@@ -140,7 +128,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: URL, used only if 'obj_type' command argument is 'link' or 'download'.
+      description: URL, used only if 'obj_type' command argument is 'url' or 'download'.
         Permitted size is 5-512 characters long.
       isArray: false
       name: obj_url
@@ -224,76 +212,6 @@ script:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  - deprecated: false
-    description: Get available environments.
-    execution: false
-    name: anyrun-get-environments
-    outputs:
-    - contextPath: ANYRUN.Environment.OS
-      description: Operating System.
-      type: String
-    - contextPath: ANYRUN.Environment.Version
-      description: OS version.
-      type: String
-    - contextPath: ANYRUN.Environment.Bitness
-      description: Whether the OS is 32-bit or 64-bit.
-      type: Number
-    - contextPath: ANYRUN.Environment.Variant
-      description: The variant of the OS.
-      type: String
-    - contextPath: ANYRUN.Environment.Build
-      description: The build number of the OS.
-      type: Number
-    - contextPath: ANYRUN.Environment.Type
-      description: Whether the OS is 'complete', 'clean' or 'office'.
-      type: String
-    - contextPath: ANYRUN.Environment.Software.IE.Version
-      description: The version of Internet Explorer in the environment.
-      type: String
-    - contextPath: ANYRUN.Environment.Software.Update
-      description: List of OS Updates.
-      type: Unknown
-    - contextPath: ANYRUN.Environment.Software.App.Name
-      description: The name of an application installed in the environment.
-      type: String
-    - contextPath: ANYRUN.Environment.Software.App.Version
-      description: The version of an application installed in the environment.
-      type: String
-  - deprecated: false
-    description: Get the user's account limits.
-    execution: false
-    name: anyrun-get-user-limits
-    outputs:
-    - contextPath: ANYRUN.User.Limit.Web.Minute
-      description: Limitations per minute in the ANYRUN web portal.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.Web.Hour
-      description: Limitations per hour in the ANYRUN web portal.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.Web.Day
-      description: Limitations per day in the ANYRUN web portal.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.Web.Month
-      description: Limitations per month in the ANYRUN web portal.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.API.Minute
-      description: Limitations per minute using the ANYRUN API.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.API.Hour
-      description: Limitations per hour using the ANYRUN API.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.API.Day
-      description: Limitations per day using the ANYRUN API.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.API.Month
-      description: Limitations per month using the ANYRUN API.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.Parallel.Total
-      description: Total amount of parallel user requests permitted.
-      type: Number
-    - contextPath: ANYRUN.User.Limit.Parallel.Available
-      description: The amount of parallel user requests available.
-      type: Number
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
