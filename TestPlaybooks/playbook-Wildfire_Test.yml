@@ -745,7 +745,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: ${checkFile}
+              simple: checkFile
             iscontext: true
           right:
             value:

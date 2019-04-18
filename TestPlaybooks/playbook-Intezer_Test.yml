@@ -664,7 +664,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: ${checkNonSupportedHash}
+              simple: checkNonSupportedHash
             iscontext: true
           right:
             value:
