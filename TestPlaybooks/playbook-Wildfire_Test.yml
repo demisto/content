@@ -749,7 +749,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: WildFire file hash reputation does not supports SHA1 hash.
+              simple: WildFire file hash reputation does not support SHA1 hash.
     view: |-
       {
         "position": {

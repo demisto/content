@@ -673,7 +673,7 @@ script:
             if (inputs == 'SHA1') {
                 return {
                     Type: 11, // warning type
-                    Contents: 'WildFire file hash reputation does not supports SHA1 hash.\n',
+                    Contents: 'WildFire file hash reputation does not support SHA1 hash.\n',
                     ContentsFormat: formats.markdown
                 };
             }
