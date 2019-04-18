@@ -1198,6 +1198,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: 'Search for publishers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#publisher'
     execution: false
     name: cbp-publisher-search
     outputs:
@@ -2009,4 +2010,4 @@ releaseNotes: Created integration. This integration replaces the existing Carbon
   or a playbook that uses these outputs you will need to update it with the new output
   paths.
 tests:
-  - Carbon Black Enterprise Protection V2 Test
+- Carbon Black Enterprise Protection V2 Test
