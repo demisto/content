@@ -1300,6 +1300,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",

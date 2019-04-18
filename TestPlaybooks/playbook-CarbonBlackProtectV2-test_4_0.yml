@@ -41,10 +41,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: e021e9e7-87a0-45b8-8faf-03c4600873b7
+    taskid: 248aff58-43ff-407c-8ce0-3d634ab03d6f
     type: regular
     task:
-      id: e021e9e7-87a0-45b8-8faf-03c4600873b7
+      id: 248aff58-43ff-407c-8ce0-3d634ab03d6f
       version: -1
       name: Search connector
       description: Returns objects that match given criteria
@@ -54,7 +54,7 @@ tasks:
       brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     scriptarguments:
       group: {}
       headers: {}
@@ -101,10 +101,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 92b6207b-3931-4613-8943-ab31ddb571cc
+    taskid: ea085e0f-010c-4de6-887a-5ebfa005ac28
     type: condition
     task:
-      id: 92b6207b-3931-4613-8943-ab31ddb571cc
+      id: ea085e0f-010c-4de6-887a-5ebfa005ac28
       version: -1
       name: Verify context
       type: condition
@@ -112,24 +112,12 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: CBP
-                accessor: Connector
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -139,7 +127,7 @@ tasks:
           right:
             value:
               simple: FireEye
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -153,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 690
         }
       }
     note: false
@@ -174,7 +162,7 @@ tasks:
       brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
-      - "5"
+      - "3"
     scriptarguments:
       headers: {}
       id:
@@ -184,46 +172,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 2b49a50c-c2df-4e7b-80db-0dd4dbcb2013
-    type: condition
-    task:
-      id: 2b49a50c-c2df-4e7b-80db-0dd4dbcb2013
-      version: -1
-      name: Verify context
-      description: Returns object instance of this class
-      type: condition
-      iscommand: false
-      brand: CarbonBlackProtectionV2
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CBP
-                accessor: Connector.AnalysisName
-            iscontext: true
-          right:
-            value:
-              simple: Check Point
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 865
+          "y": 515
         }
       }
     note: false

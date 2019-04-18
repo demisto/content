@@ -1010,7 +1010,7 @@ def fetch_incidents():
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format=CB_TIME_FORMAT)
+        last_fetch, _ = cbp_date_to_timestamp(FETCH_TIME)
     last_fetch_timestamp = cbp_date_to_timestamp(last_fetch)
     user_query = demisto.params().get('fetch_query')
     event_url_params = {
