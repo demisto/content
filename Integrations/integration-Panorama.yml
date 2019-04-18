@@ -131,6 +131,26 @@ script:
         'target': 'Target'
     }
 
+    PAN_OS_ERROR_DICT = {
+        '1': 'Unknown command - The specific config or operational command is not recognized.',
+        '2': 'Internal errors - Check with technical support when seeing these errors.',
+        '3': 'Internal errors - Check with technical support when seeing these errors.',
+        '4': 'Internal errors - Check with technical support when seeing these errors.',
+        '5': 'Internal errors - Check with technical support when seeing these errors.',
+        '6': 'Bad Xpath -The xpath specified in one or more attributes of the command is invalid. Check the API browser for proper xpath values.',
+        '7': 'Object not present - Object specified by the xpath is not present. For example, entry[@name=value] where no object with name value is present.',
+        '8': 'Object not unique - For commands that operate on a single object, the specified object is not unique.',
+        '10': 'Reference count not zero - Object cannot be deleted as there are other objects that refer to it. For example, address object still in use in policy.',
+        '11': 'Internal error - Check with technical support when seeing these errors.',
+        '12': 'Invalid object - Xpath or element values provided are not complete.',
+        '14': 'Operation not possible - Operation is allowed but not possible in this case. For example, moving a rule up one position when it is already at the top.',
+        '15': 'Operation denied - Operation is allowed. For example, Admin not allowed to delete own account, Running a command that is not allowed on a passive device.',
+        '16': 'Unauthorized -The API role does not have access rights to run this query.',
+        '17': 'Invalid command -Invalid command or parameters.',
+        '18': 'Malformed command - The XML is malformed.',
+        '21': 'Internal error - Check with technical support when seeing these errors.',
+        '22': 'Session timed out - The session for this query timed out.'
+    }
 
     ''' HELPERS '''
     def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
@@ -175,6 +195,9 @@ script:
 
             else:
                 return_error('Request Failed.\n' + str(jresult['response']))
+
+        if jresult['response']['@code'] in PAN_OS_ERROR_DICT:
+            return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[jresult['response']['@code']])
 
         return jresult
 
