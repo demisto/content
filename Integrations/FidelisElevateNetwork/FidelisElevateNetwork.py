@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS / PARAMS '''
 IS_FETCH = demisto.params().get('isFetch')
-SERVER_URL = demisto.params().get('server_url')
+SERVER_URL = demisto.params().get('server_url', '')
 CREDENTIALS = demisto.params().get('credentials')
 INSECURE = demisto.params().get('unsecure')
 PROXY = demisto.params().get('proxy')
@@ -516,49 +516,56 @@ def fetch_incidents():
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
-try:
-    handle_proxy()
-    command = demisto.command()
-    LOG('Command being called is {}'.format(command))
-    login()
-    if command == 'test-module':
-        test_integration()
-    elif command == 'fetch-incidents':
-        fetch_incidents()
-
-    elif command == 'fidelis-get-alert':
-        get_alert_command()
-
-    elif command == 'fidelis-delete-alert':
-        delete_alert_command()
-
-    elif command == 'fidelis-get-malware-data':
-        get_malware_data_command()
-
-    elif command == 'fidelis-get-alert-pcap':
-        get_alert_pcap_command()
-
-    elif command == 'fidelis-get-alert-report':
-        get_alert_report_command()
-
-    elif command == 'fidelis-sandbox-upload':
-        sandbox_upload_command()
-
-    elif command == 'fidelis-list-alerts':
-        list_alerts_command()
-
-    elif command == 'fidelis-upload-pcap':
-        upload_pcap_command()
-
-    elif command == 'fidelis-run-pcap':
-        run_pcap_command()
-
-    elif command == 'fidelis-list-pcap-components':
-        list_pcap_components_command()
 
 
-except Exception as e:
-    return_error('error has occurred: {}\n{}'.format(type(e), e.message, ))
+def main():
+    try:
+        handle_proxy()
+        command = demisto.command()
+        LOG('Command being called is {}'.format(command))
+        login()
+        if command == 'test-module':
+            test_integration()
+        elif command == 'fetch-incidents':
+            fetch_incidents()
 
-finally:
-    logout()
+        elif command == 'fidelis-get-alert':
+            get_alert_command()
+
+        elif command == 'fidelis-delete-alert':
+            delete_alert_command()
+
+        elif command == 'fidelis-get-malware-data':
+            get_malware_data_command()
+
+        elif command == 'fidelis-get-alert-pcap':
+            get_alert_pcap_command()
+
+        elif command == 'fidelis-get-alert-report':
+            get_alert_report_command()
+
+        elif command == 'fidelis-sandbox-upload':
+            sandbox_upload_command()
+
+        elif command == 'fidelis-list-alerts':
+            list_alerts_command()
+
+        elif command == 'fidelis-upload-pcap':
+            upload_pcap_command()
+
+        elif command == 'fidelis-run-pcap':
+            run_pcap_command()
+
+        elif command == 'fidelis-list-pcap-components':
+            list_pcap_components_command()
+
+    except Exception as e:
+        return_error('error has occurred: {}'.format(str(e)))
+
+    finally:
+        logout()
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
