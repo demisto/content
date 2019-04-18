@@ -153,90 +153,78 @@ def prettify_verdicts(verdicts_data):
     return pretty_verdicts_arr
 
 
-def create_dbot_score_from_verdicts(pretty_verdict):
-DbotScoreArr = [];
-for (var i = 0; i < prettyVerdicts.length; i++) {
-if (!prettyVerdicts[i].SHA256 & & !prettyVerdicts[i].MD5) {
-throw 'Hash is missing in WildFire verdict.';
-}
-if (VERDICTS_TO_DBOTSCORE[prettyVerdicts[i].Verdict] == = undefined) {
-throw 'This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.';
-}
-var DbotScore = {
-'Indicator': prettyVerdicts[i].SHA256? prettyVerdicts[i].SHA256: prettyVerdicts[i].MD5,
-'Type': 'hash',
-'Vendor': 'WildFire',
-'Score': VERDICTS_TO_DBOTSCORE[prettyVerdicts[i].Verdict]
-};
-DbotScoreArr.push(DbotScore);
-}
-return DbotScoreArr;
-}
+def create_dbot_score_from_verdicts(pretty_verdicts):
+    dbot_score_arr = []
+
+    for i in range(len(pretty_verdicts)):
+
+        if 'SHA256' not in pretty_verdicts[i] and 'MD5' not in pretty_verdicts[i]:
+            return_error('Hash is missing in WildFire verdict.')
+        if pretty_verdicts[i]["Verdict"] not in VERDICTS_TO_DBOTSCORE:
+            return_error('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
+
+        dbot_score = {
+            'Indicator': pretty_verdicts[i]["SHA256"] if "SHA256" in pretty_verdicts[i] else prettyVerdicts[i]["MD5"],
+            'Type': 'hash',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdicts[i]["Verdict"]]
+        }
+        dbot_score_arr.append(dbot_score)
+
+    return dbot_score_arr
 
 
-function
-createUploadEntry(body, title, result)
-{
-var
-md = tableToMarkdown(title, body);
-return {
-    Type: entryTypes.note,
-    Contents: result,
-    ContentsFormat: formats.json,
-    HumanReadable: md,
-    ReadableContentsFormat: formats.markdown,
-    EntryContext: {
-        "WildFire.Report(val.SHA256 === obj.SHA256 || val.MD5 === obj.MD5)": prettifyUploadBody(body)
+def create_upload_entry(body, title, result):
+    md = tableToMarkdown(title, body)
+    return {
+        'Type': entryTypes.note,
+        'Contents': result,
+        'ContentsFormat': formats.json,
+        'HumanReadable': md,
+        'ReadableContentsFormat': formats.markdown,
+        'EntryContext': {
+            "WildFire.Report(val.SHA256 === obj.SHA256 || val.MD5 === obj.MD5)": prettifyUploadBody(body)
+        }
     }
-};
-}
 
 
-function
-createEntry(body, title, result, verbose, report, ec)
-{
-var
-md = tableToMarkdown(title, body, Object.keys(body));
-if (verbose) {
-for (var i = 0; i < report.length; i++) {
-md += tableToMarkdown('Report ' + i, report[i], Object.keys(report[i]));
-}
-}
-return {
-    Type: entryTypes.note,
-    Contents: result,
-    ContentsFormat: formats.json,
-    HumanReadable: md,
-    ReadableContentsFormat: formats.markdown,
-    EntryContext: ec
-};
-}
+def create_entry(body, title, result, verbose, report, ec):
+    md = tableToMarkdown(title, body, body.keys())
+
+    if verbose:
+        for i in range(len(report)):
+            md += tableToMarkdown('Report ' + i, report[i], (report[i].keys()))
+
+    return {
+        'Type': entryTypes.note,
+        'Contents': result,
+        'ContentsFormat': formats.json,
+        'HumanReadable': md,
+        'ReadableContentsFormat': formats.markdown,
+        'EntryContext': ec
+    }
 
 
-function
-hashArgsHandler(md5, hash, file)
-{
-if (file) {
-if ( MD5_REGEX.test(file) | | SHA256_REGEX.test(file)){
-return [file];
-} else {
-throw
-'Invalid hash. Only SHA256 and MD5 are supported.';
-}
-} else {
-    inputs = md5? argToList(md5): argToList(hash);
-for (i = 0; i < inputs.length; i++)
-{
-if (SHA256_REGEX.test(inputs[i]) | | MD5_REGEX.test(inputs[i])) {
-continue;
-} else {
-throw
-'Invalid hash. Only SHA256 and MD5 are supported.';
-}
-}
-return inputs;
-}
-}
+def hash_args_handler(md5, hash, file):
+    if file:
+        if ( MD5_REGEX.test(file) | | SHA256_REGEX.test(file)){
+            return [file];
+        else:
+            return_error('Invalid hash. Only SHA256 and MD5 are supported.')
+
+    else:
+        inputs = md5? argToList(md5): argToList(hash);
+    for (i = 0; i < inputs.length; i++)
+    {
+    if (SHA256_REGEX.test(inputs[i]) | | MD5_REGEX.test(inputs[i])) {
+    continue;
+    } else {
+    throw
+    'Invalid hash. Only SHA256 and MD5 are supported.';
+    }
+    }
+    return inputs;
+
 
 // COMMANDS //
    function
