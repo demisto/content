@@ -1084,13 +1084,13 @@ script:
     - contextPath: CBP.Policy.AutomaticApprovalsOnTransition
       description: Approve on transition
       type: String
-    - contextPath: ICBP.Policy.ID
+    - contextPath: CBP.Policy.ID
       description: CBP internal ID of the policy
       type: String
-    - contextPath: ICBP.Policy.Description
+    - contextPath: CBP.Policy.Description
       description: Description of the policy
       type: String
-    - contextPath: ICBP.Policy.DisconnectedEnforcementLevel
+    - contextPath: CBP.Policy.DisconnectedEnforcementLevel
       description: The level of enforcement of the policy when disconnected
       type: String
   - arguments:
@@ -1262,7 +1262,7 @@ script:
     - contextPath: File.FileCatalogId
       description: Id of fileCatalog entry associated with this analysis
       type: String
-    - contextPath: CBP.FileName
+    - contextPath: CBP.FileAnalysis.FileName
       description: Name of the file where file exists on the endpoint
       type: String
     - contextPath: File.Malicious
@@ -2008,3 +2008,5 @@ releaseNotes: Created integration. This integration replaces the existing Carbon
   from V1 to V2, the output paths of the commands have changed - if you have a script
   or a playbook that uses these outputs you will need to update it with the new output
   paths.
+tests:
+  - Carbon Black Enterprise Protection V2 Test

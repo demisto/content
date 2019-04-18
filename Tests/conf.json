@@ -1227,6 +1227,10 @@
         {
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
+            "integrations": "CarbonBlackProtectionV2",
+            "playbookID": "Carbon Black Enterprise Protection V2 Test"
         }
     ],
     "skipped_tests": {

@@ -210,7 +210,7 @@ PUBLISHER_TRANS_DICT = {
     'id': 'ID',
     'name': 'Name',
     'publisherReputation': 'Reputation',
-    'signedCertificateCount': 'SignedCertificateCount',
+    'signedCertificateCount': 'SignedCertificatesCount',
     'signedFilesCount': 'SignedFilesCount',
     'publisherState': 'State'
 }
@@ -224,7 +224,7 @@ SERVER_CONFIG_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
+def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False, parse_json=True):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -247,7 +247,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :param safe: If set to true will return None in case of error
 
         :return: Returns the http request response json
-        :rtype: ``dict``
+        :rtype: ``dict`` or ``str``
     """
     url = SERVER + url_suffix
     try:
@@ -266,8 +266,14 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
     if res.status_code not in {200, 201}:
         if safe:
             return None
-        return_error('Error in API call [{0}] - {1}'.format(res.status_code, res.reason))
-    return res.json()
+        try:
+            reason = res.json()
+        except ValueError:
+            reason = res.reason
+        return_error('Error in API call [{0}] - {1}'.format(res.status_code, reason))
+    if parse_json:
+        return res.json()
+    return res.content
 
 
 def create_entry_object(contents='', ec=None, hr=''):
@@ -841,9 +847,9 @@ def download_file_upload_command():
     :return: File result of file upload
     """
     id = demisto.args().get('id')
+    file_upload = get_file_upload(id)
     raw_res = download_file_upload(id)
-    # TODO: Check for proper name of file
-    demisto.results(fileResult('CB_File_'.format(id), raw_res))
+    demisto.results(fileResult(file_upload.get('fileName', 'cb_uploaded_file'), raw_res))
 
 
 def download_file_upload(id):
@@ -856,7 +862,7 @@ def download_file_upload(id):
     params = {
         'downloadFile': 'true'
     }
-    return http_request('GET', url, params=params)
+    return http_request('GET', url, params=params, parse_json=False)
 
 
 def search_file_upload_command():
