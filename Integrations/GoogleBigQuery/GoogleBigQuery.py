@@ -6,11 +6,110 @@ from CommonServerUserPython import *
 import json
 import requests
 from distutils.util import strtobool
+from google.cloud import bigquery
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+# Google authentication
+# can do
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'path_to_json_file'
+BIGQUERY_CLIENT = bigquery.Client()
+# or
+BIGQUERY_CLIENT = bigquery.Client.from_service_account_json(
+    "path/to/service_account.json"
+)
+
 ''' GLOBALS/PARAMS '''
+
+
+def represents_int(string_var):
+    if '.' in string_var:
+        return False
+    if string_var[0] in ('-', '+'):
+        return string_var[1:].isdigit()
+    return string_var.isdigit()
+
+def represents_bool(string_var):
+    return string_var.lower() == 'false' or string_var.lower() == 'true'
+
+def str_to_bool(str_representing_bool):
+    return str_representing_bool.lower() == "true"
+
+
+def validate_args_for_query_job_config(allow_large_results, create_disposition, ):
+    if not represents_bool(allow_large_results):
+        return_error("Error: allow_large_results must have a boolean value.")
+    if not (create_disposition == 'CREATE_IF_NEEDED' or create_disposition == 'CREATE_NEVER'):
+        return_error("Error: create_disposition must have a value of CREATE_IF_NEEDED or CREATE_NEVER.")
+
+# might be a bad name if it doesn't only get. If it creates instead of gets - bad name
+def get_default_dataset_for_query(default_dataset_data):
+
+
+# might be a bad name if it doesn't only get. If it creates instead of gets - bad name
+def get_destination_table_for_query(destination):
+
+def
+
+
+def build_clustering_fields_list(clustering_fields_in_string_format):
+    clustering_fields_list = clustering_fields_in_string_format.split(',')
+    for i in range(len(clustering_fields_list)):
+        clustering_fields_list[i] = clustering_fields_list[i].strip()
+    return clustering_fields_list
+
+def create_job_config_for_query(allow_large_results, clustering_fields, create_disposition, default_dataset, destination, destination_encryption_configuration,
+                                dry_run, flatten_results, labels, maximum_billing_tier, maximum_bytes_billed, priority, query_parameters, schema_update_options,
+                                table_definitions, time_partitioning, udf_resources, use_legacy_sql, use_query_cache, write_disposition):
+    validate_args_for_query_job_config() # send relevant params
+    verify_all_required_args_for_query_job_config_supplied() # no need for function, implement here
+    query_job_config = bigquery.QueryJobConfig()
+    if allow_large_results:
+        query_job_config.allow_large_results = str_to_bool(allow_large_results)
+    if clustering_fields:
+        query_job_config.clustering_fields = build_clustering_fields_list(clustering_fields)
+    if create_disposition:
+        query_job_config.create_disposition = create_disposition
+    if default_dataset:
+        query_job_config.default_dataset = get_default_dataset_for_query(default_dataset)
+    if destination:
+        query_job_config.BBBB = get_destination_table_for_query(destination)
+    if BBBB:
+        query_job_config.BBBB = BBBB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 BASE_URL = "https://www.googleapis.com/bigquery/v2/"
 QUERY_URL = "projects/{0}/queries"
@@ -43,15 +142,63 @@ if not demisto.params().get('proxy'):
 
 ''' HELPER FUNCTIONS '''
 
-def represents_int(string_var):
-    if '.' in string_var:
-        return False
-    if string_var[0] in ('-', '+'):
-        return string_var[1:].isdigit()
-    return string_var.isdigit()
 
-def represents_bool(string_var):
-    return string_var.lower() == 'false' or string_var.lower() == 'true'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def validate_args_for_query_request(max_results, timeout_ms, dry_run, use_query_cache, use_legacy_sql, parameter_mode):
@@ -79,15 +226,23 @@ def build_default_dataset_data_dict(default_dataset_json_arg):
 
 
 def build_parameter_type_data(parameter_type_data):
+    # type, arrayType, structTypes(array)
+    parameter_type_data = {
+        'type': parameter_type_data['type'],
+        'arrayType': parameter_type_data.get('array_type', None),
+        'structTypes': parameter_type_data.get('struct_types', None)
+    }
 
+
+def build_parameter_value_data(parameter_value_data):
 
 
 
 def build_param_data_dict(param_data):
     param_data_dict = {
         'name': param_data.get('name', None),
-        'parameterType': build_parameter_type_data(param_data.get('parameter_type'))
-
+        'parameterType': build_parameter_type_data(param_data.get('parameter_type')),
+        'parameterValue': build_parameter_value_data(param_data.get('parameter_value'))
     }
     return param_data_dict
 
