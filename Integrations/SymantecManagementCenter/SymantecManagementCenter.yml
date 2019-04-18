@@ -3,12 +3,7 @@ commonfields:
   id: SymantecManagementCenter
   version: -1
 configuration:
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: https://
-  display: Server URL (e.g. https://)
+- display: Server URL (e.g. https://192.168.0.1)
   name: url
   required: true
   type: 0
@@ -102,7 +97,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a device from Management Center.
+    description: Get a device from Management Center
     execution: false
     name: management-center-get-device
     outputs:
@@ -156,7 +151,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the health information for a device in Management Center.
+    description: Get the health information for a device in Management Center
     execution: false
     name: management-center-get-device-health
     outputs:
@@ -189,7 +184,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get license information for a device in Management Center.
+    description: Get license information for a device in Management Center
     execution: false
     name: management-center-get-device-license
     outputs:
@@ -225,7 +220,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the status of a device in Management Center.
+    description: Get the status of a device in Management Center
     execution: false
     name: management-center-get-device-status
     outputs:
@@ -288,7 +283,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List policies in Management Center.
+    description: List policies in Management Center
     execution: false
     name: management-center-list-policies
     outputs:
@@ -633,6 +628,36 @@ script:
     description: Delete content from a policy in Management Center
     execution: false
     name: management-center-delete-policy-content
+  - arguments:
+    - default: true
+      description: Policy UUID
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Installs the specified policy on the set of targets associated with
+      the policy in Management Center
+    execution: false
+    name: management-center-install-policy
+  - arguments:
+    - default: true
+      description: Policy UUID
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: List the target devices for the specified policy in Management Center
+    execution: false
+    name: management-center-list-policy-targets
+    outputs:
+    - contextPath: ManagementCetner.Device.UUID
+      description: Device UUID
+      type: String
+    - contextPath: ManagementCetner.Device.Name
+      description: Device name
+      type: String
   isfetch: false
   runonce: false
   script: '-'
