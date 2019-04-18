@@ -196,7 +196,7 @@ script:
             else:
                 return_error('Request Failed.\n' + str(jresult['response']))
 
-        if jresult['response']['@code'] in PAN_OS_ERROR_DICT:
+        if 'response' in jresult and '@code' in jresult['response'] and jresult['response']['@code'] in PAN_OS_ERROR_DICT:
             return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[jresult['response']['@code']])
 
         return jresult
