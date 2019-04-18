@@ -248,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2820
+          "y": 3520
         }
       }
     note: false
@@ -491,7 +491,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -615,12 +615,157 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "28":
+    id: "28"
+    taskid: aebc6be3-3080-4a5b-8396-f2d6e881b488
+    type: regular
+    task:
+      id: aebc6be3-3080-4a5b-8396-f2d6e881b488
+      version: -1
+      name: file (with sha1 value in the argument file)
+      description: Retrieve results for a file hash using WildFire
+      script: WildFire|||file
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      codeItemType: {}
+      delay: {}
+      file:
+        simple: a31986a65068af86dbfeddad3e63e05f759b2b32
+      long: {}
+      maxRetries: {}
+      md5: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: d3488183-cf56-4ce9-85d0-dbed004c0592
+    type: regular
+    task:
+      id: d3488183-cf56-4ce9-85d0-dbed004c0592
+      version: -1
+      name: commentsToContext
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      contextKey:
+        simple: checkFile
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: c635b428-7d5f-49b5-8256-378af1a57b66
+    type: regular
+    task:
+      id: c635b428-7d5f-49b5-8256-378af1a57b66
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: f40ec36a-087a-484c-88cf-22f63da9fbae
+    type: condition
+    task:
+      id: f40ec36a-087a-484c-88cf-22f63da9fbae
+      version: -1
+      name: test file with sha1 input
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${checkFile}
+            iscontext: true
+          right:
+            value:
+              simple: WildFire file hash reputation does not supports SHA1 hash.
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2835,
+        "height": 3535,
         "width": 810,
         "x": 50,
         "y": 50
