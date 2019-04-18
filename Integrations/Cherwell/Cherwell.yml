@@ -193,7 +193,7 @@ script:
     deprecated: false
     description: Get attachements from given business object
     execution: false
-    name: cherwell-get-attachments
+    name: cherwell-download-attachments
     outputs:
     - contextPath: Fille
       description: File result entries
@@ -301,6 +301,66 @@ script:
     description: Unlink linked, related business objects
     execution: false
     name: cherwell-unlink-business-objects
+  - arguments:
+    - default: false
+      description: type of business object (its name)
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: public_id or record_id
+      isArray: false
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
+      required: true
+      secret: false
+    - default: false
+      description: Public id or record id
+      isArray: false
+      name: id_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Get business object attachments info
+    execution: false
+    name: cherwell-get-attachments-info
+  - arguments:
+    - default: false
+      description: type of business object (its name)
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: public_id or record_id
+      isArray: false
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
+      required: true
+      secret: false
+    - default: false
+      description: Public id or record id
+      isArray: false
+      name: id_value
+      required: true
+      secret: false
+    - default: false
+      description: Attachment id to reomve
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove the given attachment from the given business object
+    execution: false
+    name: cherwell-remove-attachment
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false
