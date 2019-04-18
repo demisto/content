@@ -463,7 +463,7 @@ def download_attachment_from_business_object(attachment):
     return attachment_content
 
 
-def build_attachments(attachments_to_download):
+def get_attachments_content(attachments_to_download):
     attachments = []
     for attachment in attachments_to_download:
         new_attachment = {
@@ -489,7 +489,7 @@ def get_attachments_details(id_type, object_id, object_type_name, object_type_id
     return parsed_response
 
 
-def get_attachments(id_type, object_id, business_object_type_name, business_object_type_id=None):
+def download_attachments(id_type, object_id, business_object_type_name=None, business_object_type_id=None):
     type = 'File'
     attachment_type = 'Imported'
     result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
@@ -497,8 +497,22 @@ def get_attachments(id_type, object_id, business_object_type_name, business_obje
     attachments_to_download = result.get('attachments')
     if not attachments_to_download:
         return
-    attachments_to_return = build_attachments(attachments_to_download)
+    attachments_to_return = get_attachments_content(attachments_to_download)
     return attachments_to_return
+
+
+def get_attachments_info(id_type, object_id, business_object_type_name=None, business_object_type_id=None):
+    type = 'File'
+    attachment_type = 'Imported'
+    result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
+                                     attachment_type)
+    attachments = result.get('attachments')
+    attachments_info = [{
+        'AttachmentFieldID': attachment.get('attachmentFileId'),
+        'FileName': attachment.get('displayText'),
+        'AttachmentID': attachment.get('attachmentId'),
+    } for attachment in attachments]
+    return attachments_info, result
 
 
 def attachment_results(attachments):
@@ -624,7 +638,7 @@ def fetch_incidents_attachments(incidents):
         rec_id = incident.get('RecID')
         business_object_id = incident.get('BusinessObjectID')
         incident['Attachments'] = []
-        attachments = get_attachments('record_id', rec_id, None, business_object_id)
+        attachments = download_attachments('record_id', rec_id, business_object_type_id=business_object_id)
         if attachments:
             for attachment in attachments:
                 new_attachment_obj = {
@@ -669,6 +683,15 @@ def upload_attachment(id_type, object_id, type_name, file_entry_id):
     except Exception as e:
         return_error(f'unable to open file: {e}')
     return attachment_id
+
+
+def remove_attachment(id_type, object_id, type_name, attachment_id):
+    id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+    url = BASE_URL + f'/api/V1/removebusinessobjectattachment/' \
+        f'attachmentid/{attachment_id}/busobname/{type_name}/{id_type_str}/{object_id}'
+    response = make_request('DELETE', url)
+    parse_response(response, f'Could not remove attachment {attachment_id} from {type_name} {object_id}')
+    return
 
 
 def link_related_business_objects(action, parent_business_object_id, parent_business_object_record_id, relationship_id,
@@ -798,12 +821,12 @@ def fetch_incidents_command():
     return
 
 
-def get_attachments_command():
+def download_attachments_command():
     args = demisto.args()
     id_type = args.get('id_type')
     object_id = args.get('id_value')
     type_name = args.get('type')
-    attachments = get_attachments(id_type, object_id, type_name)
+    attachments = download_attachments(id_type, object_id, business_object_type_name=type_name)
     if not attachments:
         return_error(f'No attachments were found for {type_name}:{object_id}')
     attachment_results(attachments)
@@ -817,29 +840,57 @@ def upload_attachment_command():
     type_name = args.get('type')
     file_entry_id = args.get('file_entry_id')
     attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
+    entry_context = {
+        'AttachmentFileID': attachment_id,
+        'BusinessObjectType': type_name,
+        string_to_context_key(id_type): object_id
+    }
     md = f'### Attachment: {attachment_id}, was successfully attached to {type_name} {object_id}'
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': {'attachment_id': attachment_id},
-        'EntryContext': {'Cherwell.Attachments(val == obj)': attachment_id},
+        'EntryContext': {'Cherwell.UploadedAttachments(val.AttachmentID == obj.AttachmentID)': entry_context},
         'HumanReadable': md,
     })
 
 
-# def remove_attachment_command():
-#     args = demisto.args()
-#     id_type = args.get('id_type')
-#     object_id = args.get('id_value')
-#     type_name = args.get('type')
-#     attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
-#     md = f'### Attachment was successfully attached to {type_name} {object_id}'
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['text'],
-#         'Contents': {'attachment_id': attachment_id},
-#         'HumanReadable': md,
-#     })
+def remove_attachment_command():
+    args = demisto.args()
+    id_type = args.get('id_type')
+    object_id = args.get('id_value')
+    type_name = args.get('type')
+    attachment_id = args.get('attachment_id')
+    remove_attachment(id_type, object_id, type_name, attachment_id)
+    md = f'### Attachment: {attachment_id}, was successfully removed from {type_name} {object_id}'
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': md,
+        'HumanReadable': md,
+    })
+
+
+def get_attachments_info_command():
+    args = demisto.args()
+    id_type = args.get('id_type')
+    object_id = args.get('id_value')
+    type_name = args.get('type')
+    attachments_info, raw_result = get_attachments_info(id_type, object_id, type_name)
+    md = tableToMarkdown(f'{type_name.capitalize()} {object_id} attachments:', attachments_info,
+                         headerTransform=pascalToSpace) if attachments_info \
+        else f'### {type_name.capitalize()} {object_id} has no attachments'
+
+    entry = {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': raw_result,
+        'HumanReadable': md
+    }
+    if attachments_info:
+        entry['EntryContext'] = {
+            f'Cherwell.AttachmentsInfo.{string_to_context_key(type_name)}{object_id}': attachments_info}
+    demisto.results(entry)
 
 
 def link_business_objects_command():
@@ -1059,11 +1110,17 @@ try:
     elif demisto.command() == 'cherwell-delete-business-object':
         delete_business_object_command()
 
-    elif demisto.command() == 'cherwell-get-attachments':
-        get_attachments_command()
+    elif demisto.command() == 'cherwell-download-attachments':
+        download_attachments_command()
+
+    elif demisto.command() == 'cherwell-get-attachments-info':
+        get_attachments_info_command()
 
     elif demisto.command() == 'cherwell-upload-attachment':
         upload_attachment_command()
+
+    elif demisto.command() == 'cherwell-remove-attachment':
+        remove_attachment_command()
 
     elif demisto.command() == 'cherwell-link-business-objects':
         link_business_objects_command()
