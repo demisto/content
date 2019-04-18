@@ -10,12 +10,11 @@ requests.packages.urllib3.disable_warnings()
 
 
 ''' GLOBALS / PARAMS '''
-IS_FETCH = demisto.params()['isFetch']
-INCIDENT_TYPE = demisto.params()['incidentType']
-SERVER_URL = demisto.params()['server_url']
-CREDENTIALS = demisto.params()['credentials']
-INSECURE = demisto.params()['unsecure']
-PROXY = demisto.params()['proxy']
+IS_FETCH = demisto.params().get('isFetch')
+SERVER_URL = demisto.params().get('server_url')
+CREDENTIALS = demisto.params().get('credentials')
+INSECURE = demisto.params().get('unsecure')
+PROXY = demisto.params().get('proxy')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 SESSION_ID = None
 
