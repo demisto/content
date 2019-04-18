@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def test_get_ioc_filter():
     from FidelisElevateNetwork import get_ioc_filter
