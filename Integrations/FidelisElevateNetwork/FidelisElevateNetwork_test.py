@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+
 def test_get_ioc_filter():
     from FidelisElevateNetwork import get_ioc_filter
     f = get_ioc_filter('192.168.19.1')  # disable-secrets-detection
