@@ -266,6 +266,41 @@ script:
     description: Link related business objects
     execution: false
     name: cherwell-link-business-objects
+  - arguments:
+    - default: false
+      description: Parent business object type name
+      isArray: false
+      name: parent_type
+      required: true
+      secret: false
+    - default: false
+      description: Parent business object record id
+      isArray: false
+      name: parent_record_id
+      required: true
+      secret: false
+    - default: false
+      description: Child business object type name
+      isArray: false
+      name: child_type
+      required: true
+      secret: false
+    - default: false
+      description: Child business object record id
+      isArray: false
+      name: child_record_id
+      required: true
+      secret: false
+    - default: false
+      description: Relationship id
+      isArray: false
+      name: relationship_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Unlink linked, related business objects
+    execution: false
+    name: cherwell-unlink-business-objects
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false

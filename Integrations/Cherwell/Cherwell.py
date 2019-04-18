@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import traceback
 from datetime import datetime, timedelta
 import os
 
@@ -285,7 +286,7 @@ def build_fields_for_business_object(data_dict, ids_dict):
     return fields
 
 
-def http_request(method, url, payload, token, custom_headers):
+def http_request(method, url, payload, token=None, custom_headers=None):
     headers = build_headers(token, custom_headers)
     response = requests.request(method, url, data=payload, headers=headers)
     return response
@@ -304,7 +305,7 @@ def request_new_access_token(using_refresh):
         'Content-Type': "application/x-www-form-urlencoded",
     }
 
-    response = http_request('POST', url, payload, headers)
+    response = http_request('POST', url, payload, custom_headers=headers)
     return response
 
 
@@ -340,11 +341,10 @@ def build_headers(token, headers=None):
 
 def make_request(method, url, payload=None, headers=None):
     token = get_access_token(False)
-    demisto.results(f'headers: {headers}')
-    response = http_request(method, url, payload, token, headers)
+    response = http_request(method, url, payload, token, custom_headers=headers)
     if response.status_code == HTTP_CODES['unauthorized']:
         token = get_access_token(True)
-        response = http_request(method, url, payload, token, headers)
+        response = http_request(method, url, payload, token, custom_headers=headers)
     return response
 
 
@@ -660,7 +660,6 @@ def upload_attachment(id_type, object_id, type_name, file_entry_id):
     file_data = demisto.getFilePath(file_entry_id)
     file_path = file_data.get('path')
     file_name = file_data.get('name')
-
     try:
         file_size = os.path.getsize(file_path)
         with open(file_path) as f:
@@ -672,25 +671,27 @@ def upload_attachment(id_type, object_id, type_name, file_entry_id):
     return attachment_id
 
 
-def link_related_business_objects(parent_business_object_id, parent_business_object_record_id, relationship_id,
+def link_related_business_objects(action, parent_business_object_id, parent_business_object_record_id, relationship_id,
                                   business_object_id, business_object_record_id):
-    url = BASE_URL + f"api/V1/linkrelatedbusinessobject/parentbusobid/{parent_business_object_id}" \
+    url_action_str = 'linkrelatedbusinessobject' if action == 'link' else 'unlinkrelatedbusinessobject'
+    url = BASE_URL + f"api/V1/{url_action_str}/parentbusobid/{parent_business_object_id}" \
         f"/parentbusobrecid/{parent_business_object_record_id}" \
         f"/relationshipid/{relationship_id}" \
         f"/busobid/{business_object_id}" \
         f"/busobrecid/{business_object_record_id}"
-    response = make_request("GET", url)
-    demisto.results(response)
-    relation_data = parse_response(response, "Could not link business objects")
-    return relation_data
+    http_method = 'GET' if action == 'link' else 'DELETE'
+    response = make_request(http_method, url)
+    parse_response(response, "Could not link business objects")
+    return
 
 
-def link_business_objects(parent_type_name, parent_record_id, child_type_name, child_record_id, relationship_id):
+def business_objects_relation_action(action, parent_type_name, parent_record_id, child_type_name, child_record_id,
+                                     relationship_id):
     parent_business_object_id = resolve_business_object_id_by_name(parent_type_name)
     child_business_object_id = resolve_business_object_id_by_name(child_type_name)
-    relation_data = link_related_business_objects(parent_business_object_id, parent_record_id, relationship_id,
-                                                  child_business_object_id, child_record_id)
-    return relation_data
+    link_related_business_objects(action, parent_business_object_id, parent_record_id, relationship_id,
+                                  child_business_object_id, child_record_id)
+    return
 
 
 ########################################################################################################################
@@ -816,13 +817,29 @@ def upload_attachment_command():
     type_name = args.get('type')
     file_entry_id = args.get('file_entry_id')
     attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
-    md = f'### Attachment was successfully attached to {type_name} {object_id}'
+    md = f'### Attachment: {attachment_id}, was successfully attached to {type_name} {object_id}'
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': {'attachment_id': attachment_id},
+        'EntryContext': {'Cherwell.Attachments(val == obj)': attachment_id},
         'HumanReadable': md,
     })
+
+
+# def remove_attachment_command():
+#     args = demisto.args()
+#     id_type = args.get('id_type')
+#     object_id = args.get('id_value')
+#     type_name = args.get('type')
+#     attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
+#     md = f'### Attachment was successfully attached to {type_name} {object_id}'
+#     demisto.results({
+#         'Type': entryTypes['note'],
+#         'ContentsFormat': formats['text'],
+#         'Contents': {'attachment_id': attachment_id},
+#         'HumanReadable': md,
+#     })
 
 
 def link_business_objects_command():
@@ -832,13 +849,35 @@ def link_business_objects_command():
     child_type = args.get('child_type')
     child_record_id = args.get('child_record_id')
     relationship_id = args.get('relationship_id')
-    relationship_data = \
-        link_business_objects(parent_type, parent_record_id, child_type, child_record_id, relationship_id)
-    md = f'### {parent_type} {parent_record_id} and {child_type} {child_record_id} were linked'
+    business_objects_relation_action('link', parent_type, parent_record_id, child_type, child_record_id,
+                                     relationship_id)
+    message = \
+        f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were linked'
+    md = f'### {message}'
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': relationship_data,
+        'Contents': message,
+        'HumanReadable': md,
+    })
+
+
+def unlink_business_objects_command():
+    args = demisto.args()
+    parent_type = args.get('parent_type')
+    parent_record_id = args.get('parent_record_id')
+    child_type = args.get('child_type')
+    child_record_id = args.get('child_record_id')
+    relationship_id = args.get('relationship_id')
+    business_objects_relation_action('unllink', parent_type, parent_record_id, child_type, child_record_id,
+                                     relationship_id)
+    message = \
+        f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were unlinked'
+    md = f'### {message}'
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': message,
         'HumanReadable': md,
     })
 
@@ -1002,10 +1041,8 @@ LOG('Command being called is %s' % (demisto.command()))
 
 try:
     # handle_proxy()
-
     if demisto.command() == 'test-module':
         token = get_access_token(True)
-        demisto.results('ok')
 
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
@@ -1031,9 +1068,12 @@ try:
     elif demisto.command() == 'cherwell-link-business-objects':
         link_business_objects_command()
 
+    elif demisto.command() == 'cherwell-unlink-business-objects':
+        unlink_business_objects_command()
+
 
 # Log exceptions
 except Exception as e:
     LOG(str(e))
     LOG.print_log()
-    return_error("Unexpected error: {}".format(e))
+    return_error(f"Unexpected error: {e}, traceback: {traceback.print_exc()}")
