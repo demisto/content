@@ -158,7 +158,7 @@ class DatetimeEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d')
         elif isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date): # pylint: disable=E0602
+        elif isinstance(obj, date):  # pylint: disable=E0602
             return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
