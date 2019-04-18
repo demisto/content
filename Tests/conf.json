@@ -290,6 +290,11 @@
         },
         {
             "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 600
+        },
+        {
+            "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
         },
@@ -584,7 +589,8 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test - CrowdStrike Falcon"
+            "playbookID": "Test - CrowdStrike Falcon",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": [
@@ -959,7 +965,8 @@
         },
         {
             "integrations": "Jask",
-            "playbookID": "Jask_Test"
+            "playbookID": "Jask_Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Qualys",
@@ -1499,6 +1506,7 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Snowflake": "Isn't working with mocking enabled - needs investigation"
+        "Snowflake": "Isn't working with mocking enabled - needs investigation",
+        "Google Cloud Compute": "checking"
     }
 }
