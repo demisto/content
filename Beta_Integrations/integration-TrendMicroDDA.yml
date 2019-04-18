@@ -1038,5 +1038,4 @@ script:
   runonce: false
 releaseNotes: "member to also add tasks to the generic detonation playbooks."
 tests:
-- detonate_file_-_generic_test
-- detonate_url_-_generic_test
+- No Test - beta integration
