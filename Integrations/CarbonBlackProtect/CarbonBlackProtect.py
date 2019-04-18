@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -15,7 +14,8 @@ requests.packages.urllib3.disable_warnings()
 TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = "{server}{api_endpoint}".format(
-    server=demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'],
+    server=demisto.params()['url'][:-1] if (demisto.params()['url']
+                                            and demisto.params()['url'].endswith('/')) else demisto.params()['url'],
     api_endpoint='/api/bit9platform/v1')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
@@ -292,7 +292,7 @@ def create_entry_object(contents='', ec=None, hr=''):
         :return: Entry object
         :rtype: ``dict``
     """
-    res =  {
+    res = {
         'Type': entryTypes['note'],
         'Contents': contents,
         'ContentsFormat': formats['json'],
@@ -422,6 +422,7 @@ def cbp_date_to_timestamp(date):
     except ValueError:
         ts = date_to_timestamp(date, date_format=CB_NO_MS_TIME_FORMAT)
     return ts
+
 
 def event_to_incident(event):
     """
