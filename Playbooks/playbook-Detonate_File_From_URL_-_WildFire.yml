@@ -31,19 +31,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 0f6db3a2-537d-45db-8abc-20accf11ec59
+    taskid: 9a30f2f0-d0e6-44d8-883b-1eb092c13372
     type: regular
     task:
-      id: 0f6db3a2-537d-45db-8abc-20accf11ec59
+      id: 9a30f2f0-d0e6-44d8-883b-1eb092c13372
       version: -1
-      name: WildFire Upload File Remote
-      description: ""
-      script: WildFire|||wildfire-upload-file-remote
+      name: WildFire Upload File URL
+      description: URL of remote file to be uploaded
+      script: '|||wildfire-upload-file-url'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -60,6 +62,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 4f0aa551-1874-4223-875d-9701c6192be6
@@ -113,6 +117,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 11650265-0035-421f-8e92-143af887b7a7
@@ -134,6 +140,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
@@ -168,6 +176,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 2a98f575-de73-4805-874d-87f4af43d99b
@@ -221,19 +231,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: be96c4b1-ebec-4d67-82d0-3f694477fcb7
+    taskid: 83af3952-dd69-4765-8662-3b5371043d46
     type: regular
     task:
-      id: be96c4b1-ebec-4d67-82d0-3f694477fcb7
+      id: 83af3952-dd69-4765-8662-3b5371043d46
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire
-      script: WildFire|||wildfire-report
+      script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -256,6 +268,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

@@ -500,6 +500,5 @@ outputs:
 - contextPath: DBotScore.Malicious
   description: DBotScore malicious object
   type: unknown
-releaseNotes: Added missing outputs
 tests:
 - Detonate URL - Generic Test

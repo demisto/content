@@ -1,7 +1,8 @@
 commonfields:
   id: CommonServer
-  version: 1
+  version: -1
 name: CommonServer
+fromversion: 4.5.0
 script: |-
   // Common functions script
   // =======================
@@ -10,7 +11,7 @@ script: |-
   /**
    * Returns true if string starts with search string
    * @param {String} search - The string to be searched
-   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0. 
+   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0.
    * @return {Boolean} true if string starts with <search> string
    */
   if (!String.prototype.startsWith) {
@@ -1958,3 +1959,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
+tests:
+  - 'Test CommonServer'
