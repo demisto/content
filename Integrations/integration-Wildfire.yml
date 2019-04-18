@@ -89,6 +89,7 @@ script:
     var TOKEN = params.token;
 
     var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA1_REGEX = /\b[a-fA-F\d]{40}\b/m;
     var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
 
     //HELPERS//
@@ -266,25 +267,37 @@ script:
     }
 
 
-    function hashArgsHandler(md5, hash, file) {
-        if(file) {
-            if( MD5_REGEX.test(file) || SHA256_REGEX.test(file)){
-                return [file];
-            } else {
-                throw 'Invalid hash. Only SHA256 and MD5 are supported.';
-            }
-        } else {
-            inputs = md5? argToList(md5) : argToList(hash);
+    function hashArgsHandler(hash, file, md5, sha256) {
+        // file/md5/sha256 are used in file command
+        if ((file && !md5 && !sha256) || (!file && md5 && !sha256) || (!file && md5 && !sha256)) {
+            if (file) {inputs = argToList(file);}
+            else if (md5) {inputs = argToList(md5);}
+            else {inputs = argToList(sha256);}
+
             for (i = 0; i < inputs.length; i++) {
-                if ( SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i]) ) {
+                if (SHA1_REGEX.test(inputs[i])) { // validate hash is not sha1
+                    return 'SHA1';
+                }
+                if (SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i])) {
                     continue;
                 } else {
                     throw 'Invalid hash. Only SHA256 and MD5 are supported.';
                 }
             }
-            return inputs;
+        // hash argument, only used in wildfire-report command
+        } else {
+            inputs = argToList(hash);
+            for (i = 0; i < inputs.length; i++) {
+                if (SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i])) {
+                    continue;
+                } else {
+                    throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+                }
+            }
         }
+        return inputs;
     }
+
 
     //COMMANDS//
     function uploadFile(upload) {
@@ -656,7 +669,15 @@ script:
 
         case 'file':
         case 'wildfire-report':
-            var inputs = hashArgsHandler(args.md5, args.hash, args.file);
+            var inputs = hashArgsHandler(args.hash, args.file, args.md5, args.sha256);
+            if (inputs == 'SHA1') {
+                return {
+                    Type: 11, // warning type
+                    Contents: 'WildFire file hash reputation does not supports SHA1 hash.\n',
+                    ContentsFormat: formats.markdown
+                };
+            }
+
             entries = [];
             for (i=0; i < inputs.length; i++) {
                 var reportResponse = getReport(inputs[i]);
@@ -668,7 +689,7 @@ script:
             return entries;
 
         case 'wildfire-get-verdict':
-            var inputs = hashArgsHandler('', args.hash, '');
+            var inputs = hashArgsHandler(args.hash, '', '', '');
             var entries = [];
             for (i=0; i < inputs.length; i++) {
                 var entry = getVerdict(inputs[i]);
@@ -697,8 +718,15 @@ script:
   - name: file
     arguments:
     - name: file
-      required: true
+      default: true
       description: file hash to check
+      isArray: true
+    - name: md5
+      description: md5 hash to check
+      isArray: true
+    - name: sha256
+      description: sha256 hash to check
+      isArray: true
     outputs:
     - contextPath: File.Name
       description: Filename
@@ -1045,3 +1073,4 @@ script:
   runonce: false
 tests:
 - Wildfire Test
+releaseNotes: Added md5,sha256 arguments options to !file command, regard non valid hash in the !file command as a warning
