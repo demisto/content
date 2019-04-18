@@ -6,17 +6,24 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from datetime import datetime, timedelta
+import os
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-    demisto.params()['url']  # Remove trailing slash to prevent wrong URL path to service
-CLIENT_ID = demisto.params().get('client_id')
+PARAMS = demisto.params()
+FETCH_TIME = PARAMS.get('fetch_time')
+FETCH_ATTACHMENTS = PARAMS.get('fetch_attachments')
+OBJECTS_TO_FETCH = PARAMS.get('objects_to_fetch').split(',')
+MAX_RESULT = PARAMS.get('max_results')
+USERNAME = PARAMS.get('credentials').get('identifier')
+PASSWORD = PARAMS.get('credentials').get('password')
+# Remove trailing slash to prevent wrong URL path to service
+SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
+CLIENT_ID = PARAMS.get('client_id')
+DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
 # Service base URL
 BASE_URL = SERVER + '/CherwellAPI/'
 
@@ -232,8 +239,11 @@ def parse_response(response, error_operation):
             err_msg = response.content.decode('utf-8')
         return_error(error_operation + ": " + err_msg)
     except Exception as error:
-        LOG.print_log()
-        return_error("Could not parse response ".format(error))
+        try:
+            return response.content  # check if needed
+        except Exception as error:
+            LOG.print_log()
+            return_error("Could not parse response ".format(error))
 
 
 def cherwell_dict_parser(key, value, item_list):
@@ -252,8 +262,11 @@ def parse_fields_from_business_object(field_list):
 
 def parse_fields_from_business_object_list(response):
     object_list = []
+    if not response.get('businessObjects'):
+        return []
     for business_obj in response.get('businessObjects'):
         new_business_obj = parse_fields_from_business_object(business_obj.get('fields'))
+        new_business_obj['BusinessObjectID'] = business_obj.get('busObId')
         object_list.append(new_business_obj)
 
     return object_list
@@ -272,8 +285,8 @@ def build_fields_for_business_object(data_dict, ids_dict):
     return fields
 
 
-def http_request(method, url, payload, token):
-    headers = build_headers(token)
+def http_request(method, url, payload, token, custom_headers):
+    headers = build_headers(token, custom_headers)
     response = requests.request(method, url, data=payload, headers=headers)
     return response
 
@@ -319,18 +332,19 @@ def get_access_token(new_token):
         return integration_context.get('access_token')
 
 
-def build_headers(token):
-    headers = HEADERS
+def build_headers(token, headers=None):
+    headers = headers if headers else HEADERS
     headers['Authorization'] = "Bearer {}".format(token)
     return headers
 
 
-def make_request(method, url, payload=None):
+def make_request(method, url, payload=None, headers=None):
     token = get_access_token(False)
-    response = http_request(method, url, payload, token)
+    demisto.results(f'headers: {headers}')
+    response = http_request(method, url, payload, token, headers)
     if response.status_code == HTTP_CODES['unauthorized']:
         token = get_access_token(True)
-        response = http_request(method, url, payload, token)
+        response = http_request(method, url, payload, token, headers)
     return response
 
 
@@ -343,8 +357,8 @@ def get_business_object_summary_by_name(name):
 
 def resolve_business_object_id_by_name(name):
     res = get_business_object_summary_by_name(name)
-    if len(res) == 0:
-        return_error('Could not retrieve business object id. Please make sure the business object type is correct.')
+    if not res:
+        return_error(f'Could not retrieve business object id. Please make sure "{name}" is a valid business object.')
     return res[0].get('busObId')
 
 
@@ -359,7 +373,7 @@ def get_business_object_record(business_object_id, object_id, id_type):
     id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
     url = BASE_URL + "api/V1/getbusinessobject/busobid/{0}/{1}/{2}".format(business_object_id, id_type_str, object_id)
     response = make_request("GET", url)
-    res_json = parse_response(response, "Could not get incident")
+    res_json = parse_response(response, "Could not get business objects")
     return res_json
 
 
@@ -368,25 +382,30 @@ def delete_business_object_record(business_object_id, object_id, id_type):
     url = BASE_URL + "api/V1/deletebusinessobject/busobid/{0}/{1}/{2}".format(business_object_id, id_type_str,
                                                                               object_id)
     response = make_request("DELETE", url)
-    res_json = parse_response(response, "Could not delete incident")
+    res_json = parse_response(response, "Could not delete business object")
     return res_json
 
 
 def get_search_results(payload):
     url = BASE_URL + "api/V1/getsearchresults"
     response = make_request("POST", url, json.dumps(payload))
-    res_json = parse_response(response, "Could not get incidents")
+    res_json = parse_response(response, "Could not search for business objects")
     return res_json
 
 
-def get_business_object_template(business_object_id):
+def get_business_object_template(business_object_id, include_all=True, field_names=None, fields_ids=None):
     url = BASE_URL + "api/V1/getbusinessobjecttemplate"
     payload = {
         "busObId": business_object_id,
-        "includeAll": True,
+        "includeAll": include_all
     }
+
+    if field_names:
+        payload['fieldNames'] = field_names
+    if fields_ids:
+        payload['fieldIds'] = fields_ids
     response = make_request("POST", url, json.dumps(payload))
-    res_json = parse_response(response, "Could not get incidents")
+    res_json = parse_response(response, "Could not get business object template")
     return res_json
 
 
@@ -421,10 +440,10 @@ def update_business_object(name, data_json, object_id, id_type):
 def get_business_object(name, object_id, id_type):
     business_object_id = resolve_business_object_id_by_name(name)
     results = get_business_object_record(business_object_id, object_id, id_type)
-    incident = parse_fields_from_business_object(results.get('fields'))
-    incident['IncidentPublicID'] = results.get('busObPublicId')
-    incident['IncidentRecordID'] = results.get('busObRecId')
-    return results, incident
+    parsed_business_object = parse_fields_from_business_object(results.get('fields'))
+    parsed_business_object['PublicID'] = results.get('busObPublicId')
+    parsed_business_object['RecordID'] = results.get('busObRecId')
+    return results, parsed_business_object
 
 
 def delete_business_object(name, object_id, id_type):
@@ -433,7 +452,248 @@ def delete_business_object(name, object_id, id_type):
     return results
 
 
-#######################################################################################################################
+def download_attachment_from_business_object(attachment):
+    attachment_id = attachment.get('attachmentId')
+    business_object_id = attachment.get('busObId')
+    business_record_id = attachment.get('busObRecId')
+    url = BASE_URL + f'api/V1/getbusinessobjectattachment' \
+        f'/attachmentid/{attachment_id}/busobid/{business_object_id}/busobrecid/{business_record_id}'
+    response = make_request('GET', url)
+    attachment_content = parse_response(response, f'Unable to get content of attachment {attachment_id}')
+    return attachment_content
+
+
+def build_attachments(attachments_to_download):
+    attachments = []
+    for attachment in attachments_to_download:
+        new_attachment = {
+            'FileName': attachment.get('displayText'),
+            'CreatedAt': attachment.get('created'),
+            'Content': download_attachment_from_business_object(attachment)
+        }
+        attachments.append(new_attachment)
+    return attachments
+
+
+def get_attachments_details(id_type, object_id, object_type_name, object_type_id, type, attachment_type):
+    id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+    businees_object_type_str = 'busobid' if object_type_id else 'busobname'
+    object_type = object_type_id if object_type_id else object_type_name
+    url = BASE_URL + f'api/V1/getbusinessobjectattachments/' \
+        f'{businees_object_type_str}/{object_type}/' \
+        f'{id_type_str}/{object_id}' \
+        f'/type/{type}' \
+        f'/attachmenttype/{attachment_type}'
+    response = make_request('GET', url)
+    parsed_response = parse_response(response, f'Unable to get attachments for {object_type} {object_id}')
+    return parsed_response
+
+
+def get_attachments(id_type, object_id, business_object_type_name, business_object_type_id=None):
+    type = 'File'
+    attachment_type = 'Imported'
+    result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
+                                     attachment_type)
+    attachments_to_download = result.get('attachments')
+    if not attachments_to_download:
+        return
+    attachments_to_return = build_attachments(attachments_to_download)
+    return attachments_to_return
+
+
+def attachment_results(attachments):
+    for attachment in attachments:
+        attachment_content = attachment.get('Content')
+        attachment_name = attachment.get('FileName')
+        demisto.results(fileResult(attachment_name, attachment_content))
+    return
+
+
+def search_in_business_object():
+    args = demisto.args()
+    business_obj_name = args.get('business_obj_name')
+    business_obj_id = args.get('business_obj_id')
+    if business_obj_name or business_obj_id:
+        try:
+            bus_id = business_obj_id if business_obj_id else BUSINESS_OBJECT_IDS[business_obj_name.lower()]
+            bus_name = business_obj_name if business_obj_name else BUSINESS_OBJECT_IDS.keys()[
+                BUSINESS_OBJECT_IDS.values().index(bus_id)]
+            fields_list = HEADERS_IDS[bus_name]
+            payload = {
+                "busObId": bus_id,
+                "pageNumber": 0,
+                "pageSize": 300,
+                "searchText": args.get('search_text'),
+                "fields": fields_list
+            }
+        except KeyError:
+            return_error('Error: ID for {} not found'.format(args.get('business_obj_name')))
+    else:
+        return_error('Error: Please provide either a business object ID or Name')
+    return get_search_results(payload)
+
+
+def query_business_objects(bus_id, filter_query, max_results):
+    payload = {
+        'busObId': bus_id,
+        'pageSize': max_results,
+        'includeAllFields': True,
+        'filters': filter_query
+    }
+    return get_search_results(payload)
+
+
+def get_special_field_id(business_object_id, field_name):
+    template_dict = get_business_object_template(business_object_id, include_all=False, field_names=[field_name])
+    fields = template_dict.get('fields')
+    if not fields:
+        return_error(f'could not get field id. Field name: {field_name}, Business object id: {business_object_id}')
+    field = fields[0]
+    return field.get('fieldId')
+
+
+def get_business_objects_details(objects_names):
+    business_objects = []
+    for name in objects_names:
+        business_object_id = resolve_business_object_id_by_name(name)
+        created_time = get_special_field_id(business_object_id, 'CreatedDateTime')
+        business_object = {
+            'business_object_id': business_object_id,
+            'business_object_name': name,
+            'created_time_field_id': created_time
+        }
+        business_objects.append(business_object)
+    return business_objects
+
+
+def get_incidents_for_business_object(business_object, max_result, last_created_time):
+    business_object_id = business_object.get('business_object_id')
+    created_time_field_id = business_object.get('created_time_field_id')
+    query = [
+        {
+            "fieldId": created_time_field_id,
+            "operator": "gt",
+            "value": last_created_time
+        }
+    ]
+    query_result = query_business_objects(business_object_id, query, max_result)
+    incidents = parse_fields_from_business_object_list(query_result)
+    return incidents
+
+
+def get_all_incidents(business_objects_details, last_created_time, max_result):
+    all_incidents = []
+    for business_object in business_objects_details:
+        incidents = get_incidents_for_business_object(business_object, max_result, last_created_time)
+        all_incidents += incidents
+    sorted_incidents = sorted(all_incidents, key=lambda incident: incident.get('CreatedDateTime'))
+    return sorted_incidents[:max_result]
+
+
+def object_to_incident(obj):
+    attachments_list = []
+    attachments = obj.get('Attachments')
+    obj.pop('Attachments')
+    if attachments:
+        for attachment in attachments:
+            file_name = attachment.get('FileName')
+            attachment_file = fileResult(file_name, attachment.get('Content'))
+            attachments_list.append({
+                'path': attachment_file.get('FileID'),
+                'name': file_name
+            })
+    item = {
+        'name': f'Record ID:{obj.get("RecID")}',
+        'attachment': attachments_list,
+        'rawJSON': json.dumps(obj)
+    }
+
+    return createContext(item, removeNull=True)
+
+
+def save_incidents(objects_to_save):
+    final_incidents = []
+    for obj in objects_to_save:
+        final_incidents.append(object_to_incident(obj))
+    demisto.incidents(final_incidents)
+    return
+
+
+def fetch_incidents_attachments(incidents):
+    for incident in incidents:
+        rec_id = incident.get('RecID')
+        business_object_id = incident.get('BusinessObjectID')
+        incident['Attachments'] = []
+        attachments = get_attachments('record_id', rec_id, None, business_object_id)
+        if attachments:
+            for attachment in attachments:
+                new_attachment_obj = {
+                    'Content': attachment.get('Content'),
+                    'FileName': attachment.get('FileName')
+                }
+                incident['Attachments'].append(new_attachment_obj)
+    return incidents
+
+
+def fetch_incidents(objects_names, last_created_time, max_result, fetch_attachments=False):
+    business_objects_details = get_business_objects_details(objects_names)
+    incidents = get_all_incidents(business_objects_details, last_created_time, max_result)
+    if fetch_attachments:
+        incidents = fetch_incidents_attachments(incidents)
+    save_incidents(incidents)
+    return incidents
+
+
+def upload_business_object_attachment(file_name, file_size, file_content, object_type_name, id_type, object_id, ):
+    id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+    url = BASE_URL + f'/api/V1/uploadbusinessobjectattachment/' \
+        f'filename/{file_name}/busobname/{object_type_name}/{id_type_str}/{object_id}/offset/0/totalsize/{file_size}'
+    payload = file_content
+    headers = HEADERS
+    headers['Content-Type'] = "application/octet-stream"
+    response = make_request('POST', url, payload, headers)
+    parsed_response = parse_response(response, f'Could not upload attachment {file_name}')
+    return parsed_response
+
+
+def upload_attachment(id_type, object_id, type_name, file_entry_id):
+    file_data = demisto.getFilePath(file_entry_id)
+    file_path = file_data.get('path')
+    file_name = file_data.get('name')
+
+    try:
+        file_size = os.path.getsize(file_path)
+        with open(file_path) as f:
+            file_content = f.read()
+        attachment_id = upload_business_object_attachment(file_name, file_size, file_content, type_name, id_type,
+                                                          object_id)
+    except Exception as e:
+        return_error(f'unable to open file: {e}')
+    return attachment_id
+
+
+def link_related_business_objects(parent_business_object_id, parent_business_object_record_id, relationship_id,
+                                  business_object_id, business_object_record_id):
+    url = BASE_URL + f"api/V1/linkrelatedbusinessobject/parentbusobid/{parent_business_object_id}" \
+        f"/parentbusobrecid/{parent_business_object_record_id}" \
+        f"/relationshipid/{relationship_id}" \
+        f"/busobid/{business_object_id}" \
+        f"/busobrecid/{business_object_record_id}"
+    response = make_request("GET", url)
+    demisto.results(response)
+    relation_data = parse_response(response, "Could not link business objects")
+    return relation_data
+
+
+def link_business_objects(parent_type_name, parent_record_id, child_type_name, child_record_id, relationship_id):
+    parent_business_object_id = resolve_business_object_id_by_name(parent_type_name)
+    child_business_object_id = resolve_business_object_id_by_name(child_type_name)
+    relation_data = link_related_business_objects(parent_business_object_id, parent_record_id, relationship_id,
+                                                  child_business_object_id, child_record_id)
+    return relation_data
+
+
+########################################################################################################################
 
 
 def create_business_object_command():
@@ -487,8 +747,8 @@ def get_business_object_command():
     type_name = args.get('type')
     id_type = args.get('id_type')
     object_id = args.get('id_value')
-    results, incident = get_business_object(type_name, object_id, id_type)
-    md = tableToMarkdown('Incidents Number: {}'.format(object_id), incident, headers=INCIDENT_HEADERS_NAMES,
+    results, business_object = get_business_object(type_name, object_id, id_type)
+    md = tableToMarkdown('Incidents Number: {}'.format(object_id), business_object, headers=INCIDENT_HEADERS_NAMES,
                          removeNull=True, headerTransform=pascalToSpace)
 
     demisto.results({
@@ -497,7 +757,7 @@ def get_business_object_command():
         'Contents': results,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.Incidents(val.IncidentPublicID == obj.IncidentPublicID)': createContext(incident, removeNull=True)
+            'Cherwell.BusinessObjects(val.PublicID == obj.PublicID)': createContext(business_object, removeNull=True)
         }
     })
 
@@ -515,6 +775,71 @@ def delete_business_object_command():
         'ContentsFormat': formats['json'],
         'Contents': results,
         'HumanReadable': md
+    })
+
+
+def fetch_incidents_command():
+    last_run = demisto.getLastRun()
+    objects_names_to_fetch = OBJECTS_TO_FETCH
+    fetch_attachments = FETCH_ATTACHMENTS
+    max_result = int(MAX_RESULT) if MAX_RESULT else 30
+    fetch_time = FETCH_TIME if FETCH_TIME else '3 days'
+    if 'last_created_time' in last_run:
+        last_created_time = last_run.get('last_created_time')
+    else:
+        last_created_time, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT, to_timestamp=False)
+    incidents = fetch_incidents(objects_names_to_fetch, last_created_time, max_result, fetch_attachments)
+    if incidents:
+        last_incident_created_time = incidents[-1].get('CreatedDateTime')
+        next_created_time_to_fetch = \
+            (datetime.strptime(last_incident_created_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+        demisto.setLastRun({'last_created_time': next_created_time_to_fetch})
+    return
+
+
+def get_attachments_command():
+    args = demisto.args()
+    id_type = args.get('id_type')
+    object_id = args.get('id_value')
+    type_name = args.get('type')
+    attachments = get_attachments(id_type, object_id, type_name)
+    if not attachments:
+        return_error(f'No attachments were found for {type_name}:{object_id}')
+    attachment_results(attachments)
+    return
+
+
+def upload_attachment_command():
+    args = demisto.args()
+    id_type = args.get('id_type')
+    object_id = args.get('id_value')
+    type_name = args.get('type')
+    file_entry_id = args.get('file_entry_id')
+    attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
+    md = f'### Attachment was successfully attached to {type_name} {object_id}'
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': {'attachment_id': attachment_id},
+        'HumanReadable': md,
+    })
+
+
+def link_business_objects_command():
+    args = demisto.args()
+    parent_type = args.get('parent_type')
+    parent_record_id = args.get('parent_record_id')
+    child_type = args.get('child_type')
+    child_record_id = args.get('child_record_id')
+    relationship_id = args.get('relationship_id')
+    relationship_data = \
+        link_business_objects(parent_type, parent_record_id, child_type, child_record_id, relationship_id)
+    md = f'### {parent_type} {parent_record_id} and {child_type} {child_record_id} were linked'
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': relationship_data,
+        'HumanReadable': md,
     })
 
 
@@ -600,18 +925,6 @@ def delete_business_object_command():
 #     return response
 
 
-def link_related_business_objects(parent_business_object_id, parent_business_object_record_id, relationship_id,
-                                  business_object_id, business_object_record_id):
-    url = BASE_URL + f"api/V1/linkrelatedbusinessobject/parentbusobid/{parent_business_object_id}" \
-        f"/parentbusobrecid/{parent_business_object_record_id}" \
-        f"/relationshipid/{relationship_id}" \
-        f"/busobid/{business_object_id}" \
-        f"/busobrecid/{business_object_record_id}"
-    response = make_request("GET", url)
-    parse_response(response, "Could not link business objects")
-    return
-
-
 # def create_task_command():
 #     args = demisto.args()
 #     parent_business_object_record_id = args.get('incident_record_id')
@@ -680,30 +993,6 @@ def search_in_business_object_command():
     })
 
 
-def search_in_business_object():
-    args = demisto.args()
-    business_obj_name = args.get('business_obj_name')
-    business_obj_id = args.get('business_obj_id')
-    if business_obj_name or business_obj_id:
-        try:
-            bus_id = business_obj_id if business_obj_id else BUSINESS_OBJECT_IDS[business_obj_name.lower()]
-            bus_name = business_obj_name if business_obj_name else BUSINESS_OBJECT_IDS.keys()[
-                BUSINESS_OBJECT_IDS.values().index(bus_id)]
-            fields_list = HEADERS_IDS[bus_name]
-            payload = {
-                "busObId": bus_id,
-                "pageNumber": 0,
-                "pageSize": 300,
-                "searchText": args.get('search_text'),
-                "fields": fields_list
-            }
-        except KeyError:
-            return_error('Error: ID for {} not found'.format(args.get('business_obj_name')))
-    else:
-        return_error('Error: Please provide either a business object ID or Name')
-    return get_search_results(payload)
-
-
 #######################################################################################################################
 
 
@@ -717,6 +1006,10 @@ try:
     if demisto.command() == 'test-module':
         token = get_access_token(True)
         demisto.results('ok')
+
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents_command()
+
     elif demisto.command() == 'cherwell-create-business-object':
         create_business_object_command()
 
@@ -729,23 +1022,15 @@ try:
     elif demisto.command() == 'cherwell-delete-business-object':
         delete_business_object_command()
 
-    # elif demisto.command() == 'cherwell-list-incidents':
-    #     list_incidents()
-    #
-    # elif demisto.command() == 'cherwell-create-task':
-    #     create_task_command()
-    #
-    # elif demisto.command() == 'cherwell-update-incident-status':
-    #     update_incident_status()
-    #
-    # elif demisto.command() == 'cherwell-update-task':
-    #     update_task_command()
-    #
-    # elif demisto.command() == 'cherwell-search-in-business-object':
-    #     search_in_business_object_command()
-    #
-    # elif demisto.command() == 'cherwell-get-task':
-    #     get_task_command()
+    elif demisto.command() == 'cherwell-get-attachments':
+        get_attachments_command()
+
+    elif demisto.command() == 'cherwell-upload-attachment':
+        upload_attachment_command()
+
+    elif demisto.command() == 'cherwell-link-business-objects':
+        link_business_objects_command()
+
 
 # Log exceptions
 except Exception as e:
