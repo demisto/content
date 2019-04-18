@@ -28,6 +28,8 @@ script:
     var FILE_UPLOAD_URL = 'v1-2/analyze';
     var ANALYSIS_RESULT_URL = 'v1-2/analyses/';
     var SHA_256_REGEXP = new RegExp('[A-Fa-f0-9]{64}');
+    var SHA_1_REGEXP = new RegExp('[A-Fa-f0-9]{40}');
+    var MD_5_REGEXP = new RegExp('[A-Fa-f0-9]{32}');
     var SUCCESS_STATUS = 'succeeded';
     var ERROR_PREFIX = 'Error from Intezer: ';
 
@@ -249,8 +251,19 @@ script:
         case 'test-module':
             // send is available
             return sendRequest('GET', IS_AVAILABLE_URL).obj.is_available;
+
         case 'file':
-            return analyzeSHA256(args.file, args.codeItuemType, args.maxRetries, args.delay);
+            if ((args.sha256 && args.file) || (!args.sha256 && !args.file)) {
+                throw 'Specify only 1 of the arguments: file, sha256';
+            }
+            var inputs = args.sha256? args.sha256 : args.file;
+            entries = [];
+            for (i=0; i < inputs.length; i++) {
+                var response = analyzeSHA256(inputs[i], args.codeItuemType, args.maxRetries, args.delay);
+                entries.push(response);
+            }
+            return entries;
+
         case 'intezer-upload':
             return analyzeUploadedFile(args.fileEntryId, args.codeItemType, args.maxRetries, args.delay);
         default:
@@ -260,9 +273,12 @@ script:
   - name: file
     arguments:
     - name: file
-      required: true
       default: true
       description: Hash of the file to query. Supports SHA256
+      isArray: true
+    - name: sha256
+      description: SHA256 hash of the file to query
+      isArray: true
     - name: codeItemType
       auto: PREDEFINED
       predefined:
@@ -353,3 +369,6 @@ script:
         retuned only for supported files.
     description: Checks file reputation for uploaded file (up to 20MB)
   runonce: false
+tests:
+- Intezer Testing
+releaseNotes: Added sha256 argument option to !file command, regard non valid hash in the !file command as a warning
