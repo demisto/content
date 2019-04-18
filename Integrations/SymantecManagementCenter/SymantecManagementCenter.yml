@@ -642,17 +642,6 @@ script:
     description: Delete content from a policy in Symantec MC
     execution: false
     name: symantec-mc-delete-policy-content
-  - arguments:
-    - default: true
-      description: Policy UUID
-      isArray: false
-      name: uuid
-      required: true
-      secret: false
-    deprecated: false
-    description: Installs the specified policy on the set of targets associated with
-      the policy in Symantec MC
-    execution: true
   isfetch: false
   runonce: false
   script: '-'
