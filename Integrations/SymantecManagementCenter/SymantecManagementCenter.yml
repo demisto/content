@@ -1,4 +1,4 @@
-category: Endpoint
+category: Network Security
 commonfields:
   id: SymantecManagementCenter
   version: -1
@@ -35,8 +35,6 @@ script:
         desc"
       isArray: false
       name: description
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
