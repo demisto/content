@@ -814,7 +814,7 @@ script:
       predefined:
       - "0"
       - "1"
-      description: '0 (not encrypted) or 1 (Encrypted with password “virus”) '
+      description: '0 (not encrypted) or 1 (Encrypted with password "virus")'
       defaultValue: "0"
     - name: archive_name
       description: A name for the retrieved archive
@@ -916,7 +916,7 @@ script:
       description: Report file type e.g. "PE"
       type: string
     - contextPath: InfoFile.Size
-      description: 'Report file size '
+      description: Report file size
       type: number
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
@@ -1038,5 +1038,4 @@ script:
   runonce: false
 releaseNotes: "member to also add tasks to the generic detonation playbooks."
 tests:
-- detonate_file_-_generic_test
-- detonate_url_-_generic_test
+- No Test - beta integration
