@@ -1,0 +1,175 @@
+id: GoogleCloudCompute-Test
+version: -1
+name: GoogleCloudCompute-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 922e6871-1537-489c-807e-c70fa6da5cef
+    type: start
+    task:
+      id: 922e6871-1537-489c-807e-c70fa6da5cef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: e5bc3bb7-5e4f-4336-85e8-ba0ffbc3e51f
+    type: regular
+    task:
+      id: e5bc3bb7-5e4f-4336-85e8-ba0ffbc3e51f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a257482d-46e7-4842-8ff8-52a564408e76
+    type: regular
+    task:
+      id: a257482d-46e7-4842-8ff8-52a564408e76
+      version: -1
+      name: Get disk type
+      description: Returns the specified disk type. Gets a list of available disk
+        types by making a list() request.
+      script: Google Cloud Compute|||gcp-compute-get-disk-type
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+        - "3"
+    scriptarguments:
+      disktype:
+        simple: pd-ssd
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
+    type: regular
+    task:
+      id: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
+      version: -1
+      name: Get Image from family
+      description: Returns the latest image that is part of an image family and is
+        not deprecated.
+      script: Google Cloud Compute|||gcp-compute-get-image-from-family
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+        - "4"
+    scriptarguments:
+      family:
+        simple: debian-9
+      project:
+        simple: debian-cloud
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 996a128e-e4a3-4ca0-84af-5b73ba57a825
+    type: regular
+    task:
+      id: 996a128e-e4a3-4ca0-84af-5b73ba57a825
+      version: -1
+      name: Get network
+      description: Returns the specified network.
+      script: Google Cloud Compute|||gcp-compute-get-network
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    scriptarguments:
+      network:
+        simple: default
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 380,
+        "x": 760,
+        "y": 60
+      }
+    }
+  }
+inputs:
+  - key: zone
+    value:
+      simple: us-east1-b
+    required: false
+    description: ""
+outputs: []
