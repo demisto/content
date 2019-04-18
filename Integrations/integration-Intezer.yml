@@ -256,7 +256,7 @@ script:
             if ((args.sha256 && args.file) || (!args.sha256 && !args.file)) {
                 throw 'Specify only 1 of the arguments: file, sha256';
             }
-            var inputs = args.sha256? args.sha256 : args.file;
+            var inputs = args.sha256? argToList(args.sha256) : argToList(args.file);
             entries = [];
             for (i=0; i < inputs.length; i++) {
                 var response = analyzeSHA256(inputs[i], args.codeItuemType, args.maxRetries, args.delay);
