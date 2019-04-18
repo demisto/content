@@ -668,7 +668,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Intezer file hash reputation supports only sha256 hash
+              simple: Intezer file hash reputation does not support MD5 and SHA1 hashes.
     view: |-
       {
         "position": {

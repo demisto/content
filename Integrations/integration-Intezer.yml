@@ -127,7 +127,7 @@ script:
     var analyzeSHA256 = function(hash, codeItemType, maxRetries, delay) {
         // validate file is indeed sha256
         if (!SHA_256_REGEXP.test(hash)) {
-            var warning = ERROR_PREFIX + 'File hash is not valid sha256.\nIntezer file hash reputation supports only sha256 hash.\n\n';
+            var warning = 'Intezer file hash reputation does not support MD5 and SHA1 hashes.\n';
             return {
               Type: 11, // warning type
               Contents: warning,
@@ -150,13 +150,14 @@ script:
             ec[outputPaths.file] = file;
             ec.DBotScore = dBotScore;
 
-            return [{
+            return {
                 Type: entryTypes.note,
                 Contents: '',
                 ContentsFormat: formats.json,
                 HumanReadable: 'Hash ' + hash + ' does not exist on Intezer genome database',
+                ReadableContentsFormat: formats.markdown,
                 EntryContext: ec
-              }];
+              };
         } else if (res.statusCode === 201) {
             analysisId = res.obj.analysis_id;
         } else {
@@ -177,7 +178,7 @@ script:
     };
 
     var waitForResponse = function(analysisId, maxRetries, delay) {
-        var entries = [];
+        var entry;
         // perform wait loop
         res = getAnalysis(analysisId);
         var tries = 0;
@@ -234,17 +235,17 @@ script:
             }
             md += 'Verdict: **' + data.verdict + '** (' + data.sub_verdict + ')\n';
             md += '[' + 'Analysis Link' + '](' + data.analysis_url + ')\n';
-
             // set return entry with context
-            entries.push({
+            entry = {
               Type: entryTypes.note,
               Contents: res.body,
               ContentsFormat: formats.json,
               HumanReadable: md,
+              ReadableContentsFormat: formats.markdown,
               EntryContext: ec
-            });
+            };
         }
-        return entries;
+        return entry;
     };
 
     switch (command) {
@@ -257,10 +258,10 @@ script:
                 throw 'Specify only 1 of the arguments: file, sha256';
             }
             var inputs = args.sha256? argToList(args.sha256) : argToList(args.file);
-            entries = [];
+            var entries = [];
             for (i=0; i < inputs.length; i++) {
-                var response = analyzeSHA256(inputs[i], args.codeItuemType, args.maxRetries, args.delay);
-                entries.push(response);
+                var entry = analyzeSHA256(inputs[i], args.codeItuemType, args.maxRetries, args.delay);
+                entries.push(entry);
             }
             return entries;
 
