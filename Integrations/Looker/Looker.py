@@ -16,8 +16,8 @@ SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
-    else demisto.params()['url']
+SERVER = demisto.params()['url'][:-1] if (demisto.params()['url']
+                                          and demisto.params()['url'].endswith('/')) else demisto.params()['url']
 # Should we use SSL
 USE_SSL = not demisto.params().get('unsecure', False)
 # How many time before the first fetch to retrieve incidents
@@ -153,13 +153,13 @@ def run_look_command():
         if not isinstance(formatted_contents, list):
             formatted_contents = [formatted_contents]
         context = {
-            'Looker.look(val.ID && val.ID === obj.ID)': {
-                'ID': int(look_id),
+            'LookerResults(val.LookID && val.LookID === obj.LookID)': {
+                'LookID': int(look_id),
                 'Results': formatted_contents
             }
         }
 
-        full_path_header_content = full_path_headers(formatted_contents, 'Looker.Look.Results')
+        full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
 
         demisto.results({
             'Type': entryTypes['note'],

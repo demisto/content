@@ -73,10 +73,10 @@ script:
     execution: false
     name: looker-run-look
     outputs:
-    - contextPath: Looker.Look.ID
+    - contextPath: LookerResults.LookID
       description: Look ID
       type: Number
-    - contextPath: Looker.Look.Results
+    - contextPath: LookerResults.Results
       description: Look Results
       type: Unknown
   - arguments:
@@ -117,10 +117,10 @@ script:
       description: Look Name
       type: String
     - contextPath: Looker.Look.SpaceID
-      description: ID of the space that contains the looker
+      description: ID of the space that contains the Look
       type: Number
     - contextPath: Looker.Look.SpaceName
-      description: Name of the space that contains the looker
+      description: Name of the space that contains the Look
       type: String
     - contextPath: Looker.Look.LastUpdated
       description: The time that the look was last updated
