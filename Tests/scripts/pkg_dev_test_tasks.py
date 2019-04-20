@@ -51,7 +51,7 @@ def get_python_version(project_dir, docker_image):
                                       "python", "-c",
                                       "import sys;print('{}.{}'.format(sys.version_info[0], sys.version_info[1]))"],
                                      universal_newlines=True, stderr=stderr_out).strip()
-    print_v("detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
+    print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
     py_num = float(py_ver)
     if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
         raise ValueError("Python vesion for docker image: {} is not supported: {}. "
@@ -173,7 +173,8 @@ def run_mypy(project_dir, py_num):
 
 
 def main():
-    description = """Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run within the docker image of an integration/script.
+    description = """Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run within the docker image
+of an integration/script.
 Meant to be used with integrations/scripts that use the folder (package) structure.
 Will lookup up what docker image to use and will setup the dev dependencies and file in the target folder. """
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
