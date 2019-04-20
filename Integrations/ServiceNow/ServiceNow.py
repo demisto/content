@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import re
 import requests
 import json
+from datetime import datetime
 import shutil
 
 # disable insecure warnings
@@ -409,7 +410,7 @@ def get_ticket_command():
     else:
         ticket = res['result']
 
-    entries = []
+    entries = []  # type: List[Dict]
 
     if get_attachments.lower() != 'false':
         entries = get_ticket_attachment_entries(ticket['sys_id'])
@@ -492,7 +493,7 @@ def get_record_command():
 
 def get(table_name, record_id, number=None):
     path = None
-    query_params = {}
+    query_params = {}  # type: Dict
     if record_id:
         path = 'table/' + table_name + '/' + record_id
     elif number:
@@ -518,7 +519,7 @@ def get_ticket_attachments(ticket_id):
 
 def get_ticket_attachment_entries(ticket_id):
     entries = []
-    links = []
+    links = []  # type: List[Tuple[str, str]]
     attachments_res = get_ticket_attachments(ticket_id)
     if 'result' in attachments_res and len(attachments_res['result']) > 0:
         attachments = attachments_res['result']

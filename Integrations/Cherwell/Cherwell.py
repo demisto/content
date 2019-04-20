@@ -363,7 +363,7 @@ def get_key_value_dict_from_template(key, val, business_object_id):
 
 
 def get_all_incidents(objects_names, last_created_time, max_results, query_string):
-    all_incidents = []
+    all_incidents: list = []
     for business_object_name in objects_names:
         business_object_id = resolve_business_object_id_by_name(business_object_name)
         query_list = [['CreatedDateTime', 'gt', last_created_time]]
@@ -968,7 +968,7 @@ try:
 
 # Log exceptions
 except Exception as e:
-    message = f'Unexpected error: {e}, traceback: {traceback.print_exc()}'
+    message = f'Unexpected error: {e}, traceback: {traceback.format_exc()}'
     LOG(message)
     LOG(str(e))
     LOG.print_log()

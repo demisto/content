@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import Union, Optional
 
 
 ''' IMPORTS '''
@@ -37,7 +38,7 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
-def error_parser(error: requests.Response) -> str:
+def error_parser(resp_err: requests.Response) -> str:
     """
 
     Args:
@@ -48,7 +49,7 @@ def error_parser(error: requests.Response) -> str:
 
     """
     try:
-        response = error.json()
+        response = resp_err.json()
         error = response.get('error', {})
         err_str = f"{error.get('code')}: {error.get('message')}"
         if err_str:
@@ -56,7 +57,7 @@ def error_parser(error: requests.Response) -> str:
         # If no error message
         raise ValueError
     except ValueError:
-        return error.text
+        return resp_err.text
 
 
 def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
@@ -101,14 +102,15 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         return res.json()
     except ValueError:
         return_error('Could not decode response from API')
+        return {}  # return_error will exit
 
 
-def epoch_seconds(d: str = None) -> int:
+def epoch_seconds(d: datetime = None) -> int:
     """
     Return the number of seconds for given date. If no date, return current.
 
     Args:
-        d (str): timestamp
+        d (datetime): timestamp
     Returns:
          int: timestamp in epoch
     """
@@ -159,7 +161,7 @@ def get_token() -> str:
     return data.get('token')
 
 
-def assert_pages(pages: str or int) -> int:
+def assert_pages(pages: Union[str, int]) -> int:
     """
 
     Args:
@@ -176,7 +178,7 @@ def assert_pages(pages: str or int) -> int:
     return 1
 
 
-def build_folders_path(folder_string: str) -> str or None:
+def build_folders_path(folder_string: str) -> Optional[str]:
     """
 
     Args:
@@ -224,7 +226,7 @@ def pages_puller(response: dict, page_count: int) -> list:
     return responses
 
 
-def build_mail_object(raw_response: dict or list, user_id: str, get_body: bool = False) -> dict or list:
+def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: bool = False) -> Union[dict, list]:
     """Building mail entry context
     Getting a list from build_mail_object
 
@@ -272,7 +274,7 @@ def build_mail_object(raw_response: dict or list, user_id: str, get_body: bool =
 
         # Create contacts properties
         entry.update(
-            {k: build_contact(given_mail.get(v)) for k, v in contact_properties.items()}
+            {k: build_contact(given_mail.get(v)) for k, v in contact_properties.items()}  # type: ignore
         )
 
         if get_body:
@@ -280,7 +282,7 @@ def build_mail_object(raw_response: dict or list, user_id: str, get_body: bool =
         entry['UserID'] = user_id
         return entry
 
-    def build_contact(contacts: dict or list or str) -> object:
+    def build_contact(contacts: Union[dict, list, str]) -> object:
         """Building contact object
 
         Args:
@@ -330,10 +332,11 @@ def file_result_creator(raw_response: dict) -> dict:
     name = raw_response.get('name')
     data = raw_response.get('contentBytes')
     try:
-        data = base64.b64decode(data)
+        data = base64.b64decode(data)  # type: ignore
         return fileResult(name, data)
     except binascii.Error:
         return_error('Attachment could not be decoded')
+        return {}  # return_error will exit
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -357,7 +360,7 @@ def test_module():
         return_error(error_parser(response))
 
 
-def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> dict or list:
+def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
     """Returning all mails from given user
 
     Args:
@@ -410,7 +413,7 @@ def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> bool:
     Returns:
         bool
     """
-    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'  # type: ignore
     no_folder = f'/users/{user_id}/messages/{message_id}'
     suffix = with_folder if folder_id else no_folder
     http_request('DELETE', suffix)
@@ -454,7 +457,8 @@ def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id:
         dict:
     """
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
-    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/{attachment_id}'
+    with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                   f'messages/{message_id}/attachments/{attachment_id}')
     suffix = with_folder if folder_id else no_folder
     response = http_request('GET', suffix)
     return response
@@ -483,7 +487,8 @@ def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str
         dict: request json
     """
     no_folder = f'/users/{user_id}/messages/{message_id}/'
-    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/'
+    with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}'  # type: ignore
+                   f'/messages/{message_id}/')
 
     suffix = with_folder if folder_id else no_folder
     response = http_request('GET', suffix, odata=odata)
