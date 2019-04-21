@@ -3,7 +3,6 @@ version: -1
 name: Email Address Enrichment - Generic
 description: Get email address reputation using one or more integrations
 fromversion: 3.6.0
-toversion: 4.0.9
 starttaskid: "0"
 tasks:
   "0":
