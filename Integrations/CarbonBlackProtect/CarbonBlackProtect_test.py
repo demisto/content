@@ -1,3 +1,6 @@
+from CommonServerPython import *
+
+
 def test_remove_prefix():
     from CarbonBlackProtect import remove_prefix
     prefix = "test_prefix"
@@ -29,11 +32,11 @@ def test_cbp_date_to_timestamp():
     from CarbonBlackProtect import cbp_date_to_timestamp
 
     cbp_time_with_milis = '2019-04-19T15:20:42.000000Z'
-    expected_ts = 1555676442000
+    expected_ts = date_to_timestamp(cbp_time_with_milis, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
     assert cbp_date_to_timestamp(cbp_time_with_milis) == expected_ts
 
     cbp_time_without_milis = '2019-04-19T15:20:42Z'
-    expected_ts = 1555676442000
+    expected_ts = date_to_timestamp(cbp_time_without_milis, date_format='%Y-%m-%dT%H:%M:%SZ')
     assert cbp_date_to_timestamp(cbp_time_without_milis) == expected_ts
 
     try:
