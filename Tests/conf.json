@@ -324,8 +324,11 @@
           "playbookID": "devo_test_playbook"
         },
         {
-          "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
+          "playbookID": "url_enrichment_-_generic_test",
+          "integrations": [
+              "Rasterize",
+              "VirusTotal - Private API"
+          ],
             "timeout": 500
         },
         {

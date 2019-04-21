@@ -2,7 +2,6 @@ id: url_enrichment_-_generic
 version: -1
 name: URL Enrichment - Generic
 fromversion: 3.6.0
-toversion: 4.0.9
 description: |-
   Enrich URL using one or more integrations.
 

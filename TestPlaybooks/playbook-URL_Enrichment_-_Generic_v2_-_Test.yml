@@ -1,8 +1,8 @@
 id: url_enrichment_-_generic_test
 version: -1
 fromversion: 4.1.0
-name: URL Enrichment - Generic - Test
-description: A test for the URL Enrichment - Generic playbook.
+name: URL Enrichment - Generic v2 - Test
+description: A test for the URL Enrichment - Generic v2 playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -28,6 +28,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: b5a53d6c-00e9-4978-8ed8-d7a5d8053dd4
@@ -62,6 +63,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 0010d483-c357-4fda-87e5-ddcdd3fbf778
@@ -95,6 +97,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 480876c6-7f2b-4f3b-84e0-4857d0d83368
@@ -117,6 +120,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 962e4198-f41d-4436-8602-96de795a5183
@@ -124,7 +128,7 @@ tasks:
     task:
       id: 962e4198-f41d-4436-8602-96de795a5183
       version: -1
-      name: URL Enrichment - Generic
+      name: URL Enrichment - Generic v2
       description: |-
         Enrich URL using one or more integrations.
 
@@ -133,7 +137,7 @@ tasks:
         * Threat information
         * URL reputaiton
         * Take URL screenshot
-      playbookName: URL Enrichment - Generic
+      playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
@@ -165,6 +169,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: 1d0fd1cb-954a-444b-86c5-80660c0ed637
@@ -214,6 +219,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: d3d29b45-7064-4512-8ce0-20ccf3426bd0
@@ -244,6 +250,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: 10182857-c240-4ee1-8cfd-a458dd201571
@@ -282,6 +289,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

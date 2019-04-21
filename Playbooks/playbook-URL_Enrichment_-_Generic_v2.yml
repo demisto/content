@@ -1,7 +1,7 @@
 id: url_enrichment_-_generic
 version: -1
 fromversion: 4.1.0
-name: URL Enrichment - Generic
+name: URL Enrichment - Generic v2
 description: |-
   Enrich URLs using one or more integrations.
 
@@ -563,6 +563,6 @@ outputs:
 - contextPath: URL.Description
   description: additional info on the url
   type: string
-releaseNotes: "Multiple fixes and improvements to performance, indicator uniqueness and stability. Overall playbook simplification. Removed reputation commands from playbook."
+releaseNotes: "Added a new playbook for URL enrichment. The new playbook includes multiple fixes and improvements to performance, indicator uniqueness and stability. Overall playbook simplification. Removed reputation commands from playbook."
 tests:
   - url_enrichment_-_generic_test
