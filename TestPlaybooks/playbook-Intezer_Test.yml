@@ -661,7 +661,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               simple: checkNonSupportedHash
