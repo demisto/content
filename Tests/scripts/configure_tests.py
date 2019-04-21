@@ -164,7 +164,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
         if detected_usage and test_playbook_id not in test_ids:
             caught_missing_test = True
             print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
-                        "pleae update the conf.json file accordingly".format(test_playbook_name))
+                        "please update the conf.json file accordingly".format(test_playbook_name))
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
