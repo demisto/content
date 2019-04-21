@@ -252,4 +252,6 @@ except Exception as e:
     LOG(e)
     LOG(traceback.format_exc())
     LOG.print_log()
-    raise
+    if demisto.command() != 'test-module':
+        raise
+    demisto.results(e)
