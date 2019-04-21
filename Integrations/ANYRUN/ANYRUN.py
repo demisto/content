@@ -103,7 +103,7 @@ def make_capital(the_string):
 
 
 def make_singular(word):
-    """Relatively naive function to make a word singular - aka imperfect"""
+    """Relatively naive/imperfect function to make a word singular"""
     if not word or len(word) == 0:
         err_msg = '"make_singular" function requires a string '
         err_msg += 'argument whose length is greater than or equal to one.'
@@ -172,11 +172,12 @@ def argToBool(arg):
 
 
 def generate_dbotscore(response):
-    main_object = response.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
+    analysis = response.get('data', {}).get('analysis', {})
+    main_object = analysis.get('content', {}).get('mainObject', {})
     submission_type = main_object.get('type', None)
     submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
-    threat_text = main_object.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
-    if submission_type == 'file':
+    threat_text = analysis.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
+    if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
         indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5', None)))
     else:
@@ -251,9 +252,10 @@ def ec_entity(response):
     entity = None
     if submission_type == 'url':
         entity = ec_url(main_object)
+        entity['URL'] = add_malicious_key(entity.get('URL', {}), verdict)
     else:
         entity = ec_file(main_object)
-    entity = add_malicious_key(entity, verdict)
+        entity['File'] = add_malicious_key(entity.get('File', {}), verdict)
     return entity
 
 
