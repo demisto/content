@@ -1,40 +1,15 @@
-category: Authentication
+category: Database
 commonfields:
   id: GoogleBigQuery
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue:
-  display: Server URL (e.g. )
-  name: url
+- display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
+  name: google_service_creds
   required: true
-  type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  required: false
-  type: 0
-description: Integration Template
+  type: 9
+description: Integration for Google BigQuery, a data warehouse for querying and analyzing
+  large databases
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
 display: GoogleBigQuery
@@ -43,235 +18,166 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
+      description: A query string, following the BigQuery query syntax, of the query
+        to execute.
+      isArray: false
+      name: query
       required: true
+      secret: false
+    - default: false
+      description: The geographic location where the job should run. Required except
+        for US and EU.
+      isArray: false
+      name: location
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
+      description: Allow large query results tables (legacy SQL, only)
       isArray: false
-      name: is_active
+      name: allow_large_results
       predefined:
-      - 'true'
-      - 'false'
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
+      description: A stringof the fully-qualified dataset ID in standard SQL format.
+        The value must included a project ID and dataset ID separated by dots.
       isArray: false
-      name: limit
+      name: default_dataset
+      required: false
+      secret: false
+    - default: false
+      description: The table where results are written. Default value is None if not
+        set.
+      isArray: false
+      name: destination_table
+      required: false
+      secret: false
+    - default: false
+      description: Custom encryption configuration for the destination table.
+      isArray: false
+      name: kms_key_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set to true, BigQuery doesn't run the job. Instead, if the query
+        is valid, BigQuery returns statistics about the job such as how many bytes
+        would be processed. If the query is invalid, an error returns. The default
+        value is false.
+      isArray: false
+      name: dry_run
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Priority of the query. Possible values include INTERACTIVE and
+        BATCH. The default value is INTERACTIVE.
+      isArray: false
+      name: priority
+      predefined:
+      - BATCH
+      - INTERACTIVE
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: use_query_cache
       required: false
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Perform a query on BigQuery
     execution: false
-    name: example-get-items
-    outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+    name: bigquery-query
   isfetch: false
   runonce: false
-  script: |-
-    ''' IMPORTS '''
-
-    import json
-    import requests
-    from distutils.util import strtobool
-
-    # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    ''' GLOBALS/PARAMS '''
-
-    USERNAME = demisto.params().get('credentials').get('identifier')
-    PASSWORD = demisto.params().get('credentials').get('password')
-    TOKEN = demisto.params().get('token')
-    # Remove trailing slash to prevent wrong URL path to service
-    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
-    # Should we use SSL
-    USE_SSL = not demisto.params().get('unsecure', False)
-    # How many time before the first fetch to retrieve incidents
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-    # Service base URL
-    BASE_URL = SERVER + '/api/v2.0/'
-    # Headers to be sent in requests
-    HEADERS = {
-        'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-    # Remove proxy if not set to true in params
-    if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
-
-    ''' HELPER FUNCTIONS '''
-
-
-    def http_request(method, url_suffix, params=None, data=None):
-        # A wrapper for requests lib to send our requests and handle requests and responses better
-        res = requests.request(
-            method,
-            BASE_URL + url_suffix,
-            verify=USE_SSL,
-            params=params,
-            data=data,
-            headers=HEADERS
-        )
-        # Handle error responses gracefully
-        if res.status_code not in {200}:
-            return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
-
-        return res.json()
-
-
-    def item_to_incident(item):
-        incident = {}
-        # Incident Title
-        incident['name'] = 'Example Incident: ' + item.get('name')
-        # Incident occurrence time, usually item creation date in service
-        incident['occurred'] = item.get('createdDate')
-        # The raw response from the service, providing full info regarding the item
-        incident['rawJSON'] = json.dumps(item)
-        return incident
-
-
-    ''' COMMANDS + REQUESTS FUNCTIONS '''
-
-
-    def test_module():
-        """
-        Performs basic get request to get item samples
-        """
-        samples = http_request('GET', 'items/samples')
-
-
-    def get_items_command():
-        """
-        Gets details about a items using IDs or some other filters
-        """
-        # Init main vars
-        headers = []
-        contents = []
-        context = {}
-        context_entries = []
-        title = ''
-        # Get arguments from user
-        item_ids = argToList(demisto.args().get('item_ids', []))
-        is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
-        limit = int(demisto.args().get('limit', 10))
-        # Make request and get raw response
-        items = get_items_request(item_ids, is_active)
-        # Parse response into context & content entries
-        if items:
-            if limit:
-                items = items[:limit]
-            title = 'Example - Getting Items Details'
-
-            for item in items:
-                contents.append({
-                    'ID': item.get('id'),
-                    'Description': item.get('description'),
-                    'Name': item.get('name'),
-                    'Created Date': item.get('createdDate')
-                })
-                context_entries.append({
-                    'ID': item.get('id'),
-                    'Description': item.get('description'),
-                    'Name': item.get('name'),
-                    'CreatedDate': item.get('createdDate')
-                })
-
-            context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': contents,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-            'EntryContext': context
-        })
-
-
-    def get_items_request(item_ids, is_active):
-        # The service endpoint to request from
-        endpoint_url = 'items'
-        # Dictionary of params for the request
-        params = {
-            'ids': item_ids,
-            'isActive': is_active
-        }
-        # Send a request using our http_request wrapper
-        response = http_request('GET', endpoint_url, params)
-        # Check if response contains errors
-        if response.get('errors'):
-            return_error(response.get('errors'))
-        # Check if response contains any data to parse
-        if 'data' in response:
-            return response.get('data')
-        # If neither was found, return back empty results
-        return {}
-
-
-    def fetch_incidents():
-        last_run = demisto.getLastRun()
-        # Get the last fetch time, if exists
-        last_fetch = last_run.get('time')
-
-        # Handle first time fetch, fetch incidents retroactively
-        if last_fetch is None:
-            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-
-        incidents = []
-        items = get_items_request()
-        for item in items:
-            incident = item_to_incident(item)
-            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
-            # Update last run and add incident if the incident is newer than last fetch
-            if incident_date > last_fetch:
-                last_fetch = incident_date
-                incidents.append(incident)
-
-        demisto.setLastRun({'time' : last_fetch})
-        demisto.incidents(incidents)
-
-
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-    LOG('Command being called is %s' % (demisto.command()))
-
-    try:
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
-            demisto.results('ok')
-        elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            fetch_incidents()
-        elif demisto.command() == 'example-get-items':
-            # An example command
-            get_items_command()
-
-    # Log exceptions
-    except Exception, e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
+  script: "import demistomock as demisto\nfrom CommonServerPython import *\nfrom CommonServerUserPython\
+    \ import *\n''' IMPORTS '''\n\nimport json\nimport requests\nimport os\nfrom distutils.util\
+    \ import strtobool\nfrom google.cloud import bigquery\nfrom oauth2client import\
+    \ service_account\n\n# Disable insecure warnings\nrequests.packages.urllib3.disable_warnings()\n\
+    \n\n\n''' GLOBALS/PARAMS '''\n\nTEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013`\
+    \ '\n          'WHERE state = \"TX\" '                              \n       \
+    \   'LIMIT 100')\n\n\n''' HELPER FUNCTIONS '''\n\ndef represents_int(string_var):\n\
+    \    if '.' in string_var:\n        return False\n    if string_var[0] in ('-',\
+    \ '+'):\n        return string_var[1:].isdigit()\n    return string_var.isdigit()\n\
+    \ndef represents_bool(string_var):\n    return string_var.lower() == 'false' or\
+    \ string_var.lower() == 'true'\n\ndef str_to_bool(str_representing_bool):\n  \
+    \  return str_representing_bool.lower() == \"true\"\n\n\ndef start_and_return_bigquery_client(google_service_creds_json_string):\n\
+    \    cur_directory_path = os.getcwd() # maybe better to take the root directory\
+    \ using os.path.abspath(os.sep)? currently it's just the same as not specifying\
+    \ a path at all\n    creds_file_name = 'google_creds_file_json'\n    path_to_save_creds_file\
+    \ = os.path.join(cur_directory_path, creds_file_name)\n    creds_file = open(path_to_save_creds_file,\
+    \ \"w\")\n    creds_file.write(google_service_creds_json_string)\n    os.environ[\"\
+    GOOGLE_APPLICATION_CREDENTIALS\"] = path_to_save_creds_file\n    bigquery_client\
+    \ = bigquery.Client()\n    creds_file.close()\n    return bigquery_client\n\n\n\
+    def validate_args_for_query_job_config(allow_large_results, priority, use_query_cache,\
+    \ use_legacy_sql, dry_run):\n    if allow_large_results and not represents_bool(allow_large_results):\n\
+    \        return_error(\"Error: allow_large_results must have a boolean value.\"\
+    )\n    if use_query_cache and not represents_bool(use_query_cache):\n        return_error(\"\
+    Error: use_query_cache must have a boolean value.\")\n    if use_legacy_sql and\
+    \ not represents_bool(use_legacy_sql):\n        return_error(\"Error: use_legacy_sql\
+    \ must have a boolean value.\")\n    if dry_run and not represents_bool(dry_run):\n\
+    \        return_error(\"Error: dry_run must have a boolean value.\")\n    if priority\
+    \ and not (priority == 'INTERACTIVE' or priority == 'BATCH'):\n        return_error(\"\
+    Error: priority must have a value of INTERACTIVE or BATCH.\")\n\n\ndef build_clustering_fields_list(clustering_fields_in_string_format):\n\
+    \    clustering_fields_list = clustering_fields_in_string_format.split(',')\n\
+    \    for i in range(len(clustering_fields_list)):\n        clustering_fields_list[i]\
+    \ = clustering_fields_list[i].strip()\n    return clustering_fields_list\n\n\n\
+    def build_query_job_config(allow_large_results, default_dataset_string, destination_table,\
+    \ dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name):\n    validate_args_for_query_job_config(allow_large_results,\
+    \ priority, use_query_cache, use_legacy_sql, dry_run)  # send relevant params\n\
+    \    query_job_config = bigquery.QueryJobConfig()\n    if allow_large_results:\n\
+    \        query_job_config.allow_large_results = str_to_bool(allow_large_results)\n\
+    \    if default_dataset_string:\n        query_job_config.default_dataset = default_dataset_string\n\
+    \    if destination_table:\n        query_job_config.destination = destination_table\
+    \ # must be in the format your-project.your_dataset.your_table\n    if kms_key_name:\n\
+    \        query_job_config.destination_encryption_configuration = bigquery.table.EncryptionConfiguration(kms_key_name)\
+    \ # make sure this shouldn't be just kms_key_name\n    if dry_run:\n        query_job_config.dry_run\
+    \ = str_to_bool(dry_run)\n    if use_legacy_sql:\n        query_job_config.use_legacy_sql\
+    \ = str_to_bool(use_legacy_sql)\n    if use_query_cache:\n        query_job_config.use_query_cache\
+    \ = str_to_bool(use_query_cache)\n    if priority:\n        query_job_config.priority\
+    \ = priority\n\n    return query_job_config\n\n\n''' COMMANDS + REQUESTS FUNCTIONS\
+    \ '''\n\ndef query(query_string, project_id, location, allow_large_results, default_dataset,\
+    \ destination, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,\n\
+    \          google_service_creds, job_id):\n    bigquery_client = start_and_return_bigquery_client(google_service_creds)\n\
+    \    job_config = build_query_job_config(allow_large_results, default_dataset,\
+    \ destination, dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name)\n\
+    \    # not sure if query should be a keyword arg\n    query_job = bigquery_client.query(query\
+    \ = query_string, job_config = job_config, location = location, job_id = job_id,\
+    \ project = project_id)\n    query_results = query_job.results()\n    return query_results\n\
+    \n\ndef query_command():\n    args = demisto.args()\n    query_results = query(args['query'],\
+    \ args.get('project_id', None), args.get('location', None), args.get('allow_large_results',\
+    \ None),\n                          args.get('default_dataset', None), args.get('destination_table',\
+    \ None), args.get('kms_key_name', None), args.get('dry_run', None),\n        \
+    \                  args.get('priority', None), args.get('use_query_cache', None),\
+    \ args.get('use_legacy_sql', None),\n                          demisto.params()['google_service_creds'],\
+    \ args.get('job_id', None))\n\n    human_readable = 'No results found.'\n    context\
+    \ = {}\n    contents = []\n\n    rows_contexts = []\n\n    for row in query_results:\n\
+    \        row_context = {underscoreToCamelCase(k): v for k, v in row.items()}\n\
+    \        rows_contexts.append(row_context)\n\n    if rows_contexts:\n        contents\
+    \ = query_results\n        context['BigQuery(val.Query && val.Query == obj.Query)']\
+    \ = {\n            'Query': query,\n            'Row': rows_contexts\n       \
+    \ }\n\n        title = 'BigQuery Query Results'\n        human_readable = tableToMarkdown(title,\
+    \ contents, removeNull=True)\n\n    demisto.results({\n        'Type': entryTypes['note'],\n\
+    \        'ContentsFormat': formats['json'],\n        'Contents': contents,\n \
+    \       'ReadableContentsFormat': formats['markdown'],\n        'HumanReadable':\
+    \ human_readable,\n        'EntryContext': context\n    })\n\n\ndef test_module():\n\
+    \    \"\"\"\n    Performs basic get request to get item samples\n    \"\"\"\n\
+    \    try:\n        bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])\n\
+    \        query_job = bigquery_client.query(TEST_QUERY)\n        query_results\
+    \ = query_job.results()\n        results_rows_iterator = iter(query_results)\n\
+    \        first_item = next(results_rows_iterator)\n        if str(first_item.get(\"\
+    name\")) == \"Frances\":\n            raise ValueError(\"Data from DB not matching\
+    \ expected results\")\n        demisto.results(\"ok\")\n    except Exception as\
+    \ ex:\n        return_error(str(ex)) # not sure if should be ex.message\n\n\n\n\
+    \n''' COMMANDS MANAGER / SWITCH PANEL '''\n\nLOG('Command being called is %s'\
+    \ % (demisto.command()))\n\ntry:\n    if demisto.command() == 'test-module':\n\
+    \        test_module()\n    elif demisto.command() == 'bigquery-query':\n    \
+    \    query_command()\n\n\n# Log exceptions\nexcept Exception, e:\n    LOG(e.message)\n\
+    \    LOG.print_log()\n    raise"
   type: python
