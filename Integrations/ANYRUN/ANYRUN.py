@@ -133,31 +133,33 @@ def make_singular(word):
             return word[:-1]
 
 
-def recursive_format(obj, *formatting_functions):
-    """Recursively format keys of a dictionary using the functions passed as positional arguments"""
+def travel_object(obj, key_functions=[], val_functions=[]):
+    """Recursively apply functions to the keys and values of a dictionary"""
 
-    def format_dict(the_dict):
+    def operate_on_dict(the_dict):
         new_dict = {}
         for key, val in the_dict.items():
             new_key = key
-            for func in formatting_functions:
-                new_key = func(new_key)
+            for key_func in key_functions:
+                new_key = key_func(new_key)
             if isinstance(val, dict) or isinstance(val, list):
-                new_val = recursive_format(val, *formatting_functions)
+                new_val = travel_object(val, key_functions=key_functions, val_functions=val_functions)
             else:
                 new_val = val
+                for val_func in val_functions:
+                    new_val = val_func(val)
             new_dict[new_key] = new_val
         return new_dict
 
     if isinstance(obj, list):
         new_list = []
         for item in obj:
-            new_item = format_dict(item) if isinstance(item, dict) else item
+            new_item = operate_on_dict(item) if isinstance(item, dict) else item
             new_list.append(new_item)
         return new_list
     elif isinstance(obj, dict):
-        formatted_dict = format_dict(obj)
-        return formatted_dict
+        altered_dict = operate_on_dict(obj)
+        return altered_dict
     else:
         err_msg = 'Invalid type: the passed "obj" argument was not of type "dict" or "list".'
         raise TypeError(err_msg)
@@ -502,7 +504,7 @@ def get_history_command():
     contents = contents_from_history(filter, response)
 
     formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
-    formatted_contents = recursive_format(contents, *formatting_funcs)
+    formatted_contents = travel_object(contents, key_functions=formatting_funcs)
     if contents:
         entry_context = {
             'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
@@ -527,7 +529,7 @@ def get_report_command():
 
     contents = contents_from_report(response)
     formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
-    formatted_contents = recursive_format(contents, *formatting_funcs)
+    formatted_contents = travel_object(contents, key_functions=formatting_funcs)
 
     dbot_score = generate_dbotscore(response)
     entity = ec_entity(response)
