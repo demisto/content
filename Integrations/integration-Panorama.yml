@@ -2496,9 +2496,9 @@ script:
         edl_output = {'Name': edl_name}
         params = {
             'action': 'edit',
-            'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
             'type': 'config',
             'key': API_KEY,
+            'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
         }
 
         if element_to_change == 'url':
