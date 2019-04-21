@@ -246,7 +246,7 @@ def test_email_with_special_character(mocker):
                     'Type': entryTypes['note'],
                     'Contents': {
                         'path': 'test_data/email_with_special_char_bytes.eml',
-                        'name': 'itcrrbgu2.eml'
+                        'name': 'email_with_special_char_bytes.eml'
                     }
                 }
             ]

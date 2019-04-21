@@ -3195,7 +3195,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
     md += u"* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
-    md += u"\n\n" + tableToMarkdown("Headers", email_data['HeadersMap']).decode("utf-8")
+    md += u"\n\n" + tableToMarkdown("Headers", email_data['HeadersMap']).decode("utf-8", "ignore")
     return md
 
 
