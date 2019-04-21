@@ -14,7 +14,6 @@ tasks:
       id: 8f949fba-f0eb-4ae0-8037-23e82ed49f09
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -789,37 +788,29 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 21bad9c6-a45c-4fa9-86aa-462429a478be
+    taskid: f3af73c6-1ae8-432a-88cb-c7002eb012c9
     type: condition
     task:
-      id: 21bad9c6-a45c-4fa9-86aa-462429a478be
+      id: f3af73c6-1ae8-432a-88cb-c7002eb012c9
       version: -1
       name: Test enrichment of md5 does exist
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEqualString
           left:
             value:
               complex:
                 root: DBotScore
-                filters:
-                - - operator: hasLength
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "32"
+                accessor: Indicator
             iscontext: true
+          right:
+            value:
+              simple: 8cbf90aeab2c93b2819fcfd6262b2cdb
     view: |-
       {
         "position": {
@@ -832,10 +823,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: c742d527-d1e5-4321-8b8d-a7b2d3a141dd
+    taskid: 85ff3918-cabb-41fe-8a9c-c32e8428e004
     type: condition
     task:
-      id: c742d527-d1e5-4321-8b8d-a7b2d3a141dd
+      id: 85ff3918-cabb-41fe-8a9c-c32e8428e004
       version: -1
       name: Test enrichment of sha1 does not exist
       type: condition
@@ -854,14 +845,22 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: hasLength
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
                       iscontext: true
                     right:
                       value:
-                        simple: "40"
+                        simple: 74eb807ea392650562b43a0e326e5d14b86f43ce
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire
             iscontext: true
     view: |-
       {

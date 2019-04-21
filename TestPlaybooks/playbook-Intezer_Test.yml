@@ -770,10 +770,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: a3bbfe97-ac04-4734-8785-7d38bd3fdfe1
+    taskid: 6d542379-0cd3-4394-8fb7-19381788faf8
     type: condition
     task:
-      id: a3bbfe97-ac04-4734-8785-7d38bd3fdfe1
+      id: 6d542379-0cd3-4394-8fb7-19381788faf8
       version: -1
       name: Test enrichment with sha256 exist
       type: condition
@@ -792,15 +792,22 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: hasLength
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
                       iscontext: true
                     right:
                       value:
-                        simple: "64"
-                accessor: Indicator
+                        simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Intezer
             iscontext: true
     view: |-
       {
@@ -814,10 +821,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 4fbde03a-0daf-4c01-8056-b611f8f78f74
+    taskid: 5a71dfad-5013-43d8-81c3-2162b9e504ff
     type: condition
     task:
-      id: 4fbde03a-0daf-4c01-8056-b611f8f78f74
+      id: 5a71dfad-5013-43d8-81c3-2162b9e504ff
       version: -1
       name: Test enrichment of md5 does not exist
       type: condition
@@ -836,15 +843,22 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: hasLength
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
                       iscontext: true
                     right:
                       value:
-                        simple: "32"
-                accessor: Indicator
+                        simple: 8cbf90aeab2c93b2819fcfd6262b2cdb
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Intezer
             iscontext: true
     view: |-
       {
