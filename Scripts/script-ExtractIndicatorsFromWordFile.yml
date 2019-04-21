@@ -33,7 +33,11 @@ script: |-
           else:  # Got file path:
               self.file_path = file_res.get('Contents').get('path')
               self.file_name = file_res.get('Contents').get('name')
-              self.file_type = demisto.dt(demisto.context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))[0].get("Type")
+              file = demisto.dt(demisto.context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
+              if isinstance(file, list):
+                file = file[0]
+
+              self.file_type = file.get("Type")
 
       def convert_doc_to_docx(self):
           conversion_res = subprocess.check_output(['soffice', '--headless', '--convert-to', 'docx', self.file_path])  # Requires office-utils docker image
@@ -145,3 +149,4 @@ dockerimage: demisto/office-utils:1.0.0.91
 runas: DBotWeakRole
 tests:
   - Extract Indicators From File - test
+releaseNotes: "The automation executes as expected when the entry is a single object."
