@@ -236,7 +236,7 @@ inputs:
 - key: AdditionalPollingCommandArgNames
   value: {}
   required: false
-  description: Commas separated arguments of the polling command
+  description: Names of additional arguments for the polling command (e.g. arg1,arg2,...)
 - key: AdditionalPollingCommandArgValues
   value: {}
   required: false
