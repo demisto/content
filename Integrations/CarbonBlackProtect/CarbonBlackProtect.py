@@ -14,8 +14,8 @@ requests.packages.urllib3.disable_warnings()
 TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = "{server}{api_endpoint}".format(
-    server=demisto.params()['url'][:-1] if (demisto.params()['url']
-                                            and demisto.params()['url'].endswith('/')) else demisto.params()['url'],
+    server=demisto.params()['url'][:-1] if (demisto.params().get('url')
+                                            and demisto.params()['url'].endswith('/')) else demisto.params().get('url'),
     api_endpoint='/api/bit9platform/v1')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
@@ -33,10 +33,10 @@ HEADERS = {
 }
 # Remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+    os.environ.pop('HTTP_PROXY', None)
+    os.environ.pop('HTTPS_PROXY', None)
+    os.environ.pop('http_proxy', None)
+    os.environ.pop('https_proxy', None)
 
 
 ''' OUTPUT KEY DICTIONARY '''
@@ -404,7 +404,8 @@ def event_severity_to_dbot_score(severity):
         :return: DBot score representation of the severity
         :rtype ``int``
     """
-    if severity == '2':
+    severity = int(severity)
+    if severity == 2:
         return 3
     elif severity in (4, 5):
         return 2
@@ -1039,67 +1040,73 @@ def fetch_incidents():
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-LOG('Command being called is {}'.format(demisto.command()))
+def main():
+    LOG('Command being called is {}'.format(demisto.command()))
 
-# should raise error in case of issue
-if demisto.command() == 'fetch-incidents':
-    demisto.incidents(fetch_incidents())
+    # should raise error in case of issue
+    if demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
 
-try:
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'cbp-fileCatalog-search':
-        search_file_catalog_command()
-    elif demisto.command() == 'cbp-computer-search':
-        search_computer_command()
-    elif demisto.command() == 'cbp-computer-update':
-        update_computer_command()
-    elif demisto.command() == 'cbp-fileInstance-search':
-        search_file_instance_command()
-    elif demisto.command() == 'cbp-event-search':
-        search_event_command()
-    elif demisto.command() == 'cbp-approvalRequest-search':
-        search_approval_request_command()
-    elif demisto.command() == 'cbp-fileRule-search':
-        search_file_rule_command()
-    elif demisto.command() == 'cbp-fileRule-get':
-        get_file_rule_command()
-    elif demisto.command() == 'cbp-fileRule-delete':
-        delete_file_rule_command()
-    elif demisto.command() == 'cbp-fileRule-update':
-        update_file_rule_command()
-    elif demisto.command() == 'cbp-policy-search':
-        search_policy_command()
-    elif demisto.command() == 'cbp-serverConfig-search':
-        search_server_config_command()
-    elif demisto.command() == 'cbp-publisher-search':
-        search_publisher_command()
-    elif demisto.command() == 'cbp-fileAnalysis-search':
-        search_file_analysis_command()
-    elif demisto.command() == 'cbp-fileAnalysis-get':
-        get_file_analysis_command()
-    elif demisto.command() == 'cbp-fileAnalysis-createOrUpdate':
-        update_file_analysis_command()
-    elif demisto.command() == 'cbp-fileUpload-createOrUpdate':
-        update_file_upload_command()
-    elif demisto.command() == 'cbp-fileUpload-download':
-        download_file_upload_command()
-    elif demisto.command() == 'cbp-fileUpload-search':
-        search_file_upload_command()
-    elif demisto.command() == 'cbp-fileUpload-get':
-        get_file_upload_command()
-    elif demisto.command() == 'cbp-computer-get':
-        get_computer_command()
-    elif demisto.command() == 'cbp-connector-get':
-        get_connector_command()
-    elif demisto.command() == 'cbp-connector-search':
-        search_connector_command()
-    elif demisto.command() == 'cbp-approvalRequest-resolve':
-        resolve_approval_request_command()
-    else:
-        return_error("Command {} is not supported.".format(demisto.command()))
-# Log exceptions
-except Exception as e:
-    return_error(str(e))
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'cbp-fileCatalog-search':
+            search_file_catalog_command()
+        elif demisto.command() == 'cbp-computer-search':
+            search_computer_command()
+        elif demisto.command() == 'cbp-computer-update':
+            update_computer_command()
+        elif demisto.command() == 'cbp-fileInstance-search':
+            search_file_instance_command()
+        elif demisto.command() == 'cbp-event-search':
+            search_event_command()
+        elif demisto.command() == 'cbp-approvalRequest-search':
+            search_approval_request_command()
+        elif demisto.command() == 'cbp-fileRule-search':
+            search_file_rule_command()
+        elif demisto.command() == 'cbp-fileRule-get':
+            get_file_rule_command()
+        elif demisto.command() == 'cbp-fileRule-delete':
+            delete_file_rule_command()
+        elif demisto.command() == 'cbp-fileRule-update':
+            update_file_rule_command()
+        elif demisto.command() == 'cbp-policy-search':
+            search_policy_command()
+        elif demisto.command() == 'cbp-serverConfig-search':
+            search_server_config_command()
+        elif demisto.command() == 'cbp-publisher-search':
+            search_publisher_command()
+        elif demisto.command() == 'cbp-fileAnalysis-search':
+            search_file_analysis_command()
+        elif demisto.command() == 'cbp-fileAnalysis-get':
+            get_file_analysis_command()
+        elif demisto.command() == 'cbp-fileAnalysis-createOrUpdate':
+            update_file_analysis_command()
+        elif demisto.command() == 'cbp-fileUpload-createOrUpdate':
+            update_file_upload_command()
+        elif demisto.command() == 'cbp-fileUpload-download':
+            download_file_upload_command()
+        elif demisto.command() == 'cbp-fileUpload-search':
+            search_file_upload_command()
+        elif demisto.command() == 'cbp-fileUpload-get':
+            get_file_upload_command()
+        elif demisto.command() == 'cbp-computer-get':
+            get_computer_command()
+        elif demisto.command() == 'cbp-connector-get':
+            get_connector_command()
+        elif demisto.command() == 'cbp-connector-search':
+            search_connector_command()
+        elif demisto.command() == 'cbp-approvalRequest-resolve':
+            resolve_approval_request_command()
+        else:
+            return_error("Command {} is not supported.".format(demisto.command()))
+    # Log exceptions
+    except Exception as e:
+        return_error(str(e))
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
