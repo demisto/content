@@ -1148,6 +1148,9 @@
             "playbookID": "MySQL Test"
         },
         {
+            "playbookID": "Email Address Enrichment - Generic v2 - Test"
+        },
+        {
             "integrations": "Phishme Intelligence",
             "playbookID": "Test - PhishMe Intelligence",
             "timeout": 500
