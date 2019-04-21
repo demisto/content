@@ -66,6 +66,7 @@ VERDICTS_TO_DBOTSCORE = {
 
 ''' HELPER FUNCTIONS '''
 
+
 def http_request(uri, method, headers={}, body={}, params={}, files={}):
     """
     Makes an API call with the supplied uri, method, headers, body
@@ -84,25 +85,26 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
-            return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + ERROR_DICT[result.status_code])
+            return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + ERROR_DICT[
+                result.status_code])
         else:
             return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
 
     return result.content
 
 
-def prettify_upload(body):
+def prettify_upload(upload_body):
     pretty_upload = {
-        'MD5': body.md5,
-        'SHA256': body.sha256,
+        'MD5': upload_body["md5"],
+        'SHA256': upload_body["sha256"],
         'Status': 'Pending'
     }
-    if 'filetype' in body:
-        pretty_upload["FileType"] = body["filetype"]
-    if 'size' in body:
-        pretty_upload["Size"] = body["size"]
-    if 'url' in body:
-        pretty_upload["URL"] = body["url"]
+    if 'filetype' in upload_body:
+        pretty_upload["FileType"] = upload_body["filetype"]
+    if 'size' in upload_body:
+        pretty_upload["Size"] = upload_body["size"]
+    if 'url' in upload_body:
+        pretty_upload["URL"] = upload_body["url"]
 
     return pretty_upload
 
@@ -110,9 +112,9 @@ def prettify_upload(body):
 def prettify_verdict(verdict_data):
     pretty_verdict = {}
 
-    if ('md5' in verdict_data):
+    if 'md5' in verdict_data:
         pretty_verdict["MD5"] = verdict_data["md5"]
-    if ('sha256' in verdict_data):
+    if 'sha256' in verdict_data:
         pretty_verdict["SHA256"] = verdict_data["sha256"]
 
     pretty_verdict["Verdict"] = verdict_data["verdict"]
@@ -138,15 +140,15 @@ def create_dbot_score_from_verdict(pretty_verdict):
 def prettify_verdicts(verdicts_data):
     pretty_verdicts_arr = []
 
-    for i in range(len(verdicts_data)):
+    for verdict_data in verdicts_data:
         pretty_verdict = {}
-        if verdicts_data[i]["md5"]:
-            pretty_verdict["MD5"] = verdicts_data[i]["md5"]
-        if verdicts_data[i]["sha256"]:
-            pretty_verdict["SHA256"] = verdicts_data[i]["sha256"]
+        if verdict_data["md5"]:
+            pretty_verdict["MD5"] = verdict_data["md5"]
+        if verdict_data["sha256"]:
+            pretty_verdict["SHA256"] = verdict_data["sha256"]
 
-        pretty_verdict["Verdict"] = verdicts_data[i]["verdict"]
-        pretty_verdict["VerdictDescription"] = VERDICTS_DICT[verdicts_data[i]["verdict"]];
+        pretty_verdict["Verdict"] = verdict_data["verdict"]
+        pretty_verdict["VerdictDescription"] = VERDICTS_DICT[verdict_data["verdict"]]
 
         pretty_verdicts_arr.append(pretty_verdict)
 
@@ -156,85 +158,83 @@ def prettify_verdicts(verdicts_data):
 def create_dbot_score_from_verdicts(pretty_verdicts):
     dbot_score_arr = []
 
-    for i in range(len(pretty_verdicts)):
+    for pretty_verdict in pretty_verdicts:
 
-        if 'SHA256' not in pretty_verdicts[i] and 'MD5' not in pretty_verdicts[i]:
+        if 'SHA256' not in pretty_verdict and 'MD5' not in pretty_verdict:
             return_error('Hash is missing in WildFire verdict.')
-        if pretty_verdicts[i]["Verdict"] not in VERDICTS_TO_DBOTSCORE:
-            return_error('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
+        if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
+            return_error(
+                'This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
 
         dbot_score = {
-            'Indicator': pretty_verdicts[i]["SHA256"] if "SHA256" in pretty_verdicts[i] else prettyVerdicts[i]["MD5"],
+            'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'hash',
             'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdicts[i]["Verdict"]]
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
         }
         dbot_score_arr.append(dbot_score)
 
     return dbot_score_arr
 
 
-def create_upload_entry(body, title, result):
-    md = tableToMarkdown(title, body)
+def create_upload_entry(upload_body, title, result):
+    md = tableToMarkdown(title, upload_body)
     return {
-        'Type': entryTypes.note,
+        'Type': entryTypes['note'],
         'Contents': result,
-        'ContentsFormat': formats.json,
+        'ContentsFormat': formats['json'],
         'HumanReadable': md,
-        'ReadableContentsFormat': formats.markdown,
+        'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {
-            "WildFire.Report(val.SHA256 === obj.SHA256 || val.MD5 === obj.MD5)": prettifyUploadBody(body)
+            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": prettify_upload(upload_body)
         }
     }
 
 
-def create_entry(body, title, result, verbose, report, ec):
+def create_entry(body, title, result, verbose, reports, ec):
     md = tableToMarkdown(title, body, body.keys())
 
     if verbose:
-        for i in range(len(report)):
-            md += tableToMarkdown('Report ' + i, report[i], (report[i].keys()))
+        for report in reports:
+            md += tableToMarkdown('Report ', report, report.keys())
 
     return {
-        'Type': entryTypes.note,
+        'Type': entryTypes['note'],
         'Contents': result,
-        'ContentsFormat': formats.json,
+        'ContentsFormat': formats['json'],
         'HumanReadable': md,
-        'ReadableContentsFormat': formats.markdown,
+        'ReadableContentsFormat': formats['markdown'],
         'EntryContext': ec
     }
 
 
 def hash_args_handler(md5, hash, file):
     if file:
-        if ( MD5_REGEX.test(file) | | SHA256_REGEX.test(file)){
+        if MD5_REGEX.test(file) SHA256_REGEX.test(file:
             return [file];
         else:
-            return_error('Invalid hash. Only SHA256 and MD5 are supported.')
+        return_error('Invalid hash. Only SHA256 and MD5 are supported.')
 
     else:
         inputs = md5? argToList(md5): argToList(hash);
-    for (i = 0; i < inputs.length; i++)
-    {
-    if (SHA256_REGEX.test(inputs[i]) | | MD5_REGEX.test(inputs[i])) {
-    continue;
-    } else {
-    throw
-    'Invalid hash. Only SHA256 and MD5 are supported.';
-    }
-    }
+        for (i = 0; i < inputs.length; i++):
+            if (SHA256_REGEX.test(inputs[i]) | | MD5_REGEX.test(inputs[i]))
+                continue;
+            else:
+                return_error('Invalid hash. Only SHA256 and MD5 are supported.')
+
     return inputs;
 
+''' COMMANDS '''
 
-// COMMANDS //
-   function
+function
 uploadFile(upload)
 {
     uri = URL + URL_DICT.upload;
 var
 body = {
-'apikey': TOKEN,
-'file': upload
+    'apikey': TOKEN,
+    'file': upload
 };
 var
 result = sendMultipartRequest(uri, DEFAULT_HEADERS, upload, body);
@@ -242,8 +242,8 @@ var
 uploadData = dq(result, 'wildfire.upload-file-info');
 var
 returnObj = {
-res: result,
-data: uploadData
+    res: result,
+    data: uploadData
 };
 return returnObj;
 }
