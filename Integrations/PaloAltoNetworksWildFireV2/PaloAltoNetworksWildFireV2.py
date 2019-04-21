@@ -190,7 +190,7 @@ def create_upload_entry(upload_body, title, result):
     }
 
 
-def create_entry(body, title, result, verbose, reports, ec):
+def create_report_entry(body, title, result, verbose, reports, ec):
     md = tableToMarkdown(title, body, body.keys())
 
     if verbose:
@@ -241,25 +241,6 @@ def file_args_handler(file = None, sha256 = None, md5 = None):
 
     else:
         return_error('Specify exactly 1 of the following arguments: file, sha256, md5.')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ''' COMMANDS '''
@@ -409,27 +390,6 @@ def wildfire_get_verdicts_command():
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': ec
         })
-
-
-def get_report(hash, format):
-    get_report_uri = URL + URL_DICT["report"]
-    body_xml = 'apikey=' + TOKEN + '&format=' + format + '&hash=' + hash
-
-    res_xml = http_request(get_report_uri, body_xml, DEFAULT_HEADERS)
-
-    if not res_xml:
-        return 'Report not found'
-    res_xml_body = res_xml["body"]
-    if not res_xml_body:
-        return 'No results yet'
-
-    jres = json.loads(res_xml_body)
-    report = result["wildfire"]["task_info.report"]
-    file_info = result["wildfire"]["file_info"]
-    if not report or not file_info:
-        return 'No results yet'
-
-    return hash, result, report, file_info
 
 
 def create_report(report_response, format, verbose):
@@ -583,21 +543,42 @@ def create_report(report_response, format, verbose):
     };
     }
     else {
-    return createEntry(file_info, 'WildFire Report', result, verbose, report, context);
+    create_report_entry(file_info, 'WildFire Report', result, verbose, report, context)
+
+
+@logger
+def wildfire_get_report(hash):
+    get_report_uri = URL + URL_DICT["report"]
+    body_xml = 'apikey=' + TOKEN + '&format=xml&hash=' + hash
+
+    res_xml = http_request(get_report_uri, body_xml, DEFAULT_HEADERS)
+
+    if not res_xml:
+        'Report not found'
+    res_xml_body = res_xml["body"]
+    else if not res_xml_body:
+        return 'No results yet'
+
+    jres = json.loads(res_xml_body)
+    report = jres["wildfire"]["task_info.report"]
+    file_info = jres["wildfire"]["file_info"]
+    if not report or not file_info:
+        return 'No results yet'
+
+    return hash, jres, report, file_info
 
 
 def wildfire_get_report_command():
-    inputs = hash_args_handler()
-            # inputs = hashArgsHandler(args.md5, args.hash, args.file);
-            # entries = [];
-            # for (i=0; i < inputs.length; i++) {
-            #     var reportResponse = getReport(inputs[i]);
-            # if (reportResponse.error){
-            # return reportResponse.error;
-            # }
-            # entries.push(createReport(reportResponse, args.format, args.verbose));
-            # }
-            # return entries;
+    if 'sha256' or 'hash' in demisto.args():
+        sha256 = demisto.args(["sha256"]) if 'sha256' in demisto.args() else demisto.args(["hash"])
+    else:
+        sha256 = None
+    md5 = demisto.args(["md5"]) if "md5" in demisto.args(["md5"]) else None
+    inputs = hash_args_handler(sha256, md5)
+    for input in inputs:
+        hash, jres, report, file_info = wildfire_get_report(input)
+        create_report(hash, jres, report, file_info)
+
 
 ''' EXECUTION '''
 LOG('command is %s' % (demisto.command(),))
