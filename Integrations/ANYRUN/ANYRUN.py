@@ -33,11 +33,6 @@ ALWAYS_UPPER_CASE = {
     'md5', 'sha1', 'sha-1', 'sha256', 'sha-256', 'sha512', 'sha-512', 'ssdeep',
     'pcap', 'ip', 'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
 }
-# image -> Path, commandLine -> CMD
-DESIRED_PROC_FIELDS = {
-    'pid', 'ppid', 'uuid', 'image', 'commandLine', 'fileName',
-    'fileType', 'mainProcess', 'versionInfo', 'context', 'scores'
-}
 THREAT_TEXT_TO_DBOTSCORE = {
     'no threat detected': 1,
     'suspicious activity': 2,
@@ -300,8 +295,8 @@ def contents_from_report(response):
     # Retrieve network details
     network = data.get('network', {})
     threats = network.get('threats', [])
-    connections = network.get('connections' [])
-    http_requests = network.get('httpRequests', [])
+    connections = network.get('connections', [])
+    http_reqs = network.get('httpRequests', [])
     dns_requests = network.get('dnsRequests', [])
 
     reformatted_threats = []
@@ -331,11 +326,34 @@ def contents_from_report(response):
         reformatted_connections.append(reformatted_connection)
     network['connections'] = reformatted_connections
 
-    # for threat in threats:
-    #     for field in {'time', 'pro', 'priority'}:
-    #         threat.pop(field, None)
-    # network['threats'] = threats
-    # network = {key: val for key, val in network.items() if val}
+    reformatted_http_reqs = []
+    for http_req in http_reqs:
+        reformatted_http_req = {
+            'Reputation': http_req.get('reputation', None),
+            'Country': http_req.get('country', None),
+            'ProcessUUID': http_req.get('process', None),
+            'Body': http_req.get('body', None),
+            'HttpCode': http_req.get('httpCode', None),
+            'Status': http_req.get('status', None),
+            'ProxyDetected': http_req.get('proxyDetected', None),
+            'Port': http_req.get('port', None),
+            'IP': http_req.get('ip', None),
+            'URL': http_req.get('url', None),
+            'Host': http_req.get('host', None),
+            'Method': http_req.get('method', None)
+        }
+        reformatted_http_reqs.append(reformatted_http_req)
+    network['httpRequests'] = reformatted_http_reqs
+
+    reformatted_dns_requests = []
+    for dns_request in dns_requests:
+        reformatted_dns_request = {
+            'Reputation': dns_request.get('reputation', None),
+            'IP': dns_request.get('ips', None),
+            'Domain': dns_request.get('domain', None)
+        }
+        reformatted_dns_requests.append(reformatted_dns_request)
+    network['dnsRequests'] = reformatted_dns_requests
 
     # Retrieve process details
     reformatted_processes = []
@@ -388,16 +406,6 @@ def contents_from_report(response):
 
 def humanreadable_from_report_contents(contents):
     """ Make the selected contents pulled from a report suitable for war room output """
-    # incidents = contents.get('Behavior', [])
-    # processes_behaviors = {}
-    # for incident in incidents:
-    #     process_uuid = incident.get('ProcessUUID', '')
-    #     category = incident.get('Category', '')
-    #     action = incident.get('Action', '')
-    #     threat_level = incident.get('ThreatLevel', 0)
-    #     info = category + ': ' + action + ' -- ThreatLevel: ' + str(threat_level)
-    #     process = processes_behaviors.setdefault(process_uuid, [])
-    #     process.append(info)
     def dict_to_string(nested_dict):
         return json.dumps(nested_dict).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
 
@@ -416,8 +424,6 @@ def humanreadable_from_report_contents(contents):
         else:
             humanreadable_contents[key] = val
     return humanreadable_contents
-
-
 
 
 def contents_from_history(filter, response):
