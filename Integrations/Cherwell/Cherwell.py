@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
+FETCHES_INCIDENTS = PARAMS.get('isFetch')
 FETCH_TIME = PARAMS.get('fetch_time')
 FETCH_ATTACHMENTS = PARAMS.get('fetch_attachments')
 OBJECTS_TO_FETCH = PARAMS.get('objects_to_fetch').split(',')
@@ -242,7 +243,7 @@ def parse_response(response, error_operation):
         except Exception:
             err_msg = response.content.decode('utf-8')
         return_error(error_operation + ": " + err_msg)
-    except Exception as error:
+    except Exception:
         try:
             return response.content  # check if needed
         except Exception as error:
@@ -525,28 +526,29 @@ def attachment_results(attachments):
     return
 
 
-def search_in_business_object():
-    args = demisto.args()
-    business_obj_name = args.get('business_obj_name')
-    business_obj_id = args.get('business_obj_id')
-    if business_obj_name or business_obj_id:
-        try:
-            bus_id = business_obj_id if business_obj_id else BUSINESS_OBJECT_IDS[business_obj_name.lower()]
-            bus_name = business_obj_name if business_obj_name else BUSINESS_OBJECT_IDS.keys()[
-                BUSINESS_OBJECT_IDS.values().index(bus_id)]
-            fields_list = HEADERS_IDS[bus_name]
-            payload = {
-                "busObId": bus_id,
-                "pageNumber": 0,
-                "pageSize": 300,
-                "searchText": args.get('search_text'),
-                "fields": fields_list
-            }
-        except KeyError:
-            return_error('Error: ID for {} not found'.format(args.get('business_obj_name')))
-    else:
-        return_error('Error: Please provide either a business object ID or Name')
-    return get_search_results(payload)
+#
+# def search_in_business_object():
+#     args = demisto.args()
+#     business_obj_name = args.get('business_obj_name')
+#     business_obj_id = args.get('business_obj_id')
+#     if business_obj_name or business_obj_id:
+#         try:
+#             bus_id = business_obj_id if business_obj_id else BUSINESS_OBJECT_IDS[business_obj_name.lower()]
+#             bus_name = business_obj_name if business_obj_name else BUSINESS_OBJECT_IDS.keys()[
+#                 BUSINESS_OBJECT_IDS.values().index(bus_id)]
+#             fields_list = HEADERS_IDS[bus_name]
+#             payload = {
+#                 "busObId": bus_id,
+#                 "pageNumber": 0,
+#                 "pageSize": 300,
+#                 "searchText": args.get('search_text'),
+#                 "fields": fields_list
+#             }
+#         except KeyError:
+#             return_error('Error: ID for {} not found'.format(args.get('business_obj_name')))
+#     else:
+#         return_error('Error: Please provide either a business object ID or Name')
+#     return get_search_results(payload)
 
 
 def run_query_on_business_objects(bus_id, filter_query, max_results):
@@ -589,28 +591,29 @@ def get_business_objects_details(objects_names):
     return business_objects
 
 
-# querystring here !!
-def get_incidents_for_business_object(business_object, max_result, last_created_time):
-
-    business_object_id = business_object.get('business_object_id')
-    created_time_field_id = business_object.get('created_time_field_id')
-    build_query_dict_list([created_time_field_id, 'gt', last_created_time])
-    query = [
-        {
-            "fieldId": created_time_field_id,
-            "operator": "gt",
-            "value": last_created_time
-        }
-    ]
-    query_result = run_query_on_business_objects(business_object_id, query, max_result)
-    incidents = parse_fields_from_business_object_list(query_result)
-    return incidents
+# def get_incidents_for_business_object(business_object, max_result, last_created_time):
+#     business_object_id = business_object.get('business_object_id')
+#     created_time_field_id = business_object.get('created_time_field_id')
+#     build_query_dict_list([created_time_field_id, 'gt', last_created_time])
+#     query = [
+#         {
+#             "fieldId": created_time_field_id,
+#             "operator": "gt",
+#             "value": last_created_time
+#         }
+#     ]
+#     query_result = run_query_on_business_objects(business_object_id, query, max_result)
+#     incidents = parse_fields_from_business_object_list(query_result)
+#     return incidents
 
 
-def get_all_incidents(business_objects_details, last_created_time, max_result):
+def get_all_incidents(objects_names, last_created_time, max_result, query_string):
     all_incidents = []
-    for business_object in business_objects_details:
-        incidents = get_incidents_for_business_object(business_object, max_result, last_created_time)
+    for business_object_name in objects_names:
+        business_object_id = resolve_business_object_id_by_name(business_object_name)
+        query_list = validate_query_for_fetch_incidents(objects_names, query_string) if query_string \
+            else [['CreatedDateTime', 'gt', last_created_time]]
+        incidents, _ = query_business_object(query_list, business_object_id, max_result)
         all_incidents += incidents
     sorted_incidents = sorted(all_incidents, key=lambda incident: incident.get('CreatedDateTime'))
     return sorted_incidents[:max_result]
@@ -661,14 +664,9 @@ def fetch_incidents_attachments(incidents):
     return incidents
 
 
-def fetch_incidents(objects_names, last_created_time, max_result, query_string, fetch_attachments=False):
-    validate_query_for_fetch_incidents(objects_names, query_string)
-    if query_string:
-        incidents = get_incidents_for_business_object()
-    else:
-        business_objects_details = get_business_objects_details(objects_names)
-        # incidents = get_all_incidents(business_objects_details, last_created_time, max_result)
-        incidents = get_all_incidents(business_objects_details, last_created_time, max_result)
+def fetch_incidents(objects_names, last_created_time, max_result, query_string, fetch_attachments):
+
+    incidents = get_all_incidents(objects_names, last_created_time, max_result, query_string)
     if fetch_attachments:
         incidents = fetch_incidents_attachments(incidents)
     save_incidents(incidents)
@@ -697,9 +695,9 @@ def upload_attachment(id_type, object_id, type_name, file_entry_id):
             file_content = f.read()
         attachment_id = upload_business_object_attachment(file_name, file_size, file_content, type_name, id_type,
                                                           object_id)
-    except Exception as e:
-        return_error(f'unable to open file: {e}')
-    return attachment_id
+        return attachment_id
+    except Exception as err:
+        return_error(f'unable to open file: {err}')
 
 
 def remove_attachment(id_type, object_id, type_name, attachment_id):
@@ -745,16 +743,15 @@ def validate_query_list(query_list):
 
 
 def validate_query_for_fetch_incidents(objects_names, query_string):
-    if query_string:
-        if not objects_names:
-            return_error(f'No business object name was given. \n'
-                         f'In order to run advanced query, fill the integration'
-                         f' parameter-`Objects to fetch` with exactly one business object name.')
-        if len(objects_names) > 1:
-            return_error(f'Advanced query operation is supported for a single business object. '
-                         f'{len(objects_names)} objects were given: {",".join(objects_names)}')
-        parsed_query = parse_query()
-
+    if not objects_names:
+        return_error(f'No business object name was given. \n'
+                     f'In order to run advanced query, fill the integration'
+                     f' parameter-`Objects to fetch` with exactly one business object name.')
+    if len(objects_names) > 1:
+        return_error(f'Advanced query operation is supported for a single business object. '
+                     f'{len(objects_names)} objects were given: {",".join(objects_names)}')
+    query_list = parse_string_query_to_list(query_string)
+    return query_list
 
 
 def build_query_dict(query, filed_ids_dict):
@@ -779,28 +776,44 @@ def build_query_dict_list(query_list, filed_ids_dict):
     return query_dict_list
 
 
-def parse_query(query_string, business_object_id):
-    query_list = [query_filter.split('::') for query_filter in query_string.split(',')]
-    validate_query_list(query_list)
+def query_business_object(query_list, business_object_id, max_results):
     filed_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
-    query_dict_list = build_query_dict_list(query_list, filed_ids_dict)
-    return query_dict_list
+    filters = build_query_dict_list(query_list, filed_ids_dict)
+    query_result = run_query_on_business_objects(business_object_id, filters, max_results)
+    business_objects = parse_fields_from_business_object_list(query_result)
+    return business_objects, query_result
 
 
-def query_business_object(business_object_name, query_string, max_results):
+def parse_string_query_to_list(query_string):
+    query_list = query_string.split(',')
+    query_filters_list = [query_filter.split('::') for query_filter in query_list]
+    validate_query_list(query_filters_list)
+    return query_filters_list
+
+
+def query_business_object_string(business_object_name, query_string, max_results):
     if max_results:
         try:
             int(max_results)
         except Exception:
             return return_error(f'`max_results` argument received is not a number')
     business_object_id = resolve_business_object_id_by_name(business_object_name)
-    filters = parse_query(query_string, business_object_id)
-    query_result = run_query_on_business_objects(business_object_id, filters, max_results)
-    business_objects = parse_fields_from_business_object_list(query_result)
-    return business_objects, query_result
+    query_filters_list = parse_string_query_to_list(query_string)
+    return query_business_object(query_filters_list, business_object_id, max_results)
 
 
 ########################################################################################################################
+def test_cammand():
+    if FETCHES_INCIDENTS:
+        if not OBJECTS_TO_FETCH[0]:
+            return_error('No objects to fetch were given')
+        for object_name in OBJECTS_TO_FETCH:
+            resolve_business_object_id_by_name(object_name)
+        if QUERY_STRING:
+            validate_query_for_fetch_incidents(OBJECTS_TO_FETCH, QUERY_STRING)
+    else:
+        get_access_token(True)
+    return
 
 
 def create_business_object_command():
@@ -887,7 +900,7 @@ def delete_business_object_command():
 
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
-    objects_names_to_fetch = OBJECTS_TO_FETCH
+    objects_names_to_fetch = OBJECTS_TO_FETCH if OBJECTS_TO_FETCH[0] else ['incidents']
     fetch_attachments = FETCH_ATTACHMENTS
     max_result = int(MAX_RESULT) if MAX_RESULT else 30
     fetch_time = FETCH_TIME if FETCH_TIME else '3 days'
@@ -896,7 +909,7 @@ def fetch_incidents_command():
         last_created_time = last_run.get('last_created_time')
     else:
         last_created_time, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT, to_timestamp=False)
-    incidents = fetch_incidents(objects_names_to_fetch, last_created_time, max_result, fetch_attachments)
+    incidents = fetch_incidents(objects_names_to_fetch, last_created_time, max_result, query_string, fetch_attachments)
     if incidents:
         last_incident_created_time = incidents[-1].get('CreatedDateTime')
         next_created_time_to_fetch = \
@@ -1022,7 +1035,7 @@ def query_business_object_command():
     type_name = args.get('type')
     query_string = args.get('query')
     max_results = args.get('max_results')
-    results, raw_response = query_business_object(type_name, query_string, max_results)
+    results, raw_response = query_business_object_string(type_name, query_string, max_results)
     md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1031,6 +1044,8 @@ def query_business_object_command():
         'EntryContext': {'Cherwell.QueryResults': results},
         'HumanReadable': md,
     })
+
+
 
 
 # def update_incident_status():
@@ -1165,23 +1180,23 @@ def query_business_object_command():
 #         'Contents': results,
 #         'HumanReadable': md
 #     })
-
-
-def search_in_business_object_command():
-    results = search_in_business_object()
-    parsed_results = parse_fields_from_business_object_list(results)
-    md = tableToMarkdown('Search Results', parsed_results, removeNull=True, headerTransform=pascalToSpace)
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'HumanReadable': md,
-        'EntryContext': {
-            'Cherwell.Search': createContext(parsed_results, removeNull=True)
-        }
-    })
-
+#
+#
+# def search_in_business_object_command():
+#     results = search_in_business_object()
+#     parsed_results = parse_fields_from_business_object_list(results)
+#     md = tableToMarkdown('Search Results', parsed_results, removeNull=True, headerTransform=pascalToSpace)
+#
+#     demisto.results({
+#         'Type': entryTypes['note'],
+#         'ContentsFormat': formats['json'],
+#         'Contents': results,
+#         'HumanReadable': md,
+#         'EntryContext': {
+#             'Cherwell.Search': createContext(parsed_results, removeNull=True)
+#         }
+#     })
+#
 
 #######################################################################################################################
 
@@ -1193,7 +1208,7 @@ LOG('Command being called is %s' % (demisto.command()))
 try:
     # handle_proxy()
     if demisto.command() == 'test-module':
-        token = get_access_token(True)
+        test_cammand()
         demisto.results('ok')
 
     elif demisto.command() == 'fetch-incidents':
