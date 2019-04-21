@@ -14,180 +14,149 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
-TOKEN = demisto.params().get('token')
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
-# Should we use SSL
-USE_SSL = not demisto.params().get('unsecure', False)
-# How many time before the first fetch to retrieve incidents
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-# Service base URL
-BASE_URL = SERVER + '/api/v2.0/'
-# Headers to be sent in requests
+SERVER = (demisto.params()['url'][:-1]
+    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
+BASE_URL = SERVER + '/api/'
+USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {
-    'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
+def http_request(method, path, params=None, data=None):
+    params = params if params is not None else {}
+    data = data if data is not None else {}
     res = requests.request(
         method,
-        BASE_URL + url_suffix,
+        BASE_URL + path,
+        auth=(USERNAME, PASSWORD),
         verify=USE_SSL,
         params=params,
         data=data,
         headers=HEADERS
     )
-    # Handle error responses gracefully
-    if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+
+    if res.status_code < 200 or res.status_code > 300:
+        status = res.status_code
+        message = res.reason
+        details = ''
+        try:
+            error_json = res.json()
+            message = error_json.get('statusMessage')
+            details = error_json.get('message')
+        except Exception:
+            pass
+        return_error('Error in API call, status code: {}, reason: {}, details: {}'.format(status, message, details))
 
     return res.json()
 
 
-def item_to_incident(item):
-    incident = {}
-    # Incident Title
-    incident['name'] = 'Example Incident: ' + item.get('name')
-    # Incident occurrence time, usually item creation date in service
-    incident['occurred'] = item.get('createdDate')
-    # The raw response from the service, providing full info regarding the item
-    incident['rawJSON'] = json.dumps(item)
-    return incident
-
-
-''' COMMANDS + REQUESTS FUNCTIONS '''
+''' FUNCTIONS '''
 
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Performs basic get request to get system info
     """
-    samples = http_request('GET', 'items/samples')
+    sys_info = http_request('GET', 'system/info')
 
 
-def get_items_command():
+def list_devices_command():
     """
-    Gets details about a items using IDs or some other filters
+    List devices in Symantec MC using provided query filters
     """
-    # Init main vars
-    headers = []
+
     contents = []
     context = {}
-    context_entries = []
-    title = ''
-    # Get arguments from user
-    item_ids = argToList(demisto.args().get('item_ids', []))
-    is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
+    build = demisto.args().get('build')
+    description = demisto.args().get('description')
+    model = demisto.args().get('model')
+    name = demisto.args().get('name')
+    os_version = demisto.args().get('os_version')
+    platform = demisto.args().get('platform')
+    device_type = demisto.args().get('type')
     limit = int(demisto.args().get('limit', 10))
-    # Make request and get raw response
-    items = get_items_request(item_ids, is_active)
-    # Parse response into context & content entries
-    if items:
+
+    devices = list_devices_request(build, description, model, name, os_version, platform, device_type)
+
+    if devices:
         if limit:
-            items = items[:limit]
-        title = 'Example - Getting Items Details'
+            devices = devices[:limit]
 
-        for item in items:
+        for device in devices:
             contents.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'Created Date': item.get('createdDate')
-            })
-            context_entries.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'CreatedDate': item.get('createdDate')
+                'UUID': device.get('uuid'),
+                'Name': device.get('name'),
+                'LastChanged': device.get('lastChanged'),
+                'Host': device.get('host'),
+                'Type': device.get('type')
             })
 
-        context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(contents)
 
+    headers = ['UUID', 'Name', 'LastChanged', 'Host', 'Type']
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': contents,
+        'Contents': devices,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Symantec Management Center Devices', contents,
+                                         removeNull=True, headers=headers, headerTransform=pascalToSpace),
         'EntryContext': context
     })
 
 
-def get_items_request(item_ids, is_active):
-    # The service endpoint to request from
-    endpoint_url = 'items'
-    # Dictionary of params for the request
-    params = {
-        'ids': item_ids,
-        'isActive': is_active
-    }
-    # Send a request using our http_request wrapper
-    response = http_request('GET', endpoint_url, params)
-    # Check if response contains errors
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    # Check if response contains any data to parse
-    if 'data' in response:
-        return response.get('data')
-    # If neither was found, return back empty results
-    return {}
+def list_devices_request(build, description, model, name, os_version, platform, type):
+    """
+    Get devices from Symantec MC
+    :param build: Device build number query
+    :param description: Device description query
+    :param model: Device model query
+    :param name: Device name query
+    :param os_version: Device OS version query
+    :param platform: Device platform query
+    :param type: Device type
+    :return: List of MC devices
+    """
 
+    path = 'devices'
+    params = {}
 
-def fetch_incidents():
-    last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('time')
+    if build:
+        params['build'] = build
+    if description:
+        params['description'] = description
+    if model:
+        params['model'] = model
+    if name:
+        params['name'] = name
+    if os_version:
+        params['osVersion'] = os_version
+    if platform:
+        params['platform'] = platform
+    if type:
+        params['type'] = type
 
-    # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-
-    incidents = []
-    items = get_items_request()
-    for item in items:
-        incident = item_to_incident(item)
-        incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_date > last_fetch:
-            last_fetch = incident_date
-            incidents.append(incident)
-
-    demisto.setLastRun({'time' : last_fetch})
-    demisto.incidents(incidents)
+    response = http_request('GET', path, params)
+    return response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
+LOG('Command being called is ' + demisto.command())
+handle_proxy()
 
 try:
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        fetch_incidents()
-    elif demisto.command() == 'example-get-items':
-        # An example command
-        get_items_command()
+    elif demisto.command() == 'symantec-mc-list-devices':
+        list_devices_command()
 
-# Log exceptions
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(str(e))
     LOG.print_log()
     raise
