@@ -1172,3 +1172,4 @@ outputs:
   type: unknown
 tests:
   - No test
+releaseNotes: "fix bug - process Email is extracting indicators twice on the same data"
