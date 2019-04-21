@@ -406,6 +406,23 @@ script:
     description: Run advanced queries to search in a given business object.
     execution: false
     name: cherwell-query-business-object
+  - arguments:
+    - default: false
+      description: type of business object (its name)
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: Field property to search by (Name, DIsplay Name or Field ID)
+      isArray: false
+      name: field_property
+      required: true
+      secret: false
+    deprecated: false
+    description: Get field info by one of its properties (Name, DIsplay Name or ID)
+    execution: false
+    name: cherwell-get-field-info
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false
