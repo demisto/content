@@ -39,6 +39,8 @@ HEADERS = {
     'Accept': "application/json"
 }
 
+QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
+
 BUSINESS_OBJECT_IDS = {
     "incident": "6dd53665c0c24cab86870a21cf6434ae",
     "task": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b",
@@ -409,9 +411,14 @@ def get_business_object_template(business_object_id, include_all=True, field_nam
     return res_json
 
 
-def build_business_object_json(simple_json, business_object_id, object_id=None, id_type=None):
+def get_key_value_dict_from_template(key, val, business_object_id):
     template_dict = get_business_object_template(business_object_id)
-    business_object_ids_dict = cherwell_dict_parser('name', 'fieldId', template_dict.get('fields'))
+    business_object_ids_dict = cherwell_dict_parser(key, val, template_dict.get('fields'))
+    return business_object_ids_dict
+
+
+def build_business_object_json(simple_json, business_object_id, object_id=None, id_type=None):
+    business_object_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
     fields_for_business_object = build_fields_for_business_object(simple_json, business_object_ids_dict)
     business_object_json = {
         'busObId': business_object_id,
@@ -547,13 +554,14 @@ def search_in_business_object():
     return get_search_results(payload)
 
 
-def query_business_objects(bus_id, filter_query, max_results):
+def run_query_on_business_objects(bus_id, filter_query, max_results):
     payload = {
         'busObId': bus_id,
-        'pageSize': max_results,
         'includeAllFields': True,
         'filters': filter_query
     }
+    if max_results:
+        payload['pageSize']: max_results
     return get_search_results(payload)
 
 
@@ -590,7 +598,7 @@ def get_incidents_for_business_object(business_object, max_result, last_created_
             "value": last_created_time
         }
     ]
-    query_result = query_business_objects(business_object_id, query, max_result)
+    query_result = run_query_on_business_objects(business_object_id, query, max_result)
     incidents = parse_fields_from_business_object_list(query_result)
     return incidents
 
@@ -715,6 +723,60 @@ def business_objects_relation_action(action, parent_type_name, parent_record_id,
     link_related_business_objects(action, parent_business_object_id, parent_record_id, relationship_id,
                                   child_business_object_id, child_record_id)
     return
+
+
+def validate_query_list(query_list):
+    for query in query_list:
+        if not len(query) == 3:
+            return_error('Cannot parse query, should be of the form: `field:operator:value`')
+        if query[1] not in QUERY_OPERATORS:
+            return_error(
+                f'Operator should be one of the following: {", ".join(QUERY_OPERATORS)}. Received: {query[1]}')
+    return
+
+
+def build_query_dict(query, filed_ids_dict):
+    field_name = query[0]
+    operator = query[1]
+    value = query[2]
+    return {
+        'fieldId': filed_ids_dict.get(field_name),
+        'operator': operator,
+        'value': value
+    }
+
+
+def build_query_dict_list(query_list, business_object_id):
+    query_dict_list = []
+    filed_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
+    for query in query_list:
+        query_dict = build_query_dict(query, filed_ids_dict)
+        query_dict_list.append(query_dict)
+    return query_dict_list
+
+
+def parse_query(query_string, business_object_id):
+    query_list = [query_filter.split('::') for query_filter in query_string.split(',')]
+    validate_query_list(query_list)
+    query_dict_list = build_query_dict_list(query_list, business_object_id)
+    return query_dict_list
+
+
+
+def query_business_object(business_object_name, query_string, max_results):
+    if max_results:
+        try:
+            int(max_results)
+        except Exception:
+            return return_error(f'`max_results` argument received is not a number')
+    business_object_id = resolve_business_object_id_by_name(business_object_name)
+    filters = parse_query(query_string, business_object_id)
+    query_result = run_query_on_business_objects(business_object_id, filters, max_results)
+    business_objects = parse_fields_from_business_object_list(query_result)
+    return business_objects, query_result
+
+
+
 
 
 ########################################################################################################################
@@ -933,6 +995,22 @@ def unlink_business_objects_command():
     })
 
 
+def query_business_object_command():
+    args = demisto.args()
+    type_name = args.get('type')
+    query_string = args.get('query')
+    max_results = args.get('max_results')
+    results, raw_response = query_business_object(type_name, query_string, max_results)
+    md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace, removeNull=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': raw_response,
+        'EntryContext': {'Cherwell.QueryResults': results},
+        'HumanReadable': md,
+    })
+
+
 # def update_incident_status():
 #     args = demisto.args()
 #     incident_public_id = args.get('incident_public_id')
@@ -1127,6 +1205,9 @@ try:
 
     elif demisto.command() == 'cherwell-unlink-business-objects':
         unlink_business_objects_command()
+
+    elif demisto.command() == 'cherwell-query-business-object':
+        query_business_object_command()
 
 
 # Log exceptions
