@@ -13,10 +13,9 @@ requests.packages.urllib3.disable_warnings()
 
 TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = "{server}{api_endpoint}".format(
-    server=demisto.params()['url'][:-1] if (demisto.params().get('url')
-                                            and demisto.params()['url'].endswith('/')) else demisto.params().get('url'),
-    api_endpoint='/api/bit9platform/v1')
+SERVER = demisto.params()['url'][:-1] if (demisto.params().get('url') and demisto.params()['url'].endswith('/')) \
+    else demisto.params().get('url')
+BASE_URL = SERVER + '/api/bit9platform/v1'
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
@@ -24,7 +23,6 @@ CB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 CB_NO_MS_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 INCIDENTS_PER_FETCH = int(demisto.params().get('max_incidents_per_fetch', 15))
 # Service base URL
-BASE_URL = SERVER + '/api/v2.0/'
 # Headers to be sent in requests
 HEADERS = {
     'X-Auth-Token': TOKEN,
@@ -249,7 +247,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :return: Returns the http request response json
         :rtype: ``dict`` or ``str``
     """
-    url = SERVER + url_suffix
+    url = BASE_URL + url_suffix
     try:
         res = requests.request(
             method,
@@ -270,7 +268,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
             reason = res.json()
         except ValueError:
             reason = res.reason
-        return_error('Error in API call [{0}] - {1}'.format(res.status_code, reason))
+        return_error(f'Error in API call status code: {res.status_code}, reason: {reason}')
     if parse_json:
         return res.json()
     return res.content
@@ -687,7 +685,21 @@ def update_file_rule_command():
     :return: Entry object of the created file analysis
     """
     args = demisto.args()
-    raw_res = update_file_rule(args)
+    body_params = {
+        'hash': args.get('hash'),
+        'fileState': args.get('fileState'),
+        'id': args.get('id'),
+        'fileCatalogId': args.get('fileCatalogId'),
+        'name': args.get('name'),
+        'description': args.get('description'),
+        'reportOnly': args.get('reportOnly'),
+        'reputationApprovalsEnabled': args.get('reputationApprovalsEnabled'),
+        'forceInstaller': args.get('forceInstaller'),
+        'forceNotInstaller': args.get('forceNotInstaller'),
+        'policyIds': args.get('policyIds'),
+        'platformFlags': args.get('platformFlags'),
+    }
+    raw_res = update_file_rule(body_params)
     ec = get_trasnformed_dict(raw_res, FILE_RULE_TRANS_DICT)
     hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', ec)
     demisto.results(create_entry_object(raw_res, {'CBP.FileRule(val.ID === obj.ID)': ec}, hr))

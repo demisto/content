@@ -1996,7 +1996,7 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule reporting only or also enforcing
       type: String
-  dockerimage: demisto/python3:3.7.2.200
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
   script: '-'
