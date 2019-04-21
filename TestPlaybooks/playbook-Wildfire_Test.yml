@@ -797,6 +797,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
