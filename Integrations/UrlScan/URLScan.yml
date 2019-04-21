@@ -260,7 +260,25 @@ script:
       description: Effective URL of the original URL
       type: string
     description: Submit a url to scan
+  - name: urlscan-get-http-transaction-list
+    arguments:
+    - name: url
+      required: true
+      description: The URL to search the transaction list for.
+    - name: limit
+      description: Limits the results in the war room(Maximum limit allowed is 100)
+      defaultValue: "20"
+    outputs:
+    - contextPath: URLScan.URL
+      description: The URL address that was examined.
+      type: string
+    - contextPath: URLScan.httpTransaction
+      description: A link to the http transaction made during the search on the given URL.
+      type: string
+    description: Get http transaction list for a given url
   runonce: false
+releaseNotes: "Added a functionallity to get a list of URLs that are related to the http transactions made for a
+  given url."
 fromversion: 3.1.1
 tests:
   - urlscan_malicious_Test

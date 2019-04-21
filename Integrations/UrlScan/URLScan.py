@@ -23,7 +23,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-INSECURE = demisto.params().get('insecure')
+INSECURE = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
@@ -499,6 +499,46 @@ def urlscan_search_command():
     })
 
 
+def format_http_transaction_list(uuid):
+    # Scan Lists sometimes returns empty
+    scan_lists = None
+    while scan_lists is None:
+        try:
+            response = urlscan_submit_request(uuid)
+            scan_lists = response['lists']
+        except Exception:
+            pass
+
+    url = demisto.args().get('url')
+    limit = int(demisto.args().get('limit'))
+    metadata = None
+    if limit > 100:
+        limit = 100
+        metadata = "Limited the data to the first 100 http transactions"
+
+    url_list = scan_lists.get('urls', [])[:limit]
+
+    context = {
+        'URL': url,
+        'httpTransaction': url_list
+    }
+
+    ec = {
+        'URLScan(val.URL && val.URL == obj.URL)': context,
+        'URL': url
+    }
+
+    human_readable = tableToMarkdown('{} - http transaction list'.format(url), url_list, ['URLs'], metadata=metadata)
+    return_outputs(human_readable, ec, response)
+
+
+def get_urlscan_http_transaction_list():
+    uuid = urlscan_submit_url()
+    ready = polling(uuid)
+    if ready is True:
+        format_http_transaction_list(uuid)
+
+
 """COMMAND FUNCTIONS"""
 try:
     if demisto.command() == 'test-module':
@@ -510,6 +550,8 @@ try:
         urlscan_submit_command()
     if demisto.command() == 'urlscan-search':
         urlscan_search_command()
+    if demisto.command() == 'urlscan-get-http-transaction-list':
+        get_urlscan_http_transaction_list()
 
 except Exception as e:
     LOG(e)
