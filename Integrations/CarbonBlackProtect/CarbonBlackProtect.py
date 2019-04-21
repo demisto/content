@@ -15,7 +15,7 @@ TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params().get('url') and demisto.params()['url'].endswith('/')) \
     else demisto.params().get('url')
-BASE_URL = SERVER + '/api/bit9platform/v1'
+BASE_URL = f'{SERVER}/api/bit9platform/v1'
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
