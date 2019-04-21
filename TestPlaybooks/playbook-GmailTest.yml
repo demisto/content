@@ -794,7 +794,7 @@ tasks:
     scriptarguments:
       filter_ids:
         complex:
-          root: Gmail
+          root: GmailFilter
           filters:
           - - operator: isEqualString
               left:
@@ -804,7 +804,6 @@ tasks:
               right:
                 value:
                   simple: admin@demistodev.com
-          accessor: Filter
           transformers:
           - operator: getField
             args:
