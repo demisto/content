@@ -7,6 +7,10 @@
             "playbookID": "Tufin Test"
         },
         {
+            "integrations": "Looker",
+            "playbookID": "Test-Looker"
+        },
+        {
             "integrations": "Vertica",
             "playbookID": "Vertica Test"
         },

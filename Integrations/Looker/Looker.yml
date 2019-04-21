@@ -130,3 +130,5 @@ script:
   runonce: false
   script: '-'
   type: python
+tests:
+  Test-Looker
