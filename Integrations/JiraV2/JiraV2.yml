@@ -298,4 +298,4 @@ script:
   runonce: false
 tests:
   - Jira-v2-Test
-releaseNotes: Rewrote the integration in Python. Improved fetch implementation. Improved support for JQL. Added the getAttachments flag in the get-issue command.
+releaseNotes: better URL handling

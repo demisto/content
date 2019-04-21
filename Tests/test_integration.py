@@ -4,7 +4,7 @@ from pprint import pformat
 import uuid
 import urllib
 
-from test_utils import print_error
+from Tests.test_utils import print_error
 from Tests.scripts.constants import PB_Status
 
 # ----- Constants ----- #
@@ -305,7 +305,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             break
 
         if i % DEFAULT_INTERVAL == 0:
-            print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
+            print('loop no. {}, playbook state is {}'.format(i / DEFAULT_INTERVAL, playbook_state))
         i = i + 1
 
     __disable_integrations_instances(client, module_instances)
