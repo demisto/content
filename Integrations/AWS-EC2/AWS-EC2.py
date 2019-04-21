@@ -212,7 +212,6 @@ def describe_instances(args):
                 'Type': instance['InstanceType'],
                 'LaunchDate': datetime.datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
                 'PublicDNSName': instance['PublicDnsName'],
-                'KeyName': instance['KeyName'],
                 'Monitoring': instance['Monitoring']['State'],
             })
             if 'Tags' in instance:
@@ -220,6 +219,9 @@ def describe_instances(args):
                     data[i].update({
                         tag['Key']: tag['Value']
                     })
+            if 'KeyName' in instance:
+                data[i].update({'KeyName': instance['KeyName']})
+
         instance.update({'Region': obj['_user_provided_options']['region_name']})
         output.append(instance)
 
