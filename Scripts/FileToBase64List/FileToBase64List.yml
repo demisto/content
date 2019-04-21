@@ -13,22 +13,22 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'no'
+  defaultValue: 'false'
   description: Zip the file before store?
   isArray: false
   name: zipFile
   predefined:
-  - 'yes'
-  - 'no'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 comment: |
   Store a file in Demisto list (as base64)
 commonfields:
-  id: e31fa2f5-3785-47e9-81ff-41e08044d8ed
+  id: FileToBase64List
   version: -1
 enabled: true
-name: FileToList
+name: FileToBase64List
 script: '-'
 system: false
 tags:
@@ -38,6 +38,6 @@ timeout: '0'
 type: python
 runas: DBotWeakRole
 runonce: true
-fromversion: 4.1.0
 tests:
-  - No Test
+- No Test
+fromversion: 4.1.0
