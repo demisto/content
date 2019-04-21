@@ -6,34 +6,33 @@ args:
   required: true
   secret: false
 - default: false
-  description: If the words is hash - the hash seed
+  description: Seed for the hash function, at the pre-process stage.
   isArray: false
   name: hashSeed
   required: false
   secret: false
 - default: false
-  description: Email subject
+  description: Subject of the email.
   isArray: false
   name: emailSubject
   required: false
   secret: false
 - default: false
-  description: Email body
+  description: Body of the email.
   isArray: false
   name: emailBody
   required: false
   secret: false
 - default: false
   defaultValue: '50'
-  description: 'Maximum number of positive \ negative words when try to explain model
-    decision '
+  description: 'Maximum number of positive/negative words to return for the model decision. '
   isArray: false
   name: topWordsLimit
   required: false
   secret: false
 - default: false
   defaultValue: '0.1'
-  description: Threshold for word importance (range 0-1)
+  description: Threshold to determine word importance (range 0-1).
   isArray: false
   name: wordThreshold
   required: false
@@ -41,7 +40,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: list
-  description: The way the model stored in Demisto.
+  description: How the model is stored in Demisto.
   isArray: false
   name: modelStoreType
   predefined:
@@ -51,20 +50,20 @@ args:
   secret: false
 - default: false
   defaultValue: '20'
-  description: Minimum text length (charecters) for prediction
+  description: Minimum number of characters for the prediction.
   isArray: false
   name: minTextLength
   required: false
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: Label probability threshold
+  description: The label probability threshold.
   isArray: false
   name: labelProbabilityThreshold
   required: false
   secret: false
-comment: Predict text label using pre-trained machine learning phishing model, and
-  get important words to the classification decision.
+comment: Predict text label using a pre-trained machine learning phishing model, and
+  get the most important words used in the classification decision.
 commonfields:
   id: DBotPredictPhishingWords
   version: -1
