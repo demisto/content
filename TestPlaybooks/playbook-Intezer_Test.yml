@@ -648,10 +648,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: b63a06e0-d6dc-4a86-8a42-52d679ec3482
+    taskid: 98116387-4217-4ae4-8460-1904044a3e04
     type: condition
     task:
-      id: b63a06e0-d6dc-4a86-8a42-52d679ec3482
+      id: 98116387-4217-4ae4-8460-1904044a3e04
       version: -1
       name: test file with sha1 input
       type: condition
@@ -671,7 +671,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Intezer file hash reputation does not support MD5 and SHA1 hashes.
+              simple: Intezer file hash reputation supports only SHA256
     view: |-
       {
         "position": {
@@ -711,13 +711,13 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 58e8ae3a-fabf-46a4-8f5a-39c87bac2d20
-    type: regular
+    taskid: 873127a0-70d5-44d1-8ead-2bbf9776ea59
+    type: title
     task:
-      id: 58e8ae3a-fabf-46a4-8f5a-39c87bac2d20
+      id: 873127a0-70d5-44d1-8ead-2bbf9776ea59
       version: -1
       name: non supported hash values
-      type: regular
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
