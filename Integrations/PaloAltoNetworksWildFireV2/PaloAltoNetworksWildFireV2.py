@@ -207,7 +207,19 @@ def create_entry(body, title, result, verbose, reports, ec):
     })
 
 
-def hash_args_handler(hash = None, file = None, md5 = None, sha256 = None):
+def hash_args_handler(sha256 = None, md5 = None):
+    # hash argument used in wildfire-report, wildfire-verdict commands
+    inputs = argToList(sha256) if sha256 else argToList(md5)
+    for input in inputs:
+        if sha256Regex.match(input) or md5Regex.test(input):
+            continue
+        else:
+            return_error('Invalid hash. Only SHA256 and MD5 are supported.')
+
+    return inputs
+
+
+def file_args_handler(file = None, sha256 = None, md5 = None):
     # file/md5/sha256 are used in file command
     if (file and not md5 and not sha256) or (not file and md5 and not sha256) or (not file and md5 and not sha256):
         if file:
@@ -218,22 +230,36 @@ def hash_args_handler(hash = None, file = None, md5 = None, sha256 = None):
             inputs = argToList(sha256)
 
         for input in inputs:
-            if sha1Regex.match(input): # validate hash is not sha1
-                return 'SHA1'
+            if sha1Regex.match(input):  # validate hash is not sha1
+                demisto.results('SHA1')
             elif sha256Regex.match(input) or md5Regex.test(input):
                 continue
             else:
                 return_error('Invalid hash. Only SHA256 and MD5 are supported.')
-    # hash argument, only used in wildfire-report command
-    else:
-        inputs = argToList(hash);
-        for input in inputs:
-            if sha256Regex.match(input) or md5Regex.test(input):
-                continue
-            else:
-                return_error('Invalid hash. Only SHA256 and MD5 are supported.')
 
-    return inputs
+        return inputs
+
+    else:
+        return_error('Specify exactly 1 of the following arguments: file, sha256, md5.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ''' COMMANDS '''
@@ -362,7 +388,7 @@ def wildfire_get_verdicts(entry_id):
 
 
 def wildfire_get_verdicts_command():
-    inputs = hash_args_handler(demisto.args(['EntryID']))
+    inputs = argToList(demisto.args(['EntryID']))
     for input in inputs:
         result, verdicts_data = wildfire_get_verdicts(input)
         
@@ -561,6 +587,7 @@ def create_report(report_response, format, verbose):
 
 
 def wildfire_get_report_command():
+    inputs = hash_args_handler()
             # inputs = hashArgsHandler(args.md5, args.hash, args.file);
             # entries = [];
             # for (i=0; i < inputs.length; i++) {
@@ -591,8 +618,11 @@ try:
     elif demisto.command() == 'wildfire-upload-url':
         wildfire_upload_url_command()
 
-    elif demisto.command() in ['file', 'wildfire-report']:
+    elif demisto.command() == 'wildfire-report':
         wildfire_get_report_command()
+
+    elif demisto.command() == 'file':
+        file_command()
 
     elif demisto.command() == 'wildfire-get-verdict':
         wildfire_get_verdict_command()
