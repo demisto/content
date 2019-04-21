@@ -1,6 +1,6 @@
-id: IP Enrichment - External - Generic
+id: IP Enrichment - External - Generic v2
 version: -1
-name: IP Enrichment - External - Generic
+name: IP Enrichment - External - Generic v2
 fromversion: 4.1.0
 description: |-
   Enrich IP using one or more integrations.
@@ -199,7 +199,7 @@ tasks:
         \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
         \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
         \n"
-      scriptName: IsIPInRanges
+      scriptName: IsIPInRanges_dev
       type: regular
       iscommand: false
       brand: ""
@@ -349,10 +349,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 886830c0-ea16-4a06-8170-41c05b587259
+    taskid: 82557e7d-0037-4bac-8092-0e3ea929615e
     type: condition
     task:
-      id: 886830c0-ea16-4a06-8170-41c05b587259
+      id: 82557e7d-0037-4bac-8092-0e3ea929615e
       version: -1
       name: Is VirusTotal Private API enabled?
       description: Checks if there is an active instance of the VirusTotal Private
@@ -413,7 +413,7 @@ tasks:
     task:
       id: b16c1c31-82c1-48ce-8607-df2f08b47a20
       version: -1
-      name: Get IP report from Virus Total Private API
+      name: Get IP report from VirusTotal Private API
       description: |
         Retrieves a report for a given IP.
       script: VirusTotal - Private API|||vt-private-get-ip-report
@@ -643,11 +643,9 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A list of IP ranges to check the IP in. The list should be provided
-    in CIDR notation, separated by commas. An example of a list of ranges would be:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
+  description: |-
+    The internal range to check against the IP address.
+    The default range is taken from the IPv4 protocol.
 - key: ResolveIP
   value:
     complex:
@@ -679,4 +677,4 @@ outputs:
   type: string
 releaseNotes: "A new generic playbook for external IP enrichment (now as a separate playbook)"
 tests:
-  - IP Enrichment - Generic - NonReputation Test
+  - IP Enrichment - Generic v2 - Test

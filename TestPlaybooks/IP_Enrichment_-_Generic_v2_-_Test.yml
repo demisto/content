@@ -1,7 +1,7 @@
-id: IP Enrichment - Generic - NonReputation Test
+id: IP Enrichment - Generic v2 - Test
 version: -1
 fromversion: 4.1.0
-name: IP Enrichment - Generic - NonReputation Test
+name: IP Enrichment - Generic v2 - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -28,6 +28,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 48651a1d-b6fd-4816-80d9-a8e5a45899e9
@@ -63,14 +64,15 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 020d7acf-146b-4276-8be3-d87175ec67b0
+    taskid: 7ffe5bea-a7af-4437-806d-34ec70eabbf9
     type: playbook
     task:
-      id: 020d7acf-146b-4276-8be3-d87175ec67b0
+      id: 7ffe5bea-a7af-4437-806d-34ec70eabbf9
       version: -1
-      name: IP Enrichment - Generic
+      name: IP Enrichment - Generic v2
       description: |-
         Enrich IP using one or more integrations.
 
@@ -80,7 +82,7 @@ tasks:
         * Separate internal and external addresses
         * IP reputation
         * For internal addresses, get host information
-      playbookName: IP Enrichment - Generic
+      playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
@@ -90,11 +92,12 @@ tasks:
       - "6"
       - "7"
     scriptarguments:
-      GetReputation:
-        complex:
-          root: inputs.GetReputation
       IP:
-        simple: ${IP.Address}
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
       InternalRange: {}
       ResolveIP:
         complex:
@@ -113,6 +116,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 29addbb6-e385-4720-8d4a-0b8ba7cdebd7
@@ -142,6 +146,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 221f8221-ddd6-4b7a-831d-f426a5928495
@@ -164,6 +169,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 0908e99e-4421-415b-8e95-88888b40f5a3
@@ -206,6 +212,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 0d739831-24ca-4043-8f30-7e46348550ad
@@ -264,6 +271,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 19720a66-9eba-4cee-8af8-4befd464aa37
@@ -305,6 +313,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: da14e18a-fb55-49ae-8f1d-8076c37dd8ed
@@ -313,7 +322,6 @@ tasks:
       id: da14e18a-fb55-49ae-8f1d-8076c37dd8ed
       version: -1
       name: Make the test fail
-      description: "Makes the test fail in case no condition is met."
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -336,6 +344,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {

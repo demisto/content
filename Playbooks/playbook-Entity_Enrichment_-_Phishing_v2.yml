@@ -1,7 +1,7 @@
-id: Entity Enrichment - Phishing
+id: Entity Enrichment - Phishing v2
 version: -1
-name: Entity Enrichment - Phishing
 fromversion: 4.1.0
+name: Entity Enrichment - Phishing v2
 description: Enrich entities using one or more integrations
 starttaskid: "0"
 tasks:
@@ -18,184 +18,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "9"
-      - "11"
-      - "13"
+      - "16"
       - "17"
+      - "18"
+      - "19"
+      - "22"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 67
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 00b1e9e8-71c6-4519-8893-851545e1fe14
-    type: playbook
-    task:
-      id: 00b1e9e8-71c6-4519-8893-851545e1fe14
-      version: -1
-      name: URL Enrichment - Generic
-      description: |-
-        Enrich URL using one or more integrations.
-
-        URL enrichment includes:
-        * Verify URL SSL
-        * Threat information
-        * URL reputaiton
-        * Take URL screenshot
-      playbookName: URL Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      GetReputation:
-        simple: "True"
-      Rasterize:
-        simple: "True"
-      VerifyURL:
-        simple: "True"
-      url:
-        complex:
-          root: inputs.url
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 386
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: d0f2162f-3ab7-4a29-850c-e12f15ec6af2
-    type: playbook
-    task:
-      id: d0f2162f-3ab7-4a29-850c-e12f15ec6af2
-      version: -1
-      name: Email Address Enrichment - Generic
-      description: Get email address reputation using one or more integrations
-      playbookName: Email Address Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domain: {}
-      Email:
-        complex:
-          root: inputs.Email
-      GetReputation:
-        simple: "True"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 386
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
-    type: playbook
-    task:
-      id: 5799a021-f77c-457b-85bc-e362b7ff4b43
-      version: -1
-      name: Domain Enrichment - Generic
-      description: Enrich Domain using one or more integrations
-      playbookName: Domain Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domain:
-        simple: ${inputs.Domain}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 549
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 587c3b81-99c9-45b4-8755-26af4808bf72
-    type: playbook
-    task:
-      id: 587c3b81-99c9-45b4-8755-26af4808bf72
-      version: -1
-      name: File Enrichment - Generic
-      description: |-
-        Enrich a file using one or more integrations.
-
-        File enrichment includes:
-        * File history
-        * Threat information
-        * File reputation
-      playbookName: File Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
-      SHA1:
-        complex:
-          root: inputs.SHA1
-      SHA256:
-        complex:
-          root: inputs.SHA256
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 225
+          "x": 280,
+          "y": 70
         }
       }
     note: false
@@ -217,21 +50,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 821
+          "x": 280,
+          "y": 721
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 3cb6ebba-40c7-4f8f-859d-218977d7564f
+  "16":
+    id: "16"
+    taskid: 7f0308e7-6722-47ff-844f-35dc22d11546
     type: playbook
     task:
-      id: 3cb6ebba-40c7-4f8f-859d-218977d7564f
+      id: 7f0308e7-6722-47ff-844f-35dc22d11546
       version: -1
-      name: IP Enrichment - External - Generic
+      name: IP Enrichment - Generic_dev
       description: |-
         Enrich IP using one or more integrations.
 
@@ -241,7 +74,7 @@ tasks:
         * Separate internal and external addresses
         * IP reputation
         * For internal addresses, get host information
-      playbookName: IP Enrichment - External - Generic
+      playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
@@ -249,9 +82,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      GetReputation:
-        complex:
-          root: inputs.GetReputation
       IP:
         complex:
           root: inputs.IP
@@ -269,8 +99,179 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 490,
           "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 1a32d820-2625-491e-8185-1e44c5d329ed
+    type: playbook
+    task:
+      id: 1a32d820-2625-491e-8185-1e44c5d329ed
+      version: -1
+      name: Email Address Enrichment - Generic v2
+      description: |-
+        Enrich email addresses.  Email address enrichment currently involves:
+        - Getting information from Active Directory for internal addresses
+        - Getting domain-squatting reputation for external addresses
+      playbookName: Email Address Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: inputs.Email
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 8189698a-475c-433b-8fbf-20275b3b2084
+    type: playbook
+    task:
+      id: 8189698a-475c-433b-8fbf-20275b3b2084
+      version: -1
+      name: File Enrichment - Generic v2
+      playbookName: File Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
+    type: playbook
+    task:
+      id: b00cb02f-d44b-4e40-8c27-281d17a94723
+      version: -1
+      name: URL Enrichment - Generic v2
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 6245f7fc-b1cc-4120-81da-d3320f809b03
+    type: playbook
+    task:
+      id: 6245f7fc-b1cc-4120-81da-d3320f809b03
+      version: -1
+      name: Domain Enrichment - Generic v2
+      description: |-
+        Enrich domains using one or more integrations.
+        Domain enrichment includes:
+        * Threat information
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 550
         }
       }
     note: false
@@ -281,10 +282,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 819,
-        "width": 810,
-        "x": 50,
-        "y": 67
+        "height": 716,
+        "width": 800,
+        "x": 70,
+        "y": 70
       }
     }
   }
@@ -316,6 +317,8 @@ inputs:
     complex:
       root: File
       accessor: SHA256
+      transformers:
+      - operator: uniq
   required: false
   description: File SHA256 to enrich
 - key: SHA1
@@ -323,20 +326,26 @@ inputs:
     complex:
       root: File
       accessor: SHA1
+      transformers:
+      - operator: uniq
   required: false
   description: File SHA1 to enrich
-- key: url
+- key: URL
   value:
     complex:
       root: URL
       accessor: Data
+      transformers:
+      - operator: uniq
   required: false
-  description: url to enrich
+  description: URL to enrich
 - key: Email
   value:
     complex:
       root: Account
       accessor: Email.Address
+      transformers:
+      - operator: uniq
   required: false
   description: The email addresses to enrich
 - key: Hostname
@@ -344,6 +353,8 @@ inputs:
     complex:
       root: Endpoint
       accessor: Hostname
+      transformers:
+      - operator: uniq
   required: false
   description: The hostname to enrich
 - key: Username
@@ -351,6 +362,8 @@ inputs:
     complex:
       root: Account
       accessor: Username
+      transformers:
+      - operator: uniq
   required: false
   description: The Username to enrich
 - key: Domain
@@ -358,6 +371,8 @@ inputs:
     complex:
       root: Domain
       accessor: Name
+      transformers:
+      - operator: uniq
   required: false
   description: The domain name to enrich
 - key: ResolveIP

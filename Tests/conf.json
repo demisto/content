@@ -1209,7 +1209,7 @@
             "playbookID": "Zoom_Test"
         },
         {
-            "playbookID": "IP Enrichment - Generic - NonReputation Test",
+            "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "Threat Crowd"
         }
     ],

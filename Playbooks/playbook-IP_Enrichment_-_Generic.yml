@@ -2,7 +2,6 @@ id: ip_enrichment_generic
 version: -1
 name: IP Enrichment - Generic
 fromversion: 3.6.0
-toversion: 4.0.9
 description: |-
   Enrich IP using one or more integrations.
 
@@ -633,6 +632,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-releaseNotes: "Playbook supported up to version 4.0.9 (included). A new one exists starting at 4.1."
+releaseNotes: "-"
 tests:
 - no test - VirusTotal quota problem, and new playbook from 4.1 (which has a test)

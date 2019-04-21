@@ -1,7 +1,7 @@
-id: IP Enrichment - Internal - Generic
+id: IP Enrichment - Internal - Generic v2
 version: -1
-name: IP Enrichment - Internal - Generic
 fromversion: 4.1.0
+name: IP Enrichment - Internal - Generic v2
 description: |-
   Enrich IP using one or more integrations.
 
@@ -123,52 +123,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "31":
-    id: "31"
-    taskid: 6a9f70f7-69ce-4b60-878c-64ba678b723b
-    type: playbook
-    task:
-      id: 6a9f70f7-69ce-4b60-878c-64ba678b723b
-      version: -1
-      name: Endpoint Enrichment - Generic
-      description: Enrich an Endpoint Hostname using one or more integrations
-      playbookName: Endpoint Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: Endpoint
-          filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: Endpoint.IP
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.IP
-                iscontext: true
-          accessor: Hostname
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "34":
     id: "34"
     taskid: 22936bea-a0fc-4095-8fb7-9d74fa41159e
@@ -224,7 +178,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "42"
     scriptarguments:
       ip:
         complex:
@@ -325,7 +279,7 @@ tasks:
         \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
         \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
         \n"
-      scriptName: IsIPInRanges
+      scriptName: IsIPInRanges_dev
       type: regular
       iscommand: false
       brand: ""
@@ -376,6 +330,52 @@ tasks:
         "position": {
           "x": -380,
           "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: d3091e4c-f852-496d-81b1-54b37f0ae47d
+    type: playbook
+    task:
+      id: d3091e4c-f852-496d-81b1-54b37f0ae47d
+      version: -1
+      name: Endpoint Enrichment - Generic v2
+      playbookName: Endpoint Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: Endpoint.IP
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1470
         }
       }
     note: false
@@ -449,4 +449,4 @@ outputs:
   type: string
 releaseNotes: "A new generic playbook for internal IP enrichment (now as a separate playbook)"
 tests:
-  - IP Enrichment - Generic - NonReputation Test
+  - IP Enrichment - Generic v2 - Test
