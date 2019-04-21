@@ -329,6 +329,7 @@
               "Rasterize",
               "VirusTotal - Private API"
           ],
+            "instance_names": "virus_total_private_api_general",
             "timeout": 500
         },
         {
