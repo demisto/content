@@ -20,7 +20,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-description: Management Center provides a unified management environment for the Symantec
+description: Symantec Management Center provides a unified management environment for the Symantec
   Security Platform portfolio of products.
 display: Symantec Management Center
 name: SymantecManagementCenter
@@ -106,7 +106,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a device from Management Center
+    description: Get a device from Symantec MC
     execution: false
     name: symantec-mc-get-device
     outputs:
@@ -332,7 +332,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a policy from Management Center
+    description: Get a policy from Symantec MC
     execution: false
     name: symantec-mc-get-policy
     outputs:
@@ -343,37 +343,37 @@ script:
       description: Policy content schema version
       type: Number
     - contextPath: SymantecMC.Policy.RevisionInfo.Number
-      description: Management Center policy content revision number
+      description: Policy content revision number
       type: Number
     - contextPath: SymantecMC.Policy.RevisionInfo.Description
-      description: Management Center policy content revision description
+      description: Policy content revision description
       type: String
     - contextPath: SymantecMC.Policy.RevisionInfo.Author
-      description: Management Center policy content revision author
+      description: Policy content revision author
       type: String
     - contextPath: SymantecMC.Policy.RevisionInfo.Date
-      description: Management Center policy content revision date
+      description: Policy content revision date
       type: Date
     - contextPath: SymantecMC.Policy.IP.Address
-      description: Management Center policy IP address
+      description: Policy IP address
       type: String
     - contextPath: SymantecMC.Policy.IP.Description
-      description: Management Center policy IP description
+      description: Policy IP description
       type: String
     - contextPath: SymantecMC.Policy.IP.Enabled
-      description: 'Management Center policy '
+      description: Policy IP enabled
       type: Boolean
     - contextPath: SymantecMC.Policy.URL.Address
-      description: 'Management Center Policy URL '
+      description: Policy URL address
       type: String
     - contextPath: SymantecMC.Policy.URL.Description
-      description: Management Center policy URL description
+      description: Policy URL description
       type: String
     - contextPath: SymantecMC.Policy.URL.Enabled
-      description: Management Center policy URL enabled
+      description: Policy URL enabled
       type: Boolean
     - contextPath: SymantecMC.Policy.Category.Name
-      description: Management Center policy category name
+      description: Policy category name
       type: String
   - arguments:
     - default: false
