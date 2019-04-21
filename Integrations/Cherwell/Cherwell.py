@@ -562,13 +562,13 @@ def run_query_on_business_objects(bus_id, filter_query, max_results):
     return get_search_results(payload)
 
 
-def get_special_field_id(business_object_id, field_name):
-    template_dict = get_business_object_template(business_object_id, include_all=False, field_names=[field_name])
-    fields = template_dict.get('fields')
-    if not fields:
-        return_error(f'could not get field id. Field name: {field_name}, Business object id: {business_object_id}')
-    field = fields[0]
-    return field.get('fieldId')
+# def get_special_field_id(business_object_id, field_name):
+#     template_dict = get_business_object_template(business_object_id, include_all=False, field_names=[field_name])
+#     fields = template_dict.get('fields')
+#     if not fields:
+#         return_error(f'could not get field id. Field name: {field_name}, Business object id: {business_object_id}')
+#     field = fields[0]
+#     return field.get('fieldId')
 
 
 def get_key_value_dict_from_template(key, val, business_object_id):
@@ -577,18 +577,18 @@ def get_key_value_dict_from_template(key, val, business_object_id):
     return business_object_ids_dict
 
 
-def get_business_objects_details(objects_names):
-    business_objects = []
-    for name in objects_names:
-        business_object_id = resolve_business_object_id_by_name(name)
-        created_time = get_special_field_id(business_object_id, 'CreatedDateTime')
-        business_object = {
-            'business_object_id': business_object_id,
-            'business_object_name': name,
-            'created_time_field_id': created_time
-        }
-        business_objects.append(business_object)
-    return business_objects
+# def get_business_objects_details(objects_names):
+#     business_objects = []
+#     for name in objects_names:
+#         business_object_id = resolve_business_object_id_by_name(name)
+#         created_time = get_special_field_id(business_object_id, 'CreatedDateTime')
+#         business_object = {
+#             'business_object_id': business_object_id,
+#             'business_object_name': name,
+#             'created_time_field_id': created_time
+#         }
+#         business_objects.append(business_object)
+#     return business_objects
 
 
 # def get_incidents_for_business_object(business_object, max_result, last_created_time):
@@ -665,7 +665,6 @@ def fetch_incidents_attachments(incidents):
 
 
 def fetch_incidents(objects_names, last_created_time, max_result, query_string, fetch_attachments):
-
     incidents = get_all_incidents(objects_names, last_created_time, max_result, query_string)
     if fetch_attachments:
         incidents = fetch_incidents_attachments(incidents)
@@ -800,6 +799,26 @@ def query_business_object_string(business_object_name, query_string, max_results
     business_object_id = resolve_business_object_id_by_name(business_object_name)
     query_filters_list = parse_string_query_to_list(query_string)
     return query_business_object(query_filters_list, business_object_id, max_results)
+
+
+def get_field_info(type, field_property):
+    business_object_id = resolve_business_object_id_by_name(type)
+    template = get_business_object_template(business_object_id)
+    business_object_fields = template.get('fields')
+    for field in business_object_fields:
+        if field.get('displayName') == field_property or \
+                field.get('fieldId') == field_property or \
+                field.get('name') == field_property:
+            field_to_return = field
+    if field_to_return:
+        field_to_return = {
+            'DisplayName': field_to_return.get('displayName'),
+            'Name': field_to_return.get('name'),
+            'FieldID': field_to_return.get('fieldId')
+        }
+    else:
+        return_error(f'Field with the value {field_property} was not found')
+    return field_to_return
 
 
 ########################################################################################################################
@@ -1046,6 +1065,21 @@ def query_business_object_command():
     })
 
 
+def get_field_info_command():
+    args = demisto.args()
+    type_name = args.get('type')
+    field_property = args.get('field_property')
+    results = get_field_info(type_name, field_property)
+    md = tableToMarkdown('Field info:', results, headers=['DisplayName', 'FieldID', 'Name'],
+                         headerTransform=pascalToSpace,
+                         removeNull=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': results,
+        'EntryContext': {'Cherwell.FieldInfo()': results},
+        'HumanReadable': md,
+    })
 
 
 # def update_incident_status():
@@ -1246,6 +1280,9 @@ try:
 
     elif demisto.command() == 'cherwell-query-business-object':
         query_business_object_command()
+
+    elif demisto.command() == 'cherwell-get-field-info':
+        get_field_info_command()
 
 
 # Log exceptions
