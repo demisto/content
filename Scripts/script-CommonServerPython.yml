@@ -1539,5 +1539,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Added python3 support for camelize method, fixed issue in camelize method."
 tests:
   - TestCommonPython
