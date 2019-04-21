@@ -286,7 +286,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by tenant.
+      description: Query Filter parameter to filter by tenant, e.g., "EQ TENANT_EXTERNAL_ID"
       isArray: false
       name: tenant
       required: false
@@ -642,6 +642,7 @@ script:
     description: Delete content from a policy in Symantec MC
     execution: false
     name: symantec-mc-delete-policy-content
+  dockerimage: demisto/python3
   isfetch: false
   runonce: false
   script: '-'
