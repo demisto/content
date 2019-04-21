@@ -176,6 +176,8 @@ def get_email_context(email_data, mailbox):
 
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
+
+
 def parse_time(t):
     # there is only one time refernce is the string
     base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
@@ -276,8 +278,10 @@ def users_to_entry(title, response):
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
-            'UserName': user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get('name') else None,
-            'DisplayName': user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get('name') else None,
+            'UserName': (user_data.get('name').get('givenName')
+                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
+            'DisplayName': (user_data.get('name').get('fullName')
+                            if user_data.get('name') and 'fullName' in user_data.get('name') else None),
             'Email': {'Address': user_data.get('primaryEmail')},
             'Gmail': {'Address': user_data.get('primaryEmail')},
             'Group': user_data.get('kind'),
@@ -387,7 +391,8 @@ def list_users_command():
     return users_to_entry('Users:', users)
 
 
-def list_users(domain, customer=None, event=None, query=None, sort_order=None, view_type='admin_view', show_deleted=False, max_results=100, projection='basic', custom_field_mask=None):
+def list_users(domain, customer=None, event=None, query=None, sort_order=None, view_type='admin_view',
+               show_deleted=False, max_results=100, projection='basic', custom_field_mask=None):
     command_args = {
         'domain': domain,
         'customer': customer,
@@ -596,7 +601,7 @@ def search_command(mailbox=None):
 
     query = args.get('query', '')
     fields = args.get('fields')  # TODO
-    label_ids = [l for l in args.get('labels-ids', '').split(',') if l != '']
+    label_ids = [lbl for lbl in args.get('labels-ids', '').split(',') if lbl != '']
     max_results = int(args.get('max-results', 100))
     page_token = args.get('page-token')
     include_spam_trash = args.get('include-spam-trash', False)
@@ -615,8 +620,9 @@ def search_command(mailbox=None):
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
-           fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False, has_attachments=None):
-    QUERY_VALUES = {
+           fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
+           has_attachments=None):
+    query_values = {
         'subject': subject,
         'from': _from,
         'to': to,
@@ -627,7 +633,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'has': 'attachment' if has_attachments else ''
     }
     q = ' '.join('%s:%s ' % (name, value, )
-                 for name, value in QUERY_VALUES.iteritems() if value != '')
+                 for name, value in query_values.iteritems() if value != '')
     q = ('%s %s' % (q, query, )).strip()
 
     command_args = {
@@ -713,9 +719,9 @@ def move_mail_command():
     args = demisto.args()
     user_id = args.get('user-id')
     _id = args.get('message-id')
-    add_labels = [l for l in args.get('add-labels', '').split(',') if l != '']
-    remove_labels = [l for l in args.get(
-        'remove-labels', '').split(',') if l != '']
+    add_labels = [lbl for lbl in args.get('add-labels', '').split(',') if lbl != '']
+    remove_labels = [lbl for lbl in args.get(
+        'remove-labels', '').split(',') if lbl != '']
 
     mail = move_mail(user_id, _id, add_labels, remove_labels)
     return emails_to_entry('Email:', [mail], 'full', user_id)
@@ -790,13 +796,14 @@ def delete_mail(user_id, _id, permanent):
     }
 
     credentials = get_credentials(['https://mail.google.com',
-                                   'https://www.googleapis.com/auth/gmail.modify', ], delegated_user=command_args['userId'])
+                                   'https://www.googleapis.com/auth/gmail.modify', ],
+                                  delegated_user=command_args['userId'])
     service = discovery.build('gmail', 'v1', credentials=credentials)
     if permanent:
-        result = service.users().messages().delete(**command_args).execute()
+        service.users().messages().delete(**command_args).execute()
         return 'Email has been successfully deleted.'
     else:
-        result = service.users().messages().trash(**command_args).execute()
+        service.users().messages().trash(**command_args).execute()
         return 'Email has been successfully moved to trash.'
 
 
@@ -873,7 +880,8 @@ def add_filter_command():
     return filters_to_entry('New filter:', user_id, [_filter])
 
 
-def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attachments=None, size=None, size_comparison=None, forward=None, add_labels=None, remove_labels=None):
+def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attachments=None, size=None,
+               size_comparison=None, forward=None, add_labels=None, remove_labels=None):
     command_args = {
         'userId': user_id,
         'body': {
@@ -1072,6 +1080,7 @@ def main():
             raise
         else:
             return_error('GMAIL: {}'.format(e))
+
 
 if __name__ == "__builtin__":
     main()
