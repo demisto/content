@@ -899,7 +899,7 @@ def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attac
     if query is not None:
         command_args['body']['criteria']['query'] = query
     if has_attachments is not None:
-        command_args['body']['criteria']['hasAttachment'] = has_attachment
+        command_args['body']['criteria']['hasAttachment'] = has_attachments
     if size is not None:
         command_args['body']['criteria']['size'] = size
     if size_comparison is not None:
@@ -1082,5 +1082,6 @@ def main():
             return_error('GMAIL: {}'.format(e))
 
 
-if __name__ == "__builtin__":
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
