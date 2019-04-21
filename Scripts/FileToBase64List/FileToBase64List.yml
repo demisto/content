@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: The file entry id.
+  description: The file entry ID.
   isArray: false
   name: entryId
   required: true
   secret: false
 - default: false
-  description: The list name to store the file in. List must be exist in Demisto.
+  description: The list name in which to store the file. The list must exist in Demisto.
   isArray: false
   name: listName
   required: true
@@ -14,7 +14,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Zip the file before store?
+  description: Whether to zip the file before storing it in the list.
   isArray: false
   name: zipFile
   predefined:
@@ -23,7 +23,7 @@ args:
   required: false
   secret: false
 comment: |
-  Store a file in Demisto list (as base64)
+  Encode a file as base64 and store it in a Demisto list.
 commonfields:
   id: FileToBase64List
   version: -1
