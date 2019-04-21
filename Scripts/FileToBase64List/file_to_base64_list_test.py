@@ -10,18 +10,7 @@ TEST_FILE_PATH = os.path.join('test_data', 'file.txt')
 
 
 def executeCommand(name, args=None):
-    if name == 'getFilePath':
-        return [
-            {
-                'Type': entryTypes['note'],
-                'Contents': {
-                    'path': TEST_FILE_PATH,
-                    'name': 'file.txt'
-                }
-            }
-        ]
-
-    elif name == 'createList':
+    if name == 'createList':
         return [
             {
                 'Type': entryTypes['note'],
@@ -39,9 +28,12 @@ def test_file_to_base64_list(mocker):
         'entryId': 1
     }
     mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': TEST_FILE_PATH})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
-    assert main().startswith("success store list")
+    result_entry = main()
+    assert 'Success' in result_entry['HumanReadable'] and 'Size' in result_entry['HumanReadable']
+    assert len(result_entry['Contents']) > 0
 
 
 def test_get_file_data(mocker):
