@@ -44,7 +44,7 @@ def test_cbp_date_to_timestamp():
         cbp_date_to_timestamp(non_cbp_time)
         raise AssertionError('cbp_date_to_timestamp should fail when passing non-cbp format dates')
     except ValueError:
-        # if got here, then the right error is passed, so no further checks required
+        # if got here, then the right error was passed, so no further checks are required
         pass
 
 

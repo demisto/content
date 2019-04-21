@@ -674,16 +674,6 @@ tasks:
           right:
             value:
               simple: "247"
-      - - operator: isSame
-          left:
-            value:
-              complex:
-                root: CBP
-                accessor: Event.Timestamp
-            iscontext: true
-          right:
-            value:
-              simple: 2019-03-23T00:00:26.217Z
     view: |-
       {
         "position": {
