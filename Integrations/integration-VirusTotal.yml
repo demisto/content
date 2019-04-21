@@ -452,7 +452,7 @@ script:
             }
         }
         ip_ec = {
-            'Address(val.ip === obj.ip)': ip,
+            'Address(val === obj)': ip,
             "VirusTotal": {
                 'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
                 'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
