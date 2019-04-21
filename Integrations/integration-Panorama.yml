@@ -172,9 +172,7 @@ script:
         # if pcap download
         if params['type'] == 'export':
             return result
-
         jresult = json.loads(xml2json(result.text))
-
         if jresult['response']['@status'] != 'success':
             if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
 
@@ -2377,7 +2375,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('External Dynamic Lists:', edls_output, ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile', 'Description'], None, True),
             'EntryContext': {
-                  "Panorama.EDLs(val.Name == obj.Name)": edls_output
+                  "Panorama.EDL(val.Name == obj.Name)": edls_output
             }
         })
 
@@ -2432,7 +2430,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('External Dynamic List:', edl_output, ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile', 'Description'], None, True),
             'EntryContext': {
-                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+                  "Panorama.EDL(val.Name == obj.Name)": edl_output
             }
         })
 
@@ -2483,7 +2481,7 @@ script:
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'EXternal Dynamic List was added successfully',
             'EntryContext': {
-                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+                  "Panorama.EDL(val.Name == obj.Name)": edl_output
             }
         })
 
@@ -2498,24 +2496,22 @@ script:
         edl_output = {'Name': edl_name}
         params = {
             'action': 'edit',
+            'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
             'type': 'config',
             'key': API_KEY,
         }
 
         if element_to_change == 'url':
-            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
             params['element'] = add_argument_open(element_value, 'url', False)
             result = http_request(URL, 'POST', params = params)
             edl_output['URL'] = element_value
 
         elif element_to_change == 'certificate_profile':
-            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
             params['element'] = add_argument_open(element_value, 'certificate-profile', False)
             result = http_request(URL, 'POST', params = params)
             edl_output['CertificateProfile'] = element_value
 
         elif element_to_change == 'description':
-            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
             params['element'] = add_argument_open(element_value, 'description', False)
             result = http_request(URL, 'POST', params = params)
             edl_output['Description'] = element_value
@@ -2524,7 +2520,6 @@ script:
         else:
             if element_value not in ['five-minute', 'hourly']:
                 return_error('Recurring segment must be five-minute or hourly')
-            params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
             params['element'] = '<recurring><' + element_value + '/></recurring>'
             result = http_request(URL, 'POST', params = params)
             edl_output['Recurring'] = element_value
@@ -2547,7 +2542,7 @@ script:
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'External Dynamic List was editted successfully',
             'EntryContext': {
-                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+                  "Panorama.EDL(val.Name == obj.Name)": edl_output
             }
         })
 
@@ -2584,7 +2579,7 @@ script:
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'External Dynamic List was deleted successfully',
             'EntryContext': {
-                  "Panorama.EDLs(val.Name == obj.Name)": edl_output
+                  "Panorama.EDL(val.Name == obj.Name)": edl_output
             }
         })
 
@@ -3555,22 +3550,22 @@ script:
   - name: panorama-list-edls
     arguments: []
     outputs:
-    - contextPath: Panorama.EDLs.Name
+    - contextPath: Panorama.EDL.Name
       description: EDL name
       type: string
-    - contextPath: Panorama.EDLs.Type
+    - contextPath: Panorama.EDL.Type
       description: EDL type
       type: string
-    - contextPath: Panorama.EDLs.URL
+    - contextPath: Panorama.EDL.URL
       description: URL in which the EDL is stored
       type: string
-    - contextPath: Panorama.EDLs.Description
+    - contextPath: Panorama.EDL.Description
       description: EDL description
       type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
+    - contextPath: Panorama.EDL.CertificateProfile
       description: EDL certificate profile
       type: string
-    - contextPath: Panorama.EDLs.Recurring
+    - contextPath: Panorama.EDL.Recurring
       description: EDL recuuring time
       type: string
     description: Returns a list of external dynamic lists
@@ -3580,22 +3575,22 @@ script:
       required: true
       description: EDL name
     outputs:
-    - contextPath: Panorama.EDLs.Name
+    - contextPath: Panorama.EDL.Name
       description: EDL name
       type: string
-    - contextPath: Panorama.EDLs.Type
+    - contextPath: Panorama.EDL.Type
       description: EDL type
       type: string
-    - contextPath: Panorama.EDLs.URL
+    - contextPath: Panorama.EDL.URL
       description: URL in which the EDL is stored
       type: string
-    - contextPath: Panorama.EDLs.Description
+    - contextPath: Panorama.EDL.Description
       description: EDL description
       type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
+    - contextPath: Panorama.EDL.CertificateProfile
       description: EDL certificate profile
       type: string
-    - contextPath: Panorama.EDLs.Recurring
+    - contextPath: Panorama.EDL.Recurring
       description: EDL recurring time
       type: string
     description: Get information for an external dynamic list
@@ -3628,22 +3623,22 @@ script:
     - name: description
       description: EDL description
     outputs:
-    - contextPath: Panorama.EDLs.Name
+    - contextPath: Panorama.EDL.Name
       description: EDL name
       type: string
-    - contextPath: Panorama.EDLs.Type
+    - contextPath: Panorama.EDL.Type
       description: EDL type
       type: string
-    - contextPath: Panorama.EDLs.URL
+    - contextPath: Panorama.EDL.URL
       description: URL in which the EDL is stored
       type: string
-    - contextPath: Panorama.EDLs.Description
+    - contextPath: Panorama.EDL.Description
       description: EDL description
       type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
+    - contextPath: Panorama.EDL.CertificateProfile
       description: EDL certificate profile
       type: string
-    - contextPath: Panorama.EDLs.Recurring
+    - contextPath: Panorama.EDL.Recurring
       description: EDL recurring time
       type: string
     description: Creates an external dynamic list
@@ -3665,19 +3660,19 @@ script:
       required: true
       description: Element value
     outputs:
-    - contextPath: Panorama.EDLs.Name
+    - contextPath: Panorama.EDL.Name
       description: EDL name
       type: string
-    - contextPath: Panorama.EDLs.URL
+    - contextPath: Panorama.EDL.URL
       description: URL in which the EDL is stored
       type: string
-    - contextPath: Panorama.EDLs.Description
+    - contextPath: Panorama.EDL.Description
       description: EDL description
       type: string
-    - contextPath: Panorama.EDLs.CertificateProfile
+    - contextPath: Panorama.EDL.CertificateProfile
       description: EDL certificate profile
       type: string
-    - contextPath: Panorama.EDLs.Recurring
+    - contextPath: Panorama.EDL.Recurring
       description: EDL recurring time
       type: string
     description: Edit an external dynamic list
@@ -3687,7 +3682,7 @@ script:
       required: true
       description: Name of the EDL to delete
     outputs:
-    - contextPath: Panorama.EDLs.Name
+    - contextPath: Panorama.EDL.Name
       description: Name of the EDL that was deleted
       type: string
     description: Deletes an EDL
