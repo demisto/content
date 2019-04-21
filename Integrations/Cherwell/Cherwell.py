@@ -24,6 +24,7 @@ PASSWORD = PARAMS.get('credentials').get('password')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
 CLIENT_ID = PARAMS.get('client_id')
+QUERY_STRING = PARAMS.get('query_string')
 DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
 # Service base URL
 BASE_URL = SERVER + '/CherwellAPI/'
@@ -411,12 +412,6 @@ def get_business_object_template(business_object_id, include_all=True, field_nam
     return res_json
 
 
-def get_key_value_dict_from_template(key, val, business_object_id):
-    template_dict = get_business_object_template(business_object_id)
-    business_object_ids_dict = cherwell_dict_parser(key, val, template_dict.get('fields'))
-    return business_object_ids_dict
-
-
 def build_business_object_json(simple_json, business_object_id, object_id=None, id_type=None):
     business_object_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
     fields_for_business_object = build_fields_for_business_object(simple_json, business_object_ids_dict)
@@ -574,6 +569,12 @@ def get_special_field_id(business_object_id, field_name):
     return field.get('fieldId')
 
 
+def get_key_value_dict_from_template(key, val, business_object_id):
+    template_dict = get_business_object_template(business_object_id)
+    business_object_ids_dict = cherwell_dict_parser(key, val, template_dict.get('fields'))
+    return business_object_ids_dict
+
+
 def get_business_objects_details(objects_names):
     business_objects = []
     for name in objects_names:
@@ -588,9 +589,12 @@ def get_business_objects_details(objects_names):
     return business_objects
 
 
+# querystring here !!
 def get_incidents_for_business_object(business_object, max_result, last_created_time):
+
     business_object_id = business_object.get('business_object_id')
     created_time_field_id = business_object.get('created_time_field_id')
+    build_query_dict_list([created_time_field_id, 'gt', last_created_time])
     query = [
         {
             "fieldId": created_time_field_id,
@@ -657,9 +661,14 @@ def fetch_incidents_attachments(incidents):
     return incidents
 
 
-def fetch_incidents(objects_names, last_created_time, max_result, fetch_attachments=False):
-    business_objects_details = get_business_objects_details(objects_names)
-    incidents = get_all_incidents(business_objects_details, last_created_time, max_result)
+def fetch_incidents(objects_names, last_created_time, max_result, query_string, fetch_attachments=False):
+    validate_query_for_fetch_incidents(objects_names, query_string)
+    if query_string:
+        incidents = get_incidents_for_business_object()
+    else:
+        business_objects_details = get_business_objects_details(objects_names)
+        # incidents = get_all_incidents(business_objects_details, last_created_time, max_result)
+        incidents = get_all_incidents(business_objects_details, last_created_time, max_result)
     if fetch_attachments:
         incidents = fetch_incidents_attachments(incidents)
     save_incidents(incidents)
@@ -735,10 +744,26 @@ def validate_query_list(query_list):
     return
 
 
+def validate_query_for_fetch_incidents(objects_names, query_string):
+    if query_string:
+        if not objects_names:
+            return_error(f'No business object name was given. \n'
+                         f'In order to run advanced query, fill the integration'
+                         f' parameter-`Objects to fetch` with exactly one business object name.')
+        if len(objects_names) > 1:
+            return_error(f'Advanced query operation is supported for a single business object. '
+                         f'{len(objects_names)} objects were given: {",".join(objects_names)}')
+        parsed_query = parse_query()
+
+
+
 def build_query_dict(query, filed_ids_dict):
     field_name = query[0]
     operator = query[1]
     value = query[2]
+    field_id = filed_ids_dict.get(field_name)
+    if not field_id:
+        demisto.results(f'Field name: {field_name} does not exit in the given business objects')
     return {
         'fieldId': filed_ids_dict.get(field_name),
         'operator': operator,
@@ -746,9 +771,8 @@ def build_query_dict(query, filed_ids_dict):
     }
 
 
-def build_query_dict_list(query_list, business_object_id):
+def build_query_dict_list(query_list, filed_ids_dict):
     query_dict_list = []
-    filed_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
     for query in query_list:
         query_dict = build_query_dict(query, filed_ids_dict)
         query_dict_list.append(query_dict)
@@ -758,9 +782,9 @@ def build_query_dict_list(query_list, business_object_id):
 def parse_query(query_string, business_object_id):
     query_list = [query_filter.split('::') for query_filter in query_string.split(',')]
     validate_query_list(query_list)
-    query_dict_list = build_query_dict_list(query_list, business_object_id)
+    filed_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
+    query_dict_list = build_query_dict_list(query_list, filed_ids_dict)
     return query_dict_list
-
 
 
 def query_business_object(business_object_name, query_string, max_results):
@@ -774,9 +798,6 @@ def query_business_object(business_object_name, query_string, max_results):
     query_result = run_query_on_business_objects(business_object_id, filters, max_results)
     business_objects = parse_fields_from_business_object_list(query_result)
     return business_objects, query_result
-
-
-
 
 
 ########################################################################################################################
@@ -870,6 +891,7 @@ def fetch_incidents_command():
     fetch_attachments = FETCH_ATTACHMENTS
     max_result = int(MAX_RESULT) if MAX_RESULT else 30
     fetch_time = FETCH_TIME if FETCH_TIME else '3 days'
+    query_string = QUERY_STRING
     if 'last_created_time' in last_run:
         last_created_time = last_run.get('last_created_time')
     else:
@@ -1172,6 +1194,7 @@ try:
     # handle_proxy()
     if demisto.command() == 'test-module':
         token = get_access_token(True)
+        demisto.results('ok')
 
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
