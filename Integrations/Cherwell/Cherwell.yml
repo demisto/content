@@ -57,7 +57,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Data JSON holding the relevant fields and their values
+      description: |-
+        Data JSON holding the relevant fields and their values (example:
+        {"title": "some value"})
       isArray: false
       name: json
       required: true
@@ -361,6 +363,36 @@ script:
     description: Remove the given attachment from the given business object
     execution: false
     name: cherwell-remove-attachment
+  - arguments:
+    - default: false
+      description: type of business object (its name)
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: 'The query to run. The query is cpmposed of comma seperated filters
+        such that each filter should be of the form: `field_name::operator::value`
+        and operator is one of: ''eq''=equal, ''gt''=grater-than, ''lt''=less-than,
+        ''contains'', ''startwith''. Example: `CreatedDateTime:gt:4/10/2019 3:10:12
+        PM`. NOTICE: If received multiple filters for the same field name, an ''OR''
+        operation between the filters will be performed, if the field names are different
+        an ''AND'' operation will be performed.'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: maximal number of result to pull
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    deprecated: false
+    description: Run advanced queries to search in a given business object.
+    execution: false
+    name: cherwell-query-business-object
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false
