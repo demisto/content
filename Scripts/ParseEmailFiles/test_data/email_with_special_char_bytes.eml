@@ -1,8 +1,8 @@
 Received: from MN2PR11MB3856.namprd11.prod.outlook.com (2603:10b6:208:160::47)
  by MN2PR11MB3904.namprd11.prod.outlook.com with HTTPS via
  MN2PR13CA0034.NAMPRD13.PROD.OUTLOOK.COM; Thu, 18 Apr 2019 14:14:33 +0000
-Received: from MN2PR11MB3904.namprd11.prod.outlook.com (10.255.120.49) by
- MN2PR11MB3856.namprd11.prod.outlook.com (22.138.251.203) with Microsoft SMTP
+Received: from MN2PR11MB3904.namprd11.prod.outlook.com (10.255.180.79) by
+ MN2PR11MB3856.namprd11.prod.outlook.com (20.178.251.203) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.20.1813.12; Thu, 18 Apr 2019 14:14:32 +0000
 Received: from MN2PR11MB3904.namprd11.prod.outlook.com
@@ -18,7 +18,7 @@ Date: Thu, 18 Apr 2019 14:14:32 +0000
 Message-ID: <C718CB8A-E78C-4EA8-AB24-61B8DCD8C8D4@demisto.com>
 Accept-Language: en-US
 Content-Language: en-US
-x-dg-rorf: ?ï¿½Iï¿½ï¿½?ï¿½HÕ§ï¿½cï¿½[?4
+x-dg-rorf: ?æIáô?ªHÕ§ícæ[?4
 X-MS-Exchange-Organization-AuthAs: Internal
 X-MS-Exchange-Organization-AuthMechanism: 04
 X-MS-Exchange-Organization-AuthSource: MN2PR11MB3904.namprd11.prod.outlook.com
