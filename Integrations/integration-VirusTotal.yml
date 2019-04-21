@@ -451,8 +451,8 @@ script:
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
             }
         }
+        ec['IP(val.Address == obj.Address)']= {'Address': ip};
         ip_ec = {
-            'Address(val === obj)': ip,
             "VirusTotal": {
                 'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
                 'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
