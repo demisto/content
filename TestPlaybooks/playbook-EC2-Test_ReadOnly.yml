@@ -93,14 +93,14 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 4960d275-1314-410b-8057-9ae495b67f48
+    taskid: 0ec50890-9844-4bfb-8578-6e46b751ee53
     type: regular
     task:
-      id: 4960d275-1314-410b-8057-9ae495b67f48
+      id: 0ec50890-9844-4bfb-8578-6e46b751ee53
       version: -1
       name: aws-ec2-describe-snapshots
       description: Describes one or more of the EBS snapshots available to you.
-      script: AWS - EC2 |||aws-ec2-describe-snapshots
+      script: AWS - EC2|||aws-ec2-describe-snapshots
       type: regular
       iscommand: true
       brand: AWS - EC2
@@ -112,7 +112,8 @@ tasks:
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
-      snapshotIds: {}
+      snapshotIds:
+        simple: snap-0776ecb88e4bd1431
     separatecontext: false
     view: |-
       {
