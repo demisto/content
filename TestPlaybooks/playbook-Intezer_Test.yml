@@ -29,12 +29,13 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 3264db25-b33a-4367-8475-88296f9e1e43
+    taskid: 9d29a99e-c268-4ada-85d1-d69c0b28390d
     type: regular
     task:
-      id: 3264db25-b33a-4367-8475-88296f9e1e43
+      id: 9d29a99e-c268-4ada-85d1-d69c0b28390d
       version: -1
       name: Analyze by SHA256
+      description: Checks file reputation of the given hash, supports SHA256
       script: Intezer|||file
       type: regular
       iscommand: true
@@ -52,6 +53,7 @@ tasks:
       maxRetries: {}
       retries:
         simple: "60"
+      sha256: {}
       threshold: {}
       wait: {}
     separatecontext: false
@@ -119,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3460
+          "y": 4335
         }
       }
     note: false
@@ -344,16 +346,17 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: cd2489b6-aa7d-4e15-8962-a9d646568c43
+    taskid: a066a4a4-f57d-4cac-8ffb-3c734052bc5a
     type: regular
     task:
-      id: cd2489b6-aa7d-4e15-8962-a9d646568c43
+      id: a066a4a4-f57d-4cac-8ffb-3c734052bc5a
       version: -1
       name: 'Analyze by Upload File '
-      script: Intezer|||intezer-upload
+      description: Checks file reputation for uploaded file (up to 20MB)
+      script: '|||intezer-upload'
       type: regular
       iscommand: true
-      brand: Intezer
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
@@ -554,7 +557,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "23"
     scriptarguments:
       all:
         simple: "yes"
@@ -601,7 +604,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2935
+          "y": 3110
         }
       }
     note: false
@@ -637,7 +640,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3110
+          "y": 3285
         }
       }
     note: false
@@ -645,10 +648,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 2af469b5-4e5e-479e-845c-c93552966393
+    taskid: b63a06e0-d6dc-4a86-8a42-52d679ec3482
     type: condition
     task:
-      id: 2af469b5-4e5e-479e-845c-c93552966393
+      id: b63a06e0-d6dc-4a86-8a42-52d679ec3482
       version: -1
       name: test file with sha1 input
       type: condition
@@ -656,7 +659,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -668,12 +671,186 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Intezer file hash reputation does not support MD5 and SHA1
+              simple: Intezer file hash reputation does not support MD5 and SHA1 hashes.
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3285
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 935f56b7-02b7-4cf2-8821-9ce5220b0eaa
+    type: regular
+    task:
+      id: 935f56b7-02b7-4cf2-8821-9ce5220b0eaa
+      version: -1
+      name: file_command_enrichment_test_script_helper
+      scriptName: file_command_enrichment_test_script_helper
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 58e8ae3a-fabf-46a4-8f5a-39c87bac2d20
+    type: regular
+    task:
+      id: 58e8ae3a-fabf-46a4-8f5a-39c87bac2d20
+      version: -1
+      name: non supported hash values
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 446e6bef-4a7b-41c0-8d0e-02e89fadb628
+    type: regular
+    task:
+      id: 446e6bef-4a7b-41c0-8d0e-02e89fadb628
+      version: -1
+      name: deleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: a3bbfe97-ac04-4734-8785-7d38bd3fdfe1
+    type: condition
+    task:
+      id: a3bbfe97-ac04-4734-8785-7d38bd3fdfe1
+      version: -1
+      name: Test enrichment with sha256 exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: hasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
+                accessor: Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 4fbde03a-0daf-4c01-8056-b611f8f78f74
+    type: condition
+    task:
+      id: 4fbde03a-0daf-4c01-8056-b611f8f78f74
+      version: -1
+      name: Test enrichment of md5 does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: hasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "32"
+                accessor: Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4160
         }
       }
     note: false
@@ -684,7 +861,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3475,
+        "height": 4350,
         "width": 380,
         "x": 50,
         "y": 50
