@@ -199,6 +199,48 @@ def test_eml_contains_eml_depth(mocker):
     assert results[0]['EntryContext']['Email']['Depth'] == 0
 
 
+def test_email_with_special_character(mocker):
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': '/Users/aazadaliyev/Downloads/itcrrbgu2.eml',
+                        'name': 'itcrrbgu2.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'RFC 822 mail text, ISO-8859 text, with very long lines, with CRLF line terminators'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 3
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['Attachments']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['Attachments']
+    assert isinstance(results[0]['EntryContext']['Email'], dict)
+    assert results[0]['EntryContext']['Email']['Depth'] == 0
+
 def test_utf_subject_convert():
     subject = ('[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?='
                ' =?utf-8?q?mmer=C3=A7ant_Pickup_!?=')
