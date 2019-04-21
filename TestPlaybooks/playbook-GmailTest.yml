@@ -799,7 +799,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Gmail.Filter.Mailbox
+                  simple: GmailFilter.Mailbox
                 iscontext: true
               right:
                 value:
@@ -813,8 +813,8 @@ tasks:
                   simple: ID
       mailbox:
         complex:
-          root: Gmail
-          accessor: Filter.Mailbox
+          root: GmailFilter
+          accessor: Mailbox
       user-id:
         simple: me
     separatecontext: false
