@@ -76,7 +76,7 @@ script:
         ''' loads the host url from the configuration or strips the server url to get valid host url '''
         host = demisto.params()['ip_address']
         if host:
-            #strip https://www. of the server address
+            #strip https://www. of the server address //disable-secrets-detection
             url = re.compile(r"https?://(www\.)?")
             host = url.sub('', demisto.params()['server']).strip().strip('/')
             #strip :{port} of the server address
