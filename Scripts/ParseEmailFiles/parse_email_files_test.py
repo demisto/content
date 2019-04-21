@@ -206,7 +206,7 @@ def test_email_with_special_character(mocker):
                 {
                     'Type': entryTypes['note'],
                     'Contents': {
-                        'path': '/Users/aazadaliyev/Downloads/itcrrbgu2.eml',
+                        'path': 'test_data/email_with_special_char_bytes.eml',
                         'name': 'itcrrbgu2.eml'
                     }
                 }
@@ -230,16 +230,12 @@ def test_email_with_special_character(mocker):
     assert demisto.args()['entryid'] == 'test'
 
     main()
-    assert demisto.results.call_count == 3
+    assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
-    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['Attachments']
-    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['Attachments']
-    assert isinstance(results[0]['EntryContext']['Email'], dict)
-    assert results[0]['EntryContext']['Email']['Depth'] == 0
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Hello dear friend'
 
 
 def test_utf_subject_convert():
