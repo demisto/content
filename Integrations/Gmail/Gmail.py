@@ -332,7 +332,7 @@ def tokens_to_entry(title, response):
             'DisplayText': token_data.get('displayText'),
             'ClientId': token_data.get('clientId'),
             'Kind': token_data.get('kind'),
-            'Scopes': ''.join(token_data.get('scopes', [])),
+            'Scopes': token_data.get('scopes', []),
             'UserKey': token_data.get('userKey'),
         })
 
@@ -569,7 +569,7 @@ def get_user_tokens(user_id):
     service = discovery.build('admin', 'directory_v1', credentials=credentials)
     result = service.tokens().list(**command_args).execute()
 
-    return result['items']
+    return result.get('items', [])
 
 
 def search_all_mailboxes():
@@ -1075,12 +1075,13 @@ def main():
         else:
             demisto.results(cmd_func())
     except Exception as e:
+        import traceback
         if command == 'fetch-incidents':
-            LOG(str(e))
+            LOG(traceback.format_exc(e))
             LOG.print_log()
             raise
         else:
-            return_error('GMAIL: {}'.format(e))
+            return_error('GMAIL: {}'.format(str(e)), traceback.format_exc(e))
 
 
 # python2 uses __builtin__ python3 uses builtins
