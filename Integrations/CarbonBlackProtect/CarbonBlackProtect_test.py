@@ -28,12 +28,12 @@ def test_event_severity_to_dbot_score():
 def test_cbp_date_to_timestamp():
     from CarbonBlackProtect import cbp_date_to_timestamp
 
-    cbp_time_with_milis = '2019-04-20T15:20:42.123456Z'
-    expected_ts = 1555762842000
+    cbp_time_with_milis = '2019-04-19T15:20:42.123456Z'
+    expected_ts = 1555676442000
     assert cbp_date_to_timestamp(cbp_time_with_milis) == expected_ts
 
-    cbp_time_without_milis = '2019-04-20T15:20:42Z'
-    expected_ts = 1555762842000
+    cbp_time_without_milis = '2019-04-19T15:20:42Z'
+    expected_ts = 1555676442000
     assert cbp_date_to_timestamp(cbp_time_without_milis) == expected_ts
 
     try:
