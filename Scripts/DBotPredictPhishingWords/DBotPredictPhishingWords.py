@@ -3,10 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-try:
-    import demisto_ml
-except Exception:
-    pass
+import demisto_ml
 
 
 def get_model_data(model_name, store_type):
@@ -67,7 +64,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         'ContentsFormat': formats['json'],
         'HumanReadable': tableToMarkdown('DBot Predict Phihsing Words', explain_result,
                                          headers=['TextTokensHighlighted', 'Label', 'Probability',
-                                                  'PositiveWords', 'NegativeWords']),
+                                                  'PositiveWords', 'NegativeWords'],
+                                         removeNull=True),
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPredictPhishingWords': explain_result
@@ -75,7 +73,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     }
 
 
-if __name__ in ['__main__', '__builtin__']:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
                                     demisto.args().get('emailSubject', ''),

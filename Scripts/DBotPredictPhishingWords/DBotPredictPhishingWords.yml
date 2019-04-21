@@ -3,7 +3,7 @@ args:
   description: The model name (or list name) in Demisto.
   isArray: false
   name: modelName
-  required: false
+  required: true
   secret: false
 - default: false
   description: If the words is hash - the hash seed
@@ -70,6 +70,24 @@ commonfields:
   version: -1
 enabled: false
 name: DBotPredictPhishingWords
+outputs:
+- contextPath: DBotPredictPhishingWords.Label
+  description: The predicted label
+  type: String
+- contextPath: DBotPredictPhishingWords.Probability
+  description: The predicted probability (range 0-1)
+  type: Number
+- contextPath: DBotPredictPhishingWords.PositiveWords
+  description: A list of words in the input text that support the model decision.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.NegativeWords
+  description: A list of words in the input text that un-support the model decision
+    -  those words are support other classification class better
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.TextTokensHighlighted
+  description: The input text (after pre-processing) with the positive words that
+    support the model decision highlighted.
+  type: String
 script: '-'
 system: false
 tags:
@@ -78,4 +96,4 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/dl:1.3
-releaseNotes: "Add new script"
+releaseNotes: Add new script
