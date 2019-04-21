@@ -788,10 +788,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: f3af73c6-1ae8-432a-88cb-c7002eb012c9
+    taskid: 4bd996b3-95ed-4025-8946-e41261bfd047
     type: condition
     task:
-      id: f3af73c6-1ae8-432a-88cb-c7002eb012c9
+      id: 4bd996b3-95ed-4025-8946-e41261bfd047
       version: -1
       name: Test enrichment of md5 does exist
       type: condition
@@ -806,6 +806,15 @@ tasks:
             value:
               complex:
                 root: DBotScore
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "32"
                 accessor: Indicator
             iscontext: true
           right:
@@ -823,10 +832,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 85ff3918-cabb-41fe-8a9c-c32e8428e004
+    taskid: 637fabe7-4b44-4aa6-85b0-e833879e47d3
     type: condition
     task:
-      id: 85ff3918-cabb-41fe-8a9c-c32e8428e004
+      id: 637fabe7-4b44-4aa6-85b0-e833879e47d3
       version: -1
       name: Test enrichment of sha1 does not exist
       type: condition

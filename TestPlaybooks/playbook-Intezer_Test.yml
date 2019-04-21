@@ -821,10 +821,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 5a71dfad-5013-43d8-81c3-2162b9e504ff
+    taskid: 634612d2-4e01-454e-8034-d017987543a8
     type: condition
     task:
-      id: 5a71dfad-5013-43d8-81c3-2162b9e504ff
+      id: 634612d2-4e01-454e-8034-d017987543a8
       version: -1
       name: Test enrichment of md5 does not exist
       type: condition
