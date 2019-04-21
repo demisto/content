@@ -1,4 +1,4 @@
-category: IT Services
+category: Ticketing
 commonfields:
   id: Cherwell
   version: -1
@@ -44,7 +44,20 @@ configuration:
   name: max_results
   required: false
   type: 0
-description: Integration Template
+- display: Advanced Query to fetch
+  name: query_string
+  required: false
+  type: 0
+description: "Integration with Cherwell Service Managment. Creating reading updating\
+  \ and deleting business objects is possible, together with attachments and relations\
+  \ operations. \nAdditionally, the integration enables advanced query operations\
+  \ both for fetching-incidents operation and as a seperate command. The query should\
+  \ be cpmposed of comma seperated filters such that each filter should be of the\
+  \ form: `field_name::operator::value` and operator is one of: 'eq'=equal, 'gt'=grater-than,\
+  \ 'lt'=less-than, 'contains', 'startwith'. Example: `CreatedDateTime:gt:4/10/2019\
+  \ 3:10:12 PM`. NOTICE: If received multiple filters for the same field name, an\
+  \ 'OR' operation between the filters will be performed, if the field names are different\
+  \ 'AND' operation will be performed."
 display: Cherwell
 name: Cherwell
 script:
