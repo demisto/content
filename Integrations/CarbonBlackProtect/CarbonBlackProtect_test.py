@@ -1,6 +1,3 @@
-import demistomock as demisto
-
-
 def test_remove_prefix():
     from CarbonBlackProtect import remove_prefix
     prefix = "test_prefix"
