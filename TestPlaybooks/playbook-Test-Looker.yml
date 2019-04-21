@@ -1,0 +1,215 @@
+id: Test-Looker
+version: -1
+name: Test-Looker
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83113fa9-ed9b-4cd9-86ee-b5beb83b53a3
+    type: start
+    task:
+      id: 83113fa9-ed9b-4cd9-86ee-b5beb83b53a3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: e7bc9118-322e-424a-84c2-ffd3876b3c20
+    type: regular
+    task:
+      id: e7bc9118-322e-424a-84c2-ffd3876b3c20
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: e83e5df5-04bf-42be-8553-744bb6a48cd5
+    type: regular
+    task:
+      id: e83e5df5-04bf-42be-8553-744bb6a48cd5
+      version: -1
+      name: looker-search-looks
+      description: Find saved looks matching search criteria
+      script: Looker|||looker-search-looks
+      type: regular
+      iscommand: true
+      brand: Looker
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit: {}
+      name: {}
+      space_id: {}
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 7366f700-e412-4300-8d18-7202aeb326ae
+    type: regular
+    task:
+      id: 7366f700-e412-4300-8d18-7202aeb326ae
+      version: -1
+      name: looker-run-look
+      description: Run a given look's query and return the results in the requested
+        format.
+      script: Looker|||looker-run-look
+      type: regular
+      iscommand: true
+      brand: Looker
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fields: {}
+      id:
+        simple: "3"
+      limit: {}
+      name: {}
+      result_format: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 15279fd5-ea03-4d4c-8093-aa0b0cd41cad
+    type: condition
+    task:
+      id: 15279fd5-ea03-4d4c-8093-aa0b0cd41cad
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LookerResults.Results
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LookerResults.LookID
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isExists
+          left:
+            value:
+              simple: Looker.Look.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 77573e29-a8b4-4427-806d-b83d4781ddf6
+    type: title
+    task:
+      id: 77573e29-a8b4-4427-806d-b83d4781ddf6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
