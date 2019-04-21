@@ -324,7 +324,7 @@
           "playbookID": "devo_test_playbook"
         },
         {
-          "playbookID": "url_enrichment_-_generic_test",
+          "playbookID": "URL Enrichment - Generic v2s",
           "integrations": [
               "Rasterize",
               "VirusTotal - Private API"
