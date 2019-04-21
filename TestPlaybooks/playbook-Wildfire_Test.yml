@@ -248,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3520
+          "y": 4045
         }
       }
     note: false
@@ -726,10 +726,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: f40ec36a-087a-484c-88cf-22f63da9fbae
+    taskid: 74cfcfd9-d28c-42bb-8028-487c6c2623ff
     type: condition
     task:
-      id: f40ec36a-087a-484c-88cf-22f63da9fbae
+      id: 74cfcfd9-d28c-42bb-8028-487c6c2623ff
       version: -1
       name: test file with sha1 input
       type: condition
@@ -737,7 +737,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -749,7 +749,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: WildFire file hash reputation does not support SHA1
+              simple: WildFire file hash reputation supports only MD5, SHA256
     view: |-
       {
         "position": {
@@ -760,12 +760,127 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 056aa3fd-f24f-4b25-8761-102fb8c9134e
+    type: regular
+    task:
+      id: 056aa3fd-f24f-4b25-8761-102fb8c9134e
+      version: -1
+      name: file_command_enrichment_test_script_helper
+      scriptName: file_command_enrichment_test_script_helper
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 21bad9c6-a45c-4fa9-86aa-462429a478be
+    type: condition
+    task:
+      id: 21bad9c6-a45c-4fa9-86aa-462429a478be
+      version: -1
+      name: Test enrichment of md5 does exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: hasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "32"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: c742d527-d1e5-4321-8b8d-a7b2d3a141dd
+    type: condition
+    task:
+      id: c742d527-d1e5-4321-8b8d-a7b2d3a141dd
+      version: -1
+      name: Test enrichment of sha1 does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: hasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "40"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "31_32_yes": 0.9
+    },
     "paper": {
       "dimensions": {
-        "height": 3535,
+        "height": 4060,
         "width": 810,
         "x": 50,
         "y": 50
