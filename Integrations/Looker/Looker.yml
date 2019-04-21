@@ -131,4 +131,4 @@ script:
   script: '-'
   type: python
 tests:
-  Test-Looker
+  - Test-Looker
