@@ -58,7 +58,7 @@ def test_predict_phishing_words_no_words(mocker):
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
     mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
     mocker.patch('demisto_ml.filter_model_words', return_value=("", 0), create=True)
-    with pytest.raises(SystemExit) as res:
+    with pytest.raises(SystemExit):
         predict_phishing_words("modelName", "list", "subject", "body")
 
 
