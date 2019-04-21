@@ -241,6 +241,7 @@ def test_email_with_special_character(mocker):
     assert isinstance(results[0]['EntryContext']['Email'], dict)
     assert results[0]['EntryContext']['Email']['Depth'] == 0
 
+
 def test_utf_subject_convert():
     subject = ('[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?='
                ' =?utf-8?q?mmer=C3=A7ant_Pickup_!?=')
