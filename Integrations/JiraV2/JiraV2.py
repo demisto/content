@@ -11,7 +11,7 @@ from base64 import b64encode
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-BASE_URL = demisto.getParam('url')
+BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')

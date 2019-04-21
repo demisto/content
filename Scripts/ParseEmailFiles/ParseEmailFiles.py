@@ -3516,7 +3516,7 @@ def main():
             )
             return
 
-        elif 'ascii text' in file_type_lower:
+        elif 'ascii text' in file_type_lower or 'unicode text' in file_type_lower:
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
