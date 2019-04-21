@@ -1229,6 +1229,5 @@ script:
     description: Send a reply from an existing ticket to the user
   isfetch: true
   runonce: false
-releaseNotes: "Rewriting RTIR to work without RT package"
 tests:
   - RTIR Test

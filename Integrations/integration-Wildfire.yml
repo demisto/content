@@ -1045,4 +1045,3 @@ script:
   runonce: false
 tests:
 - Wildfire Test
-releaseNotes: Add wildfire-get-verdict, wildfire-get-verdicts, wildfire-upload-file-url commands. deprecate wildfire-upload-file-remote command.
