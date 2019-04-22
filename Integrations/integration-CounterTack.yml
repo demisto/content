@@ -2239,6 +2239,5 @@ script:
         to represent queries.
   isfetch: true
   runonce: false
-releaseNotes: "Rewrite the integration to work without RT package"
 tests:
   - no tests
