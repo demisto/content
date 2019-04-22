@@ -407,104 +407,82 @@ def create_report(hash, jres, reports, file_info):
 
     for report in reports:
         if 'network' in report:
-            if report["network"]:
-                if ('UDP' in report[i].network) {
-    if ('-ip' in report[i].network.UDP) {
-    udp_ip.push(report[i].network.UDP['-ip']);
-    }
-    if ('-port' in report[i].network.UDP) {
-    udp_port.push(report[i].network.UDP['-port']);
-    }
-    }
-    if ('TCP' in report[i].network) {
-    if ('-ip' in report[i].network.TCP) {
-    tcp_ip.push(report[i].network.TCP['-ip']);
-    }
-    if ('-port' in report[i].network.TCP) {
-    tcp_port.push(report[i].network.TCP['-port']);
-    }
-    }
-    if ('dns' in report[i].network) {
-    for (var j = 0; j < report[i].network.dns.length; j++) {
-    if ('-query' in report[i].network.dns[j]) {
-    dns_query.push(report[i].network.dns[j]['-query']);
-    }
-    if ('-response' in report[i].network.dns[j]) {
-    dns_response.push(report[i].network.dns[j]['-response']);
-    }
-    }
-    }
-    }
-    }
-    if ('evidence' in report[i]) {
-    if ('file' in report[i].evidence) {
-    if (typeof report[i].evidence.file == 'object' & & 'entry' in report[i].evidence.file) {
-    if ('-md5' in report[i].evidence.file.entry) {
-    evidence_md5.push(report[i].evidence.file.entry['-md5']);
-    }
-    if (typeof report[i].evidence.file == 'object' & & '-text' in report[i].evidence.file.entry) {
-    evidence_text.push(report[i].evidence.file.entry['-text']);
-    }
-    }
-    }
-    }
-    }
+            if 'UDP' in report["network"]:
+                if '-ip' in report["network"]["UDP"]:
+                    udp_ip.append(report["network"]["UDP"]["-ip"])
+                if '-port' in report["network"]["UDP"]:
+                    udp_port.append(report["network"]["UDP"]["-port"])
+            if 'TCP' in report["network"]:
+                if '-ip' in report["network"]["TCP"]:
+                    tcp_ip.append(report["network"]["TCP"]["-ip"])
+                if '-port' in report["network"]["TCP"]:
+                    tcp_port.append(report["network"]["TCP"]['-port'])
+            if 'dns' in report["network"]:
+                for dns_obj in report["network"]["dns"]:
+                    if '-query' in dns_obj:
+                        dns_query.append(dns_obj['-query'])
+                    if '-response' in dns_obj:
+                        dns_response.append(dns_obj['-response'])
 
-    var
+    if 'evidence' in report:
+        if 'file' in report["evidence"]:
+            if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
+                if '-md5' in report["evidence"]["file"]["entry"]:
+                    evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
+                if '-text' in report["evidence"]["file"]["entry"]:
+                    evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+
+
     context = {
-        DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0}
-    };
+        'DBotScore': {
+                'Indicator': hash,
+                'Type': 'hash',
+                'Vendor': 'WildFire',
+                'Score': 0
+            }
+    }
 
-    var
     outputs = {
         'Status': 'Success',
         'SHA256': reportResponse.info.sha256,
-    };
-
-    if (udp_ip.length | | udp_port.length | | tcp_ip.length | | tcp_port.length | | dns_query | | dns_response) {
-
-    outputs.Network = {};
-
-    if (udp_ip.length | | udp_port.length) {
-    outputs.Network.UDP = {};
-    if (udp_ip.length) {
-    outputs.Network.UDP.IP = udp_ip;
-    }
-    if (udp_port.length) {
-    outputs.Network.UDP.Port = udp_port;
-    }
-    }
-    if (tcp_ip.length | | tcp_port.length) {
-    outputs.Network.TCP = {};
-    if (tcp_ip.length) {
-    outputs.Network.TCP.IP = tcp_ip;
-    }
-    if (tcp_port.length) {
-    outputs.Network.TCP.Port = tcp_port;
-    }
-    }
-    if (dns_query.length | | dns_response.length) {
-    outputs.Network.DNS = {};
-    if (dns_query.length) {
-    outputs.Network.DNS.Query = dns_query;
-    }
-    if (dns_response.length) {
-    outputs.Network.DNS.Response = dns_response;
-    }
-    }
     }
 
-    if (evidence_md5.length | | evidence_text.length) {
-    outputs.Evidence = {};
-    if (evidence_md5.length) {
-    outputs.Evidence.md5 = evidence_md5;
-    }
-    if (evidence_text.length) {
-    outputs.Evidence.Text = evidence_text;
-    }
-    }
+    if len(udp_ip) > 0 or len(udp_port) > 0 or len(tcp_ip) > 0 or len(tcp_port) > 0 or dns_query or dns_response:
 
-    context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs;
+        outputs["Network"] = {}
+
+        if len(udp_ip) > 0 or len(udp_port) > 0:
+            outputs["Network"]["UDP"] = {}
+            if len(udp_ip) > 0:
+                outputs["Network"]["UDP"]["IP"] = udp_ip
+            if len(udp_port) > 0:
+                outputs["Network"]["UDP"]["Port"] = udp_port
+
+        if len(tcp_ip) > 0 or len(tcp_port) > 0:
+            outputs["Network"]["TCP"] = {}
+            if len(tcp_ip) > 0:
+                outputs.Network.TCP.IP = tcp_ip;
+            }
+            if (tcp_port.length) {
+            outputs.Network.TCP.Port = tcp_port;
+            }
+            }
+        if len(dns_query) > 0 or len(dns_response) > 0:
+            outputs["Network"]["DNS"] = {}
+            if len(dns_query) > 0:
+                outputs["Network"]["DNS"]["Query"] = dns_query
+            if len(dns_response) > 0:
+            outputs["Network"]["DNS"]["Response"] = dns_response
+
+
+    if len(evidence_md5) > 0 or len(evidence_text) > 0:
+        outputs["Evidence"] = {}
+        if len(evidence_md5 > 0:
+            outputs["Evidence"]["md5"] = evidence_md5
+        if len(evidence_text > 0:
+            outputs["Evidence"]["Text"] = evidence_text
+
+    context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
     if (file_info) {
     if (file_info.malware == = 'yes') {
