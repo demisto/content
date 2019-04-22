@@ -1560,7 +1560,7 @@ def resolve_approval_request_command():
     :return: EntryObject of the approval request
     """
     args = demisto.args()
-    raw_res = update_file_upload(args)
+    raw_res = resolve_approval_request(args)
     ec = {
         'id': 'ID',
         'resolution': 'Resolution',
@@ -1594,16 +1594,12 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format=CB_TIME_FORMAT)
     last_fetch_timestamp = cbp_date_to_timestamp(last_fetch)
+    query = "timestamp>{time}".format(time=last_fetch)
     user_query = demisto.params().get('fetch_query')
-    event_url_params = {
-        'q': "timestamp>{time}".format(time=last_fetch),
-        'limit': INCIDENTS_PER_FETCH
-    }
     if user_query:
         # Add user's query to default query
-        event_url_params['q'] = '{timestamp_query}&{user_query}'.format(timestamp_query=event_url_params['q'],
-                                                                        user_query=user_query)
-    events = search_event(event_url_params)
+        query = '{timestamp_query}&{user_query}'.format(timestamp_query=query, user_query=user_query)
+    events = search_event(q=query, limit=INCIDENTS_PER_FETCH)
     incidents = []
     if events:
         for event in events:
