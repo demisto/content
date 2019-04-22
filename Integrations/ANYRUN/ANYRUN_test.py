@@ -1,4 +1,3 @@
-import demistomock as demisto
 import pytest
 import json
 from ANYRUN import anyrun_threatlevel_to_dbotscore
@@ -10,6 +9,7 @@ from ANYRUN import taskid_from_url
 
 @pytest.fixture(scope="module")
 def get_response():
+    ssdeep = "6144:u77HUUUUUUUUUUUUUUUUUUUT52V6JoGXPjm+iNQBA81RqHOF:u77HUUUUUUUUUUUUUUUUUUUTCyoUmQBj"
     response = {
         "data": {
             "analysis": {
@@ -17,7 +17,7 @@ def get_response():
                     "mainObject": {
                         "type": "file",
                         "hashes": {
-                            "ssdeep": "6144:u77HUUUUUUUUUUUUUUUUUUUT52V6JoGXPjm+iNQBA81RqHOF:u77HUUUUUUUUUUUUUUUUUUUTCyoUmQBj",
+                            "ssdeep": ssdeep,
                             "sha256": "22b6830432e47e54619e0448c93f699b096e0e73165e051598a82836ab8e38ab",
                             "sha1": "fd0d6e5e7ff1db4b3b12b8b6c8a35464b3bcd1e5",
                             "md5": "06b2ace5e7ff00d6cf6dcdc793020f45"
@@ -33,9 +33,11 @@ def get_response():
             }
         }
     }
-    response_as_string = json.dumps(response).replace('file', 'download').replace('Malicious activity', 'Suspicious activity')
+    response_as_string = json.dumps(response).replace('file', 'download')
+    response_as_string = response_as_string.replace('Malicious activity', 'Suspicious activity')
     response2 = json.loads(response_as_string)
-    response_as_string = response_as_string.replace('download', 'url').replace('Suspicious activity', 'No threat detected')
+    response_as_string = response_as_string.replace('download', 'url')
+    response_as_string = response_as_string.replace('Suspicious activity', 'No threat detected')
     response3 = json.loads(response_as_string)
     return response, response2, response3
 
@@ -139,5 +141,6 @@ class TestGenerateDBotScore(object):
 
 class TestTaskIDFromURL(object):
     def test_taskid_from_url(self):
-        url = 'https://www.madeup.com/madeup/tasks/this-is-the-task-id/blah/&someotherstuff'  # disable-secrets-detection
+        url = 'https://www.madeup.com/madeup/tasks/'  # disable-secrets-detection
+        url += 'this-is-the-task-id/blah/&someotherstuff'
         assert taskid_from_url(url) == 'this-is-the-task-id'
