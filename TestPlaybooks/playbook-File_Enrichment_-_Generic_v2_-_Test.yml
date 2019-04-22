@@ -1,6 +1,7 @@
-id: File Enrichment - Generic Test
+id: File Enrichment - Generic v2 - Test
 version: -1
-name: File Enrichment - Generic Test
+name: File Enrichment - Generic v2 - Test
+description: A test for the File Enrichment - Generic v2 playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -26,14 +27,15 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 573632f5-8257-4ae0-88c0-7fdfb169112a
+    taskid: a39113bf-3b59-4935-84a4-ca700c708154
     type: regular
     task:
-      id: 573632f5-8257-4ae0-88c0-7fdfb169112a
+      id: a39113bf-3b59-4935-84a4-ca700c708154
       version: -1
-      name: Add File MD5 to context
+      name: Add file MD5 to context
       scriptName: Set
       type: regular
       iscommand: false
@@ -48,6 +50,7 @@ tasks:
         simple: File.MD5
       value:
         simple: 3f066dd1f1da052248aed5abc4a0c6a1
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -58,14 +61,15 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 8035b34b-ba2c-49f9-833b-2212997f24ed
+    taskid: 65c19517-7c8f-4064-8fb6-6ef179bed34b
     type: regular
     task:
-      id: 8035b34b-ba2c-49f9-833b-2212997f24ed
+      id: 65c19517-7c8f-4064-8fb6-6ef179bed34b
       version: -1
-      name: Add File SHA1 to context
+      name: Add file SHA1 to context
       scriptName: Set
       type: regular
       iscommand: false
@@ -80,6 +84,7 @@ tasks:
         simple: File.SHA1
       value:
         simple: 795b33795f0308fc5e83abc2daff1d7129dfa400
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -90,14 +95,15 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: b24632ae-ecab-4d15-8d4c-be64d7ec2bdb
+    taskid: 8f11095f-844f-441d-8ec3-f849cdb6d23a
     type: regular
     task:
-      id: b24632ae-ecab-4d15-8d4c-be64d7ec2bdb
+      id: 8f11095f-844f-441d-8ec3-f849cdb6d23a
       version: -1
-      name: Add File SHA256 to context
+      name: Add file SHA256 to context
       scriptName: Set
       type: regular
       iscommand: false
@@ -112,6 +118,7 @@ tasks:
         simple: File.SHA256
       value:
         simple: afd3b729cf99fb9ea441f42862a4835d1d6eeb36ee535f9b206e3a00382c972e
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -122,14 +129,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: dbe85baf-e6b6-430c-8ef9-718922014dab
+    taskid: f509768d-6029-4bd0-8f41-b96be360aff9
     type: condition
     task:
-      id: dbe85baf-e6b6-430c-8ef9-718922014dab
+      id: f509768d-6029-4bd0-8f41-b96be360aff9
       version: -1
       name: Verify DBotScore context fields
+      description: Checks if the expected DBotScore fields were populated in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -171,6 +180,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: f083cfd3-28ab-4f13-8692-32ae498df885
@@ -180,7 +190,6 @@ tasks:
       version: -1
       name: Done
       type: title
-      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
@@ -193,6 +202,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 144f05c5-0c6b-45a4-8c74-46e471288276
@@ -200,8 +210,8 @@ tasks:
     task:
       id: 144f05c5-0c6b-45a4-8c74-46e471288276
       version: -1
-      name: File Enrichment - Generic
-      playbookName: File Enrichment - Generic
+      name: File Enrichment - Generic_dev2
+      playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
@@ -235,12 +245,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: ce25dbaf-20e4-41df-8430-43901ebd7778
+    taskid: 60f8b33c-5629-4912-8ef0-9c465db61356
     type: regular
     task:
-      id: ce25dbaf-20e4-41df-8430-43901ebd7778
+      id: 60f8b33c-5629-4912-8ef0-9c465db61356
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -254,6 +265,7 @@ tasks:
     scriptarguments:
       message:
         simple: Not all DBotScore context fields were created.
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -264,6 +276,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

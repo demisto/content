@@ -1128,7 +1128,7 @@
                 "VirusTotal - Private API",
                 "Cylance Protect v2"
             ],
-            "playbookID": "File Enrichment - Generic Test"
+            "playbookID": "File Enrichment - Generic v2 - Test"
         },
         {
             "integrations": "McAfee Active Response",
