@@ -262,6 +262,7 @@ def cherwell_dict_parser(key, value, item_list):
 
 def parse_fields_from_business_object(field_list):
     new_business_obj = cherwell_dict_parser('name', 'value', field_list)
+
     return new_business_obj
 
 
@@ -272,6 +273,8 @@ def parse_fields_from_business_object_list(response):
     for business_obj in response.get('businessObjects'):
         new_business_obj = parse_fields_from_business_object(business_obj.get('fields'))
         new_business_obj['BusinessObjectID'] = business_obj.get('busObId')
+        new_business_obj['PublicID'] = business_obj.get('busObPublicId')
+        new_business_obj['RecordID'] = business_obj.get('busObRecId')
         object_list.append(new_business_obj)
 
     return object_list

@@ -1,0 +1,51 @@
+args:
+- default: false
+  description: 'The query to run. The query is cpmposed of comma seperated filters
+    such that each filter should be of the form: `field_name::operator::value` and
+    operator is one of: ''eq''=equal, ''gt''=grater-than, ''lt''=less-than, ''contains'',
+    ''startwith''. Example: `CreatedDateTime:gt:4/10/2019 3:10:12 PM`. NOTICE: If
+    received multiple filters for the same field name, an ''OR'' operation between
+    the filters will be performed, if the field names are different an ''AND'' operation
+    will be performed.'
+  isArray: false
+  name: query
+  predefined:
+  - ''
+  required: true
+  secret: false
+comment: This script is an example script of how to query incidents from Cherwell.
+  The script wraps the cherwell-query-business-object command of the cherwell integration.
+  When writing your own script to query a business object, follow the instructions
+  found in the configuration section of the script, leave the execution part untouched.
+commonfields:
+  id: 648bab3f-ad4d-4e0d-a732-a36195771536
+  version: -1
+enabled: false
+name: CherwellQueryIncidents
+outputs:
+- contextPath: Cherwell.BusinessObject.RecordID
+  description: Recoed ID
+  type: String
+- contextPath: Cherwell.BusinessObject.PublicID
+  description: Public ID
+  type: String
+- contextPath: Cherwell.BusinessObject.Description
+  description: Incident description
+  type: String
+- contextPath: Cherwell.BusinessObject.Priority
+  description: Incident ptiority
+  type: Number
+- contextPath: Cherwell.BusinessObject.OwnedBy
+  description: Incident owned by field
+  type: String
+- contextPath: Cherwell.BusinessObject.Service
+  description: Service needed for the incident
+  type: String
+- contextPath: Cherwell.BusinessObject.CustomerDisplayName
+  description: 'Incident reporting customer '
+  type: Unknown
+script: '-'
+system: false
+timeout: '0'
+type: python
+tags: []
