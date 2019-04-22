@@ -20,8 +20,8 @@ configuration:
   name: credentials
   required: true
   type: 9
-description: Symantec Management Center provides a unified management environment for the Symantec
-  Security Platform portfolio of products.
+description: Symantec Management Center provides a unified management environment
+  for the Symantec Security Platform portfolio of products.
 display: Symantec Management Center
 name: SymantecManagementCenter
 script:
@@ -100,7 +100,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID
+      description: Device UUID - Can be retrieved from the list-devices command
       isArray: false
       name: uuid
       required: true
@@ -154,7 +154,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID
+      description: Device UUID - Can be retrieved from the list-devices command
       isArray: false
       name: uuid
       required: true
@@ -187,7 +187,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID
+      description: Device UUID - Can be retrieved from the list-devices command
       isArray: false
       name: uuid
       required: true
@@ -223,7 +223,7 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: Device UUID
+      description: Device UUID - Can be retrieved from the list-devices command
       isArray: false
       name: uuid
       required: true
@@ -248,6 +248,12 @@ script:
     - contextPath: SymantecMC.Device.MonitorState
       description: Device monitor state
       type: String
+    - contextPath: SymantecMC.Device.Warnings
+      description: Device warning count
+      type: Number
+    - contextPath: SymantecMC.Device.Errors
+      description: Device error count
+      type: Number
   - arguments:
     - default: false
       description: Query Filter parameter to filter by content type of policy, e.g.,
@@ -326,7 +332,7 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: Policy UUID
+      description: Policy UUID - Can be retrieved from the list-policies command
       isArray: false
       name: uuid
       required: true
@@ -452,7 +458,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Policy UUID
+      description: Policy UUID - Can be retrieved from the list-policies command
       isArray: false
       name: uuid
       required: true
@@ -498,7 +504,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Policy UUID
+      description: Policy UUID - Can be retrieved from the list-policies command
       isArray: false
       name: uuid
       required: true
@@ -537,7 +543,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Policy UUID
+      description: Policy UUID - Can be retrieved from the list-policies command
       isArray: false
       name: uuid
       required: true
@@ -561,25 +567,26 @@ script:
       secret: false
     - default: false
       description: The version of the schema for this content. This value will correspond
-        to the format of the content.
+        to the format of the content. Can be retrieved from the get-policy command.
       isArray: false
       name: schema_version
       required: false
       secret: false
     - default: false
-      description: CSV list of IP addresses to add
+      description: CSV list of IP addresses to add, e.g., '1.2.3.4, 8.8.8.8`
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: CSV list of URLs to add
+      description: CSV list of URLs to add, e.g., 'www.google.com, www.github.com'
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: CSV list of category names to add
+      description: CSV list of category names to add, e.g., 'Job Search/Careers, Content
+        Servers'
       isArray: true
       name: category
       required: false
@@ -591,7 +598,7 @@ script:
     name: symantec-mc-add-policy-content
   - arguments:
     - default: false
-      description: Policy UUID
+      description: Policy UUID - Can be retrieved from the list-policies command
       isArray: false
       name: uuid
       required: true
@@ -615,25 +622,26 @@ script:
       secret: false
     - default: false
       description: The version of the schema for this content. This value will correspond
-        to the format of the content.
+        to the format of the content. Can be retrieved from the get-policy command.
       isArray: false
       name: schema_version
       required: false
       secret: false
     - default: false
-      description: IP addresses to delete
+      description: CSV list of IP addresses to delete, e.g., '1.2.3.4, 8.8.8.8`
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: URLs to delete
+      description: CSV list of URLs to delete, e.g., 'www.google.com, www.github.com'
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: Category names to delete
+      description: CSV list of category names to delete, e.g., 'Job Search/Careers,
+        Content Servers'
       isArray: true
       name: category
       required: false

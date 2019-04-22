@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -98,15 +99,8 @@ def list_devices_command():
         context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(contents)
 
     headers = ['UUID', 'Name', 'LastChanged', 'Host', 'Type']
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': devices,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Symantec Management Center Devices', contents,
-                                         removeNull=True, headers=headers, headerTransform=pascalToSpace),
-        'EntryContext': context
-    })
+    return_outputs(tableToMarkdown('Symantec Management Center Devices', contents,
+                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, devices)
 
 
 def list_devices_request(build, description, model, name, os_version, platform, device_type):
@@ -144,6 +138,216 @@ def list_devices_request(build, description, model, name, os_version, platform, 
     return response
 
 
+def get_device_command():
+    """
+    Command to get information for a specified device
+    :return: An entry with the device data
+    """
+    uuid = demisto.args()['uuid']
+    content = {}
+    context = {}
+
+    device = get_device_request(uuid)
+    if device:
+        content = {
+            'UUID': device.get('uuid'),
+            'Name': device.get('name'),
+            'LastChanged': device.get('lastChanged'),
+            'LastChangedBy': device.get('lastChangedBy'),
+            'Description': device.get('description'),
+            'Model': device.get('model'),
+            'Platform': device.get('platform'),
+            'Type': device.get('type'),
+            'OSVersion': device.get('osVersion'),
+            'Build': device.get('build'),
+            'SerialNumber': device.get('serialNumber'),
+            'Host': device.get('host'),
+            'ManagementStatus': device.get('managementStatus'),
+            'DeploymentStatus': device.get('deploymentStatus')
+        }
+
+        context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content)
+
+    headers = ['UUID', 'Name', 'LastChanged', 'LastChangedBy', 'Description',
+               'Model', 'Platform', 'Host', 'Type', 'OSVersion', 'Build', 'SerialNumber',
+               'ManagementStatus', 'DeploymentStatus']
+
+    return_outputs(tableToMarkdown('Symantec Management Center Device', content,
+                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, device)
+
+
+def get_device_request(uuid):
+    """
+    Return data for a specified device
+    :param uuid: The device UUID
+    :return: The device data
+    """
+    path = 'devices/' + uuid
+
+    response = http_request('GET', path)
+
+    return response
+
+
+def get_device_health_command():
+    """
+        Command to get health information for a specified device
+        :return: An entry with the device data and health
+        """
+    uuid = demisto.args()['uuid']
+    health_content = []
+    human_readable = ''
+    context = {}
+
+    device_health = get_device_health_request(uuid)
+    if device_health and device_health.get('health'):
+
+        if not isinstance(device_health['health'], list):
+            device_health['health'] = [device_health['health']]
+
+        device_content = {
+            'UUID': device_health.get('uuid'),
+            'Name': device_health.get('name')
+        }
+
+        for health in device_health['health']:
+            health_content.append({
+                'Category': health.get('category'),
+                'Name': health.get('name'),
+                'State': health.get('state'),
+                'Message': health.get('message'),
+                'Status': health.get('status')
+            })
+
+        device_headers = ['UUID', 'Name']
+        content = device_content
+        human_readable = tableToMarkdown('Symantec Management Center Device', device_content,
+                                         removeNull=True, headers=device_headers, headerTransform=pascalToSpace)
+        if health_content:
+            health_headers = ['Category', 'Name', 'State', 'Message', 'Status']
+            human_readable += tableToMarkdown('Device Health', health_content,
+                                              removeNull=True, headers=health_headers, headerTransform=pascalToSpace)
+            content['Health'] = health_content
+
+        context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content)
+
+    return_outputs(human_readable, context, device_health)
+
+
+def get_device_health_request(uuid):
+    """
+    Return health for a specified device
+    :param uuid: The device UUID
+    :return: The device health data
+    """
+    path = 'devices/' + uuid + '/health'
+
+    response = http_request('GET', path)
+
+    return response
+
+
+def get_device_license_command():
+    """
+    Command to get license information for a specified device
+    :return: An entry with the device data and license information
+    """
+    uuid = demisto.args()['uuid']
+    license_content = []
+    human_readable = ''
+    context = {}
+
+    device_license = get_device_license_request(uuid)
+    if device_license:
+
+        if not isinstance(device_license['components'], list):
+            device_license['components'] = [device_license['components']]
+
+        device_content = {
+            'UUID': device_license.get('uuid'),
+            'Name': device_license.get('name'),
+            'Type': device_license.get('deviceType'),
+            'LicenseStatus': device_license.get('licenseStatus')
+        }
+
+        for component in device_license['components']:
+            license_content.append({
+                'Name': component.get('componentName'),
+                'ActivationDate': component.get('activationDate'),
+                'ExpirationDate': component.get('expirationDate'),
+                'Validity': component.get('validity')
+            })
+
+        device_headers = ['UUID', 'Name']
+        content = device_content
+        human_readable = tableToMarkdown('Symantec Management Center Device', device_content,
+                                         removeNull=True, headers=device_headers, headerTransform=pascalToSpace)
+        if license_content:
+            license_headers = ['Name', 'ActivationDate', 'ExpirationDate', 'Validity']
+            human_readable += tableToMarkdown('License Components', license_content,
+                                              removeNull=True, headers=license_headers, headerTransform=pascalToSpace)
+            content['LicenseComponent'] = license_content
+
+        context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content)
+
+    return_outputs(human_readable, context, device_license)
+
+
+def get_device_license_request(uuid):
+    """
+    Return the license for a specified device
+    :param uuid: The device UUID
+    :return: The device license data
+    """
+    path = 'devices/' + uuid + '/license'
+
+    response = http_request('GET', path)
+
+    return response
+
+
+def get_device_status_command():
+    """
+    Command to get the status for a specified device
+    :return: An entry with the device status data
+    """
+    uuid = demisto.args()['uuid']
+    content = {}
+    context = {}
+
+    device = get_device_status_request(uuid)
+    if device:
+        content = {
+            'UUID': device.get('uuid'),
+            'Name': device.get('name'),
+            'CheckDate': device.get('checkDate'),
+            'StartDate': device.get('startDate'),
+            'MonitorState': device.get('monitorState'),
+            'Warnings': len(device.get('warnings', [])),
+            'Errors': len(device.get('errors', []))
+        }
+
+        context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content)
+
+    headers = ['UUID', 'Name', 'CheckDate', 'StartDate', 'MonitorState', 'Warnings', 'Errors']
+
+    return_outputs(tableToMarkdown('Symantec Management Center Device Status', content,
+                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, device)
+
+
+def get_device_status_request(uuid):
+    """
+    Return data for a specified device status
+    :param uuid: The device UUID
+    :return: The device status data
+    """
+    path = 'devices/' + uuid + '/status'
+
+    response = http_request('GET', path)
+
+    return response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is ' + demisto.command())
@@ -155,6 +359,14 @@ try:
         demisto.results('ok')
     elif demisto.command() == 'symantec-mc-list-devices':
         list_devices_command()
+    elif demisto.command() == 'symantec-mc-get-device':
+        get_device_command()
+    elif demisto.command() == 'symantec-mc-get-device-health':
+        get_device_health_command()
+    elif demisto.command() == 'symantec-mc-get-device-license':
+        get_device_license_command()
+    elif demisto.command() == 'symantec-mc-get-device-status':
+        get_device_status_command()
 
 except Exception as e:
     LOG(str(e))
