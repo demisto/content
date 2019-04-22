@@ -412,3 +412,5 @@ script:
   runonce: false
 releaseNotes: "Added support for: 1. Getting information regrading specific incident. 2. Getting the service list
   with their integration keys"
+tests:
+  - PagerDuty Test
