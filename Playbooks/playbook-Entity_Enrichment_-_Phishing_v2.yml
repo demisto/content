@@ -159,6 +159,7 @@ tasks:
       id: 8189698a-475c-433b-8fbf-20275b3b2084
       version: -1
       name: File Enrichment - Generic v2
+      description: ""
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -205,6 +206,7 @@ tasks:
       id: b00cb02f-d44b-4e40-8c27-281d17a94723
       version: -1
       name: URL Enrichment - Generic v2
+      description: ""
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false

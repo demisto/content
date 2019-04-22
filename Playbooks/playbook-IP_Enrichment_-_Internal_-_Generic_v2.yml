@@ -343,6 +343,7 @@ tasks:
       id: d3091e4c-f852-496d-81b1-54b37f0ae47d
       version: -1
       name: Endpoint Enrichment - Generic v2
+      description: ""
       playbookName: Endpoint Enrichment - Generic v2
       type: playbook
       iscommand: false
