@@ -362,7 +362,8 @@ def get_business_object_summary_by_name(name):
 def resolve_business_object_id_by_name(name):
     res = get_business_object_summary_by_name(name)
     if not res:
-        return_error(f'Could not retrieve business object id. Please make sure "{name}" is a valid business object.')
+        return_error(f'Could not retrieve "{name}" business object id. '
+                     f'Make sure "{name}" is a valid business object.')
     return res[0].get('busObId')
 
 
@@ -611,8 +612,10 @@ def get_all_incidents(objects_names, last_created_time, max_result, query_string
     all_incidents = []
     for business_object_name in objects_names:
         business_object_id = resolve_business_object_id_by_name(business_object_name)
-        query_list = validate_query_for_fetch_incidents(objects_names, query_string) if query_string \
-            else [['CreatedDateTime', 'gt', last_created_time]]
+        query_list = [['CreatedDateTime', 'gt', last_created_time]]
+        if query_string:
+            additional_query_list = validate_query_for_fetch_incidents(objects_names, query_string)
+            query_list += additional_query_list
         incidents, _ = query_business_object(query_list, business_object_id, max_result)
         all_incidents += incidents
     sorted_incidents = sorted(all_incidents, key=lambda incident: incident.get('CreatedDateTime'))
@@ -805,6 +808,7 @@ def get_field_info(type, field_property):
     business_object_id = resolve_business_object_id_by_name(type)
     template = get_business_object_template(business_object_id)
     business_object_fields = template.get('fields')
+    field_to_return = None
     for field in business_object_fields:
         if field.get('displayName') == field_property or \
                 field.get('fieldId') == field_property or \
@@ -822,7 +826,7 @@ def get_field_info(type, field_property):
 
 
 ########################################################################################################################
-def test_cammand():
+def test_command():
     if FETCHES_INCIDENTS:
         if not OBJECTS_TO_FETCH[0]:
             return_error('No objects to fetch were given')
@@ -888,7 +892,7 @@ def get_business_object_command():
     object_id = args.get('id_value')
     business_object, results = get_business_object(type_name, object_id, id_type)
     md = tableToMarkdown(f'{type_name.capitalize()}: {object_id}', business_object,
-                         removeNull=True, headerTransform=pascalToSpace)
+                         headerTransform=pascalToSpace)
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -896,7 +900,7 @@ def get_business_object_command():
         'Contents': results,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': createContext(business_object, removeNull=True)
+            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': createContext(business_object)
         }
     })
 
@@ -1055,7 +1059,7 @@ def query_business_object_command():
     query_string = args.get('query')
     max_results = args.get('max_results')
     results, raw_response = query_business_object_string(type_name, query_string, max_results)
-    md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace, removeNull=True)
+    md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1242,7 +1246,7 @@ LOG('Command being called is %s' % (demisto.command()))
 try:
     # handle_proxy()
     if demisto.command() == 'test-module':
-        test_cammand()
+        test_command()
         demisto.results('ok')
 
     elif demisto.command() == 'fetch-incidents':

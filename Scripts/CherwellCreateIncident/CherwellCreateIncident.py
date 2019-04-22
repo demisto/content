@@ -21,6 +21,7 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  After you added the argument to the script arguments you will need to add its value to this `FIELDS` object by using
  `args.get('argument_name').
  Make sure the key is identical to the field name in Cherwell system.
+ 
  For example: we wished to create an incident with a requesting customer field in it, thus, we added a 
  customer_display_name argument to this script, we pulled the value of the argument by using 
  `args.get('customer_display_name')` and we set the key name to be `CustomerDisplayName` - as it is appear in Cherwell 
