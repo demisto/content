@@ -167,7 +167,7 @@ tasks:
             value:
               simple: News/Media,Portals,Search Engines
           ignorecase: true
-      - - operator: containsGeneral
+        - operator: containsGeneral
           left:
             value:
               simple: Domain.ContentCategories
