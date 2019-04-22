@@ -495,3 +495,7 @@ def demistoUrls():
 
 def appendContext(key, data, dedup=False):
     return None
+
+def dt(obj=None, trnsfrm=None):
+    return ""
+
