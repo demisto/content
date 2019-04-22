@@ -326,7 +326,7 @@
         {
           "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
+            "timeout": 600
         },
         {
             "playbookID": "CutTransformerTest"

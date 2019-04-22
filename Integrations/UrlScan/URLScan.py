@@ -23,7 +23,8 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-INSECURE = not demisto.params().get('insecure')
+INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
+    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
 PROXY = demisto.params().get('proxy')
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
