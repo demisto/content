@@ -55,7 +55,7 @@ configuration:
     Timestamp field to filter by (e.g., `opened_at`)
     This is how the filter is applied to the query: “ORDERBYopened_at^opened_at>[Last Run]. To prevent duplicate incidents, this field is mandatory for fetching incidents.
   name: timestamp_field
-  required: true
+  required: false
   type: 0
 - display: Incident type
   name: incidentType
@@ -4130,6 +4130,7 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: 'Added option to choose the timestamp field to filter by when fetching incidents; Enforcement for the fetch incidents limit and last run;'
+releaseNotes: Added option to choose the timestamp field to filter by when fetching
+  incidents; Enforcement for the fetch incidents limit and last run;
 tests:
 - No test - Hibernating instance
