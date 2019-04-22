@@ -699,6 +699,7 @@ def update_file_rule_command():
         'policyIds': args.get('policyIds'),
         'platformFlags': args.get('platformFlags'),
     }
+    body_params = {k: v for k, v in body_params.items() if v}
     raw_res = update_file_rule(body_params)
     ec = get_trasnformed_dict(raw_res, FILE_RULE_TRANS_DICT)
     hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', ec)
