@@ -1177,7 +1177,7 @@ def get_field_info_command():
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
-    # handle_proxy()
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_command()
         demisto.results('ok')
