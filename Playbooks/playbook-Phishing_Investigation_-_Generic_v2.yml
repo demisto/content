@@ -1048,5 +1048,4 @@ inputs:
 outputs: []
 releaseNotes: "A new Phishing Investigation playbook that now utilizes a customized Entity Enrichment playbook to avoid enrichment of irrelevant entities."
 tests:
-- Phishing test - attachment
-- Phishing test - Inline
+- No test - will see if old test should run new phishing playbook
