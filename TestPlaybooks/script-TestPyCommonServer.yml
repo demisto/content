@@ -335,7 +335,9 @@ script: |-
 
 
   def test_camelize():
-      assert str(camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_')) == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
+      camelized_list = camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_')
+      assert isinstance(camelized_list, list)
+      assert str(camelized_list) == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
       assert str(camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_')) == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
       demisto.results("Camelize test finished successfuly!")
 
