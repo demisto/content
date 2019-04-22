@@ -84,7 +84,7 @@ def is_valid_ip(s):
 
 def get_result_page():
     uuid = demisto.args().get('uuid')
-    uri = BASE_URL+'result/{}'.format(uuid)
+    uri = BASE_URL + 'result/{}'.format(uuid)
     return uri
 
 
