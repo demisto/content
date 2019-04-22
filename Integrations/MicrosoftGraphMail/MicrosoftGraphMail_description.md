@@ -1,0 +1,1 @@
+To start using Microsoft Graph Mail, use the Tenant ID and the Token given from this [link](https://login.microsoftonline.com/common/adminconsent?client_id=d53b5622-9b55-4399-88a6-187449269f91&redirect_uri=https://demistobot.demisto.com/msg-mail).
