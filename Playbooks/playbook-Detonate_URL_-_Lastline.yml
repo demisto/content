@@ -23,29 +23,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 5843724a-5947-48e9-85dc-721427e3e01f
+    taskid: 2e2c891a-2cbf-4ebd-8164-4791a89c3310
     type: regular
     task:
-      id: 5843724a-5947-48e9-85dc-721427e3e01f
+      id: 2e2c891a-2cbf-4ebd-8164-4791a89c3310
       version: -1
       name: Lastline Upload URL
-      description: Uploads the submission to Latline.
-      script: Lastline|||lastline-upload-url
+      description: Submit URL for analysis.
+      script: '|||lastline-upload-url'
       type: regular
       iscommand: true
-      brand: Lastline
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
-      pushToPortal: {}
       threshold: {}
       url:
         complex:
@@ -54,17 +55,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 7c75a11f-5a39-410e-8fed-bbf95f6556c4
+    taskid: 44d072d8-9786-4dd9-8bcb-630c89e2b8ee
     type: playbook
     task:
-      id: 7c75a11f-5a39-410e-8fed-bbf95f6556c4
+      id: 44d072d8-9786-4dd9-8bcb-630c89e2b8ee
       version: -1
       name: GenericPolling
       description: |-
@@ -81,7 +84,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "11"
     scriptarguments:
       Ids:
         complex:
@@ -93,7 +96,7 @@ tasks:
       PollingCommandArgName:
         simple: uuid
       PollingCommandName:
-        simple: lastline-get-report
+        simple: lastline-check-status
       Timeout:
         complex:
           root: inputs.Timeout
@@ -107,24 +110,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: c8e4ee12-826c-4f53-8ded-b9fea0f653d1
+    taskid: 7685f1a2-b64e-41a7-81f8-f3830168f714
     type: regular
     task:
-      id: c8e4ee12-826c-4f53-8ded-b9fea0f653d1
+      id: 7685f1a2-b64e-41a7-81f8-f3830168f714
       version: -1
       name: Lastline Get Report
-      description: Retrieve the reports from Lastline.
-      script: Lastline|||lastline-get-report
+      description: Get analysis report
+      script: '|||lastline-get-report'
       type: regular
       iscommand: true
-      brand: Lastline
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -139,10 +144,12 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 9cf17ba9-0559-471e-8012-1abbd588a590
@@ -172,11 +179,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 162.5,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 686f6312-301b-461a-877c-6e4ec794393f
@@ -193,11 +202,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1245
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 5305d933-86c0-46b2-8889-9c675f21f978
@@ -247,11 +258,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: b5e9fe45-6986-4e58-8ba4-229eafdcf817
@@ -292,18 +305,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 0fd4e66e-bf5d-4df8-8522-762d9f2e2e38
+    type: regular
+    task:
+      id: 0fd4e66e-bf5d-4df8-8522-762d9f2e2e38
+      version: -1
+      name: Lastline Check Status
+      description: Check submissions status
+      script: '|||lastline-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      uuid:
+        complex:
+          root: Lastline
+          accessor: Submission.UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 727.5,
+        "height": 1435,
+        "width": 605,
         "x": 50,
         "y": 50
       }
@@ -425,5 +472,17 @@ outputs:
 - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
   description: Yara signature of the executable of the process
   type: string
+- contextPath: URL
+  description: URL object
+  type: unknown
+- contextPath: URL.Malicious
+  description: URL Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBot score object
+  type: unknown
+- contextPath: Lastline.Submission
+  description: Lastline submission object
+  type: unknown
 tests:
-- Lastline - testplaybook
+- Detonate URL - Generic Test
