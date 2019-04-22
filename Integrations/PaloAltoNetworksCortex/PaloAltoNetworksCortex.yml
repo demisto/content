@@ -46,6 +46,51 @@ configuration:
   defaultvalue: 24 hours
   type: 0
   required: false
+- display: Severity of events to fetch (Firewall)
+  name: traps_severity
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - critical
+  - high
+  - medium
+  - low
+  - informational
+  - configuration
+- display: Severity of events to fetch (Firewall)
+  name: firewall_severity
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - critical
+  - high
+  - medium
+  - low
+  - informational
+  - unused
+- display: Subtype of events to fetch (Firewall)
+  name: firewall_subtype
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - url
+  - antivirus
+  - spyware
+  - vulnerability
+  - file
+  - scan
+  - flood
+  - packet
+  - resource
+  - data
+  - wildfire
+  - wildfire-virus
 script:
   script: ''
   type: python
@@ -382,5 +427,6 @@ script:
     description: Query Cortex Logging service according to pre-set queries
   dockerimage: demisto/python_pancloud:1.0.0.170
   isfetch: true
+releaseNotes: "-"
 tests:
   - Palo Alto Networks Cortex Test
