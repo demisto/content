@@ -1009,14 +1009,12 @@ def get_field_info_command():
     type_name = args.get('type')
     field_property = args.get('field_property')
     results = get_field_info(type_name, field_property)
-    md = tableToMarkdown('Field info:', results, headers=['DisplayName', 'FieldID', 'Name'],
-                         headerTransform=pascalToSpace,
-                         removeNull=True)
+    md = tableToMarkdown('Field info:', results, headerTransform=pascalToSpace)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'Cherwell.FieldInfo()': results},
+        'EntryContext': {'Cherwell.FieldInfo(val.FieldID == obj.FieldID)': results},
         'HumanReadable': md,
     })
 
