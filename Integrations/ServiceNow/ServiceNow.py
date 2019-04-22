@@ -25,12 +25,12 @@ def get_server_url():
 
 ''' GLOBAL VARIABLES '''
 
-
 DEFAULTS = {
     'limit': 10,
     'offset': 0,
     'fetch_limit': 10,
-    'fetch_time': '10 minutes'
+    'fetch_time': '10 minutes',
+    'ticket_type': 'incident'
 }
 
 USERNAME = demisto.params()['credentials']['identifier']
@@ -38,12 +38,12 @@ PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('insecure', False)
 API = '/api/now/'
 VERSION = demisto.params().get('api_version')
-PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', 'incident')
+PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', DEFAULTS['ticket_type'])
 FETCH_TIME = demisto.params().get('fetch_time').strip()
 SYSPARM_QUERY = demisto.params().get('sysparm_query')
 SYSPARM_LIMIT = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
-TIMESTAMP_FIELD = demisto.params().get('timestamp_field')
-TICKET_TYPE = demisto.params()['ticket_type']
+TIMESTAMP_FIELD = demisto.params().get('timestamp_field', 'opened_at')
+TICKET_TYPE = demisto.params().get('ticket_type', DEFAULTS['ticket_type'])
 GET_ATTACHMENTS = demisto.params().get('get_attachments', False)
 
 if VERSION:
@@ -93,7 +93,6 @@ TICKET_STATES = {
     }
 }
 
-
 TICKET_SEVERITY = {
     '1': '1 - High',
     '2': '2 - Medium',
@@ -117,14 +116,12 @@ COMPUTER_STATUS = {
     '100': 'Missing'
 }
 
-
 # Map SNOW severity to Demisto severity for incident creation
 SEVERITY_MAP = {
     '1': 3,
     '2': 2,
     '3': 1
 }
-
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
              'approval_set', 'assigned_to', 'assignment_group',
@@ -139,7 +136,6 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input',
              'watch_list', 'work_end', 'work_notes', 'work_notes_list',
              'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
-
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -954,7 +950,7 @@ def upload_file_command():
 
     res = upload_file(ticket_id, file_id, file_name, ticket_type)
 
-    if not res or 'result' not in res:
+    if not res or 'result' not in res or not res['result']:
         return_error('Unable to retrieve response')
 
     hr = {
@@ -1345,31 +1341,24 @@ def fetch_incidents():
 
     query = ''
     if SYSPARM_QUERY:
-        query += SYSPARM_QUERY
-        if TIMESTAMP_FIELD:
-            query += '^'
-    if TIMESTAMP_FIELD:
-        query += 'ORDERBY{0}^{0}>{1}'.format(TIMESTAMP_FIELD, snow_time)
+        query += SYSPARM_QUERY + '^'
+    query += 'ORDERBY{0}^{0}>{1}'.format(TIMESTAMP_FIELD, snow_time)
 
     if query:
         query_params['sysparm_query'] = query
 
-    # query_params['sysparm_query'] = 'ORDERBYopened_at^opened_at>' + snow_time
     query_params['sysparm_limit'] = SYSPARM_LIMIT
-    # if SYSPARM_QUERY:
-    #    query_params['sysparm_query'] += SYSPARM_QUERY
 
     path = 'table/' + TICKET_TYPE
-
     res = send_request(path, 'get', params=query_params)
 
     count = 0
-    current_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
+    parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
 
     for result in res.get('result', []):
         labels = []
 
-        if TIMESTAMP_FIELD and TIMESTAMP_FIELD not in result:
+        if TIMESTAMP_FIELD not in result:
             raise ValueError("The timestamp field [{}]"
                              " does not exist in the ticket".format(TIMESTAMP_FIELD))
 
@@ -1377,7 +1366,7 @@ def fetch_incidents():
             break
 
         try:
-            if TIMESTAMP_FIELD and datetime.strptime(result[TIMESTAMP_FIELD], '%Y-%m-%d %H:%M:%S') < current_time:
+            if datetime.strptime(result[TIMESTAMP_FIELD], '%Y-%m-%d %H:%M:%S') < parsed_snow_time:
                 continue
         except Exception:
             pass
@@ -1417,32 +1406,42 @@ def fetch_incidents():
         })
 
         count += 1
-        if TIMESTAMP_FIELD:
-            snow_time = result[TIMESTAMP_FIELD]
+        snow_time = result[TIMESTAMP_FIELD]
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
+
+
+def test_module():
+    path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
+    res = send_request(path, 'GET')
+    if 'result' not in res:
+        return_error('ServiceNow error: ' + str(res))
+    ticket = res['result']
+    if demisto.params().get('isFetch'):
+        if isinstance(ticket, list):
+            ticket = ticket[0]
+        if TIMESTAMP_FIELD not in ticket:
+            raise ValueError("The timestamp field [{}]"
+                             " does not exist in the ticket".format(TIMESTAMP_FIELD))
 
 
 LOG('Executing command ' + demisto.command())
 raise_exception = False
 try:
     if demisto.command() == 'test-module':
-        path = "table/incident?sysparm_limit=1"
-        res = send_request(path, 'GET')
-        if 'result' not in res:
-            return_error('ServiceNow error: ' + str(res))
+        test_module()
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
         raise_exception = True
         fetch_incidents()
-    elif demisto.command() == 'servicenow-get' or\
+    elif demisto.command() == 'servicenow-get' or \
             demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
         demisto.results(get_ticket_command())
-    elif demisto.command() == 'servicenow-update' or\
+    elif demisto.command() == 'servicenow-update' or \
             demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
         demisto.results(update_ticket_command())
-    elif demisto.command() == 'servicenow-create' or\
+    elif demisto.command() == 'servicenow-create' or \
             demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
         demisto.results(create_ticket_command())
     elif demisto.command() == 'servicenow-delete-ticket':
@@ -1451,7 +1450,7 @@ try:
         demisto.results(add_link_command())
     elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
         demisto.results(add_comment_command())
-    elif demisto.command() == 'servicenow-query' or\
+    elif demisto.command() == 'servicenow-query' or \
             demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
         demisto.results(query_tickets_command())
     elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
