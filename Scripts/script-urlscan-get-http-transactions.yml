@@ -1,0 +1,48 @@
+commonfields:
+  id: urlscan-get-http-transactions
+  version: -1
+name: urlscan-get-http-transactions
+script: |-
+  var url = args.url;
+  var defaultWaitTime = 5
+
+  uuid = executeCommand('urlscan-submit-url-command', {'url': url})[0].Contents;
+  uri = executeCommand('urlscan-get-result-page', {'uuid': uuid})[0].Contents;
+
+  var resStatusCode = -1
+  var waitedTime = 0
+  while(resStatusCode != 200 && waitedTime < args.timeout) {
+      var resStatusCode = executeCommand('urlscan-poll-uri', {'uri': uri})[0].Contents;
+
+      if (resStatusCode == 200) {
+          break;
+      }
+      wait(defaultWaitTime);
+      waitedTime = waitedTime + defaultWaitTime;
+  }
+  if(resStatusCode == 200) {
+      return executeCommand('urlscan-get-http-transaction-list', {'uuid': uuid, 'url': url});
+  } else {
+      return 'Could not get result from UrlScan, please try again later.'
+  }
+type: javascript
+tags: []
+comment: This script enables gives you the functionallity of getting the http transactions
+  made for a given URL using the UrlScan integration
+enabled: true
+args:
+- name: url
+  required: true
+  description: The URL to search the transaction list for.
+- name: timeout
+  description: How many seconds to wait for the scan id result
+  defaultValue: "60"
+scripttarget: 0
+dependson:
+  must:
+  - urlscan.io|||urlscan-get-http-transaction-list
+  - urlscan.io|||urlscan-submit-url-command
+  - urlscan.io|||urlscan-poll-uri
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Added the option to get the http transactions made at a given URL address using the UrlScan service."

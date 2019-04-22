@@ -82,6 +82,12 @@ def is_valid_ip(s):
     return True
 
 
+def get_result_page():
+    uuid = demisto.args().get('uuid')
+    uri = BASE_URL+'result/{}'.format(uuid)
+    return uri
+
+
 def polling(uuid):
     if demisto.args().get('timeout') is None:
         TIMEOUT = 60
@@ -97,6 +103,11 @@ def polling(uuid):
         timeout=int(TIMEOUT)
     )
     return ready
+
+
+def poll_uri():
+    uri = demisto.args().get('uri')
+    demisto.results(requests.get(uri, verify=INSECURE).status_code)
 
 
 def step_constant(step):
@@ -499,17 +510,16 @@ def urlscan_search_command():
     })
 
 
-def format_http_transaction_list(uuid):
-    # Scan Lists sometimes returns empty
-    scan_lists = None
-    while scan_lists is None:
-        try:
-            response = urlscan_submit_request(uuid)
-            scan_lists = response['lists']
-        except Exception:
-            pass
-
+def format_http_transaction_list():
     url = demisto.args().get('url')
+    uuid = demisto.args().get('uuid')
+
+    # Scan Lists sometimes returns empty
+    scan_lists = []
+    while not scan_lists:
+        response = urlscan_submit_request(uuid)
+        scan_lists = response.get('lists', [])
+
     limit = int(demisto.args().get('limit'))
     metadata = None
     if limit > 100:
@@ -532,13 +542,6 @@ def format_http_transaction_list(uuid):
     return_outputs(human_readable, ec, response)
 
 
-def get_urlscan_http_transaction_list():
-    uuid = urlscan_submit_url()
-    ready = polling(uuid)
-    if ready is True:
-        format_http_transaction_list(uuid)
-
-
 """COMMAND FUNCTIONS"""
 try:
     if demisto.command() == 'test-module':
@@ -550,8 +553,15 @@ try:
         urlscan_submit_command()
     if demisto.command() == 'urlscan-search':
         urlscan_search_command()
+    if demisto.command() == 'urlscan-submit-url-command':
+        demisto.results(urlscan_submit_url())
     if demisto.command() == 'urlscan-get-http-transaction-list':
-        get_urlscan_http_transaction_list()
+        format_http_transaction_list()
+    if demisto.command() == 'urlscan-get-result-page':
+        demisto.results(get_result_page())
+    if demisto.command() == 'urlscan-poll-uri':
+        poll_uri()
+
 
 except Exception as e:
     LOG(e)

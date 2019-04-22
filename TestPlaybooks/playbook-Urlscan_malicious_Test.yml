@@ -555,22 +555,23 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 16450fb1-80dd-4c80-8082-6f67007f5211
+    taskid: b2d9f333-7c8c-4d42-80b3-c32d0d162287
     type: regular
     task:
-      id: 16450fb1-80dd-4c80-8082-6f67007f5211
+      id: b2d9f333-7c8c-4d42-80b3-c32d0d162287
       version: -1
       name: get http transactions
-      description: Get http transaction list for a given url
-      script: '|||urlscan-get-http-transaction-list'
+      description: This script enables gives you the functionallity of getting the
+        http transactions made for a given URL using the UrlScan integration
+      scriptName: urlscan-get-http-transactions
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "22"
     scriptarguments:
-      limit: {}
+      timeout: {}
       url:
         simple: http://demisto.com
     separatecontext: false
