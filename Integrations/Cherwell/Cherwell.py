@@ -248,7 +248,7 @@ def parse_response(response, error_operation):
             return response.content  # check if needed
         except Exception as error:
             LOG.print_log()
-            return_error("Could not parse response ".format(error))
+            return_error(f'Could not parse response {error}')
 
 
 def cherwell_dict_parser(key, value, item_list):
@@ -300,9 +300,9 @@ def request_new_access_token(using_refresh):
     url = BASE_URL + "token"
     refresh_token = demisto.getIntegrationContext().get('refresh_token')
 
-    payload = "client_id={0}".format(CLIENT_ID)
-    payload = payload + "&grant_type=refresh_token&refresh_token={0}".format(refresh_token) if using_refresh \
-        else payload + "&grant_type=password&username={0}&password={1}".format(USERNAME, PASSWORD)
+    payload = f'client_id={CLIENT_ID}'
+    payload = payload + f'&grant_type=refresh_token&refresh_token={refresh_token}' if using_refresh \
+        else payload + f'&grant_type=password&username={USERNAME}&password={PASSWORD}'
 
     headers = {
         'Accept': "application/json",
@@ -339,7 +339,7 @@ def get_access_token(new_token):
 
 def build_headers(token, headers=None):
     headers = headers if headers else HEADERS
-    headers['Authorization'] = "Bearer {}".format(token)
+    headers['Authorization'] = f'Bearer {token}'
     return headers
 
 
@@ -353,7 +353,7 @@ def make_request(method, url, payload=None, headers=None):
 
 
 def get_business_object_summary_by_name(name):
-    url = BASE_URL + 'api/V1/getbusinessobjectsummary/busobname/{0}'.format(name)
+    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobname/{name}'
     response = make_request('GET', url)
     res_json = parse_response(response, "Could not get business object summary")
     return res_json
@@ -376,7 +376,7 @@ def save_business_object(payload):
 
 def get_business_object_record(business_object_id, object_id, id_type):
     id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
-    url = BASE_URL + "api/V1/getbusinessobject/busobid/{0}/{1}/{2}".format(business_object_id, id_type_str, object_id)
+    url = BASE_URL + f'api/V1/getbusinessobject/busobid/{business_object_id}/{id_type_str}/{object_id}'
     response = make_request("GET", url)
     res_json = parse_response(response, "Could not get business objects")
     return res_json
@@ -384,8 +384,7 @@ def get_business_object_record(business_object_id, object_id, id_type):
 
 def delete_business_object_record(business_object_id, object_id, id_type):
     id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
-    url = BASE_URL + "api/V1/deletebusinessobject/busobid/{0}/{1}/{2}".format(business_object_id, id_type_str,
-                                                                              object_id)
+    url = BASE_URL + f'api/V1/deletebusinessobject/busobid/{business_object_id}/{id_type_str}/{object_id}'
     response = make_request("DELETE", url)
     res_json = parse_response(response, "Could not delete business object")
     return res_json
