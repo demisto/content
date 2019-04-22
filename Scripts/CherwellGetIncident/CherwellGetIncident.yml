@@ -1,0 +1,53 @@
+args:
+- auto: PREDEFINED
+  default: false
+  description: Type of ID
+  isArray: false
+  name: id_type
+  predefined:
+  - public_id
+  - record_id
+  required: true
+  secret: false
+- default: false
+  description: Public id or record id
+  isArray: false
+  name: id_value
+  required: true
+  secret: false
+comment: This script is an example script of how to retreive an incident from Cherwell.
+  The script wraps the cherwell-get-business-object command of the cherwell integration.
+  When writing your own script to get a business object, follow the instructions found
+  in the configuration section of the script, leave the execution part untouched.
+commonfields:
+  id: 648bab3f-ad4d-4e0d-a732-a36195771536
+  version: -1
+enabled: false
+name: CherwellGetIncident
+outputs:
+- contextPath: Cherwell.BusinessObject.RecordID
+  description: Recoed ID
+  type: String
+- contextPath: Cherwell.BusinessObject.PublicID
+  description: Public ID
+  type: String
+- contextPath: Cherwell.BusinessObject.Description
+  description: Incident description
+  type: String
+- contextPath: Cherwell.BusinessObject.Priority
+  description: Incident ptiority
+  type: Number
+- contextPath: Cherwell.BusinessObject.OwnedBy
+  description: Incident owned by field
+  type: String
+- contextPath: Cherwell.BusinessObject.Service
+  description: Service needed for the incident
+  type: String
+- contextPath: Cherwell.BusinessObject.CustomerDisplayName
+  description: 'Incident reporting customer '
+  type: Unknown
+script: '-'
+system: false
+timeout: '0'
+type: python
+tags: []
