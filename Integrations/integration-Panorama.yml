@@ -173,9 +173,10 @@ script:
         if params['type'] == 'export':
             return result
         jresult = json.loads(xml2json(result.text))
+
+        #honadle non success
         if jresult['response']['@status'] != 'success':
             if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
-
                 # catch non existing object error and display a meaningful message
                 if jresult['response']['msg']['line'] == 'No such node':
                     return_error('Object was not found, verify that the name is correct and that the instance was committed.')
@@ -191,12 +192,19 @@ script:
 
             if '@code' in jresult['response']:
                 return_error('Request Failed.\nStatus code: ' + str(jresult['response']['@code']) + '\nWith message: ' + str(jresult['response']['msg']['line']))
-
             else:
                 return_error('Request Failed.\n' + str(jresult['response']))
 
-        if 'response' in jresult and '@code' in jresult['response'] and jresult['response']['@code'] in PAN_OS_ERROR_DICT:
-            return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[jresult['response']['@code']])
+        # handle @code
+        if 'response' in jresult and '@code' in jresult['response']:
+            if jresult['response']['@code'] in PAN_OS_ERROR_DICT:
+                return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[jresult['response']['@code']])
+            if jresult['response']['@code'] not in ['19','20']:
+            # error code non exist in dict and not of success
+                if 'msg' in jresult['response']:
+                    return_error('Request Failed.\nStatus code: ' + str(jresult['response']['@code']) + '\nWith message: ' + str(jresult['response']['msg']))
+                else:
+                    return_error('Request Failed.\n' + str(jresult['response']))
 
         return jresult
 
@@ -2618,7 +2626,7 @@ script:
 
 
     @logger
-    def panorama_register_ip_tag(tag, ips, persistent = 1):
+    def panorama_register_ip_tag(tag, ips, persistent):
         entry = ''
         for ip in ips:
             entry += '<entry ip=\"' + ip + '\" persistent=\"' + persistent + '\"><tag><member>' + tag + '</member></tag></entry>'
@@ -2641,7 +2649,9 @@ script:
         ''' Register IPs to a Tag '''
         tag = demisto.args()['tag']
         ips = argToList(demisto.args()['IPs'])
-        persistent = demisto.args()['persistent'] if 'persistent' in demisto.args() else '1'
+
+        persistent = demisto.args()['persistent'] if 'persistent' in demisto.args() else 'true'
+        persistent = '1' if persistent == 'true' else '0'
 
         result = panorama_register_ip_tag(tag, ips, persistent)
 
@@ -4085,10 +4095,11 @@ script:
     - name: persistent
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      description: '"0":non-persistent, "1":persistent. default is "1"'
-      defaultValue: "1"
+      - "true"
+      - "false"
+      description: non-persistent - stays until PAN-OS restart/reboot. persistent
+        is constant
+      defaultValue: "true"
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
       description: Tag name
@@ -4111,4 +4122,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: Add support for panorama-list/get/create/edit/delete/refresh-edl, panorama-register/unregister-ip-tag commands.
+releaseNotes: Add support for panorama-list/get/create/edit/delete/refresh-edl, panorama-register/unregister-ip-tag commands. Handle errors gracefully.

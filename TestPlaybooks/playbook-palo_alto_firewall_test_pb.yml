@@ -1344,7 +1344,7 @@ tasks:
             value:
               complex:
                 root: Panorama
-                accessor: EDLs.Name
+                accessor: EDL.Name
             iscontext: true
           right:
             value:
