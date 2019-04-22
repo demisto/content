@@ -39,6 +39,10 @@ def checked_type(file_path, regex_list):
     return False
 
 
+def validate_not_a_package_test_script(file_path):
+    return '_test' not in file_path and 'test_' not in file_path
+
+
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
@@ -60,13 +64,14 @@ def get_modified_files(files_string):
         # ignoring renamed and deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
-            if checked_type(file_path, CODE_FILES_REGEX):
+            if checked_type(file_path, CODE_FILES_REGEX) and validate_not_a_package_test_script(file_path):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
             # Common scripts (globally used so must run all tests)
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
+                modified_files_list.append(file_path)
 
             # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
