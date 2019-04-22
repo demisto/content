@@ -1138,21 +1138,21 @@ def get_file_analysis_command():
     cbp_ec_key = 'CBP.FileAnalysis(val.ID === obj.ID)'
     ec = {
         cbp_ec_key: {
-            'priority': 'Priority',
-            'fileName': 'FileName',
-            'pathName': 'PathName',
-            'computerId': 'ComputerId',
-            'dateModified': 'DateModified',
-            'id': 'ID',
-            'fileCatalogId': 'FileCatalogId',
-            'dateCreated': 'DateCreated',
-            'createdBy': 'CreatedBy'
+            'Priority': raw_res.get('priority'),
+            'FileName': raw_res.get('fileName'),
+            'PathName': raw_res.get('pathName'),
+            'ComputerId': raw_res.get('computerId'),
+            'DateModified': raw_res.get('dateModified'),
+            'ID': raw_res.get('id'),
+            'FileCatalogId': raw_res.get('fileCatalogId'),
+            'DateCreated': raw_res.get('dateCreated'),
+            'CreatedBy': raw_res.get('createdBy')
         },
         # File doesn't have dt since the api doesn't return hashes
         'File': {
-            'fileCatalogId': 'FileCatalogId',
-            'fileName': 'Name',
-            'pathName': 'PathName',
+            'FileCatalogId': raw_res.get('fileCatalogId'),
+            'Name': raw_res.get('fileName'),
+            'PathName': raw_res.get('pathName'),
         }
     }
     # analysisResult == 3 -> Malicious
@@ -1372,7 +1372,7 @@ def search_file_upload(q=None, limit=None, offset=None, sort=None, group=None):
         q = q.split('&')
         url_params['q'] = q
 
-        return http_request('GET', '/fileUpload', params=url_params)
+    return http_request('GET', '/fileUpload', params=url_params)
 
 
 def search_file_analysis_command():
