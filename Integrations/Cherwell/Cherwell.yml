@@ -453,4 +453,4 @@ script:
   script: '-'
   type: python
 tests:
-- No tests - For POC only later on tests will be added
+- No tests - Building
