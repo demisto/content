@@ -4,6 +4,7 @@ commonfields:
 name: urlscan-get-http-transactions
 script: |-
   var url = args.url;
+  var limit = args.limitl;
   var defaultWaitTime = 5
 
   uuid = executeCommand('urlscan-submit-url-command', {'url': url})[0].Contents;
@@ -21,7 +22,7 @@ script: |-
       waitedTime = waitedTime + defaultWaitTime;
   }
   if(resStatusCode == 200) {
-      return executeCommand('urlscan-get-http-transaction-list', {'uuid': uuid, 'url': url});
+      return executeCommand('urlscan-get-http-transaction-list', {'uuid': uuid, 'url': url, 'limit': limit});
   } else {
       return 'Could not get result from UrlScan, please try again later.'
   }
@@ -37,6 +38,9 @@ args:
 - name: timeout
   description: How many seconds to wait for the scan id result
   defaultValue: "60"
+- name: limit
+  description: Limits the results in the war room(Maximum limit allowed is 100)
+  defaultValue: "20"
 scripttarget: 0
 dependson:
   must:

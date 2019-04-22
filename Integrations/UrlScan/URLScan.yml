@@ -260,6 +260,7 @@ script:
       type: string
     description: Submit a url to scan
   - name: urlscan-get-http-transaction-list
+    deprecated: true
     arguments:
     - name: uuid
       required: true
@@ -278,20 +279,24 @@ script:
       description: A link to the http transaction made during the search on the given
         URL.
       type: string
-    description: Get http transaction list for a given url
+    description: Get http transaction list for a given url. (This command should be used only apart from
+      urlscan-get-http-transactions script)
   - name: urlscan-submit-url-command
+    deprecated: true
     arguments:
     - name: url
       required: true
       description: The URL sought after.
     description: Submit a URL to get its uuid.
   - name: urlscan-poll-uri
+    deprecated: true
     arguments:
     - name: uri
       required: true
       description: The uri of the sought after result.
     description: Poll the UrlScan service regarding the results for a given uri.
   - name: urlscan-get-result-page
+    deprecated: true
     arguments:
     - name: uuid
       required: true
