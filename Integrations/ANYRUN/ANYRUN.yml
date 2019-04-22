@@ -149,7 +149,7 @@ script:
       description: Reputation of the dns request.
       type: String
     - contextPath: ANYRUN.Task.DnsRequest.IP
-      description: IP addresses associated with a dns request. 
+      description: IP addresses associated with a dns request.
       type: Unknown
     - contextPath: ANYRUN.Task.DnsRequest.Domain
       description: Domain resolution of a dns request.

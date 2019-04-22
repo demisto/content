@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import re
+import os
 import json
 import requests
 from base64 import b64encode
@@ -12,18 +13,18 @@ from base64 import b64encode
 ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
 
 PARAMS = demisto.params()
-USERNAME = PARAMS.get('credentials').get('identifier')
-PASSWORD = PARAMS.get('credentials').get('password')
+USERNAME = PARAMS.get('credentials', {}).get('identifier', '')
+PASSWORD = PARAMS.get('credentials', {}).get('password', '')
 AUTH = (USERNAME + ':' + PASSWORD).encode('utf-8')
 BASIC_AUTH = 'Basic ' + b64encode(AUTH).decode()
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = PARAMS.get('url')
+SERVER = PARAMS.get('url', '')
 SERVER = SERVER[:-1] if (SERVER and SERVER.endswith('/')) else SERVER
 # Service base URL
 BASE_URL = SERVER + '/v1/'
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
-PROXY = PARAMS.get('proxy')
+PROXY = PARAMS.get('proxy', False)
 # Headers to be sent in requests
 HEADERS = {
     'Authorization': BASIC_AUTH
@@ -38,18 +39,6 @@ THREAT_TEXT_TO_DBOTSCORE = {
     'suspicious activity': 2,
     'malicious activity': 3
 }
-
-''' SETUP '''
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
-# Remove proxy if not set to true in params
-if not PROXY:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' HELPER FUNCTIONS '''
 
@@ -71,7 +60,7 @@ def underscoreToCamelCase(s):
 
 def anyrun_threatlevel_to_dbotscore(threat_level):
     """ Convert ANYRUN threat level to its equivalent DBotScore """
-    return threat_level + 1 if threat_level else None
+    return None if threat_level is None else threat_level + 1
 
 
 def make_upper(the_string):
@@ -79,22 +68,12 @@ def make_upper(the_string):
     Make 'the_string' argument uppercase if it is a member of
     'ALWAYS_UPPER_CASE' global variable
     """
-    if the_string.casefold() in ALWAYS_UPPER_CASE:
-        return the_string.upper()
-    else:
-        return the_string
+    return the_string.upper() if isinstance(the_string, str) and the_string.casefold() in ALWAYS_UPPER_CASE else the_string
 
 
 def make_capital(the_string):
     """Capitalize first letter of a string, leaving the rest of the string as is"""
-    case_insensitive_string = the_string.casefold()
-
-    if case_insensitive_string == 'os':
-        return 'OS'
-    if case_insensitive_string == 'id':
-        return 'ID'
-
-    if len(the_string) >= 1:
+    if isinstance(the_string, str) and len(the_string) >= 1:
         return the_string[0:1].upper() + the_string[1:]
     else:
         err_msg = '"make_capital" function requires a string '
@@ -163,12 +142,6 @@ def travel_object(obj, key_functions=[], val_functions=[]):
     else:
         err_msg = 'Invalid type: the passed "obj" argument was not of type "dict" or "list".'
         raise TypeError(err_msg)
-
-
-def argToBool(arg):
-    if arg.lower() == 'true':
-        return True
-    return False
 
 
 def generate_dbotscore(response):
@@ -314,6 +287,7 @@ def contents_from_report(response):
             'SrcIP': threat.get('srcip', None),
             'DstIP': threat.get('dstip', None)
         }
+        reformatted_threats.append(reformatted_threat)
     network['threats'] = reformatted_threats
 
     reformatted_connections = []
@@ -590,74 +564,6 @@ def run_analysis_command():
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
 
 
-# def get_items_command():
-#     """
-#     Gets details about a items using IDs or some other filters
-#     """
-#     # Init main vars
-#     headers = []
-#     contents = []
-#     context = {}
-#     context_entries = []
-#     title = ''
-#     # Get arguments from user
-#     item_ids = argToList(demisto.args().get('item_ids', []))
-#     is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
-#     limit = int(demisto.args().get('limit', 10))
-#     # Make request and get raw response
-#     items = get_items_request(item_ids, is_active)
-#     # Parse response into context & content entries
-#     if items:
-#         if limit:
-#             items = items[:limit]
-#         title = 'Example - Getting Items Details'
-#
-#         for item in items:
-#             contents.append({
-#                 'ID': item.get('id'),
-#                 'Description': item.get('description'),
-#                 'Name': item.get('name'),
-#                 'Created Date': item.get('createdDate')
-#             })
-#             context_entries.append({
-#                 'ID': item.get('id'),
-#                 'Description': item.get('description'),
-#                 'Name': item.get('name'),
-#                 'CreatedDate': item.get('createdDate')
-#             })
-#
-#         context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
-#
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': contents,
-#         'ReadableContentsFormat': formats['markdown'],
-#         'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-#         'EntryContext': context
-#     })
-#
-#
-# def get_items_request(item_ids, is_active):
-#     # The service endpoint to request from
-#     endpoint_url = 'items'
-#     # Dictionary of params for the request
-#     params = {
-#         'ids': item_ids,
-#         'isActive': is_active
-#     }
-#     # Send a request using our http_request wrapper
-#     response = http_request('GET', endpoint_url, params)
-#     # Check if response contains errors
-#     if response.get('errors'):
-#         return_error(response.get('errors'))
-#     # Check if response contains any data to parse
-#     if 'data' in response:
-#         return response.get('data')
-#     # If neither was found, return back empty results
-#     return {}
-
-
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
@@ -672,6 +578,18 @@ COMMANDS = {
 
 def main():
     """ Main Execution block """
+
+    ''' SETUP '''
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # Remove proxy if not set to true in params
+    if not PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     try:
         cmd_name = demisto.command()
