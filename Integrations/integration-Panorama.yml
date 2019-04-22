@@ -4115,7 +4115,7 @@ script:
       defaultValue: "true"
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
-      description: Name of the tag
+      description: Name for the tag
       type: string
     - contextPath: Panorama.DynamicTags.IPs
       description: Registered IP addresses
