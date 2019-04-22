@@ -1031,7 +1031,7 @@ def search_server_config_command():
     """
     args = demisto.args()
     raw_server_configs = search_server_config(args.get('query'), args.get('limit'), args.get('offset'),
-                                             args.get('sort'), args.get('group'))
+                                              args.get('sort'), args.get('group'))
     server_configs = []
     for server_config in raw_server_configs:
         server_configs.append({
@@ -1077,7 +1077,7 @@ def search_publisher_command():
     """
     args = demisto.args()
     raw_publishers = search_publisher(args.get('query'), args.get('limit'), args.get('offset'),
-                                     args.get('sort'), args.get('group'))
+                                      args.get('sort'), args.get('group'))
     publishers = []
     for publisher in raw_publishers:
         publishers.append({
