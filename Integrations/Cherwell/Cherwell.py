@@ -527,31 +527,6 @@ def attachment_results(attachments):
     return
 
 
-#
-# def search_in_business_object():
-#     args = demisto.args()
-#     business_obj_name = args.get('business_obj_name')
-#     business_obj_id = args.get('business_obj_id')
-#     if business_obj_name or business_obj_id:
-#         try:
-#             bus_id = business_obj_id if business_obj_id else BUSINESS_OBJECT_IDS[business_obj_name.lower()]
-#             bus_name = business_obj_name if business_obj_name else BUSINESS_OBJECT_IDS.keys()[
-#                 BUSINESS_OBJECT_IDS.values().index(bus_id)]
-#             fields_list = HEADERS_IDS[bus_name]
-#             payload = {
-#                 "busObId": bus_id,
-#                 "pageNumber": 0,
-#                 "pageSize": 300,
-#                 "searchText": args.get('search_text'),
-#                 "fields": fields_list
-#             }
-#         except KeyError:
-#             return_error('Error: ID for {} not found'.format(args.get('business_obj_name')))
-#     else:
-#         return_error('Error: Please provide either a business object ID or Name')
-#     return get_search_results(payload)
-
-
 def run_query_on_business_objects(bus_id, filter_query, max_results):
     payload = {
         'busObId': bus_id,
@@ -563,49 +538,10 @@ def run_query_on_business_objects(bus_id, filter_query, max_results):
     return get_search_results(payload)
 
 
-# def get_special_field_id(business_object_id, field_name):
-#     template_dict = get_business_object_template(business_object_id, include_all=False, field_names=[field_name])
-#     fields = template_dict.get('fields')
-#     if not fields:
-#         return_error(f'could not get field id. Field name: {field_name}, Business object id: {business_object_id}')
-#     field = fields[0]
-#     return field.get('fieldId')
-
-
 def get_key_value_dict_from_template(key, val, business_object_id):
     template_dict = get_business_object_template(business_object_id)
     business_object_ids_dict = cherwell_dict_parser(key, val, template_dict.get('fields'))
     return business_object_ids_dict
-
-
-# def get_business_objects_details(objects_names):
-#     business_objects = []
-#     for name in objects_names:
-#         business_object_id = resolve_business_object_id_by_name(name)
-#         created_time = get_special_field_id(business_object_id, 'CreatedDateTime')
-#         business_object = {
-#             'business_object_id': business_object_id,
-#             'business_object_name': name,
-#             'created_time_field_id': created_time
-#         }
-#         business_objects.append(business_object)
-#     return business_objects
-
-
-# def get_incidents_for_business_object(business_object, max_result, last_created_time):
-#     business_object_id = business_object.get('business_object_id')
-#     created_time_field_id = business_object.get('created_time_field_id')
-#     build_query_dict_list([created_time_field_id, 'gt', last_created_time])
-#     query = [
-#         {
-#             "fieldId": created_time_field_id,
-#             "operator": "gt",
-#             "value": last_created_time
-#         }
-#     ]
-#     query_result = run_query_on_business_objects(business_object_id, query, max_result)
-#     incidents = parse_fields_from_business_object_list(query_result)
-#     return incidents
 
 
 def get_all_incidents(objects_names, last_created_time, max_result, query_string):

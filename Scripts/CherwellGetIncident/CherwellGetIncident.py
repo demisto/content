@@ -18,14 +18,14 @@ BUSINESS_OBJECT_TYPE = 'Incident'
 """
  `OUTPUT_FIELDS` should contain all the fields you wish to include in the returned business object.
  Make sure the field name is identical to the field name in Cherwell system.
- In order for the fields to appear in the script outputs you will need to to update the script outputs 
+ In order for the fields to appear in the script outputs you will need to to update the script outputs
  (found in the script settings).
- 
- For example: we wished to retrieve an incident such that the fields: RecordID, Description, Priority, CustomerDisplayName, 
- OwnedBy and Service will appear in the returned object, thus, we added all of those field names to this `OUTPUT_FIELDS` 
- variable  
- In addition we added the field names to the script outputs so they will appear as an official output of 
- the script, using the following syntax: Cherwell.BusinessObject.RecordID, Cherwell.BusinessObject.PublicID, 
+
+ For example: we wished to retrieve an incident such that the fields: RecordID, Description, Priority,
+ CustomerDisplayName, OwnedBy and Service will appear in the returned object, thus, we added all of those field names
+ to this `OUTPUT_FIELDS` variable.
+ In addition we added the field names to the script outputs so they will appear as an official output of
+ the script, using the following syntax: Cherwell.BusinessObject.RecordID, Cherwell.BusinessObject.PublicID,
  Cherwell.BusinessObject.Description, Cherwell.BusinessObject.Priority and so on.
  Make sure to leave the first part in the output definition (`Cherwell.BusinessObject`) as is.
 """
