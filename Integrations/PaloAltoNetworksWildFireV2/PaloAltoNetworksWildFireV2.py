@@ -16,7 +16,7 @@ URL = demisto.getParam('server')
 TOKEN = demisto.getParam('token')
 USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']}
- 
+
 URL_DICT = {
     'verdict': '/get/verdict',
     'verdicts': '/get/verdicts',
@@ -67,9 +67,6 @@ VERDICTS_TO_DBOTSCORE = {
 
 
 def http_request(uri, method, headers={}, body={}, params={}, files={}):
-    """
-    Makes an API call with the supplied uri, method, headers, body
-    """
     LOG('running request with url=%s' % uri)
     url = '%s/%s' % (URL, uri)
     result = requests.request(
@@ -87,7 +84,8 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
             return_error('Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + ERROR_DICT[
                 result.status_code])
         else:
-            return_error('Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
+            return_error(
+                'Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     return result.content
 
@@ -190,28 +188,11 @@ def create_upload_entry(upload_body, title, result):
     }
 
 
-def create_report_entry(body, title, result, verbose, reports, ec):
-    md = tableToMarkdown(title, body, body.keys())
-
-    if verbose:
-        for report in reports:
-            md += tableToMarkdown('Report ', report, report.keys())
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
-
-
-def hash_args_handler(sha256 = None, md5 = None):
+def hash_args_handler(sha256=None, md5=None):
     # hash argument used in wildfire-report, wildfire-verdict commands
     inputs = argToList(sha256) if sha256 else argToList(md5)
-    for input in inputs:
-        if sha256Regex.match(input) or md5Regex.test(input):
+    for element in inputs:
+        if sha256Regex.match(element) or md5Regex.test(element):
             continue
         else:
             return_error('Invalid hash. Only SHA256 and MD5 are supported.')
@@ -219,7 +200,7 @@ def hash_args_handler(sha256 = None, md5 = None):
     return inputs
 
 
-def file_args_handler(file = None, sha256 = None, md5 = None):
+def file_args_handler(file=None, sha256=None, md5=None):
     # file/md5/sha256 are used in file command
     if (file and not md5 and not sha256) or (not file and md5 and not sha256) or (not file and md5 and not sha256):
         if file:
@@ -229,10 +210,10 @@ def file_args_handler(file = None, sha256 = None, md5 = None):
         else:
             inputs = argToList(sha256)
 
-        for input in inputs:
-            if sha1Regex.match(input):  # validate hash is not sha1
+        for element in inputs:
+            if sha1Regex.match(element):  # validate hash is not sha1
                 demisto.results('SHA1')
-            elif sha256Regex.match(input) or md5Regex.test(input):
+            elif sha256Regex.match(element) or md5Regex.test(element):
                 continue
             else:
                 return_error('Invalid hash. Only SHA256 and MD5 are supported.')
@@ -244,6 +225,8 @@ def file_args_handler(file = None, sha256 = None, md5 = None):
 
 
 ''' COMMANDS '''
+
+
 def test_module():
     test_url = URL + URL_DICT["report"]
     test_result = http_request(
@@ -272,7 +255,7 @@ def wildfire_upload_file(upload):
 
 
 def wildfire_upload_file_command():
-    uploads = argToList(demisto.args(['upload']))
+    uploads = argToList(demisto.args().get('upload'))
     for upload in uploads:
         result, upload_file_data = wildfire_upload_file(upload)
         create_upload_entry(upload_file_data, 'WildFire Upload File', result)
@@ -293,7 +276,7 @@ def wildfire_upload_file_url(upload):
 
 
 def wildfire_upload_file_url_command():
-    uploads = argToList(demisto.args(['upload']))
+    uploads = argToList(demisto.args().get('upload'))
     for upload in uploads:
         result, upload_file_url_data = wildfire_upload_file_url(upload)
         create_upload_entry(upload_file_url_data, 'WildFire Upload File URL', result)
@@ -307,36 +290,36 @@ def wildfire_upload_url(upload):
         'link': upload
     }
 
-    result = http_request(upload_url_uri, DEFAULT_HEADERS, '', body);
+    result = http_request(upload_url_uri, DEFAULT_HEADERS, {}, body)
     upload_url_data = result["wildfire"]["submit-link-info"]
 
     return result, upload_url_data
 
 
 def wildfire_upload_url_command():
-    uploads = argToList(demisto.args(['upload']))
+    uploads = argToList(demisto.args().get('upload'))
     for upload in uploads:
         result, upload_url_data = wildfire_upload_url(upload)
         create_upload_entry(upload_url_data, 'WildFire Upload URL', result)
 
 
 @logger
-def wildfire_get_verdict(hash):
+def wildfire_get_verdict(file_hash):
     get_verdict_uri = URL + URL_DICT["verdict"]
-    body = 'apikey=' + TOKEN + '&hash=' + hash;
+    body = 'apikey=' + TOKEN + '&hash=' + file_hash
 
-    result = http_request(get_verdict_uri, body, DEFAULT_HEADERS);
+    result = http_request(get_verdict_uri, body, DEFAULT_HEADERS)
 
-    jres = json.loads(result["body"])
-    verdict_data = jres["wildfire"]["get-verdict-info"]
+    json_res = json.loads(result["body"])
+    verdict_data = json_res["wildfire"]["get-verdict-info"]
 
-    return jres, verdict_data
+    return json_res, verdict_data
 
 
 def wildfire_get_verdict_command():
-    inputs = hash_args_handler(demisto.args(['hash']))
-    for input in inputs:
-        jres, verdict_data = wildfire_get_verdict(input)
+    inputs = hash_args_handler(demisto.args().get('hash'))
+    for element in inputs:
+        json_res, verdict_data = wildfire_get_verdict(element)
 
         pretty_verdict = prettify_verdict(verdict_data)
         md = tableToMarkdown('WildFire Verdict', pretty_verdict)
@@ -349,7 +332,7 @@ def wildfire_get_verdict_command():
 
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': jres,
+            'Contents': json_res,
             'ContentsFormat': formats['json'],
             'HumanReadable': md,
             'ReadableContentsFormat': formats['markdown'],
@@ -369,12 +352,12 @@ def wildfire_get_verdicts(entry_id):
 
 
 def wildfire_get_verdicts_command():
-    inputs = argToList(demisto.args(['EntryID']))
-    for input in inputs:
-        result, verdicts_data = wildfire_get_verdicts(input)
-        
+    inputs = argToList(demisto.args().get('EntryID'))
+    for element in inputs:
+        result, verdicts_data = wildfire_get_verdicts(element)
+
         pretty_verdicts = prettify_verdicts(verdicts_data)
-        md = tableToMarkdown('WildFire Verdicts', pretty_verdicts);
+        md = tableToMarkdown('WildFire Verdicts', pretty_verdicts)
 
         dbot_score = create_dbot_score_from_verdicts(pretty_verdicts)
         ec = {
@@ -392,7 +375,7 @@ def wildfire_get_verdicts_command():
         })
 
 
-def create_report(hash, jres, reports, file_info):
+def create_report(file_hash, json_res, reports, file_info, verbose=False):
     udp_ip = []
     udp_port = []
     tcp_ip = []
@@ -421,17 +404,17 @@ def create_report(hash, jres, reports, file_info):
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
 
-    if 'evidence' in report:
-        if 'file' in report["evidence"]:
-            if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                if '-md5' in report["evidence"]["file"]["entry"]:
-                    evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
-                if '-text' in report["evidence"]["file"]["entry"]:
-                    evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+        if 'evidence' in report:
+            if 'file' in report["evidence"]:
+                if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
+                    if '-md5' in report["evidence"]["file"]["entry"]:
+                        evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
+                    if '-text' in report["evidence"]["file"]["entry"]:
+                        evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
 
     outputs = {
         'Status': 'Success',
-        'SHA256': jres["info"]["sha256"]
+        'SHA256': json_res["info"]["sha256"]
     }
 
     if len(udp_ip) > 0 or len(udp_port) > 0 or len(tcp_ip) > 0 or len(tcp_port) > 0 or dns_query or dns_response:
@@ -459,7 +442,6 @@ def create_report(hash, jres, reports, file_info):
             if len(dns_response) > 0:
                 outputs["Network"]["DNS"]["Response"] = dns_response
 
-
     if len(evidence_md5) > 0 or len(evidence_text) > 0:
         outputs["Evidence"] = {}
         if len(evidence_md5) > 0:
@@ -467,93 +449,107 @@ def create_report(hash, jres, reports, file_info):
         if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
 
-    context["DBotScore"] = {
-        'Indicator': hash,
+    ec = {}
+    ec["DBotScore"] = {
+        'Indicator': file_hash,
         'Type': 'hash',
         'Vendor': 'WildFire',
         'Score': 0
     }
 
-    context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
-
-        # dbot_score = 0
-        # malicious = None
-        # if 'malicious' in analysis_info['Result']:
-        #     dbot_score = 3
-        #     malicious = {
-        #         'Vendor': 'JoeSecurity',
-        #         'Detections': ', '.join(set([run['detection'] for run in analysis['runs']])),
-        #         'SHA1': analysis_info['SHA1'],
-
-
-
+    ec["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
     if file_info:
         if file_info["malware"] == 'yes':
-            context["DBotScore"]["Score"] = 3
-            context["DBotScore"]["Malicious"] =
-            addMalicious(context, outputPaths.file, {
-            Type: file_info.filetype,
-                  MD5: file_info.md5,
-            SHA1: file_info.sha1,
-            SHA256: file_info.sha256,
-            Size: file_info.size,
-            Name: file_info.filename,
-            Malicious: {Vendor: 'WildFire'}
-            });
-    } else {
-        context["DBotScore"]["Score"] = 1
-    }
-    }
-    if (format === 'pdf'){
-    var bodyPDF = 'apikey=' + TOKEN + '&format=pdf&hash=' + hash;
-    var resPDF = sendRequest(reportUrl, bodyPDF, DEFAULT_HEADERS).Bytes;
-    var currentTime = new Date();
-    var fileName = command + '_at_' + currentTime.getTime();
-    return {
-        Type: 9,
-        FileID: saveFile(resPDF),
-        File: fileName,
-        Contents: fileName,
-        EntryContext: context
-    };
-    }
-    else {
-    create_report_entry(file_info, 'WildFire Report', result, verbose, report, context)
+            ec["DBotScore"]["Score"] = 3
+            ec[outputPaths.file] = {
+                'Type': file_info["filetype"],
+                'MD5': file_info["md5"],
+                'SHA1': file_info["sha1"],
+                'SHA256': file_info["sha256"],
+                'Size': file_info["size"],
+                'Name': file_info["filename"],
+                'Malicious': {'Vendor': 'WildFire'}
+            }
+        else:
+            ec["DBotScore"]["Score"] = 1
+
+    if format == 'pdf':
+        get_report_uri = URL + URL_DICT["report"]
+        body_pdf = 'apikey=' + TOKEN + '&format=pdf&hash=' + file_hash
+
+        res_pdf = http_request(get_report_uri, body_pdf, DEFAULT_HEADERS).bytes  # or content?
+
+        file_name = 'wildfire_report_' + file_hash
+        file_type = entryTypes['entryInfoFile']
+        result = fileResult(file_name, res_pdf,
+                            file_type)  # will be saved under 'InfoFile' in the context.
+        result['EntryContext'] = ec
+
+        demisto.results(result)
+
+    else:
+        md = tableToMarkdown('WildFire Report', file_info, file_info.keys())
+        if verbose:
+            for report in reports:
+                md += tableToMarkdown('Report ', report, report.keys())
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': json_res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': md,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': ec
+        })
 
 
 @logger
-def wildfire_get_report(hash):
+def wildfire_get_report(file_hash):
     get_report_uri = URL + URL_DICT["report"]
-    body_xml = 'apikey=' + TOKEN + '&format=xml&hash=' + hash
+    body_xml = 'apikey=' + TOKEN + '&format=xml&hash=' + file_hash
 
     res_xml = http_request(get_report_uri, body_xml, DEFAULT_HEADERS)
 
     if not res_xml:
         'Report not found'
-    res_xml_body = res_xml["body"]
-    else if not res_xml_body:
+
+    res_xml_body = res_xml.get('body', None)
+    if not res_xml_body:
         return 'No results yet'
 
-    jres = json.loads(res_xml_body)
-    reports = jres["wildfire"]["task_info.report"]
-    file_info = jres["wildfire"]["file_info"]
-    if not report or not file_info:
+    json_res = json.loads(res_xml_body)
+
+    reports = json_res["wildfire"].get('task_info.report', None)
+    file_info = json_res["wildfire"].get('file_info', None)
+
+    if not reports or not file_info:
         return 'No results yet'
 
-    return hash, jres, reports, file_info
+    return file_hash, json_res, reports, file_info
 
 
 def wildfire_get_report_command():
     if 'sha256' or 'hash' in demisto.args():
-        sha256 = demisto.args(["sha256"]) if 'sha256' in demisto.args() else demisto.args(["hash"])
+        sha256 = demisto.args().get('sha256', None)
     else:
         sha256 = None
-    md5 = demisto.args(["md5"]) if "md5" in demisto.args(["md5"]) else None
+    md5 = demisto.args().get('md5', None)
     inputs = hash_args_handler(sha256, md5)
-    for input in inputs:
-        hash, jres, report, file_info = wildfire_get_report(input)
-        create_report(hash, jres, report, file_info)
+
+    verbose = demisto.args().get('verbose', False) == 'true'
+
+    for element in inputs:
+        file_hash, json_res, report, file_info = wildfire_get_report(element)
+        create_report(file_hash, json_res, report, file_info, verbose)
+
+
+def wildfire_file_command():
+    inputs = file_args_handler(demisto.args().get('file'), demisto.args().get('md5'), demisto.args().get('sha256'))
+
+    for element in inputs:
+        file_hash, json_res, report, file_info = wildfire_get_report(element)
+        create_report(file_hash, json_res, report, file_info, False)
 
 
 ''' EXECUTION '''
@@ -579,7 +575,7 @@ try:
         wildfire_get_report_command()
 
     elif demisto.command() == 'file':
-        file_command()
+        wildfire_file_command()
 
     elif demisto.command() == 'wildfire-get-verdict':
         wildfire_get_verdict_command()

@@ -1,7 +1,7 @@
 commonfields:
-  id: WildFire
+  id: WildFire-v2
   version: -1
-name: WildFire
+name: WildFire-v2
 fromversion: 4.0.0
 display: Palo Alto WildFire
 category: Forensics & Malware Analysis
@@ -136,8 +136,12 @@ script:
       - name: md5
         description: MD5 hash to check
         isArray: true
-      - name: hash
+      - name: sha256
         description: SHA256 hash to check
+        isArray: true
+      - name: hash
+        deprecated: true
+        description: Deprecated - use sha256 argument
         isArray: true
       - name: format
         auto: PREDEFINED
@@ -147,7 +151,12 @@ script:
         description: Optional - request a structured report (formatted as XML/PDF)
         defaultValue: pdf
       - name: verbose
+        auto: PREDEFINED
+          predefined:
+            - true
+            - false
         description: Receive extended information from WildFire
+        defaultValue: false
     outputs:
       - contextPath: File.Name
         description: Filename
@@ -382,5 +391,5 @@ script:
     description: Deprecated, use detonate playbook instead
   runonce: false
 tests:
-    - Wildfire Test
+  - Wildfire Test
 releaseNotes: Rewrote the integration in Python.
