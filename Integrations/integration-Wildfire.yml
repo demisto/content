@@ -89,6 +89,7 @@ script:
     var TOKEN = params.token;
 
     var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA1_REGEX = /\b[a-fA-F\d]{40}\b/m;
     var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
 
     //HELPERS//
@@ -266,25 +267,47 @@ script:
     }
 
 
-    function hashArgsHandler(md5, hash, file) {
-        if(file) {
-            if( MD5_REGEX.test(file) || SHA256_REGEX.test(file)){
-                return [file];
+    function hashArgsHandler(sha256, md5) {
+        // sha256, md5 arguments are used in wildfire-report, wildfire-verdict commands
+        var inputs = sha256? argToList(sha256) : argToList(md5);
+        for (i = 0; i < inputs.length; i++) {
+            if (SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i])) {
+                continue;
             } else {
                 throw 'Invalid hash. Only SHA256 and MD5 are supported.';
             }
-        } else {
-            inputs = md5? argToList(md5) : argToList(hash);
+        }
+        return inputs;
+    }
+
+    function fileArgsHandler(file, sha256, md5) {
+        var inputs;
+        // file/md5/sha256 are used in file command
+        if ((file && !md5 && !sha256) || (!file && md5 && !sha256) || (!file && md5 && !sha256)) {
+            if (file) {
+                inputs = argToList(file);
+            } else if (md5) {
+                inputs = argToList(md5);
+            } else {
+                inputs = argToList(sha256);
+            }
             for (i = 0; i < inputs.length; i++) {
-                if ( SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i]) ) {
+                if (SHA1_REGEX.test(inputs[i])) { // validate hash is not sha1
+                    inputs[i] = 'SHA1';
+                }
+                else if (SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i])) {
                     continue;
                 } else {
                     throw 'Invalid hash. Only SHA256 and MD5 are supported.';
                 }
             }
-            return inputs;
+        } else {
+            throw 'Specify exactly 1 of the following arguments: file, sha256, md5';
         }
+
+        return inputs;
     }
+
 
     //COMMANDS//
     function uploadFile(upload) {
@@ -578,6 +601,27 @@ script:
     }
 
 
+    function doReports(inputs) {
+        var entries = [];
+        for (i=0; i < inputs.length; i++) {
+            if (inputs[i] == 'SHA1') {
+                entries.push({
+                    Type: 11, // warning type
+                    Contents: 'WildFire file hash reputation supports only MD5, SHA256 hashes',
+                    ContentsFormat: formats.markdown
+                });
+            } else {
+                var reportResponse = getReport(inputs[i]);
+                if (reportResponse.error) {
+                    return reportResponse.error;
+                }
+                entries.push(createReport(reportResponse, args.format, args.verbose));
+            }
+        }
+        return entries;
+    }
+
+
     function detonate(type, upload, format, delay, timeout, verbose) {
         var uploadData;
         if (type === 'file') {
@@ -603,93 +647,97 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
+    try {
+        switch (command) {
+            case 'test-module': // This is the call made when pressing the integration test button.
+                testUrl = URL + URL_DICT.report;
+                var res = http(
+                    testUrl,
+                    {
+                        Method: 'POST',
+                        Body: 'apikey=' + TOKEN + '&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                        Headers: DEFAULT_HEADERS
+                    },
+                    params.insecure,
+                    params.proxy
+                    );
+                if (res.StatusCode === 200) {
+                    return 'ok';
+                }
+                else {
+                    return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
+                }
+                break;
 
-    switch (command) {
-        case 'test-module': // This is the call made when pressing the integration test button.
-            testUrl = URL + URL_DICT.report;
-            var res = http(
-                testUrl,
-                {
-                    Method: 'POST',
-                    Body: 'apikey=' + TOKEN + '&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
-                    Headers: DEFAULT_HEADERS
-                },
-                params.insecure,
-                params.proxy
-                );
-            if (res.StatusCode === 200) {
-                return 'ok';
-            }
-            else {
-                return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
-            }
-            break;
+            case 'file':
+                var inputs = fileArgsHandler(args.file, args.md5, sha256);
+                return doReports(inputs);
 
-        case 'wildfire-upload':
-            inputs = argToList(args.upload);
-            entries = [];
-            for (i=0; i < inputs.length; i++) {
-                var response = uploadFile(inputs[i]);
+            case 'wildfire-upload':
+                inputs = argToList(args.upload);
+                entries = [];
+                for (i=0; i < inputs.length; i++) {
+                    var response = uploadFile(inputs[i]);
+                    var uploadData = response.data;
+                    var result = response.res;
+                    entries.push(createUploadEntry(uploadData, 'WildFire Upload File', result));
+                }
+                return entries;
+
+            case 'wildfire-upload-file-remote': //deprecated
+            case 'wildfire-upload-file-url':
+                var response = uploadFileRemote(args.upload);
                 var uploadData = response.data;
                 var result = response.res;
-                entries.push(createUploadEntry(uploadData, 'WildFire Upload File', result));
-            }
-            return entries;
+                return createUploadEntry(uploadData, 'WildFire Upload File URL', result);
 
-        case 'wildfire-upload-file-remote': //deprecated
-        case 'wildfire-upload-file-url':
-            var response = uploadFileRemote(args.upload);
-            var uploadData = response.data;
-            var result = response.res;
-            return createUploadEntry(uploadData, 'WildFire Upload File URL', result);
+            // case 'wildfire-upload-url':
+            //     inputs = argToList(args.upload);
+            //     entries = [];
+            //     for (i=0; i < inputs.length; i++) {
+            //         var response = uploadUrl(inputs[i]);
+            //         var uploadData = response.data;
+            //         var result = response.res;
+            //         entries.push(createUploadEntry(uploadData, 'WildFire Upload URL', result));
+            //     }
+            //     return entries;
 
-        // case 'wildfire-upload-url':
-        //     inputs = argToList(args.upload);
-        //     entries = [];
-        //     for (i=0; i < inputs.length; i++) {
-        //         var response = uploadUrl(inputs[i]);
-        //         var uploadData = response.data;
-        //         var result = response.res;
-        //         entries.push(createUploadEntry(uploadData, 'WildFire Upload URL', result));
-        //     }
-        //     return entries;
+            case 'wildfire-report':
+                var sha256 = args.sha256? args.sha256 : args.hash;
+                var inputs = hashArgsHandler(sha256, args.md5);
+                return doReports(inputs);
 
-        case 'file':
-        case 'wildfire-report':
-            var inputs = hashArgsHandler(args.md5, args.hash, args.file);
-            entries = [];
-            for (i=0; i < inputs.length; i++) {
-                var reportResponse = getReport(inputs[i]);
-                if (reportResponse.error){
-                    return reportResponse.error;
+            case 'wildfire-get-verdict':
+                var inputs = hashArgsHandler(args.hash, undefined);
+                var entries = [];
+                for (i=0; i < inputs.length; i++) {
+                    var entry = getVerdict(inputs[i]);
+                    entries.push(entry);
                 }
-                entries.push(createReport(reportResponse, args.format, args.verbose));
-            }
-            return entries;
+                return entries;
 
-        case 'wildfire-get-verdict':
-            var inputs = hashArgsHandler('', args.hash, '');
-            var entries = [];
-            for (i=0; i < inputs.length; i++) {
-                var entry = getVerdict(inputs[i]);
-                entries.push(entry);
-            }
-            return entries;
+            case 'wildfire-get-verdicts':
+                var inputs = argToList(args.EntryID);
+                var entries = [];
+                for (i=0; i < inputs.length; i++) {
+                    var entry = getVerdicts(inputs[i]);
+                    entries.push(entry);
+                }
+                return entries;
 
-        case 'wildfire-get-verdicts':
-            var inputs = argToList(args.EntryID);
-            var entries = [];
-            for (i=0; i < inputs.length; i++) {
-                var entry = getVerdicts(inputs[i]);
-                entries.push(entry);
-            }
-            return entries;
+            case 'detonate-file': //deprecated, please use WildFire Detonate playbook
+                return detonate('file', args.upload, args.format, args.delay, args.timeout, args.verbose);
 
-        case 'detonate-file': //deprecated, please use WildFire Detonate playbook
-            return detonate('file', args.upload, args.format, args.delay, args.timeout, args.verbose);
-
-        case 'detonate-file-remote': //deprecated, please use WildFire Detonate playbook
-            return detonate('remoteFile', args.upload, args.format, args.delay, args.timeout);
+            case 'detonate-file-remote': //deprecated, please use WildFire Detonate playbook
+                return detonate('remoteFile', args.upload, args.format, args.delay, args.timeout);
+        }
+    } catch (err) {
+        return {
+            Type: entryTypes.error,
+            Contents: err,
+            HumanReadable: err,
+            ReadableContentsFormat: formats.text,
+        };
     }
 
   type: javascript
@@ -697,8 +745,15 @@ script:
   - name: file
     arguments:
     - name: file
-      required: true
+      default: true
       description: file hash to check
+      isArray: true
+    - name: md5
+      description: md5 hash to check
+      isArray: true
+    - name: sha256
+      description: sha256 hash to check
+      isArray: true
     outputs:
     - contextPath: File.Name
       description: Filename
@@ -798,8 +853,12 @@ script:
     - name: md5
       description: MD5 hash to check
       isArray: true
-    - name: hash
+    - name: sha256
       description: SHA256 hash to check
+      isArray: true
+    - name: hash
+      deprecated: true
+      description: Deprecated - use sha256 argument
       isArray: true
     - name: format
       auto: PREDEFINED
@@ -959,7 +1018,6 @@ script:
       type: number
     description: Get a verdict regarding multiple hashes, stored in a txt file
   - name: wildfire-upload-file-remote
-    deprecated: true
     arguments:
     - name: upload
       required: true
@@ -1045,3 +1103,4 @@ script:
   runonce: false
 tests:
 - Wildfire Test
+releaseNotes: Added md5,sha256 arguments options to !file command, regard non valid hash in the !file command as a warning. add sha256 argument and deprecate hash argument for wildfire-report.
