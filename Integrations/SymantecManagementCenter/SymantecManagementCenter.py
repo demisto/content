@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 SERVER = (demisto.params()['url'][:-1]
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
+          if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
 BASE_URL = SERVER + '/api/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {
@@ -109,7 +109,7 @@ def list_devices_command():
     })
 
 
-def list_devices_request(build, description, model, name, os_version, platform, type):
+def list_devices_request(build, description, model, name, os_version, platform, device_type):
     """
     Get devices from Symantec MC
     :param build: Device build number query
@@ -118,7 +118,7 @@ def list_devices_request(build, description, model, name, os_version, platform, 
     :param name: Device name query
     :param os_version: Device OS version query
     :param platform: Device platform query
-    :param type: Device type
+    :param device_type: Device type
     :return: List of MC devices
     """
 
@@ -137,8 +137,8 @@ def list_devices_request(build, description, model, name, os_version, platform, 
         params['osVersion'] = os_version
     if platform:
         params['platform'] = platform
-    if type:
-        params['type'] = type
+    if device_type:
+        params['type'] = device_type
 
     response = http_request('GET', path, params)
     return response
