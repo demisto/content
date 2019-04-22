@@ -451,19 +451,6 @@ script:
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
             }
         }
-        ip_ec = {
-            'Address': ip,
-            "VirusTotal": {
-                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
-                "DetectedURLs": detectedUrls.slice(0,maxLen),
-                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
-                'Resolutions': resolutions.slice(0,maxLen),
-                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
-            }
-        };
         if (ec[outputPaths.ip]){ // malicious
             ec[outputPaths.ip]['VirusTotal'] = {
                 'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
@@ -476,7 +463,19 @@ script:
                 'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
             };
         } else { // not malicious
-            ec[outputPaths.ip] = ip_ec;
+            ec[outputPaths.ip] = {
+                "Address": ip,
+                "VirusTotal": {
+                    'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                    'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                    "DetectedURLs": detectedUrls.slice(0,maxLen),
+                    'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                    'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                    'Resolutions': resolutions.slice(0,maxLen),
+                    'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                    'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
+                }
+            };
         }
         longFormat = FULL_RESPONSE? 'true': longFormat;
         if (longFormat === 'true') {
