@@ -17,18 +17,18 @@ BUSINESS_OBJECT_TYPE = 'Incident'
 
 """
  `FIELDS` contains all the fields you wish to include in your business object.
- In order to update a field in a business object you will need to have a corresponding argument in the script arguments 
- (found in the script settings). After you added the argument to the script arguments you will need to add its value to 
+ In order to update a field in a business object you will need to have a corresponding argument in the script arguments
+ (found in the script settings). After you added the argument to the script arguments you will need to add its value to
  this `FIELDS` object by using `args.get('argument_name').
  Make sure the key name is identical to the field name in Cherwell system.
- 
+
  For example: we wished to update the requesting customer of some incident, thus, we added a customer_display_name
  argument to this script, we pulled the value of the argument by using`args.get('customer_display_name')` and we set
  the key name to be `CustomerDisplayName` - as it is appear in Cherwell system.
 
- Expert tip: if you don't want to keep Demisto's arguments naming convention (where variables are written in snake case
- ), you can name your arguments exactly as they appear in Cherwell system, this will shorten the `FIELDS` constant to be 
- `FIELDS = args`
+ Expert tip: if you don't want to keep Demisto's arguments naming convention (where variables are written in snake
+ case), you can name your arguments exactly as they appear in Cherwell system, this will shorten the `FIELDS` constant
+ to be `FIELDS = args`
 """
 FIELDS = {
     'Description': args.get('description'),
