@@ -48,6 +48,21 @@ def test_cbp_date_to_timestamp():
         pass
 
 
+def test_remove_keys_with_empty_value():
+    from CarbonBlackProtect import remove_keys_with_empty_value
+
+    base_dict = {
+        'first': 1,
+        'second': 2
+    }
+    assert remove_keys_with_empty_value(base_dict) == base_dict
+
+    dict_with_empty_value = dict(base_dict)
+    dict_with_empty_value['third'] = None
+    dict_with_empty_value['fourth'] = ''
+    assert remove_keys_with_empty_value(dict_with_empty_value) == base_dict
+
+
 def assert_score(severity_tuple, expected_output):
     from CarbonBlackProtect import event_severity_to_dbot_score
     for severity in severity_tuple:

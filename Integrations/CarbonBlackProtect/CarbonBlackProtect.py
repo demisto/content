@@ -22,7 +22,6 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 CB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 CB_NO_MS_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 INCIDENTS_PER_FETCH = int(demisto.params().get('max_incidents_per_fetch', 15))
-# Service base URL
 # Headers to be sent in requests
 HEADERS = {
     'X-Auth-Token': TOKEN,
@@ -235,7 +234,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :type params: ``dict``
         :param params: The URL params to be passed.
 
-        :type data: ``str``
+        :type data: ``dict``
         :param data: The body data of the request.
 
         :type headers: ``dict``
@@ -254,7 +253,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
             url,
             verify=USE_SSL,
             params=params,
-            data=data,
+            json=data,
             headers=headers,
         )
     except requests.exceptions.RequestException as e:
@@ -272,105 +271,6 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
     if parse_json:
         return res.json()
     return res.content
-
-
-def create_entry_object(contents='', ec=None, hr=''):
-    """
-        Creates an entry object
-
-        :type contents: ``dict``
-        :param contents: Raw response to output
-
-        :type ec: ``dict``
-        :param ec: Entry context of the entry object
-
-        :type hr: ``str``
-        :param hr: Human readable
-
-        :return: Entry object
-        :rtype: ``dict``
-    """
-    res = {
-        'Type': entryTypes['note'],
-        'Contents': contents,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    }
-    return res
-
-
-def get_trasnformed_dict(old_dict, transformation_dict):
-    """
-        Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
-
-        :type old_dict: ``dict``
-        :param old_dict: Old dictionary to pull values from
-
-        :type transformation_dict: ``dict``
-        :param transformation_dict: Transformation dictionary that contains oldkeys:newkeys
-
-        :return Transformed dictionart (according to transformation_dict values)
-        :rtype ``dict``
-    """
-    new_dict = {}
-    for k in list(old_dict.keys()):
-        if k in transformation_dict:
-            new_dict[transformation_dict[k]] = old_dict[k]
-    return new_dict
-
-
-def generic_search_command(search_function, trans_dict, hr_title, ec_key):
-    """
-    Searches for an item from search_function.
-
-    :param search_function: Function to call search endpoint
-    :param trans_dict: Transformation dict for result
-    :param hr_title: Title of human readable
-    :param ec_key: Entry Context key
-    :return: EntryObject of the item
-    """
-    args = demisto.args()
-    url_params = {
-        "limit": args.get('limit'),
-        "offset": args.get('offset'),
-        "sort": args.get('sort'),
-        "group": args.get('group')
-    }
-    q = args.get('query')
-    if isinstance(q, str):
-        # handle multi condition queries in the following formats: 1) a&b, 2) a&q=b
-        q = list(map(lambda x: remove_prefix('=q', x), q.split('&')))
-        url_params['q'] = q
-    headers = args.get('headers')
-    raw_res = search_function(url_params)
-    ec = []
-    for entry in raw_res:
-        ec.append(get_trasnformed_dict(entry, trans_dict))
-    hr = tableToMarkdown(hr_title, ec, headers, removeNull=True, headerTransform=pascalToSpace)
-    ec = {ec_key: ec} if ec else None
-    demisto.results(create_entry_object(raw_res, ec, hr))
-
-
-def generic_get_command(get_function, trans_dict, hr_title, ec_key):
-    """
-    Gets an item from get_function as an entry object.
-
-    :param get_function: Function to call get endpoint
-    :param trans_dict: Transformation dict for result
-    :param hr_title: Title of human readable
-    :param ec_key: Entry Context key
-    :return: EntryObject of the item
-    """
-    args = demisto.args()
-    id = args.get('id')
-    headers = args.get('headers')
-    raw_res = get_function(id)
-    ec = get_trasnformed_dict(raw_res, trans_dict)
-    hr = tableToMarkdown(hr_title, ec, headers, removeNull=True, headerTransform=pascalToSpace)
-    ec = {ec_key: ec} if ec else None
-    demisto.results(create_entry_object(raw_res, ec, hr))
 
 
 def remove_prefix(prefix, full_str):
@@ -442,6 +342,15 @@ def event_to_incident(event):
     return incident
 
 
+def remove_keys_with_empty_value(dict_with_params):
+    """
+    Removes from dict keys with empty values
+    :param dict_with_params: dict to remove empty keys from
+    :return: dict without any empty fields
+    """
+    return {k: v for k, v in dict_with_params.items() if v}
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -457,20 +366,54 @@ def search_file_catalog_command():
     Searches for file catalog
     :return: EntryObject of the file catalog
     """
-    generic_search_command(
-        search_function=search_file_catalog,
-        trans_dict=FILE_CATALOG_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Catalog Search',
-        ec_key='File(val.SHA1 === obj.SHA1)'
-    )
+    args = demisto.args()
+    raw_catalogs = search_file_catalog(args.get('query'), args.get('limit'), args.get('offset'),
+                                       args.get('sort'), args.get('group'))
+    headers = args.get('headers')
+    catalogs = []
+    for catalog in raw_catalogs:
+        catalogs.append({
+            'Size': catalog.get('fileSize'),
+            'Path': catalog.get('pathName'),
+            'SHA1': catalog.get('sha1'),
+            'SHA256': catalog.get('sha256'),
+            'MD5': catalog.get('md5'),
+            'Name': catalog.get('fileName'),
+            'Type': catalog.get('fileType'),
+            'ProductName': catalog.get('productName'),
+            'ID': catalog.get('id'),
+            'Publisher': catalog.get('publisher'),
+            'Company': catalog.get('company'),
+            'Extension': catalog.get('fileExtension')
+        })
+    hr_title = "CarbonBlack Protect File Catalog Search"
+    hr = tableToMarkdown(hr_title, catalogs, headers, removeNull=True, headerTransform=pascalToSpace)
+    catalogs = {'File(val.SHA1 === obj.SHA1)': catalogs} if catalogs else None
+    demisto.results(return_outputs(hr, catalogs, raw_catalogs))
 
 
-def search_file_catalog(url_params):
+@logger
+def search_file_catalog(q, limit, offset, sort, group):
     """
     Sends the request for file catalog, and returns the result json
-    :param url_params: url parameters for the request
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the catalogs to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     :return: File catalog response json
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/fileCatalog', params=url_params)
 
 
@@ -479,20 +422,52 @@ def search_computer_command():
     Searches for file catalog
     :return: EntryObject of the computer
     """
-    generic_search_command(
-        search_function=search_computer,
-        trans_dict=COMPUTER_TRANS_DICT,
-        hr_title='CarbonBlack Protect Computer Search',
-        ec_key='Endpoint(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_computers = search_computer(args.get('query'), args.get('limit'), args.get('offset'),
+                                    args.get('sort'), args.get('group'))
+    headers = args.get('headers')
+    computers = []
+    for computer in raw_computers:
+        computers.append({
+            'Memory': computer.get('memorySize'),
+            'Processors': computer.get('processorCount'),
+            'Processor': computer.get('processorModel'),
+            'OS': computer.get('osShortName'),
+            'OSVersion': computer.get('osName'),
+            'MACAddress': computer.get('macAddress'),
+            'Model': computer.get('machineModel'),
+            'IPAddress': computer.get('ipAddress'),
+            'Hostname': computer.get('name'),
+            'ID': computer.get('id')
+        })
+    hr_title = "CarbonBlack Protect Computer Search"
+    hr = tableToMarkdown(hr_title, computers, headers, removeNull=True, headerTransform=pascalToSpace)
+    computers = {'Endpoint(val.ID === obj.ID)': computers} if computers else None
+    demisto.results(return_outputs(hr, computers, raw_computers))
 
 
-def search_computer(url_params):
+@logger
+def search_computer(q, limit, offset, sort, group):
     """
-    Sends the request for computer, and returns the result json
-    :param url_params: url parameters for the request
+    Sends the request for file catalog, and returns the result json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the computers to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     :return: Computer response json
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/Computer', params=url_params)
 
 
@@ -502,19 +477,91 @@ def update_computer_command():
     :return: EntryObject of the computer
     """
     args = demisto.args()
-    raw_res = update_computer(args)
-    ec = get_trasnformed_dict(raw_res, COMPUTER_TRANS_DICT)
-    hr = tableToMarkdown('CarbonBlack Protect computer updated successfully', ec)
-    demisto.results(create_entry_object(raw_res, {'Endpoint(val.ID === obj.ID)': ec}, hr))
+    raw_computers = update_computer(
+        args.get('id'),
+        args.get('name'),
+        args.get('computerTag'),
+        args.get('description'),
+        args.get('policyId'),
+        args.get('automaticPolicy'),
+        args.get('localApproval'),
+        args.get('refreshFlags'),
+        args.get('prioritized'),
+        args.get('debugLevel'),
+        args.get('kernelDebugLevel'),
+        args.get('debugFlags'),
+        args.get('debugDuration'),
+        args.get('cCLevel'),
+        args.get('cCFlags'),
+        args.get('forceUpgrade'),
+        args.get('template'),
+    )
+    computers = []
+    for computer in raw_computers:
+        computers.append({
+            'Memory': computer.get('memorySize'),
+            'Processors': computer.get('processorCount'),
+            'Processor': computer.get('processorModel'),
+            'OS': computer.get('osShortName'),
+            'OSVersion': computer.get('osName'),
+            'MACAddress': computer.get('macAddress'),
+            'Model': computer.get('machineModel'),
+            'IPAddress': computer.get('ipAddress'),
+            'Hostname': computer.get('name'),
+            'ID': computer.get('id')
+        })
+    hr = tableToMarkdown('CarbonBlack Protect computer updated successfully', computers)
+    demisto.results(return_outputs(hr, {'Endpoint(val.ID === obj.ID)': computers}, raw_computers))
 
 
-def update_computer(body_params):
+@logger
+def update_computer(id, name, computer_tag, description, policy_id, automatic_policy, local_approval, refresh_flags,
+                    prioritized, debug_level, kernel_debug_level, debug_flags, debug_duration, cclevel, ccflags,
+                    force_upgrade, template):
     """
     Update computer
-    :param body_params: URL parameters for the request
+
+    :param id: id of computer
+    :param name: name of computer
+    :param computer_tag: computer tag of computer
+    :param description: description of computer
+    :param policy_id: policy id of the computer
+    :param automatic_policy: automatic policy flag
+    :param local_approval: local approval flag
+    :param refresh_flags: refresh flags
+    :param prioritized: Is prioritized
+    :param debug_level: debug level of computer
+    :param kernel_debug_level: kernel debug level of computer
+    :param debug_flags: debug flags
+    :param debug_duration: debug duration of computer
+    :param cclevel: cache consistency check level set for agent
+    :param ccflags: cache consistency check flags set for agent
+    :param force_upgrade: True if upgrade is forced for this computer
+    :param template: True if computer is a template
     :return: Result json of the request
     """
-    return http_request('POST', '/computer', data=json.dumps(body_params))
+    body_params = {
+        'id': id,
+        'name': name,
+        'computerTag': computer_tag,
+        'description': description,
+        'policyId': policy_id,
+        'automaticPolicy': automatic_policy,
+        'localApproval': local_approval,
+        'refreshFlags': refresh_flags,
+        'prioritized': prioritized,
+        'debugLevel': debug_level,
+        'kernelDebugLevel': kernel_debug_level,
+        'debugFlags': debug_flags,
+        'debugDuration': debug_duration,
+        'cCLevel': cclevel,
+        'cCFlags': ccflags,
+        'forceUpgrade': force_upgrade,
+        'template': template,
+    }
+    body_params = remove_keys_with_empty_value(body_params)
+
+    return http_request('POST', '/computer', data=body_params)
 
 
 def get_computer_command():
@@ -522,14 +569,29 @@ def get_computer_command():
     Gets the requested computer
     :return: EntryObject of the file catalog
     """
-    generic_get_command(
-        get_function=get_computer,
-        trans_dict=COMPUTER_TRANS_DICT,
-        hr_title='CarbonBlack Protect Computer Get for {}'.format(demisto.args().get('id')),
-        ec_key='Endpoint(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    id = args.get('id')
+    raw_computer = get_computer(id)
+    computer = {
+        'Memory': raw_computer.get('memorySize'),
+        'Processors': raw_computer.get('processorCount'),
+        'Processor': raw_computer.get('processorModel'),
+        'OS': raw_computer.get('osShortName'),
+        'OSVersion': raw_computer.get('osName'),
+        'MACAddress': raw_computer.get('macAddress'),
+        'Model': raw_computer.get('machineModel'),
+        'IPAddress': raw_computer.get('ipAddress'),
+        'Hostname': raw_computer.get('name'),
+        'ID': raw_computer.get('id')
+    }
+    headers = args.get('headers')
+    hr_title = f'CarbonBlack Protect Computer Get for {id}'
+    hr = tableToMarkdown(hr_title, computer, headers, removeNull=True, headerTransform=pascalToSpace)
+    entry_context_computer = {'Endpoint(val.ID === obj.ID)': computer} if computer else None
+    demisto.results(return_outputs(hr, entry_context_computer, raw_computer))
 
 
+@logger
 def get_computer(id):
     """
     Sends get computer request
@@ -545,20 +607,46 @@ def search_file_instance_command():
     Searches for file instance
     :return: EntryObject of the file instance
     """
-    generic_search_command(
-        search_function=search_file_instance,
-        trans_dict=FILE_INSTANCE_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Instance Search',
-        ec_key='CBP.FileInstance(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_files = search_file_instance(args.get('query'), args.get('limit'), args.get('offset'),
+                                     args.get('sort'), args.get('group'))
+    headers = args.get('headers')
+    files = []
+    for file in raw_files:
+        files.append({
+            'CatalogID': file.get('fileCatalogId'),
+            'ComputerID': file.get('computerId'),
+            'ID': file.get('id'),
+            'Name': file.get('fileName'),
+            'Path': file.get('pathName')
+        })
+    hr_title = "CarbonBlack Protect File Instance Search"
+    hr = tableToMarkdown(hr_title, files, headers, removeNull=True, headerTransform=pascalToSpace)
+    files = {'CBP.FileInstance(val.ID === obj.ID)': files} if files else None
+    demisto.results(return_outputs(hr, files, raw_files))
 
 
-def search_file_instance(url_params):
+@logger
+def search_file_instance(q, limit, offset, sort, group):
     """
     Sends the request for file instance, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File instance response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/fileInstance', params=url_params)
 
 
@@ -567,20 +655,65 @@ def search_event_command():
     Searches for file instance
     :return: EntryObject of the file instance
     """
-    generic_search_command(
-        search_function=search_event,
-        trans_dict=EVENT_TRANS_DICT,
-        hr_title='CarbonBlack Protect Event Search',
-        ec_key='CBP.Event(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_events = search_event(args.get('query'), args.get('limit'), args.get('offset'),
+                              args.get('sort'), args.get('group'))
+    events = []
+    for event in raw_events:
+        events.append({
+            'FilePath': event.get('pathName'),
+            'Param1': event.get('param1'),
+            'Param2': event.get('param2'),
+            'Param3': event.get('param3'),
+            'SubTypeName': event.get('subtypeName'),
+            'ComputerName': event.get('computerName'),
+            'FileName': event.get('fileName'),
+            'RuleName': event.get('ruleName'),
+            'ProcessFileCatalogID': event.get('processFileCatalogId'),
+            'StringID': event.get('stringId'),
+            'IPAddress': event.get('ipAddress'),
+            'PolicyID': event.get('policyId'),
+            'Timestamp': event.get('timestamp'),
+            'Username': event.get('userName'),
+            'ComputerID': event.get('computerId'),
+            'ProcessFileName': event.get('processFileName'),
+            'IndicatorName': event.get('indicatorName'),
+            'SubType': event.get('subtype'),
+            'Type': event.get('type'),
+            'ID': event.get('id'),
+            'Description': event.get('description'),
+            'Severity': event.get('severity'),
+            'CommandLine': event.get('commandLine'),
+            'ProcessPathName': event.get('processPathName')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect Event Search"
+    hr = tableToMarkdown(hr_title, events, headers, removeNull=True, headerTransform=pascalToSpace)
+    events = {'CBP.Event(val.ID === obj.ID)': events} if events else None
+    demisto.results(return_outputs(hr, events, raw_events))
 
 
-def search_event(url_params):
+@logger
+def search_event(q, limit, offset, sort, group):
     """
     Sends the request for file instance, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File instance response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/event', params=url_params)
 
 
@@ -589,20 +722,57 @@ def search_approval_request_command():
     Searches for approval requests
     :return: EntryObject of the approval requests
     """
-    generic_search_command(
-        search_function=search_approval_request,
-        trans_dict=APPROVAL_REQUEST_TRANS_DICT,
-        hr_title='CarbonBlack Protect Approval Request Search',
-        ec_key='CBP.ApprovalRequest(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_approval_requests = search_approval(args.get('query'), args.get('limit'), args.get('offset'),
+                                            args.get('sort'), args.get('group'))
+    approval_requests = []
+    for approval_request in raw_approval_requests:
+        approval_requests.append({
+            'ID': approval_request.get('id'),
+            'Resolution': approval_request.get('resolution'),
+            'Status': approval_request.get('status'),
+            'ResolutionComments': approval_request.get('resolutionComments'),
+            'FileCatalogID': approval_request.get('fileCatalogId'),
+            'ComputerID': approval_request.get('computerId'),
+            'ComputerName': approval_request.get('computerName'),
+            'DateCreated': approval_request.get('dateCreated'),
+            'CreatedBy': approval_request.get('createdBy'),
+            'EnforcementLevel': approval_request.get('enforcementLevel'),
+            'RequestorEmail': approval_request.get('requestorEmail'),
+            'Priority': approval_request.get('priority'),
+            'FileName': approval_request.get('fileName'),
+            'PathName': approval_request.get('pathName'),
+            'Process': approval_request.get('process'),
+            'Platform': approval_request.get('platform')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect Approval Request Search"
+    hr = tableToMarkdown(hr_title, approval_requests, headers, removeNull=True, headerTransform=pascalToSpace)
+    approval_requests = {'CBP.ApprovalRequest(val.ID === obj.ID)': approval_requests} if approval_requests else None
+    demisto.results(return_outputs(hr, approval_requests, raw_approval_requests))
 
 
-def search_approval_request(url_params):
+@logger
+def search_approval(q, limit, offset, sort, group):
     """
     Sends the request for approval request, and returns the result json
-    :param url_params: url parameters for the request
-    :return: Approval request response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/approvalRequest', params=url_params)
 
 
@@ -611,20 +781,49 @@ def search_file_rule_command():
     Searches for file rules
     :return: EntryObject of the file rules
     """
-    generic_search_command(
-        search_function=search_file_rule,
-        trans_dict=FILE_RULE_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Rule Search',
-        ec_key='CBP.FileRule(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_file_rules = search_file_rule(args.get('query'), args.get('limit'), args.get('offset'),
+                                      args.get('sort'), args.get('group'))
+    file_rules = []
+    for file_rule in raw_file_rules:
+        file_rules.append({
+            'ID': file_rule.get('id'),
+            'CatalogID': file_rule.get('fileCatalogId'),
+            'Description': file_rule.get('description'),
+            'FileState': file_rule.get('fileState'),
+            'Hash': file_rule.get('hash'),
+            'Name': file_rule.get('name'),
+            'PolicyIDs': file_rule.get('policyIds'),
+            'ReportOnly': file_rule.get('reportOnly')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect File Rule Search"
+    hr = tableToMarkdown(hr_title, file_rules, headers, removeNull=True, headerTransform=pascalToSpace)
+    file_rules = {'CBP.FileRule(val.ID === obj.ID)': file_rules} if file_rules else None
+    demisto.results(return_outputs(hr, file_rules, raw_file_rules))
 
 
-def search_file_rule(url_params):
+@logger
+def search_file_rule(q, limit, offset, sort, group):
     """
     Sends the request for file rule, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File rule response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/fileRule', params=url_params)
 
 
@@ -633,14 +832,27 @@ def get_file_rule_command():
     Gets the requested file rule
     :return: EntryObject of the file catalog
     """
-    generic_get_command(
-        get_function=get_file_rule,
-        trans_dict=FILE_RULE_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Rule Get for {}'.format(demisto.args().get('id')),
-        ec_key='CBP.FileRule(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    id = args.get('id')
+    raw_file_rule = get_file_rule(id)
+    file_rule = {
+        'ID': raw_file_rule.get('id'),
+        'CatalogID': raw_file_rule.get('fileCatalogId'),
+        'Description': raw_file_rule.get('description'),
+        'FileState': raw_file_rule.get('fileState'),
+        'Hash': raw_file_rule.get('hash'),
+        'Name': raw_file_rule.get('name'),
+        'PolicyIDs': raw_file_rule.get('policyIds'),
+        'ReportOnly': raw_file_rule.get('reportOnly')
+    }
+    headers = args.get('headers')
+    hr_title = f'CarbonBlack Protect File Rule Get for {id}'
+    hr = tableToMarkdown(hr_title, file_rule, headers, removeNull=True, headerTransform=pascalToSpace)
+    entry_context_file_rule = {'CBP.FileRule(val.ID === obj.ID)': file_rule} if file_rule else None
+    demisto.results(return_outputs(hr, entry_context_file_rule, raw_file_rule))
 
 
+@logger
 def get_file_rule(id):
     """
     Sends get file rule request
@@ -663,6 +875,7 @@ def delete_file_rule_command():
     demisto.results(hr)
 
 
+@logger
 def delete_file_rule(id):
     """
     Sends delete file rule request
@@ -685,34 +898,71 @@ def update_file_rule_command():
     :return: Entry object of the created file analysis
     """
     args = demisto.args()
-    body_params = {
-        'hash': args.get('hash'),
-        'fileState': args.get('fileState'),
-        'id': args.get('id'),
-        'fileCatalogId': args.get('fileCatalogId'),
-        'name': args.get('name'),
-        'description': args.get('description'),
-        'reportOnly': args.get('reportOnly'),
-        'reputationApprovalsEnabled': args.get('reputationApprovalsEnabled'),
-        'forceInstaller': args.get('forceInstaller'),
-        'forceNotInstaller': args.get('forceNotInstaller'),
-        'policyIds': args.get('policyIds'),
-        'platformFlags': args.get('platformFlags'),
+    raw_file_rule = update_file_rule(
+        args.get('hash'),
+        args.get('fileState'),
+        args.get('id'),
+        args.get('fileCatalogId'),
+        args.get('name'),
+        args.get('description'),
+        args.get('reportOnly'),
+        args.get('reputationApprovalsEnabled'),
+        args.get('forceInstaller'),
+        args.get('forceNotInstaller'),
+        args.get('policyIds'),
+        args.get('platformFlags'),
+    )
+    file_rule = {
+        'ID': raw_file_rule.get('id'),
+        'CatalogID': raw_file_rule.get('fileCatalogId'),
+        'Description': raw_file_rule.get('description'),
+        'FileState': raw_file_rule.get('fileState'),
+        'Hash': raw_file_rule.get('hash'),
+        'Name': raw_file_rule.get('name'),
+        'PolicyIDs': raw_file_rule.get('policyIds'),
+        'ReportOnly': raw_file_rule.get('reportOnly')
     }
-    body_params = {k: v for k, v in body_params.items() if v}
-    raw_res = update_file_rule(body_params)
-    ec = get_trasnformed_dict(raw_res, FILE_RULE_TRANS_DICT)
-    hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', ec)
-    demisto.results(create_entry_object(raw_res, {'CBP.FileRule(val.ID === obj.ID)': ec}, hr))
+    hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', file_rule,
+                         removeNull=True, headerTransform=pascalToSpace)
+    demisto.results(return_outputs(hr, {'CBP.FileRule(val.ID === obj.ID)': file_rule}, raw_file_rule))
 
 
-def update_file_rule(body_params):
+@logger
+def update_file_rule(hash, file_state, id, file_catalog_id, name, description, report_only,
+                     reputation_approvals_enabled, force_installer, force_not_installer, policy_ids, platform_flags):
     """
     Update file rule
-    :param body_params: URL parameters for the request
+    :param hash: hash of file rule
+    :param file_state: File state of this hash
+    :param id: id of the file rule
+    :param file_catalog_id: file catlog id
+    :param name: name of the file rule
+    :param description: description
+    :param report_only: True if this has a report-only ban
+    :param reputation_approvals_enabled: True if reputation approvals are enabled for this file
+    :param force_installer: True if this file is forced to act as installer
+    :param force_not_installer: True if this file is forced to act as ‘not installer'
+    :param policy_ids: List of IDs of policies where this rule applies.
+    :param platform_flags: Set of platform flags where this file rule will be valid
     :return: Result json of the request
     """
-    return http_request('POST', '/fileRule', data=json.dumps(body_params))
+    body_params = {
+        'hash': hash,
+        'fileState': file_state,
+        'id': id,
+        'fileCatalogId': file_catalog_id,
+        'name': name,
+        'description': description,
+        'reportOnly': report_only,
+        'reputationApprovalsEnabled': reputation_approvals_enabled,
+        'forceInstaller': force_installer,
+        'forceNotInstaller': force_not_installer,
+        'policyIds': policy_ids,
+        'platformFlags': platform_flags
+    }
+    body_params = remove_keys_with_empty_value(body_params)
+
+    return http_request('POST', '/fileRule', data=body_params)
 
 
 def search_policy_command():
@@ -720,20 +970,57 @@ def search_policy_command():
     Searches for policy
     :return: EntryObject of the policies
     """
-    generic_search_command(
-        search_function=search_policy,
-        trans_dict=POLICY_TRANS_DICT,
-        hr_title='CarbonBlack Protect Policy Search',
-        ec_key='CBP.Policy(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_policy = search_policy(args.get('query'), args.get('limit'), args.get('offset'),
+                               args.get('sort'), args.get('group'))
+    policies = []
+    for policy in raw_policy:
+        policies.append({
+            'ReadOnly': policy.get('readOnly'),
+            'EnforcementLevel': policy.get('enforcementLevel'),
+            'ReputationEnabled': policy.get('reputationEnabled'),
+            'AtEnforcementComputers': policy.get('atEnforcementComputers'),
+            'Automatic': policy.get('automatic'),
+            'Name': policy.get('name'),
+            'FileTrackingEnabled': policy.get('fileTrackingEnabled'),
+            'ConnectedComputers': policy.get('connectedComputers'),
+            'PackageName': policy.get('packageName'),
+            'AllowAgentUpgrades': policy.get('allowAgentUpgrades'),
+            'TotalComputers': policy.get('totalComputers'),
+            'LoadAgentInSafeMode': policy.get('loadAgentInSafeMode'),
+            'AutomaticApprovalsOnTransition': policy.get('automaticApprovalsOnTransition'),
+            'ID': policy.get('id'),
+            'Description': policy.get('description'),
+            'DisconnectedEnforcementLevel': policy.get('disconnectedEnforcementLevel')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect Policy Search"
+    hr = tableToMarkdown(hr_title, policies, headers, removeNull=True, headerTransform=pascalToSpace)
+    policies = {'CBP.Policy(val.ID === obj.ID)': policies} if policies else None
+    demisto.results(return_outputs(hr, policies, raw_policy))
 
 
-def search_policy(url_params):
+@logger
+def search_policy(q, limit, offset, sort, group):
     """
-    Sends the request for file rule, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File rule response json
+    Sends the request for search policy, and returns the result json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/policy', params=url_params)
 
 
@@ -742,20 +1029,44 @@ def search_server_config_command():
     Searches for server config
     :return: EntryObject of the server configurations
     """
-    generic_search_command(
-        search_function=search_server_config,
-        trans_dict=SERVER_CONFIG_DICT,
-        hr_title='CarbonBlack Protect Server Config Search',
-        ec_key='CBP.ServerConfig(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_server_configs = search_server_config(args.get('query'), args.get('limit'), args.get('offset'),
+                                             args.get('sort'), args.get('group'))
+    server_configs = []
+    for server_config in raw_server_configs:
+        server_configs.append({
+            'ID': server_config.get('id'),
+            'Value': server_config.get('value'),
+            'Name': server_config.get('name')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect Server Config Search"
+    hr = tableToMarkdown(hr_title, server_configs, headers, removeNull=True, headerTransform=pascalToSpace)
+    server_configs = {'CBP.ServerConfig(val.ID === obj.ID)': server_configs} if server_configs else None
+    demisto.results(return_outputs(hr, server_configs, raw_server_configs))
 
 
-def search_server_config(url_params):
+@logger
+def search_server_config(q, limit, offset, sort, group):
     """
-    Sends the request for server confing, and returns the result json
-    :param url_params: url parameters for the request
-    :return: Server config response json
+    Sends the request for file rule, and returns the result json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/serverConfig', params=url_params)
 
 
@@ -764,20 +1075,48 @@ def search_publisher_command():
     Searches for publisher
     :return: EntryObject of the publishers
     """
-    generic_search_command(
-        search_function=search_publisher,
-        trans_dict=PUBLISHER_TRANS_DICT,
-        hr_title='CarbonBlack Protect Publisher Search',
-        ec_key='CBP.Publisher(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_publishers = search_publisher(args.get('query'), args.get('limit'), args.get('offset'),
+                                     args.get('sort'), args.get('group'))
+    publishers = []
+    for publisher in raw_publishers:
+        publishers.append({
+            'Description': publisher.get('description'),
+            'ID': publisher.get('id'),
+            'Name': publisher.get('name'),
+            'Reputation': publisher.get('publisherReputation'),
+            'SignedCertificatesCount': publisher.get('signedCertificateCount'),
+            'SignedFilesCount': publisher.get('signedFilesCount'),
+            'State': publisher.get('publisherState')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect Publisher Search"
+    hr = tableToMarkdown(hr_title, publishers, headers, removeNull=True, headerTransform=pascalToSpace)
+    publishers = {'CBP.Publisher(val.ID === obj.ID)': publishers} if publishers else None
+    demisto.results(return_outputs(hr, publishers, raw_publishers))
 
 
-def search_publisher(url_params):
+@logger
+def search_publisher(q, limit, offset, sort, group):
     """
     Sends the request for publisher, and returns the result json
-    :param url_params: url parameters for the request
-    :return: Publisher response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file instances to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/publisher', params=url_params)
 
 
@@ -791,19 +1130,42 @@ def get_file_analysis_command():
     raw_res = get_file_analysis(id)
     cbp_ec_key = 'CBP.FileAnalysis(val.ID === obj.ID)'
     ec = {
-        cbp_ec_key: get_trasnformed_dict(raw_res, FILE_ANALYSIS_TRANS_DICT),
+        cbp_ec_key: {
+            'priority': 'Priority',
+            'fileName': 'FileName',
+            'pathName': 'PathName',
+            'computerId': 'ComputerId',
+            'dateModified': 'DateModified',
+            'id': 'ID',
+            'fileCatalogId': 'FileCatalogId',
+            'dateCreated': 'DateCreated',
+            'createdBy': 'CreatedBy'
+        },
         # File doesn't have dt since the api doesn't return hashes
-        'File': get_trasnformed_dict(raw_res, FILE_ANALYSIS_FILE_OUTPUT_TRANS_DICT)
+        'File': {
+            'fileCatalogId': 'FileCatalogId',
+            'fileName': 'Name',
+            'pathName': 'PathName',
+        }
     }
+    # analysisResult == 3 -> Malicious
+    if int(raw_res.get('analysisResult', 0)) == 3:
+        ec['File'].update({
+            'Malicious': {
+                'Vendor': 'Carbon Black Protection',
+                'Description': 'Carbon Black Protection found this file to be malicious.'
+            }
+        })
     hr = tableToMarkdown(
         'CarbonBlack Protect Get File Analysis for {}'.format(id),
         ec[cbp_ec_key],
         removeNull=True,
         headerTransform=pascalToSpace
     )
-    demisto.results(create_entry_object(raw_res, ec, hr))
+    demisto.results(return_outputs(hr, ec, raw_res))
 
 
+@logger
 def get_file_analysis(id):
     """
     Sends get file analysis
@@ -820,19 +1182,55 @@ def update_file_analysis_command():
     :return: Entry object of the created file analysis
     """
     args = demisto.args()
-    raw_res = update_file_analysis(args)
-    ec = get_trasnformed_dict(raw_res, FILE_ANALYSIS_TRANS_DICT)
-    hr = tableToMarkdown('CarbonBlack Protect File Analysis Created successfully', ec)
-    demisto.results(create_entry_object(raw_res, {'CBP.FileAnalysis(val.ID === obj.ID)': ec}, hr))
+    raw_file_analysis = update_file_analysis(
+        args.get('fileCatalogId'),
+        args.get('connectorId'),
+        args.get('computerId'),
+        args.get('priority'),
+        args.get('analysisStatus'),
+        args.get('analysisTarget'),
+        args.get('id')
+    )
+    file_analysis = {
+        'Priority': raw_file_analysis.get('priority'),
+        'FileName': raw_file_analysis.get('fileName'),
+        'PathName': raw_file_analysis.get('pathName'),
+        'ComputerId': raw_file_analysis.get('computerId'),
+        'DateModified': raw_file_analysis.get('dateModified'),
+        'ID': raw_file_analysis.get('id'),
+        'FileCatalogId': raw_file_analysis.get('fileCatalogId'),
+        'DateCreated': raw_file_analysis.get('dateCreated'),
+        'CreatedBy': raw_file_analysis.get('createdBy')
+    }
+    hr = tableToMarkdown('CarbonBlack Protect File Analysis Created successfully', file_analysis)
+    demisto.results(return_outputs(hr, {'CBP.FileAnalysis(val.ID === obj.ID)': file_analysis}, raw_file_analysis))
 
 
-def update_file_analysis(body_params):
+@logger
+def update_file_analysis(file_catalog_id, connector_id, computer_id, priority, analysis_status, analysis_target, id):
     """
     Update file analysis
-    :param body_params: URL parameters for the request
+    :param file_catalog_id: catalog id
+    :param connector_id: connector id
+    :param computer_id: computer id
+    :param priority: priority of the file analysis
+    :param analysis_status: status of the analysis
+    :param analysis_target: target of the analysis
+    :param id: id of the file analysis
     :return: Result json of the request
     """
-    return http_request('POST', '/fileAnalysis', data=json.dumps(body_params))
+    body_params = {
+        'fileCatalogId': file_catalog_id,
+        'connectorId': connector_id,
+        'computerId': computer_id,
+        'priority': priority,
+        'analysisStatus': analysis_status,
+        'analysisTarget': analysis_target,
+        'id': id
+    }
+    body_params = remove_keys_with_empty_value(body_params)
+
+    return http_request('POST', '/fileAnalysis', data=body_params)
 
 
 def update_file_upload_command():
@@ -841,19 +1239,52 @@ def update_file_upload_command():
     :return: Entry object of the created file upload
     """
     args = demisto.args()
-    raw_res = update_file_upload(args)
-    ec = get_trasnformed_dict(raw_res, FILE_UPLOAD_TRANS_DICT)
-    hr = tableToMarkdown('CarbonBlack Protect File Upload Created successfully', ec)
-    demisto.results(create_entry_object(raw_res, {'CBP.FileUpload(val.ID === obj.ID)': ec}, hr))
+    raw_file_upload = update_file_upload(
+        args.get('fileCatalogId'),
+        args.get('computerId'),
+        args.get('priority'),
+        args.get('uploadStatus'),
+        args.get('id')
+    )
+    file_upload = {
+        'Priority': raw_file_upload.get('priority'),
+        'FileName': raw_file_upload.get('fileName'),
+        'UploadPath': raw_file_upload.get('uploadPath'),
+        'ComputerId': raw_file_upload.get('computerId'),
+        'DateModified': raw_file_upload.get('dateModified'),
+        'ID': raw_file_upload.get('id'),
+        'FileCatalogId': raw_file_upload.get('fileCatalogId'),
+        'DateCreated': raw_file_upload.get('dateCreated'),
+        'CreatedBy': raw_file_upload.get('createdBy'),
+        'PathName': raw_file_upload.get('pathName'),
+        'UploadStatus': raw_file_upload.get('uploadStatus'),
+        'UploadedFileSize': raw_file_upload.get('uploadedFileSize'),
+    }
+    hr = tableToMarkdown('CarbonBlack Protect File Upload Created successfully', file_upload)
+    demisto.results(return_outputs(hr, {'CBP.FileUpload(val.ID === obj.ID)': file_upload}, raw_file_upload))
 
 
-def update_file_upload(body_params):
+@logger
+def update_file_upload(file_catalog_id, computer_id, priority, analysis_status, id):
     """
     Update file upload
-    :param body_params: URL parameters for the request
+    :param file_catalog_id: catalog id
+    :param computer_id: computer id
+    :param priority: priority of file upload
+    :param analysis_status: analysis status
+    :param id: id of file upload
     :return: Result json of the request
     """
-    return http_request('POST', '/fileUpload', data=json.dumps(body_params))
+    body_params = {
+        'fileCatalogId': file_catalog_id,
+        'computerId': computer_id,
+        'priority': priority,
+        'uploadStatus': analysis_status,
+        'id': id
+    }
+    body_params = remove_keys_with_empty_value(body_params)
+
+    return http_request('POST', '/fileUpload', data=body_params)
 
 
 def download_file_upload_command():
@@ -867,6 +1298,7 @@ def download_file_upload_command():
     demisto.results(fileResult(file_upload.get('fileName', 'cb_uploaded_file'), raw_res))
 
 
+@logger
 def download_file_upload(id):
     """
     Downloads file upload from server
@@ -885,21 +1317,54 @@ def search_file_upload_command():
     Searches for file upload
     :return: EntryObject of the file upload
     """
-    generic_search_command(
-        search_function=search_file_upload,
-        trans_dict=FILE_UPLOAD_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Upload Search',
-        ec_key='CBP.FileUpload(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_file_uploads = search_file_upload(args.get('query'), args.get('limit'), args.get('offset'),
+                                          args.get('sort'), args.get('group'))
+    file_uploads = []
+    for file_upload in raw_file_uploads:
+        file_uploads.append({
+            'Priority': file_upload.get('priority'),
+            'FileName': file_upload.get('fileName'),
+            'UploadPath': file_upload.get('uploadPath'),
+            'ComputerId': file_upload.get('computerId'),
+            'DateModified': file_upload.get('dateModified'),
+            'ID': file_upload.get('id'),
+            'FileCatalogId': file_upload.get('fileCatalogId'),
+            'DateCreated': file_upload.get('dateCreated'),
+            'CreatedBy': file_upload.get('createdBy'),
+            'PathName': file_upload.get('pathName'),
+            'UploadStatus': file_upload.get('uploadStatus'),
+            'UploadedFileSize': file_upload.get('uploadedFileSize'),
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect File Upload Search"
+    hr = tableToMarkdown(hr_title, file_uploads, headers, removeNull=True, headerTransform=pascalToSpace)
+    file_uploads = {'CBP.FileUpload(val.ID === obj.ID)': file_uploads} if file_uploads else None
+    demisto.results(return_outputs(hr, file_uploads, raw_file_uploads))
 
 
-def search_file_upload(url_params):
+@logger
+def search_file_upload(q, limit, offset, sort, group):
     """
     Sends the request for file upload, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File upload response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file uploads to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
-    return http_request('GET', '/fileUpload', params=url_params)
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
+        return http_request('GET', '/fileUpload', params=url_params)
 
 
 def search_file_analysis_command():
@@ -907,20 +1372,50 @@ def search_file_analysis_command():
     Searches for file analysis
     :return: EntryObject of the file analysis
     """
-    generic_search_command(
-        search_function=search_file_analysis,
-        trans_dict=FILE_ANALYSIS_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Analysis Search',
-        ec_key='CBP.FileAnalysis(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_file_analysis = search_file_analysis(args.get('query'), args.get('limit'), args.get('offset'),
+                                             args.get('sort'), args.get('group'))
+    file_analysis = []
+    for analysis in raw_file_analysis:
+        file_analysis.append({
+            'Priority': analysis.get('priority'),
+            'FileName': analysis.get('fileName'),
+            'PathName': analysis.get('pathName'),
+            'ComputerId': analysis.get('computerId'),
+            'DateModified': analysis.get('dateModified'),
+            'ID': analysis.get('id'),
+            'FileCatalogId': analysis.get('fileCatalogId'),
+            'DateCreated': analysis.get('dateCreated'),
+            'CreatedBy': analysis.get('createdBy')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect File Analysis Search"
+    hr = tableToMarkdown(hr_title, file_analysis, headers, removeNull=True, headerTransform=pascalToSpace)
+    file_analysis = {'CBP.FileAnalysis(val.ID === obj.ID)': file_analysis} if file_analysis else None
+    demisto.results(return_outputs(hr, file_analysis, raw_file_analysis))
 
 
-def search_file_analysis(url_params):
+@logger
+def search_file_analysis(q, limit, offset, sort, group):
     """
     Sends the request for file analysis, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File analysis response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file analysis to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/fileAnalysis', params=url_params)
 
 
@@ -929,14 +1424,31 @@ def get_file_upload_command():
     Gets the requested file upload
     :return: EntryObject of the file upload
     """
-    generic_get_command(
-        get_function=get_file_upload,
-        trans_dict=FILE_UPLOAD_TRANS_DICT,
-        hr_title='CarbonBlack Protect File Upload Get for {}'.format(demisto.args().get('id')),
-        ec_key='CBP.FileUpload(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    id = args.get('id')
+    raw_file_upload = get_file_upload(id)
+    file_upload = {
+        'Priority': raw_file_upload.get('priority'),
+        'FileName': raw_file_upload.get('fileName'),
+        'UploadPath': raw_file_upload.get('uploadPath'),
+        'ComputerId': raw_file_upload.get('computerId'),
+        'DateModified': raw_file_upload.get('dateModified'),
+        'ID': raw_file_upload.get('id'),
+        'FileCatalogId': raw_file_upload.get('fileCatalogId'),
+        'DateCreated': raw_file_upload.get('dateCreated'),
+        'CreatedBy': raw_file_upload.get('createdBy'),
+        'PathName': raw_file_upload.get('pathName'),
+        'UploadStatus': raw_file_upload.get('uploadStatus'),
+        'UploadedFileSize': raw_file_upload.get('uploadedFileSize'),
+    }
+    headers = args.get('headers')
+    hr_title = f'CarbonBlack Protect File Upload Get for {id}'
+    hr = tableToMarkdown(hr_title, file_upload, headers, removeNull=True, headerTransform=pascalToSpace)
+    entry_context_file_upload = {'CBP.FileUpload(val.ID === obj.ID)': file_upload} if file_upload else None
+    demisto.results(return_outputs(hr, entry_context_file_upload, raw_file_upload))
 
 
+@logger
 def get_file_upload(id):
     """
     Sends get file upload request
@@ -949,17 +1461,29 @@ def get_file_upload(id):
 
 def get_connector_command():
     """
-    Gets the requested file upload
-    :return: EntryObject of the file upload
+    Gets the requested connector
+    :return: EntryObject of the connector
     """
-    generic_get_command(
-        get_function=get_connector,
-        trans_dict=CONNECTOR_TRANS_DICT,
-        hr_title='CarbonBlack Protect Connector Get for {}'.format(demisto.args().get('id')),
-        ec_key='CBP.Connector(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    id = args.get('id')
+    raw_connector = get_file_upload(id)
+    connector = {
+        'AnalysisEnabled': raw_connector.get('analysisEnabled'),
+        'AnalysisName': raw_connector.get('analysisName'),
+        'AnalysisTargets': raw_connector.get('analysisTargets'),
+        'CanAnalyze': raw_connector.get('canAnalyze'),
+        'ConnectorVersion': raw_connector.get('connectorVersion'),
+        'Enabled': raw_connector.get('enabled'),
+        'ID': raw_connector.get('id')
+    }
+    headers = args.get('headers')
+    hr_title = f'CarbonBlack Protect Connector Get for {id}'
+    hr = tableToMarkdown(hr_title, connector, headers, removeNull=True, headerTransform=pascalToSpace)
+    entry_context_connector = {'CBP.Connector(val.ID === obj.ID)': connector} if connector else None
+    demisto.results(return_outputs(hr, entry_context_connector, raw_connector))
 
 
+@logger
 def get_connector(id):
     """
     Sends get connector request
@@ -972,23 +1496,51 @@ def get_connector(id):
 
 def search_connector_command():
     """
-    Searches for file analysis
-    :return: EntryObject of the file analysis
+    Searches for connectors
+    :return: EntryObject of the connectors
     """
-    generic_search_command(
-        search_function=search_connector,
-        trans_dict=CONNECTOR_TRANS_DICT,
-        hr_title='CarbonBlack Protect Connector Search',
-        ec_key='CBP.Connector(val.ID === obj.ID)'
-    )
+    args = demisto.args()
+    raw_connectors = search_connector(args.get('query'), args.get('limit'), args.get('offset'),
+                                      args.get('sort'), args.get('group'))
+    connectors = []
+    for connector in raw_connectors:
+        connectors.append({
+            'AnalysisEnabled': connector.get('analysisEnabled'),
+            'AnalysisName': connector.get('analysisName'),
+            'AnalysisTargets': connector.get('analysisTargets'),
+            'CanAnalyze': connector.get('canAnalyze'),
+            'ConnectorVersion': connector.get('connectorVersion'),
+            'Enabled': connector.get('enabled'),
+            'ID': connector.get('id')
+        })
+    headers = args.get('headers')
+    hr_title = "CarbonBlack Protect Connector Search"
+    hr = tableToMarkdown(hr_title, connectors, headers, removeNull=True, headerTransform=pascalToSpace)
+    connectors = {'CBP.Connector(val.ID === obj.ID)': connectors} if connectors else None
+    demisto.results(return_outputs(hr, connectors, raw_connectors))
 
 
-def search_connector(url_params):
+@logger
+def search_connector(q, limit, offset, sort, group):
     """
     Sends the request for file analysis, and returns the result json
-    :param url_params: url parameters for the request
-    :return: File analysis response json
+    :param q: Query to be executed
+    :param limit: Limit on the amount of results to be fetched
+    :param offset: Offset of the file analysis to be fetched
+    :param sort: Sort argument for request
+    :param group: Group argument for request
     """
+    url_params = {
+        "limit": limit,
+        "offset": offset,
+        "sort": sort,
+        "group": group
+    }
+    if q:
+        # handle multi condition queries in the following formats: a&b
+        q = q.split('&')
+        url_params['q'] = q
+
     return http_request('GET', '/connector', params=url_params)
 
 
@@ -999,18 +1551,24 @@ def resolve_approval_request_command():
     """
     args = demisto.args()
     raw_res = update_file_upload(args)
-    ec = get_trasnformed_dict(raw_res, APPROVAL_REQUEST_RESOLVE_TRANS_DICT)
+    ec = {
+        'id': 'ID',
+        'resolution': 'Resolution',
+        'status': 'Status',
+        'resolutionComments': 'ResolutionComments'
+    }
     hr = tableToMarkdown('CarbonBlack Protect Approval Request Updated successfully', ec)
-    demisto.results(create_entry_object(raw_res, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, hr))
+    demisto.results(return_outputs(hr, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, raw_res))
 
 
+@logger
 def resolve_approval_request(body_params):
     """
     Update file analysis
     :param body_params: URL parameters for the request
     :return: Result json of the request
     """
-    return http_request('POST', '/approvalRequest', data=json.dumps(body_params))
+    return http_request('POST', '/approvalRequest', data=body_params)
 
 
 def fetch_incidents():
