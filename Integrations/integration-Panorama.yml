@@ -2343,6 +2343,8 @@ script:
     ''' External Dynamic Lists Commands '''
     def prettify_edls_arr(edls_arr):
         pretty_edls_arr = []
+        if not isinstance(edls_arr, list): # handle case of only one edl in the instance
+            return prettify_edl(edls_arr)
         for edl in edls_arr:
             pretty_edl = {
                 'Name': edl['@name'],
