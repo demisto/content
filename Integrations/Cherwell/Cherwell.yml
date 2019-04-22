@@ -246,6 +246,20 @@ script:
     description: Upload an attachment to a given business object
     execution: false
     name: cherwell-upload-attachment
+    outputs:
+    - contextPath: Cherwell.UploadedAttachments.AttachmentFileID
+      description: AttachmentFileID to be used in order to get information on the
+        attachment
+      type: String
+    - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
+      description: Type of business object (its name)
+      type: String
+    - contextPath: Cherwell.UploadedAttachments.PublicID
+      description: 'Public id '
+      type: String
+    - contextPath: Cherwell.UploadedAttachments.RecordID
+      description: Record id
+      type: String
   - arguments:
     - default: false
       description: Parent business object type name
@@ -423,6 +437,16 @@ script:
     description: Get field info by one of its properties (Name, DIsplay Name or ID)
     execution: false
     name: cherwell-get-field-info
+    outputs:
+    - contextPath: Cherwell.FieldInfo.DisplayName
+      description: Field display name (as it may appear in CHerwell UI)
+      type: String
+    - contextPath: Cherwell.FieldInfo.FieldID
+      description: Field ID
+      type: String
+    - contextPath: Cherwell.FieldInfo.Name
+      description: The name to use whenever woring with business object commands
+      type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false
