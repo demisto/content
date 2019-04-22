@@ -669,7 +669,7 @@ def delete_file_rule(id):
     :param id: File rule ID
     :return: Result of the request
     """
-    url = SERVER + '/fileRule/{}'.format(id)
+    url = BASE_URL + '/fileRule/{}'.format(id)
     res = requests.request(
         'DELETE',
         url,
