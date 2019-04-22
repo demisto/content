@@ -22,8 +22,9 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_N
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-             "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
-             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
+             "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython_4_1.yml",
+             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml",
+             "scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
@@ -258,7 +259,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
+        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -267,7 +269,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
             _id = get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
