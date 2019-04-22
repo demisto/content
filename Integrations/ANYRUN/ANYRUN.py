@@ -35,7 +35,7 @@ ALWAYS_UPPER_CASE = {
     'pcap', 'ip', 'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
 }
 THREAT_TEXT_TO_DBOTSCORE = {
-    'no threat detected': 1,
+    'no threats detected': 1,
     'suspicious activity': 2,
     'malicious activity': 3
 }
