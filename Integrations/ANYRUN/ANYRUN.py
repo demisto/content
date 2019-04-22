@@ -40,6 +40,18 @@ THREAT_TEXT_TO_DBOTSCORE = {
     'malicious activity': 3
 }
 
+''' SETUP '''
+
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
+# Remove proxy if not set to true in params
+if not PROXY:
+    os.environ.pop('HTTP_PROXY')
+    os.environ.pop('HTTPS_PROXY')
+    os.environ.pop('http_proxy')
+    os.environ.pop('https_proxy')
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -252,6 +264,7 @@ def contents_from_report(response):
     analysis = data.get('analysis', {})
     processes = data.get('processes', [])
     incidents = data.get('incidents', [])
+    status = data.get('status', '')
 
     # Retrieve environment info from response
     os = environment.get('os', {}).get('title')
@@ -373,7 +386,8 @@ def contents_from_report(response):
         'MIME': mime,
         'FileInfo': file_info,
         'Process': reformatted_processes,
-        'Behavior': reformatted_incidents
+        'Behavior': reformatted_incidents,
+        'Status': status
     }
     if hashes:
         for key, val in hashes.items():
@@ -445,16 +459,17 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
         headers=HEADERS
     )
 
-    j_son = res.json()
-
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
-        err_msg = 'Error in API call to Example Integration {} - {}'.format(res.status_code, res.reason)
-        if j_son.get('error'):
-            err_msg += '\n{}'.format(j_son.get('message'))
-        return_error(err_msg)
+        err_msg = 'Error ANYRUN Integration API call {} - {}'.format(res.status_code, res.reason)
+        try:
+            if res.json().get('error'):
+                err_msg += '\n{}'.format(res.json().get('message'))
+            return_error(err_msg)
+        except json.decoder.JSONDecodeError as _:
+            return_error(err_msg)
 
-    return j_son
+    return res.json()
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -581,18 +596,6 @@ COMMANDS = {
 
 def main():
     """ Main Execution block """
-
-    ''' SETUP '''
-
-    # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    # Remove proxy if not set to true in params
-    if not PROXY:
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
 
     try:
         cmd_name = demisto.command()

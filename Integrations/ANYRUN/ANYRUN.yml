@@ -322,6 +322,9 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision.
       type: String
+    - contextPath: ANYRUN.Task.Status
+      description: Task analysis status.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: true
