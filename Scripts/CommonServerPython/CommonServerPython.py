@@ -4,8 +4,6 @@ from CommonServerPython import *
 # =======================
 # This script will be appended to each server script before being executed.
 # Please notice that to add custom common code, add it to the CommonServerUserPython script
-from dateutil.parser import parse
-from dateutil.tz import tzlocal
 from datetime import datetime, timedelta
 import time
 import json
