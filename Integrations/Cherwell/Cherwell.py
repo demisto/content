@@ -976,7 +976,7 @@ def unlink_business_objects_command():
     child_type = args.get('child_type')
     child_record_id = args.get('child_record_id')
     relationship_id = args.get('relationship_id')
-    business_objects_relation_action('unllink', parent_type, parent_record_id, child_type, child_record_id,
+    business_objects_relation_action('unlink', parent_type, parent_record_id, child_type, child_record_id,
                                      relationship_id)
     message = \
         f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were unlinked'
