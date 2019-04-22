@@ -446,7 +446,7 @@ def get_business_object(name, object_id, id_type):
     parsed_business_object = parse_fields_from_business_object(results.get('fields'))
     parsed_business_object['PublicID'] = results.get('busObPublicId')
     parsed_business_object['RecordID'] = results.get('busObRecId')
-    return results, parsed_business_object
+    return parsed_business_object, results
 
 
 def delete_business_object(name, object_id, id_type):
@@ -841,10 +841,10 @@ def create_business_object_command():
     data_json = json.loads(args.get('json'))
     result = create_business_object(type_name, data_json)
     ids = {
-        'IncidentPublicID': result.get('busObPublicId'),
-        'IncidentRecordID': result.get('busObRecId')
+        'PublicID': result.get('busObPublicId'),
+        'RecordID': result.get('busObRecId')
     }
-    md = tableToMarkdown('New Incident was created', ids, headerTransform=pascalToSpace)
+    md = tableToMarkdown(f'New {type_name.capitalize()} was created', ids, headerTransform=pascalToSpace)
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -852,7 +852,7 @@ def create_business_object_command():
         'Contents': result,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.IncidentPublicID == obj.IncidentPublicID)': ids
+            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': ids
         }
     })
 
@@ -865,10 +865,10 @@ def update_business_object_command():
     id_type = args.get('id_type')
     result = update_business_object(type_name, data_json, object_id, id_type)
     ids = {
-        'IncidentPublicID': result.get('busObPublicId'),
-        'IncidentRecordID': result.get('busObRecId')
+        'PublicID': result.get('busObPublicId'),
+        'RecordID': result.get('busObRecId')
     }
-    md = tableToMarkdown(f'Incident {object_id} was updated', ids, headerTransform=pascalToSpace)
+    md = tableToMarkdown(f'{type_name.capitalize()} {object_id} was updated', ids, headerTransform=pascalToSpace)
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -876,7 +876,7 @@ def update_business_object_command():
         'Contents': result,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.IncidentPublicID == obj.IncidentPublicID)': ids
+            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': ids
         }
     })
 
@@ -886,8 +886,8 @@ def get_business_object_command():
     type_name = args.get('type')
     id_type = args.get('id_type')
     object_id = args.get('id_value')
-    results, business_object = get_business_object(type_name, object_id, id_type)
-    md = tableToMarkdown('Incidents Number: {}'.format(object_id), business_object, headers=INCIDENT_HEADERS_NAMES,
+    business_object, results = get_business_object(type_name, object_id, id_type)
+    md = tableToMarkdown(f'{type_name.capitalize()}: {object_id}', business_object,
                          removeNull=True, headerTransform=pascalToSpace)
 
     demisto.results({
@@ -896,7 +896,7 @@ def get_business_object_command():
         'Contents': results,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.PublicID == obj.PublicID)': createContext(business_object, removeNull=True)
+            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': createContext(business_object, removeNull=True)
         }
     })
 
