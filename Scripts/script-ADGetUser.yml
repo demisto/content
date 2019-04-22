@@ -189,7 +189,12 @@ script: |-
   else:
       resp = listAll(attrs, demisto.get(demisto.args(),'using'), userAccountControlOut)
 
+  expectedErrs = ['invalid attribute type dn', 'Unsupported Command']
   if isError(resp):
+      errData = demisto.get(resp[0],'Contents')
+      for err in expectedErrs:
+          if err in errData:
+              return_error('No instances of "Active Directory Query" are configured.\nIf you are trying to run "ADGetUser" with "Active Directory Query V2", please use the aquivilant command "ad-get-user" instead.')
       demisto.results(resp)
   else:
       found = False
@@ -309,4 +314,5 @@ scripttarget: 0
 runonce: false
 dependson:
   must:
-  - ad-search
+  - activedir|||ad-search
+releaseNotes: 'enable script execution with "Active Directory Query" instances only'
