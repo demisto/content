@@ -596,7 +596,8 @@
             "integrations": [
                 "VirusTotal"
             ],
-            "playbookID": "ip_enrichment_generic_test"
+            "playbookID": "ip_enrichment_generic_test",
+            "instance_names": "virus_total_general"
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
