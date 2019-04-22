@@ -393,9 +393,6 @@ def wildfire_get_verdicts_command():
 
 
 def create_report(hash, jres, reports, file_info):
-    get_report_uri = URL + URL_DICT["report"]
-    # result = reportResponse.result;
-
     udp_ip = []
     udp_port = []
     tcp_ip = []
@@ -432,19 +429,9 @@ def create_report(hash, jres, reports, file_info):
                 if '-text' in report["evidence"]["file"]["entry"]:
                     evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
 
-
-    context = {
-        'DBotScore': {
-                'Indicator': hash,
-                'Type': 'hash',
-                'Vendor': 'WildFire',
-                'Score': 0
-            }
-    }
-
     outputs = {
         'Status': 'Success',
-        'SHA256': reportResponse.info.sha256,
+        'SHA256': jres["info"]["sha256"]
     }
 
     if len(udp_ip) > 0 or len(udp_port) > 0 or len(tcp_ip) > 0 or len(tcp_port) > 0 or dns_query or dns_response:
@@ -461,43 +448,61 @@ def create_report(hash, jres, reports, file_info):
         if len(tcp_ip) > 0 or len(tcp_port) > 0:
             outputs["Network"]["TCP"] = {}
             if len(tcp_ip) > 0:
-                outputs.Network.TCP.IP = tcp_ip;
-            }
-            if (tcp_port.length) {
-            outputs.Network.TCP.Port = tcp_port;
-            }
-            }
+                outputs["Network"]["TCP."]["IP"] = tcp_ip
+            if len(tcp_port) > 0:
+                outputs["Network"]["TCP"]["Port"] = tcp_port
+
         if len(dns_query) > 0 or len(dns_response) > 0:
             outputs["Network"]["DNS"] = {}
             if len(dns_query) > 0:
                 outputs["Network"]["DNS"]["Query"] = dns_query
             if len(dns_response) > 0:
-            outputs["Network"]["DNS"]["Response"] = dns_response
+                outputs["Network"]["DNS"]["Response"] = dns_response
 
 
     if len(evidence_md5) > 0 or len(evidence_text) > 0:
         outputs["Evidence"] = {}
-        if len(evidence_md5 > 0:
+        if len(evidence_md5) > 0:
             outputs["Evidence"]["md5"] = evidence_md5
-        if len(evidence_text > 0:
+        if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
+
+    context["DBotScore"] = {
+        'Indicator': hash,
+        'Type': 'hash',
+        'Vendor': 'WildFire',
+        'Score': 0
+    }
 
     context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
-    if (file_info) {
-    if (file_info.malware == = 'yes') {
-    context.DBotScore.Score = 3;
-    addMalicious(context, outputPaths.file, {
-    Type: file_info.filetype,
-          MD5: file_info.md5,
-    SHA1: file_info.sha1,
-    SHA256: file_info.sha256,
-    Size: file_info.size,
-    Name: file_info.filename,
-    Malicious: {Vendor: 'WildFire'}
-    });
+        # dbot_score = 0
+        # malicious = None
+        # if 'malicious' in analysis_info['Result']:
+        #     dbot_score = 3
+        #     malicious = {
+        #         'Vendor': 'JoeSecurity',
+        #         'Detections': ', '.join(set([run['detection'] for run in analysis['runs']])),
+        #         'SHA1': analysis_info['SHA1'],
+
+
+
+
+    if file_info:
+        if file_info["malware"] == 'yes':
+            context["DBotScore"]["Score"] = 3
+            context["DBotScore"]["Malicious"] =
+            addMalicious(context, outputPaths.file, {
+            Type: file_info.filetype,
+                  MD5: file_info.md5,
+            SHA1: file_info.sha1,
+            SHA256: file_info.sha256,
+            Size: file_info.size,
+            Name: file_info.filename,
+            Malicious: {Vendor: 'WildFire'}
+            });
     } else {
-        context.DBotScore.Score = 1;
+        context["DBotScore"]["Score"] = 1
     }
     }
     if (format === 'pdf'){
