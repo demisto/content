@@ -2,6 +2,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
+import base64
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -267,6 +268,13 @@ def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dic
     return mails_list
 
 
+def file_builder(raw_response):
+    name = raw_response.get('name')
+    data = raw_response.get('contentBytes')
+    data = base64.decodebytes(data)
+    return fileResult(name, data)
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -329,7 +337,7 @@ def delete_mail_command():
     entry_context = {
         f'MSGraphMail(val.ID == {message_id}': None
     }
-    
+
     return_outputs(human_readable, entry_context)
 
 
@@ -354,6 +362,9 @@ def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str
         suffix = no_folder
 
     response = http_request('GET', suffix, odata=odata)
+
+    # Add user ID
+    response['userId'] = user_id
     return response
 
 
@@ -381,18 +392,30 @@ def get_message_command():
 
 
 def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
+    """
+
+    Args:
+        message_id (str):
+        user_id (str_:
+        attachment_id (str):
+        folder_id (str):
+
+    Returns:
+        dict:
+    """
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
     with_folder = f'/users/{user_id}/mailFolders/{folder_id}/messages/{message_id}/attachments/{attachment_id}'
     suffix = with_folder if folder_id else no_folder
     response = http_request('GET', suffix)
+    return response
 
 
 def get_attachment_command():
     message_id = demisto.args().get('message_id')
     user_id = demisto.args().get('user_id')
     folder_id = demisto.args().get('folder_id')
-    get_attachment(message_id, user_id, folder_id)
-
+    raw_response = get_attachment(message_id, user_id, folder_id)
+    file = file_builder(raw_response)
 
 def main():
     """ GLOBALS/PARAMS """
