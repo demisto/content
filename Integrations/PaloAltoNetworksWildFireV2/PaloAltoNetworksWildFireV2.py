@@ -392,30 +392,23 @@ def wildfire_get_verdicts_command():
         })
 
 
-def create_report(report_response, format, verbose):
-    reportUrl = URL + URL_DICT.report;
-    var
-    result = reportResponse.result;
-    var
-    report = reportResponse.report;
-    var
-    file_info = reportResponse.info;
-    var
-    hash = reportResponse.hash;
+def create_report(hash, jres, reports, file_info):
+    get_report_uri = URL + URL_DICT["report"]
+    # result = reportResponse.result;
 
-    udp_ip = [];
-    udp_port = [];
-    tcp_ip = [];
-    tcp_port = [];
-    dns_query = [];
-    dns_response = [];
-    evidence_md5 = [];
-    evidence_text = [];
+    udp_ip = []
+    udp_port = []
+    tcp_ip = []
+    tcp_port = []
+    dns_query = []
+    dns_response = []
+    evidence_md5 = []
+    evidence_text = []
 
-    for (var i = 0; i < report.length; i++) {
-    if ('network' in report[i]) {
-    if (report[i].network) {
-    if ('UDP' in report[i].network) {
+    for report in reports:
+        if 'network' in report:
+            if report["network"]:
+                if ('UDP' in report[i].network) {
     if ('-ip' in report[i].network.UDP) {
     udp_ip.push(report[i].network.UDP['-ip']);
     }
@@ -560,12 +553,12 @@ def wildfire_get_report(hash):
         return 'No results yet'
 
     jres = json.loads(res_xml_body)
-    report = jres["wildfire"]["task_info.report"]
+    reports = jres["wildfire"]["task_info.report"]
     file_info = jres["wildfire"]["file_info"]
     if not report or not file_info:
         return 'No results yet'
 
-    return hash, jres, report, file_info
+    return hash, jres, reports, file_info
 
 
 def wildfire_get_report_command():
