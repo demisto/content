@@ -1235,6 +1235,10 @@
         {
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         }
     ],
     "skipped_tests": {
