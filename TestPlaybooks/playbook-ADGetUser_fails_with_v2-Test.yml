@@ -42,7 +42,7 @@ tasks:
         The script will be executed with an 'Active Directory Query' instance by default.
 
         To use this script with an instance of 'Active Directory Query V2' specify using-brand="Active Directory Query".
-      scriptName: ADGetUser_copy
+      scriptName: ADGetUser
       type: regular
       iscommand: false
       brand: ""
