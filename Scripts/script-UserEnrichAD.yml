@@ -18,4 +18,6 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ad-search
+  - activedir|||ad-search
+tests:
+  - No test
