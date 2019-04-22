@@ -177,6 +177,7 @@ script:
         #honadle non success
         if jresult['response']['@status'] != 'success':
             if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
+
                 # catch non existing object error and display a meaningful message
                 if jresult['response']['msg']['line'] == 'No such node':
                     return_error('Object was not found, verify that the name is correct and that the instance was committed.')
@@ -188,6 +189,15 @@ script:
                 # catch already at the top/bottom error for rules and return this as an entry.note
                 elif str(jresult['response']['msg']['line']).find('already at the') != -1:
                     demisto.results('Rule ' + str(jresult['response']['msg']['line']))
+                    sys.exit(0)
+
+                # catch already registered ip tags and return this as an entry.note
+                elif str(jresult['response']['msg']['line']).find('already exists, ignore') != -1:
+                    if isinstance(jresult['response']['msg']['line']['uid-response']['payload']['register']['entry'], list):
+                        ips = [o['@ip'] for o in jresult['response']['msg']['line']['uid-response']['payload']['register']['entry']]
+                    else:
+                        ips = jresult['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
+                    demisto.results('IP ' + str(ips) + ' already exist in the tag.')
                     sys.exit(0)
 
             if '@code' in jresult['response']:
