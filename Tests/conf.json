@@ -1238,7 +1238,8 @@
         },
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd"
+            "integrations": "Threat Crowd",
+            "fromversion": "4.1.0"
         }
     ],
     "skipped_tests": {
