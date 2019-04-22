@@ -1311,13 +1311,14 @@ script: |-
           :rtype: ``dict`` or ``list``
       """
       def camelize_str(src_str, delim):
+          if callable(getattr(src_str, "decode", None)):
+              src_str = src_str.decode('utf-8')
           components = src_str.split(delim)
-          return ''.join(map(lambda x: x.decode('utf-8').title(), components))
+          return ''.join(map(lambda x: x.title(), components))
 
       if isinstance(src, list):
-          return map(lambda x: camelize(x, delim), src)
-      src = {camelize_str(k, delim): v for k,v in src.iteritems()}
-      return src
+          return [camelize(x, delim) for x in src]
+      return {camelize_str(k, delim): v for k, v in src.items()}
 
 
   # Constants for common merge paths
@@ -1552,5 +1553,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Added python3 support for camelize method, fixed issue in camelize method."
 tests:
   - TestCommonPython
