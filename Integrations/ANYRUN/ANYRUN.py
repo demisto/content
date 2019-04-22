@@ -68,7 +68,10 @@ def make_upper(the_string):
     Make 'the_string' argument uppercase if it is a member of
     'ALWAYS_UPPER_CASE' global variable
     """
-    return the_string.upper() if isinstance(the_string, str) and the_string.casefold() in ALWAYS_UPPER_CASE else the_string
+    if isinstance(the_string, str) and the_string.casefold() in ALWAYS_UPPER_CASE:
+        return the_string.upper()
+    else:
+        return the_string
 
 
 def make_capital(the_string):
