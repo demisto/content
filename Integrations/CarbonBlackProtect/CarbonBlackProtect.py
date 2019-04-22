@@ -612,14 +612,15 @@ def search_file_instance_command():
                                      args.get('sort'), args.get('group'))
     headers = args.get('headers')
     files = []
-    for file in raw_files:
-        files.append({
-            'CatalogID': file.get('fileCatalogId'),
-            'ComputerID': file.get('computerId'),
-            'ID': file.get('id'),
-            'Name': file.get('fileName'),
-            'Path': file.get('pathName')
-        })
+    if raw_files:
+        for file in raw_files:
+            files.append({
+                'CatalogID': file.get('fileCatalogId'),
+                'ComputerID': file.get('computerId'),
+                'ID': file.get('id'),
+                'Name': file.get('fileName'),
+                'Path': file.get('pathName')
+            })
     hr_title = "CarbonBlack Protect File Instance Search"
     hr = tableToMarkdown(hr_title, files, headers, removeNull=True, headerTransform=pascalToSpace)
     files = {'CBP.FileInstance(val.ID === obj.ID)': files} if files else None
@@ -659,33 +660,34 @@ def search_event_command():
     raw_events = search_event(args.get('query'), args.get('limit'), args.get('offset'),
                               args.get('sort'), args.get('group'))
     events = []
-    for event in raw_events:
-        events.append({
-            'FilePath': event.get('pathName'),
-            'Param1': event.get('param1'),
-            'Param2': event.get('param2'),
-            'Param3': event.get('param3'),
-            'SubTypeName': event.get('subtypeName'),
-            'ComputerName': event.get('computerName'),
-            'FileName': event.get('fileName'),
-            'RuleName': event.get('ruleName'),
-            'ProcessFileCatalogID': event.get('processFileCatalogId'),
-            'StringID': event.get('stringId'),
-            'IPAddress': event.get('ipAddress'),
-            'PolicyID': event.get('policyId'),
-            'Timestamp': event.get('timestamp'),
-            'Username': event.get('userName'),
-            'ComputerID': event.get('computerId'),
-            'ProcessFileName': event.get('processFileName'),
-            'IndicatorName': event.get('indicatorName'),
-            'SubType': event.get('subtype'),
-            'Type': event.get('type'),
-            'ID': event.get('id'),
-            'Description': event.get('description'),
-            'Severity': event.get('severity'),
-            'CommandLine': event.get('commandLine'),
-            'ProcessPathName': event.get('processPathName')
-        })
+    if raw_events:
+        for event in raw_events:
+            events.append({
+                'FilePath': event.get('pathName'),
+                'Param1': event.get('param1'),
+                'Param2': event.get('param2'),
+                'Param3': event.get('param3'),
+                'SubTypeName': event.get('subtypeName'),
+                'ComputerName': event.get('computerName'),
+                'FileName': event.get('fileName'),
+                'RuleName': event.get('ruleName'),
+                'ProcessFileCatalogID': event.get('processFileCatalogId'),
+                'StringID': event.get('stringId'),
+                'IPAddress': event.get('ipAddress'),
+                'PolicyID': event.get('policyId'),
+                'Timestamp': event.get('timestamp'),
+                'Username': event.get('userName'),
+                'ComputerID': event.get('computerId'),
+                'ProcessFileName': event.get('processFileName'),
+                'IndicatorName': event.get('indicatorName'),
+                'SubType': event.get('subtype'),
+                'Type': event.get('type'),
+                'ID': event.get('id'),
+                'Description': event.get('description'),
+                'Severity': event.get('severity'),
+                'CommandLine': event.get('commandLine'),
+                'ProcessPathName': event.get('processPathName')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Event Search"
     hr = tableToMarkdown(hr_title, events, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -726,25 +728,26 @@ def search_approval_request_command():
     raw_approval_requests = search_approval(args.get('query'), args.get('limit'), args.get('offset'),
                                             args.get('sort'), args.get('group'))
     approval_requests = []
-    for approval_request in raw_approval_requests:
-        approval_requests.append({
-            'ID': approval_request.get('id'),
-            'Resolution': approval_request.get('resolution'),
-            'Status': approval_request.get('status'),
-            'ResolutionComments': approval_request.get('resolutionComments'),
-            'FileCatalogID': approval_request.get('fileCatalogId'),
-            'ComputerID': approval_request.get('computerId'),
-            'ComputerName': approval_request.get('computerName'),
-            'DateCreated': approval_request.get('dateCreated'),
-            'CreatedBy': approval_request.get('createdBy'),
-            'EnforcementLevel': approval_request.get('enforcementLevel'),
-            'RequestorEmail': approval_request.get('requestorEmail'),
-            'Priority': approval_request.get('priority'),
-            'FileName': approval_request.get('fileName'),
-            'PathName': approval_request.get('pathName'),
-            'Process': approval_request.get('process'),
-            'Platform': approval_request.get('platform')
-        })
+    if raw_approval_requests:
+        for approval_request in raw_approval_requests:
+            approval_requests.append({
+                'ID': approval_request.get('id'),
+                'Resolution': approval_request.get('resolution'),
+                'Status': approval_request.get('status'),
+                'ResolutionComments': approval_request.get('resolutionComments'),
+                'FileCatalogID': approval_request.get('fileCatalogId'),
+                'ComputerID': approval_request.get('computerId'),
+                'ComputerName': approval_request.get('computerName'),
+                'DateCreated': approval_request.get('dateCreated'),
+                'CreatedBy': approval_request.get('createdBy'),
+                'EnforcementLevel': approval_request.get('enforcementLevel'),
+                'RequestorEmail': approval_request.get('requestorEmail'),
+                'Priority': approval_request.get('priority'),
+                'FileName': approval_request.get('fileName'),
+                'PathName': approval_request.get('pathName'),
+                'Process': approval_request.get('process'),
+                'Platform': approval_request.get('platform')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Approval Request Search"
     hr = tableToMarkdown(hr_title, approval_requests, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -785,17 +788,18 @@ def search_file_rule_command():
     raw_file_rules = search_file_rule(args.get('query'), args.get('limit'), args.get('offset'),
                                       args.get('sort'), args.get('group'))
     file_rules = []
-    for file_rule in raw_file_rules:
-        file_rules.append({
-            'ID': file_rule.get('id'),
-            'CatalogID': file_rule.get('fileCatalogId'),
-            'Description': file_rule.get('description'),
-            'FileState': file_rule.get('fileState'),
-            'Hash': file_rule.get('hash'),
-            'Name': file_rule.get('name'),
-            'PolicyIDs': file_rule.get('policyIds'),
-            'ReportOnly': file_rule.get('reportOnly')
-        })
+    if raw_file_rules:
+        for file_rule in raw_file_rules:
+            file_rules.append({
+                'ID': file_rule.get('id'),
+                'CatalogID': file_rule.get('fileCatalogId'),
+                'Description': file_rule.get('description'),
+                'FileState': file_rule.get('fileState'),
+                'Hash': file_rule.get('hash'),
+                'Name': file_rule.get('name'),
+                'PolicyIDs': file_rule.get('policyIds'),
+                'ReportOnly': file_rule.get('reportOnly')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect File Rule Search"
     hr = tableToMarkdown(hr_title, file_rules, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -974,25 +978,26 @@ def search_policy_command():
     raw_policy = search_policy(args.get('query'), args.get('limit'), args.get('offset'),
                                args.get('sort'), args.get('group'))
     policies = []
-    for policy in raw_policy:
-        policies.append({
-            'ReadOnly': policy.get('readOnly'),
-            'EnforcementLevel': policy.get('enforcementLevel'),
-            'ReputationEnabled': policy.get('reputationEnabled'),
-            'AtEnforcementComputers': policy.get('atEnforcementComputers'),
-            'Automatic': policy.get('automatic'),
-            'Name': policy.get('name'),
-            'FileTrackingEnabled': policy.get('fileTrackingEnabled'),
-            'ConnectedComputers': policy.get('connectedComputers'),
-            'PackageName': policy.get('packageName'),
-            'AllowAgentUpgrades': policy.get('allowAgentUpgrades'),
-            'TotalComputers': policy.get('totalComputers'),
-            'LoadAgentInSafeMode': policy.get('loadAgentInSafeMode'),
-            'AutomaticApprovalsOnTransition': policy.get('automaticApprovalsOnTransition'),
-            'ID': policy.get('id'),
-            'Description': policy.get('description'),
-            'DisconnectedEnforcementLevel': policy.get('disconnectedEnforcementLevel')
-        })
+    if raw_policy:
+        for policy in raw_policy:
+            policies.append({
+                'ReadOnly': policy.get('readOnly'),
+                'EnforcementLevel': policy.get('enforcementLevel'),
+                'ReputationEnabled': policy.get('reputationEnabled'),
+                'AtEnforcementComputers': policy.get('atEnforcementComputers'),
+                'Automatic': policy.get('automatic'),
+                'Name': policy.get('name'),
+                'FileTrackingEnabled': policy.get('fileTrackingEnabled'),
+                'ConnectedComputers': policy.get('connectedComputers'),
+                'PackageName': policy.get('packageName'),
+                'AllowAgentUpgrades': policy.get('allowAgentUpgrades'),
+                'TotalComputers': policy.get('totalComputers'),
+                'LoadAgentInSafeMode': policy.get('loadAgentInSafeMode'),
+                'AutomaticApprovalsOnTransition': policy.get('automaticApprovalsOnTransition'),
+                'ID': policy.get('id'),
+                'Description': policy.get('description'),
+                'DisconnectedEnforcementLevel': policy.get('disconnectedEnforcementLevel')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Policy Search"
     hr = tableToMarkdown(hr_title, policies, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -1033,12 +1038,13 @@ def search_server_config_command():
     raw_server_configs = search_server_config(args.get('query'), args.get('limit'), args.get('offset'),
                                               args.get('sort'), args.get('group'))
     server_configs = []
-    for server_config in raw_server_configs:
-        server_configs.append({
-            'ID': server_config.get('id'),
-            'Value': server_config.get('value'),
-            'Name': server_config.get('name')
-        })
+    if raw_server_configs:
+        for server_config in raw_server_configs:
+            server_configs.append({
+                'ID': server_config.get('id'),
+                'Value': server_config.get('value'),
+                'Name': server_config.get('name')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Server Config Search"
     hr = tableToMarkdown(hr_title, server_configs, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -1079,16 +1085,17 @@ def search_publisher_command():
     raw_publishers = search_publisher(args.get('query'), args.get('limit'), args.get('offset'),
                                       args.get('sort'), args.get('group'))
     publishers = []
-    for publisher in raw_publishers:
-        publishers.append({
-            'Description': publisher.get('description'),
-            'ID': publisher.get('id'),
-            'Name': publisher.get('name'),
-            'Reputation': publisher.get('publisherReputation'),
-            'SignedCertificatesCount': publisher.get('signedCertificateCount'),
-            'SignedFilesCount': publisher.get('signedFilesCount'),
-            'State': publisher.get('publisherState')
-        })
+    if raw_publishers:
+        for publisher in raw_publishers:
+            publishers.append({
+                'Description': publisher.get('description'),
+                'ID': publisher.get('id'),
+                'Name': publisher.get('name'),
+                'Reputation': publisher.get('publisherReputation'),
+                'SignedCertificatesCount': publisher.get('signedCertificateCount'),
+                'SignedFilesCount': publisher.get('signedFilesCount'),
+                'State': publisher.get('publisherState')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Publisher Search"
     hr = tableToMarkdown(hr_title, publishers, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -1321,21 +1328,22 @@ def search_file_upload_command():
     raw_file_uploads = search_file_upload(args.get('query'), args.get('limit'), args.get('offset'),
                                           args.get('sort'), args.get('group'))
     file_uploads = []
-    for file_upload in raw_file_uploads:
-        file_uploads.append({
-            'Priority': file_upload.get('priority'),
-            'FileName': file_upload.get('fileName'),
-            'UploadPath': file_upload.get('uploadPath'),
-            'ComputerId': file_upload.get('computerId'),
-            'DateModified': file_upload.get('dateModified'),
-            'ID': file_upload.get('id'),
-            'FileCatalogId': file_upload.get('fileCatalogId'),
-            'DateCreated': file_upload.get('dateCreated'),
-            'CreatedBy': file_upload.get('createdBy'),
-            'PathName': file_upload.get('pathName'),
-            'UploadStatus': file_upload.get('uploadStatus'),
-            'UploadedFileSize': file_upload.get('uploadedFileSize'),
-        })
+    if raw_file_uploads:
+        for file_upload in raw_file_uploads:
+            file_uploads.append({
+                'Priority': file_upload.get('priority'),
+                'FileName': file_upload.get('fileName'),
+                'UploadPath': file_upload.get('uploadPath'),
+                'ComputerId': file_upload.get('computerId'),
+                'DateModified': file_upload.get('dateModified'),
+                'ID': file_upload.get('id'),
+                'FileCatalogId': file_upload.get('fileCatalogId'),
+                'DateCreated': file_upload.get('dateCreated'),
+                'CreatedBy': file_upload.get('createdBy'),
+                'PathName': file_upload.get('pathName'),
+                'UploadStatus': file_upload.get('uploadStatus'),
+                'UploadedFileSize': file_upload.get('uploadedFileSize'),
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect File Upload Search"
     hr = tableToMarkdown(hr_title, file_uploads, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -1376,18 +1384,19 @@ def search_file_analysis_command():
     raw_file_analysis = search_file_analysis(args.get('query'), args.get('limit'), args.get('offset'),
                                              args.get('sort'), args.get('group'))
     file_analysis = []
-    for analysis in raw_file_analysis:
-        file_analysis.append({
-            'Priority': analysis.get('priority'),
-            'FileName': analysis.get('fileName'),
-            'PathName': analysis.get('pathName'),
-            'ComputerId': analysis.get('computerId'),
-            'DateModified': analysis.get('dateModified'),
-            'ID': analysis.get('id'),
-            'FileCatalogId': analysis.get('fileCatalogId'),
-            'DateCreated': analysis.get('dateCreated'),
-            'CreatedBy': analysis.get('createdBy')
-        })
+    if raw_file_analysis:
+        for analysis in raw_file_analysis:
+            file_analysis.append({
+                'Priority': analysis.get('priority'),
+                'FileName': analysis.get('fileName'),
+                'PathName': analysis.get('pathName'),
+                'ComputerId': analysis.get('computerId'),
+                'DateModified': analysis.get('dateModified'),
+                'ID': analysis.get('id'),
+                'FileCatalogId': analysis.get('fileCatalogId'),
+                'DateCreated': analysis.get('dateCreated'),
+                'CreatedBy': analysis.get('createdBy')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect File Analysis Search"
     hr = tableToMarkdown(hr_title, file_analysis, headers, removeNull=True, headerTransform=pascalToSpace)
@@ -1466,7 +1475,7 @@ def get_connector_command():
     """
     args = demisto.args()
     id = args.get('id')
-    raw_connector = get_file_upload(id)
+    raw_connector = get_connector(id)
     connector = {
         'AnalysisEnabled': raw_connector.get('analysisEnabled'),
         'AnalysisName': raw_connector.get('analysisName'),
@@ -1503,16 +1512,17 @@ def search_connector_command():
     raw_connectors = search_connector(args.get('query'), args.get('limit'), args.get('offset'),
                                       args.get('sort'), args.get('group'))
     connectors = []
-    for connector in raw_connectors:
-        connectors.append({
-            'AnalysisEnabled': connector.get('analysisEnabled'),
-            'AnalysisName': connector.get('analysisName'),
-            'AnalysisTargets': connector.get('analysisTargets'),
-            'CanAnalyze': connector.get('canAnalyze'),
-            'ConnectorVersion': connector.get('connectorVersion'),
-            'Enabled': connector.get('enabled'),
-            'ID': connector.get('id')
-        })
+    if raw_connectors:
+        for connector in raw_connectors:
+            connectors.append({
+                'AnalysisEnabled': connector.get('analysisEnabled'),
+                'AnalysisName': connector.get('analysisName'),
+                'AnalysisTargets': connector.get('analysisTargets'),
+                'CanAnalyze': connector.get('canAnalyze'),
+                'ConnectorVersion': connector.get('connectorVersion'),
+                'Enabled': connector.get('enabled'),
+                'ID': connector.get('id')
+            })
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Connector Search"
     hr = tableToMarkdown(hr_title, connectors, headers, removeNull=True, headerTransform=pascalToSpace)
