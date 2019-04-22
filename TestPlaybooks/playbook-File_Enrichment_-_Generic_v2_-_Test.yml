@@ -12,6 +12,7 @@ tasks:
       id: 10c4378f-44df-4293-8f72-874b0495a27a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -189,6 +190,7 @@ tasks:
       id: f083cfd3-28ab-4f13-8692-32ae498df885
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -210,7 +212,8 @@ tasks:
     task:
       id: 144f05c5-0c6b-45a4-8c74-46e471288276
       version: -1
-      name: File Enrichment - Generic_dev2
+      name: File Enrichment - Generic v2
+      description: ""
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
