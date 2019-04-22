@@ -132,7 +132,7 @@ def createPyDocumentation(path, origin, language):
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {}
-    exec(code, ns)
+    exec(code, ns)  # guardrails-disable-line
 
     x = []
 
