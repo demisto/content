@@ -393,7 +393,7 @@ def search_file_catalog_command():
 
 
 @logger
-def search_file_catalog(q, limit, offset, sort, group):
+def search_file_catalog(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file catalog, and returns the result json
     :param q: Query to be executed
@@ -447,7 +447,7 @@ def search_computer_command():
 
 
 @logger
-def search_computer(q, limit, offset, sort, group):
+def search_computer(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file catalog, and returns the result json
     :param q: Query to be executed
@@ -628,7 +628,7 @@ def search_file_instance_command():
 
 
 @logger
-def search_file_instance(q, limit, offset, sort, group):
+def search_file_instance(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file instance, and returns the result json
     :param q: Query to be executed
@@ -696,7 +696,7 @@ def search_event_command():
 
 
 @logger
-def search_event(q, limit, offset, sort, group):
+def search_event(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file instance, and returns the result json
     :param q: Query to be executed
@@ -756,7 +756,7 @@ def search_approval_request_command():
 
 
 @logger
-def search_approval(q, limit, offset, sort, group):
+def search_approval(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for approval request, and returns the result json
     :param q: Query to be executed
@@ -808,7 +808,7 @@ def search_file_rule_command():
 
 
 @logger
-def search_file_rule(q, limit, offset, sort, group):
+def search_file_rule(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file rule, and returns the result json
     :param q: Query to be executed
@@ -1006,7 +1006,7 @@ def search_policy_command():
 
 
 @logger
-def search_policy(q, limit, offset, sort, group):
+def search_policy(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for search policy, and returns the result json
     :param q: Query to be executed
@@ -1053,7 +1053,7 @@ def search_server_config_command():
 
 
 @logger
-def search_server_config(q, limit, offset, sort, group):
+def search_server_config(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file rule, and returns the result json
     :param q: Query to be executed
@@ -1104,7 +1104,7 @@ def search_publisher_command():
 
 
 @logger
-def search_publisher(q, limit, offset, sort, group):
+def search_publisher(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for publisher, and returns the result json
     :param q: Query to be executed
@@ -1352,7 +1352,7 @@ def search_file_upload_command():
 
 
 @logger
-def search_file_upload(q, limit, offset, sort, group):
+def search_file_upload(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file upload, and returns the result json
     :param q: Query to be executed
@@ -1405,7 +1405,7 @@ def search_file_analysis_command():
 
 
 @logger
-def search_file_analysis(q, limit, offset, sort, group):
+def search_file_analysis(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file analysis, and returns the result json
     :param q: Query to be executed
@@ -1531,7 +1531,7 @@ def search_connector_command():
 
 
 @logger
-def search_connector(q, limit, offset, sort, group):
+def search_connector(q=None, limit=None, offset=None, sort=None, group=None):
     """
     Sends the request for file analysis, and returns the result json
     :param q: Query to be executed
