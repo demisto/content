@@ -207,7 +207,7 @@ def search_file_catalog_command():
     hr_title = "CarbonBlack Protect File Catalog Search"
     hr = tableToMarkdown(hr_title, catalogs, headers, removeNull=True, headerTransform=pascalToSpace)
     catalogs = {'File(val.SHA1 === obj.SHA1)': catalogs} if catalogs else None
-    demisto.results(return_outputs(hr, catalogs, raw_catalogs))
+    return_outputs(hr, catalogs, raw_catalogs)
 
 
 @logger
@@ -261,7 +261,7 @@ def search_computer_command():
     hr_title = "CarbonBlack Protect Computer Search"
     hr = tableToMarkdown(hr_title, computers, headers, removeNull=True, headerTransform=pascalToSpace)
     computers = {'Endpoint(val.ID === obj.ID)': computers} if computers else None
-    demisto.results(return_outputs(hr, computers, raw_computers))
+    return_outputs(hr, computers, raw_computers)
 
 
 @logger
@@ -329,7 +329,7 @@ def update_computer_command():
             'ID': computer.get('id')
         })
     hr = tableToMarkdown('CarbonBlack Protect computer updated successfully', computers)
-    demisto.results(return_outputs(hr, {'Endpoint(val.ID === obj.ID)': computers}, raw_computers))
+    return_outputs(hr, {'Endpoint(val.ID === obj.ID)': computers}, raw_computers)
 
 
 @logger
@@ -406,7 +406,7 @@ def get_computer_command():
     hr_title = f'CarbonBlack Protect Computer Get for {id}'
     hr = tableToMarkdown(hr_title, computer, headers, removeNull=True, headerTransform=pascalToSpace)
     entry_context_computer = {'Endpoint(val.ID === obj.ID)': computer} if computer else None
-    demisto.results(return_outputs(hr, entry_context_computer, raw_computer))
+    return_outputs(hr, entry_context_computer, raw_computer)
 
 
 @logger
@@ -442,7 +442,7 @@ def search_file_instance_command():
     hr_title = "CarbonBlack Protect File Instance Search"
     hr = tableToMarkdown(hr_title, files, headers, removeNull=True, headerTransform=pascalToSpace)
     files = {'CBP.FileInstance(val.ID === obj.ID)': files} if files else None
-    demisto.results(return_outputs(hr, files, raw_files))
+    return_outputs(hr, files, raw_files)
 
 
 @logger
@@ -510,7 +510,7 @@ def search_event_command():
     hr_title = "CarbonBlack Protect Event Search"
     hr = tableToMarkdown(hr_title, events, headers, removeNull=True, headerTransform=pascalToSpace)
     events = {'CBP.Event(val.ID === obj.ID)': events} if events else None
-    demisto.results(return_outputs(hr, events, raw_events))
+    return_outputs(hr, events, raw_events)
 
 
 @logger
@@ -570,7 +570,7 @@ def search_approval_request_command():
     hr_title = "CarbonBlack Protect Approval Request Search"
     hr = tableToMarkdown(hr_title, approval_requests, headers, removeNull=True, headerTransform=pascalToSpace)
     approval_requests = {'CBP.ApprovalRequest(val.ID === obj.ID)': approval_requests} if approval_requests else None
-    demisto.results(return_outputs(hr, approval_requests, raw_approval_requests))
+    return_outputs(hr, approval_requests, raw_approval_requests)
 
 
 @logger
@@ -622,7 +622,7 @@ def search_file_rule_command():
     hr_title = "CarbonBlack Protect File Rule Search"
     hr = tableToMarkdown(hr_title, file_rules, headers, removeNull=True, headerTransform=pascalToSpace)
     file_rules = {'CBP.FileRule(val.ID === obj.ID)': file_rules} if file_rules else None
-    demisto.results(return_outputs(hr, file_rules, raw_file_rules))
+    return_outputs(hr, file_rules, raw_file_rules)
 
 
 @logger
@@ -671,7 +671,7 @@ def get_file_rule_command():
     hr_title = f'CarbonBlack Protect File Rule Get for {id}'
     hr = tableToMarkdown(hr_title, file_rule, headers, removeNull=True, headerTransform=pascalToSpace)
     entry_context_file_rule = {'CBP.FileRule(val.ID === obj.ID)': file_rule} if file_rule else None
-    demisto.results(return_outputs(hr, entry_context_file_rule, raw_file_rule))
+    return_outputs(hr, entry_context_file_rule, raw_file_rule)
 
 
 @logger
@@ -746,7 +746,7 @@ def update_file_rule_command():
     }
     hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', file_rule,
                          removeNull=True, headerTransform=pascalToSpace)
-    demisto.results(return_outputs(hr, {'CBP.FileRule(val.ID === obj.ID)': file_rule}, raw_file_rule))
+    return_outputs(hr, {'CBP.FileRule(val.ID === obj.ID)': file_rule}, raw_file_rule)
 
 
 @logger
@@ -820,7 +820,7 @@ def search_policy_command():
     hr_title = "CarbonBlack Protect Policy Search"
     hr = tableToMarkdown(hr_title, policies, headers, removeNull=True, headerTransform=pascalToSpace)
     policies = {'CBP.Policy(val.ID === obj.ID)': policies} if policies else None
-    demisto.results(return_outputs(hr, policies, raw_policy))
+    return_outputs(hr, policies, raw_policy)
 
 
 @logger
@@ -867,7 +867,7 @@ def search_server_config_command():
     hr_title = "CarbonBlack Protect Server Config Search"
     hr = tableToMarkdown(hr_title, server_configs, headers, removeNull=True, headerTransform=pascalToSpace)
     server_configs = {'CBP.ServerConfig(val.ID === obj.ID)': server_configs} if server_configs else None
-    demisto.results(return_outputs(hr, server_configs, raw_server_configs))
+    return_outputs(hr, server_configs, raw_server_configs)
 
 
 @logger
@@ -918,7 +918,7 @@ def search_publisher_command():
     hr_title = "CarbonBlack Protect Publisher Search"
     hr = tableToMarkdown(hr_title, publishers, headers, removeNull=True, headerTransform=pascalToSpace)
     publishers = {'CBP.Publisher(val.ID === obj.ID)': publishers} if publishers else None
-    demisto.results(return_outputs(hr, publishers, raw_publishers))
+    return_outputs(hr, publishers, raw_publishers)
 
 
 @logger
@@ -983,7 +983,7 @@ def get_file_analysis_command():
         })
     hr_title = f'CarbonBlack Protect Get File Analysis for {id}'
     hr = tableToMarkdown(hr_title, ec[cbp_ec_key], removeNull=True, headerTransform=pascalToSpace)
-    demisto.results(return_outputs(hr, ec, raw_res))
+    return_outputs(hr, ec, raw_res)
 
 
 @logger
@@ -1024,7 +1024,7 @@ def update_file_analysis_command():
         'CreatedBy': raw_file_analysis.get('createdBy')
     }
     hr = tableToMarkdown('CarbonBlack Protect File Analysis Created successfully', file_analysis)
-    demisto.results(return_outputs(hr, {'CBP.FileAnalysis(val.ID === obj.ID)': file_analysis}, raw_file_analysis))
+    return_outputs(hr, {'CBP.FileAnalysis(val.ID === obj.ID)': file_analysis}, raw_file_analysis)
 
 
 @logger
@@ -1082,7 +1082,7 @@ def update_file_upload_command():
         'UploadedFileSize': raw_file_upload.get('uploadedFileSize'),
     }
     hr = tableToMarkdown('CarbonBlack Protect File Upload Created successfully', file_upload)
-    demisto.results(return_outputs(hr, {'CBP.FileUpload(val.ID === obj.ID)': file_upload}, raw_file_upload))
+    return_outputs(hr, {'CBP.FileUpload(val.ID === obj.ID)': file_upload}, raw_file_upload)
 
 
 @logger
@@ -1162,7 +1162,7 @@ def search_file_upload_command():
     hr_title = "CarbonBlack Protect File Upload Search"
     hr = tableToMarkdown(hr_title, file_uploads, headers, removeNull=True, headerTransform=pascalToSpace)
     file_uploads = {'CBP.FileUpload(val.ID === obj.ID)': file_uploads} if file_uploads else None
-    demisto.results(return_outputs(hr, file_uploads, raw_file_uploads))
+    return_outputs(hr, file_uploads, raw_file_uploads)
 
 
 @logger
@@ -1215,7 +1215,7 @@ def search_file_analysis_command():
     hr_title = "CarbonBlack Protect File Analysis Search"
     hr = tableToMarkdown(hr_title, file_analysis, headers, removeNull=True, headerTransform=pascalToSpace)
     file_analysis = {'CBP.FileAnalysis(val.ID === obj.ID)': file_analysis} if file_analysis else None
-    demisto.results(return_outputs(hr, file_analysis, raw_file_analysis))
+    return_outputs(hr, file_analysis, raw_file_analysis)
 
 
 @logger
@@ -1268,7 +1268,7 @@ def get_file_upload_command():
     hr_title = f'CarbonBlack Protect File Upload Get for {id}'
     hr = tableToMarkdown(hr_title, file_upload, headers, removeNull=True, headerTransform=pascalToSpace)
     entry_context_file_upload = {'CBP.FileUpload(val.ID === obj.ID)': file_upload} if file_upload else None
-    demisto.results(return_outputs(hr, entry_context_file_upload, raw_file_upload))
+    return_outputs(hr, entry_context_file_upload, raw_file_upload)
 
 
 @logger
@@ -1303,7 +1303,7 @@ def get_connector_command():
     hr_title = f'CarbonBlack Protect Connector Get for {id}'
     hr = tableToMarkdown(hr_title, connector, headers, removeNull=True, headerTransform=pascalToSpace)
     entry_context_connector = {'CBP.Connector(val.ID === obj.ID)': connector} if connector else None
-    demisto.results(return_outputs(hr, entry_context_connector, raw_connector))
+    return_outputs(hr, entry_context_connector, raw_connector)
 
 
 @logger
@@ -1341,7 +1341,7 @@ def search_connector_command():
     hr_title = "CarbonBlack Protect Connector Search"
     hr = tableToMarkdown(hr_title, connectors, headers, removeNull=True, headerTransform=pascalToSpace)
     connectors = {'CBP.Connector(val.ID === obj.ID)': connectors} if connectors else None
-    demisto.results(return_outputs(hr, connectors, raw_connectors))
+    return_outputs(hr, connectors, raw_connectors)
 
 
 @logger
@@ -1382,7 +1382,7 @@ def resolve_approval_request_command():
         'resolutionComments': 'ResolutionComments'
     }
     hr = tableToMarkdown('CarbonBlack Protect Approval Request Updated successfully', ec)
-    demisto.results(return_outputs(hr, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, raw_res))
+    return_outputs(hr, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, raw_res)
 
 
 @logger
