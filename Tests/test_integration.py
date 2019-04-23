@@ -32,7 +32,7 @@ def __get_integration_config(client, integration_name):
     while 'configurations' not in res:
         if total_sleep == TIMEOUT:
             print_error("Timeout - failed to get integration {} configuration. Error: {}".format(integration_name,
-                                                                                                 res.text))
+                                                                                                 res))
             return None
 
         time.sleep(SLEEP_INTERVAL)
