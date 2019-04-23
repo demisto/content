@@ -1209,7 +1209,9 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
-            "playbookID": "ExtractDomainFromEmailTest",
+            "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid"
         },
