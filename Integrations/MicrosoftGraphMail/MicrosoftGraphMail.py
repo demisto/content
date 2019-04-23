@@ -149,24 +149,26 @@ def assert_pages(pages: str or int) -> int:
     return 1
 
 
-def assert_folders(folder_string: str) -> str:
+def assert_folders(folder_string: str) -> str or None:
     """
 
     Args:
         folder_string (str): string with `,` delimiter. first one is mailFolders all other are child
 
     Returns:
-        str:  string with path to the folder and child folders
+        str or None:  string with path to the folder and child folders
 
     """
-    path = 'mailFolders/'
-    folders_list = folder_string.split(',')
-    for i in range(len(folders_list)):
-        if i == 0:
-            path += folders_list[0]
-        else:
-            path += '/childFolders/' + folders_list[0]
-    return path
+    if isinstance(folder_string, str):
+        path = 'mailFolders/'
+        folders_list = folder_string.split(',')
+        for i in range(len(folders_list)):
+            if i == 0:
+                path += folders_list[0]
+            else:
+                path += '/childFolders/' + folders_list[0]
+        return path
+    return None
 
 
 def pages_puller(response, page_count):
@@ -177,7 +179,7 @@ def pages_puller(response, page_count):
         next_link = response.get('@odata.nextLink')
         if next_link:
             responses.append(
-                http_request('GET', None, url=next_link)
+                http_request('GET', '', url=next_link)
             )
 
         else:
@@ -307,7 +309,7 @@ def test_module():
 
 def list_mails(user_id, folder_id, search, odata):
     no_folder = f'/users/{user_id}/messages'
-    with_folder = f'users/{user_id}/mailFolders/{folder_id}/messages'
+    with_folder = f'users/{user_id}/{assert_folders(folder_id)}/messages'
     pages_to_pull = demisto.args().get('pages_to_pull', 1)
 
     if search:
@@ -331,7 +333,7 @@ def list_mails_command():
 
 
 def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> True or False:
-    with_folder = f'/users/{user_id}/mailFolders/{folder_id}/messages/{message_id}'
+    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}'
     no_folder = f'/users/{user_id}/messages/{message_id}'
     suffix = with_folder if folder_id else no_folder
     return http_request('DELETE', suffix)
@@ -361,56 +363,6 @@ def delete_mail_command():
     return_outputs(human_readable, entry_context)
 
 
-def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str = None) -> dict:
-    """
-
-    Args:
-        user_id (str): User ID to pull message from
-        message_id (str): Message ID to pull
-        folder_id: (str) Folder ID to pull from
-        odata (str): OData query
-
-    Returns
-        dict: request json
-    """
-    no_folder = f'/users/{user_id}/messages/{user_id}'
-    with_folder = f'/users/{user_id}/mailFolders/{folder_id}/messages/{message_id}'
-
-    if folder_id:
-        suffix = with_folder
-    else:
-        suffix = no_folder
-
-    response = http_request('GET', suffix, odata=odata)
-
-    # Add user ID
-    response['userId'] = user_id
-    return response
-
-
-def get_message_command():
-    user_id = demisto.args().get('user_id')
-    folder_id = demisto.args().get('folder_id')
-    message_id = demisto.args().get('message_id')
-    odata = demisto.args().get('odata')
-    pull_attachment = demisto.args().get('get_attachment')
-    raw_response = get_message(user_id, folder_id, message_id, odata=odata)
-    entry_context = {'MSGraphMail(val.ID === obj.ID)': build_mail_object(raw_response)}
-    if pull_attachment and raw_response.get('hasAttachment'):
-        attachment = get_attachments()
-        entry_context['MSGraphMail(val.ID === obj.ID)'].update(attachment)
-    human_readable = tableToMarkdown(
-        f'Results for message ID {message_id}',
-        entry_context,
-        headers=['ID', 'Subject', 'Send', 'Sender', 'From', 'HasAttachment']
-    )
-    return_outputs(
-        human_readable,
-        entry_context,
-        raw_response=raw_response
-    )
-
-
 def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
     """
 
@@ -424,7 +376,7 @@ def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id:
         dict:
     """
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
-    with_folder = f'/users/{user_id}/mailFolders/{folder_id}/messages/{message_id}/attachments/{attachment_id}'
+    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}/attachments/{attachment_id}'
     suffix = with_folder if folder_id else no_folder
     response = http_request('GET', suffix)
     return response
@@ -439,9 +391,54 @@ def get_attachment_command():
     demisto.results(entry_context)
 
 
+def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str = None) -> dict:
+    """
+
+    Args:
+        user_id (str): User ID to pull message from
+        message_id (str): Message ID to pull
+        folder_id: (str) Folder ID to pull from
+        odata (str): OData query
+
+    Returns
+        dict: request json
+    """
+    no_folder = f'/users/{user_id}/messages/{user_id}'
+    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}'
+
+    suffix = with_folder if folder_id else no_folder
+
+    response = http_request('GET', suffix, odata=odata)
+
+    # Add user ID
+    response['userId'] = user_id
+    return response
+
+
+def get_message_command():
+    user_id = demisto.args().get('user_id')
+    folder_id = demisto.args().get('folder_id')
+    message_id = demisto.args().get('message_id')
+    odata = demisto.args().get('odata')
+    raw_response = get_message(user_id, folder_id, message_id, odata=odata)
+    entry_context = {'MSGraphMail(val.ID === obj.ID)': build_mail_object(raw_response)}
+    human_readable = tableToMarkdown(
+        f'Results for message ID {message_id}',
+        entry_context,
+        headers=['ID', 'Subject', 'Send', 'Sender', 'From', 'HasAttachment']
+    )
+    return_outputs(
+        human_readable,
+        entry_context,
+        raw_response=raw_response
+    )
+
+
 def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
-    with_folder = f'/users/{user_id}/mailFolders/{folder_id}/messages/{message_id}/attachments'
+    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}/attachments'
+    suffix = with_folder if folder_id else no_folder
+    return http_request('GET', suffix)
 
 
 def list_attachments_command():
@@ -449,6 +446,21 @@ def list_attachments_command():
     message_id = demisto.args().get('message_id')
     folder_id = demisto.args().get('folder_id')
     raw_response = list_attachments(user_id, message_id, folder_id)
+
+    attachments = raw_response.get('value')
+    if attachments:
+        attachment_list = [{
+            'ID': attachment.get('id'),
+            'Name': attachment.get('name'),
+            'Type': attachment.get('contentType')
+        } for attachment in attachments]
+
+        entry_context = {'MsGraphMail.Attachments(val.ID === obj.ID)': attachment_list}
+        human_readable = f'Total of {len(attachment_list)} attachments found for message {message_id} from user {user_id}:'
+        return_outputs(human_readable, entry_context, raw_response)
+    else:
+        human_readable = 'No attachments found'
+        return_outputs(human_readable, dict(), raw_response)
 
 
 def main():
