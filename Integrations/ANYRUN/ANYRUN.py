@@ -466,7 +466,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
             if res.json().get('error'):
                 err_msg += '\n{}'.format(res.json().get('message'))
             return_error(err_msg)
-        except json.decoder.JSONDecodeError as _:
+        except json.decoder.JSONDecodeError:
             return_error(err_msg)
 
     return res.json()
