@@ -514,9 +514,12 @@ def get_attachments_info(id_type, object_id, business_object_type_name=None, bus
                                      attachment_type)
     attachments = result.get('attachments')
     attachments_info = [{
-        'AttachmentFieldID': attachment.get('attachmentFileId'),
+        'AttachmentFiledID': attachment.get('attachmentFileId'),
         'FileName': attachment.get('displayText'),
         'AttachmentID': attachment.get('attachmentId'),
+        'BusinessObjectType': business_object_type_name,
+        f'BusinessObject{string_to_context_key(id_type)}': object_id
+
     } for attachment in attachments]
     return attachments_info, result
 
@@ -947,7 +950,7 @@ def get_attachments_info_command():
     }
     if attachments_info:
         entry['EntryContext'] = {
-            f'Cherwell.AttachmentsInfo.{string_to_context_key(type_name)}{object_id}': attachments_info}
+            f'Cherwell.AttachmentsInfo': attachments_info}
     demisto.results(entry)
 
 

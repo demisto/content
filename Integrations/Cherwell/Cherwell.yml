@@ -82,10 +82,10 @@ script:
     execution: false
     name: cherwell-create-business-object
     outputs:
-    - contextPath: Chrwell.BusinessObjects.RecordID
+    - contextPath: Cherwell.BusinessObjects.RecordID
       description: 'Business object record id '
       type: String
-    - contextPath: Chrwell.BusinessObjects.PublicID
+    - contextPath: Cherwell.BusinessObjects.PublicID
       description: 'Business object public id '
       type: String
   - arguments:
@@ -122,10 +122,10 @@ script:
     execution: false
     name: cherwell-update-business-object
     outputs:
-    - contextPath: Chrwell.BusinessObjects.RecordID
+    - contextPath: Cherwell.BusinessObjects.RecordID
       description: 'Business object record id '
       type: String
-    - contextPath: Chrwell.BusinessObjects.PublicID
+    - contextPath: Cherwell.BusinessObjects.PublicID
       description: 'Business object public id '
       type: Unknown
   - arguments:
@@ -196,7 +196,7 @@ script:
       name: id_type
       predefined:
       - public_id
-      - record_d
+      - record_id
       required: true
       secret: false
     - default: false
@@ -210,7 +210,7 @@ script:
     execution: false
     name: cherwell-download-attachments
     outputs:
-    - contextPath: Fille
+    - contextPath: File
       description: File result entries
       type: Unknown
   - arguments:
@@ -254,10 +254,10 @@ script:
     - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
       description: Type of business object (its name)
       type: String
-    - contextPath: Cherwell.UploadedAttachments.PublicID
+    - contextPath: Cherwell.UploadedAttachments.PublicId
       description: 'Public id '
       type: String
-    - contextPath: Cherwell.UploadedAttachments.RecordID
+    - contextPath: Cherwell.UploadedAttachments.RecordId
       description: Record id
       type: String
   - arguments:
@@ -357,6 +357,25 @@ script:
     description: Get business object attachments info
     execution: false
     name: cherwell-get-attachments-info
+    outputs:
+    - contextPath: Cherwell.AttachmentsInfo.AttachmentFiledID
+      description: Attachment field id
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.FileName
+      description: File name
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.AttachmentID
+      description: Attachment id
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.BusinessObjectType
+      description: Type of business object (its name)
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.BusinessObjectPublicId
+      description: Business object public id
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.BusinessObjectRecordId
+      description: Business object record id
+      type: String
   - arguments:
     - default: false
       description: type of business object (its name)
@@ -445,7 +464,7 @@ script:
       description: Field ID
       type: String
     - contextPath: Cherwell.FieldInfo.Name
-      description: The name to use whenever woring with business object commands
+      description: The name to use whenever working with business object commands
       type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
