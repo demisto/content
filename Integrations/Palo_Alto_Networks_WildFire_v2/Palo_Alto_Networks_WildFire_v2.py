@@ -78,9 +78,11 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
-            return_error('Request Failed with status: {} Reason is: {}'.format(result.status_code, ERROR_DICT[str(result.status_code)]))
+            return_error('Request Failed with status: {} Reason is: {}'.format(
+                result.status_code, ERROR_DICT[str(result.status_code)]))
         else:
-            return_error('Request Failed with status: {} Reason is: {}'.format(result.status_code, result.reason))
+            return_error('Request Failed with status: {} Reason is: {}'.format(
+                result.status_code, result.reason))
 
     return result.content
 
