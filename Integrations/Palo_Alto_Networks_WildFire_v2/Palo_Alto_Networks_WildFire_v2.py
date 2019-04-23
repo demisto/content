@@ -4,8 +4,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import requests
-from base64 import b64encode
-import re
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -80,7 +78,8 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
-            return_error('Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + ERROR_DICT[str(result.status_code)])
+            return_error('Request Failed with status: ' + str(result.status_code) + '. Reason is: ' +
+                         ERROR_DICT[str(result.status_code)])
         else:
             return_error(
                 'Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
@@ -190,7 +189,7 @@ def hash_args_handler(sha256=None, md5=None):
     # hash argument used in wildfire-report, wildfire-verdict commands
     inputs = argToList(sha256) if sha256 else argToList(md5)
     for element in inputs:
-        if sha256Regex.match(element) or md5Regex.test(element):
+        if sha256Regex.match(element) or md5Regex.match(element):
             continue
         else:
             return_error('Invalid hash. Only SHA256 and MD5 are supported.')
