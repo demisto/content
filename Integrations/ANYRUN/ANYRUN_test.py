@@ -1,7 +1,6 @@
 import pytest
 import json
-from ANYRUN import anyrun_threatlevel_to_dbotscore
-from ANYRUN import underscoreToCamelCase
+from ANYRUN import underscore_to_camel_case
 from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
@@ -37,40 +36,25 @@ def get_response():
     response_as_string = response_as_string.replace('Malicious activity', 'Suspicious activity')
     response2 = json.loads(response_as_string)
     response_as_string = response_as_string.replace('download', 'url')
-    response_as_string = response_as_string.replace('Suspicious activity', 'No threat detected')
+    response_as_string = response_as_string.replace('Suspicious activity', 'No threats detected')
     response3 = json.loads(response_as_string)
     return response, response2, response3
 
 
-class TestANYRUNThreatLevelToDBotScore(object):
-    def test_one(self):
-        assert anyrun_threatlevel_to_dbotscore(0) == 1
-
-    def test_two(self):
-        assert anyrun_threatlevel_to_dbotscore(2) == 3
-
-    def test_three(self):
-        assert anyrun_threatlevel_to_dbotscore(None) is None
-
-
 class TestUnderscoreToCamelCase(object):
     def test_one(self):
-        assert underscoreToCamelCase({}) == {}
+        assert underscore_to_camel_case({}) == {}
 
     def test_two(self):
-        assert underscoreToCamelCase('cApItAl') == 'cApItAl'
+        assert underscore_to_camel_case('cApItAl') == 'cApItAl'
 
     def test_three(self):
-        assert underscoreToCamelCase('capital_cAsE') == 'capitalCase'
+        assert underscore_to_camel_case('capital_cAsE') == 'capitalCase'
 
 
 class TestMakeCapital(object):
     def test_make_capital_1(self):
         assert make_capital('heLLo') == 'HeLLo'
-
-    def test_make_capital_2(self):
-        with pytest.raises(ValueError):
-            make_capital('')
 
 
 class TestMakeSingular(object):
@@ -101,7 +85,7 @@ class TestMakeUpper(object):
         assert make_upper('id') == 'ID'
 
     def test_make_upper_2(self):
-        assert make_upper('sHa-256') == 'SHA-256'
+        assert make_upper('ssdeEp') == 'SSDeep'
 
     def test_make_upper_3(self):
         assert make_upper('hello') == 'hello'
