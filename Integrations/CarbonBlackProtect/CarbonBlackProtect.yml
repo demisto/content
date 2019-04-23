@@ -81,7 +81,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -95,7 +95,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filecatalog'
+    description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filecatalog'
     execution: false
     name: cbp-fileCatalog-search
     outputs:
@@ -133,7 +133,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -172,7 +172,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+    description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
     execution: false
     name: cbp-computer-search
     outputs:
@@ -458,7 +458,7 @@ script:
     deprecated: false
     description: 'Updates computer object. Note that some computer properties can
       be changed only if specific boolean param is set, as noted below. See more:
-      https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+      https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
     execution: false
     name: cbp-computer-update
     outputs:
@@ -514,14 +514,14 @@ script:
       description: The unique ID within the tool retreiving the endpoint
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: (Int32) Unique computer id
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+    description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
     execution: false
     name: cbp-computer-get
     outputs:
@@ -583,7 +583,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -622,7 +622,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#fileinstance'
+    description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
     execution: false
     name: cbp-fileInstance-search
     outputs:
@@ -648,7 +648,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -687,7 +687,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#event'
+    description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
     execution: false
     name: cbp-event-search
     outputs:
@@ -776,7 +776,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -815,7 +815,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for approval requests. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#approvalrequest'
+    description: 'Search for approval requests. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#approvalrequest'
     execution: false
     name: cbp-approvalRequest-search
     outputs:
@@ -879,7 +879,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -918,7 +918,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+    description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-search
     outputs:
@@ -948,14 +948,14 @@ script:
       description: Is this rule reporting only or also enforcing
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: (Int32) Unique id of this fileRule
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+    description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-get
     outputs:
@@ -985,14 +985,14 @@ script:
       description: Is this rule reporting only or also enforcing
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: (Int32) Unique id of this fileRule
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+    description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-delete
   - arguments:
@@ -1002,7 +1002,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -1041,7 +1041,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#policy'
+    description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#policy'
     execution: false
     name: cbp-policy-search
     outputs:
@@ -1100,7 +1100,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -1139,7 +1139,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
+    description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#serverconfig'
     execution: false
     name: cbp-serverConfig-search
     outputs:
@@ -1159,7 +1159,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -1198,7 +1198,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for publishers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#publisher'
+    description: 'Search for publishers. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher'
     execution: false
     name: cbp-publisher-search
     outputs:
@@ -1224,7 +1224,7 @@ script:
       description: The state of the publisher
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: (Int32)Unique fileAnalysis id
       isArray: false
       name: id
@@ -1275,6 +1275,27 @@ script:
     - contextPath: File.Name
       description: Full Filename e.g. data.xls
       type: String
+    - contextPath: File.SHA1
+      description: SHA1 Hash of the file
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: String
+    - contextPath: File.MD5
+      description: MD5 Hash of the file
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
   - arguments:
     - default: false
       description: (Int32)Id of fileCatalog entry for which analysis is requested
@@ -1368,7 +1389,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -1437,7 +1458,7 @@ script:
       description: User that requested this analysis
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: (Int32)Unique id of this fileUpload
       isArray: false
       name: id
@@ -1488,7 +1509,7 @@ script:
       description: User that requested this analysis
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: (Int32)Unique id of this fileUpload
       isArray: false
       name: id
@@ -1591,7 +1612,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -1717,7 +1738,7 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#searching'
+        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
@@ -1967,7 +1988,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+    description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-update
     outputs:

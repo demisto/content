@@ -81,10 +81,13 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
     if res.status_code not in {200, 201}:
         if safe:
             return None
-        try:
-            reason = res.json()
-        except ValueError:
-            reason = res.reason
+        elif res.status_code == 401:
+            reason = 'Unauthorized. Please check your API token'
+        else:
+            try:
+                reason = res.json()
+            except ValueError:
+                reason = res.reason
         return_error(f'Error in API call status code: {res.status_code}, reason: {reason}')
     if parse_json:
         return res.json()
@@ -952,38 +955,14 @@ def get_file_analysis_command():
     """
     args = demisto.args()
     id = args.get('id')
-    raw_res = get_file_analysis(id)
+    raw_file_analysis = get_file_analysis(id)
+    # if got here, then get_file_analysis returned a result, so we can assume it'll have a valid fileCatalogId
+    raw_file_rule = search_file_catalog(q=f"id:{raw_file_analysis.get('fileCatalogId')}")[0]
     cbp_ec_key = 'CBP.FileAnalysis(val.ID === obj.ID)'
-    ec = {
-        cbp_ec_key: {
-            'Priority': raw_res.get('priority'),
-            'FileName': raw_res.get('fileName'),
-            'PathName': raw_res.get('pathName'),
-            'ComputerId': raw_res.get('computerId'),
-            'DateModified': raw_res.get('dateModified'),
-            'ID': raw_res.get('id'),
-            'FileCatalogId': raw_res.get('fileCatalogId'),
-            'DateCreated': raw_res.get('dateCreated'),
-            'CreatedBy': raw_res.get('createdBy')
-        },
-        # File doesn't have dt since the api doesn't return hashes
-        'File': {
-            'FileCatalogId': raw_res.get('fileCatalogId'),
-            'Name': raw_res.get('fileName'),
-            'PathName': raw_res.get('pathName'),
-        }
-    }
-    # analysisResult == 3 -> Malicious
-    if int(raw_res.get('analysisResult', 0)) == 3:
-        ec['File'].update({
-            'Malicious': {
-                'Vendor': 'Carbon Black Protection',
-                'Description': 'Carbon Black Protection found this file to be malicious.'
-            }
-        })
+    ec = create_file_analysis_result(raw_file_analysis, raw_file_rule, cbp_ec_key)
     hr_title = f'CarbonBlack Protect Get File Analysis for {id}'
     hr = tableToMarkdown(hr_title, ec[cbp_ec_key], removeNull=True, headerTransform=pascalToSpace)
-    return_outputs(hr, ec, raw_res)
+    return_outputs(hr, ec, raw_file_analysis)
 
 
 @logger
@@ -995,6 +974,60 @@ def get_file_analysis(id):
     """
     url = f'/fileAnalysis/{id}'
     return http_request('GET', url)
+
+
+@logger
+def create_file_analysis_result(raw_file_analysis, raw_file_rule, cbp_ec_key):
+    result = {
+        cbp_ec_key: {
+            'Priority': raw_file_analysis.get('priority'),
+            'FileName': raw_file_analysis.get('fileName'),
+            'PathName': raw_file_analysis.get('pathName'),
+            'ComputerId': raw_file_analysis.get('computerId'),
+            'DateModified': raw_file_analysis.get('dateModified'),
+            'ID': raw_file_analysis.get('id'),
+            'FileCatalogId': raw_file_analysis.get('fileCatalogId'),
+            'DateCreated': raw_file_analysis.get('dateCreated'),
+            'CreatedBy': raw_file_analysis.get('createdBy')
+        },
+        outputPaths['file']: {
+            'FileCatalogId': raw_file_analysis.get('fileCatalogId'),
+            'Name': raw_file_analysis.get('fileName'),
+            'PathName': raw_file_analysis.get('pathName'),
+            'SHA1': raw_file_rule.get('sha1'),
+            'SHA256': raw_file_rule.get('sha256'),
+            'MD5': raw_file_rule.get('md5')
+        },
+        'DBotScore': [
+            {
+                'Indicator': raw_file_rule.get('md5'),
+                'Type': 'hash',
+                'Vendor': 'Carbon Black Protection',
+                'Score': raw_file_analysis.get('analysisResult', 0)  # cb scoring as the same as dbot scoring
+            },
+            {
+                'Indicator': raw_file_rule.get('sha1'),
+                'Type': 'hash',
+                'Vendor': 'Carbon Black Protection',
+                'Score': raw_file_analysis.get('analysisResult', 0)  # cb scoring as the same as dbot scoring
+            },
+            {
+                'Indicator': raw_file_rule.get('sha256'),
+                'Type': 'hash',
+                'Vendor': 'Carbon Black Protection',
+                'Score': raw_file_analysis.get('analysisResult', 0)  # cb scoring as the same as dbot scoring
+            }
+        ]
+    }
+    # analysisResult == 3 -> Malicious
+    if int(raw_file_analysis.get('analysisResult', 0)) == 3:
+        result['File'].update({
+            'Malicious': {
+                'Vendor': 'Carbon Black Protection',
+                'Description': 'Carbon Black Protection found this file to be malicious.'
+            }
+        })
+    return result
 
 
 def update_file_analysis_command():
