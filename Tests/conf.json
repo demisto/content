@@ -1195,6 +1195,10 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "integrations": "Google BigQuery",
+            "playbookID": "Google BigQuery Test"
         }
     ],
     "skipped_tests": {
