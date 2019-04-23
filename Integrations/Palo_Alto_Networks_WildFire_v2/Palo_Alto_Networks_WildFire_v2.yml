@@ -1,0 +1,498 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: WildFire-v2
+  version: -1
+configuration:
+- defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
+  display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: API Key
+  name: token
+  required: true
+  type: 4
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Perform malware dynamic analysis
+display: Palo Alto Networks WildFire v2
+name: Palo Alto Networks WildFire v2
+script:
+  script: ''
+  type: python
+  commands:
+  - arguments:
+    - default: true
+      description: file hash to check
+      isArray: true
+      name: file
+      required: false
+      secret: false
+    - default: false
+      description: md5 hash to check
+      isArray: true
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: sha256 hash to check
+      isArray: true
+      name: sha256
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve results for a file hash using WildFire
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: WildFire.Report.Status
+      description: The status of the submission
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file
+      type: Unknown
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file
+      type: string
+  - arguments:
+    - default: false
+      description: ID of the entry containing the file to upload
+      isArray: true
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload file to WildFire for analysis
+    execution: false
+    name: wildfire-upload
+    outputs:
+    - contextPath: WildFire.Report.MD5
+      description: MD5 of the submission
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: WildFire.Report.FileType
+      description: The type of the submission
+      type: string
+    - contextPath: WildFire.Report.Size
+      description: The size of the submission
+      type: number
+    - contextPath: WildFire.Report.Status
+      description: The status of the submission
+      type: string
+  - arguments:
+    - default: false
+      description: URL of remote file to be uploaded
+      isArray: false
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: URL of remote file to be uploaded
+    execution: false
+    name: wildfire-upload-file-url
+    outputs:
+    - contextPath: WildFire.Report.MD5
+      description: MD5 of the submission
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission
+      type: string
+  - arguments:
+    - default: false
+      description: MD5 hash to check
+      isArray: true
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 hash to check
+      isArray: true
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: Deprecated - use sha256 argument
+      isArray: true
+      name: hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pdf
+      description: Optional - request a structured report (formatted as XML/PDF)
+      isArray: false
+      name: format
+      predefined:
+      - xml
+      - pdf
+      required: false
+      secret: false
+    - default: false
+      description: Receive extended information from WildFire
+      isArray: false
+      name: verbose
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve results for a file hash using WildFire
+    execution: false
+    name: wildfire-report
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: WildFire.Report.Status
+      description: The status of the submissiom
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.IP
+      description: Submission related IPs in UDP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Port
+      description: Submission related ports in UDP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.IP
+      description: Submission related IPs in TCP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Port
+      description: Submission related ports in TCP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Query
+      description: Submission DNS queries
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Response
+      description: Submission DNS responses
+      type: string
+    - contextPath: WildFire.Report.Evidence.md5
+      description: Submission evidence md5
+      type: string
+    - contextPath: WildFire.Report.Evidence.Text
+      description: Submission evidence text
+      type: string
+  - arguments:
+    - default: false
+      description: Hash to get verdict for
+      isArray: true
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a verdict regarding a hash
+    execution: false
+    name: wildfire-get-verdict
+    outputs:
+    - contextPath: WildFire.Verdicts.MD5
+      description: File MD5
+      type: string
+    - contextPath: WildFire.Verdicts.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: WildFire.Verdicts.Verdict
+      description: File verdict
+      type: number
+    - contextPath: WildFire.Verdicts.VerdictDescription
+      description: File verdict description
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+  - arguments:
+    - default: false
+      description: EntryID of the text file that contains multiple hashes. Limit is
+        500 hashes.
+      isArray: true
+      name: EntryID
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a verdict regarding multiple hashes, stored in a txt file
+    execution: false
+    name: wildfire-get-verdicts
+    outputs:
+    - contextPath: WildFire.Verdicts.MD5
+      description: File MD5
+      type: string
+    - contextPath: WildFire.Verdicts.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: WildFire.Verdicts.Verdict
+      description: File verdict
+      type: number
+    - contextPath: WildFire.Verdicts.VerdictDescription
+      description: File verdict description
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+  - arguments:
+    - default: false
+      description: URL of remote file to be uploaded
+      isArray: false
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: Deprecated, use wildfire-upload-file-url instead
+    execution: false
+    name: wildfire-upload-file-remote
+    outputs:
+    - contextPath: WildFire.Report.MD5
+      description: MD5 of the submission
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: WildFire.Report.FileType
+      description: The type of the submission
+      type: string
+    - contextPath: WildFire.Report.Size
+      description: The size of the submission
+      type: number
+    - contextPath: WildFire.Report.Status
+      description: The status of the submission
+      type: string
+  - arguments:
+    - default: false
+      description: ID of the entry containing the file to upload
+      isArray: false
+      name: upload
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '7'
+      description: Delay wait time between calls (in seconds)
+      isArray: false
+      name: delay
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Total wait time (in seconds)
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Optional - request a structured report (formatted as XML/PDF)
+      isArray: false
+      name: format
+      predefined:
+      - xml
+      - pdf
+      required: false
+      secret: false
+    deprecated: true
+    description: Deprecated, use detonate playbook instead.
+    execution: false
+    name: detonate-file
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+      type: Unknown
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: Unknown
+    - contextPath: File.Size
+      description: File size
+      type: Unknown
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: Unknown
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: Unknown
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: Unknown
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: Unknown
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: Unknown
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Unknown
+  - arguments:
+    - default: false
+      description: URL of remote file to be uploaded
+      isArray: false
+      name: upload
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '7'
+      description: Delay wait time between calls (in seconds)
+      isArray: false
+      name: delay
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Total wait time (in seconds)
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Optional - request a structured report (formatted as XML/PDF)
+      isArray: false
+      name: format
+      predefined:
+      - xml
+      - pdf
+      required: false
+      secret: false
+    deprecated: true
+    description: Deprecated, use detonate playbook instead
+    execution: false
+    name: detonate-file-remote
+  - arguments:
+    - default: false
+      description: url to submit to WildFire
+      isArray: true
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: submit a url
+    execution: false
+    name: wildfire-upload-url
+  isfetch: false
+  runonce: false
+  dockerimage: demisto/python3:3.7.2.200
+tests:
+  - Wildfire Test
+releaseNotes: Rewrote the integration in Python.

@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 ''' IMPORTS '''
 import json
 import requests
@@ -22,7 +21,7 @@ URL_DICT = {
     'verdicts': '/get/verdicts',
     'upload_file': '/submit/file',
     'upload_url': '/submit/link',
-    'upload_file_url': '/submit/url',
+    'upload_file_url': '/submix1t/url',
     'report': '/get/report'
 }
 
@@ -81,8 +80,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
-            return_error('Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + ERROR_DICT[
-                result.status_code])
+            return_error('Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + ERROR_DICT[str(result.status_code_)])
         else:
             return_error(
                 'Request Failed with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
