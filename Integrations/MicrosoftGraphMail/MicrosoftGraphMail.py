@@ -149,6 +149,26 @@ def assert_pages(pages: str or int) -> int:
     return 1
 
 
+def assert_folders(folder_string: str) -> str:
+    """
+
+    Args:
+        folder_string (str): string with `,` delimiter. first one is mailFolders all other are child
+
+    Returns:
+        str:  string with path to the folder and child folders
+
+    """
+    path = 'mailFolders/'
+    folders_list = folder_string.split(',')
+    for i in range(len(folders_list)):
+        if i == 0:
+            path += folders_list[0]
+        else:
+            path += '/childFolders/' + folders_list[0]
+    return path
+
+
 def pages_puller(response, page_count):
     responses = list()
     responses.append(response)
@@ -415,11 +435,25 @@ def get_attachment_command():
     user_id = demisto.args().get('user_id')
     folder_id = demisto.args().get('folder_id')
     raw_response = get_attachment(message_id, user_id, folder_id)
-    file = file_builder(raw_response)
+    entry_context = file_builder(raw_response)
+    demisto.results(entry_context)
+
+
+def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
+    no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
+    with_folder = f'/users/{user_id}/mailFolders/{folder_id}/messages/{message_id}/attachments'
+
+
+def list_attachments_command():
+    user_id = demisto.args().get('user_id')
+    message_id = demisto.args().get('message_id')
+    folder_id = demisto.args().get('folder_id')
+    raw_response = list_attachments(user_id, message_id, folder_id)
+
 
 def main():
     """ GLOBALS/PARAMS """
-    # Demistobot
+    # Global annotation
     global CONTEXT, DEMISTOBOT, TOKEN, TENANT_ID, USE_SSL, BASE_URL
     CONTEXT = demisto.getIntegrationContext()
     DEMISTOBOT = 'https://demistobot.demisto.com/msg-mail-token'
@@ -459,6 +493,8 @@ def main():
             get_attachment_command()
         elif command == 'msgraph-mail-delete-email':
             delete_mail_command()
+        elif command == 'msgraph-mail-list-attachments':
+            list_attachments_command()
     # Log exceptions
     except Exception as e:
         LOG(e)
