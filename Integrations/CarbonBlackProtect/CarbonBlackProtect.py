@@ -36,188 +36,6 @@ if not demisto.params().get('proxy'):
     os.environ.pop('https_proxy', None)
 
 
-''' OUTPUT KEY DICTIONARY '''
-
-
-APPROVAL_REQUEST_TRANS_DICT = {
-    'id': 'ID',
-    'resolution': 'Resolution',
-    'status': 'Status',
-    'resolutionComments': 'ResolutionComments',
-    'fileCatalogId': 'FileCatalogID',
-    'computerId': 'ComputerID',
-    'computerName': 'ComputerName',
-    'dateCreated': 'DateCreated',
-    'createdBy': 'CreatedBy',
-    'enforcementLevel': 'EnforcementLevel',
-    'requestorEmail': 'RequestorEmail',
-    'priority': 'Priority',
-    'fileName': 'FileName',
-    'pathName': 'PathName',
-    'process': 'Process',
-    'platform': 'Platform'
-}
-
-APPROVAL_REQUEST_RESOLVE_TRANS_DICT = {
-    'id': 'ID',
-    'resolution': 'Resolution',
-    'status': 'Status',
-    'resolutionComments': 'ResolutionComments'
-}
-
-COMPUTER_TRANS_DICT = {
-    'memorySize': 'Memory',
-    'processorCount': 'Processors',
-    'processorModel': 'Processor',
-    'osShortName': 'OS',
-    'osName': 'OSVersion',
-    'macAddress': 'MACAddress',
-    'machineModel': 'Model',
-    'ipAddress': 'IPAddress',
-    'name': 'Hostname',
-    'id': 'ID'
-}
-
-CONNECTOR_TRANS_DICT = {
-    'analysisEnabled': 'AnalysisEnabled',
-    'analysisName': 'AnalysisName',
-    'analysisTargets': 'AnalysisTargets',
-    'canAnalyze': 'CanAnalyze',
-    'connectorVersion': 'ConnectorVersion',
-    'enabled': 'Enabled',
-    'id': 'ID'
-}
-
-EVENT_TRANS_DICT = {
-    'pathName': 'FilePath',
-    'param1': 'Param1',
-    'param2': 'Param2',
-    'param3': 'Param3',
-    'subtypeName': 'SubTypeName',
-    'computerName': 'ComputerName',
-    'fileName': 'FileName',
-    'ruleName': 'RuleName',
-    'processFileCatalogId': 'ProcessFileCatalogID',
-    'stringId': 'StringID',
-    'ipAddress': 'IPAddress',
-    'policyId': 'PolicyID',
-    'timestamp': 'Timestamp',
-    'userName': 'Username',
-    'computerId': 'ComputerID',
-    'processFileName': 'ProcessFileName',
-    'indicatorName': 'IndicatorName',
-    'subtype': 'SubType',
-    'type': 'Type',
-    'id': 'ID',
-    'description': 'Description',
-    'severity': 'Severity',
-    'commandLine': 'CommandLine',
-    'processPathName': 'ProcessPathName'
-}
-
-FILE_ANALYSIS_TRANS_DICT = {
-    'priority': 'Priority',
-    'fileName': 'FileName',
-    'pathName': 'PathName',
-    'computerId': 'ComputerId',
-    'dateModified': 'DateModified',
-    'id': 'ID',
-    'fileCatalogId': 'FileCatalogId',
-    'dateCreated': 'DateCreated',
-    'createdBy': 'CreatedBy'
-}
-
-FILE_ANALYSIS_FILE_OUTPUT_TRANS_DICT = {
-    'fileCatalogId': 'FileCatalogId',
-    'fileName': 'Name',
-    'Malicious': 'Malicious',  # This key will be added manually if file is malicious
-    'pathName': 'PathName',
-}
-
-FILE_CATALOG_TRANS_DICT = {
-    'fileSize': 'Size',
-    'pathName': 'Path',
-    'sha1': 'SHA1',
-    'sha256': 'SHA256',
-    'md5': 'MD5',
-    'fileName': 'Name',
-    'fileType': 'Type',
-    'productName': 'ProductName',
-    'id': 'ID',
-    'publisher': 'Publisher',
-    'company': 'Company',
-    'fileExtension': 'Extension'
-}
-
-FILE_INSTANCE_TRANS_DICT = {
-    'fileCatalogId': 'CatalogID',
-    'computerId': 'ComputerID',
-    'id': 'ID',
-    'fileName': 'Name',
-    'pathName': 'Path'
-}
-
-FILE_UPLOAD_TRANS_DICT = {
-    'priority': 'Priority',
-    'fileName': 'FileName',
-    'uploadPath': 'UploadPath',
-    'computerId': 'ComputerId',
-    'dateModified': 'DateModified',
-    'id': 'ID',
-    'fileCatalogId': 'FileCatalogId',
-    'dateCreated': 'DateCreated',
-    'createdBy': 'CreatedBy',
-    'pathName': 'PathName',
-    'uploadStatus': 'UploadStatus',
-    'uploadedFileSize': 'UploadedFileSize',
-}
-
-FILE_RULE_TRANS_DICT = {
-    'id': 'ID',
-    'fileCatalogId': 'CatalogID',
-    'description': 'Description',
-    'fileState': 'FileState',
-    'hash': 'Hash',
-    'name': 'Name',
-    'policyIds': 'PolicyIDs',
-    'reportOnly': 'ReportOnly'
-}
-
-POLICY_TRANS_DICT = {
-    'readOnly': 'ReadOnly',
-    'enforcementLevel': 'EnforcementLevel',
-    'reputationEnabled': 'ReputationEnabled',
-    'atEnforcementComputers': 'AtEnforcementComputers',
-    'automatic': 'Automatic',
-    'name': 'Name',
-    'fileTrackingEnabled': 'FileTrackingEnabled',
-    'connectedComputers': 'ConnectedComputers',
-    'packageName': 'PackageName',
-    'allowAgentUpgrades': 'AllowAgentUpgrades',
-    'totalComputers': 'TotalComputers',
-    'loadAgentInSafeMode': 'LoadAgentInSafeMode',
-    'automaticApprovalsOnTransition': 'AutomaticApprovalsOnTransition',
-    'id': 'ID',
-    'description': 'Description',
-    'disconnectedEnforcementLevel': 'DisconnectedEnforcementLevel'
-}
-
-PUBLISHER_TRANS_DICT = {
-    'description': 'Description',
-    'id': 'ID',
-    'name': 'Name',
-    'publisherReputation': 'Reputation',
-    'signedCertificateCount': 'SignedCertificatesCount',
-    'signedFilesCount': 'SignedFilesCount',
-    'publisherState': 'State'
-}
-
-SERVER_CONFIG_DICT = {
-    'id': 'ID',
-    'value': 'Value',
-    'name': 'Name'
-}
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -598,7 +416,7 @@ def get_computer(id):
     :param id: Computer ID
     :return: Result json of the request
     """
-    url = '/Computer/{}'.format(id)
+    url = f'/Computer/{id}'
     return http_request('GET', url)
 
 
@@ -863,7 +681,7 @@ def get_file_rule(id):
     :param id: File rule ID
     :return: Result json of the request
     """
-    url = '/fileRule/{}'.format(id)
+    url = f'/fileRule/{id}'
     return http_request('GET', url)
 
 
@@ -875,7 +693,7 @@ def delete_file_rule_command():
     args = demisto.args()
     id = args.get('id')
     delete_file_rule(id)
-    hr = "File Result {} deleted successfully".format(id)
+    hr = f"File Result {id} deleted successfully"
     demisto.results(hr)
 
 
@@ -886,7 +704,7 @@ def delete_file_rule(id):
     :param id: File rule ID
     :return: Result of the request
     """
-    url = BASE_URL + '/fileRule/{}'.format(id)
+    url = BASE_URL + f'/fileRule/{id}'
     res = requests.request(
         'DELETE',
         url,
@@ -1163,12 +981,8 @@ def get_file_analysis_command():
                 'Description': 'Carbon Black Protection found this file to be malicious.'
             }
         })
-    hr = tableToMarkdown(
-        'CarbonBlack Protect Get File Analysis for {}'.format(id),
-        ec[cbp_ec_key],
-        removeNull=True,
-        headerTransform=pascalToSpace
-    )
+    hr_title = f'CarbonBlack Protect Get File Analysis for {id}'
+    hr = tableToMarkdown(hr_title, ec[cbp_ec_key], removeNull=True, headerTransform=pascalToSpace)
     demisto.results(return_outputs(hr, ec, raw_res))
 
 
@@ -1179,7 +993,7 @@ def get_file_analysis(id):
     :param id: File analysis ID
     :return: Result json of the request
     """
-    url = '/fileAnalysis/{}'.format(id)
+    url = f'/fileAnalysis/{id}'
     return http_request('GET', url)
 
 
@@ -1312,7 +1126,7 @@ def download_file_upload(id):
     :param id: ID of the requested file upload
     :return: File upload binary file
     """
-    url = '/fileUpload/{}'.format(id)
+    url = f'/fileUpload/{id}'
     params = {
         'downloadFile': 'true'
     }
@@ -1464,7 +1278,7 @@ def get_file_upload(id):
     :param id: File upload ID
     :return: Result json of the request
     """
-    url = '/fileUpload/{}'.format(id)
+    url = f'/fileUpload/{id}'
     return http_request('GET', url)
 
 
@@ -1499,7 +1313,7 @@ def get_connector(id):
     :param id: Connector ID
     :return: Result json of the request
     """
-    url = '/connector/{}'.format(id)
+    url = f'/connector/{id}'
     return http_request('GET', url)
 
 
@@ -1594,11 +1408,11 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format=CB_TIME_FORMAT)
     last_fetch_timestamp = cbp_date_to_timestamp(last_fetch)
-    query = "timestamp>{time}".format(time=last_fetch)
+    query = f"timestamp>{last_fetch}"
     user_query = demisto.params().get('fetch_query')
     if user_query:
         # Add user's query to default query
-        query = '{timestamp_query}&{user_query}'.format(timestamp_query=query, user_query=user_query)
+        query = f'{query}&{user_query}'
     events = search_event(q=query, limit=INCIDENTS_PER_FETCH)
     incidents = []
     if events:
@@ -1617,8 +1431,9 @@ def fetch_incidents():
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
+# main added for unit tests
 def main():
-    LOG('Command being called is {}'.format(demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
 
     # should raise error in case of issue
     if demisto.command() == 'fetch-incidents':
@@ -1678,7 +1493,7 @@ def main():
         elif demisto.command() == 'cbp-approvalRequest-resolve':
             resolve_approval_request_command()
         else:
-            return_error("Command {} is not supported.".format(demisto.command()))
+            return_error(f"Command {demisto.command()} is not supported.")
     # Log exceptions
     except Exception as e:
         return_error(str(e))
