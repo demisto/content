@@ -330,6 +330,8 @@ script:
     - contextPath: SymantecMC.Policy.Tenant
       description: Policy tenant
       type: Unknown
+    - contextPath: SymantecMC.ReplaceVariables
+      type: Boolean
   - arguments:
     - default: true
       description: Policy UUID - Can be retrieved from the list-policies command
@@ -381,6 +383,8 @@ script:
     - contextPath: SymantecMC.Policy.Category.Name
       description: Policy category name
       type: String
+    - contextPath: SymantecMC.Policy.UUID
+      type: Unknown
   - arguments:
     - default: false
       description: Policy name
@@ -509,6 +513,18 @@ script:
       name: uuid
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Set to true for force the policy object to be removed even if it
+        is referenced by another policy.
+      isArray: false
+      name: force
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Delete a policy in Symantec MC
     execution: true
@@ -589,6 +605,23 @@ script:
         Servers'
       isArray: true
       name: category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Relevant for URL and IP only
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Content description
+      isArray: false
+      name: description
       required: false
       secret: false
     deprecated: false
