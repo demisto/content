@@ -155,10 +155,14 @@ script:
 
     def test():
         config = get_client_config()
+        demisto.info('######## config created ########')
         with DxlClient(config) as client:
             client.connect()
+            demisto.info('######## client connected ########')
             client.disconnect()
+            demisto.info('######## client disconnected ########')
             mar_client = MarClient(client)
+            demisto.info('######## client MAR client created ########')
 
     def extract_item_output(item, capitalize):
         output = item['output']
@@ -257,6 +261,7 @@ script:
             return None
 
     def search_wrapper(collector, projection_collector, outputs_str, filter_by, filter_operator, filter_value, capitalize = False):
+        demisto.info('######## executing ' + demisto.command() + ' ########')
         try:
             if outputs_str:
                 outputs = outputs_str.split(',')
@@ -275,6 +280,7 @@ script:
         context = {
             'MAR.' + collector: table
         }
+        demisto.info('######## ' + demisto.command() + ' command ends ########')
         return create_entry('Search Result For ' + collector, result, table, context)
 
     def search_multiple_wrapper(collectors, filter_collector, filter_by, filter_operator, filter_value):
@@ -299,6 +305,7 @@ script:
 
     args = demisto.args()
     if demisto.command() == 'test-module':
+        demisto.info('######## executing test command ########')
         test()
         demisto.results('ok')
         sys.exit(0)

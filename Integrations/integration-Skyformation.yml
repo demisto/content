@@ -19,16 +19,16 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
-  script: |+
+  script: |-
     import requests
     requests.packages.urllib3.disable_warnings()
 
@@ -48,7 +48,7 @@ script:
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     SERVER_URL = fix_url(demisto.params()['url'])
-    INSECURE = demisto.params()['insecure']
+    INSECURE = demisto.params().get('insecure')
 
     def get_accounts_request():
         fullurl = '{}{}'.format(SERVER_URL, '/openapi/api/rest/v1/accounts')
