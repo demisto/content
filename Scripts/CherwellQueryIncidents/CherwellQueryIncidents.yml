@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'The query to run. The query is cpmposed of comma seperated filters
+  description: 'The query to run. The query is composed of comma separated filters
     such that each filter should be of the form: `field_name::operator::value` and
     operator is one of: ''eq''=equal, ''gt''=grater-than, ''lt''=less-than, ''contains'',
     ''startwith''. Example: `CreatedDateTime:gt:4/10/2019 3:10:12 PM`. NOTICE: If
@@ -15,14 +15,13 @@ args:
   secret: false
 comment: This script is an example script of how to query incidents from Cherwell.
   The script wraps the cherwell-query-business-object command of the cherwell integration.
-  When writing your own script to query a business object, follow the instructions
+  When writing your own script to query  business objects, follow the instructions
   found in the configuration section of the script, leave the execution part untouched.
 commonfields:
   id: CherwellQueryIncidents
   version: -1
 enabled: false
 name: CherwellQueryIncidents
-tags: []
 outputs:
 - contextPath: Cherwell.BusinessObject.RecordID
   description: Recoed ID
