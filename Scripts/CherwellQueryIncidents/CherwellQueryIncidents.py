@@ -22,7 +22,7 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  (found in the script settings).
 
  For example: this script was built to query incidents such that the fields: RecordID, Description, Priority,
- CustomerDisplayName, OwnedBy and Service will appear in the returned object list, thus, we added all of these field 
+ CustomerDisplayName, OwnedBy and Service will appear in the returned object list, thus, we added all of these field
  names to this `OUTPUT_FIELDS` variable.
  In addition we added the same field names to the script outputs so they will appear as an official output of
  the script, using the following syntax: Cherwell.BusinessObject.RecordID, Cherwell.BusinessObject.PublicID,
