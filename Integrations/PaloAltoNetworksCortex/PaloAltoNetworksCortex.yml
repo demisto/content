@@ -1,0 +1,386 @@
+commonfields:
+  id: Palo Alto Networks Cortex
+  version: -1
+name: Palo Alto Networks Cortex
+fromversion: 4.1.0
+display: Palo Alto Networks Cortex
+category: Analytics & SIEM
+description: This framework manages all PA's cloud managed products
+configuration:
+- display: Demisto App Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Query for fetching events
+  name: fetch_query
+  defaultvalue: Traps Threats
+  type: 15
+  required: false
+  options:
+  - Traps Threats
+  - Firewall Threats
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
+  name: first_fetch_timestamp
+  defaultvalue: 24 hours
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: cortex-query-logs
+    arguments:
+    - name: startTime
+      description: Query start time. For example, startTime="2018-04-26 00:00:00"
+      defaultValue: 1970-01-01 00:00:00
+    - name: endTime
+      default: true
+      description: Query end time. For example, endTime="2018-04-26 00:00:00"
+      defaultValue: 2020-01-01 00:00:00
+    - name: query
+      description: 'Free text SQL query. For example, query="select * from panw.traffic
+        limit 5". There are multiple tables in Loggings, such as: threat, traffic.
+        Refer to Cortex Logging service schema reference for the full list. Our documentation
+        has more queries samples.'
+      defaultValue: select * from panw.traffic limit 5
+    - name: timeRange
+      auto: PREDEFINED
+      predefined:
+      - minutes
+      - days
+      - weeks
+      description: Time range for the query, used with rangeValue. For example, timeRange="weeks"
+        timeValue="1" would run the query on the last week.
+    - name: rangeValue
+      description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The id of the log
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log
+    - contextPath: Cortex.Logging.app
+      description: The app of the log
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: Destination ip
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: Rule used
+    - contextPath: Cortex.Logging.src
+      description: The source of the action
+    - contextPath: Cortex.Logging.category-of-app
+      description: Application's category
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: Source location
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: Destination location
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: Application's characteristics
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used or not
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: NAT port
+    - contextPath: Cortex.Logging.natdst
+      description: NAT destination
+    - contextPath: Cortex.Logging.natsrc
+      description: NAT source
+    description: Query Cortex Logging service
+  - name: cortex-get-critical-threat-logs
+    arguments:
+    - name: startTime
+      description: Query start time. For example, startTime="2018-04-26 00:00:00"
+      defaultValue: 1970-01-01 00:00:00
+    - name: endTime
+      description: Query end time. For example, endTime="2018-04-26 00:00:00"
+      defaultValue: 2020-01-01 00:00:00
+    - name: logsAmount
+      description: Amount of logs. Default is 10
+      defaultValue: "10"
+    - name: timeRange
+      auto: PREDEFINED
+      predefined:
+      - minutes
+      - days
+      - weeks
+      description: Time range for the query, used with rangeValue. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    - name: rangeValue
+      description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The id of the log
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log
+    - contextPath: Cortex.Logging.app
+      description: The app of the log
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: Destination ip
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: Rule used
+    - contextPath: Cortex.Logging.src
+      description: The source of the action
+    - contextPath: Cortex.Logging.category-of-app
+      description: Application's category
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: Source location
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: Destination location
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: Application's characteristics
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used or not
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: NAT port
+    - contextPath: Cortex.Logging.natdst
+      description: NAT destination
+    - contextPath: Cortex.Logging.natsrc
+      description: NAT source
+    - contextPath: Cortex.Logging.risk-of-app
+      description: Risk of application
+    - contextPath: Cortex.Logging.type
+      description: Threat type
+    - contextPath: Cortex.Logging.pcad_id
+      description: Pcap id
+    - contextPath: Cortex.Logging.reportid
+      description: Report id
+      type: number
+    - contextPath: Cortex.Logging.category-of-threatid
+      description: Category of threat id
+    - contextPath: Cortex.Logging.subtype
+      description: Threat sub type
+    - contextPath: Cortex.Logging.time_received
+      description: Time received
+    - contextPath: Cortex.Logging.pcap
+      description: Pcap
+    - contextPath: Cortex.Logging.name-of-threatid
+      description: Name of threat id
+      type: string
+    - contextPath: Cortex.Logging.severity
+      description: Threat Severity
+    description: Query Cortex Logging service according to pre-set queries
+  - name: cortex-get-social-applications
+    arguments:
+    - name: startTime
+      description: Query start time. For example, startTime="2018-04-26 00:00:00"
+      defaultValue: 1970-01-01 00:00:00
+    - name: endTime
+      description: Query end time. For example, endTime="2018-04-26 00:00:00"
+      defaultValue: 2020-01-01 00:00:00
+    - name: logsAmount
+      description: Amount of logs. Default is 10
+      defaultValue: "10"
+    - name: timeRange
+      auto: PREDEFINED
+      predefined:
+      - minutes
+      - days
+      - weeks
+      description: Time range for the query, used with rangeValue. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    - name: rangeValue
+      description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The id of the log
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log
+    - contextPath: Cortex.Logging.app
+      description: The app of the log
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: Destination ip
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: Rule used
+    - contextPath: Cortex.Logging.src
+      description: The source of the action
+    - contextPath: Cortex.Logging.category-of-app
+      description: Application's category
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: Source location
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: Destination location
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: Application's characteristics
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used or not
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: NAT port
+    - contextPath: Cortex.Logging.natdst
+      description: NAT destination
+    - contextPath: Cortex.Logging.natsrc
+      description: NAT source
+    - contextPath: Cortex.Logging.risk-of-app
+      description: Risk of application
+    - contextPath: Cortex.Logging.aggregations.size
+      description: Aggregations size
+    - contextPath: Cortex.Logging.natsport
+      description: NAT s port
+    - contextPath: Cortex.Logging.start
+      description: Traffic start
+    - contextPath: Cortex.Logging.subcategory-of-apptime_received
+      description: Sub-category of application time
+    description: Query Cortex Logging service according to pre-set queries
+  - name: cortex-search-by-file-hash
+    arguments:
+    - name: startTime
+      description: Query start time. For example, startTime="2018-04-26 00:00:00"
+      defaultValue: 1970-01-01 00:00:00
+    - name: endTime
+      description: Query end time. For example, endTime="2018-04-26 00:00:00"
+      defaultValue: 2020-01-01 00:00:00
+    - name: logsAmount
+      description: Amount of logs. Default is 10
+      defaultValue: "10"
+    - name: timeRange
+      auto: PREDEFINED
+      predefined:
+      - minutes
+      - days
+      - weeks
+      description: Time range for the query, used with rangeValue. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    - name: rangeValue
+      description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    - name: SHA256
+      required: true
+      description: File hash for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc"
+        would return all logs related to this file.
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The id of the log
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log
+    - contextPath: Cortex.Logging.app
+      description: The app of the log
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: Destination ip
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: Rule used
+    - contextPath: Cortex.Logging.src
+      description: The source of the action
+    - contextPath: Cortex.Logging.category-of-app
+      description: Application's category
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: Source location
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: Destination location
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: Application's characteristics
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used or not
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: NAT port
+    - contextPath: Cortex.Logging.natdst
+      description: NAT destination
+    - contextPath: Cortex.Logging.natsrc
+      description: NAT source
+    - contextPath: Cortex.Logging.risk-of-app
+      description: Risk of application
+    - contextPath: Cortex.Logging.type
+      description: Threat type
+    - contextPath: Cortex.Logging.pcad_id
+      description: Pcap id
+    - contextPath: Cortex.Logging.reportid
+      description: Report id
+      type: number
+    - contextPath: Cortex.Logging.category-of-threatid
+      description: Category of threat id
+    - contextPath: Cortex.Logging.subtype
+      description: Threat sub type
+    - contextPath: Cortex.Logging.time_received
+      description: Time received
+    - contextPath: Cortex.Logging.pcap
+      description: Pcap
+    - contextPath: Cortex.Logging.name-of-threatid
+      description: Name of threat id
+      type: string
+    - contextPath: Cortex.Logging.severity
+      description: Threat Severity
+    description: Query Cortex Logging service according to pre-set queries
+  dockerimage: demisto/python_pancloud:1.0.0.170
+  isfetch: true
+tests:
+  - Palo Alto Networks Cortex Test

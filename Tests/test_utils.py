@@ -46,6 +46,7 @@ def run_command(command, is_silenced=True):
     output, err = p.communicate()
     if err:
         print_error("Failed to run command " + command)
+        print_error('error details:\n{}'.format(err))
         sys.exit(1)
     return output
 
@@ -182,7 +183,7 @@ def run_threads_list(threads_list):
     Arguments:
         threads_list (list of threads) -- list of threads to start and wait for join
     """
-    # run each command in a seperate thread
+    # run each command in a separate thread
     for t in threads_list:
         t.start()
     # wait for the commands to complete
