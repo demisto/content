@@ -1,7 +1,6 @@
 id: OTRS Test
 version: -1
 name: OTRS Test
-fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":

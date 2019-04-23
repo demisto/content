@@ -130,7 +130,8 @@
         },
         {
             "integrations": "OTRS",
-            "playbookID": "OTRS Test"
+            "playbookID": "OTRS Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Attivo Botsink",
