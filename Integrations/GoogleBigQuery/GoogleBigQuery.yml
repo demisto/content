@@ -1,183 +1,96 @@
-category: Database
 commonfields:
-  id: GoogleBigQuery
+  id: Google BigQuery
   version: -1
-configuration:
-- display: Google service account JSON (a credentials JSON generated from Google API
-    Manager or from GCP console)
-  name: google_service_creds
-  required: true
-  type: 9
+name: Google BigQuery
+display: Google BigQuery
+category: Database
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAF8ElEQVRo3tVaa2wUVRQ+lUeolLZQHwQxEUIi/GgpakvTst2d7fax7RaEUFOIRW2x7e7cme220BawNSQ1MQZFgYaH8gvlFVAxUYIIJPxRA7FSLCpBJMYnL5FEyh8cvzttodvd6e527izpJCezO3Pn3Pvde853zzkzRKKPAmUOScp+Kg/MoVF7FCiZJLHz5JA1nL8jlzxzxLoklgw908iBc5xBZKPTSzqIAcmvPU3Ltk+NSc/S5vGUz9YASBd0XIXOb2jpKm+cQDAnOvw9CAQXm1ej0ubj9PW5yVHpaXplLJU3bKN83xA9+F+gtJAnkGAdCIm50dm1EBADYgeYrJrDlF0d2UTscj7ZfXcMdN2kJW2PWwPCIZdC/jYEESwHATopwsquHVZHgb9IPAinvhI3owTRJ5L8ITm8xisjye8N+7xLtQk2JyUHPnElJhB3CcB7hCpff9TATI8bPmfzXUCfqeJAuPyzoPinEYEYkMKGr8jtnztkhbmZ3gr1MYiTXaPFgWKRFDuenMpBUyD0wemsBGqVt2EVWmgRmMoh3wjTthdAdlGpP120cz8EO/7FNJBQswm95mR7qKTBoujAqUzADJ4QDiREWDe5lInWbn5FgWysyiEAOmNgDuZFkt+N107+AGw3hUrU6VSsLsTvo4LBHMFEJVDcD7syBh1vEQikFz5SRPflkNRU2PY5cebF/oBPLjM/sMWBVEShKpRuJxeLjsMdyibx/sL2UUXHCNmrtiUZ9n/0bhSaW3uL1A2RuVxiqy1ismvQvR7ycKxx1GuUP0hRdo1GLVvfjsK8NlpMzRdhbowKlSmRQVSumg/kt4csr0Y5dZepyvuEMXh/Ctr1kA1t56vDC28jmaLnbkQZ9VSoJhqxzzh08rmhguyXPqI9xxINzOotPsDkhbXavMZlWmZgeVjh93gbHYx5//kWYFZQkfLg0P2hAg3+M3xwQb1GFe0nacVaDz3XOB3m9xiU5UP64i/M9rzG5dq+6xnanqsZ2u4rc4OEX+P3eBt9ZYQRgnf/4IAwERe7IsyARnl1PBTX9IRKYteD7mNwfNb5gD+4nKG9/9fcIOHX+D3eRggQbp42Pp616wYBUVeaVtwPhM8+H/iuPzODhF/j94QB4RNaFviR1h1K6wPxYkcyZvqHUQckC2y6utN3bzWatzDKqtZGHZDcuh56oWNSH4h3dqRRSdP5frsfXUAkVn1vNTxyO+V5zfG6GGe/ohMIn1BOKFJEej5NBfKEwfHRAWE0OBL6ldh+0H4ussRpOqVXrfFQRdtJneqN+7qD+G9J8N7hbkzEalRBusynrDFuiE7lzbCbK990s6s/Ns732WGkweMMQgxs95JSB0BnzPF61CHKWVC+cY1rZWAG5fmuhs1Vlq96JprsbzLyZRmoL1gaADrZGxHHsiSwKagwwUtDLmV9rBEwKiasvb9sY0FezgIRx/BsUybCoN5Bz32G2CppZLlJTfNssrO94sEoG6MrCLIytN8KS/EB/CQBNS1WCflNIJgeOHvKfcrLlULd2YT5ibwZ5zHxB+JAicbBjgg1MV5KcjcuIk/TdFBrKnwzTsCcyk6LmIynBd04f0Lu1qctNi05CZ2dtbxkKiknyNmQaA0Il5qOTkLDmZyXrQDzMyRNLACPmgmlu+Ebt0MTG991Yhs6sUM34n6nvufYTfsMJ4G9VMjGigNR0+LRbTf84P4lW31wWdOtZlCx8qUpMPw9fZEyUxyI1rYpCA8uGQ5Kkr8I+5y39RFa4Ds8QiCXwVpZYk2q1C9FeIexw/BZm5yMmY01PbgBJ7egcF3oLxnWjl1Kc4Ty6USAPRBDSbTYGpZqacMGJf8TvnqBxEaS8yLqyKpJhnyqfzRgHPrzzzQsfIWweE0CuHw12euHMpVG5f7N+Nwiuh2Yf77hbj6mf84Rap6/YoO1x2cnL3m1Dp2e0h1RwtkuB5CSxhZGPL9zKj4UONX/NncAxEWS/E/FOcaSJ+mfHDlNhNFlrTP0l5x9weL38LF0GrWHq2m2/uLGpT4pWvX/zRDqQjZWrVoAAAAASUVORK5CYII=
 description: Integration for Google BigQuery, a data warehouse for querying and analyzing
   large databases
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
-display: GoogleBigQuery
-name: GoogleBigQuery
+configuration:
+- display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
+  name: google_service_creds
+  defaultvalue: ""
+  type: 4
+  required: true
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - default: false
+  - name: bigquery-query
+    arguments:
+    - name: query
+      required: true
       description: A query string, following the BigQuery query syntax, of the query
         to execute.
-      isArray: false
-      name: query
-      required: true
-      secret: false
-    - default: false
+    - name: location
       description: The geographic location where the job should run. Required except
         for US and EU.
-      isArray: false
-      name: location
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Allow large query results tables (legacy SQL, only)
-      isArray: false
-      name: allow_large_results
+    - name: allow_large_results
+      auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - default: false
+      - "True"
+      - "False"
+      description: Allow large query results tables (legacy SQL, only)
+    - name: default_dataset
       description: A stringof the fully-qualified dataset ID in standard SQL format.
         The value must included a project ID and dataset ID separated by dots.
-      isArray: false
-      name: default_dataset
-      required: false
-      secret: false
-    - default: false
+    - name: destination_table
       description: The table where results are written. Default value is None if not
         set.
-      isArray: false
-      name: destination_table
-      required: false
-      secret: false
-    - default: false
+    - name: kms_key_name
       description: Custom encryption configuration for the destination table.
-      isArray: false
-      name: kms_key_name
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
+    - name: dry_run
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
       description: If set to true, BigQuery doesn't run the job. Instead, if the query
         is valid, BigQuery returns statistics about the job such as how many bytes
         would be processed. If the query is invalid, an error returns. The default
         value is false.
-      isArray: false
-      name: dry_run
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Priority of the query. Possible values include INTERACTIVE and
-        BATCH. The default value is INTERACTIVE.
-      isArray: false
-      name: priority
+    - name: priority
+      auto: PREDEFINED
       predefined:
       - BATCH
       - INTERACTIVE
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: use_query_cache
-      required: false
-      secret: false
-    deprecated: false
+      description: Priority of the query. Possible values include INTERACTIVE and
+        BATCH. The default value is INTERACTIVE.
+    - name: use_query_cache
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Look for the query result in the cache.
+    - name: use_legacy_sql
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Use legacy SQL syntax.
+    - name: job_id
+      description: The ID of the job. The ID must contain only letters (a-z, A-Z),
+        numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024
+        characters.
+    - name: write_disposition
+      auto: PREDEFINED
+      predefined:
+      - WRITE_EMPTY
+      - WRITE_TRUNCATE
+      - WRITE_APPEND
+      description: Specifies the action that occurs if destination table already exists.
+    outputs:
+    - contextPath: BigQuery.Query
+      description: The query performed.
+      type: String
+    - contextPath: BigQuery.Row
+      description: The table rows the given query returned.
+      type: Unknown
     description: Perform a query on BigQuery
-    execution: false
-    name: bigquery-query
-  isfetch: false
+  dockerimage: bigquery_image_local_3
   runonce: false
-  script: "import demistomock as demisto\nfrom CommonServerPython import *\nfrom CommonServerUserPython\
-    \ import *\n''' IMPORTS '''\n\nimport json\nimport requests\nimport os\nfrom distutils.util\
-    \ import strtobool\nfrom google.cloud import bigquery\nfrom oauth2client import\
-    \ service_account\n\n# Disable insecure warnings\nrequests.packages.urllib3.disable_warnings()\n\
-    \n\n\n''' GLOBALS/PARAMS '''\n\nTEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013`\
-    \ '\n          'WHERE state = \"TX\" '                              \n       \
-    \   'LIMIT 100')\n\n\n''' HELPER FUNCTIONS '''\n\ndef represents_int(string_var):\n\
-    \    if '.' in string_var:\n        return False\n    if string_var[0] in ('-',\
-    \ '+'):\n        return string_var[1:].isdigit()\n    return string_var.isdigit()\n\
-    \ndef represents_bool(string_var):\n    return string_var.lower() == 'false' or\
-    \ string_var.lower() == 'true'\n\ndef str_to_bool(str_representing_bool):\n  \
-    \  return str_representing_bool.lower() == \"true\"\n\n\ndef start_and_return_bigquery_client(google_service_creds_json_string):\n\
-    \    cur_directory_path = os.getcwd() # maybe better to take the root directory\
-    \ using os.path.abspath(os.sep)? currently it's just the same as not specifying\
-    \ a path at all\n    creds_file_name = 'google_creds_file_json'\n    path_to_save_creds_file\
-    \ = os.path.join(cur_directory_path, creds_file_name)\n    creds_file = open(path_to_save_creds_file,\
-    \ \"w\")\n    creds_file.write(google_service_creds_json_string)\n    os.environ[\"\
-    GOOGLE_APPLICATION_CREDENTIALS\"] = path_to_save_creds_file\n    bigquery_client\
-    \ = bigquery.Client()\n    creds_file.close()\n    return bigquery_client\n\n\n\
-    def validate_args_for_query_job_config(allow_large_results, priority, use_query_cache,\
-    \ use_legacy_sql, dry_run):\n    if allow_large_results and not represents_bool(allow_large_results):\n\
-    \        return_error(\"Error: allow_large_results must have a boolean value.\"\
-    )\n    if use_query_cache and not represents_bool(use_query_cache):\n        return_error(\"\
-    Error: use_query_cache must have a boolean value.\")\n    if use_legacy_sql and\
-    \ not represents_bool(use_legacy_sql):\n        return_error(\"Error: use_legacy_sql\
-    \ must have a boolean value.\")\n    if dry_run and not represents_bool(dry_run):\n\
-    \        return_error(\"Error: dry_run must have a boolean value.\")\n    if priority\
-    \ and not (priority == 'INTERACTIVE' or priority == 'BATCH'):\n        return_error(\"\
-    Error: priority must have a value of INTERACTIVE or BATCH.\")\n\n\ndef build_clustering_fields_list(clustering_fields_in_string_format):\n\
-    \    clustering_fields_list = clustering_fields_in_string_format.split(',')\n\
-    \    for i in range(len(clustering_fields_list)):\n        clustering_fields_list[i]\
-    \ = clustering_fields_list[i].strip()\n    return clustering_fields_list\n\n\n\
-    def build_query_job_config(allow_large_results, default_dataset_string, destination_table,\
-    \ dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name):\n    validate_args_for_query_job_config(allow_large_results,\
-    \ priority, use_query_cache, use_legacy_sql, dry_run)  # send relevant params\n\
-    \    query_job_config = bigquery.QueryJobConfig()\n    if allow_large_results:\n\
-    \        query_job_config.allow_large_results = str_to_bool(allow_large_results)\n\
-    \    if default_dataset_string:\n        query_job_config.default_dataset = default_dataset_string\n\
-    \    if destination_table:\n        query_job_config.destination = destination_table\
-    \ # must be in the format your-project.your_dataset.your_table\n    if kms_key_name:\n\
-    \        query_job_config.destination_encryption_configuration = bigquery.table.EncryptionConfiguration(kms_key_name)\
-    \ # make sure this shouldn't be just kms_key_name\n    if dry_run:\n        query_job_config.dry_run\
-    \ = str_to_bool(dry_run)\n    if use_legacy_sql:\n        query_job_config.use_legacy_sql\
-    \ = str_to_bool(use_legacy_sql)\n    if use_query_cache:\n        query_job_config.use_query_cache\
-    \ = str_to_bool(use_query_cache)\n    if priority:\n        query_job_config.priority\
-    \ = priority\n\n    return query_job_config\n\n\n''' COMMANDS + REQUESTS FUNCTIONS\
-    \ '''\n\ndef query(query_string, project_id, location, allow_large_results, default_dataset,\
-    \ destination, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,\n\
-    \          google_service_creds, job_id):\n    bigquery_client = start_and_return_bigquery_client(google_service_creds)\n\
-    \    job_config = build_query_job_config(allow_large_results, default_dataset,\
-    \ destination, dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name)\n\
-    \    # not sure if query should be a keyword arg\n    query_job = bigquery_client.query(query\
-    \ = query_string, job_config = job_config, location = location, job_id = job_id,\
-    \ project = project_id)\n    query_results = query_job.results()\n    return query_results\n\
-    \n\ndef query_command():\n    args = demisto.args()\n    query_results = query(args['query'],\
-    \ args.get('project_id', None), args.get('location', None), args.get('allow_large_results',\
-    \ None),\n                          args.get('default_dataset', None), args.get('destination_table',\
-    \ None), args.get('kms_key_name', None), args.get('dry_run', None),\n        \
-    \                  args.get('priority', None), args.get('use_query_cache', None),\
-    \ args.get('use_legacy_sql', None),\n                          demisto.params()['google_service_creds'],\
-    \ args.get('job_id', None))\n\n    human_readable = 'No results found.'\n    context\
-    \ = {}\n    contents = []\n\n    rows_contexts = []\n\n    for row in query_results:\n\
-    \        row_context = {underscoreToCamelCase(k): v for k, v in row.items()}\n\
-    \        rows_contexts.append(row_context)\n\n    if rows_contexts:\n        contents\
-    \ = query_results\n        context['BigQuery(val.Query && val.Query == obj.Query)']\
-    \ = {\n            'Query': query,\n            'Row': rows_contexts\n       \
-    \ }\n\n        title = 'BigQuery Query Results'\n        human_readable = tableToMarkdown(title,\
-    \ contents, removeNull=True)\n\n    demisto.results({\n        'Type': entryTypes['note'],\n\
-    \        'ContentsFormat': formats['json'],\n        'Contents': contents,\n \
-    \       'ReadableContentsFormat': formats['markdown'],\n        'HumanReadable':\
-    \ human_readable,\n        'EntryContext': context\n    })\n\n\ndef test_module():\n\
-    \    \"\"\"\n    Performs basic get request to get item samples\n    \"\"\"\n\
-    \    try:\n        bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])\n\
-    \        query_job = bigquery_client.query(TEST_QUERY)\n        query_results\
-    \ = query_job.results()\n        results_rows_iterator = iter(query_results)\n\
-    \        first_item = next(results_rows_iterator)\n        if str(first_item.get(\"\
-    name\")) == \"Frances\":\n            raise ValueError(\"Data from DB not matching\
-    \ expected results\")\n        demisto.results(\"ok\")\n    except Exception as\
-    \ ex:\n        return_error(str(ex)) # not sure if should be ex.message\n\n\n\n\
-    \n''' COMMANDS MANAGER / SWITCH PANEL '''\n\nLOG('Command being called is %s'\
-    \ % (demisto.command()))\n\ntry:\n    if demisto.command() == 'test-module':\n\
-    \        test_module()\n    elif demisto.command() == 'bigquery-query':\n    \
-    \    query_command()\n\n\n# Log exceptions\nexcept Exception, e:\n    LOG(e.message)\n\
-    \    LOG.print_log()\n    raise"
-  type: python
+tests: Google BigQuery Test
+releaseNotes: Integration for Google BigQuery
