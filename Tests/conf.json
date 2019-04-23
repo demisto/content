@@ -1175,11 +1175,12 @@
             "playbookID": "Kafka Test"
         },
         {
+            "playbookID": "File Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_private_api_general",
             "integrations": [
                 "VirusTotal - Private API",
                 "Cylance Protect v2"
-            ],
-            "playbookID": "File Enrichment - Generic v2 - Test"
+            ]
         },
         {
             "integrations": "McAfee Active Response",
