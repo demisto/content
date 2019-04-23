@@ -5,9 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import requests
-from base64 import b64encode
 import shutil
-import re
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
