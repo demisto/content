@@ -335,7 +335,7 @@ script:
       predefined:
       - file
       - url
-      - download
+      - remote file
       required: false
       secret: false
     - default: false

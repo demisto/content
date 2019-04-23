@@ -31,8 +31,8 @@ HEADERS = {
 }
 # Context fields that should always be uppercase
 ALWAYS_UPPER_CASE = {
-    'md5', 'sha1', 'sha256', 'sha512', 'ssdeep',
-    'pcap', 'ip', 'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
+    'md5', 'sha1', 'sha256', 'sha512', 'pcap', 'ip',
+    'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
 }
 THREAT_TEXT_TO_DBOTSCORE = {
     'no threats detected': 1,
@@ -47,10 +47,10 @@ requests.packages.urllib3.disable_warnings()
 
 # Remove proxy if not set to true in params
 if not PROXY:
-    os.environ.pop('HTTP_PROXY')
-    os.environ.pop('HTTPS_PROXY')
-    os.environ.pop('http_proxy')
-    os.environ.pop('https_proxy')
+    os.environ.pop('HTTP_PROXY', '')
+    os.environ.pop('HTTPS_PROXY', '')
+    os.environ.pop('http_proxy', '')
+    os.environ.pop('https_proxy', '')
 
 ''' HELPER FUNCTIONS '''
 
@@ -76,23 +76,6 @@ def underscore_to_camel_case(s):
     return ''.join(x.title() if i != 0 else x for i, x in enumerate(components))
 
 
-def anyrun_threatlevel_to_dbotscore(threat_level):
-    """Convert ANYRUN threat level to its equivalent DBotScore
-
-    Parameters
-    ----------
-    threat_level : int
-        Threat level from an ANYRUN task analysis verdict.
-
-    Returns
-    -------
-    int
-        Score to be used in a DBotScore object.
-    """
-
-    return threat_level + 1
-
-
 def make_upper(string):
     """
     Make argument uppercase if it is a member of 'ALWAYS_UPPER_CASE' global variable
@@ -108,8 +91,13 @@ def make_upper(string):
         Uppercased string (or original string if it didn't match the criteria).
     """
 
-    if isinstance(string, str) and string.casefold() in ALWAYS_UPPER_CASE:
-        return string.upper()
+    if isinstance(string, str):
+        if string.casefold() in ALWAYS_UPPER_CASE:
+            return string.upper()
+        elif string.casefold() == 'ssdeep':  # special case
+            return 'SSDeep'
+        else:
+            return string
     else:
         return string
 
@@ -131,9 +119,7 @@ def make_capital(string):
     if isinstance(string, str) and string:
         return string[:1].upper() + string[1:]
     else:
-        err_msg = '"make_capital" function requires a string ' \
-                'argument whose length is greater than or equal to one.'
-        raise ValueError(err_msg)
+        return string
 
 
 def make_singular(word):
@@ -150,10 +136,8 @@ def make_singular(word):
         The string in singular form (e.e. 'zebra').
     """
 
-    if not word or len(word) == 0:
-        err_msg = '"make_singular" function requires a string ' \
-                'argument whose length is greater than or equal to one.'
-        raise ValueError(err_msg)
+    if not isinstance(word, str) or not word:
+        return word
 
     word_as_lower = word.casefold()
     # Not a plural
@@ -250,7 +234,7 @@ def generate_dbotscore(response):
         hashes = main_object.get('hashes', {})
         indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5')))
     else:
-        indicator = main_object.get('url', '')
+        indicator = main_object.get('url')
     dbot_score = {
         "DBotScore": {
             "Indicator": indicator,
@@ -278,7 +262,7 @@ def add_malicious_key(entity, verdict):
         The modified entity if it was malicious, otherwise the original entity.
     """
 
-    threat_level_text = verdict.get('threatLevelText', '')
+    threat_level_text = verdict.get('threatLevelText')
 
     if threat_level_text.casefold() == 'malicious activity':
         entity['Malicious'] = {
@@ -302,13 +286,13 @@ def ec_file(main_object):
         File object populated by report contents.
     """
 
-    name = main_object.get('filename', None)
+    name = main_object.get('filename')
     hashes = main_object.get('hashes', {})
-    md5 = hashes.get('md5', None)
-    sha1 = hashes.get('sha1', None)
-    sha256 = hashes.get('sha256', None)
-    ssdeep = hashes.get('ssdeep', None)
-    ext = main_object.get('info', {}).get('ext', None)
+    md5 = hashes.get('md5')
+    sha1 = hashes.get('sha1')
+    sha256 = hashes.get('sha256')
+    ssdeep = hashes.get('ssdeep')
+    ext = main_object.get('info', {}).get('ext')
 
     file_ec = {
         'File': {
@@ -337,7 +321,7 @@ def ec_url(main_object):
         URL object populated by report contents.
     """
 
-    url = main_object.get('url', None)
+    url = main_object.get('url')
 
     url_ec = {
         'URL': {
@@ -366,7 +350,7 @@ def ec_entity(response):
     analysis = response.get('data', {}).get('analysis', {})
     verdict = analysis.get('scores', {}).get('verdict', {})
     main_object = analysis.get('content', {}).get('mainObject', {})
-    submission_type = main_object.get('type', None)
+    submission_type = main_object.get('type')
     entity = None
     if submission_type == 'url':
         entity = ec_url(main_object)
@@ -400,6 +384,41 @@ def taskid_from_url(anyrun_url):
     return task_id
 
 
+def images_from_report(response):
+    """Retrieve images from an ANYRUN report
+
+    Parameters
+    ----------
+    response : dict
+        Object returned by ANYRUN API call in 'get_report' function.
+
+    Returns
+    -------
+    list
+        List of images from ANYRUN report.
+    """
+
+    data = response.get('data', {})
+    analysis = data.get('analysis', {})
+    content = analysis.get('content', {})
+    screenshots = content.get('screenshots', [])
+
+    screen_captures = []
+    for idx, shot in enumerate(screenshots):
+        screen_cap_url = shot.get('permanentUrl')
+        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL)
+        stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
+        img_entry = {
+            'Type': entryTypes['image'],
+            'ContentsFormat': formats['text'],
+            'File': stored_img['File'],
+            'FileID': stored_img['FileID'],
+            'Contents': ''
+        }
+        screen_captures.append(img_entry)
+    return screen_captures
+
+
 def contents_from_report(response):
     """Selectively retrieve content from an ANYRUN report
 
@@ -419,7 +438,7 @@ def contents_from_report(response):
     analysis = data.get('analysis', {})
     processes = data.get('processes', [])
     incidents = data.get('incidents', [])
-    status = data.get('status', '')
+    status = data.get('status')
 
     # Retrieve environment info from response
     os = environment.get('os', {}).get('title')
@@ -427,7 +446,7 @@ def contents_from_report(response):
     # Retrieve threat score + info from response
     score = analysis.get('scores', {})
     verdict = score.get('verdict', {})
-    threat_level_text = verdict.get('threatLevelText', None)
+    threat_level_text = verdict.get('threatLevelText')
 
     # Retrieve analysis time stuff
     start_text = analysis.get('creationText')
@@ -436,9 +455,9 @@ def contents_from_report(response):
     content = analysis.get('content', {})
     main_object = content.get('mainObject', {})
     info = main_object.get('info', {})
-    mime = info.get('mime', None)
-    file_info = info.get('file', None)
-    hashes = main_object.get('hashes', None)
+    mime = info.get('mime')
+    file_info = info.get('file')
+    hashes = main_object.get('hashes')
 
     # Retrieve network details
     network = data.get('network', {})
@@ -450,13 +469,13 @@ def contents_from_report(response):
     reformatted_threats = []
     for threat in threats:
         reformatted_threat = {
-            'ProcessUUID': threat.get('process', None),
-            'Message': threat.get('msg', None),
-            'Class': threat.get('class', None),
-            'SrcPort': threat.get('srcport', None),
-            'DstPort': threat.get('dstport', None),
-            'SrcIP': threat.get('srcip', None),
-            'DstIP': threat.get('dstip', None)
+            'ProcessUUID': threat.get('process'),
+            'Message': threat.get('msg'),
+            'Class': threat.get('class'),
+            'SrcPort': threat.get('srcport'),
+            'DstPort': threat.get('dstport'),
+            'SrcIP': threat.get('srcip'),
+            'DstIP': threat.get('dstip')
         }
         reformatted_threats.append(reformatted_threat)
     network['threats'] = reformatted_threats
@@ -464,13 +483,13 @@ def contents_from_report(response):
     reformatted_connections = []
     for connection in connections:
         reformatted_connection = {
-            'Reputation': connection.get('reputation', None),
-            'ProcessUUID': connection.get('process', None),
-            'ASN': connection.get('asn', None),
-            'Country': connection.get('country', None),
-            'Protocol': connection.get('protocol', None),
-            'Port': connection.get('port', None),
-            'IP': connection.get('ip', None)
+            'Reputation': connection.get('reputation'),
+            'ProcessUUID': connection.get('process'),
+            'ASN': connection.get('asn'),
+            'Country': connection.get('country'),
+            'Protocol': connection.get('protocol'),
+            'Port': connection.get('port'),
+            'IP': connection.get('ip')
         }
         reformatted_connections.append(reformatted_connection)
     network['connections'] = reformatted_connections
@@ -478,18 +497,18 @@ def contents_from_report(response):
     reformatted_http_reqs = []
     for http_req in http_reqs:
         reformatted_http_req = {
-            'Reputation': http_req.get('reputation', None),
-            'Country': http_req.get('country', None),
-            'ProcessUUID': http_req.get('process', None),
-            'Body': http_req.get('body', None),
-            'HttpCode': http_req.get('httpCode', None),
-            'Status': http_req.get('status', None),
-            'ProxyDetected': http_req.get('proxyDetected', None),
-            'Port': http_req.get('port', None),
-            'IP': http_req.get('ip', None),
-            'URL': http_req.get('url', None),
-            'Host': http_req.get('host', None),
-            'Method': http_req.get('method', None)
+            'Reputation': http_req.get('reputation'),
+            'Country': http_req.get('country'),
+            'ProcessUUID': http_req.get('process'),
+            'Body': http_req.get('body'),
+            'HttpCode': http_req.get('httpCode'),
+            'Status': http_req.get('status'),
+            'ProxyDetected': http_req.get('proxyDetected'),
+            'Port': http_req.get('port'),
+            'IP': http_req.get('ip'),
+            'URL': http_req.get('url'),
+            'Host': http_req.get('host'),
+            'Method': http_req.get('method')
         }
         reformatted_http_reqs.append(reformatted_http_req)
     network['httpRequests'] = reformatted_http_reqs
@@ -497,9 +516,9 @@ def contents_from_report(response):
     reformatted_dns_requests = []
     for dns_request in dns_requests:
         reformatted_dns_request = {
-            'Reputation': dns_request.get('reputation', None),
-            'IP': dns_request.get('ips', None),
-            'Domain': dns_request.get('domain', None)
+            'Reputation': dns_request.get('reputation'),
+            'IP': dns_request.get('ips'),
+            'Domain': dns_request.get('domain')
         }
         reformatted_dns_requests.append(reformatted_dns_request)
     network['dnsRequests'] = reformatted_dns_requests
@@ -509,16 +528,16 @@ def contents_from_report(response):
     for process in processes:
         context = process.get('context', {})
         reformatted_process = {
-            'FileName': process.get('fileName', None),
-            'PID': process.get('pid', None),
-            'PPID': process.get('ppid', None),
-            'ProcessUUID': process.get('uuid', None),
-            'CMD': process.get('commandLine', None),
-            'Path': process.get('image', None),
-            'User': context.get('userName', None),
-            'IntegrityLevel': context.get('integrityLevel', None),
-            'ExitCode': process.get('exitCode', None),
-            'MainProcess': process.get('mainProcess', None),
+            'FileName': process.get('fileName'),
+            'PID': process.get('pid'),
+            'PPID': process.get('ppid'),
+            'ProcessUUID': process.get('uuid'),
+            'CMD': process.get('commandLine'),
+            'Path': process.get('image'),
+            'User': context.get('userName'),
+            'IntegrityLevel': context.get('integrityLevel'),
+            'ExitCode': process.get('exitCode'),
+            'MainProcess': process.get('mainProcess'),
             'Version': process.get('versionInfo', {})
         }
         reformatted_processes.append(reformatted_process)
@@ -527,10 +546,10 @@ def contents_from_report(response):
     reformatted_incidents = []
     for incident in incidents:
         reformatted_incident = {
-            'ProcessUUID': incident.get('process', None),
-            'Category': incident.get('desc', None),
-            'Action': incident.get('title', None),
-            'ThreatLevel': incident.get('threatLevel', None)
+            'ProcessUUID': incident.get('process'),
+            'Category': incident.get('desc'),
+            'Action': incident.get('title'),
+            'ThreatLevel': incident.get('threatLevel')
         }
         reformatted_incidents.append(reformatted_incident)
 
@@ -612,9 +631,9 @@ def contents_from_history(filter, response):
     filtered_tasks = []
     for task in tasks:
         # First fetch fields that we can filter on
-        name = task.get('name', None)
-        hashes = task.get('hashes', None)
-        file_url = task.get('file', None)
+        name = task.get('name')
+        hashes = task.get('hashes')
+        file_url = task.get('file')
         task_id = taskid_from_url(file_url)
 
         if filter and filter not in {name, task_id, *hashes.values()}:
@@ -624,7 +643,7 @@ def contents_from_history(filter, response):
         filtered_task = {'name': name, 'id': task_id, 'file': file_url, 'hashes': hashes}
         for field in task:
             if field in desired_fields:
-                filtered_task[field] = task.get(field, None)
+                filtered_task[field] = task.get(field)
         filtered_tasks.append(filtered_task)
 
     return filtered_tasks
@@ -653,28 +672,32 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
     dict
         Response JSON from having made the request.
     """
+    try:
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            files=files,
+            headers=HEADERS
+        )
 
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        files=files,
-        headers=HEADERS
-    )
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201}:
+            err_msg = 'Error in ANYRUN Integration API call [{}] - {}'.format(res.status_code, res.reason)
+            try:
+                if res.json().get('error'):
+                    err_msg += '\n{}'.format(res.json().get('message'))
+                return_error(err_msg)
+            except json.decoder.JSONDecodeError:
+                return_error(err_msg)
 
-    # Handle error responses gracefully
-    if res.status_code not in {200, 201}:
-        err_msg = 'Error in ANYRUN Integration API call [{}] - {}'.format(res.status_code, res.reason)
-        try:
-            if res.json().get('error'):
-                err_msg += '\n{}'.format(res.json().get('message'))
-            return_error(err_msg)
-        except json.decoder.JSONDecodeError:
-            return_error(err_msg)
+        return res.json()
 
-    return res.json()
+    except requests.exceptions.ConnectionError:
+        err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+        return_error(err_msg)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -729,6 +752,10 @@ def get_history_command():
             'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
         }
         title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
+        # Make Related Clickable
+        for task in formatted_contents:
+            related = task.get('Related', '')
+            task['Related'] = '[{}]({})'.format(related, related)
         human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
     else:
         human_readable = 'No results found.'
@@ -762,6 +789,7 @@ def get_report_command():
     task_id = args.get('task')
     response = get_report(task_id)
 
+    images = images_from_report(response)
     contents = contents_from_report(response)
     formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
@@ -782,6 +810,8 @@ def get_report_command():
     human_readable_content = humanreadable_from_report_contents(formatted_contents)
     human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+    if images:
+        demisto.results(images)
 
 
 def run_analysis(args):
@@ -798,32 +828,43 @@ def run_analysis(args):
         Response JSON from ANYRUN API call.
     """
 
-    obj_type = args.get('obj_type')
-    entry_id = args.pop('file', None)
-    files = None
-    if obj_type == 'file':
-        cmd_res = demisto.getFilePath(entry_id)
-        file_path = cmd_res.get('path')
-        name = cmd_res.get('name')
-        files = {
-            'file': (name, open(file_path, 'rb'))
-        }
+    try:
+        entry_id = args.pop('file', None)
+        obj_url = args.get('obj_url')
+        obj_type = args.get('obj_type')
+        if obj_type == 'remote file':
+            obj_type = 'download'
+            args['obj_type'] = 'download'
+        # In the case only a url was entered but the object type arg wasn't changed
+        if not entry_id and obj_url and obj_type == 'file':
+            args['obj_type'] = obj_type = 'url'
+        files = None
+        if obj_type == 'file':
+            cmd_res = demisto.getFilePath(entry_id)
+            file_path = cmd_res.get('path')
+            name = cmd_res.get('name')
+            files = {
+                'file': (name, open(file_path, 'rb'))
+            }
 
-    # Format command arguments to API's parameter expectations
-    env_bitness = int(args.get('env_bitness', 32))
-    args['env_bitness'] = env_bitness
-    env_version = args.get('env_version').lower()
-    if env_version == 'windows vista':
-        args['env_version'] = 'vista'
-    elif env_version == 'windows 8.1':
-        args['env_version'] = '8.1'
-    elif env_version == 'windows 10':
-        args['env_version'] = '10'
-    else:
-        args['env_version'] = '7'
-    url_suffix = 'analysis'
-    response = http_request('POST', url_suffix, data=args, files=files)
-    return response
+        # Format command arguments to API's parameter expectations
+        env_bitness = int(args.get('env_bitness', 32))
+        args['env_bitness'] = env_bitness
+        env_version = args.get('env_version').lower()
+        if env_version == 'windows vista':
+            args['env_version'] = 'vista'
+        elif env_version == 'windows 8.1':
+            args['env_version'] = '8.1'
+        elif env_version == 'windows 10':
+            args['env_version'] = '10'
+        else:
+            args['env_version'] = '7'
+        url_suffix = 'analysis'
+        response = http_request('POST', url_suffix, data=args, files=files)
+        return response
+    except ValueError:
+        err_msg = 'Invalid entryID - File not found for the given entryID'
+        return_error(err_msg)
 
 
 def run_analysis_command():
@@ -832,7 +873,7 @@ def run_analysis_command():
     args = demisto.args()
     response = run_analysis(args)
     task_id = response.get('data', {}).get('taskid')
-    title = 'Analysis Task ID'
+    title = 'Submission Successful'
     human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
     entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': {'ID': task_id}}
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
