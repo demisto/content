@@ -6,6 +6,7 @@ import yaml
 import os
 
 from Tests.test_utils import print_error
+from Tests.test_utils import server_version_compare
 
 contentLibPath = "./"
 limitedVersion = False
@@ -70,7 +71,7 @@ class Content:
         elif change_type == "D":
             self.deleted_store.append(data)
         else:
-            print "Unknown change type " + change_type
+            print("Unknown change type " + change_type)
 
     @abc.abstractmethod
     def get_header(self):
@@ -89,7 +90,7 @@ class Content:
         return
 
     # create a release notes section for store (add or modified) - return None if found missing release notes
-    def release_notes_section(self, store, title_prefix):
+    def release_notes_section(self, store, title_prefix, current_server_version):
         res = ""
         missing_rn = False
         if len(store) > 0:
@@ -97,9 +98,14 @@ class Content:
             new_count = 0
             for path in store:
                 with open(path, 'r') as f:
-                    print " - adding release notes (%s) for file - [%s]... " % (path, title_prefix),
+                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), ),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
+
+                    from_version = cnt.get("fromversion")
+                    if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
+                        print("Skipped because of version differences")
+                        continue
 
                     if title_prefix == NEW_RN:
                         ans = self.added_release_notes(cnt)
@@ -107,7 +113,7 @@ class Content:
                         ans = self.modified_release_notes(cnt)
                     else:
                         # should never get here
-                        print_error("Error:\n Unknown release notes type" % (title_prefix,))
+                        print_error("Error:\n Unknown release notes type" % (title_prefix))
                         return None
 
                     if ans is None:
@@ -116,9 +122,9 @@ class Content:
                     elif ans:
                         new_count += 1
                         new_str += ans
-                        print "Success"
+                        print("Success")
                     else:
-                        print "Skipped"
+                        print("Skipped")
 
             if len(new_str) > 0:
                 if self.show_secondary_header:
@@ -134,17 +140,17 @@ class Content:
 
         return res
 
-    def generate_release_notes(self):
+    def generate_release_notes(self, current_server_version):
         res = ""
 
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
-            print "starting %s RN" % (self.get_header(),)
+            print("starting {} RN".format(self.get_header()))
 
             # Added files
-            add_rn = self.release_notes_section(self.added_store, NEW_RN)
+            add_rn = self.release_notes_section(self.added_store, NEW_RN, current_server_version)
 
             # Modified files
-            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN)
+            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN, current_server_version)
 
             if add_rn is None or modified_rn is None:
                 return None
@@ -155,9 +161,9 @@ class Content:
             if len(self.deleted_store) > 0:
                 section_body += "\n##### Removed " + self.get_header() + "\n"
                 for name in self.deleted_store:
-                    print " - adding release notes (Removed) for - [%s]" % (name,),
+                    print(' - adding release notes (Removed) for - [{}]'.format(name)),
                     section_body += "- __" + name + "__\n"
-                    print "Success"
+                    print("Success")
 
             if len(section_body) > 0:
                 res = "### " + self.get_header() + "\n"
@@ -569,20 +575,22 @@ def create_content_descriptor(version, asset_id, res):
 
 
 def main(argv):
-    if len(argv) < 4:
-        print "<Release version>, <File with the full list of changes>, " \
-              "<Complete diff file for deleted files>, <assetID>"
+    if len(argv) < 5:
+        print_error("<Release version>, <File with the full list of changes>,"
+                    "<Complete diff file for deleted files>, <assetID>, <Server version>")
         sys.exit(1)
     files = parse_change_list(argv[1])
 
     for file in files:
         create_file_release_notes(file, argv[2])
 
+    server_version = argv[4]
+
     res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
         value = release_note_generator[key]
-        ans = value.generate_release_notes()
+        ans = value.generate_release_notes(server_version)
         if ans is None:
             missing_release_notes = True
         elif len(ans) > 0:

@@ -23,17 +23,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 22ee088d-a727-45d6-876b-da7f5e7366e9
+    taskid: a9d60056-7ef8-4164-8748-f5016616e779
     type: playbook
     task:
-      id: 22ee088d-a727-45d6-876b-da7f5e7366e9
+      id: a9d60056-7ef8-4164-8748-f5016616e779
       version: -1
       name: GenericPolling
       description: |-
@@ -53,19 +55,21 @@ tasks:
       - "10"
     scriptarguments:
       Ids:
-        simple: ${inputs.URL}
+        complex:
+          root: PhishAI
+          accessor: ScanID
       Interval:
         complex:
           root: inputs.Interval
       PollingCommandArgName:
-        simple: url
+        simple: scan_id
       PollingCommandName:
         simple: phish-ai-check-status
       Timeout:
         complex:
           root: inputs.Timeout
       dt:
-        simple: URL(val.Status === 'in progress')
+        simple: PhishAI(val.Status === 'in progress').ScanID
     separatecontext: true
     loop:
       iscommand: false
@@ -75,16 +79,18 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 840
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 8202a867-8ad7-4b4b-87f5-bc9e501c5260
+    taskid: 574c57f0-c341-4fb0-8576-5acd9a2ba120
     type: condition
     task:
-      id: 8202a867-8ad7-4b4b-87f5-bc9e501c5260
+      id: 574c57f0-c341-4fb0-8576-5acd9a2ba120
       version: -1
       name: Is there a URL to detonate?
       description: Checks that there is a URL in the playbook’s input.
@@ -104,17 +110,18 @@ tasks:
           left:
             value:
               complex:
-                root: ${inputs
-                accessor: URL}
+                root: inputs.URL
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 410
+          "x": 50,
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
@@ -123,7 +130,7 @@ tasks:
       id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
       version: -1
       name: Done
-      description: "Done"
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -131,17 +138,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 1230
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 28c25e00-7d40-4198-8851-81f597651fb0
+    taskid: 20e936c1-98ba-4255-8042-101aa9bcaf5a
     type: condition
     task:
-      id: 28c25e00-7d40-4198-8851-81f597651fb0
+      id: 20e936c1-98ba-4255-8042-101aa9bcaf5a
       version: -1
       name: Is Phish.AI enabled?
       description: |
@@ -171,7 +180,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Phish.AI_copy
+                        simple: Phish.AI
                 - - operator: isEqualString
                     left:
                       value:
@@ -185,21 +194,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 353cf72a-fae0-4289-87fc-0e3146ec97cb
+    taskid: 744dfdfb-f55d-4586-8783-addf3cd6fd12
     type: regular
     task:
-      id: 353cf72a-fae0-4289-87fc-0e3146ec97cb
+      id: 744dfdfb-f55d-4586-8783-addf3cd6fd12
       version: -1
-      name: Analyze URL
-      description: Updates the status of the tasks in the context.
-      script: '|||phish-ai-scan-url'
+      name: Get Report URL
+      description: Checks on url's status, e.g. completed, in progress
+      script: '|||phish-ai-check-status'
       type: regular
       iscommand: true
       brand: ""
@@ -207,27 +218,32 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      url:
-        simple: ${inputs.URL}
+      scan_id:
+        complex:
+          root: PhishAI
+          accessor: ScanID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1020
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 9cb09aaf-bd5f-4f98-8810-d44aa492c6b1
+    taskid: 46100a3a-dc92-4c08-8098-8baff8320399
     type: regular
     task:
-      id: 9cb09aaf-bd5f-4f98-8810-d44aa492c6b1
+      id: 46100a3a-dc92-4c08-8098-8baff8320399
       version: -1
-      name: Check status
-      description: "checks url's status"
-      script: '|||phish-ai-check-status'
+      name: Scan URL
+      description: Check if url is phishing and get details about the brand that is
+        being phished
+      script: '|||phish-ai-scan-url'
       type: regular
       iscommand: true
       brand: ""
@@ -236,27 +252,29 @@ tasks:
       - "2"
     scriptarguments:
       url:
-        simple: ${inputs.URL}
+        complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 660
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "5_11_yes": 0.9,
-      "9_6_#default#": 0.9
+      "5_11_yes": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 1245,
-        "width": 652.5,
-        "x": -110,
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -280,47 +298,44 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs:
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
+- contextPath: PhishAI.ScanID
+  description: Phish.AI scan ID
+  type: string
+- contextPath: PhishAI.Status
+  description: Scan status
+  type: string
+- contextPath: PhishAI.URL
+  description: URL address
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
-  type: string
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score (only in case of report type=json)
-  type: string
-- contextPath: DBotScore.Score
-  description: The actual score (only in case of report type=json)
-  type: number
-- contextPath: IP.Address
-  description: IP's relevant to the sample
+  description: The indicator we tested
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
+  description: The type of the indicator
   type: string
-- contextPath: File.Name
-  description: Filename (only in case of report type=json)
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
   type: string
-- contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: IP.Address
+  description: IP address of the url
   type: string
-- contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: IP.Geo.Country
+  description: Geo location of the url
   type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: URL.Status
+  description: URL's Status
   type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.EntryID
-  description: The Entry ID of the sample
-  type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
-  type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: URL.Data
+  description: URL's Address
   type: string
 tests:
   - Test-Detonate URL - Phish.AI

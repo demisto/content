@@ -77,6 +77,7 @@ script:
     import sys
     import requests
     import time
+    import traceback
     from datetime import datetime, timedelta
     from distutils.util import strtobool
 
@@ -696,10 +697,11 @@ script:
         incidents = []
         for alarm in alarms:
             incidents.append({
-                'name': alarm['summary'],
-                'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'],
-                                                                                             alarm['ID'],
-                                                                                             alarm['conditionType']),
+                'name': alarm['summary'].encode('utf-8'),
+                'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(
+                    alarm['alarmName'].encode('utf-8'),
+                    alarm['ID'],
+                    alarm['conditionType']),
                 'severity': severity_to_level(alarm['severity']),
                 'rawJSON': json.dumps(alarm)
             })
@@ -763,8 +765,8 @@ script:
         incidents = []
         for case in cases:
             incident = {
-                'name': case['summary'],
-                'details': 'Case %s with ID %s was triggerred' % (case['summary'], case['id']['value']),
+                'name': case['summary'].encode('utf-8'),
+                'details': 'Case %s with ID %s was triggerred' % (case['summary'].encode('utf-8'), case['id']['value']),
                 'severity': severity_to_level(case['severity']),
                 # 'status' : esm.case_status_id_to_name(case['statusId']['value']),
                 'rawJSON': json.dumps(case),
@@ -1151,7 +1153,12 @@ script:
 
     except Exception as ex:
         demisto.error('#### error in McAfee ESM v10: ' + str(ex))
-        return_error(str(ex))
+        if demisto.command() == 'fetch-incidents':
+            LOG(traceback.format_exc(ex))
+            LOG.print_log()
+            raise
+        else:
+            return_error(str(ex), error=traceback.format_exc(ex))
     finally:
         esm.logout()
   type: python
@@ -1655,4 +1662,3 @@ script:
     description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
-releaseNotes: "Fetch incidents fixed. ESM Timezone now supported. esm-get-cases-list now support filtering by time range. Added time format parameter"

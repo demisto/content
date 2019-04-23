@@ -696,4 +696,4 @@ outputs:
     description: The HybridAnalysis object
     type: unknown
 tests:
-  - "Detonate File - Generic Test"
+- Detonate File - Generic Test

@@ -3,7 +3,7 @@
   "size": 10,
   "fromVersion": "3.5.1",
   "dataType": "messages",
-  "query": "type:mention*",
+  "query": "type:mention* status:=2",
   "name": "Mentions",
   "dateRange": {
     "period": { "byFrom": "days", "fromValue": null }
