@@ -54,10 +54,11 @@ comment: This script is an example script of how to update an incident in Cherwe
   When writing your own script to update a business object, follow the instructions
   found in the configuration section of the script, leave the execution part untouched.
 commonfields:
-  id: c5307c85-4435-4612-8bbc-198611caa4c2
+  id: CherwellUpdateIncident
   version: -1
 enabled: false
 name: CherwellUpdateIncident
+tags: []
 outputs:
 - contextPath: Cherwell.BusinessObjects.IncidentPublicID
   description: Incident public ID
