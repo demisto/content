@@ -43,187 +43,6 @@ HEADERS = {
 
 QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
 
-BUSINESS_OBJECT_IDS = {
-    "incident": "6dd53665c0c24cab86870a21cf6434ae",
-    "task": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b",
-}
-
-INCIDENT_FIELD_DICT = {
-    "service": {
-        "displayName": "Service",
-        "name": "Service",
-        "field_id": "936725cd10c735d1dd8c5b4cd4969cb0bd833655f4"
-    },
-    "category": {
-        "displayName": "Category",
-        "name": "Category",
-        "field_id": "9e0b434034e94781ab29598150f388aa"
-    },
-    "subcategory": {
-        "displayName": "Subcategory",
-        "name": "Subcategory",
-        "field_id": "1163fda7e6a44f40bb94d2b47cc58f46"
-    },
-    "description": {
-        "displayName": "Description",
-        "name": "Description",
-        "field_id": "252b836fc72c4149915053ca1131d138"
-    },
-    "priority": {
-        "displayName": "Priority",
-        "name": "Priority",
-        "field_id": "83c36313e97b4e6b9028aff3b401b71c"
-    },
-    "customer_display_name": {
-        "displayName": "Customer Display Name",
-        "name": "CustomerDisplayName",
-        "field_id": "93734aaff77b19d1fcfd1d4b4aba1b0af895f25788"
-    },
-    "owned_by": {
-        "displayName": "Owned By",
-        "name": "OwnedBy",
-        "field_id": "9339fc404e4c93350bf5be446fb13d693b0bb7f219"
-    },
-    "owned_by_team": {
-        "displayName": "Owned By Team",
-        "name": "OwnedByTeam",
-        "field_id": "9339fc404e8d5299b7a7c64de79ab81a1c1ff4306c"
-    },
-    'source': {
-        "displayName": "Source",
-        "field_id": "93670bdf8abe2cd1f92b1f490a90c7b7d684222e13",
-        "name": "Source"
-    },
-    'form_view': {
-        "displayName": "Form View",
-        "field_id": "9416983037b2b2cded624d4168964b5f0fce05d285",
-        "name": "FormView"
-    },
-    'short_description': {
-        "displayName": "Short Description",
-        "field_id": "93e8ea93ff67fd95118255419690a50ef2d56f910c",
-        "name": "ShortDescription"
-    },
-    'status': {
-        "displayName": "Status",
-        "field_id": "5eb3234ae1344c64a19819eda437f18d",
-        "name": "Status"
-    },
-    'restaurant_number': {
-        "displayName": "Restaurant Number",
-        "field_id": "9413aa138a4d8ec546418249499b66c9aa948eb522",
-        "name": "RestaurantNumber"
-    }
-}
-
-TASK_FIELD_DICT = {
-    'title': {
-        "displayName": "Title",
-        "field_id": "93ad98a2d68a61778eda3d4d9cbb30acbfd458aea4",
-        "name": "Title"
-    },
-    'owned_by': {
-        "displayName": "Owned By",
-        "field_id": "93cfd5a4e13f7d4a4de1914f638abebee3a982bb50",
-        "name": "OwnedBy"
-    },
-    'status': {
-        "displayName": "Status",
-        "field_id": "9368f0fb7b744108a666984c21afc932562eb7dc16",
-        "name": "Status"
-    },
-    "description": {
-        "displayName": "Description",
-        "name": "Description",
-        "field_id": "9355d5ef648edf7a8ed5604d56af11170cce5dc25e"
-    },
-    'owned_by_team': {
-        "displayName": "Owned By Team",
-        "field_id": "93cfd5a4e10af4933a573444d08cbc412da491b42e",
-        "name": "OwnedByTeam"
-    },
-    'type': {
-        "field_id": "9355d5ed6ca15a8308c5e24389b2138b3aa9b6c7fa",
-        "name": "Type",
-        "displayName": "Type"
-    },
-    'vendor_record': {
-        "field_id": "942c29e6afe42dcbceaf024539b61a843e6d9d3599",
-        "name": "VendorRecord",
-        "displayName": "Vendor Record"
-    }
-}
-
-INCIDENT_HEADERS_NAMES = [
-    "IncidentPublicID",
-    "IncidentRecordID",
-    "Status",
-    "CustomerDisplayName",
-    "Description",
-    "OwnedBy",
-    "OwnedByTeam",
-    "TotalTasks",
-    "CreatedDateTime",
-    "SLAResolveByDeadline"
-]
-
-TASK_HEADERS_NAMES = [
-    "TaskPublicID",
-    "TaskRecordID",
-    "ParentPublicID",
-    "ParentTypeName",
-    "Status",
-    "CustomerDisplayName",
-    "Description",
-    "OwnedBy",
-    "OwnedByTeam",
-    "TotalTasks",
-    "CreatedDateTime",
-    "SLAResolveByDeadline",
-    "VendorRecord"
-]
-# disable-secrets-detection-start
-HEADERS_IDS = {
-    'incident': [
-        "6ae282c55e8e4266ae66ffc070c17fa3",  # Incident ID
-        "936725cd10c735d1dd8c5b4cd4969cb0bd833655f4",  # Service
-        "9e0b434034e94781ab29598150f388aa",  # Category
-        "1163fda7e6a44f40bb94d2b47cc58f46",  # Subcategory
-        "252b836fc72c4149915053ca1131d138",  # Description[
-        "83c36313e97b4e6b9028aff3b401b71c",  # Priority
-        "93734aaff77b19d1fcfd1d4b4aba1b0af895f25788",  # Customer Display Name
-        "9339fc404e4c93350bf5be446fb13d693b0bb7f219",  # OwnedBy
-        "9339fc404e8d5299b7a7c64de79ab81a1c1ff4306c",  # Owned By Team
-        "93670bdf8abe2cd1f92b1f490a90c7b7d684222e13",  # Source
-        "9416983037b2b2cded624d4168964b5f0fce05d285",  # FormView
-        "93e8ea93ff67fd95118255419690a50ef2d56f910c",  # Short Description
-        "c1e86f31eb2c4c5f8e8615a5189e9b19",  # Created Date Time
-        "5eb3234ae1344c64a19819eda437f18d"  # Status
-    ],
-    'task': [
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:93ad98a2d68a61778eda3d4d9cbb30acbfd458aea4",
-        # Title  disable-secrets-detection
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:93cfd5a4e13f7d4a4de1914f638abebee3a982bb50",
-        # Owned  disable-secrets-detection
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:9368f0fb7b744108a666984c21afc932562eb7dc16",
-        # Status  disable-secrets-detection
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:9355d5ef648edf7a8ed5604d56af11170cce5dc25e",
-        # Description  disable-secrets-detection
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:93cfd5a4e10af4933a573444d08cbc412da491b42e",
-        # Owned  disable-secrets-detection
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:9355d5ed6ca15a8308c5e24389b2138b3aa9b6c7fa",
-        # Type  disable-secrets-detection
-        "BO:9355d5ed41e384ff345b014b6cb1c6e748594aea5b,FI:942c29e6afe42dcbceaf024539b61a843e6d9d3599"
-        # Vendor  disable-secrets-detection
-    ]
-}
-
-# disable-secrets-detection-end
-
-RELATIONSHIP_IDS = {
-    "incident_owns_task": "9369187528b417b4a17aaa4646b7f7a78b3c821be9"
-}
-
 #######################################################################################################################
 
 
@@ -272,9 +91,9 @@ def parse_fields_from_business_object_list(response):
         return []
     for business_obj in response.get('businessObjects'):
         new_business_obj = parse_fields_from_business_object(business_obj.get('fields'))
-        new_business_obj['BusinessObjectID'] = business_obj.get('busObId')
-        new_business_obj['PublicID'] = business_obj.get('busObPublicId')
-        new_business_obj['RecordID'] = business_obj.get('busObRecId')
+        new_business_obj['BusinessObjectId'] = business_obj.get('busObId')
+        new_business_obj['PublicId'] = business_obj.get('busObPublicId')
+        new_business_obj['RecordId'] = business_obj.get('busObRecId')
         object_list.append(new_business_obj)
 
     return object_list
@@ -447,8 +266,8 @@ def get_business_object(name, object_id, id_type):
     business_object_id = resolve_business_object_id_by_name(name)
     results = get_business_object_record(business_object_id, object_id, id_type)
     parsed_business_object = parse_fields_from_business_object(results.get('fields'))
-    parsed_business_object['PublicID'] = results.get('busObPublicId')
-    parsed_business_object['RecordID'] = results.get('busObRecId')
+    parsed_business_object['PublicId'] = results.get('busObPublicId')
+    parsed_business_object['RecordId'] = results.get('busObRecId')
     return parsed_business_object, results
 
 
@@ -483,10 +302,10 @@ def get_attachments_content(attachments_to_download):
 
 def get_attachments_details(id_type, object_id, object_type_name, object_type_id, type, attachment_type):
     id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
-    businees_object_type_str = 'busobid' if object_type_id else 'busobname'
+    business_object_type_str = 'busobid' if object_type_id else 'busobname'
     object_type = object_type_id if object_type_id else object_type_name
     url = BASE_URL + f'api/V1/getbusinessobjectattachments/' \
-        f'{businees_object_type_str}/{object_type}/' \
+        f'{business_object_type_str}/{object_type}/' \
         f'{id_type_str}/{object_id}' \
         f'/type/{type}' \
         f'/attachmenttype/{attachment_type}'
@@ -514,9 +333,9 @@ def get_attachments_info(id_type, object_id, business_object_type_name=None, bus
                                      attachment_type)
     attachments = result.get('attachments')
     attachments_info = [{
-        'AttachmentFiledID': attachment.get('attachmentFileId'),
+        'AttachmentFiledId': attachment.get('attachmentFileId'),
         'FileName': attachment.get('displayText'),
-        'AttachmentID': attachment.get('attachmentId'),
+        'AttachmentId': attachment.get('attachmentId'),
         'BusinessObjectType': business_object_type_name,
         f'BusinessObject{string_to_context_key(id_type)}': object_id
 
@@ -572,7 +391,7 @@ def object_to_incident(obj):
             file_name = attachment.get('FileName')
             attachment_file = fileResult(file_name, attachment.get('Content'))
             attachments_list.append({
-                'path': attachment_file.get('FileID'),
+                'path': attachment_file.get('FileId'),
                 'name': file_name
             })
     item = {
@@ -595,7 +414,8 @@ def save_incidents(objects_to_save):
 def fetch_incidents_attachments(incidents):
     for incident in incidents:
         rec_id = incident.get('RecID')
-        business_object_id = incident.get('BusinessObjectID')
+        LOG.print_log()
+        business_object_id = incident.get('BusinessObjectId')
         incident['Attachments'] = []
         attachments = download_attachments('record_id', rec_id, business_object_type_id=business_object_id)
         if attachments:
@@ -759,7 +579,7 @@ def get_field_info(type, field_property):
         field_to_return = {
             'DisplayName': field_to_return.get('displayName'),
             'Name': field_to_return.get('name'),
-            'FieldID': field_to_return.get('fieldId')
+            'FieldId': field_to_return.get('fieldId')
         }
     else:
         return_error(f'Field with the value {field_property} was not found')
@@ -786,8 +606,8 @@ def create_business_object_command():
     data_json = json.loads(args.get('json'))
     result = create_business_object(type_name, data_json)
     ids = {
-        'PublicID': result.get('busObPublicId'),
-        'RecordID': result.get('busObRecId')
+        'PublicId': result.get('busObPublicId'),
+        'RecordId': result.get('busObRecId')
     }
     md = tableToMarkdown(f'New {type_name.capitalize()} was created', ids, headerTransform=pascalToSpace)
 
@@ -797,7 +617,7 @@ def create_business_object_command():
         'Contents': result,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': ids
+            'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': ids
         }
     })
 
@@ -810,8 +630,8 @@ def update_business_object_command():
     id_type = args.get('id_type')
     result = update_business_object(type_name, data_json, object_id, id_type)
     ids = {
-        'PublicID': result.get('busObPublicId'),
-        'RecordID': result.get('busObRecId')
+        'PublicId': result.get('busObPublicId'),
+        'RecordId': result.get('busObRecId')
     }
     md = tableToMarkdown(f'{type_name.capitalize()} {object_id} was updated', ids, headerTransform=pascalToSpace)
 
@@ -821,7 +641,7 @@ def update_business_object_command():
         'Contents': result,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': ids
+            'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': ids
         }
     })
 
@@ -841,7 +661,7 @@ def get_business_object_command():
         'Contents': results,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': createContext(business_object)
+            'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': createContext(business_object)
         }
     })
 
@@ -902,7 +722,7 @@ def upload_attachment_command():
     file_entry_id = args.get('file_entry_id')
     attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
     entry_context = {
-        'AttachmentFileID': attachment_id,
+        'AttachmentFileId': attachment_id,
         'BusinessObjectType': type_name,
         string_to_context_key(id_type): object_id
     }
@@ -911,7 +731,7 @@ def upload_attachment_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': {'attachment_id': attachment_id},
-        'EntryContext': {'Cherwell.UploadedAttachments(val.AttachmentID == obj.AttachmentID)': entry_context},
+        'EntryContext': {'Cherwell.UploadedAttachments(val.AttachmentId == obj.AttachmentId)': entry_context},
         'HumanReadable': md,
     })
 
@@ -1020,160 +840,10 @@ def get_field_info_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'Cherwell.FieldInfo(val.FieldID == obj.FieldID)': results},
-        'HumanReadable': md,
+        'EntryContext': {'Cherwell.FieldInfo(val.FieldId == obj.FieldId)': results},
+        'HumanReadable': md
     })
 
-
-# def update_incident_status():
-#     args = demisto.args()
-#     incident_public_id = args.get('incident_public_id')
-#     status = args.get('status')
-#     args.pop('incident_public_id')
-#
-#     payload = {
-#         "busObId": BUSINESS_OBJECT_IDS['incident'],
-#         "busObPublicId": incident_public_id,
-#         "fields": build_fields_for_business_object(args, INCIDENT_FIELD_DICT)
-#     }
-#
-#     results = save_business_object(payload)
-#
-#     md = "### Incident: {0} new status is: {1}".format(incident_public_id, status)
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': results,
-#         'HumanReadable': md,
-#         'EntryContext': {
-#             'Cherwell.Incidents(val.IncidentID == {0}).Status'.format(incident_public_id): status
-#         }
-#     })
-
-
-# def list_incidents():
-#     payload = {
-#         "busObId": BUSINESS_OBJECT_IDS['incident'],
-#         "pageNumber": 0,
-#         "pageSize": 300,
-#         "fields": HEADERS_IDS['incident']
-#     }
-#
-#     results = get_search_results(payload)
-#     incidents = parse_fields_from_business_object_list(results)
-#     md = tableToMarkdown('Incidents List', incidents, headers=INCIDENT_HEADERS_NAMES, removeNull=True,
-#                          headerTransform=pascalToSpace)
-#
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': results,
-#         'HumanReadable': md,
-#         'EntryContext': {
-#             'Cherwell.Incidents': incidents
-#         }
-#     })
-
-
-# def get_task_command():
-#     args = demisto.args()
-#     task_id = args.get('task_id')
-#     id_type = args.get('id_type')
-#     results = get_business_object(BUSINESS_OBJECT_IDS["task"], task_id, id_type)
-#     task = parse_fields_from_business_object(results.get('fields'))
-#     task['TaskPublicID'] = results.get('busObPublicId')
-#     task['TaskRecordID'] = results.get('busObRecId')
-#     md = tableToMarkdown('Task Number: {}'.format(task_id), task, headers=TASK_HEADERS_NAMES, removeNull=True,
-#                          headerTransform=pascalToSpace)
-#
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': results,
-#         'HumanReadable': md,
-#         'EntryContext': {
-#             'Cherwell.Tasks(val.TaskPublicID == obj.TaskPublicID)': createContext(task, removeNull=True)
-#         }
-#     })
-
-
-# def create_task():
-#     args = demisto.args()
-#     payload = {
-#         "busObId": BUSINESS_OBJECT_IDS['task'],
-#         "fields": build_fields_for_business_object(args, TASK_FIELD_DICT)
-#     }
-#     response = save_business_object(payload)
-#     return response
-
-
-# def create_task_command():
-#     args = demisto.args()
-#     parent_business_object_record_id = args.get('incident_record_id')
-#     args.pop('incident_record_id')
-#     result = create_task()
-#     link_related_business_objects(BUSINESS_OBJECT_IDS['incident'], parent_business_object_record_id,
-#                                   RELATIONSHIP_IDS['incident_owns_task'], BUSINESS_OBJECT_IDS['task'],
-#                                   result.get('busObRecId'))
-#
-#     ids = {
-#         'TaskPublicID': result.get('busObPublicId'),
-#         'TaskRecordID': result.get('busObRecId'),
-#         'IncidentRecordID': parent_business_object_record_id
-#     }
-#     md = tableToMarkdown('New Task was created', ids, headerTransform=pascalToSpace)
-#
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': result,
-#         'HumanReadable': md,
-#         'EntryContext': {
-#             'Cherwell.Tasks(val.TaskPublicID == obj.TaskPublicID)': ids
-#         }
-#     })
-
-
-# def update_task_command():
-#     demisto.results(update_task())
-
-
-# def update_task():
-#     args = demisto.args()
-#     task_public_id = args.get('task_public_id')
-#     args.pop('task_public_id')
-#
-#     payload = {
-#         "busObId": BUSINESS_OBJECT_IDS['task'],
-#         "busObPublicId": task_public_id,
-#         "fields": build_fields_for_business_object(args, TASK_FIELD_DICT)
-#     }
-#
-#     results = save_business_object(payload)
-#     md = "### Task: {} was updated".format(task_public_id)
-#     return ({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': results,
-#         'HumanReadable': md
-#     })
-#
-#
-# def search_in_business_object_command():
-#     results = search_in_business_object()
-#     parsed_results = parse_fields_from_business_object_list(results)
-#     md = tableToMarkdown('Search Results', parsed_results, removeNull=True, headerTransform=pascalToSpace)
-#
-#     demisto.results({
-#         'Type': entryTypes['note'],
-#         'ContentsFormat': formats['json'],
-#         'Contents': results,
-#         'HumanReadable': md,
-#         'EntryContext': {
-#             'Cherwell.Search': createContext(parsed_results, removeNull=True)
-#         }
-#     })
-#
 
 #######################################################################################################################
 
@@ -1207,6 +877,7 @@ try:
         download_attachments_command()
 
     elif demisto.command() == 'cherwell-get-attachments-info':
+        # fetch_incidents_command()
         get_attachments_info_command()
 
     elif demisto.command() == 'cherwell-upload-attachment':
