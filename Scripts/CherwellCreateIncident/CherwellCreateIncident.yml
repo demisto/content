@@ -48,6 +48,7 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellCreateIncident
+tags: []
 outputs:
 - contextPath: Cherwell.BusinessObjects.IncidentPublicID
   description: Incident public ID

@@ -18,10 +18,11 @@ comment: This script is an example script of how to query incidents from Cherwel
   When writing your own script to query a business object, follow the instructions
   found in the configuration section of the script, leave the execution part untouched.
 commonfields:
-  id: 648bab3f-ad4d-4e0d-a732-a36195771536
+  id: CherwellQueryIncidents
   version: -1
 enabled: false
 name: CherwellQueryIncidents
+tags: []
 outputs:
 - contextPath: Cherwell.BusinessObject.RecordID
   description: Recoed ID
