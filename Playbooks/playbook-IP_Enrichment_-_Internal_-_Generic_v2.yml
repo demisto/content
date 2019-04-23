@@ -279,7 +279,7 @@ tasks:
         \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
         \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
         \n"
-      scriptName: IsIPInRanges_dev
+      scriptName: IsIPInRanges
       type: regular
       iscommand: false
       brand: ""
