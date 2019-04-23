@@ -1238,6 +1238,7 @@
         },
         {
             "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         }
     ],
