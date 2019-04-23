@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -108,40 +108,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 48a27343-fbea-4c97-8bb5-7f42ef8ea4b4
-    type: regular
-    task:
-      id: 48a27343-fbea-4c97-8bb5-7f42ef8ea4b4
-      version: -1
-      name: Untitled Task
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
         }
       }
     note: false
