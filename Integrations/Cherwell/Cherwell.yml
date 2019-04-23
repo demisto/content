@@ -11,7 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Client ID
+- display: Client id
   name: client_id
   required: true
   type: 0
@@ -50,14 +50,9 @@ configuration:
   type: 0
 description: "Integration with Cherwell Service Managment. Creating reading updating\
   \ and deleting business objects is possible, together with attachments and relations\
-  \ operations. \nAdditionally, the integration enables advanced query operations\
-  \ both for fetching-incidents operation and as a seperate command. The query should\
-  \ be cpmposed of comma seperated filters such that each filter should be of the\
-  \ form: `field_name::operator::value` and operator is one of: 'eq'=equal, 'gt'=grater-than,\
-  \ 'lt'=less-than, 'contains', 'startwith'. Example: `CreatedDateTime:gt:4/10/2019\
-  \ 3:10:12 PM`. NOTICE: If received multiple filters for the same field name, an\
-  \ 'OR' operation between the filters will be performed, if the field names are different\
-  \ 'AND' operation will be performed."
+  \ operations.\n\nIn order to create, query, get, update, delete and link business\
+  \ objects, \nWe recomend duplicating Cherwell example scripts and edit them using\
+  \ the instructions wethin each script."
 display: Cherwell
 name: Cherwell
 script:
@@ -82,10 +77,10 @@ script:
     execution: false
     name: cherwell-create-business-object
     outputs:
-    - contextPath: Cherwell.BusinessObjects.RecordID
+    - contextPath: Cherwell.BusinessObjects.RecordId
       description: 'Business object record id '
       type: String
-    - contextPath: Cherwell.BusinessObjects.PublicID
+    - contextPath: Cherwell.BusinessObjects.PublicId
       description: 'Business object public id '
       type: String
   - arguments:
@@ -109,7 +104,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of ID
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -122,10 +117,10 @@ script:
     execution: false
     name: cherwell-update-business-object
     outputs:
-    - contextPath: Cherwell.BusinessObjects.RecordID
+    - contextPath: Cherwell.BusinessObjects.RecordId
       description: 'Business object record id '
       type: String
-    - contextPath: Cherwell.BusinessObjects.PublicID
+    - contextPath: Cherwell.BusinessObjects.PublicId
       description: 'Business object public id '
       type: Unknown
   - arguments:
@@ -143,7 +138,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of ID
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -170,7 +165,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of ID
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -179,19 +174,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a business objects by an ID
+    description: Get a business objects by an id
     execution: false
     name: cherwell-get-business-object
   - arguments:
     - default: false
-      description: 'Business object type (example: incident)'
+      description: Business object type (e.g. Incident)
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of ID
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -215,14 +210,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: type of business object (its name)
+      description: Business object type (e.g. Incident)
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: public_id or record_id
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -247,12 +242,12 @@ script:
     execution: false
     name: cherwell-upload-attachment
     outputs:
-    - contextPath: Cherwell.UploadedAttachments.AttachmentFileID
-      description: AttachmentFileID to be used in order to get information on the
+    - contextPath: Cherwell.UploadedAttachments.AttachmentFileId
+      description: AttachmentFileId to be used in order to get information on the
         attachment
       type: String
     - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
-      description: Type of business object (its name)
+      description: Business object type (e.g. Incident)
       type: String
     - contextPath: Cherwell.UploadedAttachments.PublicId
       description: 'Public id '
@@ -332,14 +327,14 @@ script:
     name: cherwell-unlink-business-objects
   - arguments:
     - default: false
-      description: type of business object (its name)
+      description: Business object type (e.g. Incident)
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: public_id or record_id
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -358,17 +353,17 @@ script:
     execution: false
     name: cherwell-get-attachments-info
     outputs:
-    - contextPath: Cherwell.AttachmentsInfo.AttachmentFiledID
+    - contextPath: Cherwell.AttachmentsInfo.AttachmentFiledId
       description: Attachment field id
       type: String
     - contextPath: Cherwell.AttachmentsInfo.FileName
       description: File name
       type: String
-    - contextPath: Cherwell.AttachmentsInfo.AttachmentID
+    - contextPath: Cherwell.AttachmentsInfo.AttachmentId
       description: Attachment id
       type: String
     - contextPath: Cherwell.AttachmentsInfo.BusinessObjectType
-      description: Type of business object (its name)
+      description: Business object type (e.g. Incident)
       type: String
     - contextPath: Cherwell.AttachmentsInfo.BusinessObjectPublicId
       description: Business object public id
@@ -378,14 +373,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: type of business object (its name)
+      description: Business object type (e.g. Incident)
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: public_id or record_id
+      description: Type of id
       isArray: false
       name: id_type
       predefined:
@@ -411,7 +406,7 @@ script:
     name: cherwell-remove-attachment
   - arguments:
     - default: false
-      description: type of business object (its name)
+      description: Business object type (e.g. Incident)
       isArray: false
       name: type
       required: true
@@ -441,27 +436,27 @@ script:
     name: cherwell-query-business-object
   - arguments:
     - default: false
-      description: type of business object (its name)
+      description: Business object type (e.g. Incident)
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
-      description: Field property to search by (Name, DIsplay Name or Field ID)
+      description: Field property to search by (Name, DIsplay Name or Field id)
       isArray: false
       name: field_property
       required: true
       secret: false
     deprecated: false
-    description: Get field info by one of its properties (Name, DIsplay Name or ID)
+    description: Get field info by one of its properties (Name, DIsplay Name or id)
     execution: false
     name: cherwell-get-field-info
     outputs:
     - contextPath: Cherwell.FieldInfo.DisplayName
       description: Field display name (as it may appear in CHerwell UI)
       type: String
-    - contextPath: Cherwell.FieldInfo.FieldID
-      description: Field ID
+    - contextPath: Cherwell.FieldInfo.FieldId
+      description: Field id
       type: String
     - contextPath: Cherwell.FieldInfo.Name
       description: The name to use whenever working with business object commands
@@ -472,4 +467,4 @@ script:
   script: '-'
   type: python
 tests:
-- No tests - Building
+- Cherwell - test
