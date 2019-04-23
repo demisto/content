@@ -31,7 +31,7 @@ HEADERS = {
 }
 # Context fields that should always be uppercase
 ALWAYS_UPPER_CASE = {
-    'md5', 'sha1', 'sha-1', 'sha256', 'sha-256', 'sha512', 'sha-512', 'ssdeep',
+    'md5', 'sha1', 'sha256', 'sha512', 'ssdeep',
     'pcap', 'ip', 'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
 }
 THREAT_TEXT_TO_DBOTSCORE = {
@@ -55,15 +55,21 @@ if not PROXY:
 ''' HELPER FUNCTIONS '''
 
 
-def underscoreToCamelCase(s):
+def underscore_to_camel_case(s):
     """
-       Convert an underscore separated string to camel case
-       This local version leaves one-word strings untouched
-       :type s: ``str``
-       :param s: The string to convert (e.g. hello_world) (required)
-       :return: The converted string (e.g. HelloWorld)
-       :rtype: ``str``
+    Convert an underscore separated string to camel case, leaving one-word strings untouched
+
+    Parameters
+    ----------
+    s : str
+        The string to convert (e.g. heLLo_world) (required).
+
+    Returns
+    -------
+    str
+        The converted string (e.g. heLLoWorld).
     """
+
     if not isinstance(s, STRING_TYPES):
         return s
     components = s.split('_')
@@ -71,36 +77,82 @@ def underscoreToCamelCase(s):
 
 
 def anyrun_threatlevel_to_dbotscore(threat_level):
-    """ Convert ANYRUN threat level to its equivalent DBotScore """
-    return None if threat_level is None else threat_level + 1
+    """Convert ANYRUN threat level to its equivalent DBotScore
 
+    Parameters
+    ----------
+    threat_level : int
+        Threat level from an ANYRUN task analysis verdict.
 
-def make_upper(the_string):
+    Returns
+    -------
+    int
+        Score to be used in a DBotScore object.
     """
-    Make 'the_string' argument uppercase if it is a member of
-    'ALWAYS_UPPER_CASE' global variable
+
+    return threat_level + 1
+
+
+def make_upper(string):
     """
-    if isinstance(the_string, str) and the_string.casefold() in ALWAYS_UPPER_CASE:
-        return the_string.upper()
+    Make argument uppercase if it is a member of 'ALWAYS_UPPER_CASE' global variable
+
+    Parameters
+    ----------
+    string : str
+        The string to check and potentially make uppercase.
+
+    Returns
+    -------
+    str
+        Uppercased string (or original string if it didn't match the criteria).
+    """
+
+    if isinstance(string, str) and string.casefold() in ALWAYS_UPPER_CASE:
+        return string.upper()
     else:
-        return the_string
+        return string
 
 
-def make_capital(the_string):
-    """Capitalize first letter of a string, leaving the rest of the string as is"""
-    if isinstance(the_string, str) and len(the_string) >= 1:
-        return the_string[0:1].upper() + the_string[1:]
+def make_capital(string):
+    """Capitalize first letter of a string, leaving the rest of the string as is
+
+    Parameters
+    ----------
+    string : str
+        The string to capitalize (e.g. 'foRUm').
+
+    Returns
+    -------
+    str
+        The capitalized string (e.g. 'FoRUm').
+    """
+
+    if isinstance(string, str) and string:
+        return string[:1].upper() + string[1:]
     else:
-        err_msg = '"make_capital" function requires a string '
-        err_msg += 'argument whose length is greater than or equal to one.'
+        err_msg = '"make_capital" function requires a string ' \
+                'argument whose length is greater than or equal to one.'
         raise ValueError(err_msg)
 
 
 def make_singular(word):
-    """Relatively naive/imperfect function to make a word singular"""
+    """Relatively naive/imperfect function to make a word singular
+
+    Parameters
+    ----------
+    word : str
+        The string to make singular (e.g. 'zebras').
+
+    Returns
+    -------
+    str
+        The string in singular form (e.e. 'zebra').
+    """
+
     if not word or len(word) == 0:
-        err_msg = '"make_singular" function requires a string '
-        err_msg += 'argument whose length is greater than or equal to one.'
+        err_msg = '"make_singular" function requires a string ' \
+                'argument whose length is greater than or equal to one.'
         raise ValueError(err_msg)
 
     word_as_lower = word.casefold()
@@ -128,7 +180,23 @@ def make_singular(word):
 
 
 def travel_object(obj, key_functions=[], val_functions=[]):
-    """Recursively apply functions to the keys and values of a dictionary"""
+    """Recursively apply functions to the keys and values of a dictionary
+
+    Parameters
+    ----------
+    obj : dict/list
+        List or dict to recurse through.
+    key_functions : list
+        Functions to apply to the keys in 'obj'.
+    val_functions : list
+        Functions to apply to the values in 'obj'
+
+    Returns
+    -------
+    list/dict
+        A list or dict in which all nested keys and values have been
+        altered by the key_functions and val_functions respectively.
+    """
 
     def operate_on_dict(the_dict):
         new_dict = {}
@@ -160,14 +228,27 @@ def travel_object(obj, key_functions=[], val_functions=[]):
 
 
 def generate_dbotscore(response):
+    """Creates DBotScore object based on the contents of 'response' argument
+
+    Parameters
+    ----------
+    response : dict
+        Object returned by ANYRUN API call in 'get_report' function.
+
+    Returns
+    -------
+    dict
+        A DBotScore object.
+    """
+
     analysis = response.get('data', {}).get('analysis', {})
     main_object = analysis.get('content', {}).get('mainObject', {})
-    submission_type = main_object.get('type', None)
+    submission_type = main_object.get('type')
     submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
     threat_text = analysis.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
     if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
-        indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5', None)))
+        indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5')))
     else:
         indicator = main_object.get('url', '')
     dbot_score = {
@@ -182,7 +263,21 @@ def generate_dbotscore(response):
 
 
 def add_malicious_key(entity, verdict):
-    """ Return the entity with the additional 'Malicious' key if determined as such by ANYRUN """
+    """Return the entity with the additional 'Malicious' key if determined as such by ANYRUN
+
+    Parameters
+    ----------
+    entity : dict
+        File or URL object.
+    verdict : dict
+        Task analysis verdict for a detonated file or url.
+
+    Returns
+    -------
+    dict
+        The modified entity if it was malicious, otherwise the original entity.
+    """
+
     threat_level_text = verdict.get('threatLevelText', '')
 
     if threat_level_text.casefold() == 'malicious activity':
@@ -194,7 +289,19 @@ def add_malicious_key(entity, verdict):
 
 
 def ec_file(main_object):
-    """ Return File entity in Demisto format for use in entry context """
+    """Return File entity in Demisto format for use in entry context
+
+    Parameters
+    ----------
+    main_object : dict
+        The main object from a report's contents.
+
+    Returns
+    -------
+    dict
+        File object populated by report contents.
+    """
+
     name = main_object.get('filename', None)
     hashes = main_object.get('hashes', {})
     md5 = hashes.get('md5', None)
@@ -217,7 +324,19 @@ def ec_file(main_object):
 
 
 def ec_url(main_object):
-    """ Return URL entity in Demisto format for use in entry context """
+    """Return URL entity in Demisto format for use in entry context
+
+    Parameters
+    ----------
+    main_object : dict
+        The main object from a report's contents.
+
+    Returns
+    -------
+    dict
+        URL object populated by report contents.
+    """
+
     url = main_object.get('url', None)
 
     url_ec = {
@@ -232,7 +351,18 @@ def ec_entity(response):
     """
     Return URL or File entity in Demisto format for use in entry
     context depending on data in 'response' (the report)
+
+    Parameters
+    ----------
+    response : dict
+        Object returned by ANYRUN API call in 'get_report' function.
+
+    Returns
+    -------
+    dict
+        File or URL object populated by report contents.
     """
+
     analysis = response.get('data', {}).get('analysis', {})
     verdict = analysis.get('scores', {}).get('verdict', {})
     main_object = analysis.get('content', {}).get('mainObject', {})
@@ -247,10 +377,22 @@ def ec_entity(response):
     return entity
 
 
-def taskid_from_url(file_url):
-    """Extract task ID from file url inside a 'task' result returned by the get_history command"""
+def taskid_from_url(anyrun_url):
+    """Extract task ID from ANYRUN url inside a 'task' result returned by the get_history command
+
+    Parameters
+    ----------
+    anyrun_url : str
+        URL that contains an ANYRUN task ID.
+
+    Returns
+    -------
+    str
+        An ANYRUN task ID.
+    """
+
     pattern = r'tasks/(.*?)/'
-    match = re.search(pattern, file_url)
+    match = re.search(pattern, anyrun_url)
     if match:
         task_id = match.groups()[0]
     else:
@@ -259,6 +401,19 @@ def taskid_from_url(file_url):
 
 
 def contents_from_report(response):
+    """Selectively retrieve content from an ANYRUN report
+
+    Parameters
+    ----------
+    response : dict
+        Object returned by ANYRUN API call in 'get_report' function.
+
+    Returns
+    -------
+    dict
+        Selected content from ANYRUN report.
+    """
+
     data = response.get('data', {})
     environment = data.get('environments', {})
     analysis = data.get('analysis', {})
@@ -400,7 +555,20 @@ def contents_from_report(response):
 
 
 def humanreadable_from_report_contents(contents):
-    """ Make the selected contents pulled from a report suitable for war room output """
+    """Make the selected contents pulled from a report suitable for war room output
+
+    Parameters
+    ----------
+    contents : dict
+        Contents selected from an ANYRUN report for Demisto output.
+
+    Returns
+    -------
+    dict
+        Contents formatted so that nested dicts/lists appear nicely in a war room
+        entry.
+    """
+
     def dict_to_string(nested_dict):
         return json.dumps(nested_dict).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
 
@@ -422,7 +590,22 @@ def humanreadable_from_report_contents(contents):
 
 
 def contents_from_history(filter, response):
-    """Return desired fields from filtered response"""
+    """Return desired fields from filtered response
+
+    Parameters
+    ----------
+    filter : str
+        File name (for a file analysis), URL (for a URL analysis),
+        Task ID, or hash by which to filter task history.
+    response : dict
+        Object returned by ANYRUN API call in 'get_history' function.
+
+    Returns
+    -------
+    list
+        List of Task summaries matching the filter.
+    """
+
     # Filter response
     tasks = response.get('data', {}).get('tasks', {})
     desired_fields = {'related', 'verdict', 'date'}
@@ -448,7 +631,29 @@ def contents_from_history(filter, response):
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
+    """
+    A wrapper for requests lib to send our requests and handle requests
+    and responses better
+
+    Parameters
+    ----------
+    method : str
+        HTTP method, e.g. 'GET', 'POST' ... etc.
+    url_suffix : str
+        API endpoint.
+    params : dict
+        URL parameters.
+    data : dict
+        Data to be sent in a 'POST' request.
+    files : dict
+        File data to be sent in a 'POST' request.
+
+    Returns
+    -------
+    dict
+        Response JSON from having made the request.
+    """
+
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -461,7 +666,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
 
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
-        err_msg = 'Error ANYRUN Integration API call {} - {}'.format(res.status_code, res.reason)
+        err_msg = 'Error in ANYRUN Integration API call [{}] - {}'.format(res.status_code, res.reason)
         try:
             if res.json().get('error'):
                 err_msg += '\n{}'.format(res.json().get('message'))
@@ -476,15 +681,33 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
 
 
 def test_module():
+    """Performs get_history API call to verify integration is operational
+
+    Returns
+    -------
+    str
+        'ok' message.
     """
-    Performs basic get request to get item samples
-    """
-    get_history()
+
+    get_history(args={'limit': 1})
     demisto.results('ok')
 
 
 def get_history(args={}):
-    # API call
+    """Make API call to ANYRUN to get analysis history
+
+    Parameters
+    ----------
+    args : dict
+        URL parameters that determine which, and how many results are
+        returned in the response.
+
+    Returns
+    -------
+    dict
+        Response JSON from ANYRUN API call.
+    """
+
     url_suffix = 'analysis/'
     params = args
     response = http_request('GET', url_suffix=url_suffix, params=params)
@@ -492,37 +715,55 @@ def get_history(args={}):
 
 
 def get_history_command():
+    """Return ANYRUN task analysis history to Demisto"""
+
     args = demisto.args()
     filter = args.pop('filter', None)
     response = get_history(args)
     contents = contents_from_history(filter, response)
 
-    formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
+    formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
     if contents:
         entry_context = {
             'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
         }
+        title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
+        human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
     else:
+        human_readable = 'No results found.'
         entry_context = None
-    title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
-    human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
+
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
 
 
 def get_report(task_id):
+    """Make API call to ANYRUN to get task report
+
+    Parameters
+    ----------
+    task_id : str
+        The unique task ID of the analysis whose report to fetch.
+
+    Returns
+    -------
+    dict
+        Response JSON from ANYRUN API call.
+    """
+
     url_suffix = 'analysis/' + task_id
     response = http_request('GET', url_suffix=url_suffix)
     return response
 
 
 def get_report_command():
+    """Return ANYRUN analysis report to Demisto"""
     args = demisto.args()
     task_id = args.get('task')
     response = get_report(task_id)
 
     contents = contents_from_report(response)
-    formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
+    formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
 
     dbot_score = generate_dbotscore(response)
@@ -544,6 +785,19 @@ def get_report_command():
 
 
 def run_analysis(args):
+    """Make API call to ANYRUN to submit file or url for analysis
+
+    Parameters
+    ----------
+    args : dict
+        The analysis specifications and data.
+
+    Returns
+    -------
+    dict
+        Response JSON from ANYRUN API call.
+    """
+
     obj_type = args.get('obj_type')
     entry_id = args.pop('file', None)
     files = None
@@ -573,6 +827,8 @@ def run_analysis(args):
 
 
 def run_analysis_command():
+    """Submit file or URL to ANYRUN for analysis and return task ID to Demisto"""
+
     args = demisto.args()
     response = run_analysis(args)
     task_id = response.get('data', {}).get('taskid')
@@ -595,7 +851,7 @@ COMMANDS = {
 
 
 def main():
-    """ Main Execution block """
+    """Main Execution block"""
 
     try:
         cmd_name = demisto.command()
