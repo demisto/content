@@ -1214,11 +1214,6 @@
             "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "playbookID": "EmailReputationTest",
             "integrations": "Pwned"
         },
