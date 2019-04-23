@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+fromversion: 4.5.0
 script: |-
   # Common functions script
   # =======================
@@ -662,7 +663,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if not data:
+      if data is None:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1537,6 +1538,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "add python3 support in LOG"
 tests:
-  - TestPYCommonServer
+  - TestCommonPython
