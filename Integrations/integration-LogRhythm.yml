@@ -524,6 +524,7 @@ script:
 
         switch(timeFrame){
         case 'Today':
+            start = new Date(end.getFullYear(), end.getMonth(), end.getDate(), 0, 0, 0, 0);
             break;
         case 'LastHour':
             start.setHours(new Date().getHours() - 1);
