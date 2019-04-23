@@ -24,8 +24,6 @@ description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: Palo Alto Networks WildFire v2
 script:
-  script: ''
-  type: python
   commands:
   - arguments:
     - default: true
@@ -355,7 +353,7 @@ script:
       name: upload
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Deprecated, use wildfire-upload-file-url instead
     execution: false
     name: wildfire-upload-file-remote
@@ -490,9 +488,11 @@ script:
     description: submit a url
     execution: false
     name: wildfire-upload-url
+  dockerimage: demisto/python3:3.7.2.200
   isfetch: false
   runonce: false
-  dockerimage: demisto/python3:3.7.2.200
+  script: '-'
+  type: python
 tests:
-  - Wildfire Test
+- Wildfire Test
 releaseNotes: Rewrote the integration in Python.
