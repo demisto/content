@@ -201,7 +201,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get attachements from given business object
+    description: Doenload imported attachements from given business object.
     execution: false
     name: cherwell-download-attachments
     outputs:
@@ -348,6 +348,17 @@ script:
       name: id_value
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of attachment
+      isArray: false
+      name: attachment_type
+      predefined:
+      - linked
+      - imported
+      - url
+      required: true
+      secret: false
     deprecated: false
     description: Get business object attachments info
     execution: false
@@ -412,13 +423,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The query to run. The query is cpmposed of comma seperated filters
-        such that each filter should be of the form: `field_name::operator::value`
-        and operator is one of: ''eq''=equal, ''gt''=grater-than, ''lt''=less-than,
-        ''contains'', ''startwith''. Example: `CreatedDateTime:gt:4/10/2019 3:10:12
-        PM`. NOTICE: If received multiple filters for the same field name, an ''OR''
-        operation between the filters will be performed, if the field names are different
-        an ''AND'' operation will be performed.'
+      description: "The query to run. The query is a list of comma seperated filters\
+        \ such that each filter should be of the form: [\"field_name\",\"operator\"\
+        ,\"value\"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than,\
+        \ 'contains', 'startwith'. Special characters shoud be escaped.\nExample:\
+        \ `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"\
+        eq\",\"1\"]]`. \nNOTICE: If received multiple filters for the same field name,\
+        \ an 'OR' operation between the filters will be performed, if the field names\
+        \ are different an 'AND' operation will be performed."
       isArray: false
       name: query
       required: true
@@ -460,6 +472,53 @@ script:
       type: String
     - contextPath: Cherwell.FieldInfo.Name
       description: The name to use whenever working with business object commands
+      type: String
+  - arguments:
+    - default: false
+      description: Business Object association ID for the saved search
+      isArray: false
+      name: association_id
+      required: true
+      secret: false
+    - default: false
+      description: Scope name or ID for the saved search
+      isArray: false
+      name: scope
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Scope owner ID for the saved search. Use (None) when no scope
+        owner exists.
+      isArray: false
+      name: scope_owner
+      required: true
+      secret: false
+    - default: false
+      description: Name of the saved search
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the results of a saved search
+    execution: false
+    name: cherwell-run-saved-search
+  - arguments:
+    - default: false
+      description: Business object name
+      isArray: false
+      name: business_object_name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: cherwell-get-business-object-id
+    outputs:
+    - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectId
+      description: Business Object id
+      type: String
+    - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
+      description: Business Object name
       type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
