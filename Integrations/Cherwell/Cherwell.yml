@@ -35,10 +35,6 @@ configuration:
   name: objects_to_fetch
   required: false
   type: 0
-- display: Fetch attachments (include attachements in fetch process)
-  name: fetch_attachments
-  required: false
-  type: 8
 - defaultvalue: '30'
   display: Max results to fetch (intially 30)
   name: max_results
@@ -48,6 +44,10 @@ configuration:
   name: query_string
   required: false
   type: 0
+- display: Fetch attachments (include attachements in fetch process)
+  name: fetch_attachments
+  required: false
+  type: 8
 description: Cloud-based IT service management solution
 display: Cherwell
 name: Cherwell
