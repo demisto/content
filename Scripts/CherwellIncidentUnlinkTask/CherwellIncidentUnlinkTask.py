@@ -46,5 +46,5 @@ def build_arguments():
     return arguments
 
 
-result = demisto.executeCommand('cherwell-link-business-objects', build_arguments())[0]
+result = demisto.executeCommand('cherwell-unlink-business-objects', build_arguments())[0]
 demisto.results(result)
