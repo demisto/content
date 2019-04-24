@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c5716ca3-4f4d-4c80-83f5-0989f6f13167
+    taskid: 6f015190-2d58-4730-884b-3435eb7ec2f9
     type: start
     task:
-      id: c5716ca3-4f4d-4c80-83f5-0989f6f13167
+      id: 6f015190-2d58-4730-884b-3435eb7ec2f9
       version: -1
       name: ""
       iscommand: false
@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 50
+          "x": 900,
+          "y": -300
         }
       }
     note: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7364c9a1-e22a-471f-8b1a-bac4d4fafab2
+    taskid: 3aed29a4-eba7-4bf1-8ddd-628117f32c71
     type: regular
     task:
-      id: 7364c9a1-e22a-471f-8b1a-bac4d4fafab2
+      id: 3aed29a4-eba7-4bf1-8ddd-628117f32c71
       version: -1
       name: Create Business Object - Incident
       description: Create a business object
@@ -45,7 +45,7 @@ tasks:
       - "2"
     scriptarguments:
       json:
-        simple: '{"Priority": "3", "CustomerDisplayName": "Test customer", "Description":
+        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description":
           "This incident was created by Cherwell test playbook"}'
       type:
         simple: Incident
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 900,
+          "y": 20
         }
       }
     note: false
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 830ef0f9-a3c2-4d47-8fbe-4dca048923f7
+    taskid: 871e10b5-16d2-4896-88ee-d6b58e2d406a
     type: condition
     task:
-      id: 830ef0f9-a3c2-4d47-8fbe-4dca048923f7
+      id: 871e10b5-16d2-4896-88ee-d6b58e2d406a
       version: -1
       name: Validate ID's in the context
       type: condition
@@ -73,8 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "21"
-      - "22"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -92,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 900,
+          "y": 195
         }
       }
     note: false
@@ -101,10 +100,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 6171976f-0d49-4a86-803b-36a44c1e377d
+    taskid: ba4008c4-b64d-4bff-8be7-4bfb628a2569
     type: regular
     task:
-      id: 6171976f-0d49-4a86-803b-36a44c1e377d
+      id: ba4008c4-b64d-4bff-8be7-4bfb628a2569
       version: -1
       name: Update Business Object - Incident priority to 1
       description: Update a business object with the given fields
@@ -137,10 +136,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: e2d13b2b-5082-43ae-8673-ed6b8ca161f5
+    taskid: efee633f-a217-468c-84fc-f994e57f04f2
     type: condition
     task:
-      id: e2d13b2b-5082-43ae-8673-ed6b8ca161f5
+      id: efee633f-a217-468c-84fc-f994e57f04f2
       version: -1
       name: Validate Priority is 1
       type: condition
@@ -173,10 +172,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: b295646a-d586-44ed-8975-1669eeeececb
+    taskid: 83245cd4-9705-4b72-8a74-1b81b60a13a6
     type: regular
     task:
-      id: b295646a-d586-44ed-8975-1669eeeececb
+      id: 83245cd4-9705-4b72-8a74-1b81b60a13a6
       version: -1
       name: Get Business Object - Get the last created incident
       description: Get a business objects by an ID
@@ -207,10 +206,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 86628cf8-04c4-46d5-8e29-be1de0e3f35c
+    taskid: 488536b5-cd30-46ac-8f9f-afca855ee078
     type: regular
     task:
-      id: 86628cf8-04c4-46d5-8e29-be1de0e3f35c
+      id: 488536b5-cd30-46ac-8f9f-afca855ee078
       version: -1
       name: 'Create File '
       description: |
@@ -241,10 +240,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 0b332fc0-a63b-42a0-8c0f-2f172aefd117
+    taskid: f3ccb8df-7892-41ef-8586-407da10997d2
     type: regular
     task:
-      id: 0b332fc0-a63b-42a0-8c0f-2f172aefd117
+      id: f3ccb8df-7892-41ef-8586-407da10997d2
       version: -1
       name: Upload Attachment to Cherwell
       description: Upload an attachment to a given business object
@@ -277,10 +276,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 378ecb0a-7a6e-44ec-8b96-ffc8feb76b0e
+    taskid: c1feb995-98a7-4f7a-8ca3-dade5afd0cf7
     type: regular
     task:
-      id: 378ecb0a-7a6e-44ec-8b96-ffc8feb76b0e
+      id: c1feb995-98a7-4f7a-8ca3-dade5afd0cf7
       version: -1
       name: Get Attachment Info
       description: Get business object attachments info
@@ -292,6 +291,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      attachment_type:
+        simple: imported
       id_type:
         simple: record_id
       id_value:
@@ -311,10 +312,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: d5ef1963-2f27-4332-8e70-2e3c930ad89a
+    taskid: a570aa33-b7ec-4736-8d50-df957fb4d47e
     type: regular
     task:
-      id: d5ef1963-2f27-4332-8e70-2e3c930ad89a
+      id: a570aa33-b7ec-4736-8d50-df957fb4d47e
       version: -1
       name: Download Attachment
       description: Get attachements from given business object
@@ -345,10 +346,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 0ca3bb23-7a8a-46a2-802a-bda490ed042f
+    taskid: ac0e7d54-d9eb-46e3-88c6-b559b70ca99e
     type: condition
     task:
-      id: 0ca3bb23-7a8a-46a2-802a-bda490ed042f
+      id: ac0e7d54-d9eb-46e3-88c6-b559b70ca99e
       version: -1
       name: Validate Upload Attachment
       type: condition
@@ -396,10 +397,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: f70ef993-8fe2-47d1-8987-c54805fb2f24
+    taskid: 9b76126e-01b2-4d59-8bdb-24a2533153cb
     type: condition
     task:
-      id: f70ef993-8fe2-47d1-8987-c54805fb2f24
+      id: 9b76126e-01b2-4d59-8bdb-24a2533153cb
       version: -1
       name: Validate Get Attachment Info
       type: condition
@@ -462,10 +463,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: acaa0892-eab8-4c06-8068-0d63a4464426
+    taskid: 07d064f8-fc98-40af-83a2-0a68c3513678
     type: condition
     task:
-      id: acaa0892-eab8-4c06-8068-0d63a4464426
+      id: 07d064f8-fc98-40af-83a2-0a68c3513678
       version: -1
       name: Validate Download Attachment
       type: condition
@@ -511,10 +512,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: a081b455-314c-4069-8b2a-70fa050a297d
+    taskid: eb087d24-1202-487b-88fc-0cbcefcb5eae
     type: regular
     task:
-      id: a081b455-314c-4069-8b2a-70fa050a297d
+      id: eb087d24-1202-487b-88fc-0cbcefcb5eae
       version: -1
       name: Remove Attachment
       description: Remove the given attachment from the given business object
@@ -547,10 +548,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: ecf8ed39-e21e-4d07-867b-876a5d92ebab
+    taskid: 647fe97d-6e03-4fb5-8496-7eff78b83edf
     type: regular
     task:
-      id: ecf8ed39-e21e-4d07-867b-876a5d92ebab
+      id: 647fe97d-6e03-4fb5-8496-7eff78b83edf
       version: -1
       name: Link Business Objects - Incident Own Task
       description: Link related business objects
@@ -601,10 +602,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 3a806d2e-5331-4dda-8586-3aaa8f9237b6
+    taskid: bc1ee040-9221-44d6-8478-a2f453c56293
     type: regular
     task:
-      id: 3a806d2e-5331-4dda-8586-3aaa8f9237b6
+      id: bc1ee040-9221-44d6-8478-a2f453c56293
       version: -1
       name: Create Business Object - Task
       description: Create a business object
@@ -634,10 +635,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 1df1b89e-67b1-4eed-8d23-62d80a3a904b
+    taskid: 02c74b5b-18f1-40bf-8a4b-677175736c78
     type: regular
     task:
-      id: 1df1b89e-67b1-4eed-8d23-62d80a3a904b
+      id: 02c74b5b-18f1-40bf-8a4b-677175736c78
       version: -1
       name: Delete context
       description: Delete field from context
@@ -659,8 +660,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 195
+          "x": 900,
+          "y": -155
         }
       }
     note: false
@@ -668,10 +669,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 6788eabe-5963-4f10-8d62-4a5ab369f76e
+    taskid: 16839102-a1f4-4c6f-8236-df8110aeaf9f
     type: regular
     task:
-      id: 6788eabe-5963-4f10-8d62-4a5ab369f76e
+      id: 16839102-a1f4-4c6f-8236-df8110aeaf9f
       version: -1
       name: Unlink Business Objects - Incident Own Task
       description: Unlink linked, related business objects
@@ -722,10 +723,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: b15e1d69-f539-4c92-883e-e36aca261aee
+    taskid: 172292b8-d468-40f6-83ed-a696e38756de
     type: regular
     task:
-      id: b15e1d69-f539-4c92-883e-e36aca261aee
+      id: 172292b8-d468-40f6-83ed-a696e38756de
       version: -1
       name: 'Query Business Object '
       description: Run advanced queries to search in a given business object.
@@ -735,19 +736,30 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "32"
     scriptarguments:
       max_results: {}
       query:
-        simple: Description::contains::test playbook
+        complex:
+          root: ${Cherwell
+          accessor: BusinessObjects.Description}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[["Description","eq","'
+              suffix:
+                value:
+                  simple: '"]]'
       type:
         simple: incident
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2965
+          "x": -10,
+          "y": 865
         }
       }
     note: false
@@ -755,10 +767,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: b977b429-4452-4835-8998-709954682ca3
+    taskid: 10581f74-8e02-46d0-866a-16ce6b7e0fe6
     type: regular
     task:
-      id: b977b429-4452-4835-8998-709954682ca3
+      id: 10581f74-8e02-46d0-866a-16ce6b7e0fe6
       version: -1
       name: Get Field Info
       description: Get field info by one of its properties (Name, DIsplay Name or
@@ -779,8 +791,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3140
+          "x": 420,
+          "y": 1040
         }
       }
     note: false
@@ -788,10 +800,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 39ff1912-b68f-4b17-8472-4be624c9407e
+    taskid: 0aea09d0-4b7a-46a7-8212-221c1cc3422b
     type: regular
     task:
-      id: 39ff1912-b68f-4b17-8472-4be624c9407e
+      id: 0aea09d0-4b7a-46a7-8212-221c1cc3422b
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -813,8 +825,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2965
+          "x": 850,
+          "y": 865
         }
       }
     note: false
@@ -822,10 +834,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: f9ce1480-9a68-491a-866e-25d01998ba08
+    taskid: 3dc53b25-5f18-4b38-887c-563ed7706ad1
     type: title
     task:
-      id: f9ce1480-9a68-491a-866e-25d01998ba08
+      id: 3dc53b25-5f18-4b38-887c-563ed7706ad1
       version: -1
       name: Additional Commands
       type: title
@@ -836,12 +848,14 @@ tasks:
       - "18"
       - "19"
       - "20"
+      - "27"
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2805
+          "x": 420,
+          "y": 705
         }
       }
     note: false
@@ -849,10 +863,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: a79067b1-0d72-49e8-83fd-ec6aa13ceeaa
+    taskid: bcd394b8-9904-4ef2-8048-c3ca53c82edf
     type: title
     task:
-      id: a79067b1-0d72-49e8-83fd-ec6aa13ceeaa
+      id: bcd394b8-9904-4ef2-8048-c3ca53c82edf
       version: -1
       name: Business Object Flow
       type: title
@@ -874,10 +888,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 1a6ca0d3-1ed3-49e2-897d-1c2db1af2cc1
+    taskid: 51f969e0-da9e-4819-88d4-e5c53c126d52
     type: regular
     task:
-      id: 1a6ca0d3-1ed3-49e2-897d-1c2db1af2cc1
+      id: 51f969e0-da9e-4819-88d4-e5c53c126d52
       version: -1
       name: Delete Business Object
       description: Delete a given business object
@@ -916,10 +930,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 78af4fa3-2142-4bdb-8863-59a8a53f583c
+    taskid: 26a77cd2-d9fa-41a6-8078-89c7add6054c
     type: title
     task:
-      id: 78af4fa3-2142-4bdb-8863-59a8a53f583c
+      id: 26a77cd2-d9fa-41a6-8078-89c7add6054c
       version: -1
       name: Done
       type: title
@@ -936,53 +950,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: f6ab0984-4fce-4e23-8e5c-f5b3dc2823f2
-    type: condition
-    task:
-      id: f6ab0984-4fce-4e23-8e5c-f5b3dc2823f2
-      version: -1
-      name: Validate Query Business Object
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "23"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Cherwell
-                accessor: QueryResults.RecID
-            iscontext: true
-          right:
-            value:
-              simple: Cherwell.BusinessObjects.RecordId
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "26":
     id: "26"
-    taskid: 5927dd73-149f-4e33-8b18-d114043b1b2b
+    taskid: 00eb746e-e676-48d9-89f5-9e85415592e3
     type: condition
     task:
-      id: 5927dd73-149f-4e33-8b18-d114043b1b2b
+      id: 00eb746e-e676-48d9-89f5-9e85415592e3
       version: -1
       name: Validate Query Business Object
       description: Check whether the values provided in arguments are equal. If either
@@ -1003,22 +976,228 @@ tasks:
               complex:
                 root: FetchedIncidents
                 accessor: RecordId
-                transformers:
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
             iscontext: true
           right:
             value:
-              simple: Cherwell.BusinessObjects.RecordId
+              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3140
+          "x": 850,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: d6b401dc-5c26-485d-898b-80702c587a5c
+    type: regular
+    task:
+      id: d6b401dc-5c26-485d-898b-80702c587a5c
+      version: -1
+      name: Get business Object ID
+      script: '|||cherwell-get-business-object-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      business_object_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 43cca44a-1895-4bd0-8d3f-2f567e28dab5
+    type: condition
+    task:
+      id: 43cca44a-1895-4bd0-8d3f-2f567e28dab5
+      version: -1
+      name: Validate Get Business Object ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Cherwell.BusinessObjectInfo.BusinessObjectId
+            iscontext: true
+          right:
+            value:
+              simple: 6dd53665c0c24cab86870a21cf6434ae
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 95dcefd1-582f-49b9-88af-ea58d62ccf76
+    type: regular
+    task:
+      id: 95dcefd1-582f-49b9-88af-ea58d62ccf76
+      version: -1
+      name: Run saved search
+      description: Returns the results of a saved search
+      script: '|||cherwell-run-saved-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      association_id:
+        simple: 6dd53665c0c24cab86870a21cf6434ae
+      scope:
+        simple: Global
+      scope_owner:
+        simple: (None)
+      search_name:
+        simple: Test playbook search
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1000,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 08c63b00-5459-4a6a-836b-9d1d3173fa24
+    type: condition
+    task:
+      id: 08c63b00-5459-4a6a-836b-9d1d3173fa24
+      version: -1
+      name: Validate Run Saved Search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: SearchOperation.RecordId
+            iscontext: true
+          right:
+            value:
+              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
+    view: |-
+      {
+        "position": {
+          "x": -1000,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 75c3a360-749d-4f8d-8e38-30dec37c8a1d
+    type: regular
+    task:
+      id: 75c3a360-749d-4f8d-8e38-30dec37c8a1d
+      version: -1
+      name: Get Business Object - Get the last created incident
+      description: Get a business objects by an ID
+      script: '|||cherwell-get-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+      - "21"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.PublicId}
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: c60f5475-ff9a-4f28-84b8-9d1460eae991
+    type: condition
+    task:
+      id: c60f5475-ff9a-4f28-84b8-9d1460eae991
+      version: -1
+      name: Validate Query Business Object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: QueryResults.RecID
+            iscontext: true
+          right:
+            value:
+              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1040
         }
       }
     note: false
@@ -1029,10 +1208,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3505,
-        "width": 1670,
-        "x": 50,
-        "y": 50
+        "height": 3855,
+        "width": 2720,
+        "x": -1000,
+        "y": -300
       }
     }
   }
