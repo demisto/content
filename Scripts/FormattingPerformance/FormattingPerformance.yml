@@ -1,0 +1,23 @@
+comment: Generates 1000 random emails and batches them into a large string. Returns
+  the time it takes to execute `extractIndicators` on the big batch of indicators.
+commonfields:
+  id: 931d610e-1c43-4876-8638-a82529bb87c4
+  version: -1
+enabled: true
+name: FormattingPerformance
+outputs:
+- contextPath: Formatting.Time
+  description: The time in seconds it took to execute formatting scripts on a string
+    with 1000 indicators in it.
+  type: Number
+script: '-'
+system: false
+tags:
+- indicator-format
+- analytics
+- autoextract
+timeout: 3µs
+type: python
+dockerimage: faker3
+runas: DBotWeakRole
+runonce: false
