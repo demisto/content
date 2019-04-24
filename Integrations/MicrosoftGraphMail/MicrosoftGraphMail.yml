@@ -104,6 +104,16 @@ script:
       name: odata
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should return body of message
+      isArray: false
+      name: get_body
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Gets email properties
     execution: false
@@ -225,27 +235,19 @@ script:
     \ seconds for given date. If no date, return current.\n\n    Args:\n        d\
     \ (str): timestamp\n    Returns:\n         int: timestamp in epoch\n    \"\"\"\
     \n    if not d:\n        d = datetime.utcnow()\n    return int((d - datetime.utcfromtimestamp(0)).total_seconds())\n\
-    \n\ndef add_attachments_to_context(message_id: str, attachments: dict or list)\
-    \ -> dict:\n    def add_attachment(entry):\n        entry['Attachment'] = attachments\n\
-    \        return entry\n\n    existing = demisto.get(demisto.context(), 'MSGraphMail')\n\
-    \    if isinstance(existing, list):\n        for email in existing:\n        \
-    \    if email.get('ID') == message_id:\n                return add_attachment(email)\n\
-    \    elif isinstance(existing, dict):\n        if existing.get('ID') == message_id:\n\
-    \            return add_attachment(existing)\n    return {'ID': message_id, 'Attachment':\
-    \ attachments}\n\n\ndef get_token() -> str:\n    \"\"\"\n    Check if we have\
-    \ a valid token and if not get one from demistobot\n\n    Returns:\n        str:\
-    \ token from demistobot\n\n    \"\"\"\n    product = 'MicrosoftGraphMail'\n  \
-    \  token = CONTEXT.get('token')\n    stored = CONTEXT.get('stored')\n    if token\
-    \ and stored:\n        if epoch_seconds() - stored < 60 * 60 - 30:\n         \
-    \   return token\n    headers = {\n        'Authorization': TOKEN,\n        'Accept':\
-    \ 'application/json'\n    }\n\n    r = requests.get(\n        DEMISTOBOT,\n  \
-    \      headers=headers,\n        params={\n            'tenant': TENANT_ID,\n\
-    \            'product': product\n        },\n        verify=USE_SSL\n    )\n \
-    \   if r.status_code != requests.codes.ok:\n        return_error(\n          \
-    \  f'Error when trying to get token from Demisto Bot: [{r.status_code}] - {r.text}')\n\
-    \    data = r.json()\n\n    demisto.setIntegrationContext(\n        {\n      \
-    \      'token': data.get('token'),\n            'stored': epoch_seconds()\n  \
-    \      }\n    )\n    return data.get('token')\n\n\ndef assert_pages(pages: str\
+    \n\ndef get_token() -> str:\n    \"\"\"\n    Check if we have a valid token and\
+    \ if not get one from demistobot\n\n    Returns:\n        str: token from demistobot\n\
+    \n    \"\"\"\n    product = 'MicrosoftGraphMail'\n    token = CONTEXT.get('token')\n\
+    \    stored = CONTEXT.get('stored')\n    if token and stored:\n        if epoch_seconds()\
+    \ - stored < 60 * 60 - 30:\n            return token\n    headers = {\n      \
+    \  'Authorization': TOKEN,\n        'Accept': 'application/json'\n    }\n\n  \
+    \  r = requests.get(\n        DEMISTOBOT,\n        headers=headers,\n        params={\n\
+    \            'tenant': TENANT_ID,\n            'product': product\n        },\n\
+    \        verify=USE_SSL\n    )\n    if r.status_code != requests.codes.ok:\n \
+    \       return_error(\n            f'Error when trying to get token from Demisto\
+    \ Bot: [{r.status_code}] - {r.text}')\n    data = r.json()\n\n    demisto.setIntegrationContext(\n\
+    \        {\n            'token': data.get('token'),\n            'stored': epoch_seconds()\n\
+    \        }\n    )\n    return data.get('token')\n\n\ndef assert_pages(pages: str\
     \ or int) -> int:\n    \"\"\"\n\n    Args:\n        pages (str or int): pages\
     \ need to pull in int or str\n\n    Returns:\n        int: \n\n    \"\"\"\n  \
     \  if isinstance(pages, str) and pages.isdigit():\n        return int(pages)\n\
@@ -260,31 +262,33 @@ script:
     \  if first:\n                path += folder\n                first = False\n\
     \            else:\n                path += f'/childFolders/{folder}'\n      \
     \  return path\n    return None\n\n\ndef pages_puller(response: dict, page_count:\
-    \ int) -> list:\n    \"\"\"\n\n    Args:\n        response (dict):\n        page_count\
-    \ (int):\n\n    Returns:\n\n    \"\"\"\n    responses = [response]\n    i = page_count\n\
-    \    while i != 0:\n        next_link = response.get('@odata.nextLink')\n    \
-    \    if next_link:\n            responses.append(\n                http_request('GET',\
+    \ int) -> list:\n    \"\"\" Gets first response from API and returns all pages\n\
+    \n    Args:\n        response (dict):\n        page_count (int):\n\n    Returns:\n\
+    \        list: list of all pages\n    \"\"\"\n    responses = [response]\n   \
+    \ i = page_count\n    while i != 0:\n        next_link = response.get('@odata.nextLink')\n\
+    \        if next_link:\n            responses.append(\n                http_request('GET',\
     \ url=next_link)\n            )\n\n        else:\n            return responses\n\
     \        i -= 1\n    return responses\n\n\ndef build_mail_object(raw_response:\
-    \ dict or list, get_body: bool = False) -> dict or list:\n    \"\"\"Building mail\
-    \ entry context\n    Getting a list from build_mail_object\n\n    Args:\n    \
-    \    get_body (bool): should get body\n        raw_response (dict or list): list\
-    \ of pages\n\n    Returns:\n        dict or list: output context\n    \"\"\"\n\
-    \n    def build_mail(given_mail: dict) -> dict:\n        \"\"\"\n\n        Args:\n\
-    \            given_mail (dict):\n\n        Returns:\n            dict:\n     \
-    \   \"\"\"\n        # Dicts\n        mail_properties = {\n            'ID': 'id',\n\
-    \            'Created': 'createdDateTime',\n            'LastModifiedTime': 'lastModifiedDateTime',\n\
-    \            'ReceivedTime': 'receivedDateTime',\n            'SendTime': 'sentDateTime',\n\
-    \            'Categories': 'categories',\n            'HasAttachments': 'hasAttachments',\n\
-    \            'Subject': 'subject',\n        }\n\n        contact_properties =\
-    \ {\n            'Sender': 'sender',\n            'From': 'from',\n          \
-    \  'CCRecipients': 'ccRecipients',\n            'BCCRecipients': 'bccRecipients',\n\
-    \            'ReplyTo': 'replyTo'\n        }\n\n        # Create entry properties\n\
-    \        entry = {k: given_mail.get(v) for k, v in mail_properties.items()}\n\n\
-    \        # Create contacts properties\n        entry.update(\n            {k:\
-    \ build_contact(given_mail.get(v)) for k, v in contact_properties.items()}\n \
-    \       )\n\n        if get_body:\n            entry['Body'] = given_mail.get('body',\
-    \ {}).get('content')\n        return entry\n\n    def build_contact(contacts:\
+    \ dict or list, user_id: str, get_body: bool = False) -> dict or list:\n    \"\
+    \"\"Building mail entry context\n    Getting a list from build_mail_object\n\n\
+    \    Args:\n        user_id (str): user id of the mail\n        get_body (bool):\
+    \ should get body\n        raw_response (dict or list): list of pages\n\n    Returns:\n\
+    \        dict or list: output context\n    \"\"\"\n\n    def build_mail(given_mail:\
+    \ dict) -> dict:\n        \"\"\"\n\n        Args:\n            given_mail (dict):\n\
+    \n        Returns:\n            dict:\n        \"\"\"\n        # Dicts\n     \
+    \   mail_properties = {\n            'ID': 'id',\n            'Created': 'createdDateTime',\n\
+    \            'LastModifiedTime': 'lastModifiedDateTime',\n            'ReceivedTime':\
+    \ 'receivedDateTime',\n            'SendTime': 'sentDateTime',\n            'Categories':\
+    \ 'categories',\n            'HasAttachments': 'hasAttachments',\n           \
+    \ 'Subject': 'subject',\n        }\n\n        contact_properties = {\n       \
+    \     'Sender': 'sender',\n            'From': 'from',\n            'CCRecipients':\
+    \ 'ccRecipients',\n            'BCCRecipients': 'bccRecipients',\n           \
+    \ 'ReplyTo': 'replyTo'\n        }\n\n        # Create entry properties\n     \
+    \   entry = {k: given_mail.get(v) for k, v in mail_properties.items()}\n\n   \
+    \     # Create contacts properties\n        entry.update(\n            {k: build_contact(given_mail.get(v))\
+    \ for k, v in contact_properties.items()}\n        )\n\n        if get_body:\n\
+    \            entry['Body'] = given_mail.get('body', {}).get('content')\n     \
+    \   entry['UserID'] = user_id\n        return entry\n\n    def build_contact(contacts:\
     \ dict or list or str) -> object:\n        \"\"\"Building contact object\n\n \
     \       Args:\n            contacts (list or dict or str):\n\n        Returns:\n\
     \            dict or list[dict] or str or None: describing contact\n\n       \
@@ -326,16 +330,15 @@ script:
     \n\ndef list_mails_command():\n    search = demisto.args().get('search')\n   \
     \ user_id = demisto.args().get('user_id')\n    folder_id = demisto.args().get('folder_id')\n\
     \    odata = demisto.args().get('odata')\n\n    raw_response = list_mails(user_id,\
-    \ folder_id=folder_id, search=search, odata=odata)\n    mail_context = build_mail_object(raw_response)\n\
-    \    entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}\n    # TODO\
-    \ return subjects, senders, from, sendtime to md\n\n    # human_readable builder\n\
-    \    human_readable = tableToMarkdown(\n        f'### Total of {len(mail_context)}\
-    \ of mails received',\n        mail_context,\n        headers=['Subject', 'From',\
-    \ 'SendTime']\n    )\n    # TODO check if needed to fix commonserverpython\n \
-    \   return_outputs(human_readable, entry_context, raw_response)\n\n\ndef delete_mail(user_id:\
-    \ str, message_id: str, folder_id: str = None) -> True or False:\n    \"\"\"\n\
-    \n    Args:\n        user_id (str):\n        message_id (str):\n        folder_id\
-    \ (str):\n\n    Returns:\n\n    \"\"\"\n    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'\n\
+    \ folder_id=folder_id, search=search, odata=odata)\n    mail_context = build_mail_object(raw_response,\
+    \ user_id)\n    entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}\n\
+    \    # human_readable builder\n    human_readable = tableToMarkdown(\n       \
+    \ f'### Total of {len(mail_context)} of mails received',\n        mail_context,\n\
+    \        headers=['Subject', 'From', 'SendTime']\n    )\n    return_outputs(human_readable,\
+    \ entry_context, raw_response)\n\n\ndef delete_mail(user_id: str, message_id:\
+    \ str, folder_id: str = None) -> True or False:\n    \"\"\"\n\n    Args:\n   \
+    \     user_id (str):\n        message_id (str):\n        folder_id (str):\n\n\
+    \    Returns:\n\n    \"\"\"\n    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'\n\
     \    no_folder = f'/users/{user_id}/messages/{message_id}'\n    suffix = with_folder\
     \ if folder_id else no_folder\n    http_request('DELETE', suffix)\n    return\
     \ True\n\n\ndef delete_mail_command():\n    user_id = demisto.args().get('user_id')\n\
@@ -367,15 +370,18 @@ script:
     \ suffix, odata=odata)\n\n    # Add user ID\n    response['userId'] = user_id\n\
     \    return response\n\n\ndef get_message_command():\n    user_id = demisto.args().get('user_id')\n\
     \    folder_id = demisto.args().get('folder_id')\n    message_id = demisto.args().get('message_id')\n\
-    \    odata = demisto.args().get('odata')\n    raw_response = get_message(user_id,\
-    \ message_id, folder_id, odata=odata)\n    mail_context = build_mail_object(raw_response)\n\
+    \    get_body = demisto.args().get('get_body') == 'true'\n    odata = demisto.args().get('odata')\n\
+    \    raw_response = get_message(user_id, message_id, folder_id, odata=odata)\n\
+    \    mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)\n\
     \    entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}\n    human_readable\
     \ = tableToMarkdown(\n        f'Results for message ID {message_id}',\n      \
     \  mail_context,\n        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From',\
-    \ 'HasAttachments']\n    )\n    return_outputs(\n        human_readable,\n   \
-    \     entry_context,\n        raw_response=raw_response\n    )\n\n\ndef list_attachments(user_id:\
-    \ str, message_id: str, folder_id: str) -> dict:\n    no_folder = f'/users/{user_id}/messages/{message_id}/attachments'\n\
-    \    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments'\n\
+    \ 'HasAttachments', 'Body']\n    )\n    return_outputs(\n        human_readable,\n\
+    \        entry_context,\n        raw_response=raw_response\n    )\n\n\ndef list_attachments(user_id:\
+    \ str, message_id: str, folder_id: str) -> dict:\n    \"\"\"Listing all the attachments\n\
+    \n    Args:\n        user_id (str):\n        message_id (str):\n        folder_id\
+    \ (str):\n\n    Returns:\n        dict:\n    \"\"\"\n    no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'\n\
+    \    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'\n\
     \    suffix = with_folder if folder_id else no_folder\n    return http_request('GET',\
     \ suffix)\n\n\ndef list_attachments_command():\n    user_id = demisto.args().get('user_id')\n\
     \    message_id = demisto.args().get('message_id')\n    folder_id = demisto.args().get('folder_id')\n\
@@ -383,24 +389,26 @@ script:
     \ = raw_response.get('value')\n    if attachments:\n        attachment_list =\
     \ [{\n            'ID': attachment.get('id'),\n            'Name': attachment.get('name'),\n\
     \            'Type': attachment.get('contentType')\n        } for attachment in\
-    \ attachments]\n        rdy = {'ID': message_id, 'Attachment': attachment_list}\n\
-    \        # TODO here\n        entry_context = add_attachments_to_context(message_id,\
-    \ attachments)\n        # TODO build context\n        entry_context['User ID']\
-    \ = user_id\n        entry_context = {'MSGraphMail(val.ID === obj.ID)': entry_context}\n\
-    \        human_readable = f'Total of {len(attachment_list)} attachments found\
-    \ for message {message_id} from user {user_id}'\n        return_outputs(human_readable,\
-    \ entry_context, raw_response)\n    else:\n        human_readable = f'No attachments\
-    \ found in message {message_id}'\n        return_outputs(human_readable, dict(),\
-    \ raw_response)\n\n\ndef main():\n    \"\"\" COMMANDS MANAGER / SWITCH PANEL \"\
-    \"\"\n    command = demisto.command()\n    LOG(f'Command being called is {command}')\n\
-    \n    try:\n        if command == 'test-module':\n            # This is the call\
-    \ made when pressing the integration test button.\n            test_module()\n\
-    \            demisto.results('ok')\n        elif command in ('msgraph-mail-list-emails',\
-    \ 'msgraph-mail-search-email'):\n            list_mails_command()\n        elif\
-    \ command == 'msgraph-mail-get-email':\n            get_message_command()\n  \
-    \      elif command == 'msgraph-mail-delete-email':\n            delete_mail_command()\n\
-    \        elif command == 'msgraph-mail-list-attachments':\n            list_attachments_command()\n\
-    \        elif command == 'msgraph-mail-get-attachment':\n            get_attachment_command()\n\
-    \    # Log exceptions\n    except Exception as e:\n        LOG(e)\n        LOG.print_log()\n\
-    \        raise\n\n\nif __name__ == \"builtins\":\n    main()"
+    \ attachments]\n        attachment_entry = {'ID': message_id, 'AttachmentID':\
+    \ attachment_list, 'User ID': user_id}\n        entry_context = {'MSGraphMailAttachment.(val.ID\
+    \ === obj.ID)': attachment_entry}\n\n        # Build human readable\n        file_names\
+    \ = [attachment.get('Name') for attachment in attachment_list if isinstance(attachment,\
+    \ dict) and attachment.get('name')]\n        human_readable = tableToMarkdown(\n\
+    \            f'Total of {len(attachment_list)} attachments found in message {message_id}\
+    \ from user {user_id}',\n            {'File names': file_names}\n        )\n \
+    \       return_outputs(human_readable, entry_context, raw_response)\n    else:\n\
+    \        human_readable = f'No attachments found in message {message_id}'\n  \
+    \      return_outputs(human_readable, dict(), raw_response)\n\n\ndef main():\n\
+    \    \"\"\" COMMANDS MANAGER / SWITCH PANEL \"\"\"\n    command = demisto.command()\n\
+    \    LOG(f'Command being called is {command}')\n\n    try:\n        if command\
+    \ == 'test-module':\n            # This is the call made when pressing the integration\
+    \ test button.\n            test_module()\n            demisto.results('ok')\n\
+    \        elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):\n\
+    \            list_mails_command()\n        elif command == 'msgraph-mail-get-email':\n\
+    \            get_message_command()\n        elif command == 'msgraph-mail-delete-email':\n\
+    \            delete_mail_command()\n        elif command == 'msgraph-mail-list-attachments':\n\
+    \            list_attachments_command()\n        elif command == 'msgraph-mail-get-attachment':\n\
+    \            get_attachment_command()\n    # Log exceptions\n    except Exception\
+    \ as e:\n        LOG(e)\n        LOG.print_log()\n        raise\n\n\nif __name__\
+    \ == \"builtins\":\n    main()"
   type: python

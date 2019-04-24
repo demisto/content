@@ -115,22 +115,6 @@ def epoch_seconds(d: str = None) -> int:
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def add_attachments_to_context(message_id: str, attachments: dict or list) -> dict:
-    def add_attachment(entry):
-        entry['Attachment'] = attachments
-        return entry
-
-    existing = demisto.get(demisto.context(), 'MSGraphMail')
-    if isinstance(existing, list):
-        for email in existing:
-            if email.get('ID') == message_id:
-                return add_attachment(email)
-    elif isinstance(existing, dict):
-        if existing.get('ID') == message_id:
-            return add_attachment(existing)
-    return {'ID': message_id, 'Attachment': attachments}
-
-
 def get_token() -> str:
     """
     Check if we have a valid token and if not get one from demistobot
@@ -217,14 +201,14 @@ def build_folders_path(folder_string: str) -> str or None:
 
 
 def pages_puller(response: dict, page_count: int) -> list:
-    """
+    """ Gets first response from API and returns all pages
 
     Args:
         response (dict):
         page_count (int):
 
     Returns:
-
+        list: list of all pages
     """
     responses = [response]
     i = page_count
@@ -241,11 +225,12 @@ def pages_puller(response: dict, page_count: int) -> list:
     return responses
 
 
-def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dict or list:
+def build_mail_object(raw_response: dict or list, user_id: str, get_body: bool = False) -> dict or list:
     """Building mail entry context
     Getting a list from build_mail_object
 
     Args:
+        user_id (str): user id of the mail
         get_body (bool): should get body
         raw_response (dict or list): list of pages
 
@@ -292,6 +277,7 @@ def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dic
 
         if get_body:
             entry['Body'] = given_mail.get('body', {}).get('content')
+        entry['UserID'] = user_id
         return entry
 
     def build_contact(contacts: dict or list or str) -> object:
@@ -402,17 +388,14 @@ def list_mails_command():
     odata = demisto.args().get('odata')
 
     raw_response = list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
-    mail_context = build_mail_object(raw_response)
+    mail_context = build_mail_object(raw_response, user_id)
     entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}
-    # TODO return subjects, senders, from, sendtime to md
-
     # human_readable builder
     human_readable = tableToMarkdown(
         f'### Total of {len(mail_context)} of mails received',
         mail_context,
         headers=['Subject', 'From', 'SendTime']
     )
-    # TODO check if needed to fix commonserverpython
     return_outputs(human_readable, entry_context, raw_response)
 
 
@@ -514,14 +497,15 @@ def get_message_command():
     user_id = demisto.args().get('user_id')
     folder_id = demisto.args().get('folder_id')
     message_id = demisto.args().get('message_id')
+    get_body = demisto.args().get('get_body') == 'true'
     odata = demisto.args().get('odata')
     raw_response = get_message(user_id, message_id, folder_id, odata=odata)
-    mail_context = build_mail_object(raw_response)
+    mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)
     entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
         mail_context,
-        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments']
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
     )
     return_outputs(
         human_readable,
@@ -531,8 +515,18 @@ def get_message_command():
 
 
 def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
-    no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
-    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments'
+    """Listing all the attachments
+
+    Args:
+        user_id (str):
+        message_id (str):
+        folder_id (str):
+
+    Returns:
+        dict:
+    """
+    no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
     suffix = with_folder if folder_id else no_folder
     return http_request('GET', suffix)
 
@@ -549,13 +543,15 @@ def list_attachments_command():
             'Name': attachment.get('name'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
-        rdy = {'ID': message_id, 'Attachment': attachment_list}
-        # TODO here
-        entry_context = add_attachments_to_context(message_id, attachments)
-        # TODO build context
-        entry_context['User ID'] = user_id
-        entry_context = {'MSGraphMail(val.ID === obj.ID)': entry_context}
-        human_readable = f'Total of {len(attachment_list)} attachments found for message {message_id} from user {user_id}'
+        attachment_entry = {'ID': message_id, 'AttachmentID': attachment_list, 'User ID': user_id}
+        entry_context = {'MSGraphMailAttachment.(val.ID === obj.ID)': attachment_entry}
+
+        # Build human readable
+        file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(attachment, dict) and attachment.get('name')]
+        human_readable = tableToMarkdown(
+            f'Total of {len(attachment_list)} attachments found in message {message_id} from user {user_id}',
+            {'File names': file_names}
+        )
         return_outputs(human_readable, entry_context, raw_response)
     else:
         human_readable = f'No attachments found in message {message_id}'
