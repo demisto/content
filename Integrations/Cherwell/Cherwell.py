@@ -24,6 +24,7 @@ USERNAME = PARAMS.get('credentials').get('identifier')
 PASSWORD = PARAMS.get('credentials').get('password')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
+SECURED = not PARAMS.get('insecure')
 CLIENT_ID = PARAMS.get('client_id')
 QUERY_STRING = PARAMS.get('query_string')
 DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
@@ -114,7 +115,7 @@ def build_fields_for_business_object(data_dict, ids_dict):
 
 def http_request(method, url, payload, token=None, custom_headers=None):
     headers = build_headers(token, custom_headers)
-    response = requests.request(method, url, data=payload, headers=headers)
+    response = requests.request(method, url, data=payload, headers=headers, verify=SECURED)
     return response
 
 
