@@ -623,10 +623,10 @@ tasks:
       version: -1
       name: file (with sha1 value in the argument file)
       description: Retrieve results for a file hash using WildFire
-      script: WildFire_new|||file
+      script: WildFire|||file
       type: regular
       iscommand: true
-      brand: WildFire_new
+      brand: WildFire
     nexttasks:
       '#none#':
       - "29"
