@@ -3,7 +3,7 @@ commonfields:
   id: SymantecManagementCenter
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://192.168.0.1:8082)
   name: url
   required: true
   type: 0
@@ -12,7 +12,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -23,7 +23,7 @@ configuration:
 description: Symantec Management Center provides a unified management environment
   for the Symantec Security Platform portfolio of products.
 display: Symantec Management Center
-name: SymantecManagementCenter
+name: Symantec Management Center
 script:
   commands:
   - arguments:
@@ -79,7 +79,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List devices in Mangement Center
+    description: List devices in Symantec MC
     execution: false
     name: symantec-mc-list-devices
     outputs:
@@ -206,19 +206,19 @@ script:
     - contextPath: SymantecMC.Device.Type
       description: Device type
       type: String
-    - contextPath: SymantecMC.Device.License.Status
+    - contextPath: SymantecMC.Device.LicenseStatus
       description: Device license status
       type: String
-    - contextPath: SymantecMC.Device.License.Component.Name
+    - contextPath: SymantecMC.Device.LicenseComponent.Name
       description: Device license component name
       type: String
-    - contextPath: SymantecMC.Device.License.Component.ActivationDate
+    - contextPath: SymantecMC.Device.LicenseComponent.ActivationDate
       description: Device license component activation date
       type: Date
-    - contextPath: SymantecMC.Device.License.Component.ExpirationDate
+    - contextPath: SymantecMC.Device.LicenseComponent.ExpirationDate
       description: Device license component expiration date
       type: Date
-    - contextPath: SymantecMC.Device.License.Component.Validity
+    - contextPath: SymantecMC.Device.LicenseComponent.Validity
       description: Device license component validity
       type: Unknown
   - arguments:
@@ -385,6 +385,9 @@ script:
       type: String
     - contextPath: SymantecMC.Policy.UUID
       type: Unknown
+    - contextPath: SymantecMC.Policy.Description
+      description: Policy Description
+      type: String
   - arguments:
     - default: false
       description: Policy name
@@ -417,7 +420,7 @@ script:
       secret: false
     - default: false
       description: Optional tenant associated with this policy. This is the tenant
-        external ID, can be retrieved from the list-tenants command.
+        UUID, can be retrieved from the list-tenants command.
       isArray: false
       name: tenant
       required: false
