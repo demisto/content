@@ -98,7 +98,7 @@ tasks:
       id: 6d578982-fd46-43e1-81c4-e335fe46d3f0
       version: -1
       name: Check that `extractIndicators` (and the formatting scripts) took less
-        than 0.5 seconds on 1000 indicator string
+        than 1 seconds on 1000 indicator string
       type: condition
       iscommand: false
       brand: ""
@@ -118,7 +118,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0.5"
+              simple: "1"
     view: |-
       {
         "position": {
