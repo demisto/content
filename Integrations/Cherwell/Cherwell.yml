@@ -52,7 +52,15 @@ description: "Integration with Cherwell Service Managment. Creating reading upda
   \ and deleting business objects is possible, together with attachments and relations\
   \ operations.\n\nIn order to create, query, get, update, delete and link business\
   \ objects, \nWe recomend duplicating Cherwell example scripts and edit them using\
-  \ the instructions wethin each script."
+  \ the instructions wethin each script.\n\nTo use advanced query when fetching incidents,\
+  \ add your query in the advanced query paramater. The  query should be a list of\
+  \ comma seperated filters such that each filter should be of the form: [\"FieldName\"\
+  ,\"Operator\",\"Value\"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than,\
+  \ 'contains', 'startwith'. Special characters shoud be escaped.\nExample: `[[\"\
+  CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`.\
+  \ \nNOTICE: If received multiple filters for the same field name, an 'OR' operation\
+  \ between the filters will be performed, if the field names are different an 'AND'\
+  \ operation will be performed."
 display: Cherwell
 name: Cherwell
 script:
