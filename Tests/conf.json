@@ -1235,6 +1235,10 @@
         {
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
+            "integrations": "WhoisV2",
+            "playbookID": "WhoisV2-Test"
         }
     ],
     "skipped_tests": {
