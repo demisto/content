@@ -262,7 +262,7 @@ def add_malicious_key(entity, verdict):
         The modified entity if it was malicious, otherwise the original entity.
     """
 
-    threat_level_text = verdict.get('threatLevelText')
+    threat_level_text = verdict.get('threatLevelText', '')
 
     if threat_level_text.casefold() == 'malicious activity':
         entity['Malicious'] = {
