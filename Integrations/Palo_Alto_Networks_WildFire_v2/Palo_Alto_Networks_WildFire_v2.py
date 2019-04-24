@@ -653,7 +653,6 @@ def main():
         elif demisto.command() == 'wildfire-get-verdicts':
             wildfire_get_verdicts_command()
 
-
     except Exception as ex:
         return_error(str(ex))
 
