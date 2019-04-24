@@ -1060,7 +1060,7 @@ script:
       description: MD5 hash to retrieve
       isArray: true
     - name: sha256
-      description: SHA256 hash to retreive
+      description: SHA256 hash to retrieve
       isArray: true
     outputs:
     - contextPath: File.Size
