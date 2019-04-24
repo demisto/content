@@ -1235,6 +1235,10 @@
         {
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
+            "integrations": "Cherwell",
+            "playbookID": "Cherwell - test"
         }
     ],
     "skipped_tests": {
