@@ -1149,6 +1149,7 @@ tasks:
       id: a3a32547-671f-421f-8c1e-da7f6263daa3
       version: -1
       name: Send complementary information report to authorities
+      description: ""
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1409,6 +1410,7 @@ tasks:
       id: 1e63f1b1-99cd-45e4-88f8-ab49072c7777
       version: -1
       name: Send report to DPO approval
+      description: ""
       script: '|||send-mail'
       type: regular
       iscommand: true
