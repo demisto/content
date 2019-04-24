@@ -15,9 +15,6 @@ URL = demisto.getParam('server')
 TOKEN = demisto.getParam('token')
 USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
-XML_HEADERS = {'Content-Type': 'application/xml', 'Accept': 'application/xml'}
-JSON_HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-MULTI_PART_HEADERS = {'Content-Type': 'multipart/form-data'}
 
 URL_DICT = {
     'verdict': '/get/verdict',
@@ -291,7 +288,7 @@ def wildfire_upload_file_url(upload):
     }
 
     # result = http_request(upload_file_url_uri, 'POST', DEFAULT_HEADERS, body=body)
-    result = http_request(upload_file_url_uri, 'POST', JSON_HEADERS, body=body)
+    result = http_request(upload_file_url_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
     upload_file_url_data = result["wildfire"]["upload-file-info"]
 
     return result, upload_file_url_data
@@ -329,7 +326,7 @@ def wildfire_upload_url_command():
 @logger
 def wildfire_get_verdict(file_hash):
     get_verdict_uri = URL + URL_DICT["verdict"]
-    body = 'apikey='+TOKEN+'&hash='+file_hash
+    body = 'apikey=' + TOKEN + '&hash=' + file_hash
 
     result = http_request(get_verdict_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
     verdict_data = result["wildfire"]["get-verdict-info"]
@@ -611,7 +608,7 @@ def wildfire_get_sample_command():
     for element in inputs:
         result = wildfire_get_sample(element)
         headers_string = str(result.headers)
-        file_name = headers_string.split("filename=",1)[1]
+        file_name = headers_string.split("filename=", 1)[1]
 
         # will be saved under 'File' in the context, can be farther investigated.
         file_entry = fileResult(file_name, result.content)
