@@ -58,22 +58,20 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
-def epoch_seconds(d=None):
+def epoch_seconds():
     """
-    Return the number of seconds for given date. If no date, return current.
+    Return the number of seconds for return current date.
     """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_token():
+def get_token(refresh_token=False):
     """
     Check if we have a valid token and if not get one
     """
     ctx = demisto.getIntegrationContext()
-    if ctx.get('token') and ctx.get('stored'):
-        if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
+    if {'token', 'stored', 'expires'} <= set(ctx) and not refresh_token:
+        if epoch_seconds() - ctx.get('stored') < ctx.get('expires'):
             return ctx.get('token')
     response = requests.get(
         DEMISTOBOT,
@@ -83,17 +81,17 @@ def get_token():
     )
     data = response.json()
     if not response.ok:
-        error_object = json.loads(data.get('detail'))
-        error_details = error_object.get('error_description')
-        if error_details:
-            return_error(error_details)
-        else:
-            return_error(error_object)
-    demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
+        return_error(f'API call to MS Graph failed [{data.get("status")} {data.get("title")}] - {data.get("detail")}))')
+
+    demisto.setIntegrationContext({
+        'token': data.get('token'),
+        'stored': epoch_seconds(),
+        'expires': data.get('expires', 3600) - 30
+    })
     return data.get('token')
 
 
-def http_request(method, url_suffix, params=None, body=None):
+def http_request(method, url_suffix, params=None, body=None, do_not_refresh_token=False):
     """
     Generic request to Microsoft Graph
     """
@@ -106,12 +104,15 @@ def http_request(method, url_suffix, params=None, body=None):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
-        data=body,
         params=params,
+        data=body
     )
     try:
         data = response.json() if response.text else {}
         if not response.ok:
+            if demisto.get(data, "error.message") == 'InvalidAuthenticationToken' and not do_not_refresh_token:
+                get_token(refresh_token=True)  # try refreshing the token only once (avoid endless loop)
+                return http_request(method, url_suffix, params, body, do_not_refresh_token=True)
             return_error(f'API call to MS Graph failed [{response.status_code}] - {demisto.get(data, "error.message")}')
         elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
             demisto.debug(str(response.headers))
@@ -124,8 +125,28 @@ def http_request(method, url_suffix, params=None, body=None):
 
 
 def test_function():
-    http_request('GET', 'users', {'$select': 'displayName'})
-    demisto.results('ok')
+    token = get_token()
+    response = requests.get(
+        BASE_URL + 'users',
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        params={'$select': 'displayName'},
+    )
+    try:
+        data = response.json() if response.text else {}
+        if not response.ok:
+            return_error(f'API call to MS Graph failed. Please check authentication related parameters.'
+                         f' [{response.status_code}] - {demisto.get(data, "error.message")}')
+
+        demisto.results('ok')
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'API call to MS Graph failed, could not parse result. '
+                     f'Please check authentication related parameters. [{response.status_code}]')
 
 
 def terminate_user_session_command():
