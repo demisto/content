@@ -617,42 +617,49 @@ def wildfire_get_sample_command():
 
 
 ''' EXECUTION '''
-LOG('command is %s' % (demisto.command(),))
-
-try:
-    # Remove proxy if not set to true in params
-    handle_proxy()
-
-    if demisto.command() == 'test-module':
-        test_module()
-
-    elif demisto.command() == 'wildfire-upload':
-        wildfire_upload_file_command()
-
-    elif demisto.command() in ['wildfire-upload-dile-remote', 'wildfire-upload-file-url']:
-        wildfire_upload_file_url_command()
-
-    elif demisto.command() == 'wildfire-upload-url':
-        wildfire_upload_url_command()
-
-    elif demisto.command() == 'wildfire-report':
-        wildfire_get_report_command()
-
-    elif demisto.command() == 'file':
-        wildfire_file_command()
-
-    elif demisto.command() == 'wildfire-get-sample':
-        wildfire_get_sample_command()
-
-    elif demisto.command() == 'wildfire-get-verdict':
-        wildfire_get_verdict_command()
-
-    elif demisto.command() == 'wildfire-get-verdicts':
-        wildfire_get_verdicts_command()
 
 
-except Exception as ex:
-    return_error(str(ex))
+def main():
+    LOG('command is %s' % (demisto.command(),))
 
-finally:
-    LOG.print_log()
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+
+        if demisto.command() == 'test-module':
+            test_module()
+
+        elif demisto.command() == 'wildfire-upload':
+            wildfire_upload_file_command()
+
+        elif demisto.command() in ['wildfire-upload-dile-remote', 'wildfire-upload-file-url']:
+            wildfire_upload_file_url_command()
+
+        elif demisto.command() == 'wildfire-upload-url':
+            wildfire_upload_url_command()
+
+        elif demisto.command() == 'wildfire-report':
+            wildfire_get_report_command()
+
+        elif demisto.command() == 'file':
+            wildfire_file_command()
+
+        elif demisto.command() == 'wildfire-get-sample':
+            wildfire_get_sample_command()
+
+        elif demisto.command() == 'wildfire-get-verdict':
+            wildfire_get_verdict_command()
+
+        elif demisto.command() == 'wildfire-get-verdicts':
+            wildfire_get_verdicts_command()
+
+
+    except Exception as ex:
+        return_error(str(ex))
+
+    finally:
+        LOG.print_log()
+
+
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
