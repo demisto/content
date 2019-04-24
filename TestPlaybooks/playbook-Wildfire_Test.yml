@@ -247,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4045
+          "y": 4570
         }
       }
     note: false
@@ -846,7 +846,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -884,6 +884,109 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 6f911f24-4102-4c78-8bff-90eb818bf989
+    type: regular
+    task:
+      id: 6f911f24-4102-4c78-8bff-90eb818bf989
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 23a6504e-5a73-4c1b-8215-05f87154fefa
+    type: regular
+    task:
+      id: 23a6504e-5a73-4c1b-8215-05f87154fefa
+      version: -1
+      name: wildfire-get-sample
+      description: Retrieve a sample from WildFire
+      script: '|||wildfire-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      md5:
+        simple: 5af84a3db5883627bfdff909e210634e
+      sha256: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 858a6b16-a64a-4175-8ea6-17e0ae284c27
+    type: condition
+    task:
+      id: 858a6b16-a64a-4175-8ea6-17e0ae284c27
+      version: -1
+      name: Test wildfire-get-sample
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: 1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3.xlsx.000
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -891,7 +994,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4060,
+        "height": 4585,
         "width": 810,
         "x": 50,
         "y": 50
