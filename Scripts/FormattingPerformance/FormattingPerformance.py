@@ -37,8 +37,8 @@ try:
         res = demisto.executeCommand('extractIndicators', {'text': indicators_text})
     end_time = time.perf_counter()
     delta = end_time - start_time
-    performance_msg = 'Formatting scripts execution time for a total of '
-    performance_msg += '{} indicators in batches of {} for a total of {}'.format(indicators_count, per_batch, executions)
+    performance_msg = 'Formatting scripts execution time for a total of {} '.format(indicators_count)
+    performance_msg += 'indicators in batches of {} for a total of {}'.format(per_batch, executions)
     performance_msg += ' executions: {}'.format(delta)
     entry_context = {'Formatting.Time': delta}
     return_outputs(readable_output=performance_msg, outputs=entry_context, raw_response=res)
