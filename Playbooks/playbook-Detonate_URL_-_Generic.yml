@@ -695,3 +695,5 @@ outputs:
   description: Task analysis status.
   type: String
 releaseNotes: Add ANYRUN URL Detonation playbook
+tests:
+- Detonate URL - Generic Test
