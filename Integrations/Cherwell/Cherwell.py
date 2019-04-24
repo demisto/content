@@ -326,9 +326,10 @@ def download_attachments(id_type, object_id, business_object_type_name=None, bus
     return attachments_to_return
 
 
-def get_attachments_info(id_type, object_id, business_object_type_name=None, business_object_type_id=None):
+def get_attachments_info(id_type, object_id, attachment_type, business_object_type_name=None,
+                         business_object_type_id=None):
     type = 'File'
-    attachment_type = 'Imported'
+    attachment_type = attachment_type
     result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
                                      attachment_type)
     attachments = result.get('attachments')
@@ -454,7 +455,7 @@ def upload_attachment(id_type, object_id, type_name, file_entry_id):
     file_name = file_data.get('name')
     try:
         file_size = os.path.getsize(file_path)
-        with open(file_path) as f:
+        with open(file_path, 'rb') as f:
             file_content = f.read()
         attachment_id = upload_business_object_attachment(file_name, file_size, file_content, type_name, id_type,
                                                           object_id)
@@ -496,12 +497,15 @@ def business_objects_relation_action(action, parent_type_name, parent_record_id,
 
 
 def validate_query_list(query_list):
-    for query in query_list:
+    for index, query in enumerate(query_list):
         if not len(query) == 3:
-            return_error('Cannot parse query, should be of the form: `field:operator:value`')
+            return_error(f'Cannot parse query, should be of the form: '
+                         f'`[["FieldName","Operator","Value"],["FieldName","Operator","Value"],...]`. '
+                         f'Filter in index {index} is malformed: {query}')
         if query[1] not in QUERY_OPERATORS:
             return_error(
-                f'Operator should be one of the following: {", ".join(QUERY_OPERATORS)}. Received: {query[1]}')
+                f'Operator should be one of the following: {", ".join(QUERY_OPERATORS)}. Filter in index {index}, '
+                f'was: {query[1]}')
     return
 
 
@@ -548,10 +552,14 @@ def query_business_object(query_list, business_object_id, max_results):
 
 
 def parse_string_query_to_list(query_string):
-    query_list = query_string.split(',')
-    query_filters_list = [query_filter.split('::') for query_filter in query_list]
-    validate_query_list(query_filters_list)
-    return query_filters_list
+    try:
+        query_list = json.loads(query_string)
+    except (ValueError, TypeError):
+        return_error(f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],'
+                     f'["FieldName","Operator","Value"]]`.')
+
+    validate_query_list(query_list)
+    return query_list
 
 
 def query_business_object_string(business_object_name, query_string, max_results):
@@ -586,7 +594,35 @@ def get_field_info(type, field_property):
     return field_to_return
 
 
+def cherwell_run_saved_search(association_id, scope, scope_owner, search_name):
+    search_payload = {
+        "Association": association_id,
+        "scope": scope,
+        "scopeOwner": scope_owner,
+        "searchname": search_name,
+        "includeAllFields": True,
+    }
+
+    results = get_search_results(search_payload)
+    business_objects = parse_fields_from_business_object_list(results)
+    return business_objects
+
+
+def cherwell_get_business_object_id(business_object_name):
+    business_object_id = resolve_business_object_id_by_name(business_object_name)
+    business_object_info = {
+        'BusinessObjectId': business_object_id,
+        'BusinessObjectName': business_object_name
+    }
+    return business_object_info
+
+
 ########################################################################################################################
+'''
+Commands
+'''
+
+
 def test_command():
     if FETCHES_INCIDENTS:
         if not OBJECTS_TO_FETCH[0]:
@@ -757,7 +793,9 @@ def get_attachments_info_command():
     id_type = args.get('id_type')
     object_id = args.get('id_value')
     type_name = args.get('type')
-    attachments_info, raw_result = get_attachments_info(id_type, object_id, type_name)
+    attachment_type = args.get('attachment_type')
+    attachments_info, raw_result = get_attachments_info(id_type, object_id, attachment_type,
+                                                        business_object_type_name=type_name)
     md = tableToMarkdown(f'{type_name.capitalize()} {object_id} attachments:', attachments_info,
                          headerTransform=pascalToSpace) if attachments_info \
         else f'### {type_name.capitalize()} {object_id} has no attachments'
@@ -845,6 +883,37 @@ def get_field_info_command():
     })
 
 
+def cherwell_run_saved_search_command():
+    args = demisto.args()
+    association_id = args.get('association_id')
+    scope = args.get('scope')
+    scope_owner = args.get('scope_owner')
+    search_name = args.get('search_name')
+    results = cherwell_run_saved_search(association_id, scope, scope_owner, search_name)
+    md = tableToMarkdown(f'{search_name} results:', results, headerTransform=pascalToSpace)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': results,
+        'EntryContext': {'Cherwell.SearchOperation(val.RecordId == obj.RecordId)': results},
+        'HumanReadable': md
+    })
+
+
+def cherwell_get_business_object_id_command():
+    args = demisto.args()
+    business_object_name = args.get('business_object_name')
+    result = cherwell_get_business_object_id(business_object_name)
+    md = tableToMarkdown(f'Business Object Info:', result, headerTransform=pascalToSpace)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': result,
+        'EntryContext': {'Cherwell.BusinessObjectInfo(val.BusinessObjectId == obj.BusinessObjectId)': result},
+        'HumanReadable': md
+    })
+
+
 #######################################################################################################################
 
 
@@ -877,7 +946,6 @@ try:
         download_attachments_command()
 
     elif demisto.command() == 'cherwell-get-attachments-info':
-        # fetch_incidents_command()
         get_attachments_info_command()
 
     elif demisto.command() == 'cherwell-upload-attachment':
@@ -897,6 +965,15 @@ try:
 
     elif demisto.command() == 'cherwell-get-field-info':
         get_field_info_command()
+
+    elif demisto.command() == 'cherwell-run-saved-search':
+        cherwell_run_saved_search_command()
+
+    elif demisto.command() == 'cherwell-get-business-object-id':
+        cherwell_get_business_object_id_command()
+
+
+
 
 
 # Log exceptions
