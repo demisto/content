@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from MicrosoftGraphMail import build_mail_object, assert_pages, assert_folders
+from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path
 
 
 def test_build_mail_object():
@@ -23,5 +23,5 @@ def test_assert_pages():
 
 def test_assert_folders():
     inp = 'i,s,f,q'
-    response = assert_folders(inp)
-    assert response == 'mailFolders/i/childFolders/i/childFolders/i/childFolders/i'
+    response = build_folders_path(inp)
+    assert response == 'mailFolders/i/childFolders/s/childFolders/f/childFolders/q'

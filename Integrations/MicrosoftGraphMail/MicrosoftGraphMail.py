@@ -1,24 +1,63 @@
+import binascii
+
 from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
 import base64
+import os
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' PARAMS DECLARATIONS '''
-BASE_URL = None
-USE_SSL = None
-CONTEXT = None
-TOKEN = None
-DEMISTOBOT = None
-TENANT_ID = None
+""" GLOBALS/PARAMS """
+# Global annotation
+CONTEXT = demisto.getIntegrationContext()
+DEMISTOBOT = 'https://ec2-18-197-54-7.eu-central-1.compute.amazonaws.com/msg-mail-token'
+# Credentials
+TOKEN = demisto.params().get('token')
+TENANT_ID = demisto.params().get('tenant_id')
+# Remove trailing slash to prevent wrong URL path to service
+SERVER = demisto.params().get('url')[:-1] if (
+        demisto.params().get('url') and demisto.params().get('url').endswith('/')) else demisto.params().get('url')
+# Should we use SSL
+USE_SSL = not demisto.params().get('unsecure', False)
+# Service base URL
+BASE_URL = str(SERVER) + '/v1.0'
+
+# Remove proxy if not set to true in params
+if not demisto.params().get('proxy'):
+    os.environ.pop('HTTP_PROXY', '')
+    os.environ.pop('HTTPS_PROXY', '')
+    os.environ.pop('http_proxy', '')
+    os.environ.pop('https_proxy', '')
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, url_suffix: str, params: dict = None, data: dict = None, odata: str = None,
+def error_parser(error: requests.Response) -> str:
+    """
+
+    Args:
+        error (requests.Response): response with error
+
+    Returns:
+        str: string of error
+
+    """
+    try:
+        response = error.json()
+        error = response.get('error', {})
+        err_str = f"{error.get('code')}: {error.get('message')}"
+        if err_str:
+            return err_str
+        # If no error message
+        raise ValueError
+    except ValueError:
+        return error.text
+
+
+def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
                  url: str = None) -> dict:
     """
     A wrapper for requests lib to send our requests and handle requests and responses better
@@ -44,7 +83,6 @@ def http_request(method: str, url_suffix: str, params: dict = None, data: dict =
 
     if odata:
         url_suffix += odata
-
     res = requests.request(
         method,
         url if url else BASE_URL + url_suffix,
@@ -54,9 +92,13 @@ def http_request(method: str, url_suffix: str, params: dict = None, data: dict =
         headers=headers
     )
     # Handle error responses gracefully
-    if res.status_code != requests.codes.ok:
-        return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {res.reason}')
-    return res.json()
+    if not (199 < res.status_code < 299):
+        error = error_parser(res)
+        return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
+    try:
+        return res.json()
+    except ValueError:
+        return_error('Could not decode response from API')
 
 
 def epoch_seconds(d: str = None) -> int:
@@ -71,6 +113,22 @@ def epoch_seconds(d: str = None) -> int:
     if not d:
         d = datetime.utcnow()
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+def add_attachments_to_context(message_id: str, attachments: dict or list) -> dict:
+    def add_attachment(entry):
+        entry['Attachment'] = attachments
+        return entry
+
+    existing = demisto.get(demisto.context(), 'MSGraphMail')
+    if isinstance(existing, list):
+        for email in existing:
+            if email.get('ID') == message_id:
+                return add_attachment(email)
+    elif isinstance(existing, dict):
+        if existing.get('ID') == message_id:
+            return add_attachment(existing)
+    return {'ID': message_id, 'Attachment': attachments}
 
 
 def get_token() -> str:
@@ -103,7 +161,7 @@ def get_token() -> str:
     )
     if r.status_code != requests.codes.ok:
         return_error(
-            f'Error in API call to Azure Security Center [{r.status_code}] - {r.text}')
+            f'Error when trying to get token from Demisto Bot: [{r.status_code}] - {r.text}')
     data = r.json()
 
     demisto.setIntegrationContext(
@@ -113,23 +171,6 @@ def get_token() -> str:
         }
     )
     return data.get('token')
-
-
-def odata_query_builder():
-    odata = {
-        'count': True if demisto.args().get('count') else False,
-        'expand': demisto.args().get('expand'),
-        'filter': {
-            'eq': demisto.args().get('filter_equals'),
-            'ne': demisto.args().get('filter_not_equals'),
-            'gt': demisto.args().get('filter_greater_than'),
-            'ge': demisto.args().get('filter_greater_or_equal'),
-            'lt': demisto.args().get('filter_less_than'),
-            'le': demisto.args().get('filter_less_or_equal'),
-            'or': demisto.args().get('or'),
-            'not': demisto.args().get('not')
-        }
-    }
 
 
 def assert_pages(pages: str or int) -> int:
@@ -149,7 +190,7 @@ def assert_pages(pages: str or int) -> int:
     return 1
 
 
-def assert_folders(folder_string: str) -> str or None:
+def build_folders_path(folder_string: str) -> str or None:
     """
 
     Args:
@@ -158,28 +199,40 @@ def assert_folders(folder_string: str) -> str or None:
     Returns:
         str or None:  string with path to the folder and child folders
 
+    >>> build_folders_path('folder,child,child2')
+    'mailFolders/folder/childFolders/child/child2'
     """
     if isinstance(folder_string, str):
         path = 'mailFolders/'
-        folders_list = folder_string.split(',')
-        for i in range(len(folders_list)):
-            if i == 0:
-                path += folders_list[0]
+        folders_list = argToList(folder_string, ',')
+        first = True
+        for folder in folders_list:
+            if first:
+                path += folder
+                first = False
             else:
-                path += '/childFolders/' + folders_list[0]
+                path += f'/childFolders/{folder}'
         return path
     return None
 
 
-def pages_puller(response, page_count):
-    responses = list()
-    responses.append(response)
+def pages_puller(response: dict, page_count: int) -> list:
+    """
+
+    Args:
+        response (dict):
+        page_count (int):
+
+    Returns:
+
+    """
+    responses = [response]
     i = page_count
     while i != 0:
         next_link = response.get('@odata.nextLink')
         if next_link:
             responses.append(
-                http_request('GET', '', url=next_link)
+                http_request('GET', url=next_link)
             )
 
         else:
@@ -217,7 +270,7 @@ def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dic
             'ReceivedTime': 'receivedDateTime',
             'SendTime': 'sentDateTime',
             'Categories': 'categories',
-            'HasAttachment': 'hasAttachment',
+            'HasAttachments': 'hasAttachments',
             'Subject': 'subject',
         }
 
@@ -230,13 +283,11 @@ def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dic
         }
 
         # Create entry properties
-        entry = (
-            {k: given_mail.get(v) for k, v in mail_properties.items()}
-        )
+        entry = {k: given_mail.get(v) for k, v in mail_properties.items()}
 
         # Create contacts properties
         entry.update(
-            {k: build_contact(v) for k, v in contact_properties.items()}
+            {k: build_contact(given_mail.get(v)) for k, v in contact_properties.items()}
         )
 
         if get_body:
@@ -279,6 +330,8 @@ def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dic
     mails_list = list()
     if isinstance(raw_response, list):
         for page in raw_response:
+            # raw_response can be a list containing multiple pages or one response
+            # if value in page, we got
             value = page.get('value')
             if value:
                 for mail in value:
@@ -290,11 +343,23 @@ def build_mail_object(raw_response: dict or list, get_body: bool = False) -> dic
     return mails_list
 
 
-def file_builder(raw_response):
+def file_result_creator(raw_response: dict) -> dict:
+    """
+
+    Args:
+        raw_response (dict):
+
+    Returns:
+        dict:
+
+    """
     name = raw_response.get('name')
     data = raw_response.get('contentBytes')
-    data = base64.decodebytes(data)
-    return fileResult(name, data)
+    try:
+        data = base64.b64decode(data)
+        return fileResult(name, data)
+    except binascii.Error:
+        return_error('Attachment could not be decoded')
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -304,39 +369,69 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    get_token()
+    # TODO test_module
 
 
-def list_mails(user_id, folder_id, search, odata):
-    no_folder = f'/users/{user_id}/messages'
-    with_folder = f'users/{user_id}/{assert_folders(folder_id)}/messages'
+def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> dict or list:
+    """Returning all mails from given user
+
+    Args:
+        user_id (str):
+        folder_id (str):
+        search (str):
+        odata (str):
+
+    Returns:
+        dict or list:
+    """
+    no_folder = f'/users/{user_id}/messages/'
+    with_folder = f'users/{user_id}/{build_folders_path(folder_id)}/messages/'
     pages_to_pull = demisto.args().get('pages_to_pull', 1)
 
     if search:
-        odata = odata + f'$search={search}' if odata else f'$search={search}'
-
+        odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
     suffix = with_folder if folder_id else no_folder
     response = http_request('GET', suffix, odata=odata)
     return pages_puller(response, assert_pages(pages_to_pull))
 
 
 def list_mails_command():
-    search = demisto.args().get('message_id')
+    search = demisto.args().get('search')
     user_id = demisto.args().get('user_id')
     folder_id = demisto.args().get('folder_id')
-    odata = demisto.args().get('odata_query')
+    odata = demisto.args().get('odata')
 
-    raw_response = list_mails(user_id, folder_id, search, odata)
-    entry_context = {'MSGraphMail(var.ID === obj.ID)': build_mail_object(raw_response)}
-    human_readable = f'### Total of {len(entry_context)} of mails received'
+    raw_response = list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
+    mail_context = build_mail_object(raw_response)
+    entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}
+    # TODO return subjects, senders, from, sendtime to md
+
+    # human_readable builder
+    human_readable = tableToMarkdown(
+        f'### Total of {len(mail_context)} of mails received',
+        mail_context,
+        headers=['Subject', 'From', 'SendTime']
+    )
+    # TODO check if needed to fix commonserverpython
     return_outputs(human_readable, entry_context, raw_response)
 
 
 def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> True or False:
-    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}'
+    """
+
+    Args:
+        user_id (str):
+        message_id (str):
+        folder_id (str):
+
+    Returns:
+
+    """
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'
     no_folder = f'/users/{user_id}/messages/{message_id}'
     suffix = with_folder if folder_id else no_folder
-    return http_request('DELETE', suffix)
+    http_request('DELETE', suffix)
+    return True
 
 
 def delete_mail_command():
@@ -346,7 +441,7 @@ def delete_mail_command():
     delete_mail(user_id, message_id, folder_id)
 
     human_readable = tableToMarkdown(
-        'Message has been deleted',
+        'Message has been deleted successfully',
         {
             'Message ID': message_id,
             'User ID': user_id,
@@ -357,7 +452,7 @@ def delete_mail_command():
     )
 
     entry_context = {
-        f'MSGraphMail(val.ID == {message_id}': None
+        f'MSGraphMail(val.ID === {message_id}': None
     }
 
     return_outputs(human_readable, entry_context)
@@ -376,7 +471,7 @@ def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id:
         dict:
     """
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
-    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}/attachments/{attachment_id}'
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/{attachment_id}'
     suffix = with_folder if folder_id else no_folder
     response = http_request('GET', suffix)
     return response
@@ -386,8 +481,9 @@ def get_attachment_command():
     message_id = demisto.args().get('message_id')
     user_id = demisto.args().get('user_id')
     folder_id = demisto.args().get('folder_id')
-    raw_response = get_attachment(message_id, user_id, folder_id)
-    entry_context = file_builder(raw_response)
+    attachment_id = demisto.args().get('attachment_id')
+    raw_response = get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
+    entry_context = file_result_creator(raw_response)
     demisto.results(entry_context)
 
 
@@ -403,11 +499,10 @@ def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str
     Returns
         dict: request json
     """
-    no_folder = f'/users/{user_id}/messages/{user_id}'
-    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}'
+    no_folder = f'/users/{user_id}/messages/{message_id}/'
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/'
 
     suffix = with_folder if folder_id else no_folder
-
     response = http_request('GET', suffix, odata=odata)
 
     # Add user ID
@@ -420,12 +515,13 @@ def get_message_command():
     folder_id = demisto.args().get('folder_id')
     message_id = demisto.args().get('message_id')
     odata = demisto.args().get('odata')
-    raw_response = get_message(user_id, folder_id, message_id, odata=odata)
-    entry_context = {'MSGraphMail(val.ID === obj.ID)': build_mail_object(raw_response)}
+    raw_response = get_message(user_id, message_id, folder_id, odata=odata)
+    mail_context = build_mail_object(raw_response)
+    entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
-        entry_context,
-        headers=['ID', 'Subject', 'Send', 'Sender', 'From', 'HasAttachment']
+        mail_context,
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments']
     )
     return_outputs(
         human_readable,
@@ -436,7 +532,7 @@ def get_message_command():
 
 def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
-    with_folder = f'/users/{user_id}/{assert_folders(folder_id)}/messages/{message_id}/attachments'
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments'
     suffix = with_folder if folder_id else no_folder
     return http_request('GET', suffix)
 
@@ -446,7 +542,6 @@ def list_attachments_command():
     message_id = demisto.args().get('message_id')
     folder_id = demisto.args().get('folder_id')
     raw_response = list_attachments(user_id, message_id, folder_id)
-
     attachments = raw_response.get('value')
     if attachments:
         attachment_list = [{
@@ -454,43 +549,23 @@ def list_attachments_command():
             'Name': attachment.get('name'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
-
-        entry_context = {'MsGraphMail.Attachments(val.ID === obj.ID)': attachment_list}
-        human_readable = f'Total of {len(attachment_list)} attachments found for message {message_id} from user {user_id}:'
+        rdy = {'ID': message_id, 'Attachment': attachment_list}
+        # TODO here
+        entry_context = add_attachments_to_context(message_id, attachments)
+        # TODO build context
+        entry_context['User ID'] = user_id
+        entry_context = {'MSGraphMail(val.ID === obj.ID)': entry_context}
+        human_readable = f'Total of {len(attachment_list)} attachments found for message {message_id} from user {user_id}'
         return_outputs(human_readable, entry_context, raw_response)
     else:
-        human_readable = 'No attachments found'
+        human_readable = f'No attachments found in message {message_id}'
         return_outputs(human_readable, dict(), raw_response)
 
 
 def main():
-    """ GLOBALS/PARAMS """
-    # Global annotation
-    global CONTEXT, DEMISTOBOT, TOKEN, TENANT_ID, USE_SSL, BASE_URL
-    CONTEXT = demisto.getIntegrationContext()
-    DEMISTOBOT = 'https://demistobot.demisto.com/msg-mail-token'
-    # Credentials
-    TOKEN = demisto.params().get('token')
-    TENANT_ID = demisto.params().get('tenant_id')
-    # Remove trailing slash to prevent wrong URL path to service
-    server = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-        demisto.params()['url']
-    # Should we use SSL
-    USE_SSL = not demisto.params().get('unsecure', False)
-    # Service base URL
-    BASE_URL = server + '/v1.0'
-
-    # Remove proxy if not set to true in params
-    if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-    # Global arguments
+    """ COMMANDS MANAGER / SWITCH PANEL """
     command = demisto.command()
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f'Command being called is {command}')
 
     try:
         if command == 'test-module':
@@ -501,12 +576,12 @@ def main():
             list_mails_command()
         elif command == 'msgraph-mail-get-email':
             get_message_command()
-        elif command == 'msgraph-mail-get-attachment':
-            get_attachment_command()
         elif command == 'msgraph-mail-delete-email':
             delete_mail_command()
         elif command == 'msgraph-mail-list-attachments':
             list_attachments_command()
+        elif command == 'msgraph-mail-get-attachment':
+            get_attachment_command()
     # Log exceptions
     except Exception as e:
         LOG(e)
