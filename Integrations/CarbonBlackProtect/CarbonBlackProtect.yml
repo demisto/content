@@ -1806,7 +1806,7 @@ script:
       description: Unique fileAnalysis id
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: ID of the approval request to update
       isArray: false
       name: id
@@ -1833,7 +1833,7 @@ script:
       - Resolved - Updater
       - Resolved - Publisher
       - Resolved - Other
-      required: false
+      required: true
       secret: false
     - default: false
       description: Email of user that created this request
@@ -1987,10 +1987,148 @@ script:
       name: headers
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-update
+    outputs:
+    - contextPath: CBP.FileRule.CatalogID
+      description: The file catalog ID for the rule
+      type: String
+    - contextPath: CBP.FileRule.Description
+      description: |
+        The rule description
+      type: String
+    - contextPath: CBP.FileRule.FileState
+      description: The file state for the rule
+      type: String
+    - contextPath: CBP.FileRule.Hash
+      description: The hash for the rule
+      type: String
+    - contextPath: CBP.FileRule.ID
+      description: The rule ID
+      type: String
+    - contextPath: CBP.FileRule.Name
+      description: The rule name
+      type: String
+    - contextPath: CBP.FileRule.PolicyIDs
+      description: The policies this rule is part of
+      type: String
+    - contextPath: CBP.FileRule.ReportOnly
+      description: Is this rule reporting only or also enforcing
+      type: String
+  - deprecated: false
+    arguments:
+    - default: false
+      description: (String) Hash associated with this rule. This parameter is not
+        required if fileCatalogId is supplied
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: '(Int32) File state for this rule. Can be one of: 1=Unapproved
+        2=Approved 3=Banned'
+      isArray: false
+      name: fileState
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      required: true
+      secret: false
+    - default: false
+      description: (Int32) Unique id of this fileRule
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: (Int32) Id of fileCatalog entry associated with this fileRule.
+        Can be 0 if creating/modifying rule based on hash or file name
+      isArray: false
+      name: fileCatalogId
+      required: false
+      secret: false
+    - default: false
+      description: (String) Name of this rule
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: (String) Description of this rule
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: '(Boolean) Set to true to create a report-only ban. Note: fileState
+        has to be set to 1 (unapproved) before this flag can be set'
+      isArray: false
+      name: reportOnly
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True if reputation approvals are enabled for this file
+      isArray: false
+      name: 'reputationApprovalsEnabled '
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True if this file is forced to act as installer, even
+        if product detected it as ‘not installer’
+      isArray: false
+      name: forceInstaller
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: (Boolean) True if this file is forced to act as ‘not installer’,
+        even if product detected it as installer
+      isArray: false
+      name: forceNotInstaller
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: (String) List of IDs of policies where this rule applies. 0 if
+        this is a global rule
+      isArray: false
+      name: policyIds
+      required: false
+      secret: false
+    - default: false
+      description: '(Int32) Set of platform flags where this file rule will be valid.
+        combination of: 1 = Windows 2 = Mac 4 = Linux'
+      isArray: false
+      name: platformFlags
+      required: false
+      secret: false
+    - default: false
+      description: Headers to present of returned table
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
+    execution: false
+    name: cbp-fileRule-createOrUpdate
     outputs:
     - contextPath: CBP.FileRule.CatalogID
       description: The file catalog ID for the rule

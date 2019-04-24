@@ -548,10 +548,11 @@ def search_approval_request_command():
     args = demisto.args()
     raw_approval_requests = search_approval(args.get('query'), args.get('limit'), args.get('offset'),
                                             args.get('sort'), args.get('group'))
+    hr_approval_requests = []
     approval_requests = []
     if raw_approval_requests:
         for approval_request in raw_approval_requests:
-            approval_requests.append({
+            approval_request_output = {
                 'ID': approval_request.get('id'),
                 'Resolution': approval_request.get('resolution'),
                 'Status': approval_request.get('status'),
@@ -568,10 +569,16 @@ def search_approval_request_command():
                 'PathName': approval_request.get('pathName'),
                 'Process': approval_request.get('process'),
                 'Platform': approval_request.get('platform')
-            })
+            }
+            approval_requests.append(approval_request_output)
+            # handle human readable output
+            hr_approval_request = dict(approval_request_output)
+            hr_approval_request['Resolution'] = approval_request_resolution_to_string(hr_approval_request['Resolution'])
+            hr_approval_request['Status'] = approval_request_status_to_string(hr_approval_request['Status'])
+            hr_approval_requests.append(hr_approval_request)
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Approval Request Search"
-    hr = tableToMarkdown(hr_title, approval_requests, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_approval_requests, headers, removeNull=True, headerTransform=pascalToSpace)
     approval_requests = {'CBP.ApprovalRequest(val.ID === obj.ID)': approval_requests} if approval_requests else None
     return_outputs(hr, approval_requests, raw_approval_requests)
 
@@ -600,6 +607,44 @@ def search_approval(q=None, limit=None, offset=None, sort=None, group=None):
     return http_request('GET', '/approvalRequest', params=url_params)
 
 
+@logger
+def approval_request_resolution_to_string(resolution):
+    """
+    Converts resolution as integer to string
+    Based on https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#approvalrequest
+    :param resolution: int that describes resolution [0-7]
+    :return: string representation of the resolution (fallback: returns resolution)
+    """
+    resolution_dict = {
+        0: 'Not Resolved',
+        1: 'Rejected',
+        2: 'Resolved - Approved',
+        3: 'Resolved - Rule Change',
+        4: 'Resolved - Installer',
+        5: 'Resolved - Updated',
+        6: 'Resolved - Publisher',
+        7: 'Resolved - Other'
+    }
+    return resolution_dict.get(resolution, resolution)
+
+
+@logger
+def approval_request_status_to_string(status):
+    """
+    Converts status as integer to string
+    Based on https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#approvalrequest
+    :param status: int that describes status [1-4]
+    :return: string representation of the status (fallback: returns status)
+    """
+    status_dict = {
+        1: 'New',
+        2: 'Open',
+        3: 'Closed',
+        4: 'Escalated'
+    }
+    return status_dict.get(status, status)
+
+
 def search_file_rule_command():
     """
     Searches for file rules
@@ -608,10 +653,11 @@ def search_file_rule_command():
     args = demisto.args()
     raw_file_rules = search_file_rule(args.get('query'), args.get('limit'), args.get('offset'),
                                       args.get('sort'), args.get('group'))
+    hr_file_rules = []
     file_rules = []
     if raw_file_rules:
         for file_rule in raw_file_rules:
-            file_rules.append({
+            file_rule_output = {
                 'ID': file_rule.get('id'),
                 'CatalogID': file_rule.get('fileCatalogId'),
                 'Description': file_rule.get('description'),
@@ -620,10 +666,14 @@ def search_file_rule_command():
                 'Name': file_rule.get('name'),
                 'PolicyIDs': file_rule.get('policyIds'),
                 'ReportOnly': file_rule.get('reportOnly')
-            })
+            }
+            file_rules.append(file_rule_output)
+            hr_file_rule_output = dict(file_rule_output)
+            hr_file_rule_output['FileState'] = file_rule_file_state_to_string(hr_file_rule_output['FileState'])
+            hr_file_rules.append(hr_file_rule_output)
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect File Rule Search"
-    hr = tableToMarkdown(hr_title, file_rules, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_file_rules, headers, removeNull=True, headerTransform=pascalToSpace)
     file_rules = {'CBP.FileRule(val.ID === obj.ID)': file_rules} if file_rules else None
     return_outputs(hr, file_rules, raw_file_rules)
 
@@ -652,6 +702,22 @@ def search_file_rule(q=None, limit=None, offset=None, sort=None, group=None):
     return http_request('GET', '/fileRule', params=url_params)
 
 
+@logger
+def file_rule_file_state_to_string(state):
+    """
+    Converts state as integer to string
+    Based on https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule
+    :param state: int that describes state [1-3]
+    :return: string representation of the state (fallback: returns state)
+    """
+    file_state_dict = {
+        1: 'Unapproved',
+        2: 'Approved',
+        3: 'Banned'
+    }
+    return file_state_dict.get(state, state)
+
+
 def get_file_rule_command():
     """
     Gets the requested file rule
@@ -670,9 +736,11 @@ def get_file_rule_command():
         'PolicyIDs': raw_file_rule.get('policyIds'),
         'ReportOnly': raw_file_rule.get('reportOnly')
     }
+    hr_file_rule = dict(file_rule)
+    hr_file_rule['FileState'] = file_rule_file_state_to_string(hr_file_rule['FileState'])
     headers = args.get('headers')
     hr_title = f'CarbonBlack Protect File Rule Get for {id}'
-    hr = tableToMarkdown(hr_title, file_rule, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_file_rule, headers, removeNull=True, headerTransform=pascalToSpace)
     entry_context_file_rule = {'CBP.FileRule(val.ID === obj.ID)': file_rule} if file_rule else None
     return_outputs(hr, entry_context_file_rule, raw_file_rule)
 
@@ -747,7 +815,9 @@ def update_file_rule_command():
         'PolicyIDs': raw_file_rule.get('policyIds'),
         'ReportOnly': raw_file_rule.get('reportOnly')
     }
-    hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', file_rule,
+    hr_file_rule = dict(file_rule)
+    hr_file_rule['FileState'] = file_rule_file_state_to_string(hr_file_rule['FileState'])
+    hr = tableToMarkdown('CarbonBlack Protect File Rule Updated successfully', hr_file_rule,
                          removeNull=True, headerTransform=pascalToSpace)
     return_outputs(hr, {'CBP.FileRule(val.ID === obj.ID)': file_rule}, raw_file_rule)
 
@@ -897,6 +967,41 @@ def search_server_config(q=None, limit=None, offset=None, sort=None, group=None)
     return http_request('GET', '/serverConfig', params=url_params)
 
 
+@logger
+def publisher_state_to_string(state):
+    """
+    Converts state as integer to string
+    Based on https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher
+    :param state: int that describes state [1-5]
+    :return: string representation of the state (fallback: returns state)
+    """
+    publisher_state_dict = {
+        1: 'Unapproved',
+        2: 'Approved',
+        3: 'Banned',
+        4: 'Approved By Policy',
+        5: 'Banned By Policy'
+    }
+    return publisher_state_dict.get(state, state)
+
+
+@logger
+def publisher_reputation_to_string(reputation):
+    """
+    Converts reputation as integer to string
+    Based on https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher
+    :param reputation: int that describes reputation [0-3]
+    :return: string representation of the reputation (fallback: returns reputation)
+    """
+    publisher_reputation_dict = {
+        0: 'Not trusted (Unknown)',
+        1: 'Low',
+        2: 'Medium',
+        3: 'High'
+    }
+    return publisher_reputation_dict.get(reputation, reputation)
+
+
 def search_publisher_command():
     """
     Searches for publisher
@@ -905,10 +1010,11 @@ def search_publisher_command():
     args = demisto.args()
     raw_publishers = search_publisher(args.get('query'), args.get('limit'), args.get('offset'),
                                       args.get('sort'), args.get('group'))
+    hr_publishers = []
     publishers = []
     if raw_publishers:
         for publisher in raw_publishers:
-            publishers.append({
+            publisher_output = {
                 'Description': publisher.get('description'),
                 'ID': publisher.get('id'),
                 'Name': publisher.get('name'),
@@ -916,10 +1022,15 @@ def search_publisher_command():
                 'SignedCertificatesCount': publisher.get('signedCertificateCount'),
                 'SignedFilesCount': publisher.get('signedFilesCount'),
                 'State': publisher.get('publisherState')
-            })
+            }
+            publishers.append(publisher_output)
+            hr_publisher_output = dict(publisher_output)
+            hr_publisher_output['State'] = publisher_state_to_string(hr_publisher_output['State'])
+            hr_publisher_output['Reputation'] = publisher_reputation_to_string(hr_publisher_output['Reputation'])
+            hr_publishers.append(hr_publisher_output)
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect Publisher Search"
-    hr = tableToMarkdown(hr_title, publishers, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_publishers, headers, removeNull=True, headerTransform=pascalToSpace)
     publishers = {'CBP.Publisher(val.ID === obj.ID)': publishers} if publishers else None
     return_outputs(hr, publishers, raw_publishers)
 
@@ -1114,7 +1225,9 @@ def update_file_upload_command():
         'UploadStatus': raw_file_upload.get('uploadStatus'),
         'UploadedFileSize': raw_file_upload.get('uploadedFileSize'),
     }
-    hr = tableToMarkdown('CarbonBlack Protect File Upload Created successfully', file_upload)
+    hr_file_upload = dict(file_upload)
+    hr_file_upload['UploadStatus'] = file_upload_status_to_string(hr_file_upload['UploadStatus'])
+    hr = tableToMarkdown('CarbonBlack Protect File Upload Created successfully', hr_file_upload)
     return_outputs(hr, {'CBP.FileUpload(val.ID === obj.ID)': file_upload}, raw_file_upload)
 
 
@@ -1139,6 +1252,26 @@ def update_file_upload(file_catalog_id, computer_id, priority, analysis_status, 
     body_params = remove_keys_with_empty_value(body_params)
 
     return http_request('POST', '/fileUpload', data=body_params)
+
+
+@logger
+def file_upload_status_to_string(status):
+    """
+    Converts status as integer to string
+    Based on https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileupload
+    :param status: int that describes state [0-6]
+    :return: string representation of the status (fallback: returns status)
+    """
+    file_status_dict = {
+        0: 'Queued',
+        1: 'Initiated',
+        2: 'Uploading',
+        3: 'Completed',
+        4: 'Error',
+        5: 'Cancelled',
+        6: 'Deleted'
+    }
+    return file_status_dict.get(status, status)
 
 
 def download_file_upload_command():
@@ -1174,10 +1307,11 @@ def search_file_upload_command():
     args = demisto.args()
     raw_file_uploads = search_file_upload(args.get('query'), args.get('limit'), args.get('offset'),
                                           args.get('sort'), args.get('group'))
+    hr_file_uploads = []
     file_uploads = []
     if raw_file_uploads:
         for file_upload in raw_file_uploads:
-            file_uploads.append({
+            file_upload_output = {
                 'Priority': file_upload.get('priority'),
                 'FileName': file_upload.get('fileName'),
                 'UploadPath': file_upload.get('uploadPath'),
@@ -1190,10 +1324,14 @@ def search_file_upload_command():
                 'PathName': file_upload.get('pathName'),
                 'UploadStatus': file_upload.get('uploadStatus'),
                 'UploadedFileSize': file_upload.get('uploadedFileSize'),
-            })
+            }
+            file_uploads.append(file_upload_output)
+            hr_file_upload = dict(file_upload_output)
+            hr_file_upload['UploadStatus'] = file_upload_status_to_string(hr_file_upload['UploadStatus'])
+            hr_file_uploads.append(hr_file_upload)
     headers = args.get('headers')
     hr_title = "CarbonBlack Protect File Upload Search"
-    hr = tableToMarkdown(hr_title, file_uploads, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_file_uploads, headers, removeNull=True, headerTransform=pascalToSpace)
     file_uploads = {'CBP.FileUpload(val.ID === obj.ID)': file_uploads} if file_uploads else None
     return_outputs(hr, file_uploads, raw_file_uploads)
 
@@ -1298,8 +1436,10 @@ def get_file_upload_command():
         'UploadedFileSize': raw_file_upload.get('uploadedFileSize'),
     }
     headers = args.get('headers')
+    hr_file_upload = dict(file_upload)
+    hr_file_upload['UploadStatus'] = file_upload_status_to_string(hr_file_upload['UploadStatus'])
     hr_title = f'CarbonBlack Protect File Upload Get for {id}'
-    hr = tableToMarkdown(hr_title, file_upload, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_file_upload, headers, removeNull=True, headerTransform=pascalToSpace)
     entry_context_file_upload = {'CBP.FileUpload(val.ID === obj.ID)': file_upload} if file_upload else None
     return_outputs(hr, entry_context_file_upload, raw_file_upload)
 
@@ -1408,23 +1548,38 @@ def resolve_approval_request_command():
     """
     args = demisto.args()
     raw_res = resolve_approval_request(args)
-    ec = {
-        'id': 'ID',
-        'resolution': 'Resolution',
-        'status': 'Status',
-        'resolutionComments': 'ResolutionComments'
+    approval_request = {
+        'ID': raw_res.get('id'),
+        'Resolution': raw_res.get('resolution'),
+        'Status': raw_res.get('status'),
+        'ResolutionComments': raw_res.get('resolutionComments')
     }
-    hr = tableToMarkdown('CarbonBlack Protect Approval Request Updated successfully', ec)
-    return_outputs(hr, {'CBP.ApprovalRequest(val.ID === obj.ID)': ec}, raw_res)
+    hr_approval_request = dict(approval_request)
+    hr_approval_request['Status'] = approval_request_status_to_string(hr_approval_request['Status'])
+    hr_approval_request['Resolution'] = approval_request_resolution_to_string(hr_approval_request['Resolution'])
+    hr = tableToMarkdown('CarbonBlack Protect Approval Request Updated successfully', hr_approval_request)
+    return_outputs(hr, {'CBP.ApprovalRequest(val.ID === obj.ID)': approval_request}, raw_res)
 
 
 @logger
-def resolve_approval_request(body_params):
+def resolve_approval_request(id, resolution, requestor_email, res_comments, status):
     """
     Update file analysis
-    :param body_params: URL parameters for the request
+    :param id: apporval request id
+    :param resolution: apporval request resolution
+    :param requestor_email: apporval request requestor email
+    :param res_comments: apporval request resolution comments
+    :param status: apporval request status
     :return: Result json of the request
     """
+    body_params = {
+        'id': id,
+        'resolution': resolution,
+        'requestorEmail': requestor_email,
+        'resolutionComments': res_comments,
+        'status': status
+    }
+    body_params = remove_keys_with_empty_value(body_params)
     return http_request('POST', '/approvalRequest', data=body_params)
 
 
@@ -1495,7 +1650,7 @@ def main():
             get_file_rule_command()
         elif demisto.command() == 'cbp-fileRule-delete':
             delete_file_rule_command()
-        elif demisto.command() == 'cbp-fileRule-update':
+        elif demisto.command() in ('cbp-fileRule-update', 'cbp-fileRule-createOrUpdate'):
             update_file_rule_command()
         elif demisto.command() == 'cbp-policy-search':
             search_policy_command()
