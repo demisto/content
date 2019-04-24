@@ -115,7 +115,9 @@ tasks:
       id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
-      description: "Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages."
+      description: Parses an email from an EML or MSG file and populates all relevant
+        context data to investigate the email. Also extracts indicators from the email
+        messages.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -726,10 +728,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 6b5282f7-4f21-4791-894e-c3f7e148c166
+    taskid: a9d9a40a-ba68-4c09-8ceb-f021d95539c5
     type: regular
     task:
-      id: 6b5282f7-4f21-4791-894e-c3f7e148c166
+      id: a9d9a40a-ba68-4c09-8ceb-f021d95539c5
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -825,10 +827,23 @@ tasks:
       emailbcc:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.BCC
+                iscontext: true
           accessor: HeadersMap.BCC
           transformers:
           - operator: uniq
           - operator: Stringify
+          - operator: RegexGroups
+            args:
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: <(.*)>
       emailbody:
         complex:
           root: Email
@@ -849,6 +864,12 @@ tasks:
       emailcc:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.CC
+                iscontext: true
           accessor: HeadersMap.CC
           transformers:
           - operator: uniq
@@ -867,6 +888,12 @@ tasks:
       emailfrom:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.From
+                iscontext: true
           accessor: HeadersMap.From
           transformers:
           - operator: uniq
@@ -894,6 +921,12 @@ tasks:
       emailmessageid:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.Message-ID
+                iscontext: true
           accessor: HeadersMap.Message-ID
           transformers:
           - operator: RegexGroups
@@ -907,12 +940,24 @@ tasks:
       emailreceived:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.Received
+                iscontext: true
           accessor: HeadersMap.Received
           transformers:
           - operator: uniq
       emailreplyto:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.Reply-To
+                iscontext: true
           accessor: HeadersMap.Reply-To
           transformers:
           - operator: RegexGroups
@@ -943,6 +988,12 @@ tasks:
       emailsubject:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.Subject
+                iscontext: true
           accessor: HeadersMap.Subject
           transformers:
           - operator: uniq
@@ -951,6 +1002,12 @@ tasks:
       emailto:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.To
+                iscontext: true
           accessor: HeadersMap.To
           transformers:
           - operator: uniq
@@ -964,6 +1021,12 @@ tasks:
       emailtocount:
         complex:
           root: Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Email.HeadersMap.To
+                iscontext: true
           accessor: HeadersMap.To
           transformers:
           - operator: uniq
