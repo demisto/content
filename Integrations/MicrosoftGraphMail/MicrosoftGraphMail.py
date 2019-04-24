@@ -164,7 +164,7 @@ def assert_pages(pages: str or int) -> int:
         pages (str or int): pages need to pull in int or str
 
     Returns:
-        int: 
+        int: default 1
 
     """
     if isinstance(pages, str) and pages.isdigit():
@@ -356,6 +356,18 @@ def test_module():
     Performs basic get request to get item samples
     """
     # TODO test_module
+    url = BASE_URL + '/me'
+    token = get_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 403:
+        return True
+    else:
+        return_error(error_parser(response))
 
 
 def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> dict or list:
@@ -390,6 +402,7 @@ def list_mails_command():
     raw_response = list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
     mail_context = build_mail_object(raw_response, user_id)
     entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}
+
     # human_readable builder
     human_readable = tableToMarkdown(
         f'### Total of {len(mail_context)} of mails received',
@@ -399,7 +412,7 @@ def list_mails_command():
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> True or False:
+def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> bool:
     """
 
     Args:
@@ -408,7 +421,7 @@ def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> True or
         folder_id (str):
 
     Returns:
-
+        bool
     """
     with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'
     no_folder = f'/users/{user_id}/messages/{message_id}'
