@@ -142,7 +142,7 @@ script: |-
       filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
       args['filter'] = filterstr
       args['attributes'] = attrs
-      resAD = getADSearchResp(args)
+      resp = getADSearchResp(args)
       if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
           return resp
       if nested:
