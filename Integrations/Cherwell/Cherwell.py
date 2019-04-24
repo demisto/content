@@ -114,7 +114,10 @@ def build_fields_for_business_object(data_dict, ids_dict):
 
 def http_request(method, url, payload, token=None, custom_headers=None):
     headers = build_headers(token, custom_headers)
-    response = requests.request(method, url, data=payload, headers=headers, verify=SECURED)
+    try:
+        response = requests.request(method, url, data=payload, headers=headers, verify=SECURED)
+    except requests.exceptions.ConnectionError as e:
+        return_error('Error connecting to server. Check your URL/Proxy/Certificate settings')
     return response
 
 
@@ -139,7 +142,8 @@ def get_new_access_token():
     response = request_new_access_token(True)
     if not response.status_code == HTTP_CODES['success']:
         response = request_new_access_token(False)
-    res_json = parse_response(response, "Could not get token")
+    res_json = parse_response(response,
+                              "Could not get token. Check your credentials (user/password/client id) and try again")
     demisto.setIntegrationContext({
         'refresh_token': res_json.get('refresh_token'),
         'token_expiration_time': int(date_to_timestamp(res_json.get('.expires'), '%a, %d %b %Y %H:%M:%S GMT')),
