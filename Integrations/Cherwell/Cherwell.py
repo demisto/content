@@ -67,7 +67,6 @@ def parse_response(response, error_operation):
         try:
             return response.content  # check if needed
         except Exception as error:
-            LOG.print_log()
             return_error(f'Could not parse response {error}')
 
 
@@ -393,7 +392,7 @@ def object_to_incident(obj):
             file_name = attachment.get('FileName')
             attachment_file = fileResult(file_name, attachment.get('Content'))
             attachments_list.append({
-                'path': attachment_file.get('FileId'),
+                'path': attachment_file.get('FileID'),
                 'name': file_name
             })
     item = {
@@ -416,7 +415,6 @@ def save_incidents(objects_to_save):
 def fetch_incidents_attachments(incidents):
     for incident in incidents:
         rec_id = incident.get('RecID')
-        LOG.print_log()
         business_object_id = incident.get('BusinessObjectId')
         incident['Attachments'] = []
         attachments = download_attachments('record_id', rec_id, business_object_type_id=business_object_id)
