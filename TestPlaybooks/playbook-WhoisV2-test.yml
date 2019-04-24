@@ -1,0 +1,136 @@
+id: WhoisV2-Test
+version: -1
+name: WhoisV2-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10ab72bc-8f68-4ee0-8e36-716b6948add1
+    type: start
+    task:
+      id: 10ab72bc-8f68-4ee0-8e36-716b6948add1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8f355f36-28bd-4656-8b2e-3a8d79a41a4b
+    type: regular
+    task:
+      id: 8f355f36-28bd-4656-8b2e-3a8d79a41a4b
+      version: -1
+      name: whois
+      description: Provides data enrichment for Domains, URLs, and IP addresses.
+      script: WhoisV2|||whois
+      type: regular
+      iscommand: true
+      brand: WhoisV2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: github.io
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 86ed15f6-7fd0-4423-88c8-d0618389d2f5
+    type: condition
+    task:
+      id: 86ed15f6-7fd0-4423-88c8-d0618389d2f5
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.[0].Whois.ID.[0]}
+            iscontext: true
+          right:
+            value:
+              simple: D503300000040351827-LRMS
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 40c58909-7c7a-4a74-8911-ef56452691e8
+    type: regular
+    task:
+      id: 40c58909-7c7a-4a74-8911-ef56452691e8
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Successful test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
