@@ -1,5 +1,6 @@
 id: GDPR Breach Notification
 version: -1
+fromversion: 4.5.0
 name: GDPR Breach Notification
 description: This playbook triggers by a GDPR breach incident, then performs the required
   tasks from GDPR Article 33.
@@ -38,6 +39,7 @@ tasks:
       id: 4d042443-509f-4e97-8504-fd6d52171444
       version: -1
       name: Notify DPO of suspected data breach
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -510,6 +512,7 @@ tasks:
       id: 66ad9306-e86d-467e-83bc-6c745c4d56ef
       version: -1
       name: DPO confirmed a breach happened
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -550,6 +553,7 @@ tasks:
       id: 57e06932-cacb-4749-80d9-033400e4462a
       version: -1
       name: The breach is likely to result in a risk to individuals
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -705,6 +709,7 @@ tasks:
       id: 22545bce-a43f-4f41-8bb8-3b4f4465ee1c
       version: -1
       name: 'The breach is of highly risk to individuals '
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1189,6 +1194,7 @@ tasks:
       id: 7432dcf3-4ea8-43bd-8a61-bd91bc6a4d8f
       version: -1
       name: Notify Individuals
+      description: ""
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1446,6 +1452,7 @@ tasks:
       id: 1f9453ad-30f6-4478-8ab0-3c7d6fcb3477
       version: -1
       name: Get DPO Approval for the report
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1499,6 +1506,7 @@ tasks:
       id: 805610b5-b97b-429b-8c6b-4f3dd46546c1
       version: -1
       name: Close Investigation
+      description: ""
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
