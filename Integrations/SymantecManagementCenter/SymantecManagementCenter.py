@@ -702,29 +702,31 @@ def add_policy_content_command():
     enabled = demisto.args().get('enabled')
     description = demisto.args().get('description')
 
-    if ((content_type == IP_LIST_TYPE and not ips) or (content_type == URL_LIST_TYPE and not urls)
-            or (content_type == CATEGORY_LIST_TYPE and not categories)):
-            return_error('Incorrect content provided for the type {}'.format(content_type))
-
-    if ((content_type == IP_LIST_TYPE and (urls or categories)) or (content_type == URL_LIST_TYPE and (ips or categories)) or
-            (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+    if ((content_type == IP_LIST_TYPE and not ips) or
+            (content_type == URL_LIST_TYPE and not urls) or
+            (content_type == CATEGORY_LIST_TYPE and not categories)):
         return_error('Incorrect content provided for the type {}'.format(content_type))
 
-    if IP_LIST_TYPE:
+    if ((content_type == IP_LIST_TYPE and (urls or categories)) or
+            (content_type == URL_LIST_TYPE and (ips or categories)) or
+            (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+        return_error('More than one content type was provided for the type {}'.format(content_type))
+
+    if content_type == IP_LIST_TYPE:
         add_policy_content_request(uuid, content_type, change_description, schema_version,
                                    ips=ips, enabled=enabled, description=description)
-    elif URL_LIST_TYPE:
+    elif content_type == URL_LIST_TYPE:
         add_policy_content_request(uuid, content_type, change_description, schema_version,
                                    urls=urls, enabled=enabled, description=description)
-    elif CATEGORY_LIST_TYPE:
+    elif content_type == CATEGORY_LIST_TYPE:
         add_policy_content_request(uuid, content_type, change_description, schema_version,
-                                   categories=categories, enabled=enabled)
+                                   categories=categories)
 
-    return_outputs('Policy content added successfully', {}, {})
+    return_outputs('Successfully added content to the policy', {}, {})
 
 
 def add_policy_content_request(uuid, content_type, change_description, schema_version,
-                               ips=None, urls=None, categories=None, enabled=None, description=None):
+                               ips=None, urls=None, categories=None, enabled=None, description=''):
     """
     Add content to a specified policy using the provided arguments
     :param uuid: Policy UUID
@@ -736,7 +738,7 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
     :param categories: Category names to add to the content
     :param enabled:  Policy content enabled
     :param description: Policy content description
-    :return: Content addition response
+    :return: Content update response
     """
     path = 'policies/' + uuid + '/content'
 
@@ -753,21 +755,108 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
         return_error('Could not update policy content - failed retrieving the current content')
 
     if ips:
+        if 'ipAddresses' not in content['content']:
+            content['content']['ipAddresses'] = []
         content['content']['ipAddresses'] += [{
             'ipAddress': ip,
             'description': description,
-            'enabled': enabled
+            'enabled': bool(strtobool(enabled))
         } for ip in ips]
     elif urls:
+        if 'urls' not in content['content']:
+            content['content']['urls'] = []
         content['content']['urls'] += [{
             'url': url,
             'description': description,
-            'enabled': enabled
+            'enabled': bool(strtobool(enabled))
         } for url in urls]
     elif categories:
+        if 'categories' not in content['content']:
+            content['content']['categories'] = []
         content['content']['categories'] += [{
             'categoryName': category,
         } for category in categories]
+
+    body['content'] = content['content']
+    response = http_request('POST', path, data=body)
+
+    return response
+
+
+def delete_policy_content_command():
+    """
+        Command to delete content from an existing policy in Symantec MC
+        :return: An entry indicating whether the deletion was successful
+    """
+    uuid = demisto.args()['uuid']
+    content_type = demisto.args()['content_type']
+    change_description = demisto.args()['change_description']
+    schema_version = demisto.args().get('schema_version')
+    ips = argToList(demisto.args().get('ip', []))
+    urls = argToList(demisto.args().get('url', []))
+    categories = argToList(demisto.args().get('category', []))
+
+    if ((content_type == IP_LIST_TYPE and not ips) or
+            (content_type == URL_LIST_TYPE and not urls) or
+            (content_type == CATEGORY_LIST_TYPE and not categories)):
+        return_error('Incorrect content provided for the type {}'.format(content_type))
+
+    if ((content_type == IP_LIST_TYPE and (urls or categories)) or
+            (content_type == URL_LIST_TYPE and (ips or categories)) or
+            (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+        return_error('More than one content type was provided for the type {}'.format(content_type))
+
+    if content_type == IP_LIST_TYPE:
+        delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips)
+    elif content_type == URL_LIST_TYPE:
+        delete_policy_content_request(uuid, content_type, change_description, schema_version, urls=urls)
+    elif content_type == CATEGORY_LIST_TYPE:
+        delete_policy_content_request(uuid, content_type, change_description, schema_version, categories=categories)
+
+    return_outputs('Successfully deleted content from the policy', {}, {})
+
+
+def delete_policy_content_request(uuid, content_type, change_description, schema_version,
+                                  ips=None, urls=None, categories=None):
+    """
+    Add content to a specified policy using the provided arguments
+    :param uuid: Policy UUID
+    :param content_type: Policy content type
+    :param change_description: Policy update change description
+    :param schema_version: Policy schema version
+    :param ips: IPs to delete from the content
+    :param urls: URLs to delete from the content
+    :param categories: Category names to delete from the content
+    :return: Content update response
+    """
+    path = 'policies/' + uuid + '/content'
+
+    body = {
+        'contentType': content_type,
+        'changeDescription': change_description
+    }
+
+    if schema_version:
+        body['schemaVersion'] = schema_version
+
+    content = get_policy_content_request(uuid)
+    if not content or 'content' not in content:
+        return_error('Could not update policy content - failed retrieving the current content')
+
+    if ips:
+        if 'ipAddresses' in content['content']:
+            ips_to_keep = [ip for ip in content['content']['ipAddresses'] if ip['ipAddress'] not in ips]
+            demisto.log(str(ips_to_keep))
+            content['content']['ipAddresses'] = ips_to_keep
+    elif urls:
+        if 'urls' in content['content']:
+            urls_to_keep = [url for url in content['content']['urls'] if url['url'] not in urls]
+            content['content']['urls'] = urls_to_keep
+    elif categories:
+        if 'categories' in content['content']:
+            categories_to_keep = [category for category in content['content']['categories']
+                                  if category['categoryName'] not in categories]
+            content['content']['categories'] = categories_to_keep
 
     body['content'] = content['content']
     response = http_request('POST', path, data=body)
@@ -791,7 +880,9 @@ COMMAND_DICTIONARY = {
     'symantec-mc-get-policy': get_policy_command,
     'symantec-mc-create-policy': create_policy_command,
     'symantec-mc-update-policy': update_policy_command,
-    'symantec-mc-delete-policy': delete_policy_command
+    'symantec-mc-delete-policy': delete_policy_command,
+    'symantec-mc-add-policy-content': add_policy_content_command,
+    'symantec-mc-delete-policy-content': delete_policy_content_command
 }
 
 try:
