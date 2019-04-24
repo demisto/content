@@ -54,7 +54,7 @@ mapping:
           message:
             type: map
             allowempty: True
-          defaultAssigneeComplex:
+          defaultassigneecomplex:
             type: map
             allowempty: True
           scriptarguments:
