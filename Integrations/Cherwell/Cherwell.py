@@ -719,12 +719,13 @@ def delete_business_object_command():
 
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
-    objects_names_to_fetch = OBJECTS_TO_FETCH if OBJECTS_TO_FETCH[0] else ['incidents']
+    objects_names_to_fetch = OBJECTS_TO_FETCH if OBJECTS_TO_FETCH[0] else ['incident']
     fetch_attachments = FETCH_ATTACHMENTS
     max_result = int(MAX_RESULT) if MAX_RESULT else 30
     fetch_time = FETCH_TIME if FETCH_TIME else '3 days'
     query_string = QUERY_STRING
-    if 'last_created_time' in last_run:
+    last_objects_fetched = last_run.get('objects_names_to_fetch')
+    if 'last_created_time' in last_run and last_objects_fetched == objects_names_to_fetch:
         last_created_time = last_run.get('last_created_time')
     else:
         last_created_time, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT, to_timestamp=False)
@@ -733,7 +734,10 @@ def fetch_incidents_command():
         last_incident_created_time = incidents[-1].get('CreatedDateTime')
         next_created_time_to_fetch = \
             (datetime.strptime(last_incident_created_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
-        demisto.setLastRun({'last_created_time': next_created_time_to_fetch})
+        demisto.setLastRun({
+            'last_created_time': next_created_time_to_fetch,
+            'objects_names_to_fetch': objects_names_to_fetch
+        })
     return
 
 
