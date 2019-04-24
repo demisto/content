@@ -25,7 +25,8 @@ URL_DICT = {
     'upload_file': '/submit/file',
     'upload_url': '/submit/link',
     'upload_file_url': '/submit/url',
-    'report': '/get/report'
+    'report': '/get/report',
+    'sample': '/get/sample'
 }
 
 ERROR_DICT = {
@@ -98,7 +99,7 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
                 result.status_code, result.reason))
 
     if result.headers['Content-Type'] == 'application/octet-stream':
-        return result.content
+        return result
     else:
         json_res = json.loads(xml2json(result.text))
         return json_res
@@ -328,7 +329,7 @@ def wildfire_upload_url_command():
 @logger
 def wildfire_get_verdict(file_hash):
     get_verdict_uri = URL + URL_DICT["verdict"]
-    body = 'apikey=' + TOKEN + '&hash=' + file_hash
+    body = 'apikey='+TOKEN+'&hash='+file_hash
 
     result = http_request(get_verdict_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
     verdict_data = result["wildfire"]["get-verdict-info"]
@@ -588,6 +589,36 @@ def wildfire_file_command():
         create_report(file_hash, report, file_info, 'xml', False)
 
 
+def wildfire_get_sample(file_hash):
+    get_report_uri = URL + URL_DICT["sample"]
+    params = {
+        'apikey': TOKEN,
+        'hash': file_hash
+    }
+
+    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+    return result
+
+
+def wildfire_get_sample_command():
+    if 'sha256' or 'hash' in demisto.args():
+        sha256 = demisto.args().get('sha256', None)
+    else:
+        sha256 = None
+    md5 = demisto.args().get('md5', None)
+    inputs = hash_args_handler(sha256, md5)
+
+    for element in inputs:
+        result = wildfire_get_sample(element)
+        headers_string = str(result.headers)
+        file_name = headers_string.split("filename=",1)[1]
+
+        # will be saved under 'File' in the context, can be farther investigated.
+        file_entry = fileResult(file_name, result.content)
+
+        demisto.results(file_entry)
+
+
 ''' EXECUTION '''
 LOG('command is %s' % (demisto.command(),))
 
@@ -612,6 +643,9 @@ try:
 
     elif demisto.command() == 'file':
         wildfire_file_command()
+
+    elif demisto.command() == 'wildfire-get-sample':
+        wildfire_get_sample_command()
 
     elif demisto.command() == 'wildfire-get-verdict':
         wildfire_get_verdict_command()
