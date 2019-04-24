@@ -1547,7 +1547,13 @@ def resolve_approval_request_command():
     :return: EntryObject of the approval request
     """
     args = demisto.args()
-    raw_res = resolve_approval_request(args)
+    raw_res = resolve_approval_request(
+        args.get('id'),
+        args.get('resolution'),
+        args.get('requestorEmail'),
+        args.get('resolutionComments'),
+        args.get('status')
+    )
     approval_request = {
         'ID': raw_res.get('id'),
         'Resolution': raw_res.get('resolution'),
@@ -1562,7 +1568,7 @@ def resolve_approval_request_command():
 
 
 @logger
-def resolve_approval_request(id, resolution, requestor_email, res_comments, status):
+def resolve_approval_request(id, resolution, requestor_email=None, res_comments=None, status=None):
     """
     Update file analysis
     :param id: apporval request id
