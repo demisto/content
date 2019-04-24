@@ -390,8 +390,8 @@ def get_all_incidents(objects_names, last_created_time, max_result, query_string
 def object_to_incident(obj):
     attachments_list = []
     attachments = obj.get('Attachments')
-    obj.pop('Attachments')
     if attachments:
+        obj.pop('Attachments')
         for attachment in attachments:
             file_name = attachment.get('FileName')
             attachment_file = fileResult(file_name, attachment.get('Content'))
@@ -985,6 +985,8 @@ try:
 
 # Log exceptions
 except Exception as e:
+    message = f'Unexpected error: {e}, traceback: {traceback.print_exc()}'
+    LOG(message)
     LOG(str(e))
     LOG.print_log()
-    return_error(f"Unexpected error: {e}, traceback: {traceback.print_exc()}")
+    return_error(message)
