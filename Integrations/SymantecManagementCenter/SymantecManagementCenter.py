@@ -31,17 +31,31 @@ CATEGORY_LIST_TYPE = 'CATEGORY_LIST'
 
 
 def http_request(method, path, params=None, data=None):
+    """
+    Sends an HTTP request using the provided arguments
+    :param method: HTTP method
+    :param path: URL path
+    :param params: URL query params
+    :param data: Request body
+    :return: JSON response (or the response itself if not serializable)
+    """
     params = params if params is not None else {}
     data = data if data is not None else {}
-    res = requests.request(
-        method,
-        BASE_URL + path,
-        auth=(USERNAME, PASSWORD),
-        verify=USE_SSL,
-        params=params,
-        data=json.dumps(data),
-        headers=HEADERS
-    )
+    res = None
+
+    try:
+        res = requests.request(
+            method,
+            BASE_URL + path,
+            auth=(USERNAME, PASSWORD),
+            verify=USE_SSL,
+            params=params,
+            data=json.dumps(data),
+            headers=HEADERS)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException):
+        # TODO: Wait for fiedler
+        return_error('Connection error')
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
@@ -53,7 +67,7 @@ def http_request(method, path, params=None, data=None):
             details = error_json.get('message')
         except Exception:
             pass
-        return_error('Error in API call, status code: {}, reason: {}, details: {}'.format(status, message, details))
+        return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'.format(status, message, details))
 
     try:
         return res.json()
@@ -120,7 +134,7 @@ def list_devices_request(build, description, model, name, os_version, platform, 
     :param os_version: Device OS version query
     :param platform: Device platform query
     :param device_type: Device type
-    :return: List of MC devices
+    :return: List of Symantec MC devices
     """
 
     path = 'devices'
@@ -285,7 +299,7 @@ def get_device_license_command():
                 'Validity': component.get('validity')
             })
 
-        device_headers = ['UUID', 'Name']
+        device_headers = ['UUID', 'Name', 'Type', 'LicenseStatus']
         content = device_content
         human_readable = tableToMarkdown('Symantec Management Center Device', device_content,
                                          removeNull=True, headers=device_headers, headerTransform=pascalToSpace)
@@ -446,6 +460,7 @@ def get_policy_command():
         policy_content = {
             'UUID': policy.get('uuid'),
             'Name': policy.get('name'),
+            'Description': policy.get('description'),
             'ContentType': policy.get('contentType')
         }
         policy_content_data = get_policy_content_request(uuid)
@@ -491,7 +506,7 @@ def get_policy_command():
                     'Name': category.get('categoryName')
                 })
 
-        policy_headers = ['UUID', 'Name', 'SchemaVersion', 'ContentType']
+        policy_headers = ['UUID', 'Name', 'SchemaVersion', 'Description', 'ContentType']
         human_readable = tableToMarkdown('Symantec Management Center Policy', policy_content,
                                          removeNull=True, headers=policy_headers, headerTransform=pascalToSpace)
         content = policy_content
@@ -777,6 +792,11 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
             'categoryName': category,
         } for category in categories]
 
+    # temporary workaround
+    # ==================================================================
+    if 'items' in content['content']:
+        content['content'].pop('items')
+    # ==================================================================
     body['content'] = content['content']
     response = http_request('POST', path, data=body)
 
@@ -846,7 +866,6 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
     if ips:
         if 'ipAddresses' in content['content']:
             ips_to_keep = [ip for ip in content['content']['ipAddresses'] if ip['ipAddress'] not in ips]
-            demisto.log(str(ips_to_keep))
             content['content']['ipAddresses'] = ips_to_keep
     elif urls:
         if 'urls' in content['content']:
@@ -864,8 +883,51 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
     return response
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def list_tenants_command():
+    """
+    List tenants in Symantec MC
+    """
 
+    contents = []
+    context = {}
+    limit = int(demisto.args().get('limit', 10))
+
+    tenants = list_tenants_request()
+
+    if tenants:
+        if limit:
+            tenants = tenants[:limit]
+
+        for tenant in tenants:
+            contents.append({
+                'UUID': tenant.get('uuid'),
+                'Name': tenant.get('name'),
+                'ExternalID': tenant.get('externalId'),
+                'Description': tenant.get('description'),
+                'System': tenant.get('system')
+            })
+
+        context['SymantecMC.Tenant(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+
+    headers = ['UUID', 'Name', 'ExternalID', 'Description', 'System']
+    return_outputs(tableToMarkdown('Symantec Management Center Tenants', contents,
+                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, tenants)
+
+
+def list_tenants_request():
+    """
+    Get devices from Symantec MC
+    :return: List of Symantec MC tenants
+    """
+
+    path = 'tenants'
+    params = {}
+
+    response = http_request('GET', path, params)
+    return response
+
+
+''' COMMANDS '''
 LOG('Command being called is ' + demisto.command())
 handle_proxy()
 
@@ -882,14 +944,14 @@ COMMAND_DICTIONARY = {
     'symantec-mc-update-policy': update_policy_command,
     'symantec-mc-delete-policy': delete_policy_command,
     'symantec-mc-add-policy-content': add_policy_content_command,
-    'symantec-mc-delete-policy-content': delete_policy_content_command
+    'symantec-mc-delete-policy-content': delete_policy_content_command,
+    'symantec-mc-list-tenants': list_tenants_command
 }
 
 try:
     command_func = COMMAND_DICTIONARY[demisto.command()]
     command_func()
-
 except Exception as e:
     LOG(str(e))
     LOG.print_log()
-    raise
+    return_error(str(e))
