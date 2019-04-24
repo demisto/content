@@ -155,7 +155,7 @@ def event_to_incident(event):
         :rtype ``dict``
     """
     incident = {
-        'name': 'CBP Event ID: ' + str(event.get('id')),
+        'name': event.get('description'),
         'occurred': str(event.get('timestamp')),
         'rawJSON': json.dumps(event),
         'severity': event_severity_to_dbot_score(event.get('severity'))
