@@ -7,8 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: 'true'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -688,11 +687,11 @@ script:
     description: Delete content from a policy in Symantec MC
     execution: false
     name: symantec-mc-delete-policy-content
-  dockerimage: demisto/python3
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: '-'
   type: python
 tests:
-  - No test - TEMP
+- No test - TEMP
 releaseNotes: '-'
