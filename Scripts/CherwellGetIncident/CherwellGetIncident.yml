@@ -26,27 +26,33 @@ enabled: false
 name: CherwellGetIncident
 tags: []
 outputs:
-- contextPath: Cherwell.BusinessObject.RecordID
+- contextPath: Cherwell.BusinessObjects.RecordId
   description: Recoed ID
   type: String
-- contextPath: Cherwell.BusinessObject.PublicID
+- contextPath: Cherwell.BusinessObjects.PublicId
   description: Public ID
   type: String
-- contextPath: Cherwell.BusinessObject.Description
+- contextPath: Cherwell.BusinessObjects.Description
   description: Incident description
   type: String
-- contextPath: Cherwell.BusinessObject.Priority
+- contextPath: Cherwell.BusinessObjects.Priority
   description: Incident ptiority
   type: Number
-- contextPath: Cherwell.BusinessObject.OwnedBy
+- contextPath: Cherwell.BusinessObjects.OwnedBy
   description: Incident owned by field
   type: String
-- contextPath: Cherwell.BusinessObject.Service
+- contextPath: Cherwell.BusinessObjects.Service
   description: Service needed for the incident
   type: String
-- contextPath: Cherwell.BusinessObject.CustomerDisplayName
+- contextPath: Cherwell.BusinessObjects.CustomerDisplayName
   description: 'Incident reporting customer '
-  type: Unknown
+  type: String
+- contextPath: Cherwell.BusinessObjects.CreatedDateTime
+  description: Created date time
+  type: Date
+- contextPath: Cherwell.BusinessObjects.TotalTasks
+  description: Total tasks for this incident
+  type: Number
 script: '-'
 system: false
 timeout: '0'

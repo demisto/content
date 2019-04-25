@@ -22,7 +22,7 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  (found in the script settings).
 
  For example: we wished to retrieve an incident such that the fields: RecordID, Description, Priority,
- CustomerDisplayName, OwnedBy and Service will appear in the returned object, thus, we added all of those field names
+ CustomerDisplayName, and so on, will appear in the returned object, thus, we added all of those field names
  to this `OUTPUT_FIELDS` variable.
  In addition we added the field names to the script outputs so they will appear as an official output of
  the script, using the following syntax: Cherwell.BusinessObject.RecordID, Cherwell.BusinessObject.PublicID,
@@ -30,13 +30,15 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  Make sure to leave the first part in the output definition (`Cherwell.BusinessObject`) as is.
 """
 OUTPUT_FIELDS = [
-    'RecordID',
-    'PublicID',
+    'RecordId',
+    'PublicId',
     'Description',
     'Priority',
     'CustomerDisplayName',
     'OwnedBy',
     'Service',
+    'CreatedDateTime',
+    'TotalTasks'
 ]
 
 
@@ -64,10 +66,10 @@ def build_context(object_dict, filter_fileds):
 
 def build_output_list():
     output_fields = OUTPUT_FIELDS
-    if 'RecordID' not in output_fields:
-        output_fields.append('RecordID')
-    if 'PublicID' not in output_fields:
-        output_fields.append('PublicID')
+    if 'RecordId' not in output_fields:
+        output_fields.append('RecordId')
+    if 'PublicId' not in output_fields:
+        output_fields.append('PublicId')
     return output_fields
 
 
@@ -83,6 +85,6 @@ demisto.results({
     'Contents': result.get('Contents'),
     'HumanReadable': md,
     'EntryContext': {
-        'Cherwell.BusinessObjects(val.RecordID == obj.RecordID)': build_context(business_object, build_output_list())
+        'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': build_context(business_object, build_output_list())
     }
 })

@@ -1,16 +1,15 @@
 args:
 - default: false
-  description: 'The query to run. The query is composed of comma separated filters
-    such that each filter should be of the form: `field_name::operator::value` and
-    operator is one of: ''eq''=equal, ''gt''=grater-than, ''lt''=less-than, ''contains'',
-    ''startwith''. Example: `CreatedDateTime:gt:4/10/2019 3:10:12 PM`. NOTICE: If
-    received multiple filters for the same field name, an ''OR'' operation between
-    the filters will be performed, if the field names are different an ''AND'' operation
-    will be performed.'
+  description: "The query to run. The query is a list of comma seperated filters such\
+    \ that each filter should be of the form: [\"field_name\",\"operator\",\"value\"\
+    ] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains',\
+    \ 'startwith'. Special characters shoud be escaped.\nExample: `[[\"CreatedDateTime\"\
+    :\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTICE: If received\
+    \ multiple filters for the same field name, an 'OR' operation between the filters\
+    \ will be performed, if the field names are different an 'AND' operation will\
+    \ be performed."
   isArray: false
   name: query
-  predefined:
-  - ''
   required: true
   secret: false
 comment: This script is an example script of how to query incidents from Cherwell.
@@ -24,27 +23,33 @@ enabled: false
 name: CherwellQueryIncidents
 tags: []
 outputs:
-- contextPath: Cherwell.BusinessObject.RecordID
+- contextPath: Cherwell.QueryResults.RecordId
   description: Recoed ID
   type: String
-- contextPath: Cherwell.BusinessObject.PublicID
+- contextPath: Cherwell.QueryResults.PublicId
   description: Public ID
   type: String
-- contextPath: Cherwell.BusinessObject.Description
+- contextPath: Cherwell.QueryResults.Description
   description: Incident description
   type: String
-- contextPath: Cherwell.BusinessObject.Priority
+- contextPath: Cherwell.QueryResults.Priority
   description: Incident ptiority
   type: Number
-- contextPath: Cherwell.BusinessObject.OwnedBy
+- contextPath: Cherwell.QueryResults.OwnedBy
   description: Incident owned by field
   type: String
-- contextPath: Cherwell.BusinessObject.Service
+- contextPath: Cherwell.QueryResults.Service
   description: Service needed for the incident
   type: String
-- contextPath: Cherwell.BusinessObject.CustomerDisplayName
+- contextPath: Cherwell.QueryResults.CustomerDisplayName
   description: 'Incident reporting customer '
-  type: Unknown
+  type: String
+- contextPath: Cherwell.BusinessObject.CreatedDateTime
+  description: Created date time
+  type: String
+- contextPath: Cherwell.BusinessObject.TotalTasks
+  description: Total tasks for this incident
+  type: Number
 script: '-'
 system: false
 timeout: '0'
