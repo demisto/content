@@ -331,6 +331,7 @@ script:
       description: Policy tenant
       type: Unknown
     - contextPath: SymantecMC.ReplaceVariables
+      description: Policy replace variables
       type: Boolean
   - arguments:
     - default: true
@@ -384,7 +385,8 @@ script:
       description: Policy category name
       type: String
     - contextPath: SymantecMC.Policy.UUID
-      type: Unknown
+      description: Policy UUID
+      type: String
     - contextPath: SymantecMC.Policy.Description
       description: Policy Description
       type: String
