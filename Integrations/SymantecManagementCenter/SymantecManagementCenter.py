@@ -909,7 +909,7 @@ def list_tenants_command():
             })
         headers = ['UUID', 'Name', 'ExternalID', 'Description', 'System']
         human_readable = tableToMarkdown('Symantec Management Center Tenants', contents,
-                                   removeNull=True, headers=headers, headerTransform=pascalToSpace)
+                                         removeNull=True, headers=headers, headerTransform=pascalToSpace)
         context['SymantecMC.Tenant(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
     else:
         human_readable = 'No tenants found'
