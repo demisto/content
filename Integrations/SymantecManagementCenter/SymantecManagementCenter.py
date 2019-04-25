@@ -50,7 +50,7 @@ def http_request(method, path, params=None, data=None):
             auth=(USERNAME, PASSWORD),
             verify=USE_SSL,
             params=params,
-            data=json.dumps(data),
+            data=json.dumps(data, sort_keys=True),
             headers=HEADERS)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException):
@@ -84,7 +84,7 @@ def test_module():
     """
     Performs basic get request to get system info
     """
-    sys_info = http_request('GET', 'system/info')
+    http_request('GET', 'system/info')
     demisto.results('ok')
 
 
@@ -120,7 +120,7 @@ def list_devices_command():
             })
         headers = ['UUID', 'Name', 'LastChanged', 'Host', 'Type']
         human_readable = tableToMarkdown('Symantec Management Center Devices', contents,
-                        removeNull=True, headers=headers, headerTransform=pascalToSpace)
+                                         removeNull=True, headers=headers, headerTransform=pascalToSpace)
         context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
     else:
         human_readable = 'No devices found'
@@ -407,7 +407,7 @@ def list_policies_command():
             })
         headers = ['UUID', 'Name', 'ContentType', 'Author', 'Shared', 'ReferenceID', 'Tenant', 'ReplaceVariables']
         human_readable = tableToMarkdown('Symantec Management Center Policies', contents,
-                                   removeNull=True, headers=headers, headerTransform=pascalToSpace)
+                                         removeNull=True, headers=headers, headerTransform=pascalToSpace)
         context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
     else:
         human_readable = 'No policies found'
@@ -723,14 +723,14 @@ def add_policy_content_command():
     enabled = demisto.args().get('enabled')
     description = demisto.args().get('description')
 
-    if ((content_type == IP_LIST_TYPE and not ips) or
-            (content_type == URL_LIST_TYPE and not urls) or
-            (content_type == CATEGORY_LIST_TYPE and not categories)):
+    if ((content_type == IP_LIST_TYPE and not ips)
+            or (content_type == URL_LIST_TYPE and not urls)
+            or (content_type == CATEGORY_LIST_TYPE and not categories)):
         return_error('Incorrect content provided for the type {}'.format(content_type))
 
-    if ((content_type == IP_LIST_TYPE and (urls or categories)) or
-            (content_type == URL_LIST_TYPE and (ips or categories)) or
-            (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+    if ((content_type == IP_LIST_TYPE and (urls or categories))
+            or (content_type == URL_LIST_TYPE and (ips or categories))
+            or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
         return_error('More than one content type was provided for the type {}'.format(content_type))
 
     if content_type == IP_LIST_TYPE:
@@ -798,11 +798,6 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
             'categoryName': category,
         } for category in categories]
 
-    # temporary workaround
-    # ==================================================================
-    if 'items' in content['content']:
-        content['content'].pop('items')
-    # ==================================================================
     body['content'] = content['content']
     response = http_request('POST', path, data=body)
 
@@ -822,14 +817,14 @@ def delete_policy_content_command():
     urls = argToList(demisto.args().get('url', []))
     categories = argToList(demisto.args().get('category', []))
 
-    if ((content_type == IP_LIST_TYPE and not ips) or
-            (content_type == URL_LIST_TYPE and not urls) or
-            (content_type == CATEGORY_LIST_TYPE and not categories)):
+    if ((content_type == IP_LIST_TYPE and not ips)
+            or (content_type == URL_LIST_TYPE and not urls)
+            or (content_type == CATEGORY_LIST_TYPE and not categories)):
         return_error('Incorrect content provided for the type {}'.format(content_type))
 
-    if ((content_type == IP_LIST_TYPE and (urls or categories)) or
-            (content_type == URL_LIST_TYPE and (ips or categories)) or
-            (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+    if ((content_type == IP_LIST_TYPE and (urls or categories))
+            or (content_type == URL_LIST_TYPE and (ips or categories))
+            or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
         return_error('More than one content type was provided for the type {}'.format(content_type))
 
     if content_type == IP_LIST_TYPE:
