@@ -55,4 +55,4 @@ system: false
 timeout: '0'
 type: python
 tests:
-- No tests - Building
+  - Cherwell Example Scripts - test
