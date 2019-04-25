@@ -100,7 +100,6 @@ def get_endpoints():
     """
     data = []
     endpoint_standards = []
-    context = {}
     endpoints = get_endpoints_request()
     for endpoint in endpoints:
         data.append({
@@ -123,8 +122,11 @@ def get_endpoints():
             'Processors': endpoint.get('num_cpus')
         })
 
-    context['CounterTack.Endpoint(val.Id && val.Id === obj.Id)'] = createContext(endpoints, keyTransform=underscoreToCamelCase)
-    context['Endpoint'] = endpoint_standards
+    context = {
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(endpoints,
+                                                                           keyTransform=underscoreToCamelCase),
+        'Endpoint': endpoint_standards
+    }
 
     headers = ['OS', 'Name', 'Threat', 'Status', 'Id', 'IP']
     entry = {
@@ -161,7 +163,6 @@ def get_endpoint():
     returns:
         The information about the specified endpoint
     """
-    context = {}
     endpoint_id = demisto.args().get('endpoint_id')
 
     response = get_endpoint_request(endpoint_id)
@@ -192,10 +193,14 @@ def get_endpoint():
         'Processors': response.get('num_cpus')
     }
 
-    context['CounterTack.Endpoint(val.Id && val.Id === obj.Id)'] = createContext(response, keyTransform=underscoreToCamelCase)
-    context['Endpoint'] = endpoint_standards
+    context = {
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(endpoints,
+                                                                           keyTransform=underscoreToCamelCase),
+        'Endpoint': endpoint_standards
+    }
 
-    headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined', 'Profile', 'Tags', 'Cluster_Hosts', 'Status']
+    headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined',
+               'Profile', 'Tags', 'Cluster_Hosts', 'Status']
     entry = {
         'Type': entryTypes['note'],
         'Contents': response,
@@ -246,7 +251,8 @@ def get_endpoint_tags():
     }
 
     context = {
-        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(tags_context, keyTransform=underscoreToCamelCase)
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(tags_context,
+                                                                           keyTransform=underscoreToCamelCase)
     }
 
     entry = {
@@ -387,7 +393,8 @@ def endpoint_quarantine_request(endpoint_id, body):
 def endpoint_quarantine():
 
     """
-    Prevents an endpoint(s) from any network communication, but maintains a connection to the Sentinel Cluster and addresses defined in the Global Whitelist.
+    Prevents an endpoint(s) from any network communication, but maintains a connection to the Sentinel Cluster
+    and addresses defined in the Global Whitelist.
 
     demisto parameter: (string) endpoint_id
         The unique ID of the endpoint
@@ -407,7 +414,8 @@ def endpoint_quarantine():
     }
 
     context = {
-        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(quarantine_context,
+                                                                           keyTransform=underscoreToCamelCase)
     }
 
     data = {
@@ -462,7 +470,8 @@ def disable_quarantine():
     }
 
     context = {
-        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(quarantine_context,
+                                                                           keyTransform=underscoreToCamelCase)
     }
 
     entry = {
@@ -613,7 +622,9 @@ def kill_process():
     }
 
     context = {
-        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase, removeNull=True)
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(response,
+                                                                           keyTransform=underscoreToCamelCase,
+                                                                           removeNull=True)
     }
 
     entry = {
@@ -647,7 +658,6 @@ def file_request():
 
 def get_all_files():
 
-    context = {}
     data = []
     files_standards = []
 
@@ -670,8 +680,11 @@ def get_all_files():
             'Path': file.get('path')
         })
 
-    context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(files, keyTransform=underscoreToCamelCase)
-    context[outputPaths['file']] = files_standards
+    context = {
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(endpoints,
+                                                                           keyTransform=underscoreToCamelCase),
+        'Endpoint': endpoint_standards
+    }
 
     headers = ['Status', 'Id', 'path', 'endpoint_id', 'extraction_time', 'user']
     entry = {
@@ -709,7 +722,6 @@ def get_endpoint_files():
 
     endpoint_id = demisto.args().get('endpoint_id')
     data = []
-    context = {}
     files_standards = []
 
     files = endpoint_files_request(endpoint_id)
@@ -729,9 +741,10 @@ def get_endpoint_files():
             'SSDeep': file.get('ssdeep'),
             'Path': file.get('path')
         })
-
-    context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(files, keyTransform=underscoreToCamelCase)
-    context[outputPaths['file']] = files_standards
+    context = {
+        'CounterTack.File(val.Id && val.Id === obj.Id)': createContext(files, keyTransform=underscoreToCamelCase),
+        outputPaths['file']: files_standards
+    }
 
     headers = ['Status', 'Id', 'path', 'endpoint_id', 'extraction_time', 'user']
     entry = {
@@ -785,7 +798,8 @@ def get_file_information():
             'Path': response.get('path')
     })
 
-    context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(response, keyTransform=underscoreToCamelCase)
+    context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(response,
+                                                                             keyTransform=underscoreToCamelCase)
     context[outputPaths['file']] = files_standards
     headers = ['endpoint_name', 'path', 'size', 'status', 'extraction_time']
     entry = {
@@ -850,21 +864,21 @@ def get_behaviors():
             'Id': behavior.get('id'),
             'Name': behavior.get('name'),
             'Type': behavior.get('type'),
-            'Impact_Level': behavior.get('impact_level'),
+            'ImpactLevel': behavior.get('impact_level'),
             'lastReported': behavior.get('last_reported'),
-            'Endpoint_ID': behavior.get('endpoint_id')
+            'EndpointID': behavior.get('endpoint_id')
         })
 
     context = {
         'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(behaviors, keyTransform=underscoreToCamelCase)
     }
-    headers = ['Name', 'Id', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'lastReported']
+    headers = ['Name', 'Id', 'Type', 'ImpactLevel', 'EndpointID', 'lastReported']
     entry = {
         'Type': entryTypes['note'],
         'Contents': behaviors,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('CounterTack Endpoints Behaviors:', data, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('CounterTack Endpoints Behaviors', data, headers, removeNull=True),
         'EntryContext': context
     }
     demisto.results(entry)
@@ -1082,9 +1096,12 @@ def search_events():
             })
 
         context = {
-            'CounterTack.Event(val.Id && val.Id === obj.Id)': createContext(results_lst, keyTransform=underscoreToCamelCase, removeNull=True)
+            'CounterTack.Event(val.Id && val.Id === obj.Id)': createContext(results_lst,
+                                                                            keyTransform=underscoreToCamelCase,
+                                                                            removeNull=True)
         }
-        headers = ['ID', 'Event Type', 'Events Action', 'Events EndpointID', 'Events Impact', 'Collected time', 'Source process PID', 'Source process name']
+        headers = ['ID', 'Event Type', 'Events Action', 'Events EndpointID', 'Events Impact',
+                   'Collected time', 'Source process PID', 'Source process name']
         entry = {
             'Type': entryTypes['note'],
             'Contents': results_lst,
@@ -1138,9 +1155,13 @@ def search_endpoints():
                 'Memory': endpoint.get('memory'),
                 'Processors': endpoint.get('num_cpus')
             })
+        context = {
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(results_lst,
+                                                                               keyTransform=underscoreToCamelCase,
+                                                                               removeNull=True),
+            'Endpoint': endpoint_standards
+        }
 
-        context['CounterTack.Endpoint(val.Id && val.Id === obj.Id)'] = createContext(results_lst, keyTransform=underscoreToCamelCase, removeNull=True)
-        context['Endpoint'] = endpoint_standards
         headers = ['Status', 'Name', 'Id', 'OS', 'Events Impact', 'Threat', 'IP']
         entry = {
             'Type': entryTypes['note'],
@@ -1180,13 +1201,15 @@ def search_behaviors():
                 'Type': behavior.get('type'),
                 'Impact_Level': behavior.get('impact_level'),
                 'lastReported': behavior.get('last_reported'),
-                'Endpoint_ID': behavior.get('endpoint_id')
+                'EndpointID': behavior.get('endpoint_id')
             })
 
         context = {
-            'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(results_lst, keyTransform=underscoreToCamelCase, removeNull=True)
+            'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(results_lst,
+                                                                               keyTransform=underscoreToCamelCase,
+                                                                               removeNull=True)
         }
-        headers = ['Name', 'Type', 'Impact_Level', 'Id', 'Endpoint_ID', 'lastReported']
+        headers = ['Name', 'Type', 'Impact_Level', 'Id', 'EndpointID', 'lastReported']
         entry = {
             'Type': entryTypes['note'],
             'Contents': results_lst,
@@ -1219,7 +1242,6 @@ def search_hashes():
         The CQL expression to be used for the search
     """
     data = []
-    context = {}
     file_standards = []
     expression = demisto.args().get('expression')
     exp = '?expression=' + expression
@@ -1248,9 +1270,11 @@ def search_hashes():
                     file_hash_type: hash_id
                 })
 
+        context = {
+            'CounterTack.Hash(val.hash_id && val.hash_id === obj.hash_id)': createContext(data),
+            outputPaths['file']: file_standards
+        }
 
-        context['CounterTack.Hash(val.hash_id && val.hash_id === obj.hash_id)'] = createContext(data)
-        context[outputPaths['file']] = file_standards
         entry = {
             'Type': entryTypes['note'],
             'Contents': results_lst,
