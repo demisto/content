@@ -25,3 +25,5 @@ system: false
 timeout: '0'
 type: python
 tags: []
+tests:
+  - Cherwell Example Scripts - test
