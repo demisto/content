@@ -3,8 +3,6 @@ args:
   description: Incident description
   isArray: false
   name: description
-  predefined:
-  - ''
   required: true
   secret: false
 - auto: PREDEFINED
@@ -50,10 +48,10 @@ enabled: false
 name: CherwellCreateIncident
 tags: []
 outputs:
-- contextPath: Cherwell.BusinessObjects.IncidentPublicID
+- contextPath: Cherwell.BusinessObjects.PublicId
   description: Incident public ID
   type: String
-- contextPath: Cherwell.BusinessObjects.IncidentRecordID
+- contextPath: Cherwell.BusinessObjects.RecordId
   description: Incident record ID
   type: String
 script: '-'
@@ -62,4 +60,3 @@ timeout: '0'
 type: python
 tests:
 - No tests - Building
-
