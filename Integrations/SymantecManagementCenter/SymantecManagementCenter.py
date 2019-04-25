@@ -55,7 +55,8 @@ def http_request(method, path, params=None, data=None):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException):
         # TODO: Wait for fiedler
-        return_error('Connection error')
+        return_error('Connection to Symantec MC failed. Check the connectivity or try'
+                     ' ticking the Trust any certificate check box.')
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
@@ -67,7 +68,8 @@ def http_request(method, path, params=None, data=None):
             details = error_json.get('message')
         except Exception:
             pass
-        return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'.format(status, message, details))
+        return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'
+                     .format(status, message, details))
 
     try:
         return res.json()
@@ -116,12 +118,14 @@ def list_devices_command():
                 'Host': device.get('host'),
                 'Type': device.get('type')
             })
-
+        headers = ['UUID', 'Name', 'LastChanged', 'Host', 'Type']
+        human_readable = tableToMarkdown('Symantec Management Center Devices', contents,
+                        removeNull=True, headers=headers, headerTransform=pascalToSpace)
         context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+    else:
+        human_readable = 'No devices found'
 
-    headers = ['UUID', 'Name', 'LastChanged', 'Host', 'Type']
-    return_outputs(tableToMarkdown('Symantec Management Center Devices', contents,
-                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, devices)
+    return_outputs(human_readable, context, devices)
 
 
 def list_devices_request(build, description, model, name, os_version, platform, device_type):
@@ -401,12 +405,14 @@ def list_policies_command():
                 'Tenant': policy.get('tenant'),
                 'ReplaceVariables': policy.get('replaceVariables')
             })
-
+        headers = ['UUID', 'Name', 'ContentType', 'Author', 'Shared', 'ReferenceID', 'Tenant', 'ReplaceVariables']
+        human_readable = tableToMarkdown('Symantec Management Center Policies', contents,
+                                   removeNull=True, headers=headers, headerTransform=pascalToSpace)
         context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+    else:
+        human_readable = 'No policies found'
 
-    headers = ['UUID', 'Name', 'ContentType', 'Author', 'Shared', 'ReferenceID', 'Tenant', 'ReplaceVariables']
-    return_outputs(tableToMarkdown('Symantec Management Center Policies', contents,
-                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, policies)
+    return_outputs(human_readable, context, policies)
 
 
 def list_policies_request(content_type, description, name, reference_id, shared, tenant):
@@ -906,12 +912,14 @@ def list_tenants_command():
                 'Description': tenant.get('description'),
                 'System': tenant.get('system')
             })
-
+        headers = ['UUID', 'Name', 'ExternalID', 'Description', 'System']
+        human_readable = tableToMarkdown('Symantec Management Center Tenants', contents,
+                                   removeNull=True, headers=headers, headerTransform=pascalToSpace)
         context['SymantecMC.Tenant(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+    else:
+        human_readable = 'No tenants found'
 
-    headers = ['UUID', 'Name', 'ExternalID', 'Description', 'System']
-    return_outputs(tableToMarkdown('Symantec Management Center Tenants', contents,
-                                   removeNull=True, headers=headers, headerTransform=pascalToSpace), context, tenants)
+    return_outputs(human_readable, context, tenants)
 
 
 def list_tenants_request():
