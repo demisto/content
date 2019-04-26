@@ -225,24 +225,23 @@ def get_device_health_command():
     context = {}
 
     device_health = get_device_health_request(uuid)
-    if device_health and device_health.get('health'):
-
-        if not isinstance(device_health['health'], list):
-            device_health['health'] = [device_health['health']]
-
+    if device_health:
         device_content = {
             'UUID': device_health.get('uuid'),
             'Name': device_health.get('name')
         }
 
-        for health in device_health['health']:
-            health_content.append({
-                'Category': health.get('category'),
-                'Name': health.get('name'),
-                'State': health.get('state'),
-                'Message': health.get('message'),
-                'Status': health.get('status')
-            })
+        if device_health.get('health'):
+            if not isinstance(device_health['health'], list):
+                device_health['health'] = [device_health['health']]
+            for health in device_health['health']:
+                health_content.append({
+                    'Category': health.get('category'),
+                    'Name': health.get('name'),
+                    'State': health.get('state'),
+                    'Message': health.get('message'),
+                    'Status': health.get('status')
+                })
 
         device_headers = ['UUID', 'Name']
         content = device_content
@@ -467,11 +466,12 @@ def get_policy_command():
             'UUID': policy.get('uuid'),
             'Name': policy.get('name'),
             'Description': policy.get('description'),
-            'ContentType': policy.get('contentType')
+            'ContentType': policy.get('contentType'),
+            'ReferenceID': policy.get('referenceId')
         }
         policy_content_data = get_policy_content_request(uuid)
 
-        if 'revisionInfo' in policy_content_data:
+        if policy_content_data and policy_content_data.get('revisionInfo'):
             policy_content['SchemaVersion'] = policy_content_data.get('schemaVersion')
             revision_content = {
                 'Number': policy_content_data['revisionInfo'].get('revisionNumber'),
@@ -481,7 +481,7 @@ def get_policy_command():
             }
 
         if policy.get('contentType') == URL_LIST_TYPE:
-            content_title = 'URLs'
+            content_title = 'URL List'
             content_headers = ['Address', 'Description', 'Enabled']
             content_key = 'URL'
             urls = policy_content_data.get('content', {}).get('urls', [])
@@ -492,7 +492,7 @@ def get_policy_command():
                     'Enabled': url.get('enabled')
                 })
         elif policy.get('contentType') == IP_LIST_TYPE:
-            content_title = 'IPs'
+            content_title = 'IP List'
             content_headers = ['Address', 'Description', 'Enabled']
             content_key = 'IP'
             ips = policy_content_data.get('content', {}).get('ipAddresses', [])
@@ -503,7 +503,7 @@ def get_policy_command():
                     'Enabled': ip.get('enabled')
                 })
         elif policy.get('contentType') == CATEGORY_LIST_TYPE:
-            content_title = 'Categories'
+            content_title = 'Category List'
             content_headers = ['Name']
             content_key = 'Category'
             categories = policy_content_data.get('content', {}).get('categories', [])
@@ -512,7 +512,7 @@ def get_policy_command():
                     'Name': category.get('categoryName')
                 })
 
-        policy_headers = ['UUID', 'Name', 'SchemaVersion', 'Description', 'ContentType']
+        policy_headers = ['UUID', 'Name', 'SchemaVersion', 'ReferenceID', 'Description', 'ContentType']
         human_readable = tableToMarkdown('Symantec Management Center Policy', policy_content,
                                          removeNull=True, headers=policy_headers, headerTransform=pascalToSpace)
         content = policy_content
@@ -529,7 +529,8 @@ def get_policy_command():
 
         context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
 
-    return_outputs(human_readable, context, policy.update(policy_content_data))
+    policy.update(policy_content_data)
+    return_outputs(human_readable, context, policy)
 
 
 def get_policy_request(uuid):
