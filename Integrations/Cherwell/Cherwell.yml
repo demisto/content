@@ -483,8 +483,8 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: Scope owner ID for the saved search. Use (None) when no scope
-        owner exists.
+      description: Scope owner ID for the saved search. Use (None) when no scope owner
+        exists.
       isArray: false
       name: scope_owner
       required: true
@@ -507,6 +507,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get general business object id by name
     execution: false
     name: cherwell-get-business-object-id
     outputs:
