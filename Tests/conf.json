@@ -1239,6 +1239,10 @@
         {
             "integrations": "Cherwell",
             "playbookID": "Cherwell - test"
+        },
+        {
+            "integrations": "Cherwell",
+            "playbookID": "Cherwell Example Scripts - test"
         }
     ],
     "skipped_tests": {
