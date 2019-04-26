@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: List devices
       description: List devices in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-list-devices
+      script: Symantec Management Center|||symantec-mc-list-devices
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "2"
@@ -73,10 +73,10 @@ tasks:
       version: -1
       name: Get BlueCoat device
       description: Get a device from Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-device
+      script: Symantec Management Center|||symantec-mc-get-device
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "3"
@@ -139,10 +139,10 @@ tasks:
       version: -1
       name: symantec-mc-get-device-health
       description: Get the health information for a device in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-device-health
+      script: Symantec Management Center|||symantec-mc-get-device-health
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "6"
@@ -194,10 +194,10 @@ tasks:
       version: -1
       name: symantec-mc-get-device-license
       description: Get license information for a device in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-device-license
+      script: Symantec Management Center|||symantec-mc-get-device-license
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "7"
@@ -224,10 +224,10 @@ tasks:
       version: -1
       name: symantec-mc-get-device-status
       description: Get the status of a device in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-device-status
+      script: Symantec Management Center|||symantec-mc-get-device-status
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "8"
@@ -322,10 +322,10 @@ tasks:
       version: -1
       name: Search for the URL policy
       description: List policies in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-list-policies
+      script: Symantec Management Center|||symantec-mc-list-policies
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "11"
@@ -393,10 +393,10 @@ tasks:
       version: -1
       name: Delete the policy
       description: Delete a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy
+      script: Symantec Management Center|||symantec-mc-delete-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "35"
@@ -424,10 +424,10 @@ tasks:
       version: -1
       name: Create a new IP policy
       description: Create a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-create-policy
+      script: Symantec Management Center|||symantec-mc-create-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "15"
@@ -478,10 +478,10 @@ tasks:
       version: -1
       name: List tenants
       description: List tenants in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-list-tenants
+      script: Symantec Management Center|||symantec-mc-list-tenants
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "13"
@@ -507,10 +507,10 @@ tasks:
       version: -1
       name: Create a new URL policy
       description: Create a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-create-policy
+      script: Symantec Management Center|||symantec-mc-create-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "16"
@@ -561,10 +561,10 @@ tasks:
       version: -1
       name: Create a new category policy
       description: Create a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-create-policy
+      script: Symantec Management Center|||symantec-mc-create-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "28"
@@ -650,10 +650,10 @@ tasks:
       name: Add IP content
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
         names.
-      script: SymantecManagementCenter|||symantec-mc-add-policy-content
+      script: Symantec Management Center|||symantec-mc-add-policy-content
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "20"
@@ -707,10 +707,10 @@ tasks:
       name: Add URL content
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
         names.
-      script: SymantecManagementCenter|||symantec-mc-add-policy-content
+      script: Symantec Management Center|||symantec-mc-add-policy-content
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "21"
@@ -764,10 +764,10 @@ tasks:
       name: Add Category content
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
         names.
-      script: SymantecManagementCenter|||symantec-mc-add-policy-content
+      script: Symantec Management Center|||symantec-mc-add-policy-content
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "25"
@@ -820,10 +820,10 @@ tasks:
       version: -1
       name: Delete IP content
       description: Delete content from a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy-content
+      script: Symantec Management Center|||symantec-mc-delete-policy-content
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "26"
@@ -873,10 +873,10 @@ tasks:
       version: -1
       name: Delete URL content
       description: Delete content from a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy-content
+      script: Symantec Management Center|||symantec-mc-delete-policy-content
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "23"
@@ -926,10 +926,10 @@ tasks:
       version: -1
       name: Delete Category content
       description: Delete content from a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy-content
+      script: Symantec Management Center|||symantec-mc-delete-policy-content
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "24"
@@ -979,10 +979,10 @@ tasks:
       version: -1
       name: Get IP policy
       description: Get a policy from Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-policy
+      script: Symantec Management Center|||symantec-mc-get-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "43"
@@ -1097,10 +1097,10 @@ tasks:
       version: -1
       name: Update IP policy description
       description: Update the metadata for a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-update-policy
+      script: Symantec Management Center|||symantec-mc-update-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "19"
@@ -1202,10 +1202,10 @@ tasks:
       version: -1
       name: Search for the IP policy
       description: List policies in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-list-policies
+      script: Symantec Management Center|||symantec-mc-list-policies
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "32"
@@ -1273,10 +1273,10 @@ tasks:
       version: -1
       name: Delete the policy
       description: Delete a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy
+      script: Symantec Management Center|||symantec-mc-delete-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "34"
@@ -1372,10 +1372,10 @@ tasks:
       version: -1
       name: Search for the category policy
       description: List policies in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-list-policies
+      script: Symantec Management Center|||symantec-mc-list-policies
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "37"
@@ -1443,10 +1443,10 @@ tasks:
       version: -1
       name: Delete the policy
       description: Delete a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy
+      script: Symantec Management Center|||symantec-mc-delete-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "39"
@@ -1508,10 +1508,10 @@ tasks:
       version: -1
       name: Delete IP policy
       description: Delete a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy
+      script: Symantec Management Center|||symantec-mc-delete-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "41"
@@ -1553,10 +1553,10 @@ tasks:
       version: -1
       name: Delete URL policy
       description: Delete a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy
+      script: Symantec Management Center|||symantec-mc-delete-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "42"
@@ -1598,10 +1598,10 @@ tasks:
       version: -1
       name: Delete category policy
       description: Delete a policy in Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-delete-policy
+      script: Symantec Management Center|||symantec-mc-delete-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "29"
@@ -1643,10 +1643,10 @@ tasks:
       version: -1
       name: Get URL policy
       description: Get a policy from Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-policy
+      script: Symantec Management Center|||symantec-mc-get-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "44"
@@ -1687,10 +1687,10 @@ tasks:
       version: -1
       name: Get category policy
       description: Get a policy from Symantec MC
-      script: SymantecManagementCenter|||symantec-mc-get-policy
+      script: Symantec Management Center|||symantec-mc-get-policy
       type: regular
       iscommand: true
-      brand: SymantecManagementCenter
+      brand: Symantec Management Center
     nexttasks:
       '#none#':
       - "27"
