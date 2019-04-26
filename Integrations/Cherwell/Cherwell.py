@@ -117,7 +117,7 @@ def http_request(method, url, payload, token=None, custom_headers=None):
     try:
         response = requests.request(method, url, data=payload, headers=headers, verify=SECURED)
     except requests.exceptions.ConnectionError as e:
-        return_error('Error connecting to server. Check your URL/Proxy/Certificate settings')
+        return_error(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {e}')
     return response
 
 
@@ -978,9 +978,6 @@ try:
 
     elif demisto.command() == 'cherwell-get-business-object-id':
         cherwell_get_business_object_id_command()
-
-
-
 
 
 # Log exceptions
