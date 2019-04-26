@@ -48,5 +48,5 @@ runas: DBotWeakRole
 dependson:
   must:
   - demisto-api-post
-ReleaseNotes: Leaves all investigations that the user is part of (clears out the incidents
+releaseNotes: Leave all investigations that the user is part of
   left pane). Incidnets that the user owner will remain in left pane.
