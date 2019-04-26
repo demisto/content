@@ -252,6 +252,8 @@ def get_device_health_command():
             human_readable += tableToMarkdown('Device Health', health_content,
                                               removeNull=True, headers=health_headers, headerTransform=pascalToSpace)
             content['Health'] = health_content
+        else:
+            human_readable += '\n\nNo health details found for this device\n'
 
         context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
 
