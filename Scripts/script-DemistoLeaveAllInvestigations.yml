@@ -8,7 +8,7 @@ script: |
       executeCommand("addEntries", {"entries":JSON.stringify(entry)});
   }
 
-  var account = 'acc_' + incidents[0].account;
+  var account = incidents[0].account ?  'acc_' + incidents[0].account : "";
 
   var res = executeCommand("getUsers", {current: true});
   if (isError(res[0])) {
