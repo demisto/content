@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: SymantecManagementCenter
+  id: Symantec Management Center
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:8082)
@@ -389,6 +389,9 @@ script:
     - contextPath: SymantecMC.Policy.Description
       description: Policy Description
       type: String
+    - contextPath: SymantecMC.Policy.ReferenceID
+      description: Policy reference ID
+      type: String
   - arguments:
     - default: false
       description: Policy name
@@ -693,5 +696,5 @@ script:
   script: '-'
   type: python
 tests:
-- No test - TEMP
+- SymantecMC_TestPlaybook
 releaseNotes: '-'
