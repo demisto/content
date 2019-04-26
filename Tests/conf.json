@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Management Center",
+            "playbookID": "SymantecMC_TestPlaybook"
+        },
+        {
             "integrations": "Tufin",
             "playbookID": "Tufin Test"
         },
