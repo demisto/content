@@ -40,7 +40,7 @@ type: javascript
 tags:
 - DemistoAPI
 comment: Leaves all investigations that the user is part of (clears out the incidents
-  left pane). Incidnets that the user owner will remain in left pane.
+  the left pane). Incidents that the user owns will remain in the left pane. Requires Demisto REST API.
 enabled: true
 scripttarget: 0
 runonce: false
