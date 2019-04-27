@@ -39,7 +39,7 @@ INCLUDED_FIELDS = '&include%5B%5D=first_trigger_log_entries&include%5B%5D=assign
 GET_SCHEDULES_SUFFIX = 'schedules'
 CREATE_INCIDENT_SUFFIX = 'incidents'
 GET_INCIDENT_SUFFIX = 'incidents/'
-GET_SERVICES_SUFFIX = 'services?offset={}'
+GET_SERVICES_SUFFIX = 'services'
 ON_CALL_BY_SCHEDULE_SUFFIX = 'schedules/{0}/users'
 ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
 USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
@@ -633,9 +633,10 @@ def get_incident_data():
 
 def get_service_keys():
     offset = 0
-    url = SERVER_URL + GET_SERVICES_SUFFIX.format(offset)
     raw_response = []
-    res = http_request('GET', url, {})
+
+    url = SERVER_URL + GET_SERVICES_SUFFIX
+    res = http_request('GET', url, {"offset": offset})
     raw_response.append(res)
 
     outputs = []
@@ -654,15 +655,21 @@ def get_service_keys():
             integration_string = ""
             for integration in service.get('integrations', []):
                 integration_url = integration.get('self', '')
-                demisto.results(integration_url)
                 if integration_url:
                     integration_data = {}
                     integration_res = http_request('GET', integration_url, {}).get('integration', {})
                     integration_data['Name'] = integration_res.get('service', {}).get('summary', '')
                     integration_data['Key'] = integration_res.get('integration_key', '')
+                    vendor_value = integration_res.get('vendor', {})
+                    if not vendor_value:
+                        integration_data['Vendor'] = 'Missing Vendor information'
+                    else:
+                        integration_data['Vendor'] = vendor_value.get('summary', 'Missing Vendor information')
+
                     integration_list.append(integration_data)
-                    integration_string += "Name: {}, Key: {}\n".format(integration_data['Name'],
-                                                                       integration_data['Key'])
+                    integration_string += "Name: {}, Vendor: {}, Key: {}\n".format(integration_data['Name'],
+                                                                                   integration_data['Vendor'],
+                                                                                   integration_data['Key'])
 
             output['Integration'] = integration_string
             context['Integration'] = integration_list
@@ -671,8 +678,7 @@ def get_service_keys():
             contexts.append(context)
 
         offset += 25
-        url = SERVER_URL + GET_SERVICES_SUFFIX.format(offset)
-        res = http_request('GET', url, {})
+        res = http_request('GET', url, {"offset": offset})
         raw_response.append(res)
 
     return {

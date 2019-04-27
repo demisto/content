@@ -403,6 +403,10 @@ script:
     - contextPath: PagerDuty.Service.Integration.Name
       description: The name of the integration used with the service
       type: string
+    - contextPath: PagerDuty.Service.Integration.Vendor
+      description: The name of the vendor for the integration used with the service.(A value of 'Missing Vendor
+        information' will appear once no information could be found)
+      type: string
     - contextPath: PagerDuty.Service.Integration.Key
       description: The key used to control events with the integration
       type: string
