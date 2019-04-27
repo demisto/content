@@ -285,7 +285,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     """
     issue = {}
     if 'issueJson' in issue_args:
-        issue = json.dumps(issue_args['issueJson'])
+        issue = json.loads(issue_args['issueJson'])
 
     if not issue.get('fields'):
         issue['fields'] = {}
@@ -311,7 +311,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
         issue['fields']['project']['id'] = project_id
 
     if issue_args.get('issueTypeName'):
-        issue['fields']['issuetype']['name'] = issue_args['issueTypeName'].title()
+        issue['fields']['issuetype']['name'] = issue_args['issueTypeName']
 
     if issue_args.get('issueTypeId'):
         issue['fields']['issuetype']['id'] = issue_args['issueTypeId']
