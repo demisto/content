@@ -52,6 +52,26 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
+    comma separated.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file as malicious.
+  name: preferredVendorsThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Determines whether to return all results, which can number in the thousands.
+    If "true", returns all results and overrides the _fullResponse_ argument (if set
+    to "false") in a command. If "false", the fullResponse argument in the command
+    determines how results are returned.
+  name: fullResponseGlobal
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -78,6 +98,10 @@ script:
     API_KEY = demisto.params()['APIKey']
 
     USE_SSL = False if demisto.params().get('insecure') else True
+    PREFERRED_VENDORS = demisto.params().get("preferredVendors", None)
+    PREFERRED_VENDORS_THRESHOLD = demisto.params().get("preferredVendorsThreshold", None)
+
+    FULL_RESPONSE = demisto.params().get("fullResponseGlobal", False)
 
     DEFAULT_HEADERS = {
         "Accept-Encoding": "gzip, deflate",
@@ -85,6 +109,32 @@ script:
     }
 
     ''' HELPER FUNCTIONS '''
+
+    def is_enough_preferred_vendors(scan_results):
+        if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
+            return False
+        if PREFERRED_VENDORS and not PREFERRED_VENDORS_THRESHOLD:
+            return_error("Error: If you entered Preferred Vendors you must also enter Preferred Vendors Threshold")
+        if "scans" not in scan_results:
+            return False
+
+        counter_of_malicious_detections = 0
+
+        vendors_scans_dict = scan_results["scans"]
+        list_of_preferred_vendors = PREFERRED_VENDORS.split(',')
+
+        for i in range(len(list_of_preferred_vendors)):
+            list_of_preferred_vendors[i] = list_of_preferred_vendors[i].lower().strip()
+
+        for vendor_name in vendors_scans_dict:
+            cur_vendor_scan = vendors_scans_dict[vendor_name]
+            vendor_name_in_lowercase = vendor_name.lower()
+
+            if vendor_name_in_lowercase in list_of_preferred_vendors:
+                if cur_vendor_scan.get("detected"):
+                    counter_of_malicious_detections += 1
+
+        return int(PREFERRED_VENDORS_THRESHOLD) <= counter_of_malicious_detections
 
 
     def http_request(method, url_suffix, params_dict, headers):
@@ -161,7 +211,7 @@ script:
         md += 'VT Link: [' + str(vt_response.get('resource')) + '](' + str(vt_response.get('permalink')) + ')\n'
         dbotScore = 0;
 
-        if (positives >= threshold):
+        if (positives >= threshold or is_enough_preferred_vendors(vt_response)):
             ec.update({
                 outputPaths['file']: {
                     'MD5': vt_response.get('md5'),
@@ -262,7 +312,7 @@ script:
         args = demisto.args()
         file_hash = args.get('resource')
         threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
-        full_response = args.get('fullResponse', None) == 'true'
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
         if (full_response):
             max_len = 1000
         else:
@@ -421,7 +471,7 @@ script:
         args = demisto.args()
         domain = args['domain']
         threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10);
-        full_response = args.get('fullResponse', None) == 'true'
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
         if (full_response):
             max_len = 1000
         else:
@@ -579,7 +629,7 @@ script:
         all_info = 1 if args.get('allInfo', None) == 'true' else 0
         short_format = args.get('shortFormat', None) == 'true'
         retries = int(args.get('retries', 2))
-        full_response = args.get('fullResponse', None) == 'true'
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
         threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
         scan_finish_time_in_seconds = int(args.get('retry_time', 6))
         if (full_response):
@@ -667,7 +717,7 @@ script:
 
         dbotScore = 0
         ec_url = {}
-        if (positives >= threshold):
+        if (positives >= threshold or is_enough_preferred_vendors(response)):
             ec_url.update({
                 'Data': url,
                 'Malicious': {
@@ -759,7 +809,7 @@ script:
         args = demisto.args()
         ip = args['ip']
         threshold = int(args.get('threshold', None) or demisto.params().get('ipThreshold', None) or 10)
-        full_response = args.get('fullResponse', None) == 'true'
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
         if (full_response):
             max_len = 1000
         else:
@@ -946,7 +996,7 @@ script:
         args = demisto.args()
         query = args['query']
 
-        full_response = args.get('fullResponse', None) == 'true'
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
         if (full_response):
             max_len = 1000
         else:
@@ -986,7 +1036,7 @@ script:
         # variables
         args = demisto.args()
         file_hash = args.get('hash')
-        full_response = args.get('fullResponse', None) == 'true'
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
         if (full_response):
             max_len = 1000
         else:

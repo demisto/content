@@ -1,6 +1,7 @@
 id: TestCommonPython
 version: -1
 name: TestCommonPython
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -532,4 +533,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "-"
