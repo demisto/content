@@ -84,8 +84,17 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
         files=files
     )
 
+    demisto.log(str(dir(result)))
+    demisto.log(str(result.headers))
     demisto.log(str(result.status_code))
     demisto.log(str(result.reason))
+
+    # sample not found
+    if str(result.reason) == 'Not Found':
+        demisto.results(
+            'Sample was not found. You can download malware files indefinitely. '
+            'You can download grayware and benign samples for 14 days.')
+        sys.exit(0)
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
@@ -607,6 +616,7 @@ def wildfire_get_sample_command():
 
     for element in inputs:
         result = wildfire_get_sample(element)
+
         headers_string = str(result.headers)
         file_name = headers_string.split("filename=", 1)[1]
 
