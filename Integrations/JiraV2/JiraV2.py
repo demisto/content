@@ -285,7 +285,11 @@ def get_issue_fields(issue_creating=False, **issue_args):
     """
     issue = {}
     if 'issueJson' in issue_args:
-        issue = json.loads(issue_args['issueJson'])
+        try:
+            issue = json.loads(issue_args['issueJson'])
+        except TypeError as te:
+            demisto.debug(str(te))
+            return_error("issueJson must be in a valid json format")
 
     if not issue.get('fields'):
         issue['fields'] = {}
