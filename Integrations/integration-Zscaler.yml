@@ -743,25 +743,26 @@ script:
         details = demisto.getArg('details')
         res = sandbox_report(md5, details)
 
-        ctype = demisto.get(res, 'Full Details.Classification.Type')
+        report = 'Full Details' if details == 'full' else 'Summary'
+        ctype = demisto.get(res, '{}.Classification.Type'.format(report))
         dbot_score = 3 if ctype == "MALICIOUS" else 2 if ctype == "SUSPICIOUS" else 1 if ctype == "BENIGN" else 0
 
         ec = {outputPaths['dbotscore']: {
             'Indicator': md5,
             'Type': 'file',
             'Vendor': 'Zscaler',
-            'Score': str(dbot_score)
+            'Score': dbot_score
         }}
 
         human_readable_report = ec['DBotScore'].copy()
-        human_readable_report["Detected Malware"] = str(demisto.get(res, 'Full Details.Classification.DetectedMalware'))
-        human_readable_report["Zscaler Score"] = demisto.get(res, 'Full Details.Classification.Score')
-        human_readable_report["Category"] = demisto.get(res, 'Full Details.Classification.Category')
+        human_readable_report["Detected Malware"] = str(demisto.get(res, '{}.Classification.DetectedMalware'.format(report)))
+        human_readable_report["Zscaler Score"] = demisto.get(res, '{}.Classification.Score'.format(report))
+        human_readable_report["Category"] = demisto.get(res, '{}.Classification.Category'.format(report))
         ec[outputPaths['file']] = {
             'MD5': md5,
             'Zscaler': {
-                'DetectedMalware': demisto.get(res, 'Full Details.Classification.DetectedMalware'),
-                'FileType': demisto.get(res, 'Full Details.File Properties.File Type'),
+                'DetectedMalware': demisto.get(res, '{}.Classification.DetectedMalware'.format(report)),
+                'FileType': demisto.get(res, '{}.File Properties.File Type'.format(report)),
             }
         }
         if dbot_score == 3:
