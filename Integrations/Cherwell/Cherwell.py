@@ -63,11 +63,8 @@ def parse_response(response, error_operation):
         except Exception:
             err_msg = response.content.decode('utf-8')
         return_error(error_operation + ": " + err_msg)
-    except Exception:
-        try:
-            return response.content  # check if needed
-        except Exception as error:
-            return_error(f'Could not parse response {error}')
+    except Exception as error:
+        return_error(f'Could not parse response {error}')
 
 
 def cherwell_dict_parser(key, value, item_list):
@@ -125,9 +122,10 @@ def request_new_access_token(using_refresh):
     url = BASE_URL + "token"
     refresh_token = demisto.getIntegrationContext().get('refresh_token')
 
-    payload = f'client_id={CLIENT_ID}'
-    payload = payload + f'&grant_type=refresh_token&refresh_token={refresh_token}' if using_refresh \
-        else payload + f'&grant_type=password&username={USERNAME}&password={PASSWORD}'
+    if using_refresh:
+        payload = f'client_id={CLIENT_ID}&grant_type=refresh_token&refresh_token={refresh_token}'
+    else:
+        payload = f'client_id={CLIENT_ID}&grant_type=password&username={USERNAME}&password={PASSWORD}'
 
     headers = {
         'Accept': "application/json",
@@ -144,9 +142,10 @@ def get_new_access_token():
         response = request_new_access_token(False)
     res_json = parse_response(response,
                               "Could not get token. Check your credentials (user/password/client id) and try again")
+    token_expiration_time = int(date_to_timestamp(res_json.get('.expires'), '%a, %d %b %Y %H:%M:%S GMT'))
     demisto.setIntegrationContext({
         'refresh_token': res_json.get('refresh_token'),
-        'token_expiration_time': int(date_to_timestamp(res_json.get('.expires'), '%a, %d %b %Y %H:%M:%S GMT')),
+        'token_expiration_time': token_expiration_time,
         'access_token': res_json.get('access_token')
     })
     return res_json.get('access_token')
@@ -181,8 +180,7 @@ def make_request(method, url, payload=None, headers=None):
 def get_business_object_summary_by_name(name):
     url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobname/{name}'
     response = make_request('GET', url)
-    res_json = parse_response(response, "Could not get business object summary")
-    return res_json
+    return parse_response(response, "Could not get business object summary")
 
 
 def resolve_business_object_id_by_name(name):
@@ -196,31 +194,27 @@ def resolve_business_object_id_by_name(name):
 def save_business_object(payload):
     url = BASE_URL + "api/V1/savebusinessobject"
     response = make_request("POST", url, json.dumps(payload))
-    res_json = parse_response(response, "Could not save business object")
-    return res_json
+    return parse_response(response, "Could not save business object")
 
 
 def get_business_object_record(business_object_id, object_id, id_type):
     id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
     url = BASE_URL + f'api/V1/getbusinessobject/busobid/{business_object_id}/{id_type_str}/{object_id}'
     response = make_request("GET", url)
-    res_json = parse_response(response, "Could not get business objects")
-    return res_json
+    return parse_response(response, "Could not get business objects")
 
 
 def delete_business_object_record(business_object_id, object_id, id_type):
     id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
     url = BASE_URL + f'api/V1/deletebusinessobject/busobid/{business_object_id}/{id_type_str}/{object_id}'
     response = make_request("DELETE", url)
-    res_json = parse_response(response, "Could not delete business object")
-    return res_json
+    return parse_response(response, "Could not delete business object")
 
 
 def get_search_results(payload):
     url = BASE_URL + "api/V1/getsearchresults"
     response = make_request("POST", url, json.dumps(payload))
-    res_json = parse_response(response, "Could not search for business objects")
-    return res_json
+    return parse_response(response, "Could not search for business objects")
 
 
 def get_business_object_template(business_object_id, include_all=True, field_names=None, fields_ids=None):
@@ -235,8 +229,7 @@ def get_business_object_template(business_object_id, include_all=True, field_nam
     if fields_ids:
         payload['fieldIds'] = fields_ids
     response = make_request("POST", url, json.dumps(payload))
-    res_json = parse_response(response, "Could not get business object template")
-    return res_json
+    return parse_response(response, "Could not get business object template")
 
 
 def build_business_object_json(simple_json, business_object_id, object_id=None, id_type=None):
@@ -255,15 +248,13 @@ def build_business_object_json(simple_json, business_object_id, object_id=None, 
 def create_business_object(name, data_json):
     business_object_id = resolve_business_object_id_by_name(name)
     business_object_json = build_business_object_json(data_json, business_object_id)
-    result = save_business_object(business_object_json)
-    return result
+    return save_business_object(business_object_json)
 
 
 def update_business_object(name, data_json, object_id, id_type):
     business_object_id = resolve_business_object_id_by_name(name)
     business_object_json = build_business_object_json(data_json, business_object_id, object_id, id_type)
-    result = save_business_object(business_object_json)
-    return result
+    return save_business_object(business_object_json)
 
 
 def get_business_object(name, object_id, id_type):
@@ -277,8 +268,7 @@ def get_business_object(name, object_id, id_type):
 
 def delete_business_object(name, object_id, id_type):
     business_object_id = resolve_business_object_id_by_name(name)
-    results = delete_business_object_record(business_object_id, object_id, id_type)
-    return results
+    return delete_business_object_record(business_object_id, object_id, id_type)
 
 
 def download_attachment_from_business_object(attachment):
@@ -288,8 +278,7 @@ def download_attachment_from_business_object(attachment):
     url = BASE_URL + f'api/V1/getbusinessobjectattachment' \
         f'/attachmentid/{attachment_id}/busobid/{business_object_id}/busobrecid/{business_record_id}'
     response = make_request('GET', url)
-    attachment_content = parse_response(response, f'Unable to get content of attachment {attachment_id}')
-    return attachment_content
+    return parse_response(response, f'Unable to get content of attachment {attachment_id}')
 
 
 def get_attachments_content(attachments_to_download):
@@ -314,8 +303,7 @@ def get_attachments_details(id_type, object_id, object_type_name, object_type_id
         f'/type/{type}' \
         f'/attachmenttype/{attachment_type}'
     response = make_request('GET', url)
-    parsed_response = parse_response(response, f'Unable to get attachments for {object_type} {object_id}')
-    return parsed_response
+    return parse_response(response, f'Unable to get attachments for {object_type} {object_id}')
 
 
 def download_attachments(id_type, object_id, business_object_type_name=None, business_object_type_id=None):
@@ -326,8 +314,7 @@ def download_attachments(id_type, object_id, business_object_type_name=None, bus
     attachments_to_download = result.get('attachments')
     if not attachments_to_download:
         return
-    attachments_to_return = get_attachments_content(attachments_to_download)
-    return attachments_to_return
+    return get_attachments_content(attachments_to_download)
 
 
 def get_attachments_info(id_type, object_id, attachment_type, business_object_type_name=None,
@@ -369,11 +356,10 @@ def run_query_on_business_objects(bus_id, filter_query, max_results):
 
 def get_key_value_dict_from_template(key, val, business_object_id):
     template_dict = get_business_object_template(business_object_id)
-    business_object_ids_dict = cherwell_dict_parser(key, val, template_dict.get('fields'))
-    return business_object_ids_dict
+    return cherwell_dict_parser(key, val, template_dict.get('fields'))
 
 
-def get_all_incidents(objects_names, last_created_time, max_result, query_string):
+def get_all_incidents(objects_names, last_created_time, max_results, query_string):
     all_incidents = []
     for business_object_name in objects_names:
         business_object_id = resolve_business_object_id_by_name(business_object_name)
@@ -381,10 +367,10 @@ def get_all_incidents(objects_names, last_created_time, max_result, query_string
         if query_string:
             additional_query_list = validate_query_for_fetch_incidents(objects_names, query_string)
             query_list += additional_query_list
-        incidents, _ = query_business_object(query_list, business_object_id, max_result)
+        incidents, _ = query_business_object(query_list, business_object_id, max_results)
         all_incidents += incidents
     sorted_incidents = sorted(all_incidents, key=lambda incident: incident.get('CreatedDateTime'))
-    return sorted_incidents[:max_result]
+    return sorted_incidents[:max_results]
 
 
 def object_to_incident(obj):
@@ -448,8 +434,7 @@ def upload_business_object_attachment(file_name, file_size, file_content, object
     headers = HEADERS
     headers['Content-Type'] = "application/octet-stream"
     response = make_request('POST', url, payload, headers)
-    parsed_response = parse_response(response, f'Could not upload attachment {file_name}')
-    return parsed_response
+    return parse_response(response, f'Could not upload attachment {file_name}')
 
 
 def upload_attachment(id_type, object_id, type_name, file_entry_id):
@@ -520,8 +505,7 @@ def validate_query_for_fetch_incidents(objects_names, query_string):
     if len(objects_names) > 1:
         return_error(f'Advanced query operation is supported for a single business object. '
                      f'{len(objects_names)} objects were given: {",".join(objects_names)}')
-    query_list = parse_string_query_to_list(query_string)
-    return query_list
+    return parse_string_query_to_list(query_string)
 
 
 def build_query_dict(query, filed_ids_dict):
@@ -569,7 +553,7 @@ def query_business_object_string(business_object_name, query_string, max_results
     if max_results:
         try:
             int(max_results)
-        except Exception:
+        except ValueError:
             return return_error(f'`max_results` argument received is not a number')
     business_object_id = resolve_business_object_id_by_name(business_object_name)
     query_filters_list = parse_string_query_to_list(query_string)
@@ -607,8 +591,7 @@ def cherwell_run_saved_search(association_id, scope, scope_owner, search_name):
     }
 
     results = get_search_results(search_payload)
-    business_objects = parse_fields_from_business_object_list(results)
-    return business_objects
+    return parse_fields_from_business_object_list(results)
 
 
 def cherwell_get_business_object_id(business_object_name):

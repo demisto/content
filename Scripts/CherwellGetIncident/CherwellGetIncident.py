@@ -25,9 +25,10 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  CustomerDisplayName, and so on, will appear in the returned object, thus, we added all of those field names
  to this `OUTPUT_FIELDS` variable.
  In addition we added the field names to the script outputs so they will appear as an official output of
- the script, using the following syntax: Cherwell.BusinessObject.RecordID, Cherwell.BusinessObject.PublicID,
- Cherwell.BusinessObject.Description, Cherwell.BusinessObject.Priority and so on.
- Make sure to leave the first part in the output definition (`Cherwell.BusinessObject`) as is.
+ the script, using the following syntax: Cherwell.BusinessObjects.RecordID, Cherwell.BusinessObjects.PublicID,
+ Cherwell.BusinessObjects.Description, Cherwell.BusinessObjects.Priority and so on.
+ Make sure to leave the prefix of the output definition (`Cherwell.BusinessObjects`) identical to what you have filed in 
+ the `OUTPUT_PATH` variable.
 """
 OUTPUT_FIELDS = [
     'RecordId',
@@ -40,6 +41,12 @@ OUTPUT_FIELDS = [
     'CreatedDateTime',
     'TotalTasks'
 ]
+
+"""
+`OUTPUT_PATH` is the path where all retrieved business objects will appear after. You can modify this path if you wish, 
+but remember to change the output prefix in the integration outputs as well.
+"""
+OUTPUT_PATH = 'Cherwell.BusinessObjects'
 
 
 # ####################################################################################
@@ -85,6 +92,6 @@ demisto.results({
     'Contents': result.get('Contents'),
     'HumanReadable': md,
     'EntryContext': {
-        'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': build_context(business_object, build_output_list())
+        f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)': build_context(business_object, build_output_list())
     }
 })

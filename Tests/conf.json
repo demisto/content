@@ -1238,11 +1238,11 @@
         },
         {
             "integrations": "Cherwell",
-            "playbookID": "Cherwell - test"
+            "playbookID": "Cherwell Example Scripts - test"
         },
         {
             "integrations": "Cherwell",
-            "playbookID": "Cherwell Example Scripts - test"
+            "playbookID": "Cherwell - test"
         }
     ],
     "skipped_tests": {
