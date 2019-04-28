@@ -50,12 +50,15 @@ QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
 ''' HELPER FUNCTIONS '''
 
 
-def parse_response(response, error_operation):
+def parse_response(response, error_operation, file_content=False):
     try:
         response.raise_for_status()
         if not response.content:
             return
-        return response.json()
+        if file_content:
+            return response.content
+        else:
+            return response.json()
     except requests.exceptions.HTTPError:
         try:
             res_json = response.json()
@@ -278,7 +281,7 @@ def download_attachment_from_business_object(attachment):
     url = BASE_URL + f'api/V1/getbusinessobjectattachment' \
         f'/attachmentid/{attachment_id}/busobid/{business_object_id}/busobrecid/{business_record_id}'
     response = make_request('GET', url)
-    return parse_response(response, f'Unable to get content of attachment {attachment_id}')
+    return parse_response(response, f'Unable to get content of attachment {attachment_id}', file_content=True)
 
 
 def get_attachments_content(attachments_to_download):
