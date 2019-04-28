@@ -42,13 +42,13 @@ def bool_arg_set_to_true(arg):
 
 
 def start_and_return_bigquery_client(google_service_creds_json_string):
-    cur_directory_path = os.getcwd() # maybe better to take the root directory using os.path.abspath(os.sep)? currently it's just the same as not specifying a path at all
+    cur_directory_path = os.getcwd()
     creds_file_name = '{0}.json'.format(demisto.uniqueFile())
     path_to_save_creds_file = os.path.join(cur_directory_path, creds_file_name)
-    creds_file = open(path_to_save_creds_file, "w")
-    json.dump(json.loads(google_service_creds_json_string), creds_file)
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path_to_save_creds_file
-    creds_file.close()
+    with open(path_to_save_creds_file, "w") as creds_file:
+        json.dump(json.loads(google_service_creds_json_string), creds_file)
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path_to_save_creds_file
+        creds_file.close()
     bigquery_client = bigquery.Client()
     return bigquery_client
 
@@ -75,16 +75,16 @@ def validate_args_for_query_job_config(allow_large_results, priority, use_query_
 
 
 def build_query_job_config(allow_large_results, default_dataset_string, destination_table, dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name, write_disposition):
-    validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run, destination_table, write_disposition)  # send relevant params
+    validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run, destination_table, write_disposition)
     query_job_config = bigquery.QueryJobConfig()
     if allow_large_results:
         query_job_config.allow_large_results = str_to_bool(allow_large_results)
     if default_dataset_string:
         query_job_config.default_dataset = default_dataset_string
     if destination_table:
-        query_job_config.destination = destination_table # must be in the format your-project.your_dataset.your_table
+        query_job_config.destination = destination_table
     if kms_key_name:
-        query_job_config.destination_encryption_configuration = bigquery.table.EncryptionConfiguration(kms_key_name) # make sure this shouldn't be just kms_key_name
+        query_job_config.destination_encryption_configuration = bigquery.table.EncryptionConfiguration(kms_key_name)
     if dry_run:
         query_job_config.dry_run = str_to_bool(dry_run)
     if use_legacy_sql:
@@ -105,13 +105,12 @@ def query(query_string, project_id, location, allow_large_results, default_datas
           google_service_creds, job_id, write_disposition):
     bigquery_client = start_and_return_bigquery_client(google_service_creds)
     job_config = build_query_job_config(allow_large_results, default_dataset, destination, dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name, write_disposition)
-    # not sure if query should be a keyword arg
     query_job = bigquery_client.query(query = query_string, job_config = job_config, location = location, job_id = job_id, project = project_id)
     if not (dry_run and str_to_bool(dry_run)):
         query_results = query_job.result()
         return query_results
-    # if dry run is activated, the results (number of bytes the query will process) are returned in the job itself
     else:
+        # if dry run is activated, the results (number of bytes the query will process) are returned in the job itself
         return query_job
 
 
@@ -123,7 +122,6 @@ def query_command():
                           demisto.params()['google_service_creds'], args.get('job_id', None), args.get('write_disposition', None))
 
     context = {}
-    contents = []
     rows_contexts = []
     human_readable = 'No results found.'
     dry_run = args.get('dry_run', None)
@@ -136,7 +134,6 @@ def query_command():
             rows_contexts.append(row_context)
 
         if rows_contexts:
-            contents = query_results
             context['BigQuery(val.Query && val.Query == obj.Query)'] = {
                 'Query': args['query'],
                 'Row': rows_contexts
@@ -145,19 +142,16 @@ def query_command():
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': rows_contexts,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': context
-    })
+    return_outputs(
+        readable_output=human_readable,
+        outputs=context,
+        raw_response=rows_contexts
+    )
 
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Perform basic get request to get item samples
     """
     try:
         bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
@@ -165,11 +159,11 @@ def test_module():
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
         first_item = next(results_rows_iterator)
-        if str(first_item.get("name")) == "Frances":
+        if str(first_item.get("name")) != "Frances":
             raise ValueError("Data from DB not matching expected results")
         demisto.results("ok")
     except Exception as ex:
-        return_error(str(ex)) # not sure if should be ex.message
+        return_error(str(ex))
 
 
 
@@ -185,8 +179,7 @@ try:
         query_command()
 
 
-# Log exceptions
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
