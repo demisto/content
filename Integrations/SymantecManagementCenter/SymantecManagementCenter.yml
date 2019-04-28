@@ -7,6 +7,10 @@ configuration:
   name: url
   required: true
   type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -15,10 +19,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 description: Symantec Management Center provides a unified management environment
   for the Symantec Security Platform portfolio of products.
 display: Symantec Management Center
