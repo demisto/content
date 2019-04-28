@@ -1238,7 +1238,8 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
-            "playbookID": "Palo Alto Networks Cortex Test"
+            "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
         }
     ],
     "skipped_tests": {
@@ -1285,6 +1286,7 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "RedCanary": "License expired",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
