@@ -2165,7 +2165,7 @@ def modify_fleet(args):
     if response['Return'] == 'True':
         demisto.results("AWS EC2 Fleet was successfully modified")
     else:
-        demisto.results("AWS EC2 Fleet was not successfully modified: "+response['Return'])
+        demisto.results("AWS EC2 Fleet was not successfully modified: " + response['Return'])
 
 
 def create_launch_template(args):
