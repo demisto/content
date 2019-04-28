@@ -1229,6 +1229,10 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Google BigQuery",
+            "playbookID": "Google BigQuery Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "af2f5a99-d70b-48c1-8c25-519732b733f2"
         },
@@ -1315,6 +1319,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Google BigQuery": "SSL problem",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
