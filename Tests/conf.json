@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Management Center",
+            "playbookID": "SymantecMC_TestPlaybook"
+        },
+        {
             "integrations": "Tufin",
             "playbookID": "Tufin Test"
         },
@@ -1225,6 +1229,10 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Google BigQuery",
+            "playbookID": "Google BigQuery Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "af2f5a99-d70b-48c1-8c25-519732b733f2"
         },
@@ -1234,15 +1242,29 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
-            "playbookID": "Palo Alto Networks Cortex Test"
+            "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
         },
         {
-            "integrations": "Cherwell",
-            "playbookID": "Cherwell Example Scripts - test"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2",
+            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         },
         {
-            "integrations": "Cherwell",
-            "playbookID": "Cherwell - test"
+            "integrations": "ANYRUN",
+            "playbookID": "ANYRUN-Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
@@ -1289,6 +1311,9 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "RedCanary": "License expired",
+        "LogRhythm": "Need to fix SOAP api",
+        "ANYRUN": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1312,6 +1337,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Google BigQuery": "SSL problem",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
@@ -1414,7 +1440,6 @@
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
         "Snowflake": "Isn't working with mocking enabled - needs investigation",
-        "Google Cloud Compute": "checking",
-        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy"
+        "Google Cloud Compute": "checking"
     }
 }
