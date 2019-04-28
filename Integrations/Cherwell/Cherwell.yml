@@ -30,13 +30,12 @@ configuration:
   required: false
   type: 0
 - defaultvalue: incident
-  display: 'Objects to fetch in comma seperated values structure, default is incident
-    (example: incident,problem,service)'
+  display: 'CSV list of objects to fetch. The default is incident, for example: incident,problem,service)'
   name: objects_to_fetch
   required: false
   type: 0
 - defaultvalue: '30'
-  display: Max results to fetch (intially 30)
+  display: Max results to fetch (defualt is 30)
   name: max_results
   required: false
   type: 0
@@ -49,58 +48,71 @@ configuration:
   required: false
   type: 8
 description: Cloud-based IT service management solution
+detaileddescription: "Integration with Cherwell Service Management. You can create, read\
+  \ update, and delete business objects, together with attachments\
+  \ and relations operations.\n\nIn order to create, query, get, update, delete, and\
+  \ link business objects, we recommend duplicating Cherwell example scripts and edit\
+  \ them using the instructions within each script.\n\nTo use an advanced query when\
+  \ fetching incidents, add your query in the advanced query parameter. The  query\
+  \ should be a CSV list of filters, such that each filter should be of the form:\
+  \ `[\"FieldName\",\"Operator\",\"Value\"]` and operator is one of: 'eq'=equal,\
+  \ 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'. \nSpecial characters\
+  \ should be escaped.\nExample: `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12\
+  \ PM\"],[\"Priority\",\"eq\",\"1\"]]`\nNOTICE: If received multiple filters for\
+  \ the same field name, an 'OR' operation between the filters will be performed,\
+  \ if the field names are different an 'AND' operation will be performed."
 display: Cherwell
 name: Cherwell
 script:
   commands:
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
       description: |-
-        Data JSON holding the relevant fields and their values (example:
-        {"title": "some value"})
+        Data JSON containing the relevant fields and their values, for example:
+        {"title": "some value"}).
       isArray: false
       name: json
       required: true
       secret: false
     deprecated: false
-    description: Create a business object
+    description: Creates a business object.
     execution: false
     name: cherwell-create-business-object
     outputs:
     - contextPath: Cherwell.BusinessObjects.RecordId
-      description: 'Business object record id '
+      description: 'Business object record ID. '
       type: String
     - contextPath: Cherwell.BusinessObjects.PublicId
-      description: 'Business object public id '
+      description: 'Business object public ID. '
       type: String
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
-      description: Data JSON holding the relevant fields and their values
+      description: Data JSON containing the relevant fields and their values.
       isArray: false
       name: json
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -109,32 +121,32 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update a business object with the given fields
+    description: Update a business object with the specified fields.
     execution: false
     name: cherwell-update-business-object
     outputs:
     - contextPath: Cherwell.BusinessObjects.RecordId
-      description: 'Business object record id '
+      description: 'Business object record ID. '
       type: String
     - contextPath: Cherwell.BusinessObjects.PublicId
-      description: 'Business object public id '
+      description: 'Business object public ID. '
       type: Unknown
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -143,25 +155,25 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a given business object
+    description: Deletes a given business object.
     execution: false
     name: cherwell-delete-business-object
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -170,19 +182,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a business objects by an id
+    description: Gets a business object by an ID.
     execution: false
     name: cherwell-get-business-object
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -191,29 +203,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     deprecated: false
-    description: Download imported attachements from given business object.
+    description: Downloads imported attachements from a specified business object.
     execution: false
     name: cherwell-download-attachments
     outputs:
     - contextPath: File
-      description: File result entries
+      description: File result entries.
       type: Unknown
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -222,115 +234,115 @@ script:
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     - default: false
-      description: the file entry id
+      description: File entry ID.
       isArray: false
       name: file_entry_id
       required: true
       secret: false
     deprecated: false
-    description: Upload an attachment to a given business object
+    description: Uploads an attachment to a specified business object.
     execution: false
     name: cherwell-upload-attachment
     outputs:
     - contextPath: Cherwell.UploadedAttachments.AttachmentFileId
-      description: AttachmentFileId to be used in order to get information on the
+      description: AttachmentFileId to use to get information about the attachment.
         attachment
       type: String
     - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       type: String
     - contextPath: Cherwell.UploadedAttachments.PublicId
-      description: 'Public id '
+      description: 'Public ID. '
       type: String
     - contextPath: Cherwell.UploadedAttachments.RecordId
-      description: Record id
+      description: Record ID.
       type: String
   - arguments:
     - default: false
-      description: Parent business object type name
+      description: Parent business object type name.
       isArray: false
       name: parent_type
       required: true
       secret: false
     - default: false
-      description: Parent business object record id
+      description: Parent business object record ID.
       isArray: false
       name: parent_record_id
       required: true
       secret: false
     - default: false
-      description: Child business object type name
+      description: Child business object type name.
       isArray: false
       name: child_type
       required: true
       secret: false
     - default: false
-      description: Child business object record id
+      description: Child business object record ID.
       isArray: false
       name: child_record_id
       required: true
       secret: false
     - default: false
-      description: Relationship id
+      description: Relationship ID.
       isArray: false
       name: relationship_id
       required: true
       secret: false
     deprecated: false
-    description: Link related business objects
+    description: Links business objects that are related.
     execution: false
     name: cherwell-link-business-objects
   - arguments:
     - default: false
-      description: Parent business object type name
+      description: Parent business object type name.
       isArray: false
       name: parent_type
       required: true
       secret: false
     - default: false
-      description: Parent business object record id
+      description: Parent business object record ID.
       isArray: false
       name: parent_record_id
       required: true
       secret: false
     - default: false
-      description: Child business object type name
+      description: Child business object type name.
       isArray: false
       name: child_type
       required: true
       secret: false
     - default: false
-      description: Child business object record id
+      description: Child business object record ID.
       isArray: false
       name: child_record_id
       required: true
       secret: false
     - default: false
-      description: Relationship id
+      description: Relationship ID.
       isArray: false
       name: relationship_id
       required: true
       secret: false
     deprecated: false
-    description: Unlink linked, related business objects
+    description: Unlinks business objects that are linked and related.
     execution: false
     name: cherwell-unlink-business-objects
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -339,14 +351,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of attachment
+      description: Type of attachment.
       isArray: false
       name: attachment_type
       predefined:
@@ -356,38 +368,38 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get business object attachments info
+    description: Gets information for business object attachments.
     execution: false
     name: cherwell-get-attachments-info
     outputs:
     - contextPath: Cherwell.AttachmentsInfo.AttachmentFiledId
-      description: Attachment field id
+      description: Attachment field ID.
       type: String
     - contextPath: Cherwell.AttachmentsInfo.FileName
-      description: File name
+      description: File name.
       type: String
     - contextPath: Cherwell.AttachmentsInfo.AttachmentId
-      description: Attachment id
+      description: Attachment ID.
       type: String
     - contextPath: Cherwell.AttachmentsInfo.BusinessObjectType
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       type: String
     - contextPath: Cherwell.AttachmentsInfo.BusinessObjectPublicId
-      description: Business object public id
+      description: Business object public ID.
       type: String
     - contextPath: Cherwell.AttachmentsInfo.BusinessObjectRecordId
-      description: Business object record id
+      description: Business object record ID.
       type: String
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of id
+      description: Type of ID.
       isArray: false
       name: id_type
       predefined:
@@ -396,35 +408,35 @@ script:
       required: true
       secret: false
     - default: false
-      description: Public id or record id
+      description: Public ID or record ID.
       isArray: false
       name: id_value
       required: true
       secret: false
     - default: false
-      description: Attachment id to reomve
+      description: Attachment ID to reomve.
       isArray: false
       name: attachment_id
       required: true
       secret: false
     deprecated: false
-    description: Remove the given attachment from the given business object
+    description: Remove the attachment from the specified business object.
     execution: false
     name: cherwell-remove-attachment
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
-      description: "The query to run. The query is a list of comma seperated filters\
-        \ such that each filter should be of the form: [\"field_name\",\"operator\"\
+      description: "The query to run. A CSV list of filters\
+        \ such that each filter is of the form: [\"field_name\",\"operator\"\
         ,\"value\"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than,\
         \ 'contains', 'startwith'. Special characters should be escaped.\nExample:\
         \ `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"\
-        eq\",\"1\"]]`. \nNOTICE: If received multiple filters for the same field name,\
+        eq\",\"1\"]]`. \nNOTE: If multiple filters are received for the same field name,\
         \ an 'OR' operation between the filters will be performed, if the field names\
         \ are different an 'AND' operation will be performed."
       isArray: false
@@ -433,18 +445,18 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: maximal number of result to pull
+      description: Maximum number of results to pull.
       isArray: false
       name: max_results
       required: false
       secret: false
     deprecated: false
-    description: Run advanced queries to search in a given business object.
+    description: Runs advanced queries to search in a specified business object.
     execution: false
     name: cherwell-query-business-object
   - arguments:
     - default: false
-      description: Business object type (e.g. Incident)
+      description: ' Business object type, for example: "Incident". '
       isArray: false
       name: type
       required: true
@@ -456,22 +468,22 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get field info by one of its properties (Name, DIsplay Name or id)
+    description: Gets information for a field, by one of its properties (Name, Display Name, or id).
     execution: false
     name: cherwell-get-field-info
     outputs:
     - contextPath: Cherwell.FieldInfo.DisplayName
-      description: Field display name (as it may appear in CHerwell UI)
+      description: Field display name (as it displays in the Cherwell UI).
       type: String
     - contextPath: Cherwell.FieldInfo.FieldId
-      description: Field id
+      description: Field ID.
       type: String
     - contextPath: Cherwell.FieldInfo.Name
-      description: The name to use whenever working with business object commands
+      description: The name to use when working with business object commands.
       type: String
   - arguments:
     - default: false
-      description: Business Object association ID for the saved search
+      description: Business object association ID for the saved search.
       isArray: false
       name: association_id
       required: true
@@ -483,39 +495,39 @@ script:
       required: true
       secret: false
     - default: false
-      description: Scope owner ID for the saved search. Use (None) when no scope owner
+      description: Scope owner ID for the saved search. Use "(None)" when no scope owner
         exists.
       isArray: false
       name: scope_owner
       required: true
       secret: false
     - default: false
-      description: Name of the saved search
+      description: Name of the saved search.
       isArray: false
       name: search_name
       required: true
       secret: false
     deprecated: false
-    description: Returns the results of a saved search
+    description: Returns the results of a saved search.
     execution: false
     name: cherwell-run-saved-search
   - arguments:
     - default: false
-      description: Business object name
+      description: Business object name.
       isArray: false
       name: business_object_name
       required: true
       secret: false
     deprecated: false
-    description: Get general business object id by name
+    description: Get a general business object id by name
     execution: false
     name: cherwell-get-business-object-id
     outputs:
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectId
-      description: Business Object id
+      description: Business object ID.
       type: String
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
-      description: Business Object name
+      description: Business object name.
       type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
