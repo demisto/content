@@ -536,7 +536,6 @@ def format_http_transaction_list():
 
     ec = {
         'URLScan(val.URL && val.URL == obj.URL)': context,
-        'URL': url
     }
 
     human_readable = tableToMarkdown('{} - http transaction list'.format(url), url_list, ['URLs'], metadata=metadata)

@@ -1,18 +1,18 @@
 commonfields:
-  id: urlscan-get-http-transactions
+  id: UrlscanGetHttpTransactions
   version: -1
-name: urlscan-get-http-transactions
+name: UrlscanGetHttpTransactions
 script: |-
   var url = args.url;
   var limit = args.limitl;
-  var defaultWaitTime = 5
+  var defaultWaitTime = Number(args.wait_time_for_polling)
 
   uuid = executeCommand('urlscan-submit-url-command', {'url': url})[0].Contents;
   uri = executeCommand('urlscan-get-result-page', {'uuid': uuid})[0].Contents;
 
   var resStatusCode = -1
   var waitedTime = 0
-  while(resStatusCode != 200 && waitedTime < args.timeout) {
+  while(resStatusCode == 404 && resStatusCode != 200 && waitedTime < Number(args.timeout)) {
       var resStatusCode = executeCommand('urlscan-poll-uri', {'uri': uri})[0].Contents;
 
       if (resStatusCode == 200) {
@@ -24,7 +24,11 @@ script: |-
   if(resStatusCode == 200) {
       return executeCommand('urlscan-get-http-transaction-list', {'uuid': uuid, 'url': url, 'limit': limit});
   } else {
-      return 'Could not get result from UrlScan, please try again later.'
+      if(waitedTime >= Number(args.timeout)){
+          return 'Could not get result from UrlScan, please try to increase the timeout.'
+      } else {
+          return 'Could not get result from UrlScan, possible rate-limit issues.'
+      }
   }
 type: javascript
 tags: []
@@ -35,6 +39,10 @@ args:
 - name: url
   required: true
   description: The URL to search the transaction list for.
+- name: wait_time_for_polling
+  defaultValue: "5"
+  description: The wait time between two polling actions of UrlScan results page, please note that you may encounter
+    rate-limit error if the time set is too low.
 - name: timeout
   description: How many seconds to wait for the scan id result
   defaultValue: "60"

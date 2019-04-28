@@ -5,6 +5,7 @@ name: urlscan.io
 display: urlscan.io
 category: Data Enrichment & Threat Intelligence
 description: Urlscan.io reputation
+defaultEnabled: false
 configuration:
 - display: API Key (needed only for submitting URLs for scanning)
   name: apikey

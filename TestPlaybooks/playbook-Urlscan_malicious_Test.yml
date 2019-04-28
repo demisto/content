@@ -563,7 +563,7 @@ tasks:
       name: get http transactions
       description: This script enables gives you the functionallity of getting the
         http transactions made for a given URL using the UrlScan integration
-      scriptName: urlscan-get-http-transactions
+      scriptName: UrlscanGetHttpTransactions
       type: regular
       iscommand: false
       brand: ""
