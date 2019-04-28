@@ -157,7 +157,7 @@ def query_command():
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Perform basic get request to get item samples
     """
     try:
         bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
