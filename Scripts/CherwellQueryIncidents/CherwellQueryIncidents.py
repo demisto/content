@@ -27,7 +27,7 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  In addition we added the same field names to the script outputs so they will appear as an official output of
  the script, using the following syntax: Cherwell.QueryResults.RecordID, Cherwell.QueryResults.PublicID,
  Cherwell.QueryResults.Description, Cherwell.QueryResults.Priority and so on.
- Make sure to leave the prefix of the output definition (`Cherwell.QueryResults`) identical to what you have filed in 
+ Make sure to leave the prefix of the output definition (`Cherwell.QueryResults`) identical to what you have filed in
  the `OUTPUT_PATH` variable.
  """
 OUTPUT_FIELDS = [
@@ -43,7 +43,7 @@ OUTPUT_FIELDS = [
 ]
 
 """
-`OUTPUT_PATH` is the path where all queried results will appear after the search. You can modify this path if you wish, 
+`OUTPUT_PATH` is the path where all queried results will appear after the search. You can modify this path if you wish,
 but remember to change the output prefix in the integration outputs as well.
 """
 OUTPUT_PATH = 'Cherwell.QueryResults'
