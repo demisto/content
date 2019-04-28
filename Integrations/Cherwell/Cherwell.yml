@@ -3,7 +3,7 @@ commonfields:
   id: Cherwell
   version: -1
 configuration:
-- display: url
+- display: 'URL (example: https://my.domain.com)'
   name: url
   required: true
   type: 0
@@ -197,7 +197,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Doenload imported attachements from given business object.
+    description: Download imported attachements from given business object.
     execution: false
     name: cherwell-download-attachments
     outputs:
