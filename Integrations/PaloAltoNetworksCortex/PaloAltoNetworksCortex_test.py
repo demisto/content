@@ -41,13 +41,14 @@ def test_process_incident_pairs():
 
 
 def test_prepare_fetch_query(mocker):
-    from PaloAltoNetworksCortex import prepare_fetch_query
+    from PaloAltoNetworksCortex import prepare_fetch_query, main
 
     traps_params = {
         'fetch_query': 'Traps Threats',
     }
     mocker.patch.object(demisto, 'params',
                         return_value=traps_params)
+    main()
     traps_fetch_timestamp = '2018-04-22T10:34:07.371267Z'
 
     traps_query = prepare_fetch_query(traps_fetch_timestamp)
@@ -63,6 +64,7 @@ def test_prepare_fetch_query(mocker):
     }
     mocker.patch.object(demisto, 'params',
                         return_value=firewall_params)
+    main()
     firewall_fetch_timestamp = '1524383011'
 
     firewall_query = prepare_fetch_query(firewall_fetch_timestamp)
