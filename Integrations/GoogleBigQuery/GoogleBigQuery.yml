@@ -90,5 +90,4 @@ script:
     description: Performs a query on BigQuery.
   dockerimage: demisto/bigquery:1.0.0.239
   runonce: false
-tests: Google BigQuery Test
 releaseNotes: Integration for Google BigQuery
