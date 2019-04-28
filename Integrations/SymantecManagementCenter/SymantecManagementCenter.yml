@@ -219,7 +219,7 @@ script:
       type: Date
     - contextPath: SymantecMC.Device.LicenseComponent.Validity
       description: Device license component validity
-      type: Unknown
+      type: String
   - arguments:
     - default: true
       description: Device UUID - Can be retrieved from the list-devices command
@@ -328,7 +328,7 @@ script:
       type: String
     - contextPath: SymantecMC.Policy.Tenant
       description: Policy tenant
-      type: Unknown
+      type: String
     - contextPath: SymantecMC.ReplaceVariables
       description: Policy replace variables
       type: Boolean
