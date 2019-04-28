@@ -1,6 +1,7 @@
 {
 	"id": "incident_companycity",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T13:01:47.329127394Z",
 	"name": "Company City",
 	"ownerOnly": false,

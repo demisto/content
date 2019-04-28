@@ -1,6 +1,7 @@
 {
 	"id": "incident_countrywherebusinesshasitsmainestablishment",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-17T12:51:19.238592047Z",
 	"name": "Country where business has its main establishment",
 	"ownerOnly": false,
