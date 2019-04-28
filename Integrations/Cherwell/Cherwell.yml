@@ -1,4 +1,4 @@
-category: IT Services
+category: Case Management
 commonfields:
   id: Cherwell
   version: -1
@@ -422,7 +422,7 @@ script:
       description: "The query to run. The query is a list of comma seperated filters\
         \ such that each filter should be of the form: [\"field_name\",\"operator\"\
         ,\"value\"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than,\
-        \ 'contains', 'startwith'. Special characters shoud be escaped.\nExample:\
+        \ 'contains', 'startwith'. Special characters should be escaped.\nExample:\
         \ `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"\
         eq\",\"1\"]]`. \nNOTICE: If received multiple filters for the same field name,\
         \ an 'OR' operation between the filters will be performed, if the field names\
