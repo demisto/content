@@ -885,12 +885,7 @@ tasks:
           accessor: HeadersMap.Message-ID
           transformers:
           - operator: uniq
-      emailreceived:
-        complex:
-          root: Email
-          accessor: HeadersMap.Received
-          transformers:
-          - operator: uniq
+      emailreceived: {}
       emailreplyto:
         complex:
           root: Email
