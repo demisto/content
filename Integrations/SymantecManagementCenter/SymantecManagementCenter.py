@@ -53,10 +53,8 @@ def http_request(method, path, params=None, data=None):
             data=json.dumps(data, sort_keys=True),
             headers=HEADERS)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
-            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException):
-        # TODO: Wait for fiedler
-        return_error('Connection to Symantec MC failed. Check the connectivity or try'
-                     ' ticking the Trust any certificate check box.')
+            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+        return_error('Could not connect to Symantec MC: {}'.format(str(e)))
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
@@ -67,9 +65,8 @@ def http_request(method, path, params=None, data=None):
             message = error_json.get('statusMessage')
             details = error_json.get('message')
         except Exception:
-            pass
-        return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'
-                     .format(status, message, details))
+            return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'
+                         .format(status, message, details))
 
     try:
         return res.json()
