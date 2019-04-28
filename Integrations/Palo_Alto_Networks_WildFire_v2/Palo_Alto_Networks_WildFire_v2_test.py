@@ -24,7 +24,7 @@ def test_prettify_report_entry():
 
 def test_prettify_verdict():
     expected_verdict_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'desc'})
+        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'})
     prettify_verdict_res = prettify_verdict(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
     assert expected_verdict_dict == prettify_verdict_res
@@ -38,10 +38,10 @@ def test_create_dbot_score_from_verdict():
 
 
 def test_prettify_verdicts():
-    expected_verdicts_dict = list(dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'desc'}))
-    prettify_verdicts_res = prettify_verdicts(list(
-        {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"}))
+    expected_verdicts_dict = [
+        {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'}]
+    prettify_verdicts_res = prettify_verdicts(
+        [{'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"}])
     assert expected_verdicts_dict == prettify_verdicts_res
 
 
