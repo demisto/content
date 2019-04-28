@@ -6,9 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import os
-from distutils.util import strtobool
 from google.cloud import bigquery
-from oauth2client import service_account
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -56,7 +54,8 @@ def start_and_return_bigquery_client(google_service_creds_json_string):
     return bigquery_client
 
 
-def validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run, destination_table, write_disposition):
+def validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run,
+                                       destination_table, write_disposition):
     if allow_large_results and not represents_bool(allow_large_results):
         return_error("Error: allow_large_results must have a boolean value.")
     if bool_arg_set_to_true(allow_large_results) and not destination_table:
@@ -73,12 +72,15 @@ def validate_args_for_query_job_config(allow_large_results, priority, use_query_
         return_error("Error: dry_run must have a boolean value.")
     if priority and not (priority == 'INTERACTIVE' or priority == 'BATCH'):
         return_error("Error: priority must have a value of INTERACTIVE or BATCH.")
-    if write_disposition and not (write_disposition == 'WRITE_TRUNCATE' or write_disposition == 'WRITE_APPEND' or write_disposition == 'WRITE_EMPTY'):
+    if write_disposition and not (write_disposition == 'WRITE_TRUNCATE' or write_disposition == 'WRITE_APPEND'
+                                  or write_disposition == 'WRITE_EMPTY'):
         return_error("Error: write_disposition must have a value of WRITE_TRUNCATE, WRITE_APPEND or WRITE_EMPTY.")
 
 
-def build_query_job_config(allow_large_results, default_dataset_string, destination_table, dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name, write_disposition):
-    validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run, destination_table, write_disposition)
+def build_query_job_config(allow_large_results, default_dataset_string, destination_table, dry_run, priority,
+                           use_query_cache, use_legacy_sql, kms_key_name, write_disposition):
+    validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run,
+                                       destination_table, write_disposition)
     query_job_config = bigquery.QueryJobConfig()
     if allow_large_results:
         query_job_config.allow_large_results = str_to_bool(allow_large_results)
@@ -104,11 +106,15 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
-def query(query_string, project_id, location, allow_large_results, default_dataset, destination, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
+
+def query(query_string, project_id, location, allow_large_results, default_dataset, destination, kms_key_name, dry_run,
+          priority, use_query_cache, use_legacy_sql,
           google_service_creds, job_id, write_disposition):
     bigquery_client = start_and_return_bigquery_client(google_service_creds)
-    job_config = build_query_job_config(allow_large_results, default_dataset, destination, dry_run, priority, use_query_cache, use_legacy_sql, kms_key_name, write_disposition)
-    query_job = bigquery_client.query(query = query_string, job_config = job_config, location = location, job_id = job_id, project = project_id)
+    job_config = build_query_job_config(allow_large_results, default_dataset, destination, dry_run, priority,
+                                        use_query_cache, use_legacy_sql, kms_key_name, write_disposition)
+    query_job = bigquery_client.query(query=query_string, job_config=job_config, location=location,
+                                      job_id=job_id, project=project_id)
     if not (dry_run and str_to_bool(dry_run)):
         query_results = query_job.result()
         return query_results
@@ -141,7 +147,8 @@ def query_command():
     rows_contexts = []
     human_readable = 'No results found.'
     if dry_run and str_to_bool(dry_run):
-        human_readable = '### Dry run results: \n This query will process {0} bytes'.format(query_results.total_bytes_processed)
+        human_readable = '### Dry run results: \n This query will process {0} ' \
+                         'bytes'.format(query_results.total_bytes_processed)
 
     else:
         for row in query_results:
@@ -179,8 +186,6 @@ def test_module():
         demisto.results("ok")
     except Exception as ex:
         return_error(str(ex))
-
-
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
