@@ -38,15 +38,14 @@ args:
   required: true
   secret: false
 comment: This script is an example script of how to create an incident in Cherwell.
-  The scruot wraps the create business bject command in the cherwell integration.
-  When writing your own script to creat a business object, follow the instructions
-  in the configuration part, leace the execution part untouched
+  The script wraps the create business object command in the cherwell integration.
+  When writing your own script to create a business object, follow the instructions
+  in the configuration part, leave the execution part untouched
 commonfields:
   id: CherwellCreateIncident
   version: -1
 enabled: false
 name: CherwellCreateIncident
-tags: []
 outputs:
 - contextPath: Cherwell.BusinessObjects.PublicId
   description: Incident public ID
@@ -60,4 +59,4 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
 tests:
-  - Cherwell Example Scripts - test
+- Cherwell Example Scripts - test
