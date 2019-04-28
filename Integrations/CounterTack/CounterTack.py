@@ -25,7 +25,8 @@ if not demisto.params().get('proxy'):
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
-SERVER_URL = demisto.params().get('server')[:-1] if demisto.params().get('server').endswith('/') else demisto.params().get('server')
+SERVER_URL = demisto.params().get('server')[:-1] if demisto.params().get('server').endswith('/') else \
+    demisto.params().get('server')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days').strip()
 
 # Should we use SSL
@@ -227,7 +228,6 @@ def endpoint_tags_request(endpoint_id):
 
     response = http_request('GET', suffix_url)
     return response
-
 
 
 def get_endpoint_tags():
@@ -539,6 +539,7 @@ def extract_file():
         'EntryContext': context
     }
     demisto.results(entry)
+
 
 def delete_file_request(endpoint_id, body):
 
@@ -866,13 +867,14 @@ def get_behaviors():
             'Type': behavior.get('type'),
             'ImpactLevel': behavior.get('impact_level'),
             'lastReported': behavior.get('last_reported'),
-            'EndpointID': behavior.get('endpoint_id')
+            'EndpointId': behavior.get('endpoint_id')
         })
 
     context = {
-        'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(behaviors, keyTransform=underscoreToCamelCase)
+        'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(behaviors,
+                                                                           keyTransform=underscoreToCamelCase)
     }
-    headers = ['Name', 'Id', 'Type', 'ImpactLevel', 'EndpointID', 'lastReported']
+    headers = ['Name', 'Id', 'Type', 'ImpactLevel', 'EndpointId', 'lastReported']
     entry = {
         'Type': entryTypes['note'],
         'Contents': behaviors,
@@ -1016,13 +1018,13 @@ def delete_behavior_tags():
     context = {
         'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
     }
+
     entry = {
         'Type': entryTypes['note'],
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Endpoint tags were deleted successfully',
-        response, removeNull=True),
+        'HumanReadable': tableToMarkdown('Endpoint tags were deleted successfully', response, removeNull=True),
         'EntryContext': context
     }
     demisto.results(entry)
@@ -1107,8 +1109,7 @@ def search_events():
             'Contents': results_lst,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Results of the events search',
-            data, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Results of the events search', data, headers, removeNull=True),
             'EntryContext': context
         }
         demisto.results(entry)
@@ -1125,7 +1126,6 @@ def search_endpoints():
 
     data = []
     endpoint_standards = []
-    context = {}
     expression = demisto.args().get('expression')
     exp = '?expression=' + expression
     endpoints = search_endpoints_request(exp)
@@ -1168,8 +1168,7 @@ def search_endpoints():
             'Contents': results_lst,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Results of the endpoints search',
-            data, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Results of the endpoints search', data, headers, removeNull=True),
             'EntryContext': context
         }
         demisto.results(entry)
@@ -1215,8 +1214,7 @@ def search_behaviors():
             'Contents': results_lst,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Results of the behaviors search',
-            data, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Results of the behaviors search', data, headers, removeNull=True),
             'EntryContext': context
         }
         demisto.results(entry)
@@ -1280,8 +1278,7 @@ def search_hashes():
             'Contents': results_lst,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Results of the hashes search:',
-            data, removeNull=True),
+            'HumanReadable': tableToMarkdown('Results of the hashes search:', data, removeNull=True),
             'EntryContext': context
         }
         demisto.results(entry)
@@ -1326,11 +1323,7 @@ def fetch_incidents():
         for behavior in behaviors.get('results'):
             incident = behavior_to_incident(behavior)
             # 0 corresponds to never triggered
-            time_stamp = behavior.get('behaviors.time_stamp')[:-5] #comapre time_stamp
-            # incidents.append({
-            #     'name': 'CounterTack Behavior - ' + behavior.get('behaviors.name'),
-            #     'rawJSON': json.dumps(behavior)
-            # })
+            time_stamp = behavior.get('behaviors.time_stamp')[:-5]  # comapre time_stamp
             if time_stamp > max_timestamp:
                 max_timestamp = time_stamp
             incidents.append(incident)
@@ -1342,10 +1335,6 @@ def fetch_incidents():
         for notification in notifications.get('results'):
             incident = notifications_to_incidents(notification)
             time_stamp = notification.get('notifications.time_stamp')[:-5]
-            # incidents.append({
-            #     'name': 'CounterTack Notification - ' + notification.get('notifications.message'),
-            #     'rawJSON': json.dumps(notification)
-            # })
 
             if time_stamp > max_timestamp:
                 max_timestamp = time_stamp
