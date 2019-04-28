@@ -12,10 +12,12 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 
 DEMISTO_APP_TOKEN = demisto.params().get('token')
-FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 USE_SSL = not demisto.params().get('insecure', False)
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
 FETCH_QUERY = None
+FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
+if not FIRST_FETCH_TIMESTAMP:
+    FIRST_FETCH_TIMESTAMP =  '24 hours'
 
 if not demisto.params().get('proxy', False):
     os.environ.pop('HTTP_PROXY', '')
@@ -51,10 +53,12 @@ COMMON_HEADERS = [
 
 
 def prepare_fetch_query(fetch_timestamp):
-    query = FETCH_QUERY_DICT[FETCH_QUERY]
+    query = FETCH_QUERY_DICT[demisto.params().get('fetch_query', 'Traps Threats')]
     if 'tms' in query:
         query += f" WHERE serverTime>'{fetch_timestamp}'"
-        FETCH_SEVERITY = demisto.params().get('traps_severity', ['all'])
+        FETCH_SEVERITY = demisto.params().get('traps_severity')
+        if not FETCH_SEVERITY:
+            FETCH_SEVERITY = ['all']
         if 'all' not in FETCH_SEVERITY:
             query += ' AND ('
             for index, severity in enumerate(FETCH_SEVERITY):
@@ -65,8 +69,12 @@ def prepare_fetch_query(fetch_timestamp):
             query += ')'
     if 'panw' in query:
         query += f' WHERE receive_time>{fetch_timestamp}'
-        FETCH_SEVERITY = demisto.params().get('firewall_severity', ['all'])
-        FETCH_SUBTYPE = demisto.params().get('firewall_subtype', ['all'])
+        FETCH_SEVERITY = demisto.params().get('firewall_severity')
+        if not FETCH_SEVERITY:
+            FETCH_SEVERITY = ['all']
+        FETCH_SUBTYPE = demisto.params().get('firewall_subtype')
+        if not FETCH_SUBTYPE:
+            FETCH_SUBTYPE = ['all']
         if 'all' not in FETCH_SUBTYPE:
             query += ' AND ('
             for index, subtype in enumerate(FETCH_SUBTYPE):
@@ -605,6 +613,8 @@ def main():
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
+            if demisto.params().get('isFetch'):
+                last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
             test_args = {
                 "query": "SELECT * FROM panw.threat LIMIT 1",
                 "startTime": 0,
