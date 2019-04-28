@@ -1296,6 +1296,8 @@
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
+        "LogRhythm": "Need to fix SOAP api",
+
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
