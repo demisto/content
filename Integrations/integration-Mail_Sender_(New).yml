@@ -52,13 +52,14 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     from email.mime.audio import MIMEAudio
     from email.mime.base import MIMEBase
     from email.mime.image import MIMEImage
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     from smtplib import SMTP
+    from smtplib import SMTPRecipientsRefused
     import base64
     import json
     import mimetypes
@@ -66,7 +67,6 @@ script:
     import re
     import random
     import string
-
     FQDN = demisto.params().get('fqdn')
 
     # Following methods raise exceptions so no need to check for return codes
@@ -357,8 +357,11 @@ script:
             demisto.results('Mail sent successfully')
         else:
             return_error('Command not recognized')
+    except SMTPRecipientsRefused, e:
+        error_msg = ''.join('{}\n'.format(val) for key, val in e.args[0].iteritems())
+        return_error("Encountered error: {}".format(error_msg))
     except Exception, e:
-        return_error(e)
+        return_error(str(e))
   type: python
   commands:
   - name: send-mail
@@ -395,22 +398,19 @@ script:
         email itself
       isArray: true
     - name: transientFile
-      description: Desired name for attached file. Multiple files are
-        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test 2,temporary file content,third file content"
-        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: Desired name for attached file. Multiple files are supported as
+        comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: transientFileContent
-      description: Content for attached file. Multiple files are
-        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test 2,temporary file content,third file content"
-        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: Content for attached file. Multiple files are supported as comma-separated
+        list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: transientFileCID
       description: CID for attached file if we want it inline. Multiple files are
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test 2,temporary file content,third file content"
-        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: templateParams
       description: 'Replace {varname} variables with values from this argument. Expected
@@ -419,3 +419,6 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
+releaseNotes: "Improved error messages"
+tests:
+  - Mail Sender (New) Test
