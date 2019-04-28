@@ -112,11 +112,11 @@
 	},
 	"unclassifiedCases": {},
 	"custom": true,
+	"releaseNotes": "Mapping to Phishing incidents",
 	"transformer": {
 		"simple": "",
 		"complex": null
 	},
 	"keyTypeMap": {},
-	"brandName": "OnboardingIntegration",
-	"releaseNotes": "Phishing Incident Mapping"
+	"brandName": "OnboardingIntegration"
 }
