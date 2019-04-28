@@ -920,13 +920,13 @@ def get_behavior():
     context = {
         'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
     }
-    headers = ['Name', 'Id', 'Impact Level', 'MaxImpact', 'Event Count', 'Type', 'Endpoint ID', 'Last Active']
+    headers = ['Name', 'Id', 'ImpactLevel', 'MaxImpact', 'EventCount', 'Type', 'EndpointId', 'LastActive']
     entry = {
         'Type': entryTypes['note'],
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('CounterTack Behavior information:', data, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('CounterTack Behavior information', data, headers, removeNull=True),
         'EntryContext': context
     }
     demisto.results(entry)
