@@ -424,4 +424,3 @@ outputs:
   description: Scan detection for this hash (True,False)
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
-releaseNotes: "-"

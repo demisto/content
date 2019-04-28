@@ -1642,4 +1642,3 @@ script:
 tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
-releaseNotes: Added fullResponseGlobal parameter. Determines whether to return all results, which can number in the thousands. If "true", returns all results and overrides the _fullResponse_ argument (if set to "false") in a command. If "false", the _fullResponse_ argument in the command determines how results are returned. implemented new mechanism for vt-private-get-url-report to support multiple urls and work around for issue with api, add context to get-url/file/domain-report commands, fix of Dbot score in ip-report command. Added mechanism that determines a file or URL are malicious based on trusted vendors.

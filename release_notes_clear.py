@@ -132,6 +132,8 @@ def remove_releaseNotes_folder(folder_path, files_extension,
     :param current_server_version: current server version
     """
     scan_files = glob.glob(os.path.join(folder_path, files_extension))
+    # support packages (subdirectories)
+    scan_files += glob.glob(os.path.join(folder_path, '*', files_extension))
 
     count = 0
     for path in scan_files:

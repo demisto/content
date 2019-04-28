@@ -397,4 +397,3 @@ outputs:
   type: number
 tests:
 - Wildfire Test
-releaseNotes: use wildfire-upload-file-url commands
