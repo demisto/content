@@ -186,7 +186,7 @@ try:
 
 
 # Log exceptions
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
