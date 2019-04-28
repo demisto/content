@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Management Center",
+            "playbookID": "SymantecMC_TestPlaybook"
+        },
+        {
             "integrations": "Tufin",
             "playbookID": "Tufin Test"
         },
@@ -1225,6 +1229,10 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Google BigQuery",
+            "playbookID": "Google BigQuery Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "af2f5a99-d70b-48c1-8c25-519732b733f2"
         },
@@ -1234,7 +1242,13 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
-            "playbookID": "Palo Alto Networks Cortex Test"
+            "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2",
+            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         }
     ],
     "skipped_tests": {
@@ -1281,6 +1295,9 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "RedCanary": "License expired",
+        "LogRhythm": "Need to fix SOAP api",
+
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1304,6 +1321,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Google BigQuery": "SSL problem",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
