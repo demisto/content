@@ -1,6 +1,7 @@
 {
 	"id": "incident_affecteddata",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-17T13:40:40.223872634Z",
 	"name": "Affected data",
 	"ownerOnly": false,

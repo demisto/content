@@ -1,6 +1,7 @@
 {
 	"id": "incident_emailaddress",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T12:02:08.966283663Z",
 	"name": "E-mail Address",
 	"ownerOnly": false,
