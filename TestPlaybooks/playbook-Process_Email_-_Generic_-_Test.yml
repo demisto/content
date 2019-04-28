@@ -365,8 +365,8 @@ tasks:
     task:
       id: 230e7c2b-b588-422c-8cbf-ccc8a51d62b7
       version: -1
-      name: Process Email - Generic_dev
-      playbookName: Process Email - Generic_dev
+      name: Process Email - Generic
+      playbookName: Process Email - Generic
       type: playbook
       iscommand: false
       brand: ""
