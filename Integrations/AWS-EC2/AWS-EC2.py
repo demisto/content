@@ -1781,213 +1781,213 @@ def create_network_acl_entry(args):
 
 
 def create_fleet(args):
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        obj = vars(client._client_config)
-        kwargs = {}
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)  # noqa:F841
+    kwargs = {}
 
-        LaunchSpecification = {}
+    LaunchSpecification = {}  # noqa:F841
 
-        BlockDeviceMappings = None
-        if args.get('DryRun') is not None:
-            kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+    BlockDeviceMappings = None  # noqa:F841
+    if args.get('DryRun') is not None:
+        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
 
-        if args.get('ClientToken') is not None:
-            kwargs.update({'ClientToken': (args.get('ClientToken'))})
+    if args.get('ClientToken') is not None:
+        kwargs.update({'ClientToken': (args.get('ClientToken'))})
 
-        SpotOptions = {}
-        if args.get('SpotAllocationStrategy') is not None:
-            SpotOptions.update({
-                'AllocationStrategy': args.get('SpotAllocationStrategy')
+    SpotOptions = {}
+    if args.get('SpotAllocationStrategy') is not None:
+        SpotOptions.update({
+            'AllocationStrategy': args.get('SpotAllocationStrategy')
+        })
+    if args.get('InstanceInterruptionBehavior') is not None:
+        SpotOptions.update({
+            'InstanceInterruptionBehavior': args.get('InstanceInterruptionBehavior')
+        })
+    if args.get('InstancePoolsToUseCount') is not None:
+        SpotOptions.update({
+            'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
+        })
+    if args.get('SingleInstanceType') is not None:
+        SpotOptions.update({'SingleInstanceType': True if args.get('SingleInstanceType') == 'True' else False})
+    if args.get('SingleAvailabilityZone') is not None:
+        SpotOptions.update({
+            'SingleAvailabilityZone': True if args.get('SingleAvailabilityZone') == 'True' else False
+        })
+    if args.get('MinTargetCapacity') is not None:
+        SpotOptions.update({
+            'MinTargetCapacity': int(args.get('MinTargetCapacity'))
+        })
+
+    if SpotOptions:
+        kwargs.update({'SpotOptions': SpotOptions})
+
+    OnDemandOptions = {}
+    if args.get('OnDemandAllocationStrategy') is not None:
+        OnDemandOptions.update({
+            'AllocationStrategy': args.get('OnDemandAllocationStrategy')
+        })
+    if args.get('OnDemandSingleInstanceType') is not None:
+        SpotOptions.update({
+            'SingleInstanceType': True if args.get('OnDemandSingleInstanceType') == 'True' else False
+        })
+    if args.get('OnDemandSingleAvailabilityZone') is not None:
+        SpotOptions.update({
+            'SingleAvailabilityZone': True if args.get('OnDemandSingleAvailabilityZone') == 'True' else False
+        })
+    if args.get('OnDemandMinTargetCapacity') is not None:
+        SpotOptions.update({
+            'MinTargetCapacity': int(args.get('OnDemandMinTargetCapacity'))
+        })
+
+    if OnDemandOptions:
+        kwargs.update({'OnDemandOptions': OnDemandOptions})
+
+    if args.get('ExcessCapacityTerminationPolicy') is not None:
+        kwargs.update({'ExcessCapacityTerminationPolicy': (args.get('ExcessCapacityTerminationPolicy'))})
+
+    LaunchTemplateConfigs = {}
+    LaunchTemplateSpecification = {}
+    if args.get('LaunchTemplateId') is not None:
+        LaunchTemplateSpecification.update({
+            'LaunchTemplateId': args.get('LaunchTemplateId')
+        })
+    if args.get('LaunchTemplateName') is not None:
+        LaunchTemplateSpecification.update({
+            'LaunchTemplateName': args.get('LaunchTemplateName')
+        })
+    if args.get('LaunchTemplateVersion') is not None:
+        LaunchTemplateSpecification.update({
+            'Version': str(args.get('LaunchTemplateVersion'))
+        })
+
+    if LaunchTemplateSpecification:
+        LaunchTemplateConfigs.update({'LaunchTemplateSpecification': LaunchTemplateSpecification})
+
+    Overrides = []
+
+    if args.get('OverrideInstanceType') is not None:
+        arr = multi_split(args.get('OverrideInstanceType'))
+        for i, item in enumerate(arr):
+            if len(Overrides) - 1 < i:
+                Overrides.append({})
+            Overrides[i].update({
+                'InstanceType': item
             })
-        if args.get('InstanceInterruptionBehavior') is not None:
-            SpotOptions.update({
-                'InstanceInterruptionBehavior': args.get('InstanceInterruptionBehavior')
-            })
-        if args.get('InstancePoolsToUseCount') is not None:
-            SpotOptions.update({
-                'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
-            })
-        if args.get('SingleInstanceType') is not None:
-            SpotOptions.update({'SingleInstanceType': True if args.get('SingleInstanceType') == 'True' else False})
-        if args.get('SingleAvailabilityZone') is not None:
-            SpotOptions.update({
-                'SingleAvailabilityZone': True if args.get('SingleAvailabilityZone') == 'True' else False
-            })
-        if args.get('MinTargetCapacity') is not None:
-            SpotOptions.update({
-                'MinTargetCapacity': int(args.get('MinTargetCapacity'))
+    if args.get('OverrideMaxPrice') is not None:
+        arr = multi_split(args.get('OverrideMaxPrice'))
+        for i, item in enumerate(arr):
+            if len(Overrides) - 1 < i:
+                Overrides.append({})
+            Overrides[i].update({
+                'MaxPrice': item
             })
 
-        if SpotOptions:
-            kwargs.update({'SpotOptions': SpotOptions})
-
-        OnDemandOptions = {}
-        if args.get('OnDemandAllocationStrategy') is not None:
-            OnDemandOptions.update({
-                'AllocationStrategy': args.get('OnDemandAllocationStrategy')
-            })
-        if args.get('OnDemandSingleInstanceType') is not None:
-            SpotOptions.update({
-                'SingleInstanceType': True if args.get('OnDemandSingleInstanceType') == 'True' else False
-            })
-        if args.get('OnDemandSingleAvailabilityZone') is not None:
-            SpotOptions.update({
-                'SingleAvailabilityZone': True if args.get('OnDemandSingleAvailabilityZone') == 'True' else False
-            })
-        if args.get('OnDemandMinTargetCapacity') is not None:
-            SpotOptions.update({
-                'MinTargetCapacity': int(args.get('OnDemandMinTargetCapacity'))
+    if args.get('OverrideSubnetId') is not None:
+        arr = multi_split(args.get('OverrideSubnetId'))
+        for i, item in enumerate(arr):
+            if len(Overrides) - 1 < i:
+                Overrides.append({})
+            Overrides[i].update({
+                'SubnetId': item
             })
 
-        if OnDemandOptions:
-            kwargs.update({'OnDemandOptions': OnDemandOptions})
-
-        if args.get('ExcessCapacityTerminationPolicy') is not None:
-            kwargs.update({'ExcessCapacityTerminationPolicy': (args.get('ExcessCapacityTerminationPolicy'))})
-
-        LaunchTemplateConfigs = {}
-        LaunchTemplateSpecification = {}
-        if args.get('LaunchTemplateId') is not None:
-            LaunchTemplateSpecification.update({
-                'LaunchTemplateId': args.get('LaunchTemplateId')
-            })
-        if args.get('LaunchTemplateName') is not None:
-            LaunchTemplateSpecification.update({
-                'LaunchTemplateName': args.get('LaunchTemplateName')
-            })
-        if args.get('LaunchTemplateVersion') is not None:
-            LaunchTemplateSpecification.update({
-                'Version': str(args.get('LaunchTemplateVersion'))
+    if args.get('OverrideAvailabilityZone') is not None:
+        arr = multi_split(args.get('OverrideAvailabilityZone'))
+        for i, item in enumerate(arr):
+            if len(Overrides) - 1 < i:
+                Overrides.append({})
+            Overrides[i].update({
+                'AvailabilityZone': item
             })
 
-        if LaunchTemplateSpecification:
-            LaunchTemplateConfigs.update({'LaunchTemplateSpecification': LaunchTemplateSpecification})
-
-        Overrides = []
-
-        if args.get('OverrideInstanceType') is not None:
-            arr = multi_split(args.get('OverrideInstanceType'))
-            for i, item in enumerate(arr):
-                if len(Overrides) - 1 < i:
-                    Overrides.append({})
-                Overrides[i].update({
-                    'InstanceType': item
-                })
-        if args.get('OverrideMaxPrice') is not None:
-            arr = multi_split(args.get('OverrideMaxPrice'))
-            for i, item in enumerate(arr):
-                if len(Overrides) - 1 < i:
-                    Overrides.append({})
-                Overrides[i].update({
-                    'MaxPrice': item
-                })
-
-        if args.get('OverrideSubnetId') is not None:
-            arr = multi_split(args.get('OverrideSubnetId'))
-            for i, item in enumerate(arr):
-                if len(Overrides) - 1 < i:
-                    Overrides.append({})
-                Overrides[i].update({
-                    'SubnetId': item
-                })
-
-        if args.get('OverrideAvailabilityZone') is not None:
-            arr = multi_split(args.get('OverrideAvailabilityZone'))
-            for i, item in enumerate(arr):
-                if len(Overrides) - 1 < i:
-                    Overrides.append({})
-                Overrides[i].update({
-                    'AvailabilityZone': item
-                })
-
-        if args.get('OverrideWeightedCapacity') is not None:
-            arr = multi_split(args.get('OverrideWeightedCapacity'))
-            for i, item in enumerate(arr):
-                if len(Overrides) - 1 < i:
-                    Overrides.append({})
-                Overrides[i].update({
-                    'WeightedCapacity': item
-                })
-
-        if args.get('OverridePriority') is not None:
-            arr = multi_split(args.get('OverridePriority'))
-            for i, item in enumerate(arr):
-                if len(Overrides) - 1 < i:
-                    Overrides.append({})
-                Overrides[i].update({
-                    'Priority': item
-                })
-
-        if Overrides:
-            LaunchTemplateConfigs.update({'Overrides': Overrides})
-
-        if LaunchTemplateConfigs:
-            kwargs.update({'LaunchTemplateConfigs': [LaunchTemplateConfigs]})
-
-        TargetCapacitySpecification = {}
-        if args.get('TotalTargetCapacity') is not None:
-            TargetCapacitySpecification.update({
-                'TotalTargetCapacity': int(args.get('TotalTargetCapacity'))
+    if args.get('OverrideWeightedCapacity') is not None:
+        arr = multi_split(args.get('OverrideWeightedCapacity'))
+        for i, item in enumerate(arr):
+            if len(Overrides) - 1 < i:
+                Overrides.append({})
+            Overrides[i].update({
+                'WeightedCapacity': item
             })
-        if args.get('OnDemandTargetCapacity') is not None:
-            TargetCapacitySpecification.update({
-                'OnDemandTargetCapacity': int(args.get('OnDemandTargetCapacity'))
+
+    if args.get('OverridePriority') is not None:
+        arr = multi_split(args.get('OverridePriority'))
+        for i, item in enumerate(arr):
+            if len(Overrides) - 1 < i:
+                Overrides.append({})
+            Overrides[i].update({
+                'Priority': item
             })
-        if args.get('SpotTargetCapacity') is not None:
-            TargetCapacitySpecification.update({
-                'SpotTargetCapacity': int(args.get('SpotTargetCapacity'))
+
+    if Overrides:
+        LaunchTemplateConfigs.update({'Overrides': Overrides})
+
+    if LaunchTemplateConfigs:
+        kwargs.update({'LaunchTemplateConfigs': [LaunchTemplateConfigs]})
+
+    TargetCapacitySpecification = {}
+    if args.get('TotalTargetCapacity') is not None:
+        TargetCapacitySpecification.update({
+            'TotalTargetCapacity': int(args.get('TotalTargetCapacity'))
+        })
+    if args.get('OnDemandTargetCapacity') is not None:
+        TargetCapacitySpecification.update({
+            'OnDemandTargetCapacity': int(args.get('OnDemandTargetCapacity'))
+        })
+    if args.get('SpotTargetCapacity') is not None:
+        TargetCapacitySpecification.update({
+            'SpotTargetCapacity': int(args.get('SpotTargetCapacity'))
+        })
+    if args.get('DefaultTargetCapacityType') is not None:
+        TargetCapacitySpecification.update({
+            'DefaultTargetCapacityType': args.get('DefaultTargetCapacityType')
+        })
+    if TargetCapacitySpecification:
+        kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
+
+    if args.get('TerminateInstancesWithExpiration') is not None:
+        kwargs.update({'TerminateInstancesWithExpiration': True if args.get(
+            'TerminateInstancesWithExpiration') == 'True' else False})
+
+    if args.get('Type') is not None:
+        kwargs.update({'Type': (args.get('Type'))})
+
+    if args.get('ValidFrom') is not None:
+        kwargs.update({'ValidFrom': (parse_date(args.get('ValidFrom')))})
+
+    if args.get('ValidUntil') is not None:
+        kwargs.update({'ValidUntil': (parse_date(args.get('ValidUntil')))})
+
+    if args.get('ReplaceUnhealthyInstances') is not None:
+        kwargs.update({'ReplaceUnhealthyInstances': (args.get('ReplaceUnhealthyInstances'))})
+
+    TagSpecifications = []
+    if args.get('Tags') is not None:
+        arr = args.get('Tags').split('#')
+        for i, item in enumerate(arr):
+            if len(TagSpecifications) - 1 < (i):
+                TagSpecifications.append({})
+            tg = item.split(':')
+            TagSpecifications[i].update({
+                'ResourceType': tg[0],
+                'Tags': parse_tag_field(tg[1])
             })
-        if args.get('DefaultTargetCapacityType') is not None:
-            TargetCapacitySpecification.update({
-                'DefaultTargetCapacityType': args.get('DefaultTargetCapacityType')
-            })
-        if TargetCapacitySpecification:
-            kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
 
-        if args.get('TerminateInstancesWithExpiration') is not None:
-            kwargs.update({'TerminateInstancesWithExpiration': True if args.get(
-                'TerminateInstancesWithExpiration') == 'True' else False})
-
-        if args.get('Type') is not None:
-            kwargs.update({'Type': (args.get('Type'))})
-
-        if args.get('ValidFrom') is not None:
-            kwargs.update({'ValidFrom': (parse_date(args.get('ValidFrom')))})
-
-        if args.get('ValidUntil') is not None:
-            kwargs.update({'ValidUntil': (parse_date(args.get('ValidUntil')))})
-
-        if args.get('ReplaceUnhealthyInstances') is not None:
-            kwargs.update({'ReplaceUnhealthyInstances': (args.get('ReplaceUnhealthyInstances'))})
-
-        TagSpecifications = []
-        if args.get('Tags') is not None:
-            arr = args.get('Tags').split('#')
-            for i, item in enumerate(arr):
-                if len(TagSpecifications) - 1 < (i):
-                    TagSpecifications.append({})
-                tg = item.split(':')
-                TagSpecifications[i].update({
-                    'ResourceType': tg[0],
-                    'Tags': parse_tag_field(tg[1])
-                })
-
-        if TagSpecifications:
-            kwargs.update({'TagSpecifications': TagSpecifications})
-        response = client.create_fleet(**kwargs)
-        data = [{
-            'FleetId': response['FleetId'],
-        }]
-        output = json.dumps(response)
-        raw = json.loads(output)
-        ec = {'AWS.EC2.Fleet': raw}
-        human_readable = tableToMarkdown('AWS EC2 Fleet', data)
-        return_outputs(human_readable, ec)
+    if TagSpecifications:
+        kwargs.update({'TagSpecifications': TagSpecifications})
+    response = client.create_fleet(**kwargs)
+    data = [{
+        'FleetId': response['FleetId'],
+    }]
+    output = json.dumps(response)
+    raw = json.loads(output)
+    ec = {'AWS.EC2.Fleet': raw}
+    human_readable = tableToMarkdown('AWS EC2 Fleet', data)
+    return_outputs(human_readable, ec)
 
 
 def delete_fleet(args):
@@ -2039,7 +2039,7 @@ def describe_fleets(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)
+    obj = vars(client._client_config)  # noqa:F841
     data = []
     kwargs = {}
     output = []
@@ -2112,10 +2112,11 @@ def describe_fleet_instances(args):
             'InstanceId': item['InstanceId'],
             'InstanceType': item['InstanceType'],
             'SpotInstanceRequestId': item['SpotInstanceRequestId'],
-            # 'InstanceHealth': item['InstanceHealth'],
             'FleetId': response['FleetId'],
             'Region': obj['_user_provided_options']['region_name'],
         })
+        if 'InstanceHealth' in item:
+            data.append({'InstanceHealth': item['InstanceHealth']})
         output.append(item)
 
     raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
@@ -2131,12 +2132,10 @@ def modify_fleet(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)
-    data = []
+    obj = vars(client._client_config)  # noqa:F841
+    data = []  # noqa:F841
     kwargs = {}
-    output = []
-    if args.get('filters') is not None:
-        kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
+    output = []  # noqa:F841
     if args.get('FleetId') is not None:
         kwargs.update({'FleetIds': args.get('FleetId')})
     if args.get('ExcessCapacityTerminationPolicy') is not None:
@@ -2166,7 +2165,7 @@ def modify_fleet(args):
     if response['Return'] == 'True':
         demisto.results("AWS EC2 Fleet was successfully modified")
     else:
-        demisto.results("AWS EC2 Fleet was not successfully modified"+response['Return'])
+        demisto.results("AWS EC2 Fleet was not successfully modified: "+response['Return'])
 
 
 def create_launch_template(args):
@@ -2176,10 +2175,10 @@ def create_launch_template(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)
+    obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
 
-    LaunchSpecification = {}
+    LaunchSpecification = {}  # noqa:F841
 
     BlockDeviceMappings = None
 
@@ -2224,6 +2223,8 @@ def create_launch_template(args):
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
         BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+    if args.get('NoDevice') is not None:
+        BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
     if BlockDeviceMappings:
         LaunchTemplateData.update({'BlockDeviceMappings': [BlockDeviceMappings]})
 
@@ -2312,6 +2313,30 @@ def create_launch_template(args):
                 'Tags': parse_tag_field(tg[1])
             })
 
+    ElasticGpuSpecifications = []
+    if args.get('ElasticGpuSpecificationsType') is not None:
+        arr = multi_split(args.get('ElasticGpuSpecificationsType'))
+        for i, item in enumerate(arr):
+            if len(ElasticGpuSpecifications) - 1 < i:
+                ElasticGpuSpecifications.append({})
+            ElasticGpuSpecifications[i].update({
+                'Type': item
+            })
+
+    if ElasticGpuSpecifications:
+        LaunchTemplateData.update({'ElasticGpuSpecifications': ElasticGpuSpecifications})
+
+    ElasticInferenceAccelerators = []
+    if args.get('ElasticInferenceAcceleratorsType') is not None:
+        arr = multi_split(args.get('ElasticInferenceAcceleratorsType'))
+        for i, item in enumerate(arr):
+            if len(ElasticInferenceAccelerators) - 1 < i:
+                ElasticInferenceAccelerators.append({})
+            ElasticInferenceAccelerators[i].update({
+                'Type': item
+            })
+    if ElasticGpuSpecifications:
+        LaunchTemplateData.update({'ElasticInferenceAccelerators': ElasticInferenceAccelerators})
     if TagSpecifications:
         LaunchTemplateData.update({'TagSpecifications': TagSpecifications})
     if args.get('securityGroupIds') is not None:
@@ -2384,7 +2409,7 @@ def delete_launch_template(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)
+    obj = vars(client._client_config)  # noqa:F841
     data = []
     kwargs = {}
     output = []
@@ -2418,7 +2443,7 @@ def modify_image_attribute(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)
+    obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
 
     if args.get('Attribute') is not None:
