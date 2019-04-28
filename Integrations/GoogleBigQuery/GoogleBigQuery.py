@@ -1,12 +1,13 @@
+""" IMPORTS """
+
+import os
+import json
+import requests
+from google.cloud import bigquery
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-''' IMPORTS '''
 
-import json
-import requests
-import os
-from google.cloud import bigquery
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -200,6 +201,6 @@ try:
 
 
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
     raise
