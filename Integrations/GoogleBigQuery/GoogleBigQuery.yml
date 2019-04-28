@@ -5,9 +5,8 @@ name: Google BigQuery
 display: Google BigQuery
 category: Database
 description: Integration for Google BigQuery, a data warehouse for querying and analyzing
-  large databases
-detaileddescription: Use these detailed instructions in order to retrieve the API
-  key
+  large databases.
+  In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
 configuration:
 - display: Google service account JSON (a credentials JSON generated from Google API
     Manager or from GCP console)
