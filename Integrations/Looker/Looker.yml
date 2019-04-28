@@ -24,6 +24,10 @@ configuration:
   name: client_secret
   required: true
   type: 4
+- display: Look name or ID to fetch incidents from
+  name: fetch_incidents_look
+  required: false
+  type: 0
 description: Looker is a business intelligence software and big data analytics platform
   that helps you explore, analyze and share real-time business analytics easily.
 display: Looker
@@ -68,8 +72,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Run a given look's query and return the results in the requested
-      format.
+    description: Run a saved look and return the results in the requested format.
     execution: false
     name: looker-run-look
     outputs:
@@ -106,7 +109,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Find saved looks matching search criteria
+    description: Find saved looks matching search criteria.
     execution: false
     name: looker-search-looks
     outputs:
@@ -125,10 +128,69 @@ script:
     - contextPath: Looker.Look.LastUpdated
       description: The time that the look was last updated
       type: Date
+  - arguments:
+    - default: false
+      description: Model name
+      isArray: false
+      name: model
+      required: false
+      secret: false
+    - default: false
+      description: Explore Name
+      isArray: false
+      name: view
+      required: false
+      secret: false
+    - default: false
+      description: List of fields to display.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters for the query, passed as a list with the format: "field
+        name: filter value", ...'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: Pivots
+      isArray: false
+      name: pivots
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results to return (0 for looker-determined limit)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Format of result
+      isArray: false
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
+      secret: false
+    deprecated: false
+    description: Run a query by defining it in the command arguments, rather than
+      a saved query in looker.
+    execution: false
+    name: looker-run-inline-query
+    outputs:
+    - contextPath: LookerResults.InlineQuery
+      description: Inline Query results
+      type: Unknown
   dockerimage: demisto/python3:3.7.3.221
-  isfetch: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python
 tests:
-  - Test-Looker
+- Test-Looker
