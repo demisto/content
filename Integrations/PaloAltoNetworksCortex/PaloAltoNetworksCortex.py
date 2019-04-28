@@ -15,7 +15,6 @@ DEMISTO_APP_TOKEN = demisto.params().get('token')
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 USE_SSL = not demisto.params().get('insecure', False)
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
-FETCH_QUERY = demisto.params().get('fetch_query', 'Traps Threats')
 
 if not demisto.params().get('proxy', False):
     os.environ.pop('HTTP_PROXY', '')
@@ -51,7 +50,7 @@ COMMON_HEADERS = [
 
 
 def prepare_fetch_query(fetch_timestamp):
-    query = FETCH_QUERY_DICT[FETCH_QUERY]
+    query = FETCH_QUERY_DICT[demisto.params().get('fetch_query', 'Traps Threats')]
     if 'tms' in query:
         query += f" WHERE serverTime>'{fetch_timestamp}'"
         FETCH_SEVERITY = demisto.params().get('traps_severity', ['all'])
