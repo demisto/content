@@ -1,12 +1,12 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 """ IMPORTS """
 
 import os
 import json
 import requests
 from google.cloud import bigquery
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
 
 # Disable insecure warnings
