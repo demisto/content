@@ -1,2 +1,2 @@
-  To allow us access to the security graph, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fms&client_id=d96bc816-4e4c-4d71-8aef-299d312db20d).
-  After authorising Demisto app, you will get a tenant ID, which should be inserted in the integration instance settings.
+To allow us access to the security graph, an admin has to authorize Demisto app using an admin consent flow. For more informatoin, see the [Microsoft Graph documentation](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fms&client_id=d96bc816-4e4c-4d71-8aef-299d312db20d).
+After Demisto app is authorized, you will get a tenant ID, which should be inserted in the integration instance settings.
