@@ -7,6 +7,7 @@ script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
   from pdfminer.pdfdocument import PDFEncryptionError
+  import traceback
   import sys
   reload(sys)
   sys.setdefaultencoding("utf-8")
@@ -59,7 +60,12 @@ script: |-
               mark_suspicious('Possibly encrypted file')
               sys.exit(0)
           except TypeError:
-              return_error("The script failed to read the PDF file. This might happen if your file is an image")
+              tb = traceback.format_exc()
+              if 'pdf = pdfx.PDFx(args.pdf)' in tb and "out_str = in_str.decode(enc['encoding'])" in tb:
+                  mark_suspicious("The script failed to read the PDF file. This might happen if your file is an image")
+              else:
+                  mark_suspicious("The script failed read PDF file due to an unknown issue")
+              sys.exit(0)
 
           if not pdf:
               demisto.results({
