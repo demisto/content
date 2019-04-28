@@ -58,6 +58,8 @@ script: |-
           except PDFEncryptionError:
               mark_suspicious('Possibly encrypted file')
               sys.exit(0)
+          except TypeError:
+              return_error("The script failed to read the PDF file. This might happen if your file is an image")
 
           if not pdf:
               demisto.results({
@@ -174,3 +176,4 @@ dockerimage: demisto/pdfx
 runas: DBotWeakRole
 tests:
   - Extract Indicators From File - test
+releaseNotes: "Added error for failing to read image file"
