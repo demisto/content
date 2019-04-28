@@ -1,6 +1,7 @@
 {
 	"typeId": "GDPR Data Breach",
 	"kind": "details",
+	"releaseNotes": "New Layout - GDPR Data Breach Incident",
 	"fromVersion": "4.5.0",
 	"layout": {
 		"id": "GDPR Data Breach",
