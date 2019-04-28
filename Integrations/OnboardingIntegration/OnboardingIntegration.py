@@ -28,90 +28,171 @@ INDICATORS_PER_INCIDENT = 5
 INDICATORS_TO_INCLUDE = ['ipv4_public', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
 EMAIL_PROTOCOLS = ['POP3', 'IMAP', 'SMTP', 'ESMTP', 'HTTP', 'HTTPS']
 # About the drop some mean regex right now disable-secrets-detection-start
-TEMPLATE_1 = [
-    '''<!doctype html>
+TEMPLATE_1 = '''<!doctype html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Simple Transactional Email</title>
-  </head>
-  <body class="" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; background-color:#f6f6f6; font-family:sans-serif; font-size:14px; line-height:1.4; margin:0; padding:0" bgcolor="#f6f6f6">
-    <span class="preheader" style="color:transparent; display:none; height:0; max-height:0; max-width:0; mso-hide:all; opacity:0; overflow:hidden; visibility:hidden; width:0" height="0" width="0">This is preheader text. Some clients will show this text as a preview.</span>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%; background-color:#f6f6f6" width="100%" bgcolor="#f6f6f6">
-      <tr>
-        <td style="font-family:sans-serif; font-size:14px; vertical-align:top" valign="top"> </td>
-        <td class="container" style="font-family:sans-serif; font-size:14px; vertical-align:top; display:block; max-width:580px; padding:10px; width:580px; margin:0 auto" valign="top" width="580">
-          <div class="content" style="box-sizing:border-box; display:block; margin:0 auto; max-width:580px; padding:10px">
 
-            <!-- START CENTERED WHITE CONTAINER -->
-            <table role="presentation" class="main" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%; background:#fff; border-radius:3px" width="100%">
+<head>
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Simple Transactional Email</title>
+</head>
 
-              <!-- START MAIN CONTENT AREA -->
-              <tr>
-                <td class="wrapper" style="font-family:sans-serif; font-size:14px; vertical-align:top; box-sizing:border-box; padding:20px" valign="top">
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%" width="100%">
-                    <tr>
-                      <td style="font-family:sans-serif; font-size:14px; vertical-align:top" valign="top">
-                        <p style="font-family:sans-serif; font-size:14px; font-weight:normal; margin:0; margin-bottom:15px">Hi there,</p>
-                        ''',
-    '                        <p style="font-family:sans-serif; font-size:14px; font-weight:normal; margin:0; margin-bottom:15px">{}</p>',
-    '''
-                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%; box-sizing:border-box" width="100%">
-                          <tbody>
-                            <tr>
-                              <td align="left" style="font-family:sans-serif; font-size:14px; vertical-align:top; padding-bottom:15px" valign="top">
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:auto" width="auto">
-                                  <tbody>
-                                    <tr>
-                                      <td style="font-family:sans-serif; font-size:14px; vertical-align:top; background-color:#3498db; border-radius:5px; text-align:center" valign="top" bgcolor="#3498db" align="center"> <a href="http://htmlemail.io" target="_blank" style="color:#fff; text-decoration:none; background-color:#3498db; border:solid 1px #3498db; border-radius:5px; box-sizing:border-box; cursor:pointer; display:inline-block; font-size:14px; font-weight:bold; margin:0; padding:12px 25px; text-transform:capitalize; border-color:#3498db" bgcolor="#3498db">Call To Action</a> </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <p style="font-family:sans-serif; font-size:14px; font-weight:normal; margin:0; margin-bottom:15px">This is a really simple email template. Its sole purpose is to get the recipient to click the button with no distractions.</p>
-                        <p style="font-family:sans-serif; font-size:14px; font-weight:normal; margin:0; margin-bottom:15px">Good luck! Hope it works.</p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
+<body class=""
+  style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
+        background-color:#f6f6f6; font-family:sans-serif; font-size:14px; line-height:1.4; margin:0; padding:0"
+  bgcolor="#f6f6f6">
+  <span class="preheader"
+    style="color:transparent; display:none; height:0; max-height:0; max-width:0; mso-hide:all; opacity:0;
+          overflow:hidden; visibility:hidden; width:0"
+    height="0" width="0">This is preheader text. Some clients will show this
+    text as a preview.</span>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+    class="body"
+    style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%; background-color:#f6f6f6"
+    width="100%" bgcolor="#f6f6f6">
+    <tr>
+      <td style="font-family:sans-serif; font-size:14px; vertical-align:top"
+        valign="top"> </td>
+      <td class="container"
+        style="font-family:sans-serif; font-size:14px; vertical-align:top; display:block; max-width:580px;
+              padding:10px; width:580px; margin:0 auto"
+        valign="top" width="580">
+        <div class="content"
+          style="box-sizing:border-box; display:block; margin:0 auto; max-width:580px; padding:10px">
+
+          <!-- START CENTERED WHITE CONTAINER -->
+          <table role="presentation" class="main"
+            style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%;
+                  background:#fff; border-radius:3px"
+            width="100%">
+
+            <!-- START MAIN CONTENT AREA -->
+            <tr>
+              <td class="wrapper"
+                style="font-family:sans-serif; font-size:14px; vertical-align:top; box-sizing:border-box; padding:20px"
+                valign="top">
+                <table role="presentation" border="0" cellpadding="0"
+                  cellspacing="0"
+                  style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%"
+                  width="100%">
+                  <tr>
+                    <td
+                      style="font-family:sans-serif; font-size:14px; vertical-align:top"
+                      valign="top">
+                      <p
+                        style="font-family:sans-serif; font-size:14px;
+                              font-weight:normal; margin:0; margin-bottom:15px">
+                        Hi there,</p>
+                      <p
+                        style="font-family:sans-serif; font-size:14px; font-weight:normal;
+                              margin:0; margin-bottom:15px">
+                        {}</p>
+                      <table role="presentation" border="0" cellpadding="0"
+                        cellspacing="0" class="btn btn-primary"
+                        style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0;
+                              width:100%; box-sizing:border-box"
+                        width="100%">
+                        <tbody>
+                          <tr>
+                            <td align="left"
+                              style="font-family:sans-serif; font-size:14px; vertical-align:top; padding-bottom:15px"
+                              valign="top">
+                              <table role="presentation" border="0"
+                                cellpadding="0" cellspacing="0"
+                                style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:auto"
+                                width="auto">
+                                <tbody>
+                                  <tr>
+                                    <td
+                                      style="font-family:sans-serif; font-size:14px; vertical-align:top;
+                                            background-color:#3498db; border-radius:5px; text-align:center"
+                                      valign="top" bgcolor="#3498db"
+                                      align="center"> <a
+                                        href="http://htmlemail.io"
+                                        target="_blank"
+                                        style="color:#fff; text-decoration:none; background-color:#3498db;
+                                              border:solid 1px #3498db; border-radius:5px; box-sizing:border-box;
+                                              cursor:pointer; display:inline-block; font-size:14px; font-weight:bold;
+                                              margin:0; padding:12px 25px; text-transform:capitalize;
+                                              border-color:#3498db"
+                                        bgcolor="#3498db">Call To Action</a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <p
+                        style="font-family:sans-serif; font-size:14px; font-weight:normal;
+                              margin:0; margin-bottom:15px">
+                        This is a really simple email template. Its sole purpose
+                        is to get the recipient to click the
+                        button with no distractions.</p>
+                      <p
+                        style="font-family:sans-serif; font-size:14px; font-weight:normal;
+                              margin:0; margin-bottom:15px">
+                        Good luck! Hope it works.</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
 
             <!-- END MAIN CONTENT AREA -->
+          </table>
+          <!-- END CENTERED WHITE CONTAINER -->
+
+          <!-- START FOOTER -->
+          <div class="footer"
+            style="clear:both; margin-top:10px; text-align:center; width:100%"
+            align="center" width="100%">
+            <table role="presentation" border="0" cellpadding="0"
+              cellspacing="0"
+              style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%"
+              width="100%">
+              <tr>
+                <td class="content-block"
+                  style="font-family:sans-serif; font-size:12px; vertical-align:top; padding-bottom:10px;
+                        padding-top:10px; color:#999; text-align:center"
+                  valign="top" align="center">
+                  <span class="apple-link"
+                    style="color:#999; font-size:12px; text-align:center"
+                    align="center">Company
+                    Inc, 3 Abbey Road, San Francisco CA 94102</span>
+                  <br> Don't like these emails? <a
+                    href="http://i.imgur.com/CScmqnj.gif"
+                    style="color:#999; text-decoration:underline; font-size:12px; text-align:center"
+                    align="center">Unsubscribe</a>.
+                </td>
+              </tr>
+              <tr>
+                <td class="content-block powered-by"
+                  style="font-family:sans-serif; font-size:12px; vertical-align:top; padding-bottom:10px;
+                        padding-top:10px; color:#999; text-align:center"
+                  valign="top" align="center">
+                  Powered by <a href="http://htmlemail.io"
+                    style="color:#999; text-decoration:none; font-size:12px; text-align:center"
+                    align="center">HTMLemail</a>.
+                </td>
+              </tr>
             </table>
-            <!-- END CENTERED WHITE CONTAINER -->
-
-            <!-- START FOOTER -->
-            <div class="footer" style="clear:both; margin-top:10px; text-align:center; width:100%" align="center" width="100%">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; width:100%" width="100%">
-                <tr>
-                  <td class="content-block" style="font-family:sans-serif; font-size:12px; vertical-align:top; padding-bottom:10px; padding-top:10px; color:#999; text-align:center" valign="top" align="center">
-                    <span class="apple-link" style="color:#999; font-size:12px; text-align:center" align="center">Company Inc, 3 Abbey Road, San Francisco CA 94102</span>
-                    <br> Don't like these emails? <a href="http://i.imgur.com/CScmqnj.gif" style="color:#999; text-decoration:underline; font-size:12px; text-align:center" align="center">Unsubscribe</a>.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block powered-by" style="font-family:sans-serif; font-size:12px; vertical-align:top; padding-bottom:10px; padding-top:10px; color:#999; text-align:center" valign="top" align="center">
-                    Powered by <a href="http://htmlemail.io" style="color:#999; text-decoration:none; font-size:12px; text-align:center" align="center">HTMLemail</a>.
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <!-- END FOOTER -->
-
           </div>
-        </td>
-        <td style="font-family:sans-serif; font-size:14px; vertical-align:top" valign="top"> </td>
-      </tr>
-    </table>
-  </body>
+          <!-- END FOOTER -->
+
+        </div>
+      </td>
+      <td style="font-family:sans-serif; font-size:14px; vertical-align:top"
+        valign="top"> </td>
+    </tr>
+  </table>
+</body>
+
 </html>
 '''
-]
-TEMPLATE_2 = ['''<html xmlns="http://www.w3.org/1999/xhtml">
+TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0;">
@@ -127,105 +208,259 @@ TEMPLATE_2 = ['''<html xmlns="http://www.w3.org/1999/xhtml">
 
 <!-- BODY -->
 <!-- Set message background color (twice) and text color (twice) -->
-<body topmargin="0" rightmargin="0" bottommargin="0" leftmargin="0" marginwidth="0" marginheight="0" width="100%" style="margin:0; min-width:100%; padding:0; -ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; height:100%; width:100%; background-color:#2D3445; border-collapse:collapse; border-spacing:0; color:#FFF" bgcolor="#2D3445" text="#FFFFFF" height="100%">
 
-<!-- SECTION / BACKGROUND -->
-<!-- Set message background color one again -->
-<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0; width:100%" class="background"><tr><td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0" bgcolor="#2D3445">
+<body topmargin="0" rightmargin="0" bottommargin="0" leftmargin="0"
+      marginwidth="0" marginheight="0" width="100%"
+      style="margin:0; min-width:100%; padding:0; -ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+            -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; height:100%; width:100%;
+            background-color:#2D3445; border-collapse:collapse; border-spacing:0; color:#FFF"
+      bgcolor="#2D3445" text="#FFFFFF" height="100%">
 
-<!-- WRAPPER -->
-<!-- Set wrapper width (twice) -->
-<table border="0" cellpadding="0" cellspacing="0" align="center" width="inherit" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; max-width:500px; padding:0; width:inherit" class="wrapper">
+    <!-- SECTION / BACKGROUND -->
+    <!-- Set message background color one again -->
+    <table width="100%" align="center" border="0" cellpadding="0"
+           cellspacing="0"
+           style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
+                 line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0;
+                 border-collapse:collapse; margin:0; padding:0; width:100%"
+           class="background">
+        <tr>
+            <td align="center" valign="top"
+                style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
+                      line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0;
+                      mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0"
+                bgcolor="#2D3445">
 
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0; padding-bottom:20px; padding-left:6.25%; padding-right:6.25%; padding-top:20px; width:87.5%" width="87.5%">
+                <!-- WRAPPER -->
+                <!-- Set wrapper width (twice) -->
+                <table border="0" cellpadding="0" cellspacing="0" align="center"
+                       width="inherit"
+                       style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                             -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                             border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                             max-width:500px; padding:0; width:inherit"
+                       class="wrapper">
 
-            <!-- PREHEADER -->
-            <!-- Set text color to background color -->
-            <div style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:1px; text-size-adjust:100%; color:#2D3445; display:none; font-size:1px; height:0; max-height:0; max-width:0; opacity:0; overflow:hidden; visibility:hidden" class="preheader" height="0">
-                Available on GitHub and CodePen. Highly compatible. Designer friendly. More than 50% of total email opens occurred on a mobile device — a mobile-friendly design is a must for email campaigns.</div>
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                                  margin:0; padding:0; padding-bottom:20px; padding-left:6.25%; padding-right:6.25%;
+                                  padding-top:20px; width:87.5%"
+                            width="87.5%">
 
-            <!-- LOGO -->
-            <!-- Image text color should be opposite to background color. Set your url, image src, alt and title. Alt text should fit the image size. Real image size should be x2. URL format: http://domain.com/?utm_source={{Campaign-Source}}&utm_medium=email&utm_content=logo&utm_campaign={{Campaign-Name}} -->
-            <a target="_blank" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; color:#FFF; text-decoration:none" href="https://github.com/konsav/email-templates/"><img border="0" vspace="0" hspace="0" src="https://raw.githubusercontent.com/konsav/email-templates/master/images/logo-white.png" width="100" height="30" alt="Logo" title="Logo" style="-ms-interpolation-mode:bicubic; border:none; line-height:100%; outline:none; text-decoration:none; color:#FFF; display:block; font-size:10px; margin:0; padding:0"></a>
+                            <!-- PREHEADER -->
+                            <!-- Set text color to background color -->
+                            <div style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                       -webkit-text-size-adjust:100%; line-height:1px; text-size-adjust:100%;
+                                       color:#2D3445; display:none; font-size:1px; height:0; max-height:0; max-width:0;
+                                       opacity:0; overflow:hidden; visibility:hidden"
+                                 class="preheader" height="0">
+                                Available on GitHub and CodePen. Highly
+                                compatible. Designer friendly. More than
+                                50% of total email opens occurred on a mobile
+                                device — a mobile-friendly design is a must
+                                for email campaigns.</div>
 
-        </td>
-    </tr>
+                            <!-- LOGO -->
+                            <!-- Image text color should be opposite to background color. Set your url, image src, 
+                                alt and title. Alt text should fit the image size. Real image size should be x2. -->
+                            <a target="_blank"
+                               style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                     -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                     color:#FFF; text-decoration:none"
+                               href="https://github.com/konsav/email-templates/"><img
+                                     border="0" vspace="0" hspace="0"
+                                     src="https://raw.githubusercontent.com/konsav/
+                                         email-templates/master/images/logo-white.png"
+                                     width="100" height="30" alt="Logo"
+                                     title="Logo"
+                                     style="-ms-interpolation-mode:bicubic; border:none; line-height:100%;
+                                           outline:none; text-decoration:none; color:#FFF; display:block;
+                                           font-size:10px; margin:0; padding:0"></a>
 
-    <!-- HERO IMAGE -->
-    <!-- Image text color should be opposite to background color. Set your url, image src, alt and title. Alt text should fit the image size. Real image size should be x2 (wrapper x2). Do not set height for flexible images (including "auto"). URL format: http://domain.com/?utm_source={{Campaign-Source}}&utm_medium=email&utm_content={{Ìmage-Name}}&utm_campaign={{Campaign-Name}} -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0; padding-top:0" class="hero"><a target="_blank" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; color:#FFF; text-decoration:none" href="https://github.com/konsav/email-templates/"><img border="0" vspace="0" hspace="0" src="https://raw.githubusercontent.com/konsav/email-templates/master/images/hero-block.png" alt="Please enable images to view this content" title="Hero Image" width="87.5%" style="-ms-interpolation-mode:bicubic; border:none; line-height:100%; outline:none; text-decoration:none; color:#FFF; display:block; font-size:13px; margin:0; max-width:340px; padding:0; width:87.5%"></a></td>
-    </tr>
+                        </td>
+                    </tr>
 
-    <!-- SUPHEADER -->
-    <!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:150%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; color:#FFF; font-family:sans-serif; font-size:14px; font-weight:400; letter-spacing:2px; margin:0; padding:0; padding-bottom:0; padding-left:6.25%; padding-right:6.25%; padding-top:27px; width:87.5%" class="supheader" width="87.5%">
-                INTRODUCING
-        </td>
-    </tr>
+                    <!-- HERO IMAGE -->
+                    <!-- Image text color should be opposite to background color. Set your url, image src,
+                         alt and title. Alt text should fit the image size. Real image size should be x2 
+                         (wrapper x2). Do not set height for flexible images (including "auto"). -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                                  margin:0; padding:0; padding-top:0"
+                            class="hero"><a target="_blank"
+                               style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                     -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                     color:#FFF; text-decoration:none"
+                               href="https://github.com/konsav/email-templates/"><img
+                                     border="0" vspace="0" hspace="0"
+                                     src="https://raw.githubusercontent.com/konsav/
+                                         email-templates/master/images/hero-block.png"
+                                     alt="Please enable images to view this content"
+                                     title="Hero Image" width="87.5%"
+                                     style="-ms-interpolation-mode:bicubic; border:none;
+                                           line-height:100%; outline:none; text-decoration:none;
+                                           color:#FFF; display:block; font-size:13px; margin:0;
+                                           max-width:340px; padding:0; width:87.5%"></a>
+                        </td>
+                    </tr>
 
-    <!-- HEADER -->
-    <!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:130%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; color:#FFF; font-family:sans-serif; font-size:24px; font-weight:bold; margin:0; padding:0; padding-left:6.25%; padding-right:6.25%; padding-top:5px; width:87.5%" class="header" width="87.5%">
-                Responsive HTML email templates
-        </td>
-    </tr>
+                    <!-- SUPHEADER -->
+                    <!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:150%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                                  color:#FFF; font-family:sans-serif; font-size:14px; font-weight:400;
+                                  letter-spacing:2px; margin:0; padding:0; padding-bottom:0; padding-left:6.25%;
+                                  padding-right:6.25%; padding-top:27px; width:87.5%"
+                            class="supheader" width="87.5%">
+                            INTRODUCING
+                        </td>
+                    </tr>
 
-    <!-- PARAGRAPH -->
-    <!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:160%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; color:#FFF; font-family:sans-serif; font-size:17px; font-weight:400; margin:0; padding:0; padding-left:6.25%; padding-right:6.25%; padding-top:15px; width:87.5%" class="paragraph" width="87.5%">
-        ''',
-              '                {}',
-        '''
-        </td>
-    </tr>
+                    <!-- HEADER -->
+                    <!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:130%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                                  color:#FFF; font-family:sans-serif; font-size:24px; font-weight:bold; margin:0;
+                                  padding:0; padding-left:6.25%; padding-right:6.25%; padding-top:5px; width:87.5%"
+                            class="header" width="87.5%">
+                            Responsive HTML email templates
+                        </td>
+                    </tr>
 
-    <!-- BUTTON -->
-    <!-- Set button background color at TD, link/text color at A and TD, font family ("sans-serif" or "Georgia, serif") at TD. For verification codes add "letter-spacing: 5px;". Link format: http://domain.com/?utm_source={{Campaign-Source}}&utm_medium=email&utm_content={{Button-Name}}&utm_campaign={{Campaign-Name}} -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0; padding-bottom:5px; padding-left:6.25%; padding-right:6.25%; padding-top:25px; width:87.5%" class="button" width="87.5%"><a href="https://github.com/konsav/email-templates/" target="_blank" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; color:#FFF; text-decoration:underline">
-                </a><table border="0" cellpadding="0" cellspacing="0" align="center" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; max-width:240px; min-width:120px; padding:0"><tr><td align="center" valign="middle" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; -khtml-border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; margin:0; padding:12px 24px; text-decoration:underline" bgcolor="#E9703E"><a target="_blank" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:120%; text-size-adjust:100%; color:#FFF; font-family:sans-serif; font-size:17px; font-weight:400; text-decoration:underline" href="https://github.com/konsav/email-templates/">
-                        View on GitHub
-                    </a>
-            </td></tr></table>
-        </td>
-    </tr>
+                    <!-- PARAGRAPH -->
+                    <!-- Set text color and font family ("sans-serif" or "Georgia, serif").
+                        Duplicate all text styles in links, including line-height -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:160%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                                  color:#FFF; font-family:sans-serif; font-size:17px; font-weight:400; margin:0;
+                                  padding:0; padding-left:6.25%; padding-right:6.25%; padding-top:15px; width:87.5%"
+                            class="paragraph" width="87.5%">
+                            {}
+                        </td>
+                    </tr>
 
-    <!-- LINE -->
-    <!-- Set line color -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; margin:0; padding:0; padding-left:6.25%; padding-right:6.25%; padding-top:30px; width:87.5%" class="line" width="87.5%"><hr color="#565F73" align="center" width="100%" size="1" noshade style="margin: 0; padding: 0;">
-        </td>
-    </tr>
+                    <!-- BUTTON -->
+                    <!-- Set button background color at TD, link/text color at A and TD, font family ("sans-serif"
+                         or "Georgia, serif") at TD. For verification codes add "letter-spacing: 5px;". -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse;
+                                  margin:0; padding:0; padding-bottom:5px; padding-left:6.25%; padding-right:6.25%;
+                                  padding-top:25px; width:87.5%"
+                            class="button" width="87.5%"><a
+                               href="https://github.com/konsav/email-templates/"
+                               target="_blank"
+                               style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                     -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                     color:#FFF; text-decoration:underline">
+                            </a>
+                            <table border="0" cellpadding="0" cellspacing="0"
+                                   align="center"
+                                   style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                         -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                         border-spacing:0; mso-table-lspace:0; mso-table-rspace:0;
+                                         border-collapse:collapse; max-width:240px; min-width:120px; padding:0">
+                                <tr>
+                                    <td align="center" valign="middle"
+                                        style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                              -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                              border-spacing:0; mso-table-lspace:0; mso-table-rspace:0;
+                                              border-collapse:collapse; -khtml-border-radius:4px;
+                                              -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;
+                                              margin:0; padding:12px 24px; text-decoration:underline"
+                                        bgcolor="#E9703E"><a target="_blank"
+                                           style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                                 -webkit-text-size-adjust:100%; line-height:120%;
+                                                 text-size-adjust:100%; color:#FFF; font-family:sans-serif;
+                                                 font-size:17px; font-weight:400; text-decoration:underline"
+                                           href="https://github.com/konsav/email-templates/">
+                                            View on GitHub
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-    <!-- FOOTER -->
-    <!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
-    <tr>
-        <td align="center" valign="top" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:150%; text-size-adjust:100%; border-spacing:0; mso-table-lspace:0; mso-table-rspace:0; border-collapse:collapse; color:#828999; font-family:sans-serif; font-size:13px; font-weight:400; margin:0; padding:0; padding-bottom:20px; padding-left:6.25%; padding-right:6.25%; padding-top:10px; width:87.5%" class="footer" width="87.5%">
+                    <!-- LINE -->
+                    <!-- Set line color -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:100%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0;
+                                  border-collapse:collapse; margin:0; padding:0; padding-left:6.25%;
+                                  padding-right:6.25%; padding-top:30px; width:87.5%"
+                            class="line" width="87.5%">
+                            <hr color="#565F73" align="center" width="100%"
+                                size="1" noshade style="margin: 0; padding: 0;">
+                        </td>
+                    </tr>
 
-                This email template was sent to you becouse we want to make the world a better place. You could change your <a href="https://github.com/konsav/email-templates/" target="_blank" style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%; line-height:150%; text-size-adjust:100%; color:#828999; font-family:sans-serif; font-size:13px; font-weight:400; text-decoration:underline">subscription settings</a> anytime.
+                    <!-- FOOTER -->
+                    <!-- Set text color and font family ("sans-serif" or "Georgia, serif").
+                        Duplicate all text styles in links, including line-height -->
+                    <tr>
+                        <td align="center" valign="top"
+                            style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                  -webkit-text-size-adjust:100%; line-height:150%; text-size-adjust:100%;
+                                  border-spacing:0; mso-table-lspace:0; mso-table-rspace:0;
+                                  border-collapse:collapse; color:#828999; font-family:sans-serif;
+                                  font-size:13px; font-weight:400; margin:0; padding:0; padding-bottom:20px;
+                                  padding-left:6.25%; padding-right:6.25%; padding-top:10px; width:87.5%"
+                            class="footer" width="87.5%">
 
-                <!-- ANALYTICS -->
-                <!-- http://www.google-analytics.com/collect?v=1&tid={{UA-Tracking-ID}}&cid={{Client-ID}}&t=event&ec=email&ea=open&cs={{Campaign-Source}}&cm=email&cn={{Campaign-Name}} -->
-                <img width="1" height="1" border="0" vspace="0" hspace="0" style="-ms-interpolation-mode:bicubic; border:none; line-height:100%; outline:none; text-decoration:none; display:block; margin:0; padding:0" src="https://raw.githubusercontent.com/konsav/email-templates/master/images/tracker.png">
+                            This email template was sent to you becouse we want
+                            to make the world a better place. You could change
+                            your <a
+                               href="https://github.com/konsav/email-templates/"
+                               target="_blank"
+                               style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+                                     -webkit-text-size-adjust:100%; line-height:150%; text-size-adjust:100%;
+                                     color:#828999; font-family:sans-serif; font-size:13px; font-weight:400;
+                                     text-decoration:underline">subscription
+                                settings</a> anytime.
 
-        </td>
-    </tr>
+                            <!-- ANALYTICS -->
+                            <img width="1" height="1" border="0" vspace="0"
+                                 hspace="0"
+                                 style="-ms-interpolation-mode:bicubic; border:none; line-height:100%; outline:none;
+                                       text-decoration:none; display:block; margin:0; padding:0"
+                                 src="https://raw.githubusercontent.com/
+                                     konsav/email-templates/master/images/tracker.png">
 
-<!-- End of WRAPPER -->
-</table>
+                        </td>
+                    </tr>
 
-<!-- End of SECTION / BACKGROUND -->
-</td></tr></table>
+                    <!-- End of WRAPPER -->
+                </table>
+
+                <!-- End of SECTION / BACKGROUND -->
+            </td>
+        </tr>
+    </table>
 
 </body>
+
 </html>
 '''
-              ]
 # Drops the mic disable-secrets-detection-end
 EMAIL_TEMPLATES = [TEMPLATE_1, TEMPLATE_2]
 
@@ -311,7 +546,7 @@ def inject_content_into_template(plaintext):
     """
     # Choose random email html template
     choice = random.randint(0, len(EMAIL_TEMPLATES) - 1)
-    chosen_template = ''.join(EMAIL_TEMPLATES[choice])
+    chosen_template = EMAIL_TEMPLATES[choice]
     html = chosen_template.format(plaintext)
     return html
 
@@ -712,4 +947,5 @@ try:
     elif demisto.command() in COMMANDS.keys():
         COMMANDS[demisto.command()]()
 except Exception as e:
-    return_error(e.message)
+    # return_error(e.message)
+    raise e
