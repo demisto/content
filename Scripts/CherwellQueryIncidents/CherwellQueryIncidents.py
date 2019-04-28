@@ -82,7 +82,7 @@ def build_output_list():
 
 
 result = demisto.executeCommand('cherwell-query-business-object', build_arguments())[0]
-business_object_list = result.get('EntryContext').items()[0][1]
+business_object_list = list(result.get('EntryContext').items())[0][1]
 md = tableToMarkdown('Query Results', business_object_list, headers=build_output_list(), headerTransform=pascalToSpace)
 demisto.results({
     'Type': result.get('Type'),

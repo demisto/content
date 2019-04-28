@@ -53,7 +53,6 @@ OUTPUT_PATH = 'Cherwell.BusinessObjects'
 # ############################## EXECUTION PART ######################################
 # ####################################################################################
 
-
 def build_arguments():
     arguments = {
         'type': BUSINESS_OBJECT_TYPE,
@@ -81,18 +80,19 @@ def build_output_list():
 
 
 result = demisto.executeCommand('cherwell-get-business-object', build_arguments())[0]
-business_object = result.get('EntryContext').items()[0][1]
+business_object = list(result.get('EntryContext').items())[0][1]
 md = tableToMarkdown('{0}: {1}'.format(BUSINESS_OBJECT_TYPE.capitalize(), args.get("id_value")),
                      business_object,
                      headers=build_output_list(),
                      headerTransform=pascalToSpace)
-context_output_path = f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)'
-demisto.results({
-    'Type': result.get('Type'),
-    'ContentsFormat': result.get('ContentsFormat'),
-    'Contents': result.get('Contents'),
-    'HumanReadable': md,
-    'EntryContext': {
-        context_output_path: build_context(business_object, build_output_list())
-    }
-})
+# context_output_path = f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)'
+
+# demisto.results({
+#     'Type': result.get('Type'),
+#     'ContentsFormat': result.get('ContentsFormat'),
+#     'Contents': result.get('Contents'),
+#     'HumanReadable': md,
+#     'EntryContext': {
+#         f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)': build_context(business_object, build_output_list())
+#     }
+# })
