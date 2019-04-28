@@ -210,7 +210,8 @@ if country in AUTHORITY_DETAILS:
     contents = country
     context = createContext(new_country)
     context['Country'] = country
-    human_readable = tableToMarkdown('{} - Supervisory Authority Information'.format(country), new_country, headers=headers)
+    human_readable = tableToMarkdown('{} - Supervisory Authority Information'.format(country),
+                                     new_country, headers=headers)
     outputs = {'GDPR.Authority(val.ID && val.ID === obj.ID)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
