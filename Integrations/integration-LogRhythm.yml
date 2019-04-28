@@ -312,9 +312,6 @@ script:
 
     var myTimezone = new Date().getTimezoneOffset();
     var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
-    if (params.timeZone === '0') {
-        tz = 0;
-    }
 
     var fixUrl = function(base) {
         res = base;
@@ -1108,18 +1105,25 @@ script:
     outputs:
     - contextPath: LogRhythm.Alarm.RBPMax
       description: Alarm maximum RBP(Risk Based Prioritization).
+      type: number
     - contextPath: LogRhythm.Alarm.RuleName
       description: Alarm rule name.
+      type: string
     - contextPath: LogRhythm.Alarm.EntityName
       description: entity name
+      type: string
     - contextPath: LogRhythm.Alarm.Date
       description: Alarm date.
+      type: date
     - contextPath: LogRhythm.Alarm.Status
       description: Alarm status.
+      type: string
     - contextPath: LogRhythm.Alarm.RBPAvg
       description: Alarm average RBP(Risk Based Prioritization).
+      type: number
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
+      type: number
     description: Retrieve a single alarm by the unique alarm identifier
   - name: lr-get-alarm-events-by-id
     arguments:
@@ -1136,36 +1140,51 @@ script:
     outputs:
     - contextPath: LogRhythm.Alarm.Event.LogSourceName
       description: Event log source.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.Command
       description: Event command.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.Subject
       description: Event subject.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.Process
       description: Event process name.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.ClassificationName
       description: Event classification.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.ImpactedEntityName
       description: Event entity (Impacted).
+      type: string
     - contextPath: LogRhythm.Alarm.Event.OriginEntityName
       description: Event entity (Origin).
+      type: string
     - contextPath: LogRhythm.Alarm.Event.VendorMsgID
       description: Event vendor Message ID.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.NormalDate
       description: Event date.
+      type: date
     - contextPath: LogRhythm.Alarm.Event.Session
       description: Event session.
     - contextPath: LogRhythm.Alarm.Event.ImpactedHostName
       description: Event hostname (Impacted).
+      type: string
     - contextPath: LogRhythm.Alarm.Event.CommonEventName
       description: Event name.
+      type: string
     - contextPath: LogRhythm.Alarm.Event.ImpactedZoneName
       description: Event zone (Impacted).
+      type: string
     - contextPath: LogRhythm.Alarm.Event.OriginZoneName
       description: Event zone (Origin).
+      type: string
     - contextPath: LogRhythm.Alarm.Event.Severity
       description: Event severity.
+      type: string
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
+      type: number
     description: Retrieve a list of events associated to this alarm
   - name: lr-get-alarm-history-by-id
     arguments:
@@ -1188,16 +1207,22 @@ script:
     outputs:
     - contextPath: LogRhythm.Alarm.History.Comment
       description: Alarm history comment.
+      type: string
     - contextPath: LogRhythm.Alarm.History.DateInserted
       description: Alarm history record date.
+      type: date
     - contextPath: LogRhythm.Alarm.History.ID
       description: The unique id of the history record.
+      type: number
     - contextPath: LogRhythm.Alarm.History.PersonID
       description: Alarm history person id
+      type: number
     - contextPath: LogRhythm.Alarm.History.PersonName
       description: Alarm history person name
+      type: string
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
+      type: number
     description: Retrieve a list of alarm status and comment updates
   - name: lr-update-alarm-status
     arguments:
@@ -1225,13 +1250,16 @@ script:
     outputs:
     - contextPath: LogRhythm.Alarm.Status
       description: Alarm new status.
+      type: string
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
+      type: number
     description: Update alarm status
   - name: lr-get-alarms
     arguments:
     - name: start-date
-      description: 'Start date for the data query. For example: start-date="2018-03-27"'
+      description: 'Start date for the data query, for example: "2018-03-27". Only
+        use this argument if the time_frame argument is "Custom".'
     - name: end-date
       description: 'End date for the data query. For example: end-date="2018-04-08"'
     - name: all-users
@@ -1274,18 +1302,25 @@ script:
     outputs:
     - contextPath: LogRhythm.Alarm.RBPMax
       description: Alarm maximum RBP(Risk Based Prioritization).
+      type: number
     - contextPath: LogRhythm.Alarm.RuleName
       description: Alarm rule name.
+      type: string
     - contextPath: LogRhythm.Alarm.EntityName
       description: entity name.
+      type: string
     - contextPath: LogRhythm.Alarm.Date
       description: Alarm date.
+      type: date
     - contextPath: LogRhythm.Alarm.Status
       description: Alarm status.
+      type: string
     - contextPath: LogRhythm.Alarm.RBPAvg
       description: Alarm average RBP(Risk Based Prioritization).
+      type: number
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
+      type: number
     description: Retrieve alarms in a given time period, optionally filtered by the
       alarm status or entity
   - name: lr-get-hosts-by-entity-id
@@ -1296,26 +1331,37 @@ script:
     outputs:
     - contextPath: LogRhythm.Host.DateUpdated
       description: The last update date of the host.
+      type: date
     - contextPath: LogRhythm.Host.EntityID
       description: The entity ID.
+      type: number
     - contextPath: LogRhythm.Host.HostID
       description: The unique ID of the host object.
+      type: number
     - contextPath: LogRhythm.Host.HostName
       description: ' The name of the host.'
+      type: string
     - contextPath: LogRhythm.Host.LongDescription
       description: ' The long description of the host.'
+      type: string
     - contextPath: LogRhythm.Host.OSVersion
       description: ' The host OS version.'
+      type: string
     - contextPath: LogRhythm.Host.RecordStatus
       description: The record status of the host.
+      type: string
     - contextPath: LogRhythm.Host.RiskThreshold
       description: The record status of the host.
+      type: string
     - contextPath: LogRhythm.Host.ShortDescription
       description: ' The short description of the host. '
+      type: string
     - contextPath: LogRhythm.Host.ThreatThreshold
       description: The threat threshold of the host.
+      type: string
     - contextPath: LogRhythm.Host.OSType
       description: The type of the host OS.
+      type: string
     description: Retrieve a list of hosts for a given entity, or an empty list if
       none is found.
   - name: lr-add-host
@@ -1366,7 +1412,7 @@ script:
       description: The type of the host OS.
       defaultValue: Unknown
     - name: os-version
-      description: ' The version of the host OS.'
+      description: The version of the host OS.
       defaultValue: None
     - name: threat-threshold
       auto: PREDEFINED
@@ -1392,26 +1438,37 @@ script:
     outputs:
     - contextPath: LogRhythm.Host.DateUpdated
       description: The last update date of the host.
+      type: date
     - contextPath: LogRhythm.Host.EntityID
       description: The entity ID.
+      type: number
     - contextPath: LogRhythm.Host.HostID
       description: The unique ID of the host object.
+      type: number
     - contextPath: LogRhythm.Host.HostName
-      description: ' The name of the host.'
+      description: The name of the host.
+      type: string
     - contextPath: LogRhythm.Host.LongDescription
-      description: ' The long description of the host.'
+      description: The long description of the host.
+      type: string
     - contextPath: LogRhythm.Host.OSVersion
-      description: ' The host OS version.'
+      description: The host OS version.
+      type: string
     - contextPath: LogRhythm.Host.RecordStatus
       description: The record status of the host.
+      type: string
     - contextPath: LogRhythm.Host.RiskThreshold
       description: The record status of the host.
+      type: string
     - contextPath: LogRhythm.Host.ShortDescription
-      description: ' The short description of the host. '
+      description: 'The short description of the host. '
+      type: string
     - contextPath: LogRhythm.Host.ThreatThreshold
       description: The threat threshold of the host.
+      type: string
     - contextPath: LogRhythm.Host.OSType
       description: The type of the host OS.
+      type: string
     description: Add new host to entity
   - name: lr-execute-query
     arguments:
@@ -1419,7 +1476,8 @@ script:
       required: true
       description: Filter log message by this argument.
     - name: start-date
-      description: 'Start date for the data query. For example: start-date="2018-04-20"'
+      description: 'Start date for the data query, for example: "2018-03-27". Only
+        use this argument if the time_frame argument is "Custom".'
     - name: end-date
       description: 'End date for the data query. For example: end-date="2018-04-20"'
     - name: time_frame
@@ -1437,62 +1495,80 @@ script:
     - contextPath: LogRhythm.Log.ClassificationName
       description: The name of one of three major activity groups–Operations, Audit,
         or Security–and a more specific sub-classification.
+      type: string
     - contextPath: LogRhythm.Log.CommonEventName
       description: A short, plain-language description of the log that determines
         its Classification.
+      type: string
     - contextPath: LogRhythm.Log.Count
       description: The number of times the log entry occurred when aggregated with
         other identical log entries.
+      type: number
     - contextPath: LogRhythm.Log.Direction
       description: Direction by name of activity between a log's Origin and Impacted
         Zones. Values can be Internal, External, Outbound, Local, or Unknown.
+      type: string
     - contextPath: LogRhythm.Log.EntityName
       description: The name of the entity.
+      type: string
     - contextPath: LogRhythm.Log.ImpactedHostName
       description: The name of the Host such as a DNS name or NetBIOS name impacted
         by the log activity.
+      type: string
     - contextPath: LogRhythm.Log.ImpactedZone
       description: The Impacted Zone Name.
+      type: string
     - contextPath: LogRhythm.Log.LogDate
       description: The creation date contained in the log. It can be in UTC or user-selected
         time zone.
+      type: date
     - contextPath: LogRhythm.Log.LogMessage
       description: The log message generated due to the activity detected by the source.
+      type: string
     - contextPath: LogRhythm.Log.LogSourceHost
       description: The system or device where the Log Source originates.
+      type: string
     - contextPath: LogRhythm.Log.LogSourceHostName
       description: The name of the log source host.
-    - contextPath: LogRhythm.Log.LogSourceHostName
-      description: The name of the log source host.
-    - contextPath: LogRhythm.Log.LogSourceHostName
-      description: The name of the log source host.
+      type: string
     - contextPath: LogRhythm.Log.MPERuleName
       description: Message Processing Engine (MPE) Rule. It identifies and normalizes
         a log messages and assigns it a Common Event.
+      type: string
     - contextPath: LogRhythm.Log.MessageType
       description: 'The Message Type that could be: Message, Log, Known Log, Event,
         Alarm.'
+      type: string
     - contextPath: LogRhythm.Log.OriginEntityName
       description: The resolved Entity of the origin host.
+      type: string
     - contextPath: LogRhythm.Log.OriginHostName
       description: The name of the Host such as a DNS name or NetBIOS name that was
         the origin of the log activity.
+      type: string
     - contextPath: LogRhythm.Log.OriginZone
       description: The enumeration value of the resolved Zone that was the origin
         of the activity - Internal, External, or DMZ.
+      type: string
     - contextPath: LogRhythm.Log.Session
       description: User, system, or application session.
+      type: string
     - contextPath: LogRhythm.Log.Priority
       description: Calculated Risk Based Priority (RBP) of the log entry.
+      type: number
     - contextPath: LogRhythm.Log.Severity
       description: Value indicating severity of the log.
+      type: string
     - contextPath: LogRhythm.Log.VendorMsgID
       description: Unique, vendor-assigned value that IDs the log message.
+      type: number
     - contextPath: LogRhythm.Log.ImpactedName
       description: The device name impacted.
+      type: string
     - contextPath: LogRhythm.Log.ObjectName
       description: 'The name for an Object. Note: Object will store the full path
         and name but ObjectName will only store the object name.'
+      type: string
     description: Executes a query for logs that match query parameters.
   isfetch: true
   runonce: false
