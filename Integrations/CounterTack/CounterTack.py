@@ -25,6 +25,8 @@ PASSWORD = demisto.params().get('credentials').get('password')
 SERVER_URL = demisto.params().get('server')[:-1] if demisto.params().get('server').endswith('/') else \
     demisto.params().get('server')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days').strip()
+FETCH_NOTIFICATIONS = demisto.params().get('fetch_notifications')
+FETCH_BEHAVIORS = demisto.params().get('fetch_behviors')
 
 # Should we use SSL
 USE_SSL = not demisto.params().get('unsecure', False)
@@ -192,7 +194,7 @@ def get_endpoint():
     }
 
     context = {
-        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(endpoints,
+        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(response,
                                                                            keyTransform=underscoreToCamelCase),
         'Endpoint': endpoint_standards
     }
@@ -679,9 +681,8 @@ def get_all_files():
         })
 
     context = {
-        'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(endpoints,
-                                                                           keyTransform=underscoreToCamelCase),
-        'Endpoint': endpoint_standards
+        'CounterTack.File(val.Id && val.Id === obj.Id)': createContext(files, keyTransform=underscoreToCamelCase),
+        outputPaths['file']: files_standards
     }
 
     headers = ['Status', 'Id', 'path', 'endpoint_id', 'extraction_time', 'user']
@@ -1288,6 +1289,17 @@ def search_hashes():
 FETCH INCIDENTS
 
 """
+
+
+def search_notifications_request(params=''):
+    """
+    Request for notifications search using CQL expression
+
+    """
+    suffix_url = 'search/notifications?expression=' + params
+    response = http_request('GET', suffix_url)
+
+    return response
 
 
 def fetch_behaviors_request(params=''):
