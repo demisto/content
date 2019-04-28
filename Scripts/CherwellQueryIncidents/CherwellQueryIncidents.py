@@ -89,5 +89,5 @@ demisto.results({
     'ContentsFormat': result.get('ContentsFormat'),
     'Contents': result.get('Contents'),
     'HumanReadable': md,
-    'EntryContext': {f'Cherwell.{OUTPUT_PATH}': build_context(business_object_list, build_output_list())}
+    'EntryContext': {OUTPUT_PATH: build_context(business_object_list, build_output_list())}
 })
