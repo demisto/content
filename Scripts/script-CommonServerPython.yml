@@ -1307,6 +1307,32 @@ script: |-
       return {camelize_str(k, delim): v for k, v in src.items()}
 
 
+  def replace_in_keys(src, existing='.', new='_'):
+      """
+          Replace a substring in all of the keys of a dictionary (or list of dictionaries)
+
+          :type src: ``dict`` or ``list``
+          :param src: The dictionary (or list of dictionaries) with keys that need replacement. (required)
+
+          :type existing: ``str``
+          :param existing: substring to replace.
+
+          :type new: ``str``
+          :param new: new substring that will replace the existing substring.
+
+          :return: The dictionary (or list of dictionaries) with keys after substring replacement.
+          :rtype: ``dict`` or ``list``
+      """
+      def replace_str(src_str):
+          if callable(getattr(src_str, "decode", None)):
+              src_str = src_str.decode('utf-8')
+          return src_str.replace(existing, new)
+
+      if isinstance(src, list):
+          return [replace_in_keys(x, existing, new) for x in src]
+      return {replace_str(k): v for k, v in src.items()}
+
+
   # Constants for common merge paths
   outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
