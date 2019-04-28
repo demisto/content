@@ -319,7 +319,7 @@ script:
     arguments:
     - name: incident_id
       required: true
-      description: ID of the sought after incident.
+      description: ID of the incident to get information for.
     outputs:
     - contextPath: PagerDuty.Incidents.ID
       description: Incident ID
