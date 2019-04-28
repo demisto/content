@@ -34,6 +34,14 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Fetch notifications incidents
+  name: fetch_notifications
+  required: false
+  type: 8
+- display: Fetch behviors incidents
+  name: fetch_behviors
+  required: false
+  type: 8
 description: CounterTack empowers endpoint security teams to assure endpoint protection
   for Identifying Cyber Threats. Integrating a predictive endpoint protection platform
 display: CounterTack
@@ -1236,7 +1244,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The CQL expression to be used for the search(e.g behaviors.event_count<60)'
+      description: The CQL expression to be used for the search(e.g behaviors.event_count<60)
       isArray: false
       name: expression
       required: true
