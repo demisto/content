@@ -3,15 +3,15 @@ Received: from BL2NAM02FT036.eop-nam02.prod.protection.outlook.com
  (9.9.9.9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1856.5 via Frontend
  Transport; Sun, 28 Apr 2019 14:29:03 +0000
-Authentication-Results: spf=fail (sender IP is 67.231.156.123)
+Authentication-Results: spf=fail (sender IP is 9.9.9.9)
  smtp.mailfrom=test.com; test1.com; dkim=pass (signature was
  verified) header.d=test.onmicrosoft.com;test1.com; dmarc=none
  action=none header.from=test.com;compauth=pass reason=115
 Received-SPF: Fail (protection.outlook.com: domain of test.com does not
- designate 67.231.156.123 as permitted sender)
- receiver=protection.outlook.com; client-ip=67.231.156.123;
+ designate 9.9.9.9 as permitted sender)
+ receiver=protection.outlook.com; client-ip=9.9.9.9;
  helo=mx0b-00169c01.pphosted.com;
-Received: from mx0b-00169c01.pphosted.com (67.231.156.123) by
+Received: from mx0b-00169c01.pphosted.com (9.9.9.9) by
  BL2NAM02FT036.mail.protection.outlook.com (9.9.9.9) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
  15.20.1835.13 via Frontend Transport; Sun, 28 Apr 2019 14:29:03 +0000
