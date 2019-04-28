@@ -124,8 +124,7 @@ tasks:
       - id: "2"
         label: ""
         labelarg:
-          simple: 'Following your own assessment, is there a high risk to individuals’
-            rights and freedoms? '
+          simple: Following your own assessment, is there a high risk to individuals rights and freedoms?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -322,10 +321,10 @@ tasks:
         type: multiSelect
         options:
         - ""
-        - ≤ € 2 m
-        - ≤ € 10 m
-        - ≤ € 50 m
-        - '> € 50 m'
+        - under 2 million euro
+        - under 10 million euro
+        - under 50 million euro
+        - over 50 million euro
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -340,19 +339,19 @@ tasks:
         options: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: '"‘main establishment’ means: as regards a controller with establishments
+        tooltip: '"main establishment means: as regards a controller with establishments
           in more than one Member State, the place of its central administration in
           the Union, unless the decisions on the purposes and means of the processing
           of personal data are taken in another establishment of the controller in
           the Union and the latter establishment has the power to have such decisions
           implemented, in which case the establishment having taken such decisions
-          is to be considered to be the main establishment; as regards a processor
+          is to be considered to be the main establishment, as regards a processor
           with establishments in more than one Member State, the place of its central
           administration in the Union, or, if the processor has no central administration
           in the Union, the establishment of the processor in the Union where the
           main processing activities in the context of the activities of an establishment
           of the processor take place to the extent that the processor is subject
-          to specific obligations under this Regulation;" - GDPR Art. 4'
+          to specific obligations under this Regulation" - GDPR Art. 4'
       - id: "19"
         label: ""
         labelarg:
@@ -1343,9 +1342,11 @@ tasks:
       description: |-
         GDPR Data Protection Supervisory Authority Listing.
 
-        "‘supervisory authority’ means an independent public authority which is established by a Member State pursuant to Article 51;
+        "'supervisory authority' means an independent public authority which is established by a Member State pursuant
+         to Article 51;
 
-        ‘supervisory authority concerned’ means a supervisory authority which is concerned by the processing of personal data because:
+        'supervisory authority concerned' means a supervisory authority which is concerned by the processing of
+        personal data because:
         (a) the controller or processor is established on the territory of the Member State of that supervisory authority;
         (b) data subjects residing in the Member State of that supervisory authority are substantially affected or likely to be substantially affected by the processing; or
         (c) a complaint has been lodged with that supervisory authority;"
