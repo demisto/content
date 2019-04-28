@@ -94,6 +94,6 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Email file type detection improvements"
+releaseNotes: "Email file type detection improvements. Fix encoding issue - eml with special characters"
 tests:
 - ParseEmailFiles-test
