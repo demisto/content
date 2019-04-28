@@ -785,15 +785,15 @@ def get_file_information():
         'path': response.get('path'),
         'size': response.get('size'),
         'extraction_time': response.get('extraction_time'),
-        'status': response.get('status'),
+        'status': response.get('status')
     }
 
     files_standards.append({
-            'Size': response.get('size'),
-            'MD5': response.get('md5'),
-            'SHA256': response.get('sha256'),
-            'SSDeep': response.get('ssdeep'),
-            'Path': response.get('path')
+        'Size': response.get('size'),
+        'MD5': response.get('md5'),
+        'SHA256': response.get('sha256'),
+        'SSDeep': response.get('ssdeep'),
+        'Path': response.get('path')
     })
 
     context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(response,
