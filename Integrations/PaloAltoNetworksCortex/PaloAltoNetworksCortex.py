@@ -17,7 +17,7 @@ TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
 FETCH_QUERY = None
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 if not FIRST_FETCH_TIMESTAMP:
-    FIRST_FETCH_TIMESTAMP =  '24 hours'
+    FIRST_FETCH_TIMESTAMP = '24 hours'
 
 if not demisto.params().get('proxy', False):
     os.environ.pop('HTTP_PROXY', '')
