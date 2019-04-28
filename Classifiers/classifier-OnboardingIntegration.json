@@ -117,5 +117,6 @@
 		"complex": null
 	},
 	"keyTypeMap": {},
-	"brandName": "OnboardingIntegration"
+	"brandName": "OnboardingIntegration",
+	"releaseNotes": "Phishing Incident Mapping"
 }
