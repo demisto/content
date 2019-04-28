@@ -428,22 +428,26 @@ script:
         var body = 'apikey='+TOKEN+'&hash='+hash;
         var result = sendRequest(sampleUrl, body, DEFAULT_HEADERS);
 
-        var fileName;
-        if (result.Headers['Content-Disposition']) {
-            var str = String(result.Headers['Content-Disposition']);
-            var n = str.lastIndexOf('filename=');
-            fileName = str.substring(n + 9);
+        if (!result) {
+            return 'Sample was not found. Grayware and benign samples are available for 14 days. For more information, contact your WildFire representative.';
         } else {
-            fileName = 'file_' + hash;
-        }
+            var fileName;
+            if (result.Headers['Content-Disposition']) {
+                var str = String(result.Headers['Content-Disposition']);
+                var n = str.lastIndexOf('filename=');
+                fileName = str.substring(n + 9);
+            } else {
+                fileName = 'file_' + hash;
+            }
 
-        var createdFileID = saveFile(result.Bytes);
-        return {
-            Type: 3,
-            FileID: createdFileID,
-            File: fileName,
-            Contents: fileName
-        };
+            var createdFileID = saveFile(result.Bytes);
+            return {
+                Type: 3,
+                FileID: createdFileID,
+                File: fileName,
+                Contents: fileName
+            };
+        }
     }
 
 
@@ -754,7 +758,7 @@ script:
                 return entries;
 
             case 'wildfire-get-sample':
-                var inputs = hashArgsHandler(sha256, args.md5);
+                var inputs = hashArgsHandler(args.sha256, args.md5);
                 var entries = [];
                 for (i=0; i < inputs.length; i++) {
                     var entry = getSample(inputs[i]);
