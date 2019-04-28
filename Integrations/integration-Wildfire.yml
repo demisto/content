@@ -429,7 +429,7 @@ script:
         var result = sendRequest(sampleUrl, body, DEFAULT_HEADERS);
 
         if (!result) {
-            return 'Sample was not found. Please note that grayware and benign samples are available for 14 days only. For more info contact your wildfire representative.';
+            return 'Sample was not found. Grayware and benign samples are available for 14 days. For more information, contact your WildFire representative.';
         } else {
             var fileName;
             if (result.Headers['Content-Disposition']) {
