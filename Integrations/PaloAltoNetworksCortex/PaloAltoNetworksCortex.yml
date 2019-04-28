@@ -46,7 +46,7 @@ configuration:
   defaultvalue: 24 hours
   type: 0
   required: false
-- display: Severity of events to fetch (Firewall)
+- display: Severity of events to fetch (Traps)
   name: traps_severity
   defaultvalue: ""
   type: 16
