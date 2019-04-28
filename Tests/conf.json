@@ -1249,6 +1249,22 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_query_v2",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "ANYRUN-Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
@@ -1297,7 +1313,7 @@
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
-
+        "ANYRUN": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
