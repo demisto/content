@@ -23,14 +23,6 @@ TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
 ''' HELPER FUNCTIONS '''
 
 
-def represents_int(string_var):
-    if '.' in string_var:
-        return False
-    if string_var[0] in ('-', '+'):
-        return string_var[1:].isdigit()
-    return string_var.isdigit()
-
-
 def represents_bool(string_var):
     return string_var.lower() == 'false' or string_var.lower() == 'true'
 
