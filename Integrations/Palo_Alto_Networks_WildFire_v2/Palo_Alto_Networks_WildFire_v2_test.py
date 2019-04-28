@@ -1,5 +1,5 @@
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
-    create_dbot_score_from_verdict, prettify_verdicts
+    create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts
 
 
 def test_will_return_ok():
@@ -31,15 +31,23 @@ def test_prettify_verdict():
 
 
 def test_create_dbot_score_from_verdict():
-    expected_dbot_score = list(dict({
-        'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3}))
-    dbot_score_dict = create_dbot_score_from_verdict(list({'SHA256': "sha256_hash", 'Verdict': "1"}))
+    expected_dbot_score = dict({
+        'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3})
+    dbot_score_dict = create_dbot_score_from_verdict({'SHA256': "sha256_hash", 'Verdict': "1"})
     assert expected_dbot_score == dbot_score_dict
 
 
 def test_prettify_verdicts():
-    expected_verdicts_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'desc'})
+    expected_verdicts_dict = list(dict({
+        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'desc'}))
     prettify_verdicts_res = prettify_verdicts(list(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"}))
     assert expected_verdicts_dict == prettify_verdicts_res
+
+
+def test_create_dbot_score_from_verdicts():
+    expected_dbot_scores = [{'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
+                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1}]
+    dbot_score_dict = create_dbot_score_from_verdicts(
+        [{'SHA256': "sha256_hash", 'Verdict': "1"}, {'MD5': "md5_hash", 'Verdict': "0"}])
+    assert expected_dbot_scores == dbot_score_dict
