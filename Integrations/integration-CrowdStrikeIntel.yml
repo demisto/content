@@ -428,8 +428,8 @@ script:
                     md += 'Type: ' + o[i].type.name + '\n';
                     md += 'Sub type: ' + o[i].sub_type.name + '\n';
                     md += 'Slug: ' + o[i].slug + '\n';
-                    md += 'Created: ' + new Date(o[i].created_date) + '\n';
-                    md += 'Last modified: ' + new Date(o[i].last_modified_date) + '\n';
+                    md += 'Created: ' + new Date(o[i].created_date * 1000) + '\n';
+                    md += 'Last modified: ' + new Date(o[i].last_modified_date * 1000) + '\n';
                     md += 'Description: ' + o[i].short_description + '\n';
                     if (o[i].target_industries) {
                       md += 'Target industries: ' + o[i].target_industries.map(function(curr) {return curr.value;}).join(', ') + '\n';
@@ -826,3 +826,4 @@ script:
   runonce: false
 tests:
 - CrowdStrike Falcon Intel v2
+releaseNotes: "Fixed date parsing in cs-report"
