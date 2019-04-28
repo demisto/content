@@ -264,7 +264,7 @@ TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
                                 for email campaigns.</div>
 
                             <!-- LOGO -->
-                            <!-- Image text color should be opposite to background color. Set your url, image src, 
+                            <!-- Image text color should be opposite to background color. Set your url, image src,
                                 alt and title. Alt text should fit the image size. Real image size should be x2. -->
                             <a target="_blank"
                                style="-ms-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
@@ -285,7 +285,7 @@ TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
 
                     <!-- HERO IMAGE -->
                     <!-- Image text color should be opposite to background color. Set your url, image src,
-                         alt and title. Alt text should fit the image size. Real image size should be x2 
+                         alt and title. Alt text should fit the image size. Real image size should be x2
                          (wrapper x2). Do not set height for flexible images (including "auto"). -->
                     <tr>
                         <td align="center" valign="top"
@@ -947,5 +947,4 @@ try:
     elif demisto.command() in COMMANDS.keys():
         COMMANDS[demisto.command()]()
 except Exception as e:
-    # return_error(e.message)
-    raise e
+    return_error(e.message)
