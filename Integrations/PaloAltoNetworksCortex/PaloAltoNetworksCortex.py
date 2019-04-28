@@ -51,7 +51,7 @@ COMMON_HEADERS = [
 
 
 def prepare_fetch_query(fetch_timestamp):
-    query = FETCH_QUERY_DICT[demisto.params().get('fetch_query', 'Traps Threats')]
+    query = FETCH_QUERY_DICT[FETCH_QUERY]
     if 'tms' in query:
         query += f" WHERE serverTime>'{fetch_timestamp}'"
         FETCH_SEVERITY = demisto.params().get('traps_severity', ['all'])
