@@ -1261,7 +1261,6 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "RedCanary": "License expired",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1282,6 +1281,7 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "RedCanary": "License expired",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
