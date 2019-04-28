@@ -62,7 +62,7 @@ def parse_response(response, error_operation):
             err_msg = res_json.get('errorMessage') or res_json.get('error_description') or res_json.get('Message')
         except Exception:
             err_msg = response.content.decode('utf-8')
-        return_error(error_operation + ": " + err_msg)
+        return_error(error_operation + ": " + str(err_msg))
     except Exception as error:
         return_error(f'Could not parse response {error}')
 
