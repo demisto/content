@@ -85,14 +85,12 @@ md = tableToMarkdown('{0}: {1}'.format(BUSINESS_OBJECT_TYPE.capitalize(), args.g
                      business_object,
                      headers=build_output_list(),
                      headerTransform=pascalToSpace)
-# context_output_path = f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)'
-
-# demisto.results({
-#     'Type': result.get('Type'),
-#     'ContentsFormat': result.get('ContentsFormat'),
-#     'Contents': result.get('Contents'),
-#     'HumanReadable': md,
-#     'EntryContext': {
-#         f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)': build_context(business_object, build_output_list())
-#     }
-# })
+demisto.results({
+    'Type': result.get('Type'),
+    'ContentsFormat': result.get('ContentsFormat'),
+    'Contents': result.get('Contents'),
+    'HumanReadable': md,
+    'EntryContext': {
+        f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)': build_context(business_object, build_output_list())
+    }
+})
