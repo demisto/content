@@ -10,7 +10,7 @@ script: |-
   uuid = executeCommand('urlscan-submit-url-command', {'url': url})[0].Contents;
   uri = executeCommand('urlscan-get-result-page', {'uuid': uuid})[0].Contents;
 
-  var resStatusCode = -1
+  var resStatusCode = 404
   var waitedTime = 0
   while(resStatusCode == 404 && waitedTime < Number(args.timeout)) {
       var resStatusCode = executeCommand('urlscan-poll-uri', {'uri': uri})[0].Contents;
