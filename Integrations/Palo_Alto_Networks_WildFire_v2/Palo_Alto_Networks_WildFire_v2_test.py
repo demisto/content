@@ -6,8 +6,9 @@ def test_will_return_ok():
 
 
 def test_prettify_upload():
-    expected_json = "{'MD5': 'md5_hash', 'SHA256': 'sha256_hash', "
-    prettify_upload_res = prettify_upload("<my_json>")
+    expected_json = dict({
+        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'FileType': "pdf", 'Size': 5, 'Status': "Pending"})
+    prettify_upload_res = prettify_upload({'md5': "md5_hash", 'sha256': "sha256_hash", 'filetype': "pdf", 'size': 5})
     assert expected_json == prettify_upload_res
 
     # 2nd usecase
