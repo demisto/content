@@ -521,14 +521,14 @@ def create_content():
     returns:
         The randomly generated data as a string
     """
-    details = fake.text(600)
+    details = fake.text(600)  # pylint: disable=no-member
     details += '\n'
     for _ in range(INDICATORS_PER_INCIDENT):
-        ipv4, url, domain = fake.ipv4_public(), fake.url(), fake.domain_name()
-        sha1, sha256, md5 = fake.sha1(), fake.sha256(), fake.md5()
+        ipv4, url, domain = fake.ipv4_public(), fake.url(), fake.domain_name()  # pylint: disable=no-member
+        sha1, sha256, md5 = fake.sha1(), fake.sha256(), fake.md5()  # pylint: disable=no-member
         details += ipv4 + ' ' + url + ' ' + domain + ' ' + sha1 + ' ' + sha256 + ' ' + md5 + '\n'
 
-    emails = [fake.email() for _ in range(INDICATORS_PER_INCIDENT)]
+    emails = [fake.email() for _ in range(INDICATORS_PER_INCIDENT)]  # pylint: disable=no-member
     details += ' '.join(emails)
     return details
 
@@ -558,23 +558,25 @@ def create_email():
     returns:
         email.Message object and the email as a standard dictionary
     """
-    sender = fake.email()
-    recipient = fake.email()
-    cc = [fake.email() for _ in range(random.randint(0, 2))]
-    bcc = [fake.email() for _ in range(random.randint(0, 2))]
+    sender = fake.email()  # pylint: disable=no-member
+    recipient = fake.email()  # pylint: disable=no-member
+    cc = [fake.email() for _ in range(random.randint(0, 2))]  # pylint: disable=no-member
+    bcc = [fake.email() for _ in range(random.randint(0, 2))]  # pylint: disable=no-member
     the_time = datetime.now()
-    received = 'from ' + fake.hostname() + ' (' + fake.ipv4_public() + ')\r\n' + 'by ' + fake.domain_word() + '.'
-    received += fake.free_email_domain() + ' with ' + EMAIL_PROTOCOLS[random.randint(0, len(EMAIL_PROTOCOLS) - 1)]
+    received = 'from ' + fake.hostname() + ' (' + fake.ipv4_public()  # pylint: disable=no-member
+    received += ')\r\n' + 'by ' + fake.domain_word() + '.'  # pylint: disable=no-member
+    received += fake.free_email_domain() + ' with '  # pylint: disable=no-member
+    received += EMAIL_PROTOCOLS[random.randint(0, len(EMAIL_PROTOCOLS) - 1)]
     received += '; ' + the_time.strftime('%c')
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = fake.sentence()
+    msg['Subject'] = fake.sentence()  # pylint: disable=no-member
     msg['From'] = sender
     msg['Reply-To'] = sender
     msg['To'] = recipient
-    msg['Message-ID'] = fake.uuid4()
+    msg['Message-ID'] = fake.uuid4()  # pylint: disable=no-member
     msg['CC'] = ', '.join(cc) if cc else ''
     msg['BCC'] = ', '.join(bcc) if bcc else ''
-    msg['User-Agent'] = fake.user_agent()
+    msg['User-Agent'] = fake.user_agent()  # pylint: disable=no-member
     msg['Date'] = the_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     msg['Received'] = received
 
@@ -947,4 +949,4 @@ try:
     elif demisto.command() in COMMANDS.keys():
         COMMANDS[demisto.command()]()
 except Exception as e:
-    return_error(e.message)
+    return_error(str(e))
