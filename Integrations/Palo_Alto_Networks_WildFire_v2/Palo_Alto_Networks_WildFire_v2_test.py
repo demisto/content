@@ -65,4 +65,4 @@ def test_file_args_handler():
                                '1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3']
     file_hash_list = file_args_handler(
         file="12345678901234567890123456789012,1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3")
-    assert expected_file_hash_list == expected_file_hash_list
+    assert expected_file_hash_list == file_hash_list
