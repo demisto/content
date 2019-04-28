@@ -294,6 +294,11 @@
         },
         {
             "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 600
+        },
+        {
+            "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
         },
@@ -1200,7 +1205,8 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
-            "playbookID": "ExtractDomainFromEmailTest"
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
             "integrations": "VirusTotal",
@@ -1244,9 +1250,9 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
+        "Test-Detonate URL - ThreatGrid": "Outdated test",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
