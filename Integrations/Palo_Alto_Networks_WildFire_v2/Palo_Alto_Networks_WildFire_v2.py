@@ -90,13 +90,18 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
     # demisto.log(str(result.status_code))
     # demisto.log(str(result.reason))
 
-    # sample not found
     if str(result.reason) == 'Not Found':
-        demisto.results(
-            'Sample was not found. '
-            'Please note that grayware and benign samples are available for 14 days only. '
-            'For more info contact your wildfire representative.')
-        sys.exit(0)
+        # sample not found
+        if url.find('/get/sample') != -1:
+            demisto.results(
+                'Sample was not found. '
+                'Please note that grayware and benign samples are available for 14 days only. '
+                'For more info contact your wildfire representative.')
+            sys.exit(0)
+        # report not found
+        if url.find('/get/report') != -1:
+            demisto.results('Report not found.')
+            sys.exit(0)
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
@@ -251,9 +256,7 @@ def file_args_handler(file=None, sha256=None, md5=None):
             inputs = argToList(sha256)
 
         for element in inputs:
-            if sha1Regex.match(element):  # validate hash is not sha1
-                demisto.results('SHA1')
-            elif sha256Regex.match(element) or md5Regex.test(element):
+            if sha256Regex.match(element) or md5Regex.match(element) or sha1Regex.match(element):
                 continue
             else:
                 return_error('Invalid hash. Only SHA256 and MD5 are supported.')
@@ -639,10 +642,16 @@ def wildfire_get_report_command():
 
 def wildfire_file_command():
     inputs = file_args_handler(demisto.args().get('file'), demisto.args().get('md5'), demisto.args().get('sha256'))
-
     for element in inputs:
-        file_hash, report, file_info = wildfire_get_report(element)
-        create_report(file_hash, report, file_info, 'xml', False)
+        if sha1Regex.match(element):
+            demisto.results({
+                'Type': 11,
+                'Contents': 'WildFire file hash reputation supports only MD5, SHA256 hashes',
+                'ContentsFormat': formats['text']
+            })
+        else:
+            file_hash, report, file_info = wildfire_get_report(element)
+            create_report(file_hash, report, file_info, 'xml', False)
 
 
 def wildfire_get_sample(file_hash):

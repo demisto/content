@@ -1,5 +1,6 @@
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
-    create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts
+    create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
+    file_args_handler
 
 
 def test_will_return_ok():
@@ -51,3 +52,17 @@ def test_create_dbot_score_from_verdicts():
     dbot_score_dict = create_dbot_score_from_verdicts(
         [{'SHA256': "sha256_hash", 'Verdict': "1"}, {'MD5': "md5_hash", 'Verdict': "0"}])
     assert expected_dbot_scores == dbot_score_dict
+
+
+def test_hash_args_handler():
+    expected_hash_list = ['12345678901234567890123456789012']
+    hash_list = hash_args_handler(md5='12345678901234567890123456789012')
+    assert expected_hash_list == hash_list
+
+
+def test_file_args_handler():
+    expected_file_hash_list = ['12345678901234567890123456789012',
+                               '1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3']
+    file_hash_list = file_args_handler(
+        file="12345678901234567890123456789012,1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3")
+    assert expected_file_hash_list == expected_file_hash_list
