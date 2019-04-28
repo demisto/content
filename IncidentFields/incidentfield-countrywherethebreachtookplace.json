@@ -1,6 +1,7 @@
 {
 	"id": "incident_countrywherethebreachtookplace",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T11:28:33.557006122Z",
 	"name": "Country where the breach took place",
 	"ownerOnly": false,

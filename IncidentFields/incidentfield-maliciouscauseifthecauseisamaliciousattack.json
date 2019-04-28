@@ -1,6 +1,7 @@
 {
 	"id": "incident_maliciouscauseifthecauseisamaliciousattack",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-16T10:43:41.342957399Z",
 	"name": "Malicious Cause (If the cause is a malicious attack)",
 	"ownerOnly": false,

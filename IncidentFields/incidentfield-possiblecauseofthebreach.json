@@ -1,6 +1,7 @@
 {
 	"id": "incident_possiblecauseofthebreach",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-16T10:43:51.71269953Z",
 	"name": "Possible Cause of the Breach",
 	"ownerOnly": false,

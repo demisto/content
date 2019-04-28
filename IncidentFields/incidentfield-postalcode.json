@@ -1,6 +1,7 @@
 {
 	"id": "incident_postalcode",
 	"version": -1,
+	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T11:15:06.414769944Z",
 	"name": "Postal Code",
 	"ownerOnly": false,
