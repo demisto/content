@@ -57,28 +57,52 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
     elif AWS_rolePolicy is not None:
         kwargs.update({'Policy': AWS_rolePolicy})
     if kwargs and AWS_access_key_id is None:
-        sts_client = boto3.client('sts')
+
+        if AWS_access_key_id is None:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+    elif AWS_access_key_id and AWS_roleArn:
+        sts_client = boto3.client(
+            service_name='sts',
+            aws_access_key_id=AWS_access_key_id,
+            aws_secret_access_key=AWS_secret_access_key,
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+        kwargs.update({
+            'RoleArn': AWS_roleArn,
+            'RoleSessionName': AWS_roleSessionName,
+        })
         sts_response = sts_client.assume_role(**kwargs)
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken'],
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken'],
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
+        client = boto3.client(
+            service_name=service,
+            region_name=AWS_DEFAULT_REGION,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
     else:
         if region is not None:
             client = boto3.client(
@@ -155,6 +179,17 @@ def parse_resource_ids(resource_id):
     id_list = resource_id.replace(" ", "")
     resourceIds = id_list.split(",")
     return resourceIds
+
+
+def multi_split(data):
+    data = data.replace(" ", "")
+    data = data.split(";")
+    return data
+
+
+def parse_date(dt):
+    arr = dt.split("-")
+    return (datetime.datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
 
 
 """MAIN FUNCTIONS"""
@@ -1745,6 +1780,684 @@ def create_network_acl_entry(args):
         demisto.results("The Instance ACL was successfully modified")
 
 
+def create_fleet(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+        kwargs = {}
+
+        LaunchSpecification = {}
+
+        BlockDeviceMappings = None
+        if args.get('DryRun') is not None:
+            kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+
+        if args.get('ClientToken') is not None:
+            kwargs.update({'ClientToken': (args.get('ClientToken'))})
+
+        SpotOptions = {}
+        if args.get('SpotAllocationStrategy') is not None:
+            SpotOptions.update({
+                'AllocationStrategy': args.get('SpotAllocationStrategy')
+            })
+        if args.get('InstanceInterruptionBehavior') is not None:
+            SpotOptions.update({
+                'InstanceInterruptionBehavior': args.get('InstanceInterruptionBehavior')
+            })
+        if args.get('InstancePoolsToUseCount') is not None:
+            SpotOptions.update({
+                'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
+            })
+        if args.get('SingleInstanceType') is not None:
+            SpotOptions.update({'SingleInstanceType': True if args.get('SingleInstanceType') == 'True' else False})
+        if args.get('SingleAvailabilityZone') is not None:
+            SpotOptions.update({
+                'SingleAvailabilityZone': True if args.get('SingleAvailabilityZone') == 'True' else False
+            })
+        if args.get('MinTargetCapacity') is not None:
+            SpotOptions.update({
+                'MinTargetCapacity': int(args.get('MinTargetCapacity'))
+            })
+
+        if SpotOptions:
+            kwargs.update({'SpotOptions': SpotOptions})
+
+        OnDemandOptions = {}
+        if args.get('OnDemandAllocationStrategy') is not None:
+            OnDemandOptions.update({
+                'AllocationStrategy': args.get('OnDemandAllocationStrategy')
+            })
+        if args.get('OnDemandSingleInstanceType') is not None:
+            SpotOptions.update({
+                'SingleInstanceType': True if args.get('OnDemandSingleInstanceType') == 'True' else False
+            })
+        if args.get('OnDemandSingleAvailabilityZone') is not None:
+            SpotOptions.update({
+                'SingleAvailabilityZone': True if args.get('OnDemandSingleAvailabilityZone') == 'True' else False
+            })
+        if args.get('OnDemandMinTargetCapacity') is not None:
+            SpotOptions.update({
+                'MinTargetCapacity': int(args.get('OnDemandMinTargetCapacity'))
+            })
+
+        if OnDemandOptions:
+            kwargs.update({'OnDemandOptions': OnDemandOptions})
+
+        if args.get('ExcessCapacityTerminationPolicy') is not None:
+            kwargs.update({'ExcessCapacityTerminationPolicy': (args.get('ExcessCapacityTerminationPolicy'))})
+
+        LaunchTemplateConfigs = {}
+        LaunchTemplateSpecification = {}
+        if args.get('LaunchTemplateId') is not None:
+            LaunchTemplateSpecification.update({
+                'LaunchTemplateId': args.get('LaunchTemplateId')
+            })
+        if args.get('LaunchTemplateName') is not None:
+            LaunchTemplateSpecification.update({
+                'LaunchTemplateName': args.get('LaunchTemplateName')
+            })
+        if args.get('LaunchTemplateVersion') is not None:
+            LaunchTemplateSpecification.update({
+                'Version': str(args.get('LaunchTemplateVersion'))
+            })
+
+        if LaunchTemplateSpecification:
+            LaunchTemplateConfigs.update({'LaunchTemplateSpecification': LaunchTemplateSpecification})
+
+        Overrides = []
+
+        if args.get('OverrideInstanceType') is not None:
+            arr = multi_split(args.get('OverrideInstanceType'))
+            for i, item in enumerate(arr):
+                if len(Overrides) - 1 < i:
+                    Overrides.append({})
+                Overrides[i].update({
+                    'InstanceType': item
+                })
+        if args.get('OverrideMaxPrice') is not None:
+            arr = multi_split(args.get('OverrideMaxPrice'))
+            for i, item in enumerate(arr):
+                if len(Overrides) - 1 < i:
+                    Overrides.append({})
+                Overrides[i].update({
+                    'MaxPrice': item
+                })
+
+        if args.get('OverrideSubnetId') is not None:
+            arr = multi_split(args.get('OverrideSubnetId'))
+            for i, item in enumerate(arr):
+                if len(Overrides) - 1 < i:
+                    Overrides.append({})
+                Overrides[i].update({
+                    'SubnetId': item
+                })
+
+        if args.get('OverrideAvailabilityZone') is not None:
+            arr = multi_split(args.get('OverrideAvailabilityZone'))
+            for i, item in enumerate(arr):
+                if len(Overrides) - 1 < i:
+                    Overrides.append({})
+                Overrides[i].update({
+                    'AvailabilityZone': item
+                })
+
+        if args.get('OverrideWeightedCapacity') is not None:
+            arr = multi_split(args.get('OverrideWeightedCapacity'))
+            for i, item in enumerate(arr):
+                if len(Overrides) - 1 < i:
+                    Overrides.append({})
+                Overrides[i].update({
+                    'WeightedCapacity': item
+                })
+
+        if args.get('OverridePriority') is not None:
+            arr = multi_split(args.get('OverridePriority'))
+            for i, item in enumerate(arr):
+                if len(Overrides) - 1 < i:
+                    Overrides.append({})
+                Overrides[i].update({
+                    'Priority': item
+                })
+
+        if Overrides:
+            LaunchTemplateConfigs.update({'Overrides': Overrides})
+
+        if LaunchTemplateConfigs:
+            kwargs.update({'LaunchTemplateConfigs': [LaunchTemplateConfigs]})
+
+        TargetCapacitySpecification = {}
+        if args.get('TotalTargetCapacity') is not None:
+            TargetCapacitySpecification.update({
+                'TotalTargetCapacity': int(args.get('TotalTargetCapacity'))
+            })
+        if args.get('OnDemandTargetCapacity') is not None:
+            TargetCapacitySpecification.update({
+                'OnDemandTargetCapacity': int(args.get('OnDemandTargetCapacity'))
+            })
+        if args.get('SpotTargetCapacity') is not None:
+            TargetCapacitySpecification.update({
+                'SpotTargetCapacity': int(args.get('SpotTargetCapacity'))
+            })
+        if args.get('DefaultTargetCapacityType') is not None:
+            TargetCapacitySpecification.update({
+                'DefaultTargetCapacityType': args.get('DefaultTargetCapacityType')
+            })
+        if TargetCapacitySpecification:
+            kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
+
+        if args.get('TerminateInstancesWithExpiration') is not None:
+            kwargs.update({'TerminateInstancesWithExpiration': True if args.get(
+                'TerminateInstancesWithExpiration') == 'True' else False})
+
+        if args.get('Type') is not None:
+            kwargs.update({'Type': (args.get('Type'))})
+
+        if args.get('ValidFrom') is not None:
+            kwargs.update({'ValidFrom': (parse_date(args.get('ValidFrom')))})
+
+        if args.get('ValidUntil') is not None:
+            kwargs.update({'ValidUntil': (parse_date(args.get('ValidUntil')))})
+
+        if args.get('ReplaceUnhealthyInstances') is not None:
+            kwargs.update({'ReplaceUnhealthyInstances': (args.get('ReplaceUnhealthyInstances'))})
+
+        TagSpecifications = []
+        if args.get('Tags') is not None:
+            arr = args.get('Tags').split('#')
+            for i, item in enumerate(arr):
+                if len(TagSpecifications) - 1 < (i):
+                    TagSpecifications.append({})
+                tg = item.split(':')
+                TagSpecifications[i].update({
+                    'ResourceType': tg[0],
+                    'Tags': parse_tag_field(tg[1])
+                })
+
+        if TagSpecifications:
+            kwargs.update({'TagSpecifications': TagSpecifications})
+        response = client.create_fleet(**kwargs)
+        data = [{
+            'FleetId': response['FleetId'],
+        }]
+        output = json.dumps(response)
+        raw = json.loads(output)
+        ec = {'AWS.EC2.Fleet': raw}
+        human_readable = tableToMarkdown('AWS EC2 Fleet', data)
+        return_outputs(human_readable, ec)
+
+
+def delete_fleet(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    data = []
+    kwargs = {}
+    output = []
+    if args.get('DryRun') is not None:
+        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+    if args.get('FleetIds') is not None:
+        kwargs.update({'FleetIds': parse_resource_ids(args.get('FleetIds'))})
+    if args.get('TerminateInstances') is not None:
+        kwargs.update({'TerminateInstances': bool(args.get('TerminateInstances'))})
+
+    response = client.delete_fleets(**kwargs)
+    for i, item in enumerate(response['SuccessfulFleetDeletions']):
+        data.append({'SuccessfulFleetDeletions': {
+            'CurrentFleetState': item['CurrentFleetState'],
+            'PreviousFleetState': item['PreviousFleetState'],
+            'FleetId': item['FleetId'],
+            'Region': obj['_user_provided_options']['region_name'],
+        }})
+        output.append(item)
+    for i, item in enumerate(response['UnsuccessfulFleetDeletions']):
+        data.append({'UnsuccessfulFleetDeletions': {
+            'Error-Code': item['Error']['Code'],
+            'Error-Message': item['Error']['Message'],
+            'FleetId': item['FleetId'],
+            'Region': obj['_user_provided_options']['region_name'],
+        }})
+        output.append(item)
+
+    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    ec = {'AWS.EC2.DeletedFleets': raw}
+    human_readable = tableToMarkdown('AWS Deleted Fleets', data)
+    return_outputs(human_readable, ec)
+
+
+def describe_fleets(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    data = []
+    kwargs = {}
+    output = []
+    if args.get('filters') is not None:
+        kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
+    if args.get('FleetIds') is not None:
+        kwargs.update({'FleetIds': parse_resource_ids(args.get('FleetIds'))})
+    if args.get('MaxResults') is not None:
+        kwargs.update({'MaxResults': args.get('MaxResults')})
+    if args.get('NextToken') is not None:
+        kwargs.update({'NextToken': args.get('NextToken')})
+
+    response = client.describe_fleets(**kwargs)
+    for i, item in enumerate(response['Fleets']):
+
+        data.append({
+            'ActivityStatus': item['ActivityStatus'] if 'ActivityStatus' in item.keys() is not None else "None",
+            'FleetId': item['FleetId'],
+            'FleetState': item['FleetState'],
+            'FulfilledCapacity': item['FulfilledCapacity'],
+            'FulfilledOnDemandCapacity': item['FulfilledOnDemandCapacity'],
+            'LaunchTemplateId': item['LaunchTemplateConfigs'][0]['LaunchTemplateSpecification'][
+                'LaunchTemplateId'],
+            'CreateTime': datetime.datetime.strftime(item['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'TotalTargetCapacity': item['TargetCapacitySpecification']['TotalTargetCapacity'],
+            'OnDemandTargetCapacity': item['TargetCapacitySpecification']['OnDemandTargetCapacity'],
+            'SpotTargetCapacity': item['TargetCapacitySpecification']['SpotTargetCapacity'],
+            'DefaultTargetCapacityType': item['TargetCapacitySpecification']['DefaultTargetCapacityType'],
+            'TerminateInstancesWithExpiration': item['TerminateInstancesWithExpiration'],
+            'Type': item['Type'],
+            'InstanceInterruptionBehavior': item['SpotOptions']['InstanceInterruptionBehavior'],
+        })
+        if 'Tags' in item:
+            for tag in item['Tags']:
+                data[i].update({
+                    tag['Key']: tag['Value']
+                })
+        output.append(item)
+
+    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId)': raw}
+    human_readable = tableToMarkdown('AWS EC2 Fleets', data)
+    return_outputs(human_readable, ec)
+
+
+def describe_fleet_instances(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    data = []
+    kwargs = {}
+    output = []
+    if args.get('filters') is not None:
+        kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
+    if args.get('FleetId') is not None:
+        kwargs.update({'FleetId': args.get('FleetId')})
+    if args.get('MaxResults') is not None:
+        kwargs.update({'MaxResults': int(args.get('MaxResults'))})
+    if args.get('NextToken') is not None:
+        kwargs.update({'NextToken': args.get('NextToken')})
+
+    response = client.describe_fleet_instances(**kwargs)
+    for i, item in enumerate(response['ActiveInstances']):
+        demisto.log(str(item))
+        data.append({
+            'InstanceId': item['InstanceId'],
+            'InstanceType': item['InstanceType'],
+            'SpotInstanceRequestId': item['SpotInstanceRequestId'],
+            # 'InstanceHealth': item['InstanceHealth'],
+            'FleetId': response['FleetId'],
+            'Region': obj['_user_provided_options']['region_name'],
+        })
+        output.append(item)
+
+    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw}
+    human_readable = tableToMarkdown('AWS EC2 Fleets Instances', data)
+    return_outputs(human_readable, ec)
+
+
+def modify_fleet(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    data = []
+    kwargs = {}
+    output = []
+    if args.get('filters') is not None:
+        kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
+    if args.get('FleetId') is not None:
+        kwargs.update({'FleetIds': args.get('FleetId')})
+    if args.get('ExcessCapacityTerminationPolicy') is not None:
+        kwargs.update({'ExcessCapacityTerminationPolicy': args.get('ExcessCapacityTerminationPolicy')})
+    TargetCapacitySpecification = {}
+    if args.get('TotalTargetCapacity') is not None:
+        TargetCapacitySpecification.update({
+            'TotalTargetCapacity': int(args.get('TotalTargetCapacity'))
+        })
+    if args.get('OnDemandTargetCapacity') is not None:
+        TargetCapacitySpecification.update({
+            'OnDemandTargetCapacity': int(args.get('OnDemandTargetCapacity'))
+        })
+    if args.get('SpotTargetCapacity') is not None:
+        TargetCapacitySpecification.update({
+            'SpotTargetCapacity': int(args.get('SpotTargetCapacity'))
+        })
+    if args.get('DefaultTargetCapacityType') is not None:
+        TargetCapacitySpecification.update({
+            'DefaultTargetCapacityType': args.get('DefaultTargetCapacityType')
+        })
+    if TargetCapacitySpecification:
+        kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
+
+    response = client.modify_fleet(**kwargs)
+
+    if response['Return'] == 'True':
+        demisto.results("AWS EC2 Fleet was successfully modified")
+    else:
+        demisto.results("AWS EC2 Fleet was not successfully modified"+response['Return'])
+
+
+def create_launch_template(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    kwargs = {}
+
+    LaunchSpecification = {}
+
+    BlockDeviceMappings = None
+
+    LaunchTemplateData = {}
+
+    if args.get('ClientToken') is not None:
+        kwargs.update({'ClientToken': args.get('ClientToken')})
+    if args.get('LaunchTemplateName') is not None:
+        kwargs.update({'LaunchTemplateName': args.get('LaunchTemplateName')})
+    if args.get('VersionDescription') is not None:
+        kwargs.update({'VersionDescription': args.get('VersionDescription')})
+
+    if args.get('KernelId') is not None:
+        LaunchTemplateData.update({'KernelId': args.get('KernelId')})
+    if args.get('EbsOptimized') is not None:
+        LaunchTemplateData.update({'EbsOptimized': args.get('EbsOptimized')})
+
+    if args.get('iamInstanceProfileArn') is not None and args.get('iamInstanceProfileName') is not None:
+        LaunchTemplateData.update({
+            'IamInstanceProfile': {
+                'Arn': args.get('iamInstanceProfileArn'),
+                'Name': args.get('iamInstanceProfileName')}
+        })
+
+    if args.get('deviceName') is not None:
+        BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
+        BlockDeviceMappings.update({'Ebs': {}})
+    if args.get('VirtualName') is not None:
+        BlockDeviceMappings.update({'VirtualName': {args.get('VirtualName')}})
+    if args.get('ebsVolumeSize') is not None:
+        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+    if args.get('ebsVolumeType') is not None:
+        BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
+    if args.get('ebsIops') is not None:
+        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+    if args.get('ebsDeleteOnTermination') is not None:
+        BlockDeviceMappings['Ebs'].update(
+            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+    if args.get('ebsKmsKeyId') is not None:
+        BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
+    if args.get('ebsSnapshotId') is not None:
+        BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
+    if args.get('ebsEncrypted') is not None:
+        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+    if BlockDeviceMappings:
+        LaunchTemplateData.update({'BlockDeviceMappings': [BlockDeviceMappings]})
+
+    NetworkInterfaces = {}
+    if args.get('AssociatePublicIpAddress') is not None:
+        NetworkInterfaces.update({'AssociatePublicIpAddress': args.get('AssociatePublicIpAddress')})
+    if args.get('NetworkInterfacesDeleteOnTermination') is not None:
+        NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination')})
+    if args.get('NetworkInterfacesDescription') is not None:
+        NetworkInterfaces.update({'Description': args.get('NetworkInterfacesDescription')})
+    if args.get('NetworkInterfacesDeviceIndex') is not None:
+        NetworkInterfaces.update({'DeviceIndex': args.get('NetworkInterfacesDeviceIndex')})
+    if args.get('NetworkInterfaceGroups') is not None:
+        NetworkInterfaces.update({'Groups': parse_resource_ids(args.get('NetworkInterfaceGroups'))})
+    if args.get('Ipv6AddressCount') is not None:
+        NetworkInterfaces.update({'Ipv6AddressCount': args.get('Ipv6AddressCount')})
+    if args.get('Ipv6Addresses') is not None:
+        arr = args.get('Ipv6Addresses').split(',')
+        NetworkInterfaces.update({'Ipv6Addresses': []})
+        for a in arr:
+            NetworkInterfaces['Ipv6Addresses'].append({'Ipv6Address': a})
+    if args.get('NetworkInterfaceId') is not None:
+        NetworkInterfaces.update({'NetworkInterfaceId': args.get('NetworkInterfaceId')})
+    if args.get('PrivateIpAddress') is not None:
+        NetworkInterfaces.update({'PrivateIpAddress': args.get('PrivateIpAddress')})
+    if args.get('SubnetId') is not None:
+        NetworkInterfaces.update({'SubnetId': args.get('SubnetId')})
+    if NetworkInterfaces:
+        LaunchTemplateData.update({'NetworkInterfaces': [NetworkInterfaces]})
+    if args.get('ImageId') is not None:
+        LaunchTemplateData.update({'ImageId': args.get('ImageId')})
+    if args.get('InstanceType') is not None:
+        LaunchTemplateData.update({'InstanceType': args.get('InstanceType')})
+    if args.get('KeyName') is not None:
+        LaunchTemplateData.update({'KeyName': args.get('KeyName')})
+    if args.get('Monitoring') is not None:
+        LaunchTemplateData.update({'Monitoring': {'Enabled': args.get('Monitoring')}})
+    if args.get('AvailabilityZone') is not None:
+        LaunchTemplateData.update({
+            'Placement': {
+                'AvailabilityZone': args.get('AvailabilityZone')}
+        })
+    if args.get('AvailabilityZoneGroupName') is not None:
+        LaunchTemplateData.update({
+            'Placement': {
+                'GroupName': args.get('AvailabilityZoneGroupName')}
+        })
+    if args.get('PlacementTenancy') is not None:
+        LaunchTemplateData.update({
+            'Placement': {
+                'Tenancy': args.get('PlacementTenancy')}
+        })
+    if args.get('PlacementAffinity') is not None:
+        LaunchTemplateData.update({
+            'Placement': {
+                'Affinity': args.get('PlacementAffinity')}
+        })
+    if args.get('PlacementHostId') is not None:
+        LaunchTemplateData.update({
+            'Placement': {
+                'HostId': args.get('PlacementHostId')}
+        })
+    if args.get('PlacementSpreadDomain') is not None:
+        LaunchTemplateData.update({
+            'Placement': {
+                'SpreadDomain': args.get('PlacementSpreadDomain')}
+        })
+    if args.get('RamDiskId') is not None:
+        LaunchTemplateData.update({'RamDiskId': args.get('RamDiskId')})
+    if args.get('DisableApiTermination') is not None:
+        LaunchTemplateData.update({'DisableApiTermination': args.get('DisableApiTermination')})
+    if args.get('InstanceInitiatedShutdownBehavior') is not None:
+        LaunchTemplateData.update(
+            {'InstanceInitiatedShutdownBehavior': args.get('InstanceInitiatedShutdownBehavior')})
+    if args.get('UserData') is not None:
+        LaunchTemplateData.update({'UserData': args.get('UserData')})
+    TagSpecifications = []
+    if args.get('Tags') is not None:
+        arr = args.get('Tags').split('#')
+        for i, item in enumerate(arr):
+            if len(TagSpecifications) - 1 < (i):
+                TagSpecifications.append({})
+            tg = item.split(':')
+            TagSpecifications[i].update({
+                'ResourceType': tg[0],
+                'Tags': parse_tag_field(tg[1])
+            })
+
+    if TagSpecifications:
+        LaunchTemplateData.update({'TagSpecifications': TagSpecifications})
+    if args.get('securityGroupIds') is not None:
+        LaunchTemplateData.update({'SecurityGroupIds': parse_resource_ids(args.get('securityGroupIds'))})
+    if args.get('securityGroups') is not None:
+        LaunchTemplateData.update({'SecurityGroups': parse_resource_ids(args.get('securityGroups'))})
+
+    InstanceMarketOptions = {}
+    if args.get('MarketType') is not None:
+        InstanceMarketOptions.update({
+            'MarketType': args.get('MarketType')
+        })
+
+    SpotOptions = {}
+    if args.get('SpotInstanceType') is not None:
+        SpotOptions.update({
+            'SpotInstanceType': args.get('SpotInstanceType')
+        })
+    if args.get('BlockDurationMinutes') is not None:
+        SpotOptions.update({
+            'BlockDurationMinutes': args.get('BlockDurationMinutes')
+        })
+    if args.get('SpotValidUntil') is not None:
+        SpotOptions.update({
+            'ValidUntil': parse_date(args.get('SpotValidUntil'))
+        })
+    if args.get('SpotInstanceInterruptionBehavior') is not None:
+        SpotOptions.update({
+            'InstanceInterruptionBehavior': args.get('SpotInstanceInterruptionBehavior')
+        })
+    if args.get('SpotMaxPrice') is not None:
+        SpotOptions.update({
+            'MaxPrice': args.get('SpotMaxPrice')
+        })
+
+    if SpotOptions:
+        InstanceMarketOptions.update({'SpotOptions': SpotOptions})
+
+    if InstanceMarketOptions:
+        LaunchTemplateData.update({'InstanceMarketOptions': InstanceMarketOptions})
+
+    if LaunchTemplateData:
+        kwargs.update({'LaunchTemplateData': LaunchTemplateData})
+
+    response = client.create_launch_template(**kwargs)
+
+    data = []
+    template = response['LaunchTemplate']
+    data.append({
+        'LaunchTemplateId': response['LaunchTemplate']['LaunchTemplateId'],
+        'LaunchTemplateName': response['LaunchTemplate']['LaunchTemplateName'],
+        'CreateTime': response['LaunchTemplate']['CreateTime'],
+        'CreatedBy': response['LaunchTemplate']['CreatedBy'],
+        'DefaultVersionNumber': response['LaunchTemplate']['DefaultVersionNumber'],
+        'LatestVersionNumber': response['LaunchTemplate']['LatestVersionNumber'],
+    })
+    output = json.dumps(template, cls=DatetimeEncoder)
+    data = json.dumps(data, cls=DatetimeEncoder)
+    data = json.loads(data)
+    raw = json.loads(output)
+    ec = {'AWS.EC2.LaunchTemplates': raw}
+    human_readable = tableToMarkdown('AWS LaunchTemplates', data)
+    return_outputs(human_readable, ec)
+
+
+def delete_launch_template(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    data = []
+    kwargs = {}
+    output = []
+    if args.get('LaunchTemplateId') is not None:
+        kwargs.update({'LaunchTemplateId': args.get('LaunchTemplateId')})
+    if args.get('LaunchTemplateName') is not None:
+        kwargs.update({'LaunchTemplateName': args.get('LaunchTemplateName')})
+
+    response = client.delete_launch_template(**kwargs)
+    item = response['LaunchTemplate']
+    data.append({
+        'LaunchTemplateId': item['LaunchTemplateId'],
+        'LaunchTemplateName': item['LaunchTemplateName'],
+        'CreateTime': datetime.datetime.strftime(item['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'CreatedBy': item['CreatedBy'],
+        'DefaultVersionNumber': item['DefaultVersionNumber'],
+        'LatestVersionNumber': item['LatestVersionNumber'],
+    })
+    output.append(item)
+
+    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    ec = {'AWS.EC2.DeletedLaunchTemplates': raw}
+    human_readable = tableToMarkdown('AWS Deleted Launch Templates', data)
+    return_outputs(human_readable, ec)
+
+
+def modify_image_attribute(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    kwargs = {}
+
+    if args.get('Attribute') is not None:
+        kwargs.update({'Attribute': args.get('Attribute')})
+    if args.get('Description') is not None:
+        kwargs.update({'Description': {'Value': args.get('Description')}})
+    if args.get('ImageId') is not None:
+        kwargs.update({'ImageId': args.get('ImageId')})
+
+    LaunchPermission = {"Add": [], "Remove": []}
+    if args.get('LaunchPermission-Add-Group') is not None:
+        LaunchPermission["Add"].append({'Group': args.get('LaunchPermission-Add-Group')})
+    if args.get('LaunchPermission-Add-UserId') is not None:
+        LaunchPermission["Add"].append({'UserId': args.get('LaunchPermission-Add-UserId')})
+
+    if args.get('LaunchPermission-Remove-Group') is not None:
+        LaunchPermission["Remove"].append({'Group': args.get('LaunchPermission-Remove-Group')})
+    if args.get('LaunchPermission-Remove-UserId') is not None:
+        LaunchPermission["Remove"].append({'UserId': args.get('LaunchPermission-Remove-UserId')})
+
+    if LaunchPermission:
+        kwargs.update({'LaunchPermission': LaunchPermission})
+
+    if args.get('OperationType') is not None:
+        kwargs.update({'OperationType': args.get('OperationType')})
+    if args.get('ProductCodes') is not None:
+        kwargs.update({'ProductCodes': parse_resource_ids(args.get('ProductCodes'))})
+    if args.get('UserGroups') is not None:
+        kwargs.update({'UserGroups': parse_resource_ids(args.get('UserGroups'))})
+    if args.get('UserIds') is not None:
+        kwargs.update({'UserIds': parse_resource_ids(args.get('UserIds'))})
+    if args.get('Value') is not None:
+        kwargs.update({'Value': args.get('Value')})
+
+    response = client.modify_image_attribute(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('Image attribute sucessfully modified')
+
+
 """COMMAND BLOCK"""
 try:
     LOG('Command being called is {}'.format(demisto.command()))
@@ -1910,5 +2623,36 @@ try:
 
     elif demisto.command() == 'aws-ec2-create-network-acl-entry':
         create_network_acl_entry(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-create-fleet':
+        create_fleet(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-fleet':
+        delete_fleet(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-describe-fleets':
+        describe_fleets(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-describe-fleet-instances':
+        describe_fleet_instances(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-modify-fleet':
+        modify_fleet(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-create-launch-template':
+        create_launch_template(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-launch-template':
+        delete_launch_template(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-modify-image-attribute':
+        modify_image_attribute(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-modify-network-interface-attribute':
+        modify_network_interface_attribute(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-modify-instance-attribute':
+        modify_instance_attribute(demisto.args())
+
 except Exception as e:
     return_error('Error has occurred in the AWS EC2 Integration: {}\n {}'.format(type(e), e.message))
