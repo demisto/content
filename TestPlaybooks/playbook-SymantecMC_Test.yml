@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8312cf16-27b0-4914-8598-c2462db4b7b8
+    taskid: e520c945-01f2-420b-8e65-71229ae86cb8
     type: start
     task:
-      id: 8312cf16-27b0-4914-8598-c2462db4b7b8
+      id: e520c945-01f2-420b-8e65-71229ae86cb8
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: fc332b09-7cd1-4a0a-8fc4-0be3d887691d
+    taskid: fd5116b2-2513-41b5-8718-b482a3e81469
     type: regular
     task:
-      id: fc332b09-7cd1-4a0a-8fc4-0be3d887691d
+      id: fd5116b2-2513-41b5-8718-b482a3e81469
       version: -1
       name: List devices
       description: List devices in Symantec MC
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -66,10 +66,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 5136b6ac-160f-4541-8988-c1721e6b9136
+    taskid: 9eb2a3c9-e2b3-4820-8c8d-85cbd50937ce
     type: regular
     task:
-      id: 5136b6ac-160f-4541-8988-c1721e6b9136
+      id: 9eb2a3c9-e2b3-4820-8c8d-85cbd50937ce
       version: -1
       name: Get BlueCoat device
       description: Get a device from Symantec MC
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -96,10 +96,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 3735de8b-1a9c-448c-8749-0f07080f0d49
+    taskid: 63e6a96a-ffb7-4284-8438-02b6eebd9e8a
     type: condition
     task:
-      id: 3735de8b-1a9c-448c-8749-0f07080f0d49
+      id: 63e6a96a-ffb7-4284-8438-02b6eebd9e8a
       version: -1
       name: Did we get the correct device?
       type: condition
@@ -123,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -132,10 +132,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: fb5eb6a7-a73c-472b-88dc-b346c6ea6a58
+    taskid: 07e3b4b1-43ab-4c2a-89b2-2cf536df1c0e
     type: regular
     task:
-      id: fb5eb6a7-a73c-472b-88dc-b346c6ea6a58
+      id: 07e3b4b1-43ab-4c2a-89b2-2cf536df1c0e
       version: -1
       name: symantec-mc-get-device-health
       description: Get the health information for a device in Symantec MC
@@ -153,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1040
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
@@ -162,10 +162,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 1d861ed8-6bef-430f-84d8-49825d61578d
+    taskid: c67b3573-afe3-4244-8ae5-32b0272ab122
     type: title
     task:
-      id: 1d861ed8-6bef-430f-84d8-49825d61578d
+      id: c67b3573-afe3-4244-8ae5-32b0272ab122
       version: -1
       name: Get Device Status
       type: title
@@ -178,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -187,10 +187,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: dfa2604e-cc4b-40e7-858a-50fd60c06dd6
+    taskid: 87968ff0-ce02-48d6-833c-d95edc5ebf94
     type: regular
     task:
-      id: dfa2604e-cc4b-40e7-858a-50fd60c06dd6
+      id: 87968ff0-ce02-48d6-833c-d95edc5ebf94
       version: -1
       name: symantec-mc-get-device-license
       description: Get license information for a device in Symantec MC
@@ -208,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1215
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
@@ -217,10 +217,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: d2b8599f-8225-4440-8688-7d333175bd3b
+    taskid: 7e669a5a-8dea-464a-8218-ed3000079cb4
     type: regular
     task:
-      id: d2b8599f-8225-4440-8688-7d333175bd3b
+      id: 7e669a5a-8dea-464a-8218-ed3000079cb4
       version: -1
       name: symantec-mc-get-device-status
       description: Get the status of a device in Symantec MC
@@ -238,8 +238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1390
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -247,10 +247,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7262a793-b8ec-439c-83c6-548529a76522
+    taskid: f9f47b16-1efd-4fca-830a-26c23e77ae35
     type: condition
     task:
-      id: 7262a793-b8ec-439c-83c6-548529a76522
+      id: f9f47b16-1efd-4fca-830a-26c23e77ae35
       version: -1
       name: Did we get all the details?
       type: condition
@@ -281,8 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1565
+          "x": 50,
+          "y": 1915
         }
       }
     note: false
@@ -290,10 +290,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: ad07b2bb-ed9a-47f1-8350-8f8efdc35624
+    taskid: 0cabba6b-6301-4afa-805e-d18b37e78fe5
     type: title
     task:
-      id: ad07b2bb-ed9a-47f1-8350-8f8efdc35624
+      id: 0cabba6b-6301-4afa-805e-d18b37e78fe5
       version: -1
       name: Manage Policy
       type: title
@@ -301,13 +301,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "47"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1740
+          "x": 50,
+          "y": 2090
         }
       }
     note: false
@@ -315,10 +315,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: e4034ddb-324e-49cd-8eeb-60ae4474c3e4
+    taskid: 3e23c31e-2b4d-4743-8cce-307497445fc6
     type: regular
     task:
-      id: e4034ddb-324e-49cd-8eeb-60ae4474c3e4
+      id: 3e23c31e-2b4d-4743-8cce-307497445fc6
       version: -1
       name: Search for the URL policy
       description: List policies in Symantec MC
@@ -342,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2585
+          "x": 50,
+          "y": 3635
         }
       }
     note: false
@@ -351,10 +351,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 7f6f574d-7a72-4dc1-81a6-5bd76e644bef
+    taskid: dd7f2ce4-1232-4c11-8730-3e3e16dee030
     type: condition
     task:
-      id: 7f6f574d-7a72-4dc1-81a6-5bd76e644bef
+      id: dd7f2ce4-1232-4c11-8730-3e3e16dee030
       version: -1
       name: Does it exist?
       type: condition
@@ -377,8 +377,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2760
+          "x": 50,
+          "y": 3810
         }
       }
     note: false
@@ -386,10 +386,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 4be40bed-d39d-4c71-8d2f-b536ebdf8f99
+    taskid: 153ba310-a809-4bb8-8d48-c26d87d703db
     type: regular
     task:
-      id: 4be40bed-d39d-4c71-8d2f-b536ebdf8f99
+      id: 153ba310-a809-4bb8-8d48-c26d87d703db
       version: -1
       name: Delete the policy
       description: Delete a policy in Symantec MC
@@ -408,8 +408,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2935
+          "x": 162.5,
+          "y": 3985
         }
       }
     note: false
@@ -417,10 +417,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 85e17dd1-134b-4178-8358-da2bbea7713c
+    taskid: a53f13c4-24d1-41ae-8453-e5713400d7ec
     type: regular
     task:
-      id: 85e17dd1-134b-4178-8358-da2bbea7713c
+      id: a53f13c4-24d1-41ae-8453-e5713400d7ec
       version: -1
       name: Create a new IP policy
       description: Create a policy in Symantec MC
@@ -462,8 +462,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4335
+          "x": 50,
+          "y": 5385
         }
       }
     note: false
@@ -471,10 +471,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 1b54a1bc-37b0-4328-8624-677bd88b5051
+    taskid: 4bfdc528-08c2-43e2-81c7-c4c87edf68e8
     type: regular
     task:
-      id: 1b54a1bc-37b0-4328-8624-677bd88b5051
+      id: 4bfdc528-08c2-43e2-81c7-c4c87edf68e8
       version: -1
       name: List tenants
       description: List tenants in Symantec MC
@@ -491,8 +491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4160
+          "x": 50,
+          "y": 5210
         }
       }
     note: false
@@ -500,10 +500,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 119e7ca6-69bd-437d-8432-ef61163f4b97
+    taskid: c181a43d-200c-4c8c-87c5-fa79f05d67b3
     type: regular
     task:
-      id: 119e7ca6-69bd-437d-8432-ef61163f4b97
+      id: c181a43d-200c-4c8c-87c5-fa79f05d67b3
       version: -1
       name: Create a new URL policy
       description: Create a policy in Symantec MC
@@ -545,8 +545,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4510
+          "x": 50,
+          "y": 5560
         }
       }
     note: false
@@ -554,10 +554,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: f070736e-f7a6-4e24-8c2b-ff08fe4bb6e2
+    taskid: 044c6989-7d0c-4705-8d09-5441cd5371b4
     type: regular
     task:
-      id: f070736e-f7a6-4e24-8c2b-ff08fe4bb6e2
+      id: 044c6989-7d0c-4705-8d09-5441cd5371b4
       version: -1
       name: Create a new category policy
       description: Create a policy in Symantec MC
@@ -599,8 +599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4685
+          "x": 50,
+          "y": 5735
         }
       }
     note: false
@@ -608,10 +608,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: b1343460-5d1d-4d27-8278-e00c50f1396c
+    taskid: ff21fae5-a25f-4285-857d-54c363f13694
     type: regular
     task:
-      id: b1343460-5d1d-4d27-8278-e00c50f1396c
+      id: ff21fae5-a25f-4285-857d-54c363f13694
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -633,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3985
+          "x": 50,
+          "y": 5035
         }
       }
     note: false
@@ -642,10 +642,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: ad617734-044c-4fec-8581-e942e38596e0
+    taskid: 6bce9c4b-eecf-412d-8f11-ae22af1dcd85
     type: regular
     task:
-      id: ad617734-044c-4fec-8581-e942e38596e0
+      id: 6bce9c4b-eecf-412d-8f11-ae22af1dcd85
       version: -1
       name: Add IP content
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
@@ -690,8 +690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5035
+          "x": 50,
+          "y": 6085
         }
       }
     note: false
@@ -699,10 +699,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 283d0c27-dc4e-419a-87fc-2a1e35f667e1
+    taskid: d34863ad-12c5-44df-8a97-ab6f9d8cf921
     type: regular
     task:
-      id: 283d0c27-dc4e-419a-87fc-2a1e35f667e1
+      id: d34863ad-12c5-44df-8a97-ab6f9d8cf921
       version: -1
       name: Add URL content
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
@@ -747,8 +747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5210
+          "x": 50,
+          "y": 6260
         }
       }
     note: false
@@ -756,10 +756,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: decd8f5b-3ba7-4ac3-8dca-25748952c04f
+    taskid: c34f2cea-5056-47c7-8538-f5d16328c1d0
     type: regular
     task:
-      id: decd8f5b-3ba7-4ac3-8dca-25748952c04f
+      id: c34f2cea-5056-47c7-8538-f5d16328c1d0
       version: -1
       name: Add Category content
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
@@ -804,8 +804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5385
+          "x": 50,
+          "y": 6435
         }
       }
     note: false
@@ -813,10 +813,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 9ab79950-95d9-4e37-8e73-b957c460a2f3
+    taskid: 5388307f-628d-428e-8335-b98c850dd1dd
     type: regular
     task:
-      id: 9ab79950-95d9-4e37-8e73-b957c460a2f3
+      id: 5388307f-628d-428e-8335-b98c850dd1dd
       version: -1
       name: Delete IP content
       description: Delete content from a policy in Symantec MC
@@ -857,8 +857,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5910
+          "x": 50,
+          "y": 6960
         }
       }
     note: false
@@ -866,10 +866,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 9c93b0af-9a3b-4c8a-8360-0f4764a5d9ee
+    taskid: 0f5e9396-7e29-4fb5-8794-c23a6e1565a2
     type: regular
     task:
-      id: 9c93b0af-9a3b-4c8a-8360-0f4764a5d9ee
+      id: 0f5e9396-7e29-4fb5-8794-c23a6e1565a2
       version: -1
       name: Delete URL content
       description: Delete content from a policy in Symantec MC
@@ -910,8 +910,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5735
+          "x": 50,
+          "y": 6785
         }
       }
     note: false
@@ -919,10 +919,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 4b3e47d2-5d8e-4884-803c-49484448d68e
+    taskid: 59eb03cd-5c3c-4b3d-8902-a740a68aafc8
     type: regular
     task:
-      id: 4b3e47d2-5d8e-4884-803c-49484448d68e
+      id: 59eb03cd-5c3c-4b3d-8902-a740a68aafc8
       version: -1
       name: Delete Category content
       description: Delete content from a policy in Symantec MC
@@ -963,8 +963,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5560
+          "x": 50,
+          "y": 6610
         }
       }
     note: false
@@ -972,10 +972,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: b51f2840-4e31-4aef-8d1f-5c4d23783b0b
+    taskid: 0b16d1fb-5701-4e89-84d0-65e685ecba2a
     type: regular
     task:
-      id: b51f2840-4e31-4aef-8d1f-5c4d23783b0b
+      id: 0b16d1fb-5701-4e89-84d0-65e685ecba2a
       version: -1
       name: Get IP policy
       description: Get a policy from Symantec MC
@@ -1007,8 +1007,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 6085
+          "x": 50,
+          "y": 7135
         }
       }
     note: false
@@ -1016,10 +1016,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 9a6a46dc-5bd6-4acf-82b4-daa6ccc697b7
+    taskid: 9ef56294-1a82-491a-8510-5890b6cef4ac
     type: condition
     task:
-      id: 9a6a46dc-5bd6-4acf-82b4-daa6ccc697b7
+      id: 9ef56294-1a82-491a-8510-5890b6cef4ac
       version: -1
       name: Did we get all the policy data?
       type: condition
@@ -1081,8 +1081,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 6610
+          "x": 50,
+          "y": 7660
         }
       }
     note: false
@@ -1090,10 +1090,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 32c659d8-17c2-43db-8e38-12db556d5939
+    taskid: 3792da18-5ea7-4921-883d-6e3872b5b75e
     type: regular
     task:
-      id: 32c659d8-17c2-43db-8e38-12db556d5939
+      id: 3792da18-5ea7-4921-883d-6e3872b5b75e
       version: -1
       name: Update IP policy description
       description: Update the metadata for a policy in Symantec MC
@@ -1130,8 +1130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4860
+          "x": 50,
+          "y": 5910
         }
       }
     note: false
@@ -1139,10 +1139,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 54891a0b-b584-46c9-853c-93b86d4e772b
+    taskid: 85a295b6-d6a1-46e6-8b09-e10019137792
     type: title
     task:
-      id: 54891a0b-b584-46c9-853c-93b86d4e772b
+      id: 85a295b6-d6a1-46e6-8b09-e10019137792
       version: -1
       name: Done
       type: title
@@ -1152,8 +1152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 7310
+          "x": 50,
+          "y": 8360
         }
       }
     note: false
@@ -1161,10 +1161,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 6437243f-447d-423b-8f54-9f1315ab09b6
+    taskid: 3a95cab7-cefc-49a2-8113-c8329bea829e
     type: regular
     task:
-      id: 6437243f-447d-423b-8f54-9f1315ab09b6
+      id: 3a95cab7-cefc-49a2-8113-c8329bea829e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1174,7 +1174,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "45"
     scriptarguments:
       all:
         simple: "yes"
@@ -1186,7 +1186,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -1195,10 +1195,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 458c7ee9-f802-4b6a-888c-40f03718d99e
+    taskid: 3ab1c0f2-e1c7-40e3-8bf9-6cbae0b8f7b9
     type: regular
     task:
-      id: 458c7ee9-f802-4b6a-888c-40f03718d99e
+      id: 3ab1c0f2-e1c7-40e3-8bf9-6cbae0b8f7b9
       version: -1
       name: Search for the IP policy
       description: List policies in Symantec MC
@@ -1222,8 +1222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1885
+          "x": 50,
+          "y": 2935
         }
       }
     note: false
@@ -1231,10 +1231,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 1210ac1c-6adb-43e2-87ff-d681024f32bc
+    taskid: 34ab8ce1-259b-48cc-80da-2dad60d38d89
     type: condition
     task:
-      id: 1210ac1c-6adb-43e2-87ff-d681024f32bc
+      id: 34ab8ce1-259b-48cc-80da-2dad60d38d89
       version: -1
       name: Does it exist?
       type: condition
@@ -1257,8 +1257,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2060
+          "x": 50,
+          "y": 3110
         }
       }
     note: false
@@ -1266,10 +1266,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 23a657b7-5121-460c-8474-d9e955cd9a77
+    taskid: ca71a1d8-f129-426a-8fd9-6da4abeb859a
     type: regular
     task:
-      id: 23a657b7-5121-460c-8474-d9e955cd9a77
+      id: ca71a1d8-f129-426a-8fd9-6da4abeb859a
       version: -1
       name: Delete the policy
       description: Delete a policy in Symantec MC
@@ -1288,8 +1288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2235
+          "x": 162.5,
+          "y": 3285
         }
       }
     note: false
@@ -1297,10 +1297,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 55f08f93-1775-49a8-8bf0-4b6663e0b0eb
+    taskid: 62bf0dc0-eb4e-4c44-8bd8-257b0601368e
     type: regular
     task:
-      id: 55f08f93-1775-49a8-8bf0-4b6663e0b0eb
+      id: 62bf0dc0-eb4e-4c44-8bd8-257b0601368e
       version: -1
       name: Delete key
       description: Delete field from context
@@ -1322,8 +1322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2410
+          "x": 162.5,
+          "y": 3460
         }
       }
     note: false
@@ -1331,10 +1331,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: f7790894-3cfa-4a2b-883c-42aba483a8da
+    taskid: 79836770-9014-4ed4-898f-3d7b94fd3376
     type: regular
     task:
-      id: f7790894-3cfa-4a2b-883c-42aba483a8da
+      id: 79836770-9014-4ed4-898f-3d7b94fd3376
       version: -1
       name: Delete key
       description: Delete field from context
@@ -1356,8 +1356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3110
+          "x": 162.5,
+          "y": 4160
         }
       }
     note: false
@@ -1365,10 +1365,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 7fc6076d-dde9-4ff4-8edc-49f096fcbd5b
+    taskid: 1f9d71ad-a55a-4b3e-8cf9-d4d576561fc1
     type: regular
     task:
-      id: 7fc6076d-dde9-4ff4-8edc-49f096fcbd5b
+      id: 1f9d71ad-a55a-4b3e-8cf9-d4d576561fc1
       version: -1
       name: Search for the category policy
       description: List policies in Symantec MC
@@ -1392,8 +1392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3285
+          "x": 50,
+          "y": 4335
         }
       }
     note: false
@@ -1401,10 +1401,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 39416b7b-982b-46d8-848c-c06bde24599d
+    taskid: b55dfd3d-0c71-4cfb-89c1-01d4af6e1634
     type: condition
     task:
-      id: 39416b7b-982b-46d8-848c-c06bde24599d
+      id: b55dfd3d-0c71-4cfb-89c1-01d4af6e1634
       version: -1
       name: Does it exist?
       type: condition
@@ -1427,8 +1427,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3460
+          "x": 50,
+          "y": 4510
         }
       }
     note: false
@@ -1436,10 +1436,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: ecaef95b-d960-404c-8fbb-b7f5600820a2
+    taskid: 646ea8e3-c147-4b9a-8be3-cf9945b41384
     type: regular
     task:
-      id: ecaef95b-d960-404c-8fbb-b7f5600820a2
+      id: 646ea8e3-c147-4b9a-8be3-cf9945b41384
       version: -1
       name: Delete the policy
       description: Delete a policy in Symantec MC
@@ -1458,8 +1458,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3635
+          "x": 162.5,
+          "y": 4685
         }
       }
     note: false
@@ -1467,10 +1467,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 20ef4c03-69ac-4e2e-8349-ed227e65db89
+    taskid: d5e2d034-e0fb-4504-82bb-e0648fe03330
     type: regular
     task:
-      id: 20ef4c03-69ac-4e2e-8349-ed227e65db89
+      id: d5e2d034-e0fb-4504-82bb-e0648fe03330
       version: -1
       name: Delete key
       description: Delete field from context
@@ -1492,8 +1492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3810
+          "x": 162.5,
+          "y": 4860
         }
       }
     note: false
@@ -1501,10 +1501,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 3632ded1-6b80-435a-8ae5-6d9a6f72bfd8
+    taskid: bc6dcfcb-a279-4f3a-8772-f0e54f923cb1
     type: regular
     task:
-      id: 3632ded1-6b80-435a-8ae5-6d9a6f72bfd8
+      id: bc6dcfcb-a279-4f3a-8772-f0e54f923cb1
       version: -1
       name: Delete IP policy
       description: Delete a policy in Symantec MC
@@ -1537,8 +1537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 6785
+          "x": 50,
+          "y": 7835
         }
       }
     note: false
@@ -1546,10 +1546,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: b90c02f3-cafc-4282-862a-770b9cfe0768
+    taskid: 2be2bda4-8b35-4a29-8dc8-a2befabe125b
     type: regular
     task:
-      id: b90c02f3-cafc-4282-862a-770b9cfe0768
+      id: 2be2bda4-8b35-4a29-8dc8-a2befabe125b
       version: -1
       name: Delete URL policy
       description: Delete a policy in Symantec MC
@@ -1582,8 +1582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 6960
+          "x": 50,
+          "y": 8010
         }
       }
     note: false
@@ -1591,10 +1591,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 48a91d02-42e1-4742-8236-1f38f7a64045
+    taskid: cc37b408-c7db-48f7-8ba5-4507e3087225
     type: regular
     task:
-      id: 48a91d02-42e1-4742-8236-1f38f7a64045
+      id: cc37b408-c7db-48f7-8ba5-4507e3087225
       version: -1
       name: Delete category policy
       description: Delete a policy in Symantec MC
@@ -1627,8 +1627,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 7135
+          "x": 50,
+          "y": 8185
         }
       }
     note: false
@@ -1636,10 +1636,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 181ea259-a3a7-4baa-80f9-4e4bd149bab3
+    taskid: 585bd05d-4eac-489b-85cf-650728d97f83
     type: regular
     task:
-      id: 181ea259-a3a7-4baa-80f9-4e4bd149bab3
+      id: 585bd05d-4eac-489b-85cf-650728d97f83
       version: -1
       name: Get URL policy
       description: Get a policy from Symantec MC
@@ -1671,8 +1671,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 6260
+          "x": 50,
+          "y": 7310
         }
       }
     note: false
@@ -1680,10 +1680,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: 27de4ae4-9922-4ade-8a1d-8289fdf92a06
+    taskid: b9ef2ccc-c854-4a95-835a-da9067ac4261
     type: regular
     task:
-      id: 27de4ae4-9922-4ade-8a1d-8289fdf92a06
+      id: b9ef2ccc-c854-4a95-835a-da9067ac4261
       version: -1
       name: Get category policy
       description: Get a policy from Symantec MC
@@ -1715,8 +1715,203 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 6435
+          "x": 50,
+          "y": 7485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: b479585e-d8e0-4c73-84ed-7d664ff7a636
+    type: regular
+    task:
+      id: b479585e-d8e0-4c73-84ed-7d664ff7a636
+      version: -1
+      name: Get non-existing device
+      description: Get a device from Symantec MC
+      script: '|||symantec-mc-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      uuid:
+        simple: "123"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: ee41d511-741b-4865-8eaa-cb4bebbcfc95
+    type: condition
+    task:
+      id: ee41d511-741b-4865-8eaa-cb4bebbcfc95
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 5648f8aa-642f-4fdb-8e59-16b27ed315ce
+    type: regular
+    task:
+      id: 5648f8aa-642f-4fdb-8e59-16b27ed315ce
+      version: -1
+      name: Try using illegal filter
+      description: List policies in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-policies
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      content_type: {}
+      description: {}
+      limit: {}
+      name:
+        simple: blabla
+      reference_id: {}
+      shared: {}
+      tenant: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: dfd07450-1f83-4255-8b16-1eb1755a3050
+    type: condition
+    task:
+      id: dfd07450-1f83-4255-8b16-1eb1755a3050
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 4125db0e-e062-4d34-8b52-4501a42dcac5
+    type: regular
+    task:
+      id: 4125db0e-e062-4d34-8b52-4501a42dcac5
+      version: -1
+      name: Get non existing policy
+      description: Get a policy from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      uuid:
+        simple: "123"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: 8378d735-1000-47fa-81fe-0525f01ccedc
+    type: condition
+    task:
+      id: 8378d735-1000-47fa-81fe-0525f01ccedc
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
         }
       }
     note: false
@@ -1727,7 +1922,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7325,
+        "height": 8375,
         "width": 492.5,
         "x": 50,
         "y": 50
