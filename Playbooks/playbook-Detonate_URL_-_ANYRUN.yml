@@ -307,19 +307,19 @@ inputs:
     (in minutes)
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
-  description: The date and time when the analysis was executed.
+  description: Date and time the analysis was executed.
   type: String
 - contextPath: ANYRUN.Task.Behavior.Category
-  description: The categorization of a process behavior.
+  description: Category of a process behavior.
   type: String
 - contextPath: ANYRUN.Task.Behavior.Action
   description: Actions performed by a process.
   type: String
 - contextPath: ANYRUN.Task.Behavior.ThreatLevel
-  description: The threat score associated with a process behavior.
+  description: Threat score associated with a process behavior.
   type: Number
 - contextPath: ANYRUN.Task.Behavior.ProcessUUID
-  description: The unique ID of the process whose behaviors are being profiled.
+  description: Unique ID of the process whose behaviors are being profiled.
   type: String
 - contextPath: ANYRUN.Task.Connection.Reputation
   description: Connection reputation.
@@ -343,76 +343,76 @@ outputs:
   description: Connection IP number.
   type: String
 - contextPath: ANYRUN.Task.DnsRequest.Reputation
-  description: Reputation of the dns request.
+  description: Reputation of the DNS request.
   type: String
 - contextPath: ANYRUN.Task.DnsRequest.IP
-  description: IP addresses associated with a dns request.
+  description: IP addresses associated with a DNS request.
   type: Unknown
 - contextPath: ANYRUN.Task.DnsRequest.Domain
-  description: Domain resolution of a dns request.
+  description: Domain resolution of a DNS request.
   type: String
 - contextPath: ANYRUN.Task.Threat.ProcessUUID
-  description: Unique process ID (used by ANYRUN) whence the threat originated.
+  description: Unique process ID from where the threat originated.
   type: String
 - contextPath: ANYRUN.Task.Threat.Msg
   description: Threat message.
   type: String
 - contextPath: ANYRUN.Task.Threat.Class
-  description: Class of threat.
+  description: Class of the threat.
   type: String
 - contextPath: ANYRUN.Task.Threat.SrcPort
-  description: Port number whence the threat originated.
+  description: Port on which the threat originated.
   type: Number
 - contextPath: ANYRUN.Task.Threat.DstPort
-  description: Destination port number of the threat.
+  description: Destination port of the threat.
   type: Number
 - contextPath: ANYRUN.Task.Threat.SrcIP
-  description: Source IP address whence the threat originated.
+  description: Source IP address where the threat originated.
   type: String
 - contextPath: ANYRUN.Task.Threat.DstIP
   description: Destination IP address of the threat.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Reputation
-  description: Reputation of the http request.
+  description: Reputation of the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Country
-  description: Http request country
+  description: HTTP request country.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
-  description: ID of the process making the http request.
+  description: ID of the process making the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Body
-  description: Http request body parameters and details.
+  description: HTTP request body parameters and details.
   type: Unknown
 - contextPath: ANYRUN.Task.HttpRequest.HttpCode
-  description: Http request response code.
+  description: HTTP request response code.
   type: Number
 - contextPath: ANYRUN.Task.HttpRequest.Status
-  description: Status of the http request.
+  description: Status of the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
-  description: Whether the http request was made through a proxy.
+  description: Whether the HTTP request was made through a proxy.
   type: Boolean
 - contextPath: ANYRUN.Task.HttpRequest.Port
-  description: Http request port number.
+  description: HTTP request port.
   type: Number
 - contextPath: ANYRUN.Task.HttpRequest.IP
-  description: Http request IP address.
+  description: HTTP request IP address.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.URL
-  description: Http request url.
+  description: HTTP request URL.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Host
-  description: Http request host.
+  description: HTTP request host.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Method
-  description: Http request method type.
+  description: HTTP request method type.
   type: String
 - contextPath: ANYRUN.Task.FileInfo
-  description: Details of the file submitted for analysis.
+  description: Details of the submitted file.
   type: String
 - contextPath: ANYRUN.Task.OS
-  description: The environment OS of the sandbox in which the file was analyzed.
+  description: OS of the sandbox in which the file was analyzed.
   type: String
 - contextPath: ANYRUN.Task.ID
   description: The unique ID of the task.
@@ -421,7 +421,7 @@ outputs:
   description: The MIME of the file submitted for analysis.
   type: String
 - contextPath: ANYRUN.Task.Verdict
-  description: ANYRUN's determination regarding the submitted file or url's maliciousness.
+  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
   type: String
 - contextPath: ANYRUN.Task.Process.FileName
   description: File name of the process.
@@ -433,16 +433,16 @@ outputs:
   description: Parent process identification number.
   type: Number
 - contextPath: ANYRUN.Task.Process.ProcessUUID
-  description: Unique process ID (used by ANYRUN).
+  description: Unique process ID (used by ANY.RUN).
   type: String
 - contextPath: ANYRUN.Task.Process.CMD
   description: Process command.
   type: String
 - contextPath: ANYRUN.Task.Process.Path
-  description: Path of executed command.
+  description: Path of the executed command.
   type: String
 - contextPath: ANYRUN.Task.Process.User
-  description: User who executed command.
+  description: User who executed the command.
   type: String
 - contextPath: ANYRUN.Task.Process.IntegrityLevel
   description: The process integrity level.
@@ -463,16 +463,16 @@ outputs:
   description: Version of the program executed.
   type: String
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested.
+  description: The indicator that was tested.
   type: String
 - contextPath: DBotScore.Score
   description: The actual score.
   type: Number
 - contextPath: DBotScore.Type
-  description: The type of the indicator.
+  description: Type of indicator.
   type: String
 - contextPath: DBotScore.Vendor
-  description: The vendor used to calculate the score.
+  description: Vendor used to calculate the score.
   type: String
 - contextPath: URL.Data
   description: URL data.
@@ -481,7 +481,7 @@ outputs:
   description: For malicious URLs, the vendor that made the decision.
   type: String
 - contextPath: URL.Malicious.Description
-  description: For malicious URLs, the reason for the vendor to make the decision.
+  description: For malicious URLs, the reason that the vendor made the decision.
   type: String
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
