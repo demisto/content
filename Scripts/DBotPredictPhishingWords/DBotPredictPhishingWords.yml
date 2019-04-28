@@ -71,20 +71,21 @@ enabled: false
 name: DBotPredictPhishingWords
 outputs:
 - contextPath: DBotPredictPhishingWords.Label
- description: The predicted label.
- type: String
+  description: The predicted label.
+  type: String
 - contextPath: DBotPredictPhishingWords.Probability
- description: The predicted probability (range: 0-1).
- type: Number
+  description: The predicted probability (range 0-1).
+  type: Number
 - contextPath: DBotPredictPhishingWords.PositiveWords
- description: A list of words in the input text that supports the model decision.
- type: Unknown
+  description: A list of words in the input text that supports the model decision.
+  type: Unknown
 - contextPath: DBotPredictPhishingWords.NegativeWords
- description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
- type: Unknown
+  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
+  type: Unknown
 - contextPath: DBotPredictPhishingWords.TextTokensHighlighted
- description: The input text (after pre-processing) with the positive words that
-   support the model decision.
+  description: The input text (after pre-processing) with the positive words that
+    support the model decision.
+  type: String
 script: '-'
 system: false
 tags:
