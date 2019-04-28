@@ -6,9 +6,6 @@ from CommonServerUserPython import *
 import json
 import requests
 import os
-import base64
-from datetime import datetime
-import time
 import os.path
 
 # Disable insecure warnings
@@ -61,7 +58,7 @@ def http_request(method, suffix_url, headers=DEFAULT_HEADERS, body=None):
 
     try:
         response = response.json()
-    except:
+    except Exception:
         return_error(response.content)
 
     return response
@@ -72,8 +69,8 @@ def parse_error_response(response):
         res = response.json()
         msg = res.get('message')
         if res.get('details') is not None and res.get('details')[0].get('message') is not None:
-            msg = msg + "\n"+json.dumps(res.get('details')[0])
-    except:
+            msg = msg + "\n" + json.dumps(res.get('details')[0])
+    except Exception:
         return response.text
     return msg
 
@@ -570,7 +567,7 @@ def delete_file():
         'path': path
     }
 
-    response = delete_file_request(endpoint_id, body)
+    delete_file_request(endpoint_id, body)
 
     demisto.results('The file has been deleted successfully')
 
@@ -816,7 +813,7 @@ def get_file_information():
 
 def download_file_request(file_id):
 
-    #This request downloads an extracted file.
+    # This request downloads an extracted file.
 
     suffix_url = 'downloads/extractedfiles/' + file_id
     response = http_request('GET', suffix_url)
@@ -1251,9 +1248,9 @@ def search_hashes():
             results_lst.append({k.replace('hashes.', ''): v for k, v in results[i].items()})
         hashes['results'] = results_lst
         for hash_type in hashes.get('results'):
-            file_hash_type =  hash_type.get('type', '').upper()
+            file_hash_type = hash_type.get('type', '').upper()
             if file_hash_type == 'SSDEEP':
-                file_hash_type =  'SSDeep'
+                file_hash_type = 'SSDeep'
             hash_id = hash_type.get('id')
             data.append({
                 file_hash_type: hash_id,
@@ -1293,7 +1290,7 @@ FETCH INCIDENTS
 """
 
 
-def search_behaviors_request(params=''):
+def fetch_behaviors_request(params=''):
     """
     Request for behaviors search using CQL expression
 
@@ -1302,7 +1299,6 @@ def search_behaviors_request(params=''):
     response = http_request('GET', suffix_url)
 
     return response
-
 
 
 def fetch_incidents():
@@ -1318,7 +1314,7 @@ def fetch_incidents():
     max_timestamp = last_update_time
     if FETCH_BEHAVIORS:
         params = 'behaviors.time_stamp>' + last_update_time
-        behaviors = search_behaviors_request(params)
+        behaviors = fetch_behaviors_request(params)
 
         for behavior in behaviors.get('results'):
             incident = behavior_to_incident(behavior)
