@@ -34,8 +34,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by description, for example: "CONTAINS". '
-        desc"
+      description: ' Filter the query filter parameter by description, for example: "CONTAINS"
+        desc".'
       isArray: false
       name: description
       required: false
