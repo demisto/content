@@ -1281,6 +1281,7 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "RedCanary": "License expired",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
