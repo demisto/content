@@ -20,6 +20,7 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellIncidentOwnTask
+dockerimage: demisto/python3:3.7.2.214
 script: '-'
 system: false
 timeout: '0'
