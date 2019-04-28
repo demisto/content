@@ -1,4 +1,4 @@
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold
 from CommonServerPython import entryTypes
 import demistomock as demisto
 
@@ -323,6 +323,12 @@ def test_utf_subject_convert():
     assert 'utf-8' not in decoded
     assert 'Votre' in decoded
     assert 'chez' in decoded
+
+
+def test_unfold():
+    assert unfold('test\n\tthis') == 'test this'
+    assert unfold('test\r\n\tthis') == 'test this'
+    assert unfold('test   \r\n this') == 'test this'
 
 
 def test_email_raw_headers(mocker):
