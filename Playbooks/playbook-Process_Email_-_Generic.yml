@@ -728,10 +728,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: a9d9a40a-ba68-4c09-8ceb-f021d95539c5
+    taskid: 040c1852-c639-4322-80d0-e10d0dfc9b09
     type: regular
     task:
-      id: a9d9a40a-ba68-4c09-8ceb-f021d95539c5
+      id: 040c1852-c639-4322-80d0-e10d0dfc9b09
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -827,23 +827,10 @@ tasks:
       emailbcc:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.BCC
-                iscontext: true
           accessor: HeadersMap.BCC
           transformers:
           - operator: uniq
           - operator: Stringify
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
       emailbody:
         complex:
           root: Email
@@ -864,23 +851,10 @@ tasks:
       emailcc:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.CC
-                iscontext: true
-          accessor: HeadersMap.CC
+          accessor: CC
           transformers:
           - operator: uniq
           - operator: Stringify
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
       emailclientname:
         complex:
           root: Email
@@ -888,23 +862,10 @@ tasks:
       emailfrom:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.From
-                iscontext: true
-          accessor: HeadersMap.From
+          accessor: From
           transformers:
           - operator: uniq
           - operator: Stringify
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
       emailfromdisplayname: {}
       emailimage:
         complex:
@@ -921,80 +882,50 @@ tasks:
       emailmessageid:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.Message-ID
-                iscontext: true
           accessor: HeadersMap.Message-ID
           transformers:
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
           - operator: uniq
       emailreceived:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.Received
-                iscontext: true
           accessor: HeadersMap.Received
           transformers:
           - operator: uniq
       emailreplyto:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.Reply-To
-                iscontext: true
           accessor: HeadersMap.Reply-To
           transformers:
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
           - operator: uniq
       emailreturnpath:
         complex:
           root: Email
-          accessor: ReturnPath
+          accessor: HeadersMap.Return-Path
+          transformers:
+          - operator: uniq
       emailsenderdomain: {}
       emailsenderip:
         complex:
           root: Email
           accessor: SenderIP
+          transformers:
+          - operator: uniq
       emailsize:
         complex:
           root: Email
           accessor: Size
+          transformers:
+          - operator: uniq
       emailsource:
         complex:
           root: Email
           accessor: Source
+          transformers:
+          - operator: uniq
       emailsubject:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.Subject
-                iscontext: true
-          accessor: HeadersMap.Subject
+          accessor: Subject
           transformers:
           - operator: uniq
           - operator: Stringify
@@ -1002,41 +933,15 @@ tasks:
       emailto:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.To
-                iscontext: true
-          accessor: HeadersMap.To
+          accessor: To
           transformers:
           - operator: uniq
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
       emailtocount:
         complex:
           root: Email
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Email.HeadersMap.To
-                iscontext: true
-          accessor: HeadersMap.To
+          accessor: To
           transformers:
           - operator: uniq
-          - operator: RegexGroups
-            args:
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: <(.*)>
           - operator: count
       emailurlclicked:
         complex:
