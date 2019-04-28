@@ -15,6 +15,7 @@ URL = demisto.getParam('server')
 TOKEN = demisto.getParam('token')
 USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
+MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
 URL_DICT = {
     'verdict': '/get/verdict',
@@ -68,12 +69,12 @@ VERDICTS_TO_DBOTSCORE = {
 
 def http_request(url, method, headers=None, body=None, params=None, files=None):
     LOG('running request with url=%s' % url)
-    demisto.log(url)
-    demisto.log('method : ' + str(method))
-    demisto.log('headers : ' + str(headers))
-    demisto.log('body : ' + str(body))
-    demisto.log('params : ' + str(params))
-    demisto.log('files : ' + str(files))
+    # demisto.log(url)
+    # demisto.log('method : ' + str(method))
+    # demisto.log('headers : ' + str(headers))
+    # demisto.log('body : ' + str(body))
+    # demisto.log('params : ' + str(params))
+    # demisto.log('files : ' + str(files))
     result = requests.request(
         method,
         url,
@@ -84,25 +85,26 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
         files=files
     )
 
-    demisto.log(str(dir(result)))
-    demisto.log(str(result.headers))
-    demisto.log(str(result.status_code))
-    demisto.log(str(result.reason))
+    # demisto.log(str(dir(result)))
+    # demisto.log(str(result.headers))
+    # demisto.log(str(result.status_code))
+    # demisto.log(str(result.reason))
 
     # sample not found
     if str(result.reason) == 'Not Found':
         demisto.results(
-            'Sample was not found. You can download malware files indefinitely. '
-            'You can download grayware and benign samples for 14 days.')
+            'Sample was not found. '
+            'Please note that grayware and benign samples are available for 14 days only. '
+            'For more info contact your wildfire representative.')
         sys.exit(0)
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
-            return_error('Request Failed with status: {} Reason is: {}'.format(
-                result.status_code, ERROR_DICT[str(result.status_code)]))
+            return_error('Request Failed with status: {status} Reason is: {reason}'.format(
+                status=result.status_code, reason=ERROR_DICT[str(result.status_code)]))
         else:
-            return_error('Request Failed with status: {} Reason is: {}'.format(
-                result.status_code, result.reason))
+            return_error('Request Failed with status: {status} Reason is: {reason}'.format(
+                status=result.status_code, reason=result.reason))
 
     if result.headers['Content-Type'] == 'application/octet-stream':
         return result
@@ -125,6 +127,22 @@ def prettify_upload(upload_body):
         pretty_upload["URL"] = upload_body["url"]
 
     return pretty_upload
+
+
+def prettify_report_entry(file_info):
+    pretty_report = {
+        'MD5': file_info["md5"],
+        'SHA256': file_info["sha256"],
+        'Status': 'Completed'
+    }
+    if 'filetype' in file_info:
+        pretty_report["FileType"] = file_info["filetype"]
+    if 'size' in file_info:
+        pretty_report["Size"] = file_info["size"]
+    if 'url' in file_info:
+        pretty_report["URL"] = file_info["url"]
+
+    return pretty_report
 
 
 def prettify_verdict(verdict_data):
@@ -160,9 +178,9 @@ def prettify_verdicts(verdicts_data):
 
     for verdict_data in verdicts_data:
         pretty_verdict = {}
-        if verdict_data["md5"]:
+        if 'md5' in verdict_data:
             pretty_verdict["MD5"] = verdict_data["md5"]
-        if verdict_data["sha256"]:
+        if 'sha256' in verdict_data:
             pretty_verdict["SHA256"] = verdict_data["sha256"]
 
         pretty_verdict["Verdict"] = verdict_data["verdict"]
@@ -196,17 +214,18 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
 
 
 def create_upload_entry(upload_body, title, result):
-    md = tableToMarkdown(title, upload_body)
-    return {
+    pretty_upload_body = prettify_upload(upload_body)
+    md = tableToMarkdown(title, pretty_upload_body, removeNull=True)
+    demisto.results({
         'Type': entryTypes['note'],
         'Contents': result,
         'ContentsFormat': formats['json'],
         'HumanReadable': md,
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {
-            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": prettify_upload(upload_body)
+            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_upload_body
         }
-    }
+    })
 
 
 def hash_args_handler(sha256=None, md5=None):
@@ -245,6 +264,14 @@ def file_args_handler(file=None, sha256=None, md5=None):
         return_error('Specify exactly 1 of the following arguments: file, sha256, md5.')
 
 
+def hash_list_to_file(hash_list):
+    file_path = demisto.uniqueFile()
+    with open(file_path, 'w') as f:
+        f.write("\n".join(hash_list))
+
+    return [file_path]
+
+
 ''' COMMANDS '''
 
 
@@ -271,7 +298,6 @@ def wildfire_upload_file(upload):
         result = http_request(
             upload_file_uri,
             'POST',
-            headers=DEFAULT_HEADERS,
             body=body,
             files={'file': f}
         )
@@ -291,13 +317,23 @@ def wildfire_upload_file_command():
 @logger
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
-    body = {
-        'apikey': TOKEN,
-        'url': upload
-    }
+    body = '''--upload_boundry
+Content-Disposition: form-data; name="apikey"
 
-    # result = http_request(upload_file_url_uri, 'POST', DEFAULT_HEADERS, body=body)
-    result = http_request(upload_file_url_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
+{apikey}
+--upload_boundry
+Content-Disposition: form-data; name="url"
+
+{url}
+--upload_boundry--'''.format(apikey=TOKEN, url=upload)
+
+    result = http_request(
+        upload_file_url_uri,
+        'POST',
+        headers=MULTIPART_HEADERS,
+        body=body
+    )
+
     upload_file_url_data = result["wildfire"]["upload-file-info"]
 
     return result, upload_file_url_data
@@ -313,12 +349,22 @@ def wildfire_upload_file_url_command():
 @logger
 def wildfire_upload_url(upload):
     upload_url_uri = URL + URL_DICT["upload_url"]
-    body = {
-        'apikey': TOKEN,
-        'link': upload
-    }
+    body = '''--upload_boundry
+Content-Disposition: form-data; name="apikey"
 
-    result = http_request(upload_url_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
+{apikey}
+--upload_boundry
+Content-Disposition: form-data; name="link"
+
+{link}
+--upload_boundry--'''.format(apikey=TOKEN, link=upload)
+
+    result = http_request(
+        upload_url_uri,
+        'POST',
+        headers=MULTIPART_HEADERS,
+        body=body
+    )
 
     upload_url_data = result["wildfire"]["submit-link-info"]
 
@@ -349,7 +395,7 @@ def wildfire_get_verdict_command():
         result, verdict_data = wildfire_get_verdict(element)
 
         pretty_verdict = prettify_verdict(verdict_data)
-        md = tableToMarkdown('WildFire Verdict', pretty_verdict)
+        md = tableToMarkdown('WildFire Verdict', pretty_verdict, removeNull=True)
 
         dbot_score = create_dbot_score_from_verdict(pretty_verdict)
         ec = {
@@ -368,34 +414,40 @@ def wildfire_get_verdict_command():
 
 
 @logger
-def wildfire_get_verdicts(entry_id):
+def wildfire_get_verdicts(file_path):
     get_verdicts_uri = URL + URL_DICT["verdicts"]
     body = {'apikey': TOKEN}
 
-    shutil.copy(demisto.getFilePath(entry_id)['path'],
-                demisto.getFilePath(entry_id)['name'])
-    with open(demisto.getFilePath(entry_id)['name'], 'rb') as f:
+    with open(file_path, 'rb') as f:
         result = http_request(
             get_verdicts_uri,
             'POST',
-            headers=DEFAULT_HEADERS,
             body=body,
             files={'file': f}
         )
 
-    # result = http_request(get_verdicts_uri, 'POST', headers=DEFAULT_HEADERS, params=params, files=entry_id)
     verdicts_data = result["wildfire"]["get-verdict-info"]
 
     return result, verdicts_data
 
 
 def wildfire_get_verdicts_command():
-    inputs = argToList(demisto.args().get('EntryID'))
-    for element in inputs:
-        result, verdicts_data = wildfire_get_verdicts(element)
+    if ('EntryID' in demisto.args() and 'hash_list' in demisto.args()) or (
+            'EntryID' not in demisto.args() and 'hash_list' not in demisto.args()):
+        return_error('Specify exactly 1 of the following arguments: EntryID, hash_list.')
+
+    if 'EntryID' in demisto.args():
+        inputs = argToList(demisto.args().get('EntryID'))
+        paths = [demisto.getFilePath(element)['path'] for element in inputs]
+
+    else:
+        paths = hash_list_to_file(argToList(demisto.args().get('hash_list')))
+
+    for file_path in paths:
+        result, verdicts_data = wildfire_get_verdicts(file_path)
 
         pretty_verdicts = prettify_verdicts(verdicts_data)
-        md = tableToMarkdown('WildFire Verdicts', pretty_verdicts)
+        md = tableToMarkdown('WildFire Verdicts', pretty_verdicts, removeNull=True)
 
         dbot_score = create_dbot_score_from_verdicts(pretty_verdicts)
         ec = {
@@ -494,7 +546,6 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         'Vendor': 'WildFire',
         'Score': 0
     }
-
     ec["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
     if file_info:
@@ -511,7 +562,6 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
             }
         else:
             ec["DBotScore"]["Score"] = 1
-
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
         params = {
@@ -524,17 +574,17 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
 
         file_name = 'wildfire_report_' + file_hash
         file_type = entryTypes['entryInfoFile']
-        result = fileResult(file_name, res_pdf,
+        result = fileResult(file_name, res_pdf.content,
                             file_type)  # will be saved under 'InfoFile' in the context.
         result['EntryContext'] = ec
 
         demisto.results(result)
 
     else:
-        md = tableToMarkdown('WildFire Report', file_info, file_info.keys())
+        md = tableToMarkdown('WildFire Report', prettify_report_entry(file_info))
         if verbose:
             for report in reports:
-                md += tableToMarkdown('Report ', report, report.keys())
+                md += tableToMarkdown('Report ', report, report.keys(), removeNull=True)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -567,13 +617,14 @@ def wildfire_get_report(file_hash):
     if not reports or not file_info:
         demisto.results('No results yet')
         sys.exit(0)
-
     return file_hash, reports, file_info
 
 
 def wildfire_get_report_command():
-    if 'sha256' or 'hash' in demisto.args():
+    if 'sha256' in demisto.args():
         sha256 = demisto.args().get('sha256', None)
+    elif 'hash' in demisto.args():
+        sha256 = demisto.args().get('hash', None)
     else:
         sha256 = None
     md5 = demisto.args().get('md5', None)
@@ -581,7 +632,6 @@ def wildfire_get_report_command():
 
     verbose = demisto.args().get('verbose', False) == 'true'
     format_ = demisto.args().get('format', 'xml')
-
     for element in inputs:
         file_hash, report, file_info = wildfire_get_report(element)
         create_report(file_hash, report, file_info, format_, verbose)
@@ -642,7 +692,7 @@ def main():
         elif demisto.command() == 'wildfire-upload':
             wildfire_upload_file_command()
 
-        elif demisto.command() in ['wildfire-upload-dile-remote', 'wildfire-upload-file-url']:
+        elif demisto.command() in ['wildfire-upload-file-remote', 'wildfire-upload-file-url']:
             wildfire_upload_file_url_command()
 
         elif demisto.command() == 'wildfire-upload-url':
