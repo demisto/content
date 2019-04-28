@@ -74,7 +74,9 @@ def http_request(method, path, params=None, data=None):
     try:
         return res.json()
     except Exception:
-        return res
+        if res.status_code == 204:
+            return res
+        return_error('Failed parsing the response from Symantec MC API: {}'.format(res.content))
 
 
 ''' FUNCTIONS '''
