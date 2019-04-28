@@ -27,262 +27,262 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Query Filter parameter to filter by by the OS build number, e.g.,
-        "GT 227900"
+      description: ' Filter the query filter parameter by the OS build number, for example:
+        "GT 227900". '
       isArray: true
       name: build
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by description, e.g., "CONTAINS
+      description: ' Filter the query filter parameter by description, for example: "CONTAINS". '
         desc"
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by model, e.g., "EQ VSWG-SE"
+      description: ' Filter the query filter parameter by model, for example: "EQ VSWG-SE". '
       isArray: false
       name: model
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by name, e.g., "STARTSWITH CAS"
+      description: ' Filter the query filter parameter by name, for example: "STARTSWITH CAS". '
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by OS version, e.g., "LT 2.3"
+      description: ' Filter the query filter parameter by OS version, for example: "LT 2.3". '
       isArray: false
       name: os_version
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by platform, e.g., "CONTAINS CAS"
+      description: ' Filter the query filter parameter by platform, for example: "CONTAINS CAS". '
       isArray: false
       name: platform
       required: false
       secret: false
     - default: false
-      description: String parameter to filter by device type, e.g., "cas"
+      description: ' Filter the query filter parameter by device type, for example: "cas". '
       isArray: false
       name: type
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: Limit the number of results returned
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: List devices in Symantec MC
+    description: Lists all devices in Symantec MC.
     execution: false
     name: symantec-mc-list-devices
     outputs:
     - contextPath: SymantecMC.Device.UUID
-      description: Device UUID
+      description: Device UUID.
       type: String
     - contextPath: SymantecMC.Device.Name
-      description: Device name
+      description: Device name.
       type: String
     - contextPath: SymantecMC.Device.LastChanged
-      description: Device last changed date
+      description: Device last changed date.
       type: Date
     - contextPath: SymantecMC.Device.Type
-      description: Device type
+      description: Device type.
       type: String
     - contextPath: SymantecMC.Device.Host
-      description: Device host address
+      description: Device host address.
       type: String
   - arguments:
     - default: true
-      description: Device UUID - Can be retrieved from the list-devices command
+      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
       isArray: false
       name: uuid
       required: true
       secret: false
     deprecated: false
-    description: Get a device from Symantec MC
+    description: Gets device information from Symantec MC.
     execution: false
     name: symantec-mc-get-device
     outputs:
     - contextPath: SymantecMC.Device.UUID
-      description: Device UUID
+      description: Device UUID.
       type: String
     - contextPath: SymantecMC.Device.Name
-      description: Device name
+      description: Device name.
       type: String
     - contextPath: SymantecMC.Device.LastChanged
-      description: Device last changed
+      description: Device last changed date.
       type: String
     - contextPath: SymantecMC.Device.LastChangedBy
-      description: Device last changed by
+      description: User that last changed the device.
       type: String
     - contextPath: SymantecMC.Device.Description
-      description: Device description
+      description: Device description.
       type: String
     - contextPath: SymantecMC.Device.Model
-      description: Device model
+      description: Device model.
       type: String
-    - contextPath: SymantecMC.Device.Platform
+    - contextPath: SymantecMC.Device..Platform
       description: Device platform
       type: String
     - contextPath: SymantecMC.Device.Type
-      description: Device type
+      description: Device type.
       type: String
     - contextPath: SymantecMC.Device.OSVersion
-      description: Device OS version
+      description: Device OS version.
       type: String
     - contextPath: SymantecMC.Device.Build
-      description: Device build number
+      description: Device build number.
       type: Number
     - contextPath: SymantecMC.Device.SerialNumber
-      description: Device serial number
+      description: Device serial number.
       type: Number
     - contextPath: SymantecMC.Device.Host
-      description: Device host address
+      description: Device host address.
       type: String
     - contextPath: SymantecMC.Device.ManagementStatus
-      description: Device management status
+      description: Device management status.
       type: String
     - contextPath: SymantecMC.Device.DeploymentStatus
-      description: Device deployment status
+      description: Device deployment status.
       type: String
   - arguments:
     - default: true
-      description: Device UUID - Can be retrieved from the list-devices command
+      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
       isArray: false
       name: uuid
       required: true
       secret: false
     deprecated: false
-    description: Get the health information for a device in Symantec MC
+    description: Gets health information for a device.
     execution: false
     name: symantec-mc-get-device-health
     outputs:
     - contextPath: SymantecMC.Device.UUID
-      description: Device UUID
+      description: Device UUID.
       type: String
     - contextPath: SymantecMC.Device.Name
-      description: Device Name
+      description: Device name.
       type: String
     - contextPath: SymantecMC.Device.Health.Category
-      description: Device health category
+      description: Device health category.
       type: String
     - contextPath: SymantecMC.Device.Health.Name
-      description: Device health name
+      description: Device health name.
       type: String
     - contextPath: SymantecMC.Device.Health.State
-      description: Device health state
+      description: Device health state.
       type: String
     - contextPath: SymantecMC.Device.Health.Message
-      description: Device health message
+      description: Device health message.
       type: String
     - contextPath: SymantecMC.Device.Health.Status
-      description: Device health status
+      description: Device health status.
       type: String
   - arguments:
     - default: true
-      description: Device UUID - Can be retrieved from the list-devices command
+      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
       isArray: false
       name: uuid
       required: true
       secret: false
     deprecated: false
-    description: Get license information for a device in Symantec MC
+    description: Gets license information for a device in Symantec MC
     execution: false
     name: symantec-mc-get-device-license
     outputs:
     - contextPath: SymantecMC.Device.UUID
-      description: Device UUID
+      description: Device UUID.
       type: String
     - contextPath: SymantecMC.Device.Name
-      description: Device name
+      description: Device name.
       type: String
     - contextPath: SymantecMC.Device.Type
-      description: Device type
+      description: Device type.
       type: String
     - contextPath: SymantecMC.Device.LicenseStatus
-      description: Device license status
+      description: Device license status.
       type: String
     - contextPath: SymantecMC.Device.LicenseComponent.Name
-      description: Device license component name
+      description: Device license component name.
       type: String
     - contextPath: SymantecMC.Device.LicenseComponent.ActivationDate
-      description: Device license component activation date
+      description: Device license component activation date.
       type: Date
     - contextPath: SymantecMC.Device.LicenseComponent.ExpirationDate
       description: Device license component expiration date
       type: Date
     - contextPath: SymantecMC.Device.LicenseComponent.Validity
-      description: Device license component validity
+      description: Device license component validity.
       type: String
   - arguments:
     - default: true
-      description: Device UUID - Can be retrieved from the list-devices command
+      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
       isArray: false
       name: uuid
       required: true
       secret: false
     deprecated: false
-    description: Get the status of a device in Symantec MC
+    description: Gets the status of a device.
     execution: false
     name: symantec-mc-get-device-status
     outputs:
     - contextPath: SymantecMC.Device.UUID
-      description: Device UUID
+      description: Device UUID.
       type: String
     - contextPath: SymantecMC.Device.Name
-      description: Device name
+      description: Device name.
       type: String
     - contextPath: SymantecMC.Device.CheckDate
-      description: Device check date
+      description: Device check date.
       type: Date
     - contextPath: SymantecMC.Device.StartDate
-      description: Device start date
+      description: Device start date.
       type: Date
     - contextPath: SymantecMC.Device.MonitorState
-      description: Device monitor state
+      description: Device monitor state.
       type: String
     - contextPath: SymantecMC.Device.Warnings
-      description: Device warning count
+      description: Device warning count.
       type: Number
     - contextPath: SymantecMC.Device.Errors
-      description: Device error count
+      description: Device error count.
       type: Number
   - arguments:
     - default: false
-      description: Query Filter parameter to filter by content type of policy, e.g.,
+      description: Filter the query filter parameter by content type of policy, e.g.,
         "ENDSWITH URL"
       isArray: false
       name: content_type
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by description, e.g., "CONTAINS
-        desc"
+      description: ' Filter the query filter parameter by description, for example: "CONTAINS
+        desc."'
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by name, e.g., "STARTSWITH my_list"
+      description: ' Filter the query filter parameter by name, for example: "STARTSWITH my_list". '
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by referenceId, e.g., "EQ my_list"
+      description: ' Filter the query filter parameter by referenceId, for example: "EQ my_list". '
       isArray: false
       name: reference_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Parameter to filter based on if the policy is shared or not shared.
+      description: Parameter to filter, based on whether the policy is shared or not shared.
       isArray: false
       name: shared
       predefined:
@@ -291,7 +291,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query Filter parameter to filter by tenant, e.g., "EQ TENANT_EXTERNAL_ID"
+      description: Filter the query filter parameter by tenant, e.g., "EQ TENANT_EXTERNAL_ID"
       isArray: false
       name: tenant
       required: false
@@ -309,99 +309,98 @@ script:
     name: symantec-mc-list-policies
     outputs:
     - contextPath: SymantecMC.Policy.UUID
-      description: Policy UUID
+      description: Policy UUID.
       type: String
     - contextPath: SymantecMC.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: String
     - contextPath: SymantecMC.Policy.ContentType
-      description: Policy content type
+      description: Policy content type.
       type: String
     - contextPath: SymantecMC.Policy.Author
-      description: Policy author
+      description: Policy author.
       type: String
     - contextPath: SymantecMC.Policy.Shared
-      description: Policy shared
+      description: Policy shared.
       type: Boolean
     - contextPath: SymantecMC.Policy.ReferenceID
       description: Policy reference ID
       type: String
     - contextPath: SymantecMC.Policy.Tenant
-      description: Policy tenant
+      description: Policy tenant.
       type: String
     - contextPath: SymantecMC.ReplaceVariables
-      description: Policy replace variables
       type: Boolean
   - arguments:
     - default: true
-      description: Policy UUID - Can be retrieved from the list-policies command
+      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
       isArray: false
       name: uuid
       required: true
       secret: false
     deprecated: false
-    description: Get a policy from Symantec MC
+    description: Gets information for a policy.
     execution: false
     name: symantec-mc-get-policy
     outputs:
     - contextPath: SymantecMC.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: String
     - contextPath: SymantecMC.Policy.SchemaVersion
-      description: Policy content schema version
+      description: Policy content schema version.
       type: Number
     - contextPath: SymantecMC.Policy.RevisionInfo.Number
-      description: Policy content revision number
+      description: Policy content revision number.
       type: Number
     - contextPath: SymantecMC.Policy.RevisionInfo.Description
-      description: Policy content revision description
+      description: Policy content revision description.
       type: String
     - contextPath: SymantecMC.Policy.RevisionInfo.Author
-      description: Policy content revision author
+      description: Policy content revision author.
       type: String
     - contextPath: SymantecMC.Policy.RevisionInfo.Date
-      description: Policy content revision date
+      description: Policy content revision date.
       type: Date
     - contextPath: SymantecMC.Policy.IP.Address
-      description: Policy IP address
+      description: Policy IP address.
       type: String
     - contextPath: SymantecMC.Policy.IP.Description
-      description: Policy IP description
+      description: Policy IP description.
       type: String
     - contextPath: SymantecMC.Policy.IP.Enabled
-      description: Policy IP enabled
+      description: Policy IP enabled.
       type: Boolean
     - contextPath: SymantecMC.Policy.URL.Address
-      description: Policy URL address
+      description: Policy URL address.
       type: String
     - contextPath: SymantecMC.Policy.URL.Description
-      description: Policy URL description
+      description: Policy URL description.
       type: String
     - contextPath: SymantecMC.Policy.URL.Enabled
-      description: Policy URL enabled
+      description: Policy URL enabled.
       type: Boolean
     - contextPath: SymantecMC.Policy.Category.Name
-      description: Policy category name
+      description: Policy category name.
       type: String
     - contextPath: SymantecMC.Policy.UUID
-      description: Policy UUID
+      description: Policy UUID.
       type: String
     - contextPath: SymantecMC.Policy.Description
-      description: Policy Description
+      description: Policy Description.
       type: String
     - contextPath: SymantecMC.Policy.ReferenceID
-      description: Policy reference ID
+      description: Policy reference ID.
       type: String
   - arguments:
     - default: false
-      description: Policy name
+      description: Policy name.
       isArray: false
       name: name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Policy content type
+      description: Policy content type.
       isArray: false
       name: content_type
       predefined:
@@ -411,20 +410,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Policy description
+      description: Policy description.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: Policy reference ID
+      description: Policy reference ID.
       isArray: false
       name: reference_id
       required: false
       secret: false
     - default: false
-      description: Optional tenant associated with this policy. This is the tenant
-        UUID, can be retrieved from the list-tenants command.
+      description: Tenant external ID of the tenant associated with this policy. Run the symantec-mc-list-tenants command tp get the tenant external ID.
       isArray: false
       name: tenant
       required: false
@@ -451,50 +449,50 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a policy in Symantec MC
+    description: Creates a policy in Symantec MC.
     execution: false
     name: symantec-mc-create-policy
     outputs:
     - contextPath: SymantecMC.Policy.UUID
-      description: Policy UUID
+      description: Policy UUID.
       type: String
     - contextPath: SymantecMC.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: String
     - contextPath: SymantecMC.Policy.ContentType
-      description: Policy content type
+      description: Policy content type.
       type: String
     - contextPath: SymantecMC.Policy.Author
-      description: Policy author
+      description: Policy author.
       type: String
   - arguments:
     - default: true
-      description: Policy UUID - Can be retrieved from the list-policies command
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
       isArray: false
       name: uuid
       required: true
       secret: false
     - default: false
-      description: The policy's new name
+      description: New name of the policy.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: The policy's new description
+      description: New description of the policy.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: The policy's new reference ID
+      description: New reference ID of the policy.
       isArray: false
       name: reference_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Replace variables in the policy
+      description: Replace variables in the policy.
       isArray: false
       name: replace_variables
       predefined:
@@ -503,19 +501,19 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update the metadata for a policy in Symantec MC
+    description: Updates the metadata for a policy in Symantec MC.
     execution: false
     name: symantec-mc-update-policy
     outputs:
     - contextPath: SymantecMC.Policy.UUID
-      description: Policy UUID
+      description: Policy UUID.
       type: String
     - contextPath: SymantecMC.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: String
   - arguments:
     - default: true
-      description: Policy UUID - Can be retrieved from the list-policies command
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
       isArray: false
       name: uuid
       required: true
@@ -523,7 +521,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Set to true for force the policy object to be removed even if it
+      description: Set to "true" to force the policy object to be removed even if it
         is referenced by another policy.
       isArray: false
       name: force
@@ -533,40 +531,40 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Delete a policy in Symantec MC
+    description: Deletes a policy in Symantec MC.
     execution: true
     name: symantec-mc-delete-policy
   - arguments:
     - default: false
       defaultValue: '10'
-      description: Limit the number of results returned
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: List tenants in Symantec MC
+    description: List tenants in Symantec MC.
     execution: false
     name: symantec-mc-list-tenants
     outputs:
     - contextPath: SymantecMC.Tenant.UUID
-      description: Tenant UUID
+      description: Tenant UUID.
       type: String
     - contextPath: SymantecMC.Tenant.Name
-      description: Tenant name
+      description: Tenant name.
       type: String
     - contextPath: SymantecMC.Tenant.ExternalID
-      description: Tenant external ID
+      description: Tenant external ID.
       type: String
     - contextPath: SymantecMC.Tenant.Description
-      description: Tenant description
+      description: Tenant description.
       type: String
     - contextPath: SymantecMC.Tenant.System
-      description: Is system tenant
+      description: Whether the system is a tenant.
       type: Boolean
   - arguments:
     - default: false
-      description: Policy UUID - Can be retrieved from the list-policies command
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
       isArray: false
       name: uuid
       required: true
@@ -583,33 +581,33 @@ script:
       required: true
       secret: false
     - default: false
-      description: The policy change description
+      description: Description of the policy change.
       isArray: false
       name: change_description
       required: true
       secret: false
     - default: false
       description: The version of the schema for this content. This value will correspond
-        to the format of the content. Can be retrieved from the get-policy command.
+        to the format of the content. Run the symantec-mc-get-policy command to get the schema vesion.
       isArray: false
       name: schema_version
       required: false
       secret: false
     - default: false
-      description: CSV list of IP addresses to add, e.g., '1.2.3.4, 8.8.8.8`
+      description: ' CSV list of IP addresses to add, for example: "1.2.3.4, 8.8.8.8".'
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: CSV list of URLs to add, e.g., 'www.google.com, www.github.com'
+      description: ' CSV list of URLs to add, for example: "www.google.com, www.github.com".'
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: CSV list of category names to add, e.g., 'Job Search/Careers, Content
-        Servers'
+      description: ' CSV list of category names to add, for example: "Job Search/Careers, Content
+        Servers".'
       isArray: true
       name: category
       required: false
@@ -617,7 +615,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Relevant for URL and IP only
+      description: Relevant for URL and IP.
       isArray: false
       name: enabled
       predefined:
@@ -626,26 +624,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Content description
+      description: Content description.
       isArray: false
       name: description
       required: false
       secret: false
     deprecated: false
-    description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
+    description: Adds content to a policy in Symantec MC. Can be IPs, URLs, or category
       names.
     execution: false
     name: symantec-mc-add-policy-content
   - arguments:
     - default: false
-      description: Policy UUID - Can be retrieved from the list-policies command
-      isArray: false
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
       name: uuid
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Policy content type
+      description: Policy content type.
       isArray: false
       name: content_type
       predefined:
@@ -655,39 +652,39 @@ script:
       required: true
       secret: false
     - default: false
-      description: The policy change description
+      description: Description of the policy change.
       isArray: false
       name: change_description
       required: true
       secret: false
     - default: false
       description: The version of the schema for this content. This value will correspond
-        to the format of the content. Can be retrieved from the get-policy command.
+        to the format of the content. Run the symantec-mc-get-policy command to get the schema version.
       isArray: false
       name: schema_version
       required: false
       secret: false
     - default: false
-      description: CSV list of IP addresses to delete, e.g., '1.2.3.4, 8.8.8.8`
+      description: ' CSV list of IP addresses to delete, for example: "1.2.3.4, 8.8.8.8".'
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: CSV list of URLs to delete, e.g., 'www.google.com, www.github.com'
+      description: ' CSV list of URLs to delete, for example: "www.google.com, www.github.com".'
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: CSV list of category names to delete, e.g., 'Job Search/Careers,
-        Content Servers'
+      description: ' CSV list of category names to delete, for example: "Job Search/Careers,
+        Content Servers".'
       isArray: true
       name: category
       required: false
       secret: false
     deprecated: false
-    description: Delete content from a policy in Symantec MC
+    description: Deletes content from a policy in Symantec MC.
     execution: false
     name: symantec-mc-delete-policy-content
   dockerimage: demisto/python3:3.7.3.221
