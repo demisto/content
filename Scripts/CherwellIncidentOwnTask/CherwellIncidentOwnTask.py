@@ -10,7 +10,7 @@ args = demisto.args()
 `RELATIONSHIP_ID` is the id of the relationship you wish to base your link on. In this case we wanted to create script
 for incidents to own tasks, thus, we used the "Incident Owns Task" relationship id.
 """
-RELATIONSHIP_ID = '9369187528b417b4a17aaa4646b7f7a78b3c821be9'
+RELATIONSHIP_ID = '9369187528b417b4a17aaa4646b7f7a78b3c821be9'  # guardrails-disable-line
 
 """
  `PARENT_BUSINESS_OBJECT_TYPE` is the name of parent business object and `CHILD_BUSINESS_OBJECT_TYPE` is the name of the
