@@ -80,7 +80,7 @@ def get_token(refresh_token=False):
     )
     data = response.json()
     if not response.ok:
-        return_error(f'API call to MS Graph failed [{data.get("status")} {data.get("title")}] - {data.get("detail")}))')
+        return_error(f'API call to MS Graph failed [{data.get("status")} {data.get("title")}] - {data.get("detail")}')
 
     demisto.setIntegrationContext({
         'token': data.get('token'),
