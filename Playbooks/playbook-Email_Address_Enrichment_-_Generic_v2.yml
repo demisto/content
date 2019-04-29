@@ -16,6 +16,7 @@ tasks:
       id: 10b003be-68f2-4e57-8f11-d0475f1aac42
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
