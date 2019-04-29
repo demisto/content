@@ -172,10 +172,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 0908e99e-4421-415b-8e95-88888b40f5a3
+    taskid: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
     type: condition
     task:
-      id: 0908e99e-4421-415b-8e95-88888b40f5a3
+      id: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
       version: -1
       name: Was external IP resolved?
       description: Checks whether one of the external IPs was resolved to the yahoo.com
@@ -192,16 +192,22 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               complex:
-                root: Domain
-                accessor: Name
+                root: Endpoint
+                filters:
+                - - operator: endWith
+                    left:
+                      value:
+                        simple: Endpoint.Hostname
+                      iscontext: true
+                    right:
+                      value:
+                        simple: yahoo.com
+                accessor: Hostname
             iscontext: true
-          right:
-            value:
-              simple: yahoo.com
           ignorecase: true
     view: |-
       {
