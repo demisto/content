@@ -16,7 +16,6 @@ tasks:
       id: 10b003be-68f2-4e57-8f11-d0475f1aac42
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -117,10 +116,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 984a7eef-e942-4c44-8dc5-27ceb71e9571
+    taskid: 17c82691-cc28-445a-8aea-129217f589d6
     type: regular
     task:
-      id: 984a7eef-e942-4c44-8dc5-27ceb71e9571
+      id: 17c82691-cc28-445a-8aea-129217f589d6
       version: -1
       name: Classify email addresses as internal or external
       description: Adds a NetworkType attribute to all email addresses. The NetworkType
@@ -138,7 +137,7 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs.Domain
+          root: inputs.InternalDomains
           transformers:
           - operator: uniq
       email:
@@ -547,15 +546,15 @@ view: |-
     }
   }
 inputs:
-- key: Domain
+- key: InternalDomains
   value:
     complex:
-      root: Domain
-      accessor: Name
+      root: inputs.InternalDomains
       transformers:
       - operator: uniq
   required: false
-  description: A list of domains
+  description: A list of internal domains, separated by commas. The list will be used
+    to determine whether an email address is internal or external.
 - key: Email
   value:
     complex:
@@ -564,7 +563,12 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The email addresses to enrich
+  description: The email addresses to enrich.
+- key: Domain
+  value:
+    simple: inputs.Domain
+  required: false
+  description: The domains associated with the incident.
 outputs:
 - contextPath: Account
   description: The Account's object

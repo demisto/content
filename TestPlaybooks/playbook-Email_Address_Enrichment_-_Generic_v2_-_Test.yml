@@ -289,5 +289,10 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: InternalDomains
+  value:
+    simple: demisto.com, demistodev.com
+  required: false
+  description: A comma-separated list of internal domains
 outputs: []
