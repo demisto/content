@@ -1195,6 +1195,9 @@
             "playbookID": "MySQL Test"
         },
         {
+            "playbookID": "Email Address Enrichment - Generic v2 - Test"
+        },
+        {
             "integrations": "Phishme Intelligence",
             "playbookID": "Test - PhishMe Intelligence",
             "timeout": 500
@@ -1220,6 +1223,14 @@
         {
             "integrations": "Kafka V2",
             "playbookID": "Kafka Test"
+        },
+        {
+            "playbookID": "File Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_private_api_general",
+            "integrations": [
+                "VirusTotal - Private API",
+                "Cylance Protect v2"
+            ]
         },
         {
             "integrations": "McAfee Active Response",
@@ -1248,13 +1259,11 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
+            "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "File Enrichment - Generic Test"
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
@@ -1363,6 +1372,7 @@
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
+        "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test"
