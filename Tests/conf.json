@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Management Center",
+            "playbookID": "SymantecMC_TestPlaybook"
+        },
+        {
             "integrations": "Tufin",
             "playbookID": "Tufin Test"
         },
@@ -1226,6 +1230,10 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Google BigQuery",
+            "playbookID": "Google BigQuery Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "af2f5a99-d70b-48c1-8c25-519732b733f2"
         },
@@ -1240,6 +1248,29 @@
         {
             "integrations": "CarbonBlackProtectionV2",
             "playbookID": "Carbon Black Enterprise Protection V2 Test"
+            "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_query_v2",
+            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "ANYRUN-Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
@@ -1286,6 +1317,9 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "RedCanary": "License expired",
+        "LogRhythm": "Need to fix SOAP api",
+        "ANYRUN": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1309,6 +1343,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Google BigQuery": "SSL problem",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
