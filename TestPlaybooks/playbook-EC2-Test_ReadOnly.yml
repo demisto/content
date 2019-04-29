@@ -35,7 +35,7 @@ tasks:
       version: -1
       name: aws-ec2-describe-instances
       description: Describes one or more of your instances.
-      script: AWS - EC2 |||aws-ec2-describe-instances-fail
+      script: AWS - EC2 |||aws-ec2-describe-instances
       type: regular
       iscommand: true
       brand: AWS - EC2
