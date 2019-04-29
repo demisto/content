@@ -240,6 +240,6 @@ script:
     description: Runs PCAP file analysis in Fidelis Elevate.
   isfetch: true
   runonce: false
-releaseNotes: "fixed fetch-incident"
+releaseNotes: "Fixed ioc filter in fidelis-list-alerts command"
 tests:
   - Fidelis-Test
