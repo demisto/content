@@ -27,8 +27,8 @@ In order to change the objects being unlinked, you will need to have correspondi
  `args.get('argument_name').
 For example if you wish to unlink a configuration item and an incident where the parent object is the
 incident, you will need to change the script arguments to be called `incident_record_id` and
-`configuration_item_record_id` and then, modify the variables `parent_record_id` and `child_record_id` such that 
-parent_record_id = args.get('incident_record_id') and child_record_id = args.get('configuration_item_record_id').  
+`configuration_item_record_id` and then, modify the variables `parent_record_id` and `child_record_id` such that
+parent_record_id = args.get('incident_record_id') and child_record_id = args.get('configuration_item_record_id').
 """
 parent_record_id = args.get('incident_record_id')
 child_record_id = args.get('task_record_id')
