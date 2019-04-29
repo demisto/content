@@ -1226,6 +1226,16 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "playbookID": "Endpoint Enrichment - Generic v2 - Test",
+            "integrations": [
+                "FalconHost",
+                "Cylance Protect",
+                "carbonblack",
+                "epo",
+                "activedir"
+            ]
+        },
+        {
             "playbookID": "EmailReputationTest",
             "integrations": "Pwned"
         },
