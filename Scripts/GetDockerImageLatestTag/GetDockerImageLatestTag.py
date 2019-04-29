@@ -2,10 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
-import urllib3
 import re
 
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 ACCEPT_HEADER = {
     'Accept': "application/json, "
