@@ -95,9 +95,13 @@ def main():
             verify=verify_ssl
         )
         res.raise_for_status()
+        # returns tags in lexical order. See: https://docs.docker.com/registry/spec/api/#listing-image-tags
         tags = res.json().get('tags', [])
-        if len(tags) > 1:
-            tag = tags[-2]
+        if tags:
+            if tags[-1] != 'latest':
+                tag = tags[-1]
+            elif len(tags) > 1:  # skip latest case
+                tag = tags[-2]
         else:
             tag = 'latest'
         demisto.results(tag)
