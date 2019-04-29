@@ -1272,6 +1272,14 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
+            "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
+            "playbookID": "IP Enrichment - Generic v2 - Test",
+            "integrations": "Threat Crowd",
+            "fromversion": "4.1.0"
+        },
+        {
             "playbookID": "Palo Alto Networks Cortex Test",
             "fromversion": "4.1.0"
         },
