@@ -780,7 +780,8 @@
         {
             "playbookID": "Cybereason Test",
             "integrations": "Cybereason",
-            "timeout": 1200
+            "timeout": 1200,
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "VirusTotal - Private API",
@@ -1288,8 +1289,7 @@
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
-        "Zoom_test": "Added here because test existed but was not configured - need to review the test",
-        "Cybereason Test": "Test is failing due to connection issues though it's in unmockable (issue 16555)"
+        "Zoom_test": "Added here because test existed but was not configured - need to review the test"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
