@@ -1,13 +1,13 @@
 args:
 - default: false
-  description: Incident description
+  description: Incident description.
   isArray: false
   name: description
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Incident priority
+  description: Incident priority.
   isArray: false
   name: priority
   predefined:
@@ -20,26 +20,26 @@ args:
   required: false
   secret: false
 - default: false
-  description: Owner of the incident
+  description: Incident owner.
   isArray: false
   name: owned_by
   required: false
   secret: false
 - default: false
-  description: Service needed
+  description: Service needed.
   isArray: false
   name: service
   required: false
   secret: false
 - default: false
-  description: Public id or record id
+  description: Public ID or record ID.
   isArray: false
   name: id_value
   required: true
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Type of ID
+  description: Type of ID.
   isArray: false
   name: id_type
   predefined:
@@ -50,7 +50,7 @@ args:
 comment: This script is an example script of how to update an incident in Cherwell.
   The script wraps the update-business-object command of the cherwell integration.
   When writing your own script to update a business object, follow the instructions
-  found in the configuration section of the script, leave the execution part untouched.
+  found in the configuration section of the script, but do not change the execution section.
 commonfields:
   id: CherwellUpdateIncident
   version: -1
