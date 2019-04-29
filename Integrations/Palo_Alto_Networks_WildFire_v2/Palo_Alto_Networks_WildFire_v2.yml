@@ -177,11 +177,11 @@ script:
       description: SHA256 of the submission
       type: string
     - contextPath: WildFire.Report.Status
-        description: The status of the submission
+      description: The status of the submission
       type: string
     - contextPath: WildFire.Report.URL
-        description: URL of the submission
-        type: string
+      description: URL of the submission
+      type: string
   - name: wildfire-get-sample
     arguments:
       - name: md5
@@ -191,36 +191,36 @@ script:
         description: SHA256 hash to retrieve
         isArray: true
     outputs:
-      - contextPath: File.Size
-        description: File size
-        type: number
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file
-        type: string
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file
-        type: string
-      - contextPath: File.Name
-        description: The sample name
-        type: string
-      - contextPath: File.SSDeep
-        description: SSDeep hash of the file
-        type: string
-      - contextPath: File.EntryID
-        description: War-Room Entry ID of the file
-        type: string
-      - contextPath: File.Info
-        description: Basic information of the file
-        type: string
-      - contextPath: File.Type
-        description: File type e.g. "PE"
-        type: string
-      - contextPath: File MD5
-        description: MD5 hash of the file
-        type: string
-      - contextPath: File.Extension
-        description: File Extension
-        type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: The sample name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
     description: Retrieve a sample from WildFire
   - arguments:
     - default: false
