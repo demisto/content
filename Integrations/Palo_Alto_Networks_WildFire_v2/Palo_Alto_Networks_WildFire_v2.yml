@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
-name: Palo Alto Networks WildFire v2
+name: WildFire-v2
 fromversion: 4.0.0
 script:
   commands:
