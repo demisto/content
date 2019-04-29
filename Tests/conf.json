@@ -1260,6 +1260,13 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Cisco Umbrella Investigate",
+            "playbookID": "Domain Enrichment - Generic v2 - Test"
+        }
+    ],
+    "skipped_tests": [
+        {
+        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
             "integrations": "Google BigQuery",
             "playbookID": "Google BigQuery Test"
         },
