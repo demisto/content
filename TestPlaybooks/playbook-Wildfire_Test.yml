@@ -910,7 +910,7 @@ tasks:
     separatecontext: false
     view: |-
       {
-        "position":! {
+        "position": {
           "x": 265,
           "y": 4045
         }
