@@ -27,7 +27,7 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  the key name to be `CustomerDisplayName` - as it appears in the Cherwell system.
 
  Expert tip: if you don't want to keep Demisto's arguments naming convention, (where variables are written in snake
- case), you can name your arguments exactly as they appear in the Cherwell system, This will shorten the `FIELDS` 
+ case), you can name your arguments exactly as they appear in the Cherwell system, This will shorten the `FIELDS`
  constant to be `FIELDS = args`
 """
 FIELDS = {
