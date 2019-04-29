@@ -350,7 +350,7 @@ def test_module():
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, verify=USE_SSL)
     if response.status_code == 403:
         return True
     else:
