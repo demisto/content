@@ -99,45 +99,30 @@ script:
     - contextPath: MSGraphMail.Body
       description: Body of email
       type: String
-    - contextPath: MSGraphMail.Sender
-      description: Sender's email
-      type: Unknown
     - contextPath: MSGraphMail.Sender.Name
       description: Name of sender
       type: String
     - contextPath: MSGraphMail.Sender.Address
       description: Email address of sender
       type: String
-    - contextPath: MSGraphMail.From
-      description: From's email
-      type: Unknown
     - contextPath: MSGraphMail.From.Name
       description: Name of from
       type: String
     - contextPath: MSGraphMail.From.Address
       description: Email address of from
       type: String
-    - contextPath: MSGraphMail.CCRecipients
-      description: CCRecipients's email
-      type: Unknown
     - contextPath: MSGraphMail.CCRecipients.Name
       description: Name of ccRecipients
       type: String
     - contextPath: MSGraphMail.CCRecipients.Address
       description: Email address of ccRecipients
       type: String
-    - contextPath: MSGraphMail.BCCRecipients
-      description: BCCRecipients's email
-      type: Unknown
     - contextPath: MSGraphMail.BCCRecipients.Name
       description: Name of bccRecipients
       type: String
     - contextPath: MSGraphMail.BCCRecipients.Address
       description: Email address of bccRecipients
       type: String
-    - contextPath: MSGraphMail.ReplyTo
-      description: ReplyTo's email
-      type: Unknown
     - contextPath: MSGraphMail.ReplyTo.Name
       description: Name of replyTo
       type: String
@@ -217,45 +202,30 @@ script:
     - contextPath: MSGraphMail.Body
       description: Body of email
       type: String
-    - contextPath: MSGraphMail.Sender
-      description: Sender's email
-      type: Unknown
     - contextPath: MSGraphMail.Sender.Name
       description: Name of sender
       type: String
     - contextPath: MSGraphMail.Sender.Address
       description: Email address of sender
       type: String
-    - contextPath: MSGraphMail.From
-      description: From's email
-      type: Unknown
     - contextPath: MSGraphMail.From.Name
       description: Name of from
       type: String
     - contextPath: MSGraphMail.From.Address
       description: Email address of from
       type: String
-    - contextPath: MSGraphMail.CCRecipients
-      description: CCRecipients's email
-      type: Unknown
     - contextPath: MSGraphMail.CCRecipients.Name
       description: Name of ccRecipients
       type: String
     - contextPath: MSGraphMail.CCRecipients.Address
       description: Email address of ccRecipients
       type: String
-    - contextPath: MSGraphMail.BCCRecipients
-      description: BCCRecipients's email
-      type: Unknown
     - contextPath: MSGraphMail.BCCRecipients.Name
       description: Name of bccRecipients
       type: String
     - contextPath: MSGraphMail.BCCRecipients.Address
       description: Email address of bccRecipients
       type: String
-    - contextPath: MSGraphMail.ReplyTo
-      description: ReplyTo's email
-      type: Unknown
     - contextPath: MSGraphMail.ReplyTo.Name
       description: Name of replyTo
       type: String
@@ -355,34 +325,34 @@ script:
     outputs:
     - contextPath: File.Size
       description: Size of file
-      type: Unknown
+      type: Number
     - contextPath: File.SHA1
       description: File's SHA1
-      type: Unknown
+      type: String
     - contextPath: File.SHA256
       description: File's SHA256
-      type: Unknown
+      type: String
     - contextPath: File.Name
       description: File's name
-      type: Unknown
+      type: String
     - contextPath: File.SSDeep
       description: File's SSDeep
-      type: Unknown
+      type: String
     - contextPath: File.EntryID
       description: File's entry id
-      type: Unknown
+      type: String
     - contextPath: File.Info
       description: File's info
-      type: Unknown
+      type: String
     - contextPath: File.Type
       description: File's type
-      type: Unknown
+      type: String
     - contextPath: File.MD5
       description: File's MD5
-      type: Unknown
+      type: String
     - contextPath: File.Extension
       description: File's Extension
-      type: Unknown
+      type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
