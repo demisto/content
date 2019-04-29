@@ -149,8 +149,8 @@ def run_look_command():
     contents = run_look_request(look_id, result_format, limit, fields)
 
     if result_format == 'json':
-        camelized = camelize(contents, delim='_')  # TODO: Replace . with _
-        formatted_contents = [{k.replace('.', '_'): v for k, v in d.items()} for d in camelized]
+        camelized = camelize(contents, delim='_')
+        formatted_contents = replace_in_keys(camelized)
         if not isinstance(formatted_contents, list):
             formatted_contents = [formatted_contents]
         context = {
