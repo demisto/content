@@ -1203,6 +1203,14 @@
             "playbookID": "Kafka Test"
         },
         {
+            "playbookID": "File Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_private_api_general",
+            "integrations": [
+                "VirusTotal - Private API",
+                "Cylance Protect v2"
+            ]
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500
@@ -1229,13 +1237,11 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
+            "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "File Enrichment - Generic Test"
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
