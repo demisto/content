@@ -3173,19 +3173,19 @@ def extract_address_eml(eml, s):
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
-    md = "### Results:\n"
+    md = u"### Results:\n"
     if email_file_name:
-        md = "### {}\n".format(email_file_name)
+        md = u"### {}\n".format(email_file_name)
 
     if print_only_headers:
         return tableToMarkdown("Email Headers: " + email_file_name, email_data['HeadersMap'])
 
     if parent_email_file:
-        md += "### Containing email: {}\n".format(parent_email_file)
+        md += u"### Containing email: {}\n".format(parent_email_file)
 
-    md += "* {0}:\t{1}\n".format('From', email_data['From'] or "")
-    md += "* {0}:\t{1}\n".format('To', email_data['To'] or "")
-    md += "* {0}:\t{1}\n".format('CC', email_data['CC'] or "")
+    md += u"* {0}:\t{1}\n".format('From', email_data['From'] or "")
+    md += u"* {0}:\t{1}\n".format('To', email_data['To'] or "")
+    md += u"* {0}:\t{1}\n".format('CC', email_data['CC'] or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data['Subject'] or "")
 
     if email_data['Text']:
@@ -3194,8 +3194,8 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if email_data['HTML']:
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
-    md += "* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
-    md += "\n\n" + tableToMarkdown("Headers", email_data['HeadersMap'])
+    md += u"* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
+    md += u"\n\n" + tableToMarkdown("Headers", email_data['HeadersMap']).decode("utf-8", "ignore")
     return md
 
 
