@@ -1344,13 +1344,7 @@
         },
         {
             "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test",
             "playbookID": "Palo Alto Networks Cortex Test"
-        },
-        {
-            "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd",
-            "fromversion": "4.1.0"
         }
     ],
     "skipped_tests": {
