@@ -994,6 +994,7 @@ tasks:
       id: c8a03d03-5ffc-43db-88c0-c4d0e562e2c2
       version: -1
       name: Email Address Enrichment - Generic v2
+      description: ""
       playbookName: Email Address Enrichment - Generic v2
       type: playbook
       iscommand: false
