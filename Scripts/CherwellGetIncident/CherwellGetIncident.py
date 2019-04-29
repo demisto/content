@@ -10,23 +10,23 @@ args = demisto.args()
 
 """
  `BUSINESS_OBJECT_TYPE` is the name of business object you wish to retrieve using this script.
- In this case we set it to be 'incident' as this script is in charge of retrieving incidents
+ In this case we set it to be 'incident' as this script is in charge of retrieving incidents.
 """
 
 BUSINESS_OBJECT_TYPE = 'Incident'
 
 """
  `OUTPUT_FIELDS` should contain all the fields you wish to include in the returned business object.
- Make sure the field name is identical to the field name in Cherwell system.
+ Make sure the field name is identical to the field name in the Cherwell system.
  In order for the fields to appear in the script outputs you will need to to update the script outputs
  (found in the script settings).
 
  For example: we wished to retrieve an incident such that the fields: RecordID, Description, Priority,
- CustomerDisplayName, and so on, will appear in the returned object, thus, we added all of those field names
+ CustomerDisplayName, etc., will appear in the returned object, thus, we added all of those field names
  to this `OUTPUT_FIELDS` variable.
- In addition we added the field names to the script outputs so they will appear as an official output of
+ In addition, we added the field names to the script outputs so they will appear as an official output of
  the script, using the following syntax: Cherwell.BusinessObjects.RecordID, Cherwell.BusinessObjects.PublicID,
- Cherwell.BusinessObjects.Description, Cherwell.BusinessObjects.Priority and so on.
+ Cherwell.BusinessObjects.Description, Cherwell.BusinessObjects.Priority, etc.
  Make sure to leave the prefix of the output definition (`Cherwell.BusinessObjects`) identical to what you have filed in
  the `OUTPUT_PATH` variable.
 """
