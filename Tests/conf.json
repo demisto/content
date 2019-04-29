@@ -134,7 +134,8 @@
         },
         {
             "integrations": "OTRS",
-            "playbookID": "OTRS Test"
+            "playbookID": "OTRS Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Attivo Botsink",
@@ -1248,6 +1249,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "CarbonBlackProtectionV2",
+            "playbookID": "Carbon Black Enterprise Protection V2 Test"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_query_v2",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
@@ -1340,6 +1345,7 @@
     ],
     "unmockable_integrations": {
         "Google BigQuery": "SSL problem",
+        "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
