@@ -184,9 +184,6 @@ def build_folders_path(folder_string: str) -> str or None:
 
     Returns:
         str or None:  string with path to the folder and child folders
-
-    >>> build_folders_path('folder,child,child2')
-    'mailFolders/folder/childFolders/child/child2'
     """
     if isinstance(folder_string, str):
         path = 'mailFolders/'
@@ -291,18 +288,6 @@ def build_mail_object(raw_response: dict or list, user_id: str, get_body: bool =
 
         Returns:
             dict or list[dict] or str or None: describing contact
-
-        >>> build_contact([{'emailAddress':{'name': 'Sample Name','address': 'user@example.com'}}])
-        [{'Name': 'Sample Name', 'Address': 'user@example.com'}]
-
-        >>> build_contact({'emailAddress':{'name': 'Sample Name','address': 'user@example.com'}})
-        {'Name': 'Sample Name', 'Address': 'user@example.com'}
-
-        >>> build_contact({}) is None
-        True
-
-        >>> build_contact([]) is None
-        True
         """
         if contacts:
             if isinstance(contacts, list):
