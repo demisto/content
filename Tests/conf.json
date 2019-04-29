@@ -1411,6 +1411,7 @@
         "Remedy AR": "Failure to connect to proxy",
         "Snowflake": "Isn't working with mocking enabled - needs investigation",
         "Google Cloud Compute": "checking",
-        "jira-v2": "inconsistent test (uploads randomly generated file each time)"
+        "jira-v2": "inconsistent test (uploads randomly generated file each time)",
+        "Microsoft Graph User": "checking"
     }
 }

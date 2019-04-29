@@ -104,7 +104,8 @@ def http_request(method, url_suffix, params=None, body=None, do_not_refresh_toke
             'Accept': 'application/json'
         },
         params=params,
-        data=body
+        data=body,
+        verify=USE_SSL,
     )
     try:
         data = response.json() if response.text else {}
@@ -133,6 +134,7 @@ def test_function():
             'Accept': 'application/json'
         },
         params={'$select': 'displayName'},
+        verify=USE_SSL
     )
     try:
         data = response.json() if response.text else {}
