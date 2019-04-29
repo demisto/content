@@ -59,21 +59,19 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 7f0308e7-6722-47ff-844f-35dc22d11546
+    taskid: 9b97858b-33e7-4b02-8b00-b72debacc0db
     type: playbook
     task:
-      id: 7f0308e7-6722-47ff-844f-35dc22d11546
+      id: 9b97858b-33e7-4b02-8b00-b72debacc0db
       version: -1
-      name: IP Enrichment - Generic_dev
+      name: IP Enrichment - Generic v2
       description: |-
-        Enrich IP using one or more integrations.
+        Enrich IP addresses using one or more integrations.
 
-        IP enrichment includes:
-        * Resolve IP to Hostname (DNS)
-        * Threat information
-        * Separate internal and external addresses
-        * IP reputation
-        * For internal addresses, get host information
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -87,7 +85,9 @@ tasks:
           root: inputs.IP
           transformers:
           - operator: uniq
-      InternalRange: {}
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
       ResolveIP:
         complex:
           root: inputs.ResolveIP
@@ -304,7 +304,11 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: The internal range to check against the IPs
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
 - key: MD5
   value:
     complex:
