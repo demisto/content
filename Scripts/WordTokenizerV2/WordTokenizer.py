@@ -117,8 +117,10 @@ def word_tokenize(text):
             text_result['hashedTokenizedText'] = hash_tokenized_text
 
         result.append(text_result)
-
+    if len(result) == 1:
+        result = result[0]
     return {
+        'Type': entryTypes['note'],
         'Contents': result,
         'ContentsFormat': formats['json'],
         'HumanReadable': tableToMarkdown('Tokenized Text', result, headers=['tokenizedText']),
