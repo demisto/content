@@ -26,7 +26,7 @@ configuration:
 - display: Secret Key
   name: secret_key
   required: false
-  type: 0
+  type: 4
 - display: Use System Proxy
   name: proxy
   required: false
