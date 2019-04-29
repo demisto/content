@@ -1243,13 +1243,12 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
-            "playbookID": "Palo Alto Networks Cortex Test"
+            "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "CarbonBlackProtectionV2",
             "playbookID": "Carbon Black Enterprise Protection V2 Test"
-            "playbookID": "Palo Alto Networks Cortex Test",
-            "fromversion": "4.1.0"
         },
         {
             "integrations": "Active Directory Query v2",

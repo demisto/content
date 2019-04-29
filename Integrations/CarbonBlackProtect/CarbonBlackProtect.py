@@ -317,20 +317,18 @@ def update_computer_command():
         args.get('forceUpgrade'),
         args.get('template'),
     )
-    computers = []
-    for computer in raw_computers:
-        computers.append({
-            'Memory': computer.get('memorySize'),
-            'Processors': computer.get('processorCount'),
-            'Processor': computer.get('processorModel'),
-            'OS': computer.get('osShortName'),
-            'OSVersion': computer.get('osName'),
-            'MACAddress': computer.get('macAddress'),
-            'Model': computer.get('machineModel'),
-            'IPAddress': computer.get('ipAddress'),
-            'Hostname': computer.get('name'),
-            'ID': computer.get('id')
-        })
+    computers = {
+        'Memory': raw_computers.get('memorySize'),
+        'Processors': raw_computers.get('processorCount'),
+        'Processor': raw_computers.get('processorModel'),
+        'OS': raw_computers.get('osShortName'),
+        'OSVersion': raw_computers.get('osName'),
+        'MACAddress': raw_computers.get('macAddress'),
+        'Model': raw_computers.get('machineModel'),
+        'IPAddress': raw_computers.get('ipAddress'),
+        'Hostname': raw_computers.get('name'),
+        'ID': raw_computers.get('id')
+    }
     hr = tableToMarkdown('CarbonBlack Protect computer updated successfully', computers)
     return_outputs(hr, {'Endpoint(val.ID === obj.ID)': computers}, raw_computers)
 
