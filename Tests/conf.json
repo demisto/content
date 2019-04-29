@@ -1238,6 +1238,10 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "playbookID": "Account Enrichment - Generic v2 - Test",
+            "integrations": "activedir"
+        },
+       {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
@@ -1263,6 +1267,13 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Cisco Umbrella Investigate",
+            "playbookID": "Domain Enrichment - Generic v2 - Test"
+        }
+    ],
+    "skipped_tests": [
+        {
+        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
             "integrations": "Google BigQuery",
             "playbookID": "Google BigQuery Test"
         },
@@ -1361,6 +1372,7 @@
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
+        "Snowflake": "Looks like account expired, needs looking into",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
