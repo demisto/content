@@ -19,8 +19,8 @@ if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
         # example of comapre url: https://github.com/demisto/content/compare/62f0bd03be73...1451bf0f3c2a
         DIFF_COMPARE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/compare/::g')    
         if [ -z "${DIFF_COMPARE}" ]; then
-            echo "Failed: extracting diff compare from CIRCLE_COMPARE_URL: ${CIRCLE_COMPARE_URL}"
-            exit 1
+            echo "Failed: extracting diff compare from CIRCLE_COMPARE_URL: ${CIRCLE_COMPARE_URL} using instead: HEAD~1...HEAD"
+            DIFF_COMPARE="HEAD~1...HEAD"            
         fi                
     fi
 fi
