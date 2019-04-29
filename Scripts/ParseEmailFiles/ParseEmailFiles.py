@@ -3295,6 +3295,20 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     return email_data, attached_emails_emls + attached_emails_msg
 
 
+def unfold(s):
+    r"""
+    Remove folding whitespace from a string by converting line breaks (and any
+    whitespace adjacent to line breaks) to a single space and removing leading
+    & trailing whitespace.
+    From: https://github.com/jwodder/headerparser/blob/master/headerparser/types.py#L39
+    >>> unfold('This is a \n folded string.\n')
+    'This is a folded string.'
+    :param string s: a string to unfold
+    :rtype: string
+    """
+    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
+
+
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3):
     global ENCODINGS_TYPES
 
@@ -3313,9 +3327,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         header_list = []
         headers_map = {}
         for item in headers.items():
+            value = unfold(convert_to_unicode(item[1]))
             item_dict = {
                 "name": item[0],
-                "value": convert_to_unicode(item[1])
+                "value": value
             }
 
             # old way to map headers
@@ -3330,17 +3345,13 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     headers_map[item[0]] = [headers_map[item[0]]]
 
                 # add the new value to the value array
-                headers_map[item[0]].append(convert_to_unicode(item[1]))
+                headers_map[item[0]].append(value)
             else:
-                headers_map[item[0]] = convert_to_unicode(item[1])
+                headers_map[item[0]] = value
 
         eml = message_from_string(file_data)
         if not eml:
             raise Exception("Could not parse eml file!")
-
-        headers_map['From'] = extract_address_eml(eml, 'from')
-        headers_map['To'] = extract_address_eml(eml, 'to')
-        headers_map['Cc'] = extract_address_eml(eml, 'cc')
 
         if parse_only_headers:
             return {
