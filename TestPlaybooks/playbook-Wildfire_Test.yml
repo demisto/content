@@ -37,9 +37,9 @@ tasks:
     task:
       id: 6e4c85d9-6a98-478b-852b-6b4ddf083b6d
       version: -1
-      name: wildfire-upload-file-remote
-      description: Upload a file hosted on a website to WildFire for analysis
-      script: '|||wildfire-upload-file-remote'
+      name: wildfire-upload-file-url
+      description: Upload a URL of remote file to WildFire for analysis
+      script: '|||wildfire-upload-file-url'
       type: regular
       iscommand: true
       brand: ""
