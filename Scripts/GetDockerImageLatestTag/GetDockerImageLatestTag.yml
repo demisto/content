@@ -26,3 +26,5 @@ args:
   - "no"
   description: Trust any certificate (not secure)
   defaultValue: "no"
+tests:
+  - No test - no testplaybook, but unit tests exist
