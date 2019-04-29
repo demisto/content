@@ -200,7 +200,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "45"
     scriptarguments:
       append:
         simple: "true"
@@ -264,33 +264,6 @@ tasks:
         "position": {
           "x": 1022.5,
           "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
-    type: playbook
-    task:
-      id: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
-      version: -1
-      name: Email Address Enrichment - Generic
-      description: ""
-      playbookName: Email Address Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 690
         }
       }
     note: false
@@ -1007,6 +980,32 @@ tasks:
       {
         "position": {
           "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: c8a03d03-5ffc-43db-88c0-c4d0e562e2c2
+    type: playbook
+    task:
+      id: c8a03d03-5ffc-43db-88c0-c4d0e562e2c2
+      version: -1
+      name: Email Address Enrichment - Generic v2
+      playbookName: Email Address Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
           "y": 690
         }
       }

@@ -3,14 +3,12 @@ version: -1
 fromversion: 4.1.0
 name: IP Enrichment - Generic v2
 description: |-
-  Enrich IP using one or more integrations.
+  Enrich IP addresses using one or more integrations.
 
-  IP enrichment includes:
-  * Resolve IP to Hostname (DNS)
-  * Threat information
-  * Separate internal and external addresses
-  * IP reputation (using auto-extract)
-  * For internal addresses, get host information
+  - Resolve IP addresses to hostnames (DNS)
+  - Provide threat information
+  - Separate internal and external IP addresses
+  - For internal IP addresses, get host information
 starttaskid: "0"
 tasks:
   "0":
@@ -64,12 +62,12 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 3758e92e-53f9-4354-8bf7-4b49e66770d1
+    taskid: 777ec369-d05d-4f8f-8c43-8068566e3ed0
     type: playbook
     task:
-      id: 3758e92e-53f9-4354-8bf7-4b49e66770d1
+      id: 777ec369-d05d-4f8f-8c43-8068566e3ed0
       version: -1
-      name: IP Enrichment - External - Generic
+      name: IP Enrichment - External - Generic v2
       description: |-
         Enrich IP using one or more integrations.
 
@@ -92,7 +90,11 @@ tasks:
           root: inputs.IP
           transformers:
           - operator: uniq
-      InternalRange: {}
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
       ResolveIP:
         complex:
           root: inputs.ResolveIP
@@ -113,12 +115,12 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 7a76830c-859f-410c-88c1-b295dd16c295
+    taskid: 6d0d48a2-7a07-400b-8f98-9c832a56ff8f
     type: playbook
     task:
-      id: 7a76830c-859f-410c-88c1-b295dd16c295
+      id: 6d0d48a2-7a07-400b-8f98-9c832a56ff8f
       version: -1
-      name: IP Enrichment - Internal - Generic
+      name: IP Enrichment - Internal - Generic v2
       description: |-
         Enrich IP using one or more integrations.
 
@@ -141,7 +143,11 @@ tasks:
           root: inputs.IP
           transformers:
           - operator: uniq
-      InternalRange: {}
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
       ResolveIP:
         complex:
           root: inputs.ResolveIP
@@ -183,11 +189,17 @@ inputs:
   required: false
   description: The IP address to enrich.
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: inputs.InternalRange
+      transformers:
+      - operator: uniq
   required: false
-  description: |-
-    The internal range to check against the IP address.
-    The default range is taken from the IPv4 protocol.
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
 - key: ResolveIP
   value:
     complex:
