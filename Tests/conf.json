@@ -779,7 +779,8 @@
         {
             "playbookID": "Cybereason Test",
             "integrations": "Cybereason",
-            "timeout": 1200
+            "timeout": 1200,
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "VirusTotal - Private API",
