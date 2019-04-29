@@ -154,7 +154,7 @@ script:
       type: string
     - contextPath: WildFire.Report.Status
         description: The status of the submission
-      type: string
+        type: string
     - contextPath: WildFire.Report.URL
         description: URL of the submission
         type: string
