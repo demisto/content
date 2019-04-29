@@ -142,7 +142,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: URL of remote file to be uploaded
+    description: Upload a URL of remote file to WildFire for analysis
     execution: false
     name: wildfire-upload-file-url
     outputs:
@@ -152,6 +152,76 @@ script:
     - contextPath: WildFire.Report.SHA256
       description: SHA256 of the submission
       type: string
+    - contextPath: WildFire.Report.Status
+        description: The status of the submission
+      type: string
+    - contextPath: WildFire.Report.URL
+        description: URL of the submission
+        type: string
+  - arguments:
+      - default: false
+        description: Upload a URL of a webpage to WildFire for analysis
+        isArray: true
+        name: upload
+        required: true
+        secret: false
+    deprecated: false
+    description: submit a url
+    execution: false
+    name: wildfire-upload-url
+    outputs:
+    - contextPath: WildFire.Report.MD5
+      description: MD5 of the submission
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: WildFire.Report.Status
+        description: The status of the submission
+      type: string
+    - contextPath: WildFire.Report.URL
+        description: URL of the submission
+        type: string
+  - name: wildfire-get-sample
+    arguments:
+      - name: md5
+        description: MD5 hash to retrieve
+        isArray: true
+      - name: sha256
+        description: SHA256 hash to retrieve
+        isArray: true
+    outputs:
+      - contextPath: File.Size
+        description: File size
+        type: number
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file
+        type: string
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file
+        type: string
+      - contextPath: File.Name
+        description: The sample name
+        type: string
+      - contextPath: File.SSDeep
+        description: SSDeep hash of the file
+        type: string
+      - contextPath: File.EntryID
+        description: War-Room Entry ID of the file
+        type: string
+      - contextPath: File.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: File.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: File MD5
+        description: MD5 hash of the file
+        type: string
+      - contextPath: File.Extension
+        description: File Extension
+        type: string
+    description: Retrieve a sample from WildFire
   - arguments:
     - default: false
       description: MD5 hash to check
@@ -319,7 +389,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a verdict regarding multiple hashes, stored in a txt file
+    description: Get a verdict regarding multiple hashes, stored in a txt file or given as list
     execution: false
     name: wildfire-get-verdicts
     outputs:
@@ -347,188 +417,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-  - arguments:
-    - default: false
-      description: URL of remote file to be uploaded
-      isArray: false
-      name: upload
-      required: true
-      secret: false
-    deprecated: true
-    description: Deprecated, use wildfire-upload-file-url instead
-    execution: false
-    name: wildfire-upload-file-remote
-    outputs:
-    - contextPath: WildFire.Report.MD5
-      description: MD5 of the submission
-      type: string
-    - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission
-      type: string
-    - contextPath: WildFire.Report.FileType
-      description: The type of the submission
-      type: string
-    - contextPath: WildFire.Report.Size
-      description: The size of the submission
-      type: number
-    - contextPath: WildFire.Report.Status
-      description: The status of the submission
-      type: string
-  - arguments:
-    - default: false
-      description: ID of the entry containing the file to upload
-      isArray: false
-      name: upload
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '7'
-      description: Delay wait time between calls (in seconds)
-      isArray: false
-      name: delay
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
-      description: Total wait time (in seconds)
-      isArray: false
-      name: timeout
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Optional - request a structured report (formatted as XML/PDF)
-      isArray: false
-      name: format
-      predefined:
-      - xml
-      - pdf
-      required: false
-      secret: false
-    deprecated: true
-    description: Deprecated, use detonate playbook instead.
-    execution: false
-    name: detonate-file
-    outputs:
-    - contextPath: File.Name
-      description: Filename
-      type: Unknown
-    - contextPath: File.Type
-      description: File type e.g. "PE"
-      type: Unknown
-    - contextPath: File.Size
-      description: File size
-      type: Unknown
-    - contextPath: File.MD5
-      description: MD5 hash of the file
-      type: Unknown
-    - contextPath: File.SHA1
-      description: SHA1 hash of the file
-      type: Unknown
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
-      type: Unknown
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-      type: Unknown
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: Unknown
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: Unknown
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: Unknown
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: Unknown
-  - arguments:
-    - default: false
-      description: URL of remote file to be uploaded
-      isArray: false
-      name: upload
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '7'
-      description: Delay wait time between calls (in seconds)
-      isArray: false
-      name: delay
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
-      description: Total wait time (in seconds)
-      isArray: false
-      name: timeout
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Optional - request a structured report (formatted as XML/PDF)
-      isArray: false
-      name: format
-      predefined:
-      - xml
-      - pdf
-      required: false
-      secret: false
-    deprecated: true
-    description: Deprecated, use detonate playbook instead
-    execution: false
-    name: detonate-file-remote
-  - arguments:
-    - default: false
-      description: url to submit to WildFire
-      isArray: true
-      name: upload
-      required: true
-      secret: false
-    deprecated: false
-    description: submit a url
-    execution: false
-    name: wildfire-upload-url
-  - name: wildfire-get-sample
-    arguments:
-      - name: md5
-        description: MD5 hash to retrieve
-        isArray: true
-      - name: sha256
-        description: SHA256 hash to retrieve
-        isArray: true
-    outputs:
-      - contextPath: File.Size
-        description: File size
-        type: number
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file
-        type: string
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file
-        type: string
-      - contextPath: File.Name
-        description: The sample name
-        type: string
-      - contextPath: File.SSDeep
-        description: SSDeep hash of the file
-        type: string
-      - contextPath: File.EntryID
-        description: War-Room Entry ID of the file
-        type: string
-      - contextPath: File.Info
-        description: Basic information of the file
-        type: string
-      - contextPath: File.Type
-        description: File type e.g. "PE"
-        type: string
-      - contextPath: File MD5
-        description: MD5 hash of the file
-        type: string
-      - contextPath: File.Extension
-        description: File Extension
-        type: string
-    description: Retrieve a sample from WildFire
   dockerimage: demisto/python3:3.7.2.200
   isfetch: false
   runonce: false

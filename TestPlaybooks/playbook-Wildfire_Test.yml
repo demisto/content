@@ -623,7 +623,7 @@ tasks:
       version: -1
       name: file (with sha1 value in the argument file)
       description: Retrieve results for a file hash using WildFire
-      script: WildFire-v2|||file
+      script: 'WildFire-v2|||file'
       type: regular
       iscommand: true
       brand: WildFire-v2

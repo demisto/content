@@ -69,12 +69,6 @@ VERDICTS_TO_DBOTSCORE = {
 
 def http_request(url, method, headers=None, body=None, params=None, files=None):
     LOG('running request with url=%s' % url)
-    # demisto.log(url)
-    # demisto.log('method : ' + str(method))
-    # demisto.log('headers : ' + str(headers))
-    # demisto.log('body : ' + str(body))
-    # demisto.log('params : ' + str(params))
-    # demisto.log('files : ' + str(files))
     result = requests.request(
         method,
         url,
@@ -84,11 +78,6 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
         params=params,
         files=files
     )
-
-    # demisto.log(str(dir(result)))
-    # demisto.log(str(result.headers))
-    # demisto.log(str(result.status_code))
-    # demisto.log(str(result.reason))
 
     if str(result.reason) == 'Not Found':
         # sample not found
@@ -283,7 +272,7 @@ def test_module():
     params = {
         'apikey': TOKEN,
         'format': 'xml',
-        'hash': '7f638f13d0797ef9b1a393808dc93b94'
+        'hash': '7f638f13d0797ef9b1a393808dc93b94'  # guardrails-disable-line
     }
     json_res = http_request(test_url, 'POST', headers=DEFAULT_HEADERS, params=params)
     if json_res:
