@@ -134,7 +134,8 @@
         },
         {
             "integrations": "OTRS",
-            "playbookID": "OTRS Test"
+            "playbookID": "OTRS Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Attivo Botsink",
@@ -1246,7 +1247,6 @@
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test",
             "fromversion": "4.1.0"
-
         },
         {
             "integrations": "Cherwell",
@@ -1255,6 +1255,10 @@
         {
             "integrations": "Cherwell",
             "playbookID": "Cherwell - test"
+        },
+        {
+            "integrations": "CarbonBlackProtectionV2",
+            "playbookID": "Carbon Black Enterprise Protection V2 Test"
         },
         {
             "integrations": "Active Directory Query v2",
@@ -1349,6 +1353,7 @@
     ],
     "unmockable_integrations": {
         "Google BigQuery": "SSL problem",
+        "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
