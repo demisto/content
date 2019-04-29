@@ -333,6 +333,15 @@
           "playbookID": "devo_test_playbook"
         },
         {
+          "playbookID": "URL Enrichment - Generic v2 - Test",
+          "integrations": [
+              "Rasterize",
+              "VirusTotal - Private API"
+          ],
+            "instance_names": "virus_total_private_api_general",
+            "timeout": 500
+        },
+        {
             "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
@@ -1303,6 +1312,7 @@
     ],
     "skipped_tests": {
         "detonate_file_-_generic_test": "relevant only for v3.6",
+        "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
