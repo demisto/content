@@ -65,7 +65,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get items from the service.
+    description: List all mails of a given user.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
@@ -231,6 +231,9 @@ script:
       type: String
     - contextPath: MSGraphMail.ReplyTo.Address
       description: Email address of replyTo
+      type: String
+    - contextPath: MSGraphMail.UserID
+      description: ID of user
       type: String
   - arguments:
     - default: false
