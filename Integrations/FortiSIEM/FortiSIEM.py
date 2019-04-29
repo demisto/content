@@ -68,9 +68,9 @@ def validateSuccessfulResponse(resp, error_text):
 
 
 def login():
-    session=requests.session()
+    session = requests.session()
 
-    response = session.get(HOST+'/phoenix/login-html.jsf', verify=VERIFY_SSL)
+    response = session.get(HOST + '/phoenix/login-html.jsf', verify=VERIFY_SSL)
     p = re.compile('(value=".{1046}==")')
     viewState = p.findall(response.text.encode('utf-8'))
     VIEW_STATE = viewState[0][len('value="'):][:-1]
@@ -83,15 +83,15 @@ def login():
         'Accept-Language': 'en-US,en;q=0.9,he;q=0.8'
     }
     data = {
-      'loginHtml': 'loginHtml',
-      'loginHtml:username': USERNAME,
-      'loginHtml:password': PASSWORD,
-      'loginHtml:userDomain': 'Empty',
-      'loginHtml:loginBtn': 'Log In',
-      'javax.faces.ViewState': VIEW_STATE
+        'loginHtml': 'loginHtml',
+        'loginHtml:username': USERNAME,
+        'loginHtml:password': PASSWORD,
+        'loginHtml:userDomain': 'Empty',
+        'loginHtml:loginBtn': 'Log In',
+        'javax.faces.ViewState': VIEW_STATE
     }
 
-    response = session.post(HOST+'/phoenix/login-html.jsf', headers=headers, data=data, verify=VERIFY_SSL)
+    response = session.post(HOST + '/phoenix/login-html.jsf', headers=headers, data=data, verify=VERIFY_SSL)
     return session
 
 
@@ -123,7 +123,7 @@ def clear_incident(incident_id, reason):
 
 def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
     session = login()
-    response = session.get(HOST+'/phoenix/rest/h5/report/triggerEvent?rawMsg='+incident_id)
+    response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
     validateSuccessfulResponse(response, "triggering events report")
 
     try:
@@ -152,19 +152,25 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
     data = json.dumps(data)
 
     # pole until report progress reaches 100
-    response = session.post(restAddress+'/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+    response = session.post(restAddress + '/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
     while response.text != "100" and max_wait_time > 0:
-        response = session.post(restAddress+'/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+        response = session.post(restAddress + '/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
         max_wait_time = int(max_wait_time) - 1
         time.sleep(1)
 
-    response = session.post(restAddress+'/resultByReport?start=0&perPage='+max_results+'&allData='+extended_data,
-                            headers=headers, data=data, verify=VERIFY_SSL)
+    params = {
+        'start': 0,
+        'perPage': max_results,
+        'allData': extended_data,
+    }
+
+    response = session.post(restAddress + '/resultByReport', params=params, headers=headers, data=data,
+                            verify=VERIFY_SSL)
 
     try:
         res = response.json()
         eventKeys = res["headerData"]["columnNames"]
-    except Exception as err:
+    except ValueError:
         return_error("Got wrong response format when getting report results. "
                      "Expected a json object but got " + response.text)
         sys.exit(0)
@@ -188,8 +194,8 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
             break
         cur["ExtendedData"] = {}
         for extItem in key["extData"]:
-            if EXTENDED_KEYS.get(extItem["left"], None) is not None:
-                cur[EXTENDED_KEYS.get(extItem["left"])] = extItem["right"]
+            if EXTENDED_KEYS.get(extItem["left"]) is not None:
+                cur[EXTENDED_KEYS.get(extItem["left"]).replace(' ', '')] = extItem["right"]
             else:
                 cur["ExtendedData"][extItem["left"]] = extItem["right"]
         eventData.append(cur)
@@ -257,7 +263,8 @@ def GetIncidentsByOrg(queryId):
     return param
 
 
-def create_query_xml(include_value, interval="", single_evt_value="phEventCategory=1", interval_type="Minute", attr_list=None, limit="All"):
+def create_query_xml(include_value, interval="", single_evt_value="phEventCategory=1", interval_type="Minute",
+                     attr_list=None, limit="All"):
     doc = Document()
     reports = doc.createElement("Reports")
     doc.appendChild(reports)
@@ -267,7 +274,7 @@ def create_query_xml(include_value, interval="", single_evt_value="phEventCatego
     reports.appendChild(report)
     name = doc.createElement("Name")
     report.appendChild(name)
-    nameText = doc.createTextNode("All Incidents")
+    doc.createTextNode("All Incidents")
     custScope = doc.createElement("CustomerScope")
     custScope.setAttribute("groupByEachCustomer", "true")
     report.appendChild(custScope)
