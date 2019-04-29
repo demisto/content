@@ -247,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4045
+          "y": 5095
         }
       }
     note: false
@@ -655,10 +655,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: d3488183-cf56-4ce9-85d0-dbed004c0592
+    taskid: 420b6ed9-a560-4993-8a91-65ba9f44cdda
     type: regular
     task:
-      id: d3488183-cf56-4ce9-85d0-dbed004c0592
+      id: 420b6ed9-a560-4993-8a91-65ba9f44cdda
       version: -1
       name: commentsToContext
       description: "Takes the comments of a given entry ID and stores them in the
@@ -846,7 +846,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -884,6 +884,213 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 6f911f24-4102-4c78-8bff-90eb818bf989
+    type: regular
+    task:
+      id: 6f911f24-4102-4c78-8bff-90eb818bf989
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 23a6504e-5a73-4c1b-8215-05f87154fefa
+    type: regular
+    task:
+      id: 23a6504e-5a73-4c1b-8215-05f87154fefa
+      version: -1
+      name: wildfire-get-sample
+      description: Retrieve a sample from WildFire
+      script: '|||wildfire-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      md5:
+        simple: 5af84a3db5883627bfdff909e210634e
+      sha256: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 858a6b16-a64a-4175-8ea6-17e0ae284c27
+    type: condition
+    task:
+      id: 858a6b16-a64a-4175-8ea6-17e0ae284c27
+      version: -1
+      name: Test wildfire-get-sample
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: 1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3.xlsx.000
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 42535e46-9dae-4023-8349-77b3cce008be
+    type: regular
+    task:
+      id: 42535e46-9dae-4023-8349-77b3cce008be
+      version: -1
+      name: wildfire-get-sample benign
+      description: Retrieve a sample
+      script: '|||wildfire-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      md5: {}
+      sha256:
+        simple: 4b4f3e336514eedf8c8a1f9d929b97e42921f757056eb640706bd17e096ddad0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 33c30ad5-f151-4d6c-84f8-ad32cb5eb87c
+    type: regular
+    task:
+      id: 33c30ad5-f151-4d6c-84f8-ad32cb5eb87c
+      version: -1
+      name: comments to context
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      contextKey:
+        simple: benignSample
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 54fdac96-2f29-4a1a-87db-5c3c0475c900
+    type: condition
+    task:
+      id: 54fdac96-2f29-4a1a-87db-5c3c0475c900
+      version: -1
+      name: info message of sample not found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: benignSample
+            iscontext: true
+          right:
+            value:
+              simple: Sample was not found.
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -891,7 +1098,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4060,
+        "height": 5110,
         "width": 810,
         "x": 50,
         "y": 50
