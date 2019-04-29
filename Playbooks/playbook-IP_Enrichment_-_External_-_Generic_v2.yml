@@ -196,7 +196,7 @@ tasks:
       description: "Checks if the IP address is in the internal IP address ranges.\nIf
         internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
         \"InRange\" attribute to \"no\". "
-      scriptName: IsIPInRanges_dev
+      scriptName: IsIPInRanges
       type: regular
       iscommand: false
       brand: ""
