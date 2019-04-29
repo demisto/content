@@ -210,7 +210,7 @@ script:
         // set the context according to the newest data
         output = outputs[0];
         var contextKey;
-        if (isStandardCommand(command) && output !== undefined && !isObjectEmpty(output)) {
+        if (isStandardCommand(command) && output && typeof output === 'object' && !isObjectEmpty(output)) {
             if (command == 'ip' || command == 'domain') {
                 var ipContext = {};
                 if (output.ASN !== undefined) {
