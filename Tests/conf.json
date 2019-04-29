@@ -1235,6 +1235,10 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "playbookID": "Account Enrichment - Generic v2 - Test",
+            "integrations": "activedir"
+        },
+       {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
