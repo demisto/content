@@ -66,7 +66,7 @@ tasks:
     task:
       id: 7f0308e7-6722-47ff-844f-35dc22d11546
       version: -1
-      name: IP Enrichment - Generic v2
+      name: IP Enrichment - Generic_dev
       description: |-
         Enrich IP using one or more integrations.
 
@@ -110,10 +110,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 1a32d820-2625-491e-8185-1e44c5d329ed
+    taskid: 6af97bcc-cec1-41fb-8354-22ba6044cfcd
     type: playbook
     task:
-      id: 1a32d820-2625-491e-8185-1e44c5d329ed
+      id: 6af97bcc-cec1-41fb-8354-22ba6044cfcd
       version: -1
       name: Email Address Enrichment - Generic v2
       description: |-
@@ -128,7 +128,7 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      Domain:
+      Domains:
         complex:
           root: inputs.Domain
           transformers:
@@ -136,6 +136,11 @@ tasks:
       Email:
         complex:
           root: inputs.Email
+          transformers:
+          - operator: uniq
+      InternalDomains:
+        complex:
+          root: inputs.InternalDomains
           transformers:
           - operator: uniq
     separatecontext: true
@@ -460,6 +465,11 @@ inputs:
   description: Determines whether the IP Enrichment - Generic playbook should convert
     IP addresses to hostnames using a DNS query. You can set this to either True or
     False.
+- key: InternalDomains
+  value: {}
+  required: false
+  description: A list of internal domains, separated by commas. The list will be used
+    to determine whether an email address is internal or external.
 outputs:
 - contextPath: Account
   description: The Account's object

@@ -3,14 +3,11 @@ version: -1
 name: IP Enrichment - External - Generic v2
 fromversion: 4.1.0
 description: |-
-  Enrich IP using one or more integrations.
+  Enrich IP addresses using one or more integrations.
 
-  IP enrichment includes:
-  * Resolve IP to Hostname (DNS)
-  * Threat information
-  * Separate internal and external addresses
-  * IP reputation (using auto-extract)
-  * For internal addresses, get host information
+  - Resolve IP addresses to hostnames (DNS)
+  - Provide threat information
+  - Separate internal and external addresses
 starttaskid: "0"
 tasks:
   "0":
@@ -153,13 +150,14 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 13e467ea-87c1-4ecc-808c-2b8e67e0f39e
+    taskid: 6b8d857a-6012-41ac-8133-999741963259
     type: condition
     task:
-      id: 13e467ea-87c1-4ecc-808c-2b8e67e0f39e
+      id: 6b8d857a-6012-41ac-8133-999741963259
       version: -1
       name: Are there any IP addresses?
-      description: Determine whether the playbook's input contains an IP address.
+      description: Determine whether the playbook's input contains at least one IP
+        address.
       type: condition
       iscommand: false
       brand: ""
@@ -189,16 +187,15 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 24cd44a3-b0ce-4c6e-8687-074e90599b22
+    taskid: 583bdb15-2ba1-4818-8040-960105e9c247
     type: regular
     task:
-      id: 24cd44a3-b0ce-4c6e-8687-074e90599b22
+      id: 583bdb15-2ba1-4818-8040-960105e9c247
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nAdds
-        \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
-        \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
-        \n"
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf
+        internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
+        \"InRange\" attribute to \"no\". "
       scriptName: IsIPInRanges_dev
       type: regular
       iscommand: false
@@ -229,13 +226,13 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 1bd57324-7ece-47a0-8e22-ebd341ecd0a4
+    taskid: 607dafbe-8ee1-47ad-810a-dacf03842673
     type: condition
     task:
-      id: 1bd57324-7ece-47a0-8e22-ebd341ecd0a4
+      id: 607dafbe-8ee1-47ad-810a-dacf03842673
       version: -1
       name: Resolve the IP address?
-      description: Checks whether the ResolveIP parameter is set to "True".
+      description: Checks whether the "ResolveIP" parameter is set to "True".
       type: condition
       iscommand: false
       brand: ""
@@ -349,14 +346,14 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 82557e7d-0037-4bac-8092-0e3ea929615e
+    taskid: 0df4420b-8119-4731-8cb3-4745fd044913
     type: condition
     task:
-      id: 82557e7d-0037-4bac-8092-0e3ea929615e
+      id: 0df4420b-8119-4731-8cb3-4745fd044913
       version: -1
       name: Is VirusTotal Private API enabled?
       description: Checks if there is an active instance of the VirusTotal Private
-        API enabled.
+        API integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -408,14 +405,14 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: b16c1c31-82c1-48ce-8607-df2f08b47a20
+    taskid: 700d9287-b7b0-440b-84a0-43eb625d45eb
     type: regular
     task:
-      id: b16c1c31-82c1-48ce-8607-df2f08b47a20
+      id: 700d9287-b7b0-440b-84a0-43eb625d45eb
       version: -1
       name: Get IP report from VirusTotal Private API
       description: |
-        Retrieves a report for a given IP.
+        Retrieves a report for a given IP address.
       script: VirusTotal - Private API|||vt-private-get-ip-report
       type: regular
       iscommand: true
@@ -441,7 +438,7 @@ tasks:
           transformers:
           - operator: uniq
       threshold: {}
-    reputationcalc: 2
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -507,13 +504,14 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 02350f3e-c374-459c-855a-9e2453ec8697
+    taskid: bfd335eb-f565-4abd-87d2-6299336bc89b
     type: condition
     task:
-      id: 02350f3e-c374-459c-855a-9e2453ec8697
+      id: bfd335eb-f565-4abd-87d2-6299336bc89b
       version: -1
-      name: Is Threat Crowd enabled?
-      description: Checks if there is an active instance of Threat Crowd enabled.
+      name: Is ThreatCrowd enabled?
+      description: Checks if there is an active instance of the ThreatCrowd integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -565,14 +563,14 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: f03d81e7-d7ea-40a3-86bb-94c90e7694f2
+    taskid: bfa43e99-360c-4f84-8e09-77a8b7ca5b52
     type: regular
     task:
-      id: f03d81e7-d7ea-40a3-86bb-94c90e7694f2
+      id: bfa43e99-360c-4f84-8e09-77a8b7ca5b52
       version: -1
-      name: Get IP report from Threat Crowd
+      name: Get IP report from ThreatCrowd
       description: |
-        Retrieves a report for a given IP.
+        Retrieves a report for a given IP address.
       script: '|||threat-crowd-ip'
       type: regular
       iscommand: true
@@ -596,7 +594,7 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-    reputationcalc: 2
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -641,39 +639,42 @@ inputs:
   required: false
   description: The IP address to enrich.
 - key: InternalRange
-  value: {}
+  value:
+    simple: inputs.InternalRange
   required: false
-  description: |-
-    The internal range to check against the IP address.
-    The default range is taken from the IPv4 protocol.
+  description: 'A CSV list of IP address ranges (in CIDR notation). Use this list
+    to check if an IP address is found within a set of IP address ranges. For example:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
 - key: ResolveIP
   value:
     complex:
       root: inputs.ResolveIP
   required: true
-  description: Convert the IP address to a hostname using a DNS query (True/ False).
+  description: Whether to convert the IP address to a hostname using a DNS query (True/False).
 outputs:
 - contextPath: IP
-  description: The IP objects
+  description: The IP address objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, and Vendor.
   type: unknown
 - contextPath: Endpoint
-  description: The Endpoint's object
+  description: The endpoint's object.
   type: unknown
 - contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+  description: The hostname to enrich.
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: Endpoint operating system.
   type: string
 - contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
+  description: A list of endpoint IP addresses.
 - contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
+  description: A list of endpoint MAC addresses.
 - contextPath: Endpoint.Domain
-  description: Endpoint domain name
+  description: Endpoint domain name.
   type: string
 releaseNotes: "A new generic playbook for external IP enrichment (now as a separate playbook)"
 tests:

@@ -3,14 +3,11 @@ version: -1
 fromversion: 4.1.0
 name: IP Enrichment - Internal - Generic v2
 description: |-
-  Enrich IP using one or more integrations.
+  Enrich Internal IP addresses using one or more integrations.
 
-  IP enrichment includes:
-  * Resolve IP to Hostname (DNS)
-  * Threat information
-  * Separate internal and external addresses
-  * IP reputation
-  * For internal addresses, get host information
+  - Resolve IP address to hostname (DNS)
+  - Separate internal and external IP addresses
+  - Get host information for IP addresses
 starttaskid: "0"
 tasks:
   "0":
@@ -89,13 +86,13 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: b5a0e443-afd5-42ae-8d21-55f16885e641
+    taskid: f52523d0-362f-4f1e-8c16-443889e17ff1
     type: condition
     task:
-      id: b5a0e443-afd5-42ae-8d21-55f16885e641
+      id: f52523d0-362f-4f1e-8c16-443889e17ff1
       version: -1
-      name: Are there any IP addresses?
-      description: Determine whether the playbook's input contains an IP address.
+      name: Are there IP addresses?
+      description: Checks whether the playbook's input contains at least one IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -116,7 +113,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 170,
           "y": 330
         }
       }
@@ -269,16 +266,15 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: d98f4552-a3ea-42f9-8d42-c59d55a86137
+    taskid: 38e2fd1f-3863-4034-80af-14cb06cbcf25
     type: regular
     task:
-      id: d98f4552-a3ea-42f9-8d42-c59d55a86137
+      id: 38e2fd1f-3863-4034-80af-14cb06cbcf25
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nAdds
-        \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
-        \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
-        \n"
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf
+        internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
+        \"InRange\" attribute to \"no\". \n"
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -302,7 +298,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 170,
           "y": 570
         }
       }
@@ -412,41 +408,42 @@ inputs:
   required: false
   description: The IP address to enrich.
 - key: InternalRange
-  value: {}
+  value:
+    simple: inputs.InternalRange
   required: false
-  description: 'A list of IP ranges to check the IP in. The list should be provided
-    in CIDR notation, separated by commas. An example of a list of ranges would be:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+  description: "A CSV list of IP address ranges (in CIDR notation). Use this list
+    to check if an IP address is found within a set of IP address ranges. \nFor example:
+    \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If no list is provided,
     will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
+    address ranges)."
 - key: ResolveIP
   value:
     complex:
       root: inputs.ResolveIP
   required: true
-  description: Convert the IP address to a hostname using a DNS query (True/ False).
+  description: Whether to convert the IP address to a hostname using a DNS query (True/False).
 outputs:
 - contextPath: IP
-  description: The IP objects
+  description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type and Vendor
   type: unknown
 - contextPath: Endpoint
-  description: The Endpoint's object
+  description: The endpoint's object.
   type: unknown
 - contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+  description: The hostname to enrich.
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: Endpoint operating system.
   type: string
 - contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
+  description: A list of endpoint IP addresses.
 - contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
+  description: A list of endpoint MAC addresses.
 - contextPath: Endpoint.Domain
-  description: Endpoint domain name
+  description: Endpoint domain name.
   type: string
 releaseNotes: "A new generic playbook for internal IP enrichment (now as a separate playbook)"
 tests:

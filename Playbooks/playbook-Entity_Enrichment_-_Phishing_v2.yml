@@ -384,6 +384,11 @@ inputs:
   description: Determines whether the IP Enrichment - Generic playbook should convert
     IP addresses to hostnames using a DNS query. You can set this to either True or
     False.
+- key: InternalDomains
+  value: {}
+  required: false
+  description: A list of internal domains, separated by commas. The list will be used
+    to determine whether an email address is internal or external.
 outputs:
 - contextPath: Account
   description: The Account's object
