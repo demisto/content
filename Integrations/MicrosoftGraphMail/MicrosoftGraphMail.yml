@@ -33,13 +33,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: User ID to pull mails from. Can be principal ID (email address)
+      description: User ID from which to pull mails (can be principal ID (email address)).
       isArray: true
       name: user_id
       required: true
       secret: false
     - default: false
-      description: ID of folder, comma seperated in the struct of (mail_box,child_mail_box,child_mail_box)
+      description: ' A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
       isArray: false
       name: folder_id
       predefined:
@@ -47,66 +47,66 @@ script:
       required: false
       secret: false
     - default: false
-      description: add OData query
+      description: Add an OData query.
       isArray: false
       name: odata
       required: false
       secret: false
     - default: false
-      description: Search term
+      description: Search term.
       isArray: false
       name: search
       required: false
       secret: false
     - default: true
       defaultValue: '1'
-      description: How many pages of emails to pull. (10 email per page)
+      description: The number of pages of emails to pull (maximum is 10 emails per page).
       isArray: false
       name: pages_to_pull
       required: false
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Get items from the service.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
     - contextPath: Example.Item.ID
-      description: Item ID
+      description: Item ID.
       type: number
     - contextPath: Example.Item.Name
-      description: Item name
+      description: Item name.
       type: string
     - contextPath: Example.Item.CreatedDate
-      description: Item creation date
+      description: Item creation date.
       type: date
   - arguments:
     - default: false
-      description: user id
+      description: User ID or principal ID (mostly email address).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: '{message_id}'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
       secret: false
     - default: false
-      description: '{folder_id}'
+      description: Folder ID.
       isArray: false
       name: folder_id
       required: false
       secret: false
     - default: false
-      description: '{odata}'
+      description: OData.
       isArray: false
       name: odata
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should return body of message
+      description: Whether the message body should be returned.
       isArray: false
       name: get_body
       predefined:
@@ -115,24 +115,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets email properties
+    description: Gets the properties of an email.
     execution: false
     name: msgraph-mail-get-email
   - arguments:
     - default: false
-      description: '{user_id}'
+      description: User ID or principal ID (mostly email address).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: '{message_id}'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
       secret: false
     - default: false
-      description: '{folder_id}'
+      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
       isArray: false
       name: folder_id
       required: false
@@ -142,19 +142,19 @@ script:
     name: msgraph-mail-delete-email
   - arguments:
     - default: false
-      description: '{user_id}'
+      description: User ID or principal ID (mostly email address).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: '{message_id}'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
       secret: false
     - default: false
-      description: '{folder_id}'
+      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
       isArray: false
       name: folder_id
       required: false
@@ -165,45 +165,42 @@ script:
     name: msgraph-mail-list-attachments
   - arguments:
     - default: false
-      description: '{user_id}'
+      description: User ID or principal ID (mostly email address).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: '{message_id}'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
       secret: false
     - default: false
-      description: '{folder_id}'
+      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
       isArray: false
       name: folder_id
       required: false
       secret: false
     - default: false
-      description: ID of attachment
+      description: ID of the attachment.
       isArray: false
       name: attachment_id
       required: true
       secret: false
     deprecated: false
-    description: Gets an attachment from email
+    description: Gets an attachment from the email.
     execution: false
     name: msgraph-mail-get-attachment
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: |-
-    import binascii
-
-
-
     ''' IMPORTS '''
     import requests
     import base64
     import os
+    import binascii
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -553,7 +550,6 @@ script:
         """
         Performs basic get request to get item samples
         """
-        # TODO test_module
         url = BASE_URL + '/me'
         token = get_token()
         headers = {
@@ -600,6 +596,7 @@ script:
         raw_response = list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
         mail_context = build_mail_object(raw_response, user_id)
         entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}
+
         # human_readable builder
         human_readable = tableToMarkdown(
             f'### Total of {len(mail_context)} of mails received',

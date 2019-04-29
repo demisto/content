@@ -1,11 +1,10 @@
-import binascii
-
 from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
 import base64
 import os
+import binascii
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -355,7 +354,6 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    # TODO test_module
     url = BASE_URL + '/me'
     token = get_token()
     headers = {
