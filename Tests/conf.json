@@ -816,6 +816,10 @@
             "playbookID": "Microsoft Graph Test"
         },
         {
+            "integrations": "Microsoft Graph User",
+            "playbookID": "Microsoft Graph - Test"
+        },
+        {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
