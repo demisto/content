@@ -17,7 +17,7 @@ HEADERS = {"Authorization": TOKEN, "Accept": "application/json"}
 USE_SSL = not demisto.params().get('unsecure', False)
 
 ''' CONSTANTS '''
-DEMISTOBOT = "https://demistobot.demisto.com/msg-user"
+DEMISTOBOT = "https://demistobot.demisto.com/msg-user-token"
 PRODUCT = "MicrosoftGraphUser"
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
