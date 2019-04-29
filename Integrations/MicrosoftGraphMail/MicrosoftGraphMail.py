@@ -562,7 +562,8 @@ def list_attachments_command():
         entry_context = {'MSGraphMailAttachment(val.ID === obj.ID)': attachment_entry}
 
         # Build human readable
-        file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(attachment, dict) and attachment.get('Name')]
+        file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(
+            attachment, dict) and attachment.get('Name')]
         human_readable = tableToMarkdown(
             f'Total of {len(attachment_list)} attachments found in message {message_id} from user {user_id}',
             {'File names': file_names}
