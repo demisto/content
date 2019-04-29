@@ -210,6 +210,7 @@ tasks:
           root: inputs.Domain
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
