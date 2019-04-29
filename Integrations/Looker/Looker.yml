@@ -28,6 +28,11 @@ configuration:
   name: fetch_incidents_look
   required: false
   type: 0
+- defaultvalue: '500'
+  display: Fetch incidents result limit
+  name: fetch_incidents_limit
+  required: false
+  type: 0
 description: Looker is a business intelligence software and big data analytics platform
   that helps you explore, analyze and share real-time business analytics easily.
 display: Looker
@@ -39,24 +44,6 @@ script:
       description: Id of the look - can be found in the look's URL or by running looker-search-looks
       isArray: false
       name: id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: json
-      description: Format of result
-      isArray: false
-      name: result_format
-      predefined:
-      - json
-      - csv
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
-      description: Maximum number of results to return (0 for looker-determined limit)
-      isArray: false
-      name: limit
       required: false
       secret: false
     - default: false
@@ -101,13 +88,6 @@ script:
       name: user_id
       required: false
       secret: false
-    - default: false
-      defaultValue: '50'
-      description: Maximum number of looks to return (0 for looker-determined limit)
-      isArray: false
-      name: limit
-      required: false
-      secret: false
     deprecated: false
     description: Find saved looks matching search criteria.
     execution: false
@@ -130,19 +110,19 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Model name
+      description: Name of the model
       isArray: false
       name: model
       required: false
       secret: false
     - default: false
-      description: Explore Name
+      description: Name of the view / Explore
       isArray: false
       name: view
       required: false
       secret: false
     - default: false
-      description: List of fields to display.
+      description: List of fields to display
       isArray: true
       name: fields
       required: false
@@ -156,27 +136,15 @@ script:
       secret: false
     - default: false
       description: Pivots
-      isArray: false
+      isArray: true
       name: pivots
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
-      description: Maximum number of results to return (0 for looker-determined limit)
-      isArray: false
-      name: limit
+      description: Sorting for the query results
+      isArray: true
+      name: sorts
       required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: json
-      description: Format of result
-      isArray: false
-      name: result_format
-      predefined:
-      - json
-      - csv
-      required: true
       secret: false
     deprecated: false
     description: Run a query by defining it in the command arguments, rather than
@@ -187,6 +155,82 @@ script:
     - contextPath: LookerResults.InlineQuery
       description: Inline Query results
       type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the model
+      isArray: false
+      name: model
+      required: true
+      secret: false
+    - default: false
+      description: Name of the view / Explore
+      isArray: false
+      name: view
+      required: true
+      secret: false
+    - default: false
+      description: List of fields to display
+      isArray: true
+      name: fields
+      required: true
+      secret: false
+    - default: false
+      description: 'Filters for the query, passed as a list with the format: "field
+        name: filter value", ...'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: List of pivots
+      isArray: true
+      name: pivots
+      required: false
+      secret: false
+    - default: false
+      description: Sorting for the query results
+      isArray: true
+      name: sorts
+      required: false
+      secret: false
+    - default: false
+      description: Title of the look
+      isArray: false
+      name: look_title
+      required: false
+      secret: false
+    - default: false
+      description: Description of the look
+      isArray: false
+      name: look_description
+      required: false
+      secret: false
+    - default: false
+      description: ID of the space that will contain the look
+      isArray: false
+      name: look_space_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a look from a query
+    execution: false
+    name: looker-create-look
+    outputs:
+    - contextPath: Looker.Look.ID
+      description: Look ID
+      type: Number
+    - contextPath: Looker.Look.Name
+      description: Look Name
+      type: String
+    - contextPath: Looker.Look.SpaceID
+      description: ID of the space that contains the Look
+      type: Number
+    - contextPath: Looker.Look.SpaceName
+      description: Name of the space that contains the Look
+      type: String
+    - contextPath: Looker.Look.LastUpdated
+      description: The time that the look was last updated
+      type: Date
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false

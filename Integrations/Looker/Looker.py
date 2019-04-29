@@ -56,7 +56,17 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
     if res.status_code not in {200}:
         raise requests.exceptions.HTTPError('Error in API call to Looker [%d] - %s' % (res.status_code, res.reason))
 
-    return res.json() if response_type == 'json' else res.content
+    if response_type != 'json':
+        return res.content
+
+    res_obj = res.json()
+
+    # More error handling
+    if isinstance(res_obj, list) and len(res_obj) == 1 and \
+            isinstance(res_obj[0], dict) and 'looker_error' in res_obj[0]:
+        raise Exception(f"Looker Error: {res_obj[0]['looker_error']}")
+
+    return res_obj
 
 
 def get_new_token():
@@ -132,6 +142,19 @@ def test_module():
     Performs basic get request to check connectivity and authentication
     """
     http_request('GET', '/user')
+
+
+def fetch_incidents_command():
+
+    look = demisto.params().get('fetch_incidents_look')
+    limit = demisto.params().get('fetch_incidents_limit', '500')
+    if not look:
+        raise Exception("Integration configuration parameter 'Look name or ID to fetch incidents from' is empty.")
+
+    incidents = []
+    raw_response = run_look_request(look, 'json', limit, '')
+
+    demisto.incidents(incidents)
 
 
 def run_look_command():
@@ -242,6 +265,8 @@ try:
     if demisto.command() == 'test-module':
         test_module()
         demisto.results('ok')
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents_command()
     elif demisto.command() == 'looker-run-look':
         run_look_command()
     elif demisto.command() == 'looker-search-looks':
