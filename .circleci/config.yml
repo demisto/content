@@ -5,9 +5,9 @@ jobs:
       - image: devdemisto/content-build-2and3:1.0.0.197 # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.4.0"
+      CONTENT_VERSION: "19.4.1"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "3e4ecb7ab0e0b995b5c8b5449d792caa85220946" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "46a1d9ffbe6dbf734f9b790e7f2874f63e4b96ba" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -29,14 +29,15 @@ jobs:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
               - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
+          name: Create ID Set
+          command: |
+            python ./Tests/scripts/update_id_set.py -r
+      - run:
           name: Infrastucture testing
           command: |
             pytest ./Tests/scripts/hook_validations/tests/ -v
             pytest ./Tests/scripts/infrastructure_tests/ -v
-      - run:
-          name: Create ID Set
-          command: |
-            python ./Tests/scripts/update_id_set.py -r
+            pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           command: |
