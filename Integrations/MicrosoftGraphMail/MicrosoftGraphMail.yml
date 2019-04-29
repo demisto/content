@@ -42,8 +42,6 @@ script:
       description: ' A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
       isArray: false
       name: folder_id
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -145,6 +143,9 @@ script:
       type: String
     - contextPath: MSGraphMail.ReplyTo.Address
       description: Email address of replyTo
+      type: String
+    - contextPath: MSGraphMail.UserID
+      description: ID of user
       type: String
   - arguments:
     - default: false
@@ -354,28 +355,43 @@ script:
     outputs:
     - contextPath: File.Size
       description: Size of file
+      type: Unknown
     - contextPath: File.SHA1
       description: File's SHA1
+      type: Unknown
     - contextPath: File.SHA256
       description: File's SHA256
+      type: Unknown
     - contextPath: File.Name
       description: File's name
+      type: Unknown
     - contextPath: File.SSDeep
       description: File's SSDeep
+      type: Unknown
     - contextPath: File.EntryID
       description: File's entry id
+      type: Unknown
     - contextPath: File.Info
       description: File's info
+      type: Unknown
     - contextPath: File.Type
       description: File's type
+      type: Unknown
     - contextPath: File.MD5
       description: File's MD5
+      type: Unknown
     - contextPath: File.Extension
       description: File's Extension
+      type: Unknown
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
+
+
     ''' IMPORTS '''
     import requests
     import base64
