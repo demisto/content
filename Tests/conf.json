@@ -1406,6 +1406,7 @@
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
         "Snowflake": "Isn't working with mocking enabled - needs investigation",
-        "Google Cloud Compute": "checking"
+        "Google Cloud Compute": "checking",
+        "jira-v2": "inconsistent test (uploads randomly generated file each time)"
     }
 }
