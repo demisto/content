@@ -175,9 +175,9 @@ script:
 
     function parseReputationResult(command, result) {
         var outputs = [];
-        var output;
+        var output = {};
         var contexts = [];
-        var context;
+        var context = {};
 
         var objects = dq(result, 'objects');
         objects.sort(function(x, y) {return x.created_ts < y.created_ts;});
