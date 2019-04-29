@@ -153,11 +153,11 @@ script:
       description: SHA256 of the submission
       type: string
     - contextPath: WildFire.Report.Status
-        description: The status of the submission
-        type: string
+      description: The status of the submission
+      type: string
     - contextPath: WildFire.Report.URL
-        description: URL of the submission
-        type: string
+      description: URL of the submission
+      type: string
   - arguments:
       - default: false
         description: Upload a URL of a webpage to WildFire for analysis
