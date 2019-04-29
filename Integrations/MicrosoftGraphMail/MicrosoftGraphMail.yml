@@ -388,5 +388,6 @@ script:
   runonce: false
   script: ''
   type: python
-tests: MicrosoftGraphMail-Test
+tests:
+  - MicrosoftGraphMail-Test
 releaseNotes: New integration
