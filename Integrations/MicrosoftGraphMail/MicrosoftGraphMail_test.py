@@ -6,7 +6,7 @@ from requests.models import Response
 def test_build_mail_object():
     # Testing list of mails
     user_id = 'ex@example.com'
-    with open('test_data/mails.json') as mail_json:
+    with open('test_data/mails') as mail_json:
         mail = json.load(mail_json)
         res = build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, list)
@@ -15,7 +15,7 @@ def test_build_mail_object():
         assert res[0]['UserID'] == user_id
         assert res[0]['Body']
 
-    with open('test_data/mail.json') as mail_json:
+    with open('test_data/mail') as mail_json:
         mail = json.load(mail_json)
         res = build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, dict)
