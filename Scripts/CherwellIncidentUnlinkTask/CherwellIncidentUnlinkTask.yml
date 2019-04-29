@@ -1,21 +1,21 @@
 args:
 - default: false
-  description: Incident record id
+  description: Incident record ID.
   isArray: false
   name: incident_record_id
   required: true
   secret: false
 - default: false
-  description: Task record id
+  description: Task record ID.
   isArray: false
   name: task_record_id
   required: true
   secret: false
-comment: This script is an example script of how to unlink a Task from am Incident
+comment: This script is an example script of how to unlink a task from an incident
   in Cherwell. The script wraps the cherwell-unlink-business-object command of the
   cherwell integration. When writing your own script to unlink business objects, follow
-  the instructions found in the configuration section of the script, leave the execution
-  part untouched.
+  the instructions found in the configuration section of the script, but do not change the execution
+  section.
 commonfields:
   id: CherwellIncidentUnlinkTask
   version: -1
