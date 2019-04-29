@@ -328,7 +328,7 @@
           "playbookID": "devo_test_playbook"
         },
         {
-          "integrations": "urlscan.io",
+            "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
@@ -744,7 +744,8 @@
         },
         {
             "integrations": "urlscan.io",
-            "playbookID": "urlscan_malicious_Test"
+            "playbookID": "urlscan_malicious_Test",
+            "timeout": 300
         },
         {
             "integrations": "EWS v2",
