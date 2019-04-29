@@ -7,7 +7,7 @@ args = demisto.args()
 # ####################################################################################
 
 """
-`RELATIONSHIP_ID` is the id of the relationship you wish to base your link on. In this case we wanted to create script
+`RELATIONSHIP_ID` is the id of the relationship you wish to base your link on. In this case, we wanted to create script
 for incidents to own tasks, thus, we used the "Incident Owns Task" relationship id.
 """
 RELATIONSHIP_ID = '9369187528b417b4a17aaa4646b7f7a78b3c821be9'  # guardrails-disable-line
@@ -21,9 +21,14 @@ PARENT_BUSINESS_OBJECT_TYPE = 'Incident'
 CHILD_BUSINESS_OBJECT_TYPE = 'Task'
 
 """
-In order to create your own link script you can just modify the arguments inside the integration settings to correspond
-to the business objects you wish to link.
-For example if you wish to create a link between configuration item and an incident when
+`parent_record_id` and `child_record_id` stores the input ids of the parent and child records respectively.
+In order to change the objects being unlinked, you will need to have corresponding arguments in the script arguments.
+ After you added the argument to the script arguments, you will need to add their values by using
+ `args.get('argument_name').
+For example if you wish to unlink a configuration item and an incident where the parent object is the
+incident, you will need to change the script arguments to be called `incident_record_id` and
+`configuration_item_record_id` and then, modify the variables `parent_record_id` and `child_record_id` such that 
+parent_record_id = args.get('incident_record_id') and child_record_id = args.get('configuration_item_record_id').  
 """
 parent_record_id = args.get('incident_record_id')
 child_record_id = args.get('task_record_id')
