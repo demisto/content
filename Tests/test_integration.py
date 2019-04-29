@@ -26,6 +26,18 @@ def __get_integration_config(client, integration_name):
     })
 
     res = res.json()
+    TIMEOUT = 180
+    SLEEP_INTERVAL = 5
+    total_sleep = 0
+    while 'configurations' not in res:
+        if total_sleep == TIMEOUT:
+            print_error("Timeout - failed to get integration {} configuration. Error: {}".format(integration_name,
+                                                                                                 res.content))
+            return None
+
+        time.sleep(SLEEP_INTERVAL)
+        total_sleep += SLEEP_INTERVAL
+
     all_configurations = res['configurations']
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
