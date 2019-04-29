@@ -1351,10 +1351,6 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate URL - ANYRUN - Test"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Palo Alto Networks Cortex Test"
         }
     ],
     "skipped_tests": {
