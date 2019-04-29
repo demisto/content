@@ -20,8 +20,8 @@ DEMISTOBOT = 'https://demistobot.demisto.com/msg-mail-token'
 TOKEN = demisto.params().get('token')
 TENANT_ID = demisto.params().get('tenant_id')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params().get('url')[:-1] if (
-        demisto.params().get('url') and demisto.params().get('url').endswith('/')) else demisto.params().get('url')
+URL = demisto.params().get('url')
+SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 # Should we use SSL
 USE_SSL = not demisto.params().get('unsecure', False)
 # Service base URL
