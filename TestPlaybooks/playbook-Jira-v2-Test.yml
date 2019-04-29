@@ -77,18 +77,18 @@ tasks:
       description:
         simple: '"delete - this is test"'
       dueDate: {}
-      issueJson: {}
-      issueTypeId:
-        simple: "10001"
-      issueTypeName:
-        simple: Incident
+      issueJson:
+        simple: '{"fields":{"issuetype":{"name":"Request for Action"}}}'
+      issueTypeId: {}
+      issueTypeName: {}
       labels: {}
       parentIssueId: {}
       parentIssueKey: {}
       priority: {}
       projectKey:
         simple: DEM
-      projectName: {}
+      projectName:
+        simple: demistodev
       reporter: {}
       summary:
         simple: '"jira playbook test - delete"'

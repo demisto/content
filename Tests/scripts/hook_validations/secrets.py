@@ -302,7 +302,7 @@ def get_file_contents(file_path, file_extension):
         file_contents = extract_text_from_pdf(file_path)
     else:
         # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
-        with io.open('./' + file_path, mode="r", encoding="utf-8") as commited_file:
+        with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
             file_contents = commited_file.read()
 
     file_contents = ignore_base64(file_contents)
@@ -343,6 +343,8 @@ def is_secrets_disabled(line, skip_secrets):
     elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
         skip_secrets = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
+        skip_secrets = False
+    elif not skip_secrets:
         skip_secrets = False
 
     return skip_secrets
