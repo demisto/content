@@ -1,4 +1,7 @@
+import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
+
 
 ''' IMPORTS '''
 import requests
@@ -12,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
 # Global annotation
 CONTEXT = demisto.getIntegrationContext()
-DEMISTOBOT = 'https://ec2-18-197-54-7.eu-central-1.compute.amazonaws.com/msg-mail-token'
+DEMISTOBOT = 'https://demistobot.demisto.com/msg-mail-token'
 # Credentials
 TOKEN = demisto.params().get('token')
 TENANT_ID = demisto.params().get('tenant_id')
@@ -256,6 +259,7 @@ def build_mail_object(raw_response: dict or list, user_id: str, get_body: bool =
             'Categories': 'categories',
             'HasAttachments': 'hasAttachments',
             'Subject': 'subject',
+            'IsDraft': 'isDraft'
         }
 
         contact_properties = {
@@ -554,18 +558,18 @@ def list_attachments_command():
             'Name': attachment.get('name'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
-        attachment_entry = {'ID': message_id, 'AttachmentID': attachment_list, 'User ID': user_id}
-        entry_context = {'MSGraphMailAttachment.(val.ID === obj.ID)': attachment_entry}
+        attachment_entry = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
+        entry_context = {'MSGraphMailAttachment(val.ID === obj.ID)': attachment_entry}
 
         # Build human readable
-        file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(attachment, dict) and attachment.get('name')]
+        file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(attachment, dict) and attachment.get('Name')]
         human_readable = tableToMarkdown(
             f'Total of {len(attachment_list)} attachments found in message {message_id} from user {user_id}',
             {'File names': file_names}
         )
         return_outputs(human_readable, entry_context, raw_response)
     else:
-        human_readable = f'No attachments found in message {message_id}'
+        human_readable = f'### No attachments found in message {message_id}'
         return_outputs(human_readable, dict(), raw_response)
 
 
