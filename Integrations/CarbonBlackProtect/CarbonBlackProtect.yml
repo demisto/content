@@ -22,7 +22,7 @@ configuration:
   name: incidents_per_fetch
   required: false
   type: 0
-- display: Fetch query
+- display: Fetch query (see ? for more info)
   name: fetch_query
   required: false
   type: 0
@@ -2017,8 +2017,7 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule reporting only or also enforcing
       type: String
-  - deprecated: false
-    arguments:
+  - arguments:
     - default: false
       description: (String) Hash associated with this rule. This parameter is not
         required if fileCatalogId is supplied
@@ -2126,6 +2125,7 @@ script:
       name: headers
       required: false
       secret: false
+    deprecated: false
     description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-createOrUpdate

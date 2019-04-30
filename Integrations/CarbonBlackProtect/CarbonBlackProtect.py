@@ -180,6 +180,7 @@ def test_module():
     Performs basic get request to get item samples
     """
     http_request('GET', '/computer?limit=-1')
+    fetch_incidents(test=True)
 
 
 def search_file_catalog_command():
@@ -1130,7 +1131,7 @@ def create_file_analysis_result(raw_file_analysis, raw_file_rule, cbp_ec_key):
     }
     # analysisResult == 3 -> Malicious
     if int(raw_file_analysis.get('analysisResult', 0)) == 3:
-        result['File'].update({
+        outputPaths['file'].update({
             'Malicious': {
                 'Vendor': 'Carbon Black Protection',
                 'Description': 'Carbon Black Protection found this file to be malicious.'
@@ -1587,7 +1588,7 @@ def resolve_approval_request(id, resolution, requestor_email=None, res_comments=
     return http_request('POST', '/approvalRequest', data=body_params)
 
 
-def fetch_incidents():
+def fetch_incidents(test=False):
     """
         Fetches incident using the events API
         :return: Fetched events in incident format
@@ -1596,8 +1597,8 @@ def fetch_incidents():
     # Get the last fetch time, if exists
     last_fetch = last_run.get('first_event_time')
 
-    # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
+    # Handle first time fetch OR test, fetch incidents retroactively
+    if last_fetch is None or test:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format=CB_TIME_FORMAT)
     last_fetch_timestamp = cbp_date_to_timestamp(last_fetch)
     query = f"timestamp>{last_fetch}"
@@ -1616,7 +1617,9 @@ def fetch_incidents():
             if incident_date_timestamp > last_fetch_timestamp:
                 last_fetch = incident_date
             incidents.append(incident)
-        demisto.setLastRun({'first_event_time': last_fetch})
+        if not test:
+            # this allows us to test fetch-incidents prior to
+            demisto.setLastRun({'first_event_time': last_fetch})
     return incidents
 
 
