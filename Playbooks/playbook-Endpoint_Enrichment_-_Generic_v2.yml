@@ -125,7 +125,7 @@ tasks:
       id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
       version: -1
       name: Is there an endpoint to enrich?
-      description: Checks whether there is at least on endpoint to enrich (by hostname).
+      description: Checks whether there is at least one endpoint to enrich (by hostname).
       type: condition
       iscommand: false
       brand: ""

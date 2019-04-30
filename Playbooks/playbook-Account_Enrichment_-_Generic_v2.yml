@@ -41,7 +41,7 @@ tasks:
       id: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
       version: -1
       name: Is there an account to enrich?
-      description: Checks if there is at least on username to enrich.
+      description: Checks if there is at least one username to enrich.
       type: condition
       iscommand: false
       brand: ""
