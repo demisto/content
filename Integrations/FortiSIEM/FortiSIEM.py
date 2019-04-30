@@ -358,7 +358,7 @@ def dumpXML(xmlList, phCustId):
 def buildQueryString(args):
     res_list = []
     for key in args:
-        if IpAddr not in key:
+        if 'IpAddr' not in key:
             res_list.append('{} = "{}"'.format(key, args[key]))
         else:
             res_list.append("{} = {}".format(key, args[key]))
