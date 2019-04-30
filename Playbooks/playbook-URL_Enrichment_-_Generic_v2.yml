@@ -43,8 +43,8 @@ tasks:
     task:
       id: 7bc8f493-84d1-4d5e-8bfc-64db0cab685c
       version: -1
-      name: Do we have URLs?
-      description: do we have a url to check
+      name: Are there URLs?
+      description: Determine whtether the playbook's input contains at least one URL.
       type: condition
       iscommand: false
       brand: ""
@@ -108,7 +108,7 @@ tasks:
       id: b5ea6e49-a7eb-49d7-8398-3087829d7aee
       version: -1
       name: 'Is Rasterize integration enabled? '
-      description: Check if we can use rasterize
+      description: Checks if there is an active instance of the Rasterize integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -158,7 +158,7 @@ tasks:
       id: 16f823c3-bd44-4fa9-879c-385ac3a21582
       version: -1
       name: Get URL screenshot
-      description: Get the screenshot of the url page
+      description: Gets a screenshot of the URL page.
       script: Rasterize|||rasterize
       type: regular
       iscommand: true
@@ -194,9 +194,9 @@ tasks:
     task:
       id: f4894996-e946-44e3-8405-95efb847e7cb
       version: -1
-      name: Should the system take URL screenshots?
-      description: Checks if the playbook's Rasterize input is equal to "True", to
-        determine whether "screenshots" of the URLs should be created.
+      name: Capture screenshots of the URL?
+      description: Checks if the playbook's Rasterize input is set to "True", which
+        determines whether screenshots of the URLs are created.
       type: condition
       iscommand: false
       brand: ""
@@ -322,9 +322,9 @@ tasks:
     task:
       id: f2ea80eb-2dc7-4939-8962-bbbbf052af6a
       version: -1
-      name: Should the system verify URLs?
-      description: Checks if the playbook's VerifyURL input is equal to "True", to
-        determine whether SSL verification should be done on URLs.
+      name: Verify URLs?
+      description: Checks if the playbook's VerifyURL input is set to "True", to
+        determine whether to perform SSL verification on the URLs.
       type: condition
       iscommand: false
       brand: ""
@@ -447,7 +447,7 @@ tasks:
       id: 42285b15-afd4-4163-8b9d-20adc26e11a9
       version: -1
       name: Get URL report from VirusTotal Private API
-      description: Retrieves a report for a given URL.
+      description: Retrieves a report from VirusTotal API for a specified URL.
       script: '|||vt-private-get-url-report'
       type: regular
       iscommand: true
@@ -543,26 +543,26 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Should the system perform verification on the URLs, for SSL certificates?
+  description: Should the system perform SSL certificate verification on the URLs?
 outputs:
 - contextPath: URL
-  description: The URL's object
+  description: The URL object.
   type: uknown
 - contextPath: URL.Data
-  description: The enriched URL
+  description: The enriched URL.
   type: string
 - contextPath: DBotScore
-  description: The DBotScore
+  description: The DBotScore object.
   type: unknown
 - contextPath: URL.Malicious
-  description: whether url was detected as malicious
+  description: Whether the detected URL was malicious.
   type: unknown
 - contextPath: URL.Vendor
-  description: name of vendor who labeled as malicious
+  description: Vendor that labeled the URL as malicious.
   type: string
 - contextPath: URL.Description
-  description: additional info on the url
+  description: Additional information for the URL.
   type: string
-releaseNotes: "Added a new playbook for URL enrichment. The new playbook includes multiple fixes and improvements to performance, indicator uniqueness and stability. Overall playbook simplification. Removed reputation commands from playbook."
+releaseNotes: "Updated names and descriptions."
 tests:
   - url_enrichment_-_generic_test
