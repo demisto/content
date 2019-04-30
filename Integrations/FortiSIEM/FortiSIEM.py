@@ -15,8 +15,8 @@ PASSWORD = demisto.params()['credentials']['password']
 AUTH = ('super/' + USERNAME, PASSWORD)
 VERIFY_SSL = not demisto.params().get('unsecure', False)
 HOST = demisto.params()['host']
-URL = HOST + "/phoenix/rest/query/"
-restAddress = HOST + "/phoenix/rest/h5/report"
+QUERY_URL = HOST + "/phoenix/rest/query/"
+REST_ADDRESS = HOST + "/phoenix/rest/h5"
 
 EXTENDED_KEYS = {}
 
@@ -32,7 +32,7 @@ def load_extended_keys():
 
     if not EXTENDED_KEYS:
         session = login()
-        url = HOST + '/phoenix/rest/h5/eventAttributeType/all'
+        url = REST_ADDRESS + '/eventAttributeType/all'
         response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
         EXTENDED_KEYS = dict((attr['attributeId'], attr['displayName']) for attr in response.json())
 
@@ -71,8 +71,11 @@ def validateSuccessfulResponse(resp, error_text):
 @logger
 def login():
     session = requests.session()
+    login_url = HOST + '/phoenix/login-html.jsf'
 
-    response = session.get(HOST + '/phoenix/login-html.jsf', verify=VERIFY_SSL)
+    response = session.get(login_url, verify=VERIFY_SSL)
+
+    # get the VIEW_STATE from the xml returned in the UI login page.
     p = re.compile('(value=".{1046}==")')
     viewState = p.findall(response.text.encode('utf-8'))
     VIEW_STATE = viewState[0][len('value="'):][:-1]
@@ -93,7 +96,7 @@ def login():
         'javax.faces.ViewState': VIEW_STATE
     }
 
-    response = session.post(HOST + '/phoenix/login-html.jsf', headers=headers, data=data, verify=VERIFY_SSL)
+    response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)
     return session
 
 
@@ -135,8 +138,7 @@ def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
         queryData = jsonRes[0]['right']
     except (ValueError, KeyError):
         return_error("Got wrong response format when triggering events report. "
-                     "Expected a json array but got " + response.text)
-        sys.exit(0)
+                     "Expected a json array but got:\n" + response.text)
 
     return getEventsByQuery(session, queryData, max_results, extended_data, max_wait_time,
                             "FortiSIEM events for Incident " + incident_id, incident_id=incident_id)
@@ -149,17 +151,19 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         'Content-Type': 'application/json'
     }
 
-    response = session.post(restAddress + '/run', headers=headers, data=json.dumps(queryData), verify=VERIFY_SSL)
+    response = session.post(REST_ADDRESS + '/report/run', headers=headers, data=json.dumps(queryData), verify=VERIFY_SSL)
     validateSuccessfulResponse(response, "running report")
 
     data = response.json()
     data["report"] = queryData
     data = json.dumps(data)
 
-    # pole until report progress reaches 100
-    response = session.post(restAddress + '/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+    # poll until report progress reaches 100
+    response = session.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+
+    # response contain the percentage of the report loading
     while response.text != "100" and max_wait_time > 0:
-        response = session.post(restAddress + '/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+        response = session.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
         max_wait_time = int(max_wait_time) - 1
         time.sleep(1)
 
@@ -169,7 +173,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         'allData': extended_data,
     }
 
-    response = session.post(restAddress + '/resultByReport', params=params, headers=headers, data=data,
+    response = session.post(REST_ADDRESS + '/report/resultByReport', params=params, headers=headers, data=data,
                             verify=VERIFY_SSL)
 
     try:
@@ -177,8 +181,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         eventKeys = res["headerData"]["columnNames"]
     except (ValueError, KeyError):
         return_error("Got wrong response format when getting report results. "
-                     "Expected a json object but got " + response.text)
-        sys.exit(0)
+                     "Expected a json object but got:\n" + response.text)
 
     # reformat results
     eventData = []
@@ -217,38 +220,39 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
 
 
 @logger
-def GetEventQuery(inXml):
-    Urlfirst = URL + "eventQuery"
+def GetEventQuery():
+    in_xml = create_query_xml("all", interval='1')
+    url = QUERY_URL + "eventQuery"
     headers = {'Content-Type': 'text/xml'}
-    resp = requests.request('POST', Urlfirst, headers=headers, data=inXml, verify=VERIFY_SSL, auth=AUTH)
-    queryId = resp.text
+    resp = requests.request('POST', url, headers=headers, data=inXml, verify=VERIFY_SSL, auth=AUTH)
     validateSuccessfulResponse(resp, "fetching event query")
+    queryId = resp.text
     if 'error code="255"' in queryId:
-        return_error("Got error code 255 getting event query. Make sure the query has valid syntax")
-        sys.exit(0)
+        return_error("Got error code 255 while getting event query. Make sure the query has valid syntax")
+
     return queryId
 
 
 @logger
 def GetIncidentsByOrg(queryId):
     # The request will poll until the server completes the query.
-    UrlSecond = URL + "progress/" + queryId
-    resp = requests.request('GET', UrlSecond, verify=VERIFY_SSL, auth=AUTH)
+    url = QUERY_URL + "progress/" + queryId
+    resp = requests.request('GET', url, verify=VERIFY_SSL, auth=AUTH)
 
     while resp.text != '100':
-        resp = requests.request('GET', UrlSecond, verify=VERIFY_SSL, auth=AUTH)
+        resp = requests.request('GET', url, verify=VERIFY_SSL, auth=AUTH)
 
     outXML = []
     if resp.text == '100':
-        UrlFinal = URL + 'events/' + queryId + '/0/1000'
-        resp = requests.request('GET', UrlFinal, verify=VERIFY_SSL, auth=AUTH)
+        url = QUERY_URL + 'events/' + queryId + '/0/1000'
+        resp = requests.request('GET', url, verify=VERIFY_SSL, auth=AUTH)
         content = resp.text
         if content != '':
             outXML.append(content)
 
         p = re.compile(r'totalCount="\d+"')
         mlist = p.findall(content)
-        if mlist[0] != '':
+        if mlist and mlist[0] != '':
             mm = mlist[0].replace('"', '')
             m = mm.split("=")[-1]
             num = 0
@@ -258,8 +262,8 @@ def GetIncidentsByOrg(queryId):
                     num += 1
             if num > 0:
                 for i in range(num):
-                    UrlFinal = URL + 'events/' + queryId + '/' + str(i * 1000 + 1) + '/1000'
-                    resp = requests.request('GET', UrlFinal, verify=VERIFY_SSL, auth=AUTH)
+                    url = QUERY_URL + 'events/' + queryId + '/' + str(i * 1000 + 1) + '/1000'
+                    resp = requests.request('GET', url, verify=VERIFY_SSL, auth=AUTH)
                     content = resp.text
                     if content != '':
                         outXML.append(content)
@@ -351,7 +355,7 @@ def dumpXML(xmlList, phCustId):
 def buildQueryString(args):
     res_list = []
     for key in args:
-        if key.find("IpAddr") == -1:
+        if IpAddr not in key:
             res_list.append('{} = "{}"'.format(key, args[key]))
         else:
             res_list.append("{} = {}".format(key, args[key]))
@@ -432,7 +436,7 @@ def get_cmdb_devices_command():
     return_outputs(
         tableToMarkdown("Devices", list_of_devices),
         {'FortiSIEM.CmdbDevices': list_of_devices},
-        list_of_devices
+        raw_response
     )
 
 
@@ -491,20 +495,20 @@ def get_lists_command():
             'DisplayName': r['displayName'],
             'NatualID': r['naturalId'],
             'ID': r['id'],
-            'ValueType': r['valueType'],
+            'ResourceType': r['groupType']['displayName'],
             'Children': [c['displayName'] for c in r['children']],
         })
 
     return_outputs(
         tableToMarkdown('Lists:', resources, removeNull=True),
-        {'FortiSIEM.ResourceList': resources},
+        {'FortiSIEM.ResourceList(val.ID && val.ID == obj.ID)': resources},
         raw_response=raw_resources)
 
 
 @logger
 def get_lists():
     session = login()
-    url = HOST + '/phoenix/rest/h5/group/resource'
+    url = REST_ADDRESS + '/group/resource'
     response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
 
     return response.json()
@@ -534,11 +538,10 @@ def add_item_to_resource_list_command():
 @logger
 def add_item_to_resource_list(resource_type, group_id, object_info):
     session = login()
-    url = '{}/phoenix/rest/h5/{}/save'.format(HOST, resource_type)
+    url = '{}/{}/save'.format(REST_ADDRESS, resource_type)
     object_info['groupId'] = group_id
     object_info['active'] = True
     object_info['sysDefined'] = False
-    demisto.info('\n\n{}\n\n'.format(object_info))
 
     response = session.post(url, data=json.dumps(object_info), verify=VERIFY_SSL, auth=AUTH)
     response = response.json()
@@ -562,7 +565,7 @@ def remove_item_from_resource_list_command():
 @logger
 def remove_item_from_resource_list(resource_type, deleted_ids):
     session = login()
-    url = '{}/phoenix/rest/h5/{}/del'.format(HOST, resource_type)
+    url = '{}/{}/del'.format(REST_ADDRESS, resource_type)
 
     response = session.delete(url, params={'ids': json.dumps(deleted_ids)}, verify=VERIFY_SSL, auth=AUTH)
 
@@ -594,7 +597,7 @@ def get_resource_list_command():
 @logger
 def get_resource_list(resource_type, group_id):
     session = login()
-    url = '{}/phoenix/rest/h5/{}/list'.format(HOST, resource_type)
+    url = '{}/{}/list'.format(REST_ADDRESS, resource_type)
 
     params = {
         'groupId': group_id,
@@ -611,7 +614,7 @@ def get_resource_list(resource_type, group_id):
     return response
 
 
-def prepare_args(d):
+def convert_keys_to_snake_case(d):
     d = dict((k.replace("-", "_"), v) for k, v in d.items())
     return d
 
@@ -628,8 +631,7 @@ def test():
 
 
 def fetch_incidents():
-    in_xml = create_query_xml("all", interval='1')
-    query_id = GetEventQuery(in_xml)
+    query_id = GetEventQuery()
     res = GetIncidentsByOrg(query_id)
     known_ids = demisto.getLastRun().get('ids', None)
     if known_ids is None or not known_ids:
@@ -652,7 +654,6 @@ def fetch_incidents():
 
 
 def main():
-    global EXTENDED_KEYS
     try:
         handle_proxy()
         load_extended_keys()
@@ -675,7 +676,7 @@ def main():
                               args['reportWindowUnit'])
 
         elif demisto.command() == 'fortisiem-get-events-by-query':
-            args = prepare_args(demisto.args())
+            args = convert_keys_to_snake_case(demisto.args())
             get_events_by_query(**args)
 
         elif demisto.command() == 'fortisiem-get-cmdb-devices':
