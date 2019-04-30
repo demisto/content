@@ -1,7 +1,7 @@
-id: Phishing Investigation - Generic
+id: Phishing Investigation - Generic v2
 version: -1
 fromversion: 4.1.0
-name: Phishing Investigation - Generic
+name: Phishing Investigation - Generic v2
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -32,6 +32,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: c4e87e26-a8fc-473a-8f84-e63335a552e8
@@ -67,6 +68,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: c3cd10bc-d79e-4471-8b28-82613ac05418
@@ -93,6 +95,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 89d7dd49-06a3-4397-8b72-f4428bf24805
@@ -119,6 +122,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 104d08e2-78ad-496f-81f6-f3ebe77f3b5a
@@ -154,6 +158,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: f90db644-38c8-4d31-840c-4b5b16069a33
@@ -179,6 +184,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 1a99d7e1-2c84-4d57-80be-0ec42482d952
@@ -194,7 +200,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "45"
     scriptarguments:
       append:
         simple: "true"
@@ -215,6 +221,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 0f0f8a66-8f89-43fe-8e23-33d1d476c175
@@ -261,32 +268,7 @@ tasks:
       }
     note: false
     timertriggers: []
-  "14":
-    id: "14"
-    taskid: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
-    type: playbook
-    task:
-      id: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
-      version: -1
-      name: Email Address Enrichment - Generic
-      description: ""
-      playbookName: Email Address Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: bd6e25bf-75cc-41b0-8f27-12b96b0f5ca4
@@ -325,6 +307,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: ac0d8fe7-8ec0-49b8-8947-75d3bb87437c
@@ -372,6 +355,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: 3616a344-7c58-4ac0-86fe-bad84f58c2e2
@@ -417,6 +401,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: a4de0c33-52a7-42d9-8e4d-1a753a62d20e
@@ -424,7 +409,7 @@ tasks:
     task:
       id: a4de0c33-52a7-42d9-8e4d-1a753a62d20e
       version: -1
-      name: Engage with User
+      name: Engage With User
       description: ""
       type: title
       iscommand: false
@@ -442,6 +427,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
     taskid: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
@@ -468,32 +454,7 @@ tasks:
       }
     note: false
     timertriggers: []
-  "25":
-    id: "25"
-    taskid: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
-    type: playbook
-    task:
-      id: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
-      version: -1
-      name: Entity Enrichment - Generic
-      description: ""
-      playbookName: Entity Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
     taskid: 87a23c95-84b5-4343-8a01-d70c6f97702a
@@ -521,6 +482,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
     taskid: 1b402b79-641b-4ac1-8124-80e939ae3bd4
@@ -546,6 +508,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
     taskid: 2f89f21c-0088-460a-81b2-b0c3f021b89c
@@ -572,6 +535,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
     taskid: 8f9afe19-c4b2-4f86-8544-4fee8d8455d1
@@ -594,6 +558,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "30":
     id: "30"
     taskid: 50789baf-1476-467a-8386-0be463a4a460
@@ -619,6 +584,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "31":
     id: "31"
     taskid: 7d784d78-4fc1-4465-8a32-4c13aff74e60
@@ -644,6 +610,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "33":
     id: "33"
     taskid: 6f2e21d2-2a93-433e-81f5-3c9abd359e95
@@ -671,6 +638,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "34":
     id: "34"
     taskid: 536ca1cd-adbe-4db2-89c1-318be024fc3e
@@ -699,6 +667,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
     taskid: cd577642-8baf-4aba-87d9-29f0366aa173
@@ -714,7 +683,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "44"
     separatecontext: true
     view: |-
       {
@@ -725,6 +694,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
     taskid: eebcf7b0-41c8-4185-8fad-977de983ab65
@@ -771,6 +741,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "37":
     id: "37"
     taskid: f6b138df-f341-4cc0-8b9a-7f4ba4a06c71
@@ -817,6 +788,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "38":
     id: "38"
     taskid: cfb76a8d-e926-41a3-8036-6d4d54abf96d
@@ -843,6 +815,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "39":
     id: "39"
     taskid: 5ff2d707-a036-4db0-8851-ed3ec61802db
@@ -871,6 +844,7 @@ tasks:
     timertriggers:
     - fieldname: detectionsla
       action: start
+    ignoreworker: false
   "40":
     id: "40"
     taskid: 83e23120-b009-4565-8ab7-880b247aee16
@@ -898,6 +872,7 @@ tasks:
     timertriggers:
     - fieldname: detectionsla
       action: stop
+    ignoreworker: false
   "41":
     id: "41"
     taskid: 88612884-d640-4dd1-85f4-0daa684ecf99
@@ -925,6 +900,7 @@ tasks:
     timertriggers:
     - fieldname: detectionsla
       action: stop
+    ignoreworker: false
   "42":
     id: "42"
     taskid: b7d4e2cb-4d75-4c0d-8d87-732af590173e
@@ -954,6 +930,7 @@ tasks:
     timertriggers:
     - fieldname: remediationsla
       action: start
+    ignoreworker: false
   "43":
     id: "43"
     taskid: f863f789-c46a-44e2-8d8b-02174df5010b
@@ -981,6 +958,61 @@ tasks:
     timertriggers:
     - fieldname: remediationsla
       action: stop
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: d44e387b-ce57-4156-81ce-05133928e91a
+    type: playbook
+    task:
+      id: d44e387b-ce57-4156-81ce-05133928e91a
+      version: -1
+      name: Entity Enrichment - Generic v2
+      description: ""
+      playbookName: Entity Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: c8a03d03-5ffc-43db-88c0-c4d0e562e2c2
+    type: playbook
+    task:
+      id: c8a03d03-5ffc-43db-88c0-c4d0e562e2c2
+      version: -1
+      name: Email Address Enrichment - Generic v2
+      description: ""
+      playbookName: Email Address Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1014,7 +1046,7 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
-releaseNotes: "-"
+releaseNotes: "A new Phishing Investigation playbook that now utilizes a customized Entity Enrichment playbook to avoid enrichment of irrelevant entities."
 tests:
-- Phishing test - attachment
-- Phishing test - Inline
+- Phishing v2 Test - Attachment
+- Phishing v2 Test - Inline
