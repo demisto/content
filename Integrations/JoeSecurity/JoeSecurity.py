@@ -16,12 +16,13 @@ USE_SSL = not demisto.params().get('insecure', False)
 MAX_POLLS = int(demisto.params().get('maxpolls', 300))
 USE_PROXY = demisto.params().get('proxy', True)
 
-nothing_to_analyze_message = 'We found nothing to analyze in your uploaded email (possibly all elements where whitelisted, check Input filtering in your Settings).'
+nothing_to_analyze_message = 'We found nothing to analyze in your uploaded email' \
+                             '(possibly all elements where whitelisted, check Input filtering in your Settings).'
 nothing_to_analyze_output = {
-                'Type' : entryTypes['note'],
-                'ContentsFormat' : formats['markdown'],
-                'Contents' : 'We found nothing to analyze in your uploaded email',
-                'HumanReadable' : 'We found nothing to analyze in your uploaded email'
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': 'We found nothing to analyze in your uploaded email',
+                'HumanReadable': 'We found nothing to analyze in your uploaded email'
                 }
 
 if not USE_PROXY:
@@ -31,6 +32,8 @@ if not USE_PROXY:
     del os.environ['https_proxy']
 
 ''' HELPER FUNCTIONS '''
+
+
 def http_post(url_suffix, data=None, files=None, parse_json=True):
     data = {} if data is None else data
 
@@ -38,11 +41,7 @@ def http_post(url_suffix, data=None, files=None, parse_json=True):
         data, files, ))
     data.setdefault('apikey', demisto.params()['api_key'])
 
-    res = requests.post(BASE_URL + url_suffix,
-        verify=USE_SSL,
-        data=data,
-        files=files
-    )
+    res = requests.post(BASE_URL + url_suffix, verify=USE_SSL, data=data, files=files)
 
     if res.status_code == 403:
         raise Exception('API Key is incorrect')
@@ -71,18 +70,18 @@ def analysis_to_entry(title, info):
     dbot_scores = []
     for analysis in info:
         analysis_info = {
-            'ID' : analysis['webid'], # for detonate generic polling
-            'WebID' : analysis['webid'],
-            'SampleName' : analysis['filename'],
-            'Status' : analysis['status'],
-            'Comments' : analysis['comments'],
-            'Time' : analysis['time'],
-            'MD5' : analysis['md5'],
-            'SHA1' : analysis['sha1'],
-            'SHA256' : analysis['sha256'],
-            'Systems' : [run['system'] for run in analysis['runs']],
-            'Result' : ', '.join([run['detection'] for run in analysis['runs']]),
-            'Errors' : [run['error'] for run in analysis['runs']],
+            'ID': analysis['webid'], # for detonate generic polling
+            'WebID': analysis['webid'],
+            'SampleName': analysis['filename'],
+            'Status': analysis['status'],
+            'Comments': analysis['comments'],
+            'Time': analysis['time'],
+            'MD5': analysis['md5'],
+            'SHA1': analysis['sha1'],
+            'SHA256': analysis['sha256'],
+            'Systems': [run['system'] for run in analysis['runs']],
+            'Result': ', '.join([run['detection'] for run in analysis['runs']]),
+            'Errors': [run['error'] for run in analysis['runs']],
         }
 
         analysis_context = dict(analysis_info)
@@ -97,9 +96,9 @@ def analysis_to_entry(title, info):
         if 'malicious' in analysis_info['Result']:
             dbot_score = 3
             malicious = {
-                'Vendor' : 'JoeSecurity',
-                'Detections' : ', '.join(set([run['detection'] for run in analysis['runs']])),
-                'SHA1' : analysis_info['SHA1'],
+                'Vendor': 'JoeSecurity',
+                'Detections': ', '.join(set([run['detection'] for run in analysis['runs']])),
+                'SHA1': analysis_info['SHA1'],
             }
         elif 'suspicious' in analysis_info['Result']:
             dbot_score = 2
@@ -107,11 +106,11 @@ def analysis_to_entry(title, info):
             dbot_score = 1
 
         dbot_scores.append({
-            'Vendor' : 'JoeSecurity',
-            'Indicator' : analysis_info['MD5'],
-            'Type' : 'url' if 'md5' is None else 'file',
-            'Score' : dbot_score,
-            'Malicious' : malicious,
+            'Vendor': 'JoeSecurity',
+            'Indicator': analysis_info['MD5'],
+            'Type': 'file' if analysis_info['MD5'] else 'url',
+            'Score': dbot_score,
+            'Malicious': malicious,
         })
         context.append(analysis_context)
         table.append(analysis_table)
@@ -123,7 +122,7 @@ def analysis_to_entry(title, info):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, table, removeNull=True),
         'EntryContext': {'Joe.Analysis(val.ID && val.ID == obj.ID)' : createContext(context, removeNull=True),
-            'DBotScore' : createContext(dbot_scores, removeNull=True),
+            'DBotScore': createContext(dbot_scores, removeNull=True),
         }
     }
 
@@ -131,10 +130,10 @@ def analysis_to_entry(title, info):
 
 
 def poll_webid(web_id):
-    result = {'data' : {'status' : 'pending'}}
+    result = {'data': {'status': 'pending'}}
     max_polls = MAX_POLLS
 
-    while (max_polls >=0) and result['data']['status'] != 'finished':
+    while (max_polls >= 0) and result['data']['status'] != 'finished':
         if result['data']['status'] != 'pending':
             LOG('error while polling: result is %s' % (result, ))
         result = info_request(web_id)
@@ -149,6 +148,8 @@ def poll_webid(web_id):
 
 
 ''' FUNCTIONS '''
+
+
 def is_online():
     cmd_url = 'v2/server/online'
     res = http_post(cmd_url)
@@ -203,15 +204,14 @@ def analyse_url():
 def analyse_url_request(url, should_wait, internet_access, comments='', systems=''):
     data = {
         'accept-tac': 1,
-        'url' : url,
-        'internet-access' : 1 if internet_access else 0,
+        'url': url,
+        'internet-access': 1 if internet_access else 0,
     }
     if comments != '':
         data['comments'] = comments
     if systems != '':
         data['systems[]'] = [s.strip() for s in systems.split(',')]
-    res = http_post('v2/analysis/submit',
-        data=data)
+    res = http_post('v2/analysis/submit', data=data)
 
     if 'errors' in res:
         LOG('Error! in command analyse_url: url=%s' % (url, ))
@@ -244,11 +244,9 @@ def analyse_sample():
 
     LOG('analysing sample')
     if len(file_entry) != 0:
-        return [analyse_sample_file_request(f, should_wait, internet_access, comments, systems)
-            for f in file_entry]
+        return [analyse_sample_file_request(f, should_wait, internet_access, comments, systems) for f in file_entry]
     else:
-        return [analyse_sample_url_request(s, should_wait, internet_access, comments, systems)
-            for s in sample_url]
+        return [analyse_sample_url_request(s, should_wait, internet_access, comments, systems) for s in sample_url]
 
 
 def analyse_sample_file_request(file_entry, should_wait, internet_access, comments='', systems=''):
@@ -265,12 +263,10 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
         demisto.getFilePath(file_entry)['name'])
 
     with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
-        res = http_post('v2/analysis/submit',
-            data=data,
-            files={'sample':f})
+        res = http_post('v2/analysis/submit', data=data, files={'sample':f})
 
-    if(res == 'nothing_to_analyze'):
-        return nothing_to_analyze_output;
+    if res == 'nothing_to_analyze':
+        return nothing_to_analyze_output
 
     if 'errors' in res:
         LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
@@ -290,8 +286,8 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
 def analyse_sample_url_request(sample_url, should_wait, internet_access, comments, systems):
     data = {
         'accept-tac': 1,
-        'sample-url' : sample_url,
-        'internet-access' : 1 if internet_access else 0,
+        'sample-url': sample_url,
+        'internet-access': 1 if internet_access else 0,
     }
     if comments != '':
         data['comments'] = comments
@@ -300,7 +296,7 @@ def analyse_sample_url_request(sample_url, should_wait, internet_access, comment
 
     res = http_post('v2/analysis/submit', data=data)
 
-    if(res == 'nothing_to_analyze'):
+    if res == 'nothing_to_analyze':
         return nothing_to_analyze_output
 
     if 'errors' in res:
@@ -331,11 +327,7 @@ def download_sample():
 
 
 def download_request(webid, rsc_type):
-    res = http_post('v2/analysis/download',
-        data={'webid': webid,
-            'type' : rsc_type.lower(),
-        },
-        parse_json=False)
+    res = http_post('v2/analysis/download', data={'webid': webid, 'type' : rsc_type.lower()}, parse_json=False)
 
     info = info_request(webid)
     if rsc_type == 'sample':
