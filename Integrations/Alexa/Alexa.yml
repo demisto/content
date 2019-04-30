@@ -19,9 +19,6 @@ configuration:
   type: 8
 description: Alexa provides website ranking information that can be useful in determining
   if the domain in question has a strong web presence.
-detaileddescription: To use this integration, simply call ```!domain```. !domain accepts
-  "domain" as a parameter to query. Threshold is the point where a domain will be
-  considered unknown versus suspicious.
 display: Alexa Rank Indicator
 name: Alexa Rank Indicator
 script:
