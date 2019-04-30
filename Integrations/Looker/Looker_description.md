@@ -5,7 +5,7 @@
 4. Go to "API3 Keys" and select "Edit Keys"
 5. Click on "New API3 Key"
 
-#### Get a query/look ID:
+#### Get a look ID:
 **Usages:** 
 - "Look name or ID to fetch incidents from" integration parameter
 - Look ID command arguments
@@ -19,3 +19,14 @@
 1. Configure looker without fetching incidents or filling in the parameter.
 2. Run looker-search-queries or looker-search-looks
 3. The ID will be part of the results (among other look details).
+
+#### Get model and view names from an explore's URL:
+1. Navigate to the desired explore.
+2. The URL will be formatted like so: `https://<looker server>/explore/<model>/<view>`
+
+#### Get a field's SQL name (for command arguments):
+1. Navigate to the desired explore.
+2. Click on the desired field.
+3. In the "DATA" tab, Click on "SQL".
+
+You will see the field name in the following format: "object_name.field_name"
