@@ -5,18 +5,9 @@
 	"fromVersion": "4.5.0",
 	"layout": {
 		"id": "GDPR Data Breach",
-		"version": 6,
+		"version": -1,
 		"modified": "2019-04-16T17:03:30.154388Z",
-		"commitMessage": "",
-		"shouldPublish": false,
-		"shouldCommit": false,
-		"shouldPush": false,
 		"name": "",
-		"kind": "edit",
-		"prevKind": "edit",
-		"typeId": "GDPR Data Breach",
-		"prevTypeId": "GDPR Data Breach",
-		"system": false,
 		"sections": [
 			{
 				"id": "",
