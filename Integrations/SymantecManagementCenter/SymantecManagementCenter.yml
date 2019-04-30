@@ -441,8 +441,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Tenant external ID of the tenant associated with this policy. Run
-        the symantec-mc-list-tenants command tp get the tenant external ID.
+      description: UUID of the tenant associated with this policy. Run the symantec-mc-list-tenants
+        command to get the tenant UUID.
       isArray: false
       name: tenant
       required: false
@@ -733,4 +733,5 @@ script:
   type: python
 tests:
 - SymantecMC_TestPlaybook
-releaseNotes: 'Added option to get and modify content to a policy using its name. Additional description fixes.'
+releaseNotes: Added option to get and modify content to a policy using its name. Additional
+  description fixes.
