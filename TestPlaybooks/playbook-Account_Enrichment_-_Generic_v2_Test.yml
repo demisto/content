@@ -71,7 +71,7 @@ tasks:
     task:
       id: 29b267bd-b609-4924-8c70-f0a65057cc5f
       version: -1
-      name: Account Enrichment - Generic_dev
+      name: Account Enrichment - Generic v2
       playbookName: Account Enrichment - Generic v2
       type: playbook
       iscommand: false
