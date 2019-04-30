@@ -42,7 +42,7 @@ def alexa_domain_command():
     dom_ec = {'Name': domain}
     dbot_ec = {
         'Score': dbot_score,
-        'Vendor': 'Alexa',
+        'Vendor': 'Alexa Rank Indicator',
         'Domain': domain,
         'Type': 'domain'
     }
@@ -57,11 +57,11 @@ def alexa_domain_command():
     hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
                  ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
     demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'Contents': xml2json(resp.content),
-                'HumanReadable': hr_string,
-                'EntryContext': ec
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': xml2json(resp.content),
+        'HumanReadable': hr_string,
+        'EntryContext': ec
     })
 
 
