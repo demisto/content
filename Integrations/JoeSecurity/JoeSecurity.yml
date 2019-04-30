@@ -182,7 +182,7 @@ script:
       - 'False'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Submit a url for analysis.
     execution: false
     name: joe-detonate-url
@@ -573,7 +573,7 @@ script:
       - 'False'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Submit a sample for analysis.
     execution: false
     name: joe-detonate-file
