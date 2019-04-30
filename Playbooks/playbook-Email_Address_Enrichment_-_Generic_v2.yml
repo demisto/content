@@ -3,9 +3,9 @@ version: -1
 fromversion: 4.1.0
 name: Email Address Enrichment - Generic v2
 description: |-
-  Enrich email addresses.  Email address enrichment currently involves:
-  - Getting information from Active Directory for internal addresses
-  - Getting domain-squatting reputation for external addresses
+  Enrich email addresses.
+  - Get information from Active Directory for internal addresses
+  - Get the domain-squatting reputation for external addresses
 starttaskid: "0"
 tasks:
   "0":
@@ -84,9 +84,8 @@ tasks:
     task:
       id: db8113cf-a721-49a6-83dd-152e83c7d962
       version: -1
-      name: Are there Email addresses to check?
-      description: Checks if there are any email addresses involved and passed down
-        as arguments to this playbook.
+      name: Are there email addresses to check?
+      description: Determines whether the playbook's input contains at least one email address.
       type: condition
       iscommand: false
       brand: ""
@@ -125,7 +124,7 @@ tasks:
       name: Classify email addresses as internal or external
       description: Adds a NetworkType attribute to all email addresses. The NetworkType
         attribute determines whether the email address is an internal or external
-        email address, according to the domains that were passed down as arguments
+        email address, according to the domains that were passed as arguments
         to this playbook.
       scriptName: IsEmailAddressInternal
       type: regular
@@ -217,8 +216,8 @@ tasks:
     task:
       id: 5499e24d-dd70-4b65-88af-eeca45b06f9f
       version: -1
-      name: Get email addresses' info from Active Directory
-      description: Uses Active Directory to get user information for internal email
+      name: Get email address info from Active Directory
+      description: Uses Active Directory to get user information for internal emails.
         addresses.
       scriptName: ADGetUser
       type: regular
@@ -274,7 +273,7 @@ tasks:
       id: 2d740d11-a326-4913-83f1-8df803c0a3eb
       version: -1
       name: Are there any external email addresses?
-      description: Checks whether there are email addresses with a NetworkType  attribute
+      description: Checks whether there are email addresses with a NetworkType attribute
         value of "External".
       scriptName: Exists
       type: condition
@@ -321,7 +320,7 @@ tasks:
       id: e521733d-b152-4a1f-8050-e7658405a187
       version: -1
       name: Are there any internal email addresses?
-      description: Checks whether there are email addresses with a NetworkType  attribute
+      description: Checks whether there are email addresses with a NetworkType attribute
         value of "Internal".
       scriptName: Exists
       type: condition
@@ -420,7 +419,7 @@ tasks:
       id: 252874b2-867f-4406-8442-cc3999fac864
       version: -1
       name: Is Active Directory enabled?
-      description: Check if there's an active instance of Active Directory
+      description: Checks if there's an active instance of the Active Directory integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -473,7 +472,7 @@ tasks:
       id: 1f1a6cd8-5aaa-4b0a-8147-e91dc6beec49
       version: -1
       name: Is there a domain list input?
-      description: Checks if there are domains to check for domain-squatting.
+      description: Checks if there is at least one domain to check for domain-squatting.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -554,7 +553,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A list of internal domains, separated by commas. The list will be used
+  description: A CSV list of internal domains. The list will be used
     to determine whether an email address is internal or external.
 - key: Email
   value:
@@ -572,55 +571,55 @@ inputs:
   description: The domains associated with the incident.
 outputs:
 - contextPath: Account
-  description: The Account's object
+  description: The Account object.
   type: unknown
 - contextPath: Account.Email.Address
-  description: The Email account full address
+  description: The email account full address.
   type: string
 - contextPath: Account.Groups
-  description: The groups the Account is part of
+  description: The groups the account belongs to.
   type: string
 - contextPath: Account.Email.Domain
-  description: The Email account domain
+  description: The email account domain.
   type: string
 - contextPath: Account.Email.NetworkType
-  description: The Email account NetworkType (could be Internal/External)
+  description: The email account NetworkType (Internal/External).
   type: string
 - contextPath: Account.Type
-  description: Type of the Account entity
+  description: Account entity type.
   type: string
 - contextPath: Account.Email.Username
-  description: The Email account username
+  description: The email account username.
   type: string
 - contextPath: Account.ID
-  description: The unique Account DN (Distinguished Name)
+  description: The unique account DN (Distinguished Name).
   type: string
 - contextPath: Account.DisplayName
-  description: The Account display name
+  description: The account display name.
   type: string
 - contextPath: Account.Manager
-  description: The Account's manager
+  description: The account's manager.
   type: string
 - contextPath: Account.Email.Distance.Domain
-  description: The compared domain
+  description: The compared domain.
   type: string
 - contextPath: Account.Email.Distance.Value
-  description: 'The distance between the email domain and the compared domain '
+  description: 'The distance between the email domain and the compared domain. '
   type: number
 - contextPath: DBotScore.Indicator
-  description: The Indicator
+  description: The indicator.
   type: string
 - contextPath: DBotScore
-  description: The DBotScore's object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Type
-  description: The Indicator Type
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The DBot score vendor
+  description: The DBot score vendor.
   type: string
 - contextPath: DBotScore.Score
-  description: The DBot score
+  description: The DBot score.
   type: number
 releaseNotes: "Added a new playbook for email address enrichment. Multiple fixes to enrichment uniqueness and to performance, fixed a bug where domains were not sent as inputs to the playbook, and removed reputation tasks."
 tests:
