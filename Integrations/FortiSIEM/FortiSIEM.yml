@@ -244,6 +244,7 @@ script:
       description: CSV list of device IPs.
     - name: limit
       description: Maximum number of results to return.
+      defaultValue: "50"
     outputs:
     - contextPath: FortiSIEM.CmdbDevice
       description: CMDB devices.
@@ -256,6 +257,7 @@ script:
       description: The query to get events.
     - name: report-window
       description: Interval time of the search.
+      defaultValue: "60"
     - name: interval-type
       auto: PREDEFINED
       predefined:
