@@ -1137,10 +1137,14 @@ def run_instances(args):
     if BlockDeviceMappings:
         kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})
 
-    if args.get('iamInstanceProfileArn') and args.get('iamInstanceProfileName') is not None:
+    if args.get('iamInstanceProfileArn') is not None:
         kwargs.update({
             'IamInstanceProfile': {
-                'Arn': args.get('iamInstanceProfileArn'),
+                'Arn': args.get('iamInstanceProfileArn')}
+        })
+    if args.get('iamInstanceProfileName') is not None:
+        kwargs.update({
+            'IamInstanceProfile': {
                 'Name': args.get('iamInstanceProfileName')}
         })
     if args.get('launchTemplateId') is not None:
