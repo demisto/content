@@ -1,6 +1,5 @@
 Create a Service Account
-Follow the instructions [here](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) in the "Creating a Service Account" section.
-Grant Permissions
-In order for the Service Account to carry out certain Google cloud API commands, it is required that you grant the Service Account roles with the necessary permissions. The nex screens after creating the srvice account will be Service account permissions you will need to give you account the role of "Compute Engine -> Compute Admin".
-Setup Integration Instance
-All the integration parameters to set up an instance are in the Service Account Credentials File that was downloaded to your machine in step 1 when you created a Service Account. Copy each value to its matching integration parameter without its surrounding quotes.
+1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure in the Creating a Service Account section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file when configuring an instance of the integration.
+2. Grant the Compute Admin permission to the Service Account to enable the Service Account to perform certain Google Cloud API commands.
+3. In Demisto, configure an instance of the Google Cloud Compute integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
+
