@@ -62,11 +62,13 @@ def parse_resource_type(resource_type):
     return type_to_url_path.get(resource_type, resource_type)
 
 
+@logger
 def validateSuccessfulResponse(resp, error_text):
     if resp.status_code != 200:
         return_error('Got response status {} when {}'.format(resp.status_code, error_text))
 
 
+@logger
 def login():
     session = requests.session()
 
@@ -104,6 +106,7 @@ def clear_incident_command():
     return_outputs("Incident cleared successfully.", {}, raw_response)
 
 
+@logger
 def clear_incident(incident_id, reason):
     session = login()
     headers = {
@@ -121,6 +124,7 @@ def clear_incident(incident_id, reason):
     return response.text
 
 
+@logger
 def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
     session = login()
     response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
@@ -129,7 +133,7 @@ def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
     try:
         jsonRes = response.json()
         queryData = jsonRes[0]['right']
-    except ValueError:
+    except (ValueError, KeyError):
         return_error("Got wrong response format when triggering events report. "
                      "Expected a json array but got " + response.text)
         sys.exit(0)
@@ -138,6 +142,7 @@ def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
                             "FortiSIEM events for Incident " + incident_id, incident_id=incident_id)
 
 
+@logger
 def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_time, tableTitle, incident_id=None):
     headers = {
         'Accept': 'application/json, text/plain, */*',
@@ -170,7 +175,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
     try:
         res = response.json()
         eventKeys = res["headerData"]["columnNames"]
-    except ValueError:
+    except (ValueError, KeyError):
         return_error("Got wrong response format when getting report results. "
                      "Expected a json object but got " + response.text)
         sys.exit(0)
@@ -211,6 +216,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
     })
 
 
+@logger
 def GetEventQuery(inXml):
     Urlfirst = URL + "eventQuery"
     headers = {'Content-Type': 'text/xml'}
@@ -223,6 +229,7 @@ def GetEventQuery(inXml):
     return queryId
 
 
+@logger
 def GetIncidentsByOrg(queryId):
     # The request will poll until the server completes the query.
     UrlSecond = URL + "progress/" + queryId
@@ -263,6 +270,7 @@ def GetIncidentsByOrg(queryId):
     return param
 
 
+@logger
 def create_query_xml(include_value, interval="", single_evt_value="phEventCategory=1", interval_type="Minute",
                      attr_list=None, limit="All"):
     doc = Document()
@@ -320,6 +328,7 @@ def create_query_xml(include_value, interval="", single_evt_value="phEventCatego
     return doc.toxml()
 
 
+@logger
 def dumpXML(xmlList, phCustId):
     param = []
     for xml in xmlList:
@@ -338,6 +347,7 @@ def dumpXML(xmlList, phCustId):
     return param
 
 
+@logger
 def buildQueryString(args):
     res_list = []
     for key in args:
@@ -348,6 +358,7 @@ def buildQueryString(args):
     return " AND ".join(res_list)
 
 
+@logger
 def getEventsByFilter(maxResults, extendedData, maxWaitTime, reportWindow, reportWindowUnit):
     session = login()
 
@@ -425,6 +436,7 @@ def get_cmdb_devices_command():
     )
 
 
+@logger
 def get_cmdb_devices(device_ip=None, limit=100):
     cmdb_url = HOST + "/phoenix/rest/cmdbDeviceInfo/devices"
 
@@ -444,7 +456,8 @@ def get_cmdb_devices(device_ip=None, limit=100):
     return list_of_devices[:limit]
 
 
-def get_events_by_query(query, report_window="60", report_type="Minute", limit="20", extended_data='false',
+@logger
+def get_events_by_query(query, report_window="60", interval_type="Minute", limit="20", extended_data='false',
                         max_wait_time=60):
     session = login()
 
@@ -452,7 +465,7 @@ def get_events_by_query(query, report_window="60", report_type="Minute", limit="
         "isReportService": True,
         "selectClause": "phRecvTime,reptDevIpAddr,eventType,eventName,rawEventMsg,destIpAddr",
         "reportWindow": int(report_window),
-        "reportWindowUnit": report_type,
+        "reportWindowUnit": interval_type,
         "timeRangeRelative": True,
         "eventFilters": [{
             "groupBy": "",
@@ -488,6 +501,7 @@ def get_lists_command():
         raw_response=raw_resources)
 
 
+@logger
 def get_lists():
     session = login()
     url = HOST + '/phoenix/rest/h5/group/resource'
@@ -517,6 +531,7 @@ def add_item_to_resource_list_command():
     return_outputs(tableToMarkdown('Resource was added:', raw_response, removeNull=True), outputs, raw_response)
 
 
+@logger
 def add_item_to_resource_list(resource_type, group_id, object_info):
     session = login()
     url = '{}/phoenix/rest/h5/{}/save'.format(HOST, resource_type)
@@ -544,6 +559,7 @@ def remove_item_from_resource_list_command():
     return_outputs(raw_response, {}, raw_response=raw_response)
 
 
+@logger
 def remove_item_from_resource_list(resource_type, deleted_ids):
     session = login()
     url = '{}/phoenix/rest/h5/{}/del'.format(HOST, resource_type)
@@ -575,6 +591,7 @@ def get_resource_list_command():
                    raw_response)
 
 
+@logger
 def get_resource_list(resource_type, group_id):
     session = login()
     url = '{}/phoenix/rest/h5/{}/list'.format(HOST, resource_type)
