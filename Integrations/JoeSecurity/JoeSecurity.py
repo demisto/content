@@ -19,11 +19,11 @@ USE_PROXY = demisto.params().get('proxy', True)
 nothing_to_analyze_message = 'We found nothing to analyze in your uploaded email' \
                              '(possibly all elements where whitelisted, check Input filtering in your Settings).'
 nothing_to_analyze_output = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'Contents': 'We found nothing to analyze in your uploaded email',
-                'HumanReadable': 'We found nothing to analyze in your uploaded email'
-                }
+    'Type': entryTypes['note'],
+    'ContentsFormat': formats['markdown'],
+    'Contents': 'We found nothing to analyze in your uploaded email',
+    'HumanReadable': 'We found nothing to analyze in your uploaded email'
+}
 
 if not USE_PROXY:
     del os.environ['HTTP_PROXY']
@@ -174,13 +174,13 @@ def analysis_info():
 
 def info_request(web_id):
     cmd_url = 'v2/analysis/info'
-    return http_post(cmd_url, data={'webid' : web_id})
+    return http_post(cmd_url, data={'webid': web_id})
 
 
 def search():
     cmd_url = 'v2/analysis/search'
     query = demisto.args().get('query')
-    res = http_post(cmd_url, data={'q':query})
+    res = http_post(cmd_url, data={'q': query})
     if len(res['data']) == 0:
         return 'No Result was found.'
 
@@ -261,7 +261,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
     shutil.copy(demisto.getFilePath(file_entry)['path'], demisto.getFilePath(file_entry)['name'])
 
     with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
-        res = http_post('v2/analysis/submit', data=data, files={'sample':f})
+        res = http_post('v2/analysis/submit', data=data, files={'sample': f})
 
     if res == 'nothing_to_analyze':
         return nothing_to_analyze_output
@@ -364,7 +364,7 @@ try:
     elif demisto.command() == 'joe-search':
         demisto.results(search())
 
-except Exception, e:
+except Exception as e:
     if demisto.params().get('verbose'):
         LOG(e.message)
         if demisto.command() != 'test-module':
@@ -373,5 +373,5 @@ except Exception, e:
     demisto.results({
         'Type': entryTypes['error'],
         'ContentsFormat': formats['text'],
-        'Contents': 'error has occured: %s' % (e.message, ),
+        'Contents': 'error has occurred: %s' % (e.message, ),
     })
