@@ -740,7 +740,7 @@ script:
 
     def sandbox_report_command():
         md5 = demisto.getArg('md5')
-        details = demisto.getArg('details', 'full')
+        details = demisto.getArg('details')
         res = sandbox_report(md5, details)
 
         report = 'Full Details' if details == 'full' else 'Summary'
