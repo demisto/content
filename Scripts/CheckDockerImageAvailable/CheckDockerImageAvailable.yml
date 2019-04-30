@@ -29,7 +29,7 @@ args:
   defaultValue: "no"
 scripttarget: 0
 runonce: false
-releaseNotes: Script to check if a docker image is accessible to for 'pull' command 
+releaseNotes: Improve script to work with older demisto/python images 
 tests:
   - CheckDockerImageAvailableTest
 runas: DBotWeakRole
