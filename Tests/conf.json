@@ -1146,6 +1146,28 @@
             ]
         },
         {
+            "playbookID": "Phishing v2 Test - Attachment",
+            "timeout": 600,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
+            "playbookID": "Phishing v2 Test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
         },
@@ -1171,6 +1193,9 @@
         {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
+        },
+        {
+            "playbookID": "Email Address Enrichment - Generic v2 - Test"
         },
         {
             "integrations": "Phishme Intelligence",
@@ -1200,6 +1225,14 @@
             "playbookID": "Kafka Test"
         },
         {
+            "playbookID": "File Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_private_api_general",
+            "integrations": [
+                "VirusTotal - Private API",
+                "Cylance Protect v2"
+            ]
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500
@@ -1226,15 +1259,17 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
+            "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "File Enrichment - Generic Test"
+            "playbookID": "Account Enrichment - Generic v2 - Test",
+            "integrations": "activedir"
         },
-        {
+       {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
@@ -1264,91 +1299,6 @@
             "playbookID": "Domain Enrichment - Generic v2 - Test"
         },
         {
-            "integrations": "AWS - S3v2",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
-        },
-        {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
-        },
-        {
-            "integrations": "AWS - CloudTrail",
-            "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
-        },
-        {
-            "playbookID": "5dc848e5-a649-4394-8300-386770d39d75"
-        },
-        {
-            "integrations": "carbonblackprotection",
-            "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
-        },
-        {
-            "integrations": "carbonblack",
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
-        },
-        {
-            "integrations": [
-                "AWS - EC2",
-                "AWS - EC2_copy"
-            ],
-            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
-        },
-        {
-            "integrations": "DomainTools",
-            "playbookID": "DomainTools-Test"
-        },
-        {
-            "integrations": "Cisco Spark",
-            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
-        },
-        {
-            "integrations": "EWS_most_updated",
-            "playbookID": "EWS test"
-        },
-        {
-            "playbookID": "Get File Sample By Hash - Generic - Test"
-        },
-        {
-            "playbookID": "Get File Sample From Hash - Generic - Test"
-        },
-        {
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
-        },
-        {
-            "integrations": "carbonblack",
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test"
-        },
-        {
-            "playbookID": "get_file_sample_from_path_-_d2_-_test"
-        },
-        {
-            "integrations": "carbonblack",
-            "playbookID": "get_file_sample_from_path_-_generic_-_test"
-        },
-        {
-            "integrations": "Remedy On-Demand",
-            "playbookID": "Remedy-On-Demand-Test"
-        },
-        {
-            "playbookID": "ssdeepreputationtest"
-        },
-        {
-            "playbookID": "TestIsEmailAddressInternal"
-        },
-        {
-            "integrations": "AWS - S3",
-            "playbookID": "113aca8a-ee52-419f-89a6-150ee232d0d1"
-        },
-        {
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
-        },
-        {
-            "playbookID": "GoogleCloudCompute-Test"
-        }
-    ],
-    "skipped_tests": [
-        {
-        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
             "integrations": "Google BigQuery",
             "playbookID": "Google BigQuery Test"
         },
@@ -1363,6 +1313,11 @@
         {
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
+        },
+        {
+            "playbookID": "IP Enrichment - Generic v2 - Test",
+            "integrations": "Threat Crowd",
             "fromversion": "4.1.0"
         },
         {
@@ -1393,13 +1348,10 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate URL - ANYRUN - Test"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
+        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "detonate_file_-_generic_test": "relevant only for v3.6",
         "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -1412,6 +1364,8 @@
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
+        "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
+        "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test"
@@ -1446,6 +1400,7 @@
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
+        "Snowflake": "Looks like account expired, needs looking into",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
