@@ -13,9 +13,9 @@ tasks:
       id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -23,10 +23,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 8dcf9277-f035-41b2-8165-8ea8d70541a4
@@ -48,7 +51,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: inputs.Username
@@ -56,10 +59,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 193
+          "x": 265,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 97aaf60a-4203-4577-8548-a61287d8b988
@@ -69,9 +75,9 @@ tasks:
       version: -1
       name: Active Directory
       type: title
+      description: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -79,10 +85,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: b3c42fed-7e9b-428e-8fd6-142c05a2cbd1
@@ -92,17 +101,20 @@ tasks:
       version: -1
       name: Done
       type: title
+      description: ""
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 865
+          "x": -2.5,
+          "y": 1090
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: e20b8aa1-b0b6-4052-8f18-ae8ad93b446f
@@ -117,8 +129,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "3"
+      "no":
+      - "7"
       "yes":
       - "5"
     scriptarguments:
@@ -126,7 +138,7 @@ tasks:
         complex:
           root: modules
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: brand
@@ -134,7 +146,7 @@ tasks:
               right:
                 value:
                   simple: activedir
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: state
@@ -146,10 +158,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 515
+          "x": 670,
+          "y": 510
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 03d20c71-9bee-4a97-8a4d-47135ec38828
@@ -183,18 +198,112 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 330,
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b3863ef8-aed7-4405-8a7d-33f89bba4d3b
+    type: condition
+    task:
+      id: b3863ef8-aed7-4405-8a7d-33f89bba4d3b
+      version: -1
+      name: Is Active Directory v2 enabled?
+      description: Checks if there's an active "Active Directory" instance
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c562e7a5-a6db-4150-8d9e-3b594070e6d8
+    type: regular
+    task:
+      id: c562e7a5-a6db-4150-8d9e-3b594070e6d8
+      version: -1
+      name: Get Account info from Active Directory
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name:
+        simple: ${inputs.Username}
+      user-account-control-out: {}
+      username:
+        simple: ${inputs.Username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 605,
-        "x": 50,
+        "height": 1105,
+        "width": 1262.5,
+        "x": -2.5,
         "y": 50
       }
     }
@@ -228,3 +337,4 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
   type: string
+releaseNotes: "Added support for Active Directory Query v2."

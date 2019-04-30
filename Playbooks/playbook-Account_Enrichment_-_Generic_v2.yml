@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+    taskid: 6c7a7a55-c9f1-457c-8811-8a20c896837b
     type: start
     task:
-      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+      id: 6c7a7a55-c9f1-457c-8811-8a20c896837b
       version: -1
       name: ""
       description: ""
@@ -35,10 +35,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+    taskid: 3145de58-6fbc-48be-8f96-44d4c2116099
     type: condition
     task:
-      id: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+      id: 3145de58-6fbc-48be-8f96-44d4c2116099
       version: -1
       name: Is there an account to enrich?
       description: Checks if there is at least one username to enrich.
@@ -49,7 +49,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "4"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -71,22 +71,22 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+    taskid: f72e1fdc-7ff0-416c-85ae-5574af631c99
     type: title
     task:
-      id: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+      id: f72e1fdc-7ff0-416c-85ae-5574af631c99
       version: -1
       name: Done
-      description: ""
       type: title
+      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 765
+          "x": -270,
+          "y": 1110
         }
       }
     note: false
@@ -94,19 +94,20 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 6d452be6-9cf3-47e7-8424-180ff698cb8b
+    taskid: a1ffee29-e1ac-4b27-8b45-bb28a84263ad
     type: condition
     task:
-      id: 6d452be6-9cf3-47e7-8424-180ff698cb8b
+      id: a1ffee29-e1ac-4b27-8b45-bb28a84263ad
       version: -1
       name: Is Active Directory enabled?
-      description: Checks if there is an active instance of the Active Directory integration enabled.
+      description: Checks if there is an active instance of the Active Directory integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "7"
       "yes":
       - "5"
     separatecontext: false
@@ -139,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 395
+          "x": 480,
+          "y": 540
         }
       }
     note: false
@@ -148,10 +149,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 34511610-25f6-4cba-88be-5efe1ce7a69e
+    taskid: fd61fdcb-e597-4c17-8b4b-720d229d60f0
     type: regular
     task:
-      id: 34511610-25f6-4cba-88be-5efe1ce7a69e
+      id: fd61fdcb-e597-4c17-8b4b-720d229d60f0
       version: -1
       name: Get account info from Active Directory
       description: Queries Active Directory for the username's information.
@@ -183,8 +184,133 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 580
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 10475fbe-c7ff-42f7-8e6d-a4d49471fb17
+    type: title
+    task:
+      id: 10475fbe-c7ff-42f7-8e6d-a4d49471fb17
+      version: -1
+      name: Active Directory
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5ef57595-da5f-4f77-8f36-66cbd161464c
+    type: condition
+    task:
+      id: 5ef57595-da5f-4f77-8f36-66cbd161464c
+      version: -1
+      name: Is Active Directory v2 enabled?
+      description: Checks if there is an active instance of the Active Directory integration
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: ceb57087-b57e-4f65-8f13-75c20a16fdc2
+    type: regular
+    task:
+      id: ceb57087-b57e-4f65-8f13-75c20a16fdc2
+      version: -1
+      name: Get account info from Active Directory
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 900
         }
       }
     note: false
@@ -197,9 +323,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 780,
-        "width": 650,
-        "x": 50,
+        "height": 1125,
+        "width": 1140,
+        "x": -270,
         "y": 50
       }
     }
@@ -237,6 +363,6 @@ outputs:
 - contextPath: Account.Manager
   description: The account's manager.
   type: string
-releaseNotes: "Updated names and descriptions."
+releaseNotes: "Added support for Active Directory Query v2."
 tests:
   - Account Enrichment - Generic v2 - Test
