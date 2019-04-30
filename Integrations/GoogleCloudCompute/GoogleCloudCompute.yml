@@ -3,14 +3,14 @@ commonfields:
   id: Google Cloud Compute
   version: -1
 configuration:
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Service Account Private Key file contents (JSON)
   name: service
   required: true
   type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Google Compute Engine delivers virtual machines running in Google's innovative
   data centers and worldwide fiber network. Compute Engine's tooling and workflow
   support enable scaling from single instances to global, load-balanced cloud computing.
