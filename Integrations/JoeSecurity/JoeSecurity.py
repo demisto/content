@@ -70,7 +70,7 @@ def analysis_to_entry(title, info):
     dbot_scores = []
     for analysis in info:
         analysis_info = {
-            'ID': analysis['webid'], # for detonate generic polling
+            'ID': analysis['webid'],  # for detonate generic polling
             'WebID': analysis['webid'],
             'SampleName': analysis['filename'],
             'Status': analysis['status'],
@@ -121,9 +121,8 @@ def analysis_to_entry(title, info):
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, table, removeNull=True),
-        'EntryContext': {'Joe.Analysis(val.ID && val.ID == obj.ID)' : createContext(context, removeNull=True),
-            'DBotScore': createContext(dbot_scores, removeNull=True),
-        }
+        'EntryContext': {'Joe.Analysis(val.ID && val.ID == obj.ID)': createContext(context, removeNull=True),
+                         'DBotScore': createContext(dbot_scores, removeNull=True), }
     }
 
     return entry
@@ -252,15 +251,14 @@ def analyse_sample():
 def analyse_sample_file_request(file_entry, should_wait, internet_access, comments='', systems=''):
     data = {
         'accept-tac': 1,
-        'internet-access' : 1 if internet_access else 0,
+        'internet-access': 1 if internet_access else 0,
     }
     if comments != '':
         data['comments'] = comments
     if systems != '':
         data['systems[]'] = [s.strip() for s in systems.split(',')]
 
-    shutil.copy(demisto.getFilePath(file_entry)['path'],
-        demisto.getFilePath(file_entry)['name'])
+    shutil.copy(demisto.getFilePath(file_entry)['path'], demisto.getFilePath(file_entry)['name'])
 
     with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
         res = http_post('v2/analysis/submit', data=data, files={'sample':f})
@@ -327,7 +325,7 @@ def download_sample():
 
 
 def download_request(webid, rsc_type):
-    res = http_post('v2/analysis/download', data={'webid': webid, 'type' : rsc_type.lower()}, parse_json=False)
+    res = http_post('v2/analysis/download', data={'webid': webid, 'type': rsc_type.lower()}, parse_json=False)
 
     info = info_request(webid)
     if rsc_type == 'sample':
