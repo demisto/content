@@ -17,6 +17,7 @@ import time
 
 # Params for assembling object of the Service Account Credentials File Contents
 SERVICE_ACCOUNT_FILE = demisto.params().get('service')
+SERVICE_ACT_PROJECT_ID = None
 
 
 # Params for constructing googleapiclient service object
@@ -133,8 +134,10 @@ def build_and_authenticate(googleservice):
         integration will make API calls
     """
 
+    global SERVICE_ACT_PROJECT_ID
     auth_json_string = str(SERVICE_ACCOUNT_FILE).replace("\'", "\"").replace("\\\\", "\\")
     service_account_info = json.loads(auth_json_string)
+    SERVICE_ACT_PROJECT_ID = service_account_info.get('project_id')
     service_credentials = service_account.Credentials.from_service_account_info(
         service_account_info, scopes=SCOPE
     )
