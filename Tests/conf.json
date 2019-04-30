@@ -1350,6 +1350,10 @@
             "playbookID": "Detonate URL - ANYRUN - Test"
         },
         {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
+        },
+        {
             "integrations": "AWS - S3v2",
             "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
         },
