@@ -151,7 +151,8 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         'Content-Type': 'application/json'
     }
 
-    response = session.post(REST_ADDRESS + '/report/run', headers=headers, data=json.dumps(queryData), verify=VERIFY_SSL)
+    response = session.post(REST_ADDRESS + '/report/run', headers=headers, data=json.dumps(queryData),
+                            verify=VERIFY_SSL)
     validateSuccessfulResponse(response, "running report")
 
     data = response.json()
@@ -224,7 +225,7 @@ def GetEventQuery():
     in_xml = create_query_xml("all", interval='1')
     url = QUERY_URL + "eventQuery"
     headers = {'Content-Type': 'text/xml'}
-    resp = requests.request('POST', url, headers=headers, data=inXml, verify=VERIFY_SSL, auth=AUTH)
+    resp = requests.request('POST', url, headers=headers, data=in_xml, verify=VERIFY_SSL, auth=AUTH)
     validateSuccessfulResponse(resp, "fetching event query")
     queryId = resp.text
     if 'error code="255"' in queryId:
@@ -250,6 +251,8 @@ def GetIncidentsByOrg(queryId):
         if content != '':
             outXML.append(content)
 
+        # this code is taken directly from their documentation.
+        # get all results (last "page" has less than 1000 records)
         p = re.compile(r'totalCount="\d+"')
         mlist = p.findall(content)
         if mlist and mlist[0] != '':
