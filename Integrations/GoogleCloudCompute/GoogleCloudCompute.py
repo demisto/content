@@ -16,25 +16,8 @@ import time
 """ GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
-SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id').encode('utf-8')
-PRIVATE_KEY_ID = demisto.params().get('private_key_id').encode('utf-8')
-PRIVATE_KEY = demisto.params().get('private_key').encode('utf-8')
-CLIENT_EMAIL = demisto.params().get('client_email').encode('utf-8')
-CLIENT_ID = demisto.params().get('client_id').encode('utf-8')
-CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url').encode('utf-8')
+SERVICE_ACCOUNT_FILE = demisto.params().get('service')
 
-AUTH_JSON = {
-    'type': 'service_account',  # guardrails-disable-line
-    'project_id': SERVICE_ACT_PROJECT_ID,
-    'private_key_id': PRIVATE_KEY_ID,
-    'private_key': PRIVATE_KEY,
-    'client_email': CLIENT_EMAIL,
-    'client_id': CLIENT_ID,
-    'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-    'token_uri': 'https://oauth2.googleapis.com/token',
-    'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
-    'client_x509_cert_url': CLIENT_X509_CERT_URL
-}
 
 # Params for constructing googleapiclient service object
 API_VERSION = 'v1'
@@ -150,7 +133,7 @@ def build_and_authenticate(googleservice):
         integration will make API calls
     """
 
-    auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace("\\\\", "\\")
+    auth_json_string = str(SERVICE_ACCOUNT_FILE).replace("\'", "\"").replace("\\\\", "\\")
     service_account_info = json.loads(auth_json_string)
     service_credentials = service_account.Credentials.from_service_account_info(
         service_account_info, scopes=SCOPE
