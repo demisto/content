@@ -76,7 +76,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A condition contains three parts: name, operator and value. Name
+      description: 'A condition contains three parts: name, operator, and value. Name
         is any valid field in the object that is being queried. Operator (: LIKE,
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
@@ -100,53 +100,53 @@ script:
     name: cbp-fileCatalog-search
     outputs:
     - contextPath: File.Size
-      description: Size of the file
+      description: Size of the file.
       type: Unknown
     - contextPath: File.Path
-      description: Path on the found hostname
+      description: Path on the found hostname.
       type: String
     - contextPath: File.Name
-      description: Name of the file
+      description: Name of the file.
       type: String
     - contextPath: File.Type
-      description: File Type
+      description: File type.
       type: String
     - contextPath: File.ProductName
-      description: The name of the product this file belongs to
+      description: The name of the product to which this file belongs.
       type: String
     - contextPath: File.ID
-      description: Unique fileCatalog Id
+      description: Unique fileCatalog ID.
       type: String
     - contextPath: File.Publisher
-      description: The publisher of the file
+      description: The publisher of the file.
       type: String
     - contextPath: File.Company
-      description: The company for the product
+      description: The company for the product.
       type: String
     - contextPath: File.Extension
-      description: Extension of the file
+      description: Extension of the file.
       type: String
   - arguments:
     - default: false
-      description: 'A condition contains three parts: name, operator and value. Name
+      description: 'A condition contains three parts: name, operator, and value. Name
         is any valid field in the object that is being queried. Operator (: LIKE,
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
-        single character. Value is compared with operator and depends on field type.
+        single character. Value is compared with an operator and depends on field type.
         See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int23) Offset in data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName'
       isArray: false
       name: group
       required: false
@@ -154,17 +154,16 @@ script:
     - default: false
       description: 'Sorting is optional and can be defined with a single attribute:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        (if omitted) is ascending (ASC). xyz is field name from the result set.'
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: 'Maximum number of results to retrieve (Int32). If not specified,
+        the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the Offset parameter is ignored.
+        If set to "0", all results will be returned, and the Offset parameter is ignored. Some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -172,43 +171,43 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
+    description: 'Search for computers. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
     execution: false
     name: cbp-computer-search
     outputs:
     - contextPath: Endpoint.Processors
-      description: The number of processors
+      description: The number of processors.
       type: Number
     - contextPath: Endpoint.MACAddress
-      description: MAC address of the endpoint
+      description: MAC address of the endpoint.
       type: String
     - contextPath: Endpoint.Model
-      description: The machine model, if available
+      description: The machine model, if available.
       type: String
     - contextPath: Endpoint.IPAddress
-      description: The IP address of the endpoint
+      description: The IP address of the endpoint.
       type: String
     - contextPath: Endpoint.Processor
-      description: The model of the processor
+      description: The model of the processor.
       type: String
     - contextPath: Endpoint.Hostname
-      description: Hostname of the endpoint
+      description: Hostname of the endpoint.
       type: String
     - contextPath: Endpoint.OSVersion
-      description: The full OS name for the endpoint
+      description: The full OS name for the endpoint.
       type: String
     - contextPath: Endpoint.ID
-      description: The unique ID within the tool retreiving the endpoint
+      description: The unique ID within the tool retreiving the endpoint.
       type: String
     - contextPath: Endpoint.OS
-      description: The short OS name running on the endpoint
+      description: The short OS name running on the endpoint.
       type: String
     - contextPath: Memory
-      description: Amount of memory for the endpoint
+      description: Amount of memory for the endpoint.
       type: Number
   - arguments:
     - default: true
-      description: (Int32) Unique computer id
+      description: (Int32) Unique computer ID.
       isArray: false
       name: id
       required: true
@@ -220,28 +219,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: (String) Custom computer tag
+      description: (String) Custom computer tag.
       isArray: false
       name: computerTag
       required: false
       secret: false
     - default: false
-      description: (String) Description of this computer
+      description: (String) Description of this computer.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: (Int32) New Id of policy for this computer. PolicyId is ignored
-        if either automaticPolicy us True or localApproval is True
+      description: (Int32) New ID of the policy for this computer. PolicyId is ignored
+        if either automaticPolicy is "True" or localApproval is "True".
       isArray: false
       name: policyId
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if this policy is assigned automatically through
-        AD. Has to be False if localApproval is True
+      description: (Boolean) "True" if this policy is assigned automatically through
+        AD. If localApproval is "True", this argument must be "False".
       isArray: false
       name: automaticPolicy
       predefined:
@@ -251,8 +250,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if this computer is currently in local approval
-        mode. Has to be False if automaticPolicy is True
+      description: (Boolean) "True" if this computer is currently in local approval
+        mode. If automaticPolicy is "True", this argument must be "False".
       isArray: false
       name: localApproval
       predefined:
@@ -261,20 +260,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: '(Int32) Change refresh flags for this agent. Can be combination
+      description: '(Int32) Change refresh flags for this agent. Can be a combination
         of: 0x01=Complete resynch of agent NAB and installer table is requested 0x02=Rescan
         of programs installed on the computer is requested 0x20=Tell agent to refresh
         config list 0x40=Force this agent to reregister with new cookie 0x200=Trigger
         agent Reboot. 0x1000=Tell agent to refresh config list from the file 0x4000
         Boost the priority of this agent over all others permanently (until it is
-        de-prioritized)'
+        de-prioritized).'
       isArray: false
       name: refreshFlags
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True to prioritize this computer
+      description: (Boolean) Set to "True" to prioritize this computer.
       isArray: false
       name: prioritized
       predefined:
@@ -283,17 +282,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Current debug level of agent. Range is from 0 (none) to
-        8 (verbose). This value can be changed only if ‘changeDiagnostics’ request
-        parameter is set to true.
+      description: (Int32) Current debug level of the agent. Range is from 0 (none) to
+        8 (verbose). This value can be changed only if the "changeDiagnostics" request
+        parameter is set to "True".
       isArray: false
       name: debugLevel
       required: false
       secret: false
     - default: false
-      description: (Int32) Current kernel debug level of agent. Range is from 0 (none)
-        to 5 (verbose). This value can be changed only if ‘changeDiagnostics’ request
-        parameter is set to true.
+      description: (Int32) Current kernel debug level of the agent. Range is from 0 (none)
+        to 5 (verbose). This value can be changed only if the "changeDiagnostics" request
+        parameter is set to "True".
       isArray: false
       name: kernelDebugLevel
       required: false
@@ -304,24 +303,24 @@ script:
         = Delete debug files 0x80 = Upload agent cache 0x200 = Save verbose debug
         info + counters to the cache when copied/uploaded 0x400 = Generate and upload
         an analysis.bt9 file that contains various constraint violation analysis information
-        0x800 = Run a health check and send results to server This value can be changed
-        only if ‘changeDiagnostics’ request parameter is set to true.'
+        0x800 = Run a health check and send results to server. This value can be changed
+        only if the "changeDiagnostics" request parameter is set to "True".'
       isArray: false
       name: debugFlags
       required: false
       secret: false
     - default: false
       description: (Int32) Debug duration in minutes. This value can be changed only
-        if ‘changeDiagnostics’ request parameter is set to true.
+        if the "changeDiagnostics" request parameter is set to "True".
       isArray: false
       name: debugDuration
       required: false
       secret: false
     - default: false
-      description: '(Int32) Cache consistency check level set for agent. Can be one
+      description: '(Int32) Cache consistency check level set for the agent. Can be one
         of: 0 = None 1 = Quick verification 2 = Rescan known files Full scan for new
-        files This value can be changed only if ‘changeDiagnostics’ request parameter
-        is set to true.'
+        files. This value can be changed only if the "changeDiagnostics" request parameter
+        is set to "True".'
       isArray: false
       name: cCLevel
       required: false
@@ -337,14 +336,14 @@ script:
         for new script types as a result of a change to what ‘IsScript’ means 0x0080
         = Whether we are doing a level 3 check for initialization 0x0100 = This cache
         check is to remediate CR# 18041 0x0200 = Force the re-evaluation of the IsCrawlable
-        state and archive type'
+        state and archive type.'
       isArray: false
       name: cCFlags
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True to force upgrade for this computer
+      description: (Boolean) Set to "True" to force an upgrade for this computer.
       isArray: false
       name: forceUpgrade
       predefined:
@@ -354,8 +353,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if computer is a VDI template. This value can be
-        changed only if ‘changeTemplate’ request parameter is set to true.
+      description: (Boolean) "True" if the computer is a VDI template. This value can be
+        changed only if the "changeTemplate" request parameter is set to "True".
       isArray: false
       name: template
       predefined:
@@ -371,7 +370,7 @@ script:
         2=Automatic, by time (specified by templateCloneCleanupTime and templateCloneCleanupTimeScale)
         3=Automatic, when new computer with the same name comes online
         4=Automatic, as soon as computer goes offline
-        This value can be changed only if ‘changeTemplate’ request parameter is set to true.
+        This value can be changed only if the "changeTemplate" request parameter is set to "True".
       isArray: false
       name: templateCloneCleanupMode
       predefined:
@@ -382,10 +381,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) If templateCloneCleanupMode is 2, this is time before clone
-        is cleaned up. Time unit is specified in templateCloneCleanupTimeScale.This
-        value can be changed only if ‘changeTemplate’ request parameter is set to
-        true.
+      description: (Int32) If the templateCloneCleanupMode value is "2", this is the time before clone
+                     is cleaned up. Time unit is specified in templateCloneCleanupTimeScale. This
+                     value can be changed only if the "changeTemplate" request parameter is set to
+                     "True".
       isArray: false
       name: templateCloneCleanupTime
       required: false
@@ -393,11 +392,11 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        (Int32) Time unit of template cleanup. Can be one of:
+        (Int32) Time unit of the template cleanup. Can be one of:
         1=Hours
         2=Days
         3=Weeks
-        This value can be changed only if ‘changeTemplate’ request parameter is set to true.
+        This value can be changed only if the "changeTemplate" request parameter is set to "True".
       isArray: false
       name: templateCloneCleanupTimeScale
       predefined:
@@ -408,9 +407,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) If True, clones of this template will track only new
-        and modified files. This value can be changed only if ‘changeTemplate’ request
-        parameter is set to true.
+      description: (Boolean) If "True", clones of this template will track only new
+        and modified files. This value can be changed only if the "changeTemplate" request
+        parameter is set to "True".
       isArray: false
       name: templateTrackModsOnly
       predefined:
@@ -419,24 +418,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Boolean) Optional flag, defaults to false. If set to true, debug
-        and CC properties of computer will be updated from the object sent in the
-        body the request. This action requires ‘Change advanced options’ permission.
+      description: (Boolean) If "True", debug
+        and CC properties of the computer will be updated from the object sent in the
+        body the request. This action requires "Change advanced options" permission. Default is "False".
       isArray: false
       name: changeDiagnostics
       required: false
       secret: false
     - default: false
-      description: (Boolean) Optional flag, defaults to false. If set to true, template
+      description: (Boolean) If set to true, template
         settings will be updated from the object sent in the body the request. This
-        action requires ‘Change advanced options’ permission.
+        action requires "Change advanced options" permission. Default is "False".
       isArray: false
       name: changeTemplate
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) Optional flag, deletes computer entry.
+      description: (Boolean) Deletes a computer entry. Default is "False".
       isArray: false
       name: delete
       predefined:
@@ -446,8 +445,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) Optional flag to reset CLI password for this computer.
-        This action requires ‘Change advanced options’ permission.
+      description: (Boolean) Reset the CLI password for this computer.
+        This action requires "Change advanced options" permission.
       isArray: false
       name: resetCLIPassword
       predefined:
@@ -456,125 +455,124 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Updates computer object. Note that some computer properties can
-      be changed only if specific boolean param is set, as noted below. See more:
-      https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
+    description: 'Updates computer objects. Note that some computer properties can
+      be changed only if specific boolean parameters are set. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
     execution: false
     name: cbp-computer-update
     outputs:
     - contextPath: Endpoint.Processors
-      description: The number of processors
+      description: The number of processors.
       type: Number
     - contextPath: Endpoint.MACAddress
-      description: MAC address of the endpoint
+      description: MAC address of the endpoint.
       type: String
     - contextPath: Endpoint.Model
-      description: The machine model, if available
+      description: The machine model, if available.
       type: String
     - contextPath: Endpoint.IPAddress
-      description: The IP address of the endpoint
+      description: IP address of the endpoint.
       type: String
     - contextPath: Endpoint.Processor
-      description: The model of the processor
+      description: Model of the processor.
       type: String
     - contextPath: Endpoint.Hostname
-      description: Hostname of the endpoint
+      description: Hostname of the endpoint.
       type: String
     - contextPath: Endpoint.OSVersion
-      description: The full OS name for the endpoint
+      description: The full OS name running on the endpoint.
       type: String
     - contextPath: Endpoint.ID
-      description: The unique ID within the tool retreiving the endpoint
+      description: The unique ID within the tool retreiving the endpoint.
       type: String
     - contextPath: Endpoint.Processors
-      description: The number of processors
+      description: The number of processors.
       type: Number
     - contextPath: Endpoint.OS
-      description: The short OS name running on the endpoint
+      description: The short OS name running on the endpoint.
       type: String
     - contextPath: Endpoint.MACAddress
-      description: MAC address of the endpoint
+      description: MAC address of the endpoint.
       type: String
     - contextPath: Endpoint.Model
-      description: The machine model, if available
+      description: The machine model, if available.
       type: String
     - contextPath: Endpoint.IPAddress
-      description: The IP address of the endpoint
+      description: IP address of the endpoint.
       type: String
     - contextPath: Endpoint.Processor
-      description: The model of the processor
+      description: Model of the processor.
       type: String
     - contextPath: Endpoint.Hostname
-      description: Hostname of the endpoint
+      description: Hostname of the endpoint.
       type: String
     - contextPath: Endpoint.OSVersion
-      description: The full OS name for the endpoint
+      description: The full OS name running on the endpoint.
       type: String
     - contextPath: Endpoint.ID
-      description: The unique ID within the tool retreiving the endpoint
+      description: The unique ID within the tool retreiving the endpoint.
       type: String
   - arguments:
     - default: true
-      description: (Int32) Unique computer id
+      description: (Int32) Unique computer ID.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
+    description: 'Returns information for a computer. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer'
     execution: false
     name: cbp-computer-get
     outputs:
     - contextPath: Endpoint.Processors
-      description: The number of processors
+      description: The number of processors.
       type: Number
     - contextPath: Endpoint.MACAddress
-      description: MAC address of the endpoint
+      description: MAC address of the endpoint.
       type: String
     - contextPath: Endpoint.Model
-      description: The machine model, if available
+      description: The machine model, if available.
       type: String
     - contextPath: Endpoint.IPAddress
-      description: The IP address of the endpoint
+      description: IP address of the endpoint.
       type: String
     - contextPath: Endpoint.Processor
-      description: The model of the processor
+      description: The model of the processor.
       type: String
     - contextPath: Endpoint.Hostname
-      description: Hostname of the endpoint
+      description: Hostname of the endpoint.
       type: String
     - contextPath: Endpoint.OSVersion
-      description: The full OS name for the endpoint
+      description: The full OS name running on the endpoint.
       type: String
     - contextPath: Endpoint.ID
-      description: The unique ID within the tool retreiving the endpoint
+      description: The unique ID within the tool retreiving the endpoint.
       type: String
     - contextPath: Endpoint.Processors
-      description: The number of processors
+      description: The number of processors.
       type: Number
     - contextPath: Endpoint.OS
-      description: The short OS name running on the endpoint
+      description: The short OS name running on the endpoint.
       type: String
     - contextPath: Endpoint.MACAddress
-      description: MAC address of the endpoint
+      description: MAC address of the endpoint.
       type: String
     - contextPath: Endpoint.Model
-      description: The machine model, if available
+      description: The machine model, if available.
       type: String
     - contextPath: Endpoint.IPAddress
-      description: The IP address of the endpoint
+      description: IP address of the endpoint.
       type: String
     - contextPath: Endpoint.Processor
-      description: The model of the processor
+      description: Model of the processor.
       type: String
     - contextPath: Endpoint.Hostname
-      description: Hostname of the endpoint
+      description: Hostname of the endpoint.
       type: String
     - contextPath: Endpoint.OSVersion
-      description: The full OS name for the endpoint
+      description: The full OS name running on the endpoint.
       type: String
     - contextPath: Endpoint.ID
-      description: The unique ID within the tool retreiving the endpoint
+      description: The unique ID within the tool retreiving the endpoint.
       type: String
   - arguments:
     - default: false
@@ -583,17 +581,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored.
+        If set to "0", all results will be returned, and the "offset" parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -601,45 +597,44 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
-        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+      description: 'Sorting is optional and can be defined with a single attribute, where xyz is the field name from the result set:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
+    description: 'Search for file instances. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
     execution: false
     name: cbp-fileInstance-search
     outputs:
     - contextPath: CBP.FileInstance.CatalogID
-      description: The file ID in the file catalog
+      description: The file ID in the file catalog.
       type: String
     - contextPath: CBP.FileInstance.ComputerID
-      description: The computer ID on which the file was found
+      description: The computer ID on which the file was found.
       type: String
     - contextPath: CBP.FileInstance.ID
-      description: CBP internal ID of the file instance
+      description: CBP internal ID of the file instance.
       type: String
     - contextPath: CBP.FileInstance.Name
-      description: Name of the file
+      description: Name of the file.
       type: String
     - contextPath: CBP.FileInstance.Path
-      description: Path on the found hostname
+      description: Path on the found hostname.
       type: String
   - arguments:
     - default: false
@@ -648,17 +643,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored.
+        If set to "0", all results will be returned, and the "offset" parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -666,108 +659,107 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
-        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+      description: 'Sorting is optional and can be defined with a single attribute, where xyz is field name from the result set:
+        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
+    description: 'Search for events. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
     execution: false
     name: cbp-event-search
     outputs:
     - contextPath: CBP.Event.FilePath
-      description: File path of the event
+      description: File path of the event.
       type: String
     - contextPath: CBP.Event.Param1
-      description: First event parameter
+      description: First event parameter.
       type: String
     - contextPath: CBP.Event.Param2
-      description: Second event parameter
+      description: Second event parameter.
       type: String
     - contextPath: CBP.Event.Param3
-      description: Third event parameter
+      description: Third event parameter.
       type: String
     - contextPath: CBP.Event.SubTypeName
-      description: Name of the sub type
+      description: Name of the subtype.
       type: String
     - contextPath: CBP.Event.ComputerName
-      description: Name of the computer related to the event
+      description: Name of the computer related to the event.
       type: String
     - contextPath: CBP.Event.FileName
-      description: Name of the file related to the event
+      description: Name of the file related to the event.
       type: String
     - contextPath: CBP.Event.RuleName
-      description: Name of the rule related to the event
+      description: Name of the rule related to the event.
       type: String
     - contextPath: CBP.Event.ProcessFileCatalogID
-      description: ID of the process file catalog id
+      description: ID of the process file catalog ID.
       type: String
     - contextPath: CBP.Event.StringID
-      description: ID of the event string
+      description: ID of the event string.
       type: String
     - contextPath: CBP.Event.IPAddress
-      description: IP address of the event
+      description: IP address of the event.
       type: String
     - contextPath: CBP.Event.PolicyID
-      description: Policy ID of the event
+      description: Policy ID of the event.
       type: String
     - contextPath: CBP.Event.Timestamp
-      description: Timestamp of the event
+      description: Timestamp of the event.
       type: Date
     - contextPath: CBP.Event.Username
-      description: Event's username
+      description: Username related to the event.
       type: String
     - contextPath: CBP.Event.ComputerID
-      description: ID of the event computer
+      description: ID of the event computer.
       type: String
     - contextPath: CBP.Event.ProcessFileName
-      description: FileName of the process
+      description: File name of the process.
       type: String
     - contextPath: CBP.Event.FileCatalogID
-      description: ID of the file catalog
+      description: ID of the file catalog.
       type: String
     - contextPath: CBP.Event.ProcessFileName
-      description: File name of the process
+      description: File name of the process.
       type: String
     - contextPath: CBP.Event.IndicatorName
-      description: Event's indicator name
+      description: Indicator name of the event.
       type: String
     - contextPath: CBP.Event.SubType
-      description: The id of the subtype
+      description: ID of the subtype.
       type: Number
     - contextPath: CBP.Event.Type
-      description: Type of the event
+      description: Type of the event.
       type: Number
     - contextPath: CBP.Event.ID
-      description: Event's ID
+      description: ID of the event.
       type: Number
     - contextPath: CBP.Event.Description
-      description: Event's description
+      description: Description of the event.
       type: String
     - contextPath: CBP.Event.Severity
-      description: Severity of the event
+      description: Severity of the event.
       type: String
     - contextPath: CBP.Event.CommandLine
-      description: Command line executed in the event
+      description: Command line executed in the event.
       type: String
     - contextPath: CBP.Event.ProcessPathName
-      description: Path name of the process
+      description: Path name of the process.
       type: String
   - arguments:
     - default: false
@@ -776,17 +768,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored.
+        If set to "0", all results will be returned, and the "offset" parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -794,7 +784,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
@@ -807,70 +797,69 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
+      description: 'Sorting is optional and can be defined with a single attribute, where xyz is field name from the result set:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search for approval requests. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#approvalrequest'
+    description: 'Search for approval requests. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#approvalrequest'
     execution: false
     name: cbp-approvalRequest-search
     outputs:
     - contextPath: CBP.ApprovalRequest.ID
-      description: ID of the approval request
+      description: ID of the approval request.
       type: Number
     - contextPath: CBP.ApprovalRequest.ResolutionComments
-      description: Comments by request resolver
+      description: Comments added by the request resolver.
       type: String
     - contextPath: CBP.ApprovalRequest.Resolution
-      description: 'Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected,
+      description: 'Resolution of the request. Can be one of: 0=Not Resolved, 1=Rejected,
         2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved
-        - Updater, 6=Resolved - Publisher, 7=Resolved - Other'
+        - Updater, 6=Resolved - Publisher, 7=Resolved - Other.'
       type: Number
     - contextPath: CBP.ApprovalRequest.Status
-      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated'
+      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated.'
       type: Number
     - contextPath: CBP.ApprovalRequest.FileCatalogID
-      description: Id of fileCatalog entry associated with file for this event
+      description: ID of the fileCatalog entry associated with file for this event.
       type: Number
     - contextPath: CBP.ApprovalRequest.ComputerID
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: Number
     - contextPath: CBP.ApprovalRequest.ComputerName
-      description: Name of computer associated with this event
+      description: Name of the computer associated with this event.
       type: String
     - contextPath: CBP.ApprovalRequest.DateCreated
-      description: Date/time when notifier was created (UTC)
+      description: Date/time when the notifier was created (UTC).
       type: Date
     - contextPath: CBP.ApprovalRequest.CreatedBy
-      description: User that created this notifier
+      description: User that created this notifier.
       type: String
     - contextPath: CBP.ApprovalRequest.EnforcementLevel
-      description: 'Enforcement level of agent at the time of request. Can be one
+      description: 'Enforcement level of the agent at the time of the request. Can be one
         of: 20=High (Block Unapproved), 30=Medium (Prompt Unapproved), 40=Low (Monitor
-        Unapproved), 60=None (Visibility), 80=None (Disabled)'
+        Unapproved), 60=None (Visibility), 80=None (Disabled).'
       type: Number
     - contextPath: CBP.ApprovalRequest.RequestorEmail
-      description: Email of user that created this request
+      description: Email address of the user that created this request.
       type: String
     - contextPath: CBP.ApprovalRequest.Priority
-      description: 'Priority of this request. Can be one of: 0=High, 1=Medium, 2=Low'
+      description: 'Priority of this request. Can be one of: 0=High, 1=Medium, 2=Low.'
       type: Number
     - contextPath: CBP.ApprovalRequest.FileName
-      description: Name of file on the agent
+      description: Name of the file on the agent.
       type: String
     - contextPath: CBP.ApprovalRequest.PathName
-      description: Path of the file on the agent
+      description: Path of the file on the agent.
       type: String
     - contextPath: CBP.ApprovalRequest.Process
-      description: Process that attempted to execute file on the agent. This is full
-        process path
+      description: Process that attempted to execute the file on the agent (the full process path).
       type: String
     - contextPath: CBP.ApprovalRequest.Platform
-      description: Platform of this approval request
+      description: Platform of this approval request.
       type: String
   - arguments:
     - default: false
@@ -879,17 +868,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored.
+        If set to "0", all results will be returned, and the offset parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -897,92 +884,90 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
+      description: 'Sorting is optional and can be defined with a single attribute where xyz is field name from the result set:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
+    description: 'Search for file rules. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-search
     outputs:
     - contextPath: CBP.FileRule.CatalogID
-      description: The file catalog ID for the rule
+      description: The file catalog ID for the rule.
       type: String
     - contextPath: CBP.FileRule.Description
-      description: |
-        The rule description
+      description: Description of the rule.
       type: String
     - contextPath: CBP.FileRule.FileState
-      description: The file state for the rule
+      description: The file state for the rule.
       type: String
     - contextPath: CBP.FileRule.Hash
-      description: The hash for the rule
+      description: Hash for the rule.
       type: String
     - contextPath: CBP.FileRule.ID
-      description: The rule ID
+      description: ID of the rule.
       type: String
     - contextPath: CBP.FileRule.Name
-      description: The rule name
+      description: Name of the rule.
       type: String
     - contextPath: CBP.FileRule.PolicyIDs
-      description: The policies this rule is part of
+      description: Policies of which this rule is a part.
       type: String
     - contextPath: CBP.FileRule.ReportOnly
-      description: Is this rule reporting only or also enforcing
+      description: Whether this rule is "reporting only, or also "enforcing".
       type: String
   - arguments:
     - default: true
-      description: (Int32) Unique id of this fileRule
+      description: (Int32) Unique ID of the file rule.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
+    description: 'Gets the file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-get
     outputs:
     - contextPath: CBP.FileRule.CatalogID
-      description: The file catalog ID for the rule
+      description: The file catalog ID for the rule.
       type: String
     - contextPath: CBP.FileRule.Description
-      description: |
-        The rule description
+      description: Description of the rule.
       type: String
     - contextPath: CBP.FileRule.FileState
-      description: The file state for the rule
+      description: The file state for the rule.
       type: String
     - contextPath: CBP.FileRule.Hash
-      description: The hash for the rule
+      description: Hash for the rule.
       type: String
     - contextPath: CBP.FileRule.ID
-      description: The rule ID
+      description: ID of the rule.
       type: String
     - contextPath: CBP.FileRule.Name
-      description: The rule name
+      description: Name of the rule.
       type: String
     - contextPath: CBP.FileRule.PolicyIDs
-      description: The policies this rule is part of
+      description: Policies of which this rule is a part.
       type: String
     - contextPath: CBP.FileRule.ReportOnly
-      description: Is this rule reporting only or also enforcing
+      description: Whether this rule is "reporting only, or also "enforcing".
       type: String
   - arguments:
     - default: true
@@ -992,7 +977,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
+    description: 'Deletes the file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-delete
   - arguments:
@@ -1002,17 +987,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored.
+        If set to "0", all results will be returned, and the "offset" parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -1020,78 +1003,78 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
+      description: 'Sorting is optional and can be defined with a single attribute where xyz is field name from the result set:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#policy'
+    description: 'Search for policies. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#policy'
     execution: false
     name: cbp-policy-search
     outputs:
     - contextPath: CBP.Policy.ReadOnly
-      description: Is this policy read only
+      description: Whether the policy "read-only".
       type: Boolean
     - contextPath: CBP.Policy.EnforcementLevel
-      description: The level of enforcement of the policy
+      description: The level of enforcement of the policy.
       type: String
     - contextPath: CBP.Policy.ReputationEnabled
-      description: Is reputation enabled for policy
+      description: Whether the reputation for the policy is enabled.
       type: Boolean
     - contextPath: CBP.Policy.AtEnforcementComputers
-      description: Number of enforced computers
+      description: Number of enforced computers.
       type: Number
     - contextPath: CBP.Policy.Automatic
-      description: Is this policy automatic
+      description: Whether the policy is automatic.
       type: Boolean
     - contextPath: CBP.Policy.Name
-      description: Name of the policy
+      description: Name of the policy.
       type: String
     - contextPath: CBP.Policy.FileTrackingEnabled
-      description: Is file tracking enabled for policy
+      description: Whether file tracking enabled for the policy.
       type: Boolean
     - contextPath: CBP.Policy.ConnectedComputers
-      description: Number of connected computers assocuated with the policy
+      description: Number of connected computers associated with the policy.
       type: Number
     - contextPath: CBP.Policy.PackageName
-      description: Package name of the policy
+      description: Package name of the policy.
       type: String
     - contextPath: CBP.Policy.AllowAgentUpgrades
-      description: Does the polixy allow agent upgrades
+      description: Whether the policy allows agent upgrades.
       type: Boolean
     - contextPath: CBP.Policy.TotalComputers
-      description: Number of computers associated with the policy
+      description: Number of computers associated with the policy.
       type: Number
     - contextPath: CBP.Policy.LoadAgentInSafeMode
-      description: Should we load in safe mode
+      description: Whether the agent should load in safe mode.
       type: Boolean
     - contextPath: CBP.Policy.AutomaticApprovalsOnTransition
-      description: Approve on transition
+      description: Approve on transition.
       type: String
     - contextPath: CBP.Policy.ID
-      description: CBP internal ID of the policy
+      description: CBP internal ID of the policy.
       type: String
     - contextPath: CBP.Policy.Description
-      description: Description of the policy
+      description: Description of the policy.
       type: String
     - contextPath: CBP.Policy.DisconnectedEnforcementLevel
-      description: The level of enforcement of the policy when disconnected
+      description: The level of enforcement of the policy when disconnected.
       type: String
   - arguments:
     - default: false
@@ -1100,17 +1083,14 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching.'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored. If set to "0", all results will be returned, and the "offset" parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -1118,39 +1098,39 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
+      description: 'Sorting is optional and can be defined with a single attribute where xyz is field name from the result set:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+       is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#serverconfig'
+    description: 'Search in server configurations. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#serverconfig.'
     execution: false
     name: cbp-serverConfig-search
     outputs:
     - contextPath: CBP.ServerConfig.ID
-      description: CBP internal ID of the server config
+      description: CBP internal ID of the server configuration.
       type: String
     - contextPath: CBP.ServerConfig.Name
-      description: Name of the server config
+      description: Name of the server configuration.
       type: String
     - contextPath: CBP.ServerConfig.Value
-      description: Value of the server config
+      description: Value of the server configuration.
       type: String
   - arguments:
     - default: false
@@ -1159,17 +1139,14 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching.'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the "offset" parameter is ignored. If set to "0", all results will be returned, and the "offset" parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -1177,150 +1154,150 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
+      description: 'Sorting is optional and can be defined with a single attribute where xyz is field name from the result set:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: 'Search for publishers. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher'
+    description: 'Search for publishers. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher.'
     execution: false
     name: cbp-publisher-search
     outputs:
     - contextPath: CBP.Publisher.Description
-      description: Description of the publisher
+      description: Description of the publisher.
       type: String
     - contextPath: CBP.Publisher.ID
-      description: CBP internal ID of the publisher
+      description: CBP internal ID of the publisher.
       type: String
     - contextPath: CBP.Publisher.Name
-      description: Name of the publisher
+      description: Name of the publisher.
       type: String
     - contextPath: CBP.Publisher.Reputation
-      description: The reputation of the publisher
+      description: Reputation of the publisher.
       type: String
     - contextPath: CBP.Publisher.SignedCertificatesCount
-      description: Number of certificates from the publisher
+      description: Number of certificates from the publisher.
       type: Number
     - contextPath: CBP.Publisher.SignedFilesCount
-      description: Number of signed files from publisher
+      description: Number of signed files from publisher.
       type: Number
     - contextPath: CBP.Publisher.State
-      description: The state of the publisher
+      description: The state of the publisher.
       type: String
   - arguments:
     - default: true
-      description: (Int32)Unique fileAnalysis id
+      description: (Int32) Unique fileAnalysis ID.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Returns object instance of this class
+    description: Returns the object instance of this class.
     execution: false
     name: cbp-fileAnalysis-get
     outputs:
     - contextPath: CBP.FileAnalysis.Priority
-      description: File analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: File analysis priority.  Valid range is [-2, 2], where 2 is highest priority.
+        Default priority is "0".
       type: Number
     - contextPath: CBP.FileAnalysis.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file on the endpoint.
       type: String
     - contextPath: CBP.FileAnalysis.ComputerId
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.DateModified
-      description: Date/Time when fileAnalysis request was last modified (UTC)
+      description: Date/time when the fileAnalysis request was last modified (UTC).
       type: Date
     - contextPath: CBP.FileAnalysis.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
     - contextPath: CBP.FileAnalysis.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID of the fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.DateCreated
-      description: Date/Time when fileAnalysis request was created (UTC)
+      description: Date/time when the fileAnalysis request was created (UTC).
       type: Date
     - contextPath: CBP.FileAnalysis.CreatedBy
-      description: User that requested this analysis
+      description: User that requested the analysis.
       type: String
     - contextPath: File.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID ofthe fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.FileName
-      description: Name of the file where file exists on the endpoint
+      description: Name of the file on the endpoint.
       type: String
     - contextPath: File.Malicious
-      description: Vendor and description of malicious file
+      description: Vendor and description of the malicious file.
       type: String
     - contextPath: File.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file on the endpoint.
       type: Unknown
     - contextPath: File.Name
-      description: Full Filename e.g. data.xls
+      description: ' Full file name, for example: "data.xls". '
       type: String
     - contextPath: File.SHA1
-      description: SHA1 Hash of the file
+      description: SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: String
     - contextPath: File.MD5
-      description: MD5 Hash of the file
+      description: MD5 hash of the file.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The Indicator
+      description: The indicator.
       type: string
     - contextPath: DBotScore.Type
-      description: The Indicator Type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
+      description: The DBot score vendor.
       type: string
     - contextPath: DBotScore.Score
       description: The DBot score
       type: number
   - arguments:
     - default: false
-      description: (Int32)Id of fileCatalog entry for which analysis is requested
+      description: (Int32) ID of the fileCatalog entry for which analysis is requested.
       isArray: false
       name: fileCatalogId
       required: true
       secret: false
     - default: false
-      description: (Int32)Id of target connector for the analysis
+      description: (Int32) ID of the target connector for the analysis.
       isArray: false
       name: connectorId
       required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: (Int32)Id of computer from which to upload the file. If 0, system
-        will find best computer to get the file from
+      description: (Int32) ID of the computer from which to upload the file. If "0", the system
+        will identify the best computer from which to get the file.
       isArray: false
       name: computerId
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: (Int32)Analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: '(Int32) The analysis priority (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       isArray: false
       name: priority
       predefined:
@@ -1332,14 +1309,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32)Status of analysis. Status of analysis in progress can be
-        changed to 5 (Cancelled)
+      description: (Int32) Status of the analysis. The status of an analysis that is in progress can be
+        changed to "5" (Cancelled).
       isArray: false
       name: analysisStatus
       required: false
       secret: false
     - default: false
-      description: (String)Target of the analysis (Optional). It has to be one of
+      description: (String) Target of the analysis. It has to be one of
         possible analysisTarget options defined for the given connector object, or
         empty for connectors without defined analysisTargets.
       isArray: false
@@ -1347,40 +1324,40 @@ script:
       required: false
       secret: false
     - default: false
-      description: If provided, will try to update the file analysis with this id
+      description: If specified, will try to update the file analysis with this ID.
       isArray: false
       name: id
       required: false
       secret: false
     deprecated: false
-    description: Creates or updates file analysis request
+    description: Creates or updates a file analysis request.
     execution: false
     name: cbp-fileAnalysis-createOrUpdate
     outputs:
     - contextPath: CBP.FileAnalysis.Priority
-      description: File analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: 'File analysis priority in range (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       type: Number
     - contextPath: CBP.FileAnalysis.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileAnalysis.ComputerID
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.DateModified
-      description: Date/Time when fileAnalysis request was last modified (UTC)
+      description: Date/time when the fileAnalysis request was last modified (UTC).
       type: Date
     - contextPath: CBP.FileAnalysis.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID of the fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.DateCreated
-      description: Date/Time when fileAnalysis request was created (UTC)
+      description: Date/time when the fileAnalysis request was created (UTC).
       type: Date
     - contextPath: CBP.FileAnalysis.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
     - contextPath: CBP.FileAnalysis.CreatedBy
-      description: User that requested this analysis
+      description: User that requested the analysis.
       type: String
   - arguments:
     - default: false
@@ -1389,17 +1366,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more informatoin, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the offset parameter is ignored.
+        If set to "0", all results will be returned, and the offset parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -1407,136 +1382,136 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
       description: 'Sorting is optional and can be defined with a single attribute:
-        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        &sort=xyz [ASC|DESC], where xyz is the field name from the result set. There can be only one sorting field. Default sort order
+        is ascending (ASC). '
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: Returns objects that match given criteria
+    description: Returns objects that match the specified criteria.
     execution: false
     name: cbp-fileAnalysis-search
     outputs:
     - contextPath: CBP.FileAnalysis.Priority
-      description: File analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: 'File analysis priority in range (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       type: Number
     - contextPath: CBP.FileAnalysis.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileAnalysis.ComputerID
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.DateModified
-      description: Date/Time when fileAnalysis request was last modified (UTC)
+      description: Date/time when the fileAnalysis request was last modified (UTC).
       type: Date
     - contextPath: CBP.FileAnalysis.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID of the fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileAnalysis.DateCreated
-      description: Date/Time when fileAnalysis request was created (UTC)
+      description: Date/time when the fileAnalysis request was created (UTC).
       type: Date
     - contextPath: CBP.FileAnalysis.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
     - contextPath: CBP.FileAnalysis.CreatedBy
-      description: User that requested this analysis
+      description: User that requested this analysis.
       type: String
   - arguments:
     - default: true
-      description: (Int32)Unique id of this fileUpload
+      description: (Int32) Unique ID of this fileUpload.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Returns object instance of this class
+    description: Returns the object instance of this class.
     execution: false
     name: cbp-fileUpload-get
     outputs:
     - contextPath: CBP.FileUpload.Priority
-      description: File analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: 'File analysis priority in range (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       type: Number
     - contextPath: CBP.FileUpload.FileName
-      description: Name of the file where file exists on the endpoint
+      description: Name of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileUpload.UploadPath
-      description: Local upload path for this file on the server (can be a shared
-        network path). Note that file is compressed in a ZIP archive
+      description: Local upload path for the file on the server (can be a shared
+        network path). Note that the file is compressed in a ZIP archive.
       type: String
     - contextPath: CBP.FileUpload.ComputerId
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: String
     - contextPath: CBP.FileUpload.DateModified
-      description: Date/Time when fileAnalysis request was last modified (UTC)
+      description: Date/time when the fileAnalysis request was last modified (UTC).
       type: Date
     - contextPath: CBP.FileUpload.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
     - contextPath: CBP.FileUpload.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID of the fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileUpload.DateCreated
-      description: Date/Time when fileAnalysis request was created (UTC)
+      description: Date/time when the fileAnalysis request was created (UTC).
       type: Date
     - contextPath: CBP.FileUpload.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file where there file exists on the endpoint.
       type: String
     - contextPath: CBP.FileUpload.UploadStatus
-      description: Status of upload. Can be one of:[0-6]
+      description: 'Status of the upload (valid range: 0-6).'
       type: Number
     - contextPath: CBP.FileUpload.UploadedFileSize
-      description: Size of uploaded file. This will be 0 unless uploadStatus is 3
-        (Completed)
+      description: Size of the uploaded file. The file size will be 0 unless the uploadStatus is "3"
+        (Completed).
       type: String
     - contextPath: CBP.FileUpload.CreatedBy
-      description: User that requested this analysis
+      description: User that requested the analysis.
       type: String
   - arguments:
     - default: true
-      description: (Int32)Unique id of this fileUpload
+      description: (Int32) Unique ID of the fileUpload.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Returns object instance of this class
+    description: Returns the bject instance of this class.
     execution: false
     name: cbp-fileUpload-download
   - arguments:
     - default: false
-      description: (Int32)Id of fileCatalog entry for file to upload
+      description: (Int32) ID of the fileCatalog entry for file to upload.
       isArray: false
       name: fileCatalogId
       required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: (Int32)Id of computer entry associated with this analysis
+      description: (Int32) ID of the computer entry associated with this analysis.
       isArray: false
       name: computerId
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Int32)Upload priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: 'File analysis priority in range (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       isArray: false
       name: priority
       predefined:
@@ -1548,62 +1523,62 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32)Status of upload. Status of upload in progress can be changed
-        to 5 (Cancelled). Any upload can be changed to 6 (Deleted)
+      description: (Int32)Status of upload. The status of "upload in progress" can be changed
+        to "5" (Cancelled). Any upload can be changed to "6" (Deleted).
       isArray: false
       name: uploadStatus
       required: false
       secret: false
     - default: false
       description: ID of the file upload to update. If omitted, will create a new
-        file upload
+        file upload.
       isArray: false
       name: id
       required: false
       secret: false
     deprecated: false
-    description: Creates or updates file upload request
+    description: Creates or updates a file upload request.
     execution: false
     name: cbp-fileUpload-createOrUpdate
     outputs:
     - contextPath: CBP.FileUpload.Priority
-      description: File analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: 'File analysis priority in range (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       type: Number
     - contextPath: CBP.FileUpload.CreatedByUserId
-      description: User Id that requested this analysis
+      description: ID of the user that requested the analysis.
       type: String
     - contextPath: CBP.FileUpload.UploadPath
       description: Local upload path for this file on the server (can be a shared
-        network path). Note that file is compressed in a ZIP archive
+        network path). Note that the file is compressed in a ZIP archive.
       type: String
     - contextPath: CBP.FileUpload.FileName
-      description: Name of the file where file exists on the endpoint
+      description: Name of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileUpload.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileUpload.UploadStatus
-      description: Status of upload. Can be one of:[0-6]
+      description: 'Status of the upload (valid range: 0-6).'
       type: Number
     - contextPath: CBP.FileUpload.ComputerID
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: String
     - contextPath: CBP.FileUpload.DateModified
-      description: Date/Time when fileAnalysis request was last modified (UTC)
+      description: Date/time when the fileAnalysis request was last modified (UTC).
       type: Date
     - contextPath: CBP.FileUpload.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID of the fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileUpload.DateCreated
-      description: Date/Time when fileAnalysis request was created (UTC)
+      description: Date/time when the fileAnalysis request was created (UTC).
       type: Date
     - contextPath: CBP.FileUpload.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
     - contextPath: CBP.FileUpload.UploadedFileSize
-      description: Size of uploaded file. This will be 0 unless uploadStatus is 3
-        (Completed)
+      description: Size of uploaded file. The file size will be 0 unless the uploadStatus is "3"
+        (Completed).
       type: Number
   - arguments:
     - default: false
@@ -1612,17 +1587,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the offset parameter is ignored.
+        If set to "0", all results will be returned, and the offset parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -1630,106 +1603,105 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
       description: 'Sorting is optional and can be defined with a single attribute:
-        &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        &sort=xyz [ASC|DESC], where xyz is the field name from the result set. There can be only one sorting field. Default sort order
+        is ascending (ASC).'
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: Returns objects that match given criteria
+    description: Returns objects that match the specified criteria.
     execution: false
     name: cbp-fileUpload-search
     outputs:
     - contextPath: CBP.FileUpload.Priority
-      description: File analysis priority in range [-2, 2], where 2 is highest priority.
-        Default priority is 0
+      description: 'File analysis priority in range (valid range: -2, 2), where "2" is highest priority.
+        Default priority is "0".'
       type: Number
     - contextPath: CBP.FileUpload.CreatedByUserId
-      description: |
-        User Id that requested this analysis
+      description: ID of the user that requested the analysis.
       type: String
     - contextPath: CBP.FileUpload.UploadPath
       description: Local upload path for this file on the server (can be a shared
-        network path). Note that file is compressed in a ZIP archive
+        network path). Note that the file is compressed in a ZIP archive.
       type: String
     - contextPath: CBP.FileUpload.FileName
-      description: Name of the file where file exists on the endpoint
+      description: Name of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileUpload.PathName
-      description: Path of the file where file exists on the endpoint
+      description: Path of the file where the file exists on the endpoint.
       type: String
     - contextPath: CBP.FileUpload.UploadStatus
-      description: Status of upload. Can be one of:[0-6]
+      description: 'Status of upload (valid range: 0-6).'
       type: Number
     - contextPath: CBP.FileUpload.ComputerID
-      description: Id of computer entry associated with this analysis
+      description: ID of the computer entry associated with this analysis.
       type: String
     - contextPath: CBP.FileUpload.DateModified
-      description: Date/Time when fileAnalysis request was last modified (UTC)
+      description: Date/time when the fileAnalysis request was last modified (UTC).
       type: Date
     - contextPath: CBP.FileUpload.FileCatalogId
-      description: Id of fileCatalog entry associated with this analysis
+      description: ID of the fileCatalog entry associated with this analysis.
       type: String
     - contextPath: CBP.FileUpload.DateCreated
-      description: Date/Time when fileAnalysis request was created (UTC)
+      description: Date/time when the fileAnalysis request was created (UTC).
       type: Date
     - contextPath: CBP.FileUpload.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
     - contextPath: CBP.FileUpload.UploadedFileSize
-      description: Size of uploaded file. This will be 0 unless uploadStatus is 3
-        (Completed)
+      description: Size of the uploaded file. The file size will be 0 unless the uploadStatus is "3"
+        (Completed).
       type: Number
   - arguments:
     - default: true
-      description: (Int32)Unique connector Id
+      description: (Int32) Unique connector ID.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Returns object instance of this class
+    description: Returns the object instance of this class.
     execution: false
     name: cbp-connector-get
     outputs:
     - contextPath: CBP.Connector.AnalysisEnabled
-      description: True if analysis component of this connector is enabled
+      description: '"True" if the analysis component of this connector is enabled. "False" if the analysis component of this connector is disabled.'
       type: Boolean
     - contextPath: CBP.Connector.AnalysisName
-      description: Name for analysis component of the connector (can be same as the
-        name field)
+      description: Name for the analysis component of the connector (can be same as the
+        name field).
       type: String
     - contextPath: CBP.Connector.AnalysisTargets
       description: Array of possible analysis targets. Analysis targets are required
-        when creating new fileAnalysis. They usualy represent different OS and configurations
+        when creating a new fileAnalysis. They usualy represent different OS and configurations
         and are available only for some internal connectors.
       type: String
     - contextPath: CBP.Connector.CanAnalyze
-      description: True if this connector can analyze files
+      description: '"True" if this connector can analyze files. "False" if this connector cannot analyze files.'
       type: Boolean
     - contextPath: CBP.Connector.ConnectorVersion
-      description: Version of this connector
+      description: Version of this connector.
       type: String
     - contextPath: CBP.Connector.Enabled
-      description: True if connector is enabled
+      description: '"True" if the connector is enabled. "False" if the connector is disabled.'
       type: Boolean
     - contextPath: CBP.Connector.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
   - arguments:
     - default: false
@@ -1738,17 +1710,15 @@ script:
         ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating
         values) is any of valid operators (see below). All operators consist of a
         single character. Value is compared with operator and depends on field type.
-        See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
+        For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching.'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: '(Int32) Is maximum number of results to retrieve. If not specified:
-        First 1000 results will be returned. If set to -1: Only result count will
-        be returned, without actual results. Offset parameter is ignored in this case.
-        If set to 0: All results will be returned. Offset parameter is ignored in
-        this case. Note that some result sets could be very large, resulting in query
+      description: '(Int32) Maximum number of results to retrieve. If not specified, the first 1000 results will be returned. If set to "-1", only the result count will
+        be returned, without actual results, and the offset parameter is ignored.
+        If set to "0", all results will be returned, and the offset parameter is ignored. Note that some result sets might be very large, resulting in query
         timeout. Therefore, unless you know that query will not return more than 1000
         results, it is recommended to retrieve data in chunks using offset and limit.'
       isArray: false
@@ -1756,54 +1726,54 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Offset in data set
+      description: (Int32) Offset in the data set.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       description: 'Grouping is optional and can be defined with a single attribute:
-        &group=xyz. There can be only one grouping field. Example: group=osShortName'
+        &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: 'Sorting is optional and can be defined with a single attribute:
+      description: 'Sorting is optional and can be defined with a single attribute where xyz is the field name from the result set:
         &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order
-        (if omitted) is ASC. xyz is field name from the result set.'
+        is ascending (ASC).'
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: Returns objects that match given criteria
+    description: Returns objects that match the specified criteria.
     execution: false
     name: cbp-connector-search
     outputs:
     - contextPath: CBP.Connector.AnalysisEnabled
-      description: True if analysis component of this connector is enabled
+      description: '"True" if the analysis component of this connector is enabled. "False" if the analysis component of this connector is disabled.'
       type: Boolean
     - contextPath: CBP.Connector.AnalysisName
-      description: Name for analysis component of the connector (can be same as the
-        name field)
+      description: Name for the analysis component of the connector (can be same as the
+        name field).
       type: String
     - contextPath: CBP.Connector.AnalysisTargets
       description: Array of possible analysis targets. Analysis targets are required
-        when creating new fileAnalysis. They usualy represent different OS and configurations
+        when creating a new fileAnalysis. They usualy represent different OS and configurations
         and are available only for some internal connectors.
       type: String
     - contextPath: CBP.Connector.CanAnalyze
-      description: True if this connector can analyze files
+      description: '"True" if this connector can analyze files. "False" if this connector cannot analyze files.'
       type: Boolean
     - contextPath: CBP.Connector.ConnectorVersion
-      description: Version of this connector
+      description: Version of this connector.
       type: String
     - contextPath: CBP.Connector.Enabled
-      description: True if connector is enabled
+      description: '"True" if the connector is enabled. "False" if the connector is disabled.'
       type: Boolean
     - contextPath: CBP.Connector.ID
-      description: Unique fileAnalysis id
+      description: Unique fileAnalysis ID.
       type: String
   - arguments:
     - default: true
@@ -1815,7 +1785,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        Resolution of request. Resolution can be changed for open requests or
+        Resolution of the request. Resolution can be changed for open requests or
         closed requests only. It can be one of:
         0=Not Resolved
         1=Rejected
@@ -1836,13 +1806,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Email of user that created this request
+      description: Email address of the user that created this request.
       isArray: false
       name: requestorEmail
       required: false
       secret: false
     - default: false
-      description: Comments by request resolver
+      description: Comments added by the user that resolved the request.
       isArray: false
       name: resolutionComments
       required: false
@@ -1861,15 +1831,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Resolves file approval request
+    description: Resolves a file approval request.
     execution: false
     name: cbp-approvalRequest-resolve
     outputs:
     - contextPath: CBP.ApprovalRequest.ID
-      description: ID of the approval request
+      description: ID of the approval request.
       type: Number
     - contextPath: CBP.ApprovalRequest.ResolutionComments
-      description: Comments by request resolver
+      description: Comments added by the user that resolved the request.
       type: String
     - contextPath: CBP.ApprovalRequest.Resolution
       description: 'Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected,
@@ -1882,7 +1852,7 @@ script:
   - arguments:
     - default: false
       description: (String) Hash associated with this rule. This parameter is not
-        required if fileCatalogId is supplied
+        required if fileCatalogId is supplied.
       isArray: false
       name: hash
       required: false
@@ -1906,28 +1876,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: (Int32) Id of fileCatalog entry associated with this fileRule.
-        Can be 0 if creating/modifying rule based on hash or file name
+      description: (Int32) ID of the fileCatalog entry associated with this fileRule.
+        Can be "0" if creating or modifying the rule based on the hash or file name.
       isArray: false
       name: fileCatalogId
       required: false
       secret: false
     - default: false
-      description: (String) Name of this rule
+      description: (String) Name of this rule.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: (String) Description of this rule
+      description: (String) Description of this rule.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '(Boolean) Set to true to create a report-only ban. Note: fileState
-        has to be set to 1 (unapproved) before this flag can be set'
+      description: '(Boolean) If "true", creates a report-only ban. Note: fileState
+        has to be set to "1" (unapproved) before this flag can be set.'
       isArray: false
       name: reportOnly
       predefined:
@@ -1937,7 +1907,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if reputation approvals are enabled for this file
+      description: (Boolean) "True" if reputation approvals are enabled for this file. "False" if reputation approvals are disabled for this file.
       isArray: false
       name: 'reputationApprovalsEnabled '
       predefined:
@@ -1947,8 +1917,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if this file is forced to act as installer, even
-        if product detected it as ‘not installer’
+      description: (Boolean) "True" if this file is forced to act as installer, even
+        if the product detected it as ‘not installer’.
       isArray: false
       name: forceInstaller
       predefined:
@@ -1958,8 +1928,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if this file is forced to act as ‘not installer’,
-        even if product detected it as installer
+      description: (Boolean) "True" if this file is forced to act as ‘not installer’,
+        even if the product detected it as installer.
       isArray: false
       name: forceNotInstaller
       predefined:
@@ -1968,21 +1938,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: (String) List of IDs of policies where this rule applies. 0 if
-        this is a global rule
+      description: (String) List of IDs of policies to which this rule applies. Set to "0" if
+        this is a global rule.
       isArray: false
       name: policyIds
       required: false
       secret: false
     - default: false
       description: '(Int32) Set of platform flags where this file rule will be valid.
-        combination of: 1 = Windows 2 = Mac 4 = Linux'
+        Combination of: 1 = Windows 2 = Mac 4 = Linux.'
       isArray: false
       name: platformFlags
       required: false
       secret: false
     - default: false
-      description: Headers to present of returned table
+      description: Headers to present of the returned table.
       isArray: false
       name: headers
       required: false
@@ -1993,35 +1963,34 @@ script:
     name: cbp-fileRule-update
     outputs:
     - contextPath: CBP.FileRule.CatalogID
-      description: The file catalog ID for the rule
+      description: The file catalog ID for the rule.
       type: String
     - contextPath: CBP.FileRule.Description
-      description: |
-        The rule description
+      description: The rule description.
       type: String
     - contextPath: CBP.FileRule.FileState
-      description: The file state for the rule
+      description: The file state for the rule.
       type: String
     - contextPath: CBP.FileRule.Hash
-      description: The hash for the rule
+      description: The hash for the rule.
       type: String
     - contextPath: CBP.FileRule.ID
-      description: The rule ID
+      description: The rule ID.
       type: String
     - contextPath: CBP.FileRule.Name
-      description: The rule name
+      description: The rule name.
       type: String
     - contextPath: CBP.FileRule.PolicyIDs
-      description: The policies this rule is part of
+      description: The policies this rule belongs to.
       type: String
     - contextPath: CBP.FileRule.ReportOnly
-      description: Is this rule reporting only or also enforcing
+      description: Whether this rule "reporting only" or is also "enforcing".
       type: String
   - deprecated: false
     arguments:
     - default: false
       description: (String) Hash associated with this rule. This parameter is not
-        required if fileCatalogId is supplied
+        required if the fileCatalogId is supplied.
       isArray: false
       name: hash
       required: false
@@ -2029,7 +1998,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: '(Int32) File state for this rule. Can be one of: 1=Unapproved
-        2=Approved 3=Banned'
+        2=Approved 3=Banned.'
       isArray: false
       name: fileState
       predefined:
@@ -2039,34 +2008,34 @@ script:
       required: true
       secret: false
     - default: false
-      description: (Int32) Unique id of this fileRule
+      description: (Int32) Unique ID of this fileRule.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: (Int32) Id of fileCatalog entry associated with this fileRule.
-        Can be 0 if creating/modifying rule based on hash or file name
+      description: (Int32) ID of the fileCatalog entry associated with this fileRule.
+        Can be "0" if creating or modifying the rule based on the hash or file name.`
       isArray: false
       name: fileCatalogId
       required: false
       secret: false
     - default: false
-      description: (String) Name of this rule
+      description: (String) Name of this rule.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: (String) Description of this rule
+      description: (String) Description of this rule.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '(Boolean) Set to true to create a report-only ban. Note: fileState
-        has to be set to 1 (unapproved) before this flag can be set'
+      description: '(Boolean) Set to "true" to create a report-only ban. Note: fileState
+        has to be set to "1" (unapproved) before this flag can be set.'
       isArray: false
       name: reportOnly
       predefined:
@@ -2076,7 +2045,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if reputation approvals are enabled for this file
+      description: (Boolean) "True" if reputation approvals are enabled for this file. "False" if reputation approvals are disabled for this file.
       isArray: false
       name: 'reputationApprovalsEnabled '
       predefined:
@@ -2086,8 +2055,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if this file is forced to act as installer, even
-        if product detected it as ‘not installer’
+      description: (Boolean) "True" if this file is forced to act as installer, even
+        if the product detected it as ‘not installer’.
       isArray: false
       name: forceInstaller
       predefined:
@@ -2097,8 +2066,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) True if this file is forced to act as ‘not installer’,
-        even if product detected it as installer
+      description: (Boolean) "True" if this file is forced to act as ‘not installer’,
+        even if the product detected it as installer.
       isArray: false
       name: forceNotInstaller
       predefined:
@@ -2107,53 +2076,52 @@ script:
       required: false
       secret: false
     - default: false
-      description: (String) List of IDs of policies where this rule applies. 0 if
-        this is a global rule
+      description: (String) List of IDs of policies to which this rule applies. Set to "0" if
+        this is a global rule.
       isArray: false
       name: policyIds
       required: false
       secret: false
     - default: false
       description: '(Int32) Set of platform flags where this file rule will be valid.
-        combination of: 1 = Windows 2 = Mac 4 = Linux'
+        combination of: 1 = Windows 2 = Mac 4 = Linux.'
       isArray: false
       name: platformFlags
       required: false
       secret: false
     - default: false
-      description: Headers to present of returned table
+      description: Headers to present of the returned table.
       isArray: false
       name: headers
       required: false
       secret: false
-    description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
+    description: 'Creates or updates a file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     execution: false
     name: cbp-fileRule-createOrUpdate
     outputs:
     - contextPath: CBP.FileRule.CatalogID
-      description: The file catalog ID for the rule
+      description: The file catalog ID for the rule.
       type: String
     - contextPath: CBP.FileRule.Description
-      description: |
-        The rule description
+      description: The rule description.
       type: String
     - contextPath: CBP.FileRule.FileState
-      description: The file state for the rule
+      description: The file state for the rule.
       type: String
     - contextPath: CBP.FileRule.Hash
-      description: The hash for the rule
+      description: The hash for the rule.
       type: String
     - contextPath: CBP.FileRule.ID
-      description: The rule ID
+      description: The rule ID.
       type: String
     - contextPath: CBP.FileRule.Name
-      description: The rule name
+      description: The rule name.
       type: String
     - contextPath: CBP.FileRule.PolicyIDs
-      description: The policies this rule is part of
+      description: The policies this rule belongs to.
       type: String
     - contextPath: CBP.FileRule.ReportOnly
-      description: Is this rule reporting only or also enforcing
+      description: Is this rule "reporting only" or is it also "enforcing".
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
