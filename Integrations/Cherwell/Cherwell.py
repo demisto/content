@@ -353,7 +353,7 @@ def run_query_on_business_objects(bus_id, filter_query, max_results):
         'filters': filter_query
     }
     if max_results:
-        payload['pageSize']: max_results
+        payload['pageSize'] = max_results
     return get_search_results(payload)
 
 
