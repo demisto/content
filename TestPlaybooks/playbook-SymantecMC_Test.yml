@@ -756,12 +756,12 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: c34f2cea-5056-47c7-8538-f5d16328c1d0
+    taskid: c6c3f0c4-1b73-4240-8985-88dd188577b5
     type: regular
     task:
-      id: c34f2cea-5056-47c7-8538-f5d16328c1d0
+      id: c6c3f0c4-1b73-4240-8985-88dd188577b5
       version: -1
-      name: Add Category content
+      name: Add Category content with policy name
       description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
         names.
       script: Symantec Management Center|||symantec-mc-add-policy-content
@@ -782,9 +782,7 @@ tasks:
         simple: test
       enabled: {}
       ip: {}
-      schema_version: {}
-      url: {}
-      uuid:
+      name:
         complex:
           root: SymantecMC
           accessor: Policy
@@ -799,7 +797,10 @@ tasks:
                   simple: Name
               getField:
                 value:
-                  simple: UUID
+                  simple: Name
+      schema_version: {}
+      url: {}
+      uuid: {}
     separatecontext: false
     view: |-
       {
@@ -1636,12 +1637,12 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 585bd05d-4eac-489b-85cf-650728d97f83
+    taskid: a1442773-428c-49b7-856b-a87ce2a254c2
     type: regular
     task:
-      id: 585bd05d-4eac-489b-85cf-650728d97f83
+      id: a1442773-428c-49b7-856b-a87ce2a254c2
       version: -1
-      name: Get URL policy
+      name: Get URL policy with name
       description: Get a policy from Symantec MC
       script: Symantec Management Center|||symantec-mc-get-policy
       type: regular
@@ -1651,7 +1652,7 @@ tasks:
       '#none#':
       - "44"
     scriptarguments:
-      uuid:
+      name:
         complex:
           root: SymantecMC
           accessor: Policy
@@ -1666,7 +1667,8 @@ tasks:
                   simple: Name
               getField:
                 value:
-                  simple: UUID
+                  simple: Name
+      uuid: {}
     separatecontext: false
     view: |-
       {

@@ -27,49 +27,48 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ' Filter the query filter parameter by the OS build number, for
+      description: 'Filter the query filter parameter by the OS build number, for
         example: "GT 227900". '
       isArray: true
       name: build
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by description, for example:
+      description: 'Filter the query filter parameter by description, for example:
         "CONTAINS" desc".'
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by model, for example: "EQ
-        VSWG-SE". '
+      description: 'Filter the query filter parameter by model, for example: "EQ VSWG-SE".'
       isArray: false
       name: model
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by name, for example: "STARTSWITH
+      description: 'Filter the query filter parameter by name, for example: "STARTSWITH
         CAS". '
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by OS version, for example:
-        "LT 2.3". '
+      description: 'Filter the query filter parameter by OS version, for example:
+        "LT 2.3".'
       isArray: false
       name: os_version
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by platform, for example: "CONTAINS
+      description: 'Filter the query filter parameter by platform, for example: "CONTAINS
         CAS". '
       isArray: false
       name: platform
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by device type, for example:
+      description: 'Filter the query filter parameter by device type, for example:
         "cas". '
       isArray: false
       name: type
@@ -200,7 +199,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets license information for a device in Symantec MC
+    description: Gets license information for a device in Symantec MC.
     execution: false
     name: symantec-mc-get-device-license
     outputs:
@@ -271,21 +270,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by description, for example:
+      description: 'Filter the query filter parameter by description, for example:
         "CONTAINS desc."'
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by name, for example: "STARTSWITH
+      description: 'Filter the query filter parameter by name, for example: "STARTSWITH
         my_list". '
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: ' Filter the query filter parameter by referenceId, for example:
+      description: 'Filter the query filter parameter by referenceId, for example:
         "EQ my_list". '
       isArray: false
       name: reference_id
@@ -316,7 +315,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List policies in Symantec MC
+    description: List policies in Symantec MC.
     execution: false
     name: symantec-mc-list-policies
     outputs:
@@ -350,7 +349,13 @@ script:
         UUID.
       isArray: false
       name: uuid
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The policy name
+      isArray: false
+      name: name
+      required: false
       secret: false
     deprecated: false
     description: Gets information for a policy.
@@ -585,7 +590,13 @@ script:
         UUID.
       isArray: false
       name: uuid
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The policy name to add content to.
+      isArray: false
+      name: name
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -613,19 +624,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' CSV list of IP addresses to add, for example: "1.2.3.4, 8.8.8.8".'
+      description: 'CSV list of IP addresses to add, for example: "1.2.3.4, 8.8.8.8".'
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: ' CSV list of URLs to add, for example: "www.google.com, www.github.com".'
+      description: 'CSV list of URLs to add, for example: "www.google.com, www.github.com".'
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: ' CSV list of category names to add, for example: "Job Search/Careers,
+      description: 'CSV list of category names to add, for example: "Job Search/Careers,
         Content Servers".'
       isArray: true
       name: category
@@ -659,7 +670,13 @@ script:
         UUID.
       isArray: false
       name: uuid
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The policy name to add content to.
+      isArray: false
+      name: name
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -687,19 +704,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' CSV list of IP addresses to delete, for example: "1.2.3.4, 8.8.8.8".'
+      description: 'CSV list of IP addresses to delete, for example: "1.2.3.4, 8.8.8.8".'
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: ' CSV list of URLs to delete, for example: "www.google.com, www.github.com".'
+      description: 'CSV list of URLs to delete, for example: "www.google.com, www.github.com".'
       isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: ' CSV list of category names to delete, for example: "Job Search/Careers,
+      description: 'CSV list of category names to delete, for example: "Job Search/Careers,
         Content Servers".'
       isArray: true
       name: category
@@ -716,4 +733,4 @@ script:
   type: python
 tests:
 - SymantecMC_TestPlaybook
-releaseNotes: '-'
+releaseNotes: 'Added option to get and modify content to a policy using its name. Additional description fixes.'
