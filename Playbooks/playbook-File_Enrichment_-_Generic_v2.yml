@@ -5,10 +5,8 @@ name: File Enrichment - Generic v2
 description: |-
   Enrich a file using one or more integrations.
 
-  File enrichment includes:
-  - Threat information
+  - Provide threat information
 
-  File reputation is not included as part of the enrichment playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -67,8 +65,8 @@ tasks:
     task:
       id: 9ce11d97-a210-4566-8929-a2c7236c34dd
       version: -1
-      name: Is there a SHA-256 hash?
-      description: Check if there is a SHA-256 hash in context.
+      name: Is there a SHA256 hash?
+      description: Check if there is a SHA256 hash in context.
       type: condition
       iscommand: false
       brand: ""
@@ -108,7 +106,7 @@ tasks:
       id: 96571487-7027-42f8-8c89-ca96f16b2a33
       version: -1
       name: Is Cylance Protect v2 enabled?
-      description: Checks if there is an active instance of Cylance Protect v2.
+      description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -165,7 +163,7 @@ tasks:
       id: 49c6d1e2-ac63-4783-8733-794570f1bdb5
       version: -1
       name: Get threat information from Cylance Protect v2
-      description: Get threat information from the Cylance Protect v2 integration.
+      description: Gets threat information from the Cylance Protect v2 integration.
       script: Cylance Protect v2|||cylance-protect-get-threat
       type: regular
       iscommand: true
@@ -274,7 +272,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: File SHA-256 hash to enrich.
+  description: The file SHA256 hash to enrich.
 - key: SHA1
   value:
     complex:
@@ -283,47 +281,47 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: File SHA-1 hash to enrich.
+  description: The file SHA1 hash to enrich.
 outputs:
 - contextPath: DBotScore.Indicator
-  description: The tested indicator
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The indicator type.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: SHA1 hash of the file.
   type: string
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: SHA256 hash of the file.
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that made the decision.
   type: string
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: MD5 hash of the file.
   type: string
 - contextPath: DBotScore
-  description: The DBotScore's object
+  description: The DBotScore object.
   type: unknown
 - contextPath: File
-  description: The file's object
+  description: The file object
   type: unknown
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: File.VirusTotal.Scans
-  description: the scan object
+  description: The scan object.
   type: unknown
 - contextPath: File.VirusTotal.Scans.Source
-  description: Scan vendor for this hash
+  description: Vendor that scanned this hash.
 - contextPath: File.VirusTotal.Scans.Detected
-  description: Scan detection for this hash (True,False)
+  description: Whether a scan was detected for this hash (True/False).
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
-releaseNotes: "Added a new playbook for file enrichment. The new playbook features improved indicator uniqueness, the removal of a redundant subplaybook, simplified conditions & structure, the removal of indicator reputation and the removal of the Palo Alto Networks AppFramework integration."
+releaseNotes: "Updated names and descriptions."
 tests:
   - File Enrichment - Generic v2 - Test
