@@ -176,7 +176,8 @@ def test_module():
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error(str(ex))
+        return_error("There was a problem creating a BigQuery client.\n"
+                     "Please make sure the credentials JSON you entered is valid.")
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
