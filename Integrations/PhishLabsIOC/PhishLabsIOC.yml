@@ -11,8 +11,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+- defaultvalue: https://ioc.phishlabs.com
+  display: Server URL (e.g. https://ioc.phishlabs.com)
   name: url
   required: true
   type: 0
@@ -30,6 +30,10 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
 description: Get live feeds of IOC data from PhishLabs
 display: PhishLabsIOC
 name: PhishLabsIOC
@@ -90,7 +94,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get global IOC feed from PhishLabs
+    description: Gets the global IOC feed from PhishLabs
     execution: false
     name: phishlabs-global-feed
     outputs:
@@ -225,7 +229,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get indicators from a speicifed PhishLabs incident.
+    description: Gets indicators from a speicifed PhishLabs incident.
     execution: false
     name: phishlabs-get-incident-indicators
     outputs:
