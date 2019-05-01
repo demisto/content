@@ -2,7 +2,10 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import yaml
+import sys
 
+reload(sys)
+sys.setdefaultencoding('utf-8')  # pylint: disable=E110
 
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?')
 
@@ -12,13 +15,20 @@ def get_yaml_obj(entry_id):
         yml_file_path = demisto.getFilePath(entry_id)['path']
         with open(yml_file_path, 'r') as yml_file:
             data = yaml.safe_load(yml_file)
-    except (ValueError, yaml.YAMLError):
+    except (yaml.YAMLError, ValueError):
         return_error('Failed to open integration file')
 
     return data
 
 
 def get_command_examples(entry_id):
+    """
+    get command examples from command file
+
+    @param entry_id: an entry ID of a command file or the content of such file
+
+    @return: a list of command examples
+    """
     commands = []
     errors = []
     if entry_id is None:
@@ -32,18 +42,27 @@ def get_command_examples(entry_id):
         demisto.debug('failed to open command file, tried parsing as free text')
         commands = entry_id.split('\n')
 
+    demisto.debug('found the following commands:\n{}'.format('\n* '.join(commands)))
     return commands, errors
 
 
-def find_cmd_example(command_examples, cmd):
-    regex = re.compile('^!?{}( .*)?$'.format(cmd))
-    valid_examples = [example for example in command_examples if regex.match(example) is not None]
+def build_example_dict(command_examples):
+    """
+    gets an array of command examples, run them one by one and return a map of
+        {base command -> (example command, markdown, outputs)}
+    Note: if a command appears more then once, run all occurrences but stores only the first.
+    """
+    examples = {}
+    errors = []
+    for example in command_examples:
+        if example.startswith('!'):
+            cmd, md_example, context_example, cmd_errors = run_command(example[1:])
+            errors.extend(cmd_errors)
 
-    example = valid_examples[0] if len(valid_examples) > 0 else ''
-    if example.startswith('!'):
-        return example[1:]
-    else:
-        return example
+            if cmd not in examples:
+                examples[cmd] = (example, md_example, context_example)
+
+    return examples, errors
 
 
 def extract_command(cmd_example):
@@ -55,60 +74,44 @@ def extract_command(cmd_example):
     return cmd, args
 
 
-def generate_command_example(cmd, cmd_example):
+def run_command(command_example):
     errors = []
     context_example = ''
     md_example = ''
-    if cmd_example != '':
-        try:
-            example_cmd, kwargs = extract_command(cmd_example)
-            res = demisto.executeCommand(example_cmd, kwargs)
+    cmd = command_example
+    try:
+        cmd, kwargs = extract_command(command_example)
+        demisto.info('\n\n\ncommand_example: "{}"\ncmd: "{}"\nkwargs: {}\n\n\n'.format(command_example, cmd, kwargs))
+        res = demisto.executeCommand(cmd, kwargs)
 
-            for entry in res:
-                if is_error(entry):
-                    demisto.results(res)
-                    raise RuntimeError('something went wrong with your command: {}'.format(cmd_example))
+        for entry in res:
+            if is_error(entry):
+                demisto.results(res)
+                raise RuntimeError('something went wrong with your command: {}'.format(command_example))
 
-                raw_context = entry.get('EntryContext', {})
-                if raw_context is not None:
-                    context = {k.split('(')[0]: v for k, v in raw_context.items()}
-                    context_example += json.dumps(context, indent=4)
-                if entry.get('HumanReadable') is None:
-                    if entry.get('Contents') is not None:
-                        content = entry.get('Contents')
-                        if isinstance(content, STRING_TYPES):
-                            md_example += content
-                        else:
-                            md_example += json.dumps(content)
-                else:
-                    md_example += entry.get('HumanReadable')
+            raw_context = entry.get('EntryContext', {})
+            if raw_context is not None:
+                context = {k.split('(')[0]: v for k, v in raw_context.items()}
+                context_example += json.dumps(context, indent=4)
+            if entry.get('HumanReadable') is None:
+                if entry.get('Contents') is not None:
+                    content = entry.get('Contents')
+                    if isinstance(content, STRING_TYPES):
+                        md_example += content
+                    else:
+                        md_example += json.dumps(content)
+            else:
+                md_example += entry.get('HumanReadable')
 
-        except RuntimeError:
-            errors.append('The provided example for cmd {} has failed...'.format(cmd['name']))
+    except RuntimeError:
+        errors.append('The provided example for cmd {} has failed...'.format(cmd))
 
-        except Exception as e:
-            errors.append(
-                'Error encountered in the processing of command {}, error was: {}. '.format(cmd['name'], str(e))
-                + 'Please check your command inputs and outputs')
-    else:
-        errors.append('did not get any example for {}. please add it manually.'.format(cmd['name']))
+    except Exception as e:
+        errors.append(
+            'Error encountered in the processing of command {}, error was: {}'.format(cmd, str(e)) +
+            '. Please check your command inputs and outputs')
 
-    example = [
-        '',
-        '##### Command Example',
-        '`{}`'.format(cmd_example),
-        '',
-        '##### Context Example',
-        '```',
-        '{}'.format(context_example),
-        '```',
-        '',
-        '##### Human Readable Output',
-        '{}'.format(md_example),
-        '',
-    ]
-
-    return example, errors
+    return cmd, md_example, context_example, errors
 
 
 def add_lines(line):
@@ -124,24 +127,24 @@ def add_lines(line):
     return output
 
 
-def addErrorLines(scriptToScan, scriptType):
+def addErrorLines(script_to_scan, script_type):
     res = ''
-    if 'python' in scriptType:
-        errorKeys = ['return_error', 'raise ']
-    elif 'javascript' in scriptType:
-        errorKeys = ['throw ']
+    if 'python' in script_type:
+        error_keys = ['return_error', 'raise ']
+    elif 'javascript' in script_type:
+        error_keys = ['throw ']
     # Unsupported script type
     else:
         return res
     linesToSkip = 0
-    scriptLines = scriptToScan.splitlines()
+    scriptLines = script_to_scan.splitlines()
     for idx in range(len(scriptLines)):
         # Skip lines that were already scanned
         if linesToSkip > 0:
             linesToSkip -= 1
             continue
         line = scriptLines[idx]
-        if any(key in line for key in errorKeys):
+        if any(key in line for key in error_keys):
             if '(' in line:
                 bracketOpenIdx = line.index('(') + 1
                 if ')' in line:
@@ -150,7 +153,7 @@ def addErrorLines(scriptToScan, scriptType):
                 # Handle multi line error
                 else:
                     res += '*' + ('' if len(line[bracketOpenIdx:].lstrip()) < 1 else ' ' + line[bracketOpenIdx:] + '\n')
-                    while ')' not in scriptLines[idx + linesToSkip + 1]:
+                    while not ')' in scriptLines[idx + linesToSkip + 1]:
                         linesToSkip += 1
                         line = scriptLines[idx + linesToSkip]
                         res += ' ' + line.lstrip() + '\n'
@@ -160,7 +163,7 @@ def addErrorLines(scriptToScan, scriptType):
                     bracketCloseIdx = line.index(')')
                     res += line[:bracketCloseIdx].lstrip() + '\n'
             else:
-                firstMatchingErrorKey = next((key for key in errorKeys if key in line), False)
+                firstMatchingErrorKey = next((key for key in error_keys if key in line), False)
                 afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)
                 res += '* ' + line[afterErrorKeyIdx:] + '\n'
     return res
@@ -174,7 +177,7 @@ def generate_section(title, data):
     ]
 
     if data is not None:
-        section.append(add_lines(data))
+        section.extend(add_lines(data))
 
     return section
 
@@ -198,7 +201,7 @@ def generate_setup_section(yaml_data):
 
 
 # Commands
-def generate_commands_section(yaml_data, command_examples):
+def generate_commands_section(yaml_data, example_dict):
     errors = []
     section = [
         '## Commands',
@@ -211,15 +214,15 @@ def generate_commands_section(yaml_data, command_examples):
     section.extend(command_list)
 
     for i, cmd in enumerate(commands):
-        cmd_section, cmd_errors = generate_single_command_section(i, cmd, command_examples)
+        cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
         section.extend(cmd_section)
         errors.extend(cmd_errors)
 
     return section, errors
 
 
-def generate_single_command_section(index, cmd, command_examples):
-    cmd_example = find_cmd_example(command_examples, cmd['name'])
+def generate_single_command_section(index, cmd, example_dict):
+    cmd_example = example_dict.get(cmd['name'])
     errors = []
     section = [
         '### {}. {}'.format(index + 1, cmd['name']),
@@ -233,14 +236,15 @@ def generate_single_command_section(index, cmd, command_examples):
     ]
 
     # Inputs
-    if len(cmd['arguments']) == 0:
+    arguments = cmd.get('arguments')
+    if arguments is None:
         section.append('There are no input arguments for this command.')
     else:
         section.extend([
             '| **Argument Name** | **Description** | **Required** |',
             '| --- | --- | --- |',
         ])
-        for arg in cmd['arguments']:
+        for arg in arguments:
             if not arg.get('description'):
                 errors.append(
                     'Error! You are missing description in input {} of command {}'.format(arg['name'], cmd['name']))
@@ -281,13 +285,48 @@ def generate_single_command_section(index, cmd, command_examples):
     return section, errors
 
 
+def generate_command_example(cmd, cmd_example=None):
+    errors = []
+    context_example = None
+    md_example = ''
+    if cmd_example is not None:
+        cmd_example, md_example, context_example = cmd_example
+    else:
+        cmd_example = ' '
+        errors.append('did not get any example for {}. please add it manually.'.format(cmd['name']))
+
+    example = [
+        '',
+        '##### Command Example',
+        '```{}```'.format(cmd_example),
+        '',
+    ]
+    if context_example:
+        example.extend([
+            '##### Context Example',
+            '```',
+            '{}'.format(context_example),
+            '```',
+            '',
+        ])
+    example.extend([
+        '##### Human Readable Output',
+        '{}'.format(md_example),
+        '',
+    ])
+
+    return example, errors
+
+
 def main():
     args = demisto.args()
     yml_data = get_yaml_obj(args['entryID'])
     command_examples, errors = get_command_examples(args.get('commands'))
+    example_dict, build_errors = build_example_dict(command_examples)
+    errors.extend(build_errors)
 
     docs = []
-    docs.extend(generate_section('Overview', args.get('overview')))
+    docs.extend(generate_section('Overview', args.get('overview', yml_data.get('description'))))
     docs.append('This integration was integrated and tested with version xx of {}'.format(yml_data['name']))
     # Playbooks
     docs.extend(generate_section('{} Playbook'.format(yml_data['name']), None))
@@ -300,7 +339,7 @@ def main():
     # Fetched incidents data
     docs.extend(generate_section('Fetched Incidents Data', args.get('fetchedData')))
     # Commands
-    command_section, command_errors = generate_commands_section(yml_data, command_examples)
+    command_section, command_errors = generate_commands_section(yml_data, example_dict)
     docs.extend(command_section)
     errors.extend(command_errors)
     # Additional info
