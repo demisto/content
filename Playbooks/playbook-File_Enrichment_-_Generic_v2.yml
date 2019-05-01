@@ -1,14 +1,14 @@
-id: File Enrichment - Generic
+id: File Enrichment - Generic v2
 version: -1
-name: File Enrichment - Generic
-fromversion: 3.6.0
+fromversion: 4.1.0
+name: File Enrichment - Generic v2
 description: |-
   Enrich a file using one or more integrations.
 
   File enrichment includes:
-  * File history
-  * Threat information
-  * File reputation
+  - Threat information
+
+  File reputation is not included as part of the enrichment playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,19 +24,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
-      - "31"
-    reputationcalc: 0
+      - "25"
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 50
+          "x": 735,
+          "y": -90
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: d2deb7de-75cc-4f33-8ba3-6f83370096f8
@@ -45,54 +45,27 @@ tasks:
       id: d2deb7de-75cc-4f33-8ba3-6f83370096f8
       version: -1
       name: Done
-      description: ""
       type: title
+      description: ""
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1010
+          "x": 735,
+          "y": 620
         }
       }
     note: false
     timertriggers: []
-  "24":
-    id: "24"
-    taskid: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
-    type: title
-    task:
-      id: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
-      version: -1
-      name: Threat information
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-      - "29"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
-    taskid: 803cab60-a177-4bca-8890-267658a8e037
+    taskid: 9ce11d97-a210-4566-8929-a2c7236c34dd
     type: condition
     task:
-      id: 803cab60-a177-4bca-8890-267658a8e037
+      id: 9ce11d97-a210-4566-8929-a2c7236c34dd
       version: -1
       name: Is there a SHA-256 hash?
       description: Check if there is a SHA-256 hash in context.
@@ -103,16 +76,15 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "26"
+      - "27"
     scriptarguments:
       value:
         simple: ${File.SHA256}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -121,44 +93,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 340
+          "x": 470,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
-  "26":
-    id: "26"
-    taskid: 977beaa5-2d82-4d11-815d-16c6b502b5af
-    type: title
-    task:
-      id: 977beaa5-2d82-4d11-815d-16c6b502b5af
-      version: -1
-      name: Get threat info from Cylance Protect v2
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
-    taskid: a385675b-4d5d-40c4-8ea3-f9658e14ef91
+    taskid: 96571487-7027-42f8-8c89-ca96f16b2a33
     type: condition
     task:
-      id: a385675b-4d5d-40c4-8ea3-f9658e14ef91
+      id: 96571487-7027-42f8-8c89-ca96f16b2a33
       version: -1
       name: Is Cylance Protect v2 enabled?
       description: Checks if there is an active instance of Cylance Protect v2.
@@ -170,18 +117,17 @@ tasks:
       - "7"
       "yes":
       - "28"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: modules
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
@@ -190,7 +136,7 @@ tasks:
                       value:
                         simple: Cylance Protect v2
                     ignorecase: true
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.state
@@ -204,18 +150,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 660
+          "x": 470,
+          "y": 250
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
-    taskid: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
+    taskid: 49c6d1e2-ac63-4783-8733-794570f1bdb5
     type: regular
     task:
-      id: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
+      id: 49c6d1e2-ac63-4783-8733-794570f1bdb5
       version: -1
       name: Get threat information from Cylance Protect v2
       description: Get threat information from the Cylance Protect v2 integration.
@@ -230,27 +177,30 @@ tasks:
       sha256:
         complex:
           root: inputs.SHA256
-    reputationcalc: 0
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 835
+          "x": 470,
+          "y": 450
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
-    taskid: 0357cc1e-4fed-4d34-8672-c44dde656382
+    taskid: 4e009c34-dfb2-4626-8c6e-b8da7850d084
     type: playbook
     task:
-      id: 0357cc1e-4fed-4d34-8672-c44dde656382
+      id: 4e009c34-dfb2-4626-8c6e-b8da7850d084
       version: -1
-      name: File Enrichment - Virus Total private API
-      description: Get file reputation using one or more integrations
+      name: File Enrichment - Virus Total Private API
+      description: Get file information using the Virus Total Private API integration.
       playbookName: File Enrichment - Virus Total Private API
       type: playbook
       iscommand: false
@@ -262,13 +212,18 @@ tasks:
       MD5:
         complex:
           root: inputs.MD5
+          transformers:
+          - operator: uniq
       SHA1:
         complex:
           root: inputs.SHA1
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: inputs.SHA256
-    reputationcalc: 0
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -277,88 +232,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 835
+          "x": 990,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
-  "30":
-    id: "30"
-    taskid: 52857fb4-234a-41b3-863e-acedeb1b02b3
-    type: playbook
-    task:
-      id: 52857fb4-234a-41b3-863e-acedeb1b02b3
-      version: -1
-      name: File Enrichment - File reputation
-      description: Get file reputation using one or more integrations
-      playbookName: File Enrichment - File reputation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
-      SHA1:
-        complex:
-          root: inputs.SHA1
-      SHA256:
-        complex:
-          root: inputs.SHA256
-    reputationcalc: 0
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 1135,
-          "y": 835
-        }
-      }
-    note: false
-    timertriggers: []
-  "31":
-    id: "31"
-    taskid: e14e2725-8611-4089-8947-4db090c13347
-    type: title
-    task:
-      id: e14e2725-8611-4089-8947-4db090c13347
-      version: -1
-      name: File reputation
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1135,
-          "y": 675
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "25_27_yes": 0.59,
+      "25_7_#default#": 0.44,
+      "27_28_yes": 0.57,
+      "27_7_#default#": 0.63
+    },
     "paper": {
       "dimensions": {
-        "height": 1025,
-        "width": 1465,
-        "x": 50,
-        "y": 50
+        "height": 775,
+        "width": 900,
+        "x": 470,
+        "y": -90
       }
     }
   }
@@ -368,6 +262,8 @@ inputs:
     complex:
       root: File
       accessor: MD5
+      transformers:
+      - operator: uniq
   required: false
   description: File MD5 hash to enrich.
 - key: SHA256
@@ -375,6 +271,8 @@ inputs:
     complex:
       root: File
       accessor: SHA256
+      transformers:
+      - operator: uniq
   required: false
   description: File SHA-256 hash to enrich.
 - key: SHA1
@@ -382,6 +280,8 @@ inputs:
     complex:
       root: File
       accessor: SHA1
+      transformers:
+      - operator: uniq
   required: false
   description: File SHA-1 hash to enrich.
 outputs:
@@ -424,6 +324,6 @@ outputs:
   description: Scan detection for this hash (True,False)
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
-releaseNotes: "-"
+releaseNotes: "Added a new playbook for file enrichment. The new playbook features improved indicator uniqueness, the removal of a redundant subplaybook, simplified conditions & structure, the removal of indicator reputation and the removal of the Palo Alto Networks AppFramework integration."
 tests:
-  - no test (new v2 playbook has an updated test)
+  - File Enrichment - Generic v2 - Test

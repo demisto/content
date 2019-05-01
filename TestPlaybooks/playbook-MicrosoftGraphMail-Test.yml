@@ -1,0 +1,238 @@
+id: MicrosoftGraphMail-Test
+version: -1
+name: MicrosoftGraphMail-Test
+description: Microsoft Graph Mail Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b1851353-8f53-4bee-86c0-750e1978204d
+    type: start
+    task:
+      id: b1851353-8f53-4bee-86c0-750e1978204d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 017c9817-f538-494b-8606-255a070adacc
+    type: regular
+    task:
+      id: 017c9817-f538-494b-8606-255a070adacc
+      version: -1
+      name: msgraph-mail-get-attachment
+      description: Gets an attachment from the email.
+      script: MicrosoftGraphMail|||msgraph-mail-get-attachment
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      attachment_id:
+        simple: ${MSGraphMailAttachment.Attachment.ID}
+      folder_id: {}
+      message_id:
+        simple: ${MSGraphMail.ID}
+      user_id:
+        simple: ${MSGraphMail.UserID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 180b99e8-efaa-4e2b-8645-96e7d5bbfe58
+    type: regular
+    task:
+      id: 180b99e8-efaa-4e2b-8645-96e7d5bbfe58
+      version: -1
+      name: msgraph-mail-get-email
+      description: Gets the properties of an email.
+      script: MicrosoftGraphMail|||msgraph-mail-get-email
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      folder_id: {}
+      get_body: {}
+      message_id:
+        simple: ${MSGraphMail.ID}
+      odata: {}
+      user_id:
+        simple: ${MSGraphMail.UserID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 9b4aefdd-bec6-403c-80e6-e3a42422d7c2
+    type: regular
+    task:
+      id: 9b4aefdd-bec6-403c-80e6-e3a42422d7c2
+      version: -1
+      name: msgraph-mail-list-attachments
+      description: Lists all of the attachments of given email
+      script: MicrosoftGraphMail|||msgraph-mail-list-attachments
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      folder_id: {}
+      message_id:
+        simple: ${MSGraphMail.ID}
+      user_id:
+        simple: ${MSGraphMail.UserID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: edb2f630-ed48-48e3-8bf7-2f56345488c7
+    type: regular
+    task:
+      id: edb2f630-ed48-48e3-8bf7-2f56345488c7
+      version: -1
+      name: msgraph-mail-list-emails
+      description: Get items from the service.
+      script: MicrosoftGraphMail|||msgraph-mail-list-emails
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      folder_id: {}
+      odata: {}
+      pages_to_pull: {}
+      search:
+        simple: קבל
+      user_id:
+        simple: oren@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 7079a8d4-a9be-4a43-8282-61614f7712f5
+    type: regular
+    task:
+      id: 7079a8d4-a9be-4a43-8282-61614f7712f5
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 16db566d-6d17-4f0a-8437-8866dec1ce26
+    type: title
+    task:
+      id: 16db566d-6d17-4f0a-8437-8866dec1ce26
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
