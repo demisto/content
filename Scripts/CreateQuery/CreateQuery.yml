@@ -156,3 +156,5 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
+tests:
+  - No tests will add in the future
