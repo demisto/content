@@ -25,11 +25,6 @@ nothing_to_analyze_output = {
     'HumanReadable': 'We found nothing to analyze in your uploaded email'
 }
 
-if not USE_PROXY:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' HELPER FUNCTIONS '''
 
@@ -337,6 +332,7 @@ def download_request(webid, rsc_type):
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(), ))
 try:
+    handle_proxy()
     if demisto.command() in ['test-module', 'joe-is-online']:
         # This is the call made when pressing the integration test button.
         if is_online():
