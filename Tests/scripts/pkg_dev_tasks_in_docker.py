@@ -115,7 +115,6 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
     pylint_files = get_pylint_files(project_dir)
     # copy demistomock and common server
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
-    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
     subprocess.check_call(['cp', CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py',
                            project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
