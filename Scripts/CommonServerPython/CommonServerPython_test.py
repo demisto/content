@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from Scripts.CommonServerPython.CommonServerPython import *
+from .CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+    flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2
 
 import copy
 import pytest
@@ -205,7 +207,7 @@ def test_tbl_to_md_header_not_on_first_object():
 
 def test_tbl_to_md_no_header():
     # no header
-    table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', data,
+    table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
                                        headers=['no', 'header', 'found'], removeNull=True)
     expected_table_no_headers = '''### tableToMarkdown test with no headers
 **No entries.**
