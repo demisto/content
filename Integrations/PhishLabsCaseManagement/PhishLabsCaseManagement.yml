@@ -1,0 +1,355 @@
+category: Case Management
+commonfields:
+  id: PhishLabs Case Management
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: https://caseapi.phishlabs.com
+  display: Server URL (e.g. https://caseapi.phishlabs.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+description: Manage cases in PhishLabs
+display: PhishLabs Case Management
+name: PhishLabs Case Management
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Open
+      description: CSV list of statuses, for example, "Open,Assigned"
+      isArray: true
+      name: status
+      predefined:
+      - Open
+      - Closed
+      - Assigned
+      - Rejected
+      - Duplicate
+      - Pending Input
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Case type.
+      isArray: false
+      name: type
+      predefined:
+      - 419 Scam
+      - Credential Recovery
+      - Crimeware
+      - Mobile Abuse
+      - Job Scam
+      - Pharming
+      - Phishing
+      - Phishing Redirect
+      - Vishing
+      - Other
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Limit the number of cases to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Get cases starting from this position.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The field to filter the begin_date and end_date by.
+      isArray: false
+      name: date_field
+      predefined:
+      - caseOpen
+      - caseClose
+      required: false
+      secret: false
+    - default: false
+      description: Begin date
+      isArray: false
+      name: begin_date
+      required: false
+      secret: false
+    - default: false
+      description: End date
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists cases in PhishLabs
+    execution: false
+    name: phishlabs-list-cases
+    outputs:
+    - contextPath: PhishLabs.Case.ID
+      description: Case ID
+      type: String
+    - contextPath: PhishLabs.Case.Number
+      description: Case number
+      type: Number
+    - contextPath: PhishLabs.Case.Status
+      description: Case status
+      type: String
+    - contextPath: PhishLabs.Case.Type
+      description: Case type
+      type: String
+    - contextPath: PhishLabs.Case.CreatedBy
+      description: Case created by
+      type: String
+    - contextPath: PhishLabs.Case.Title
+      description: Case title
+      type: String
+    - contextPath: PhishLabs.Case.Severity
+      description: Case severity
+      type: String
+  - arguments:
+    - default: true
+      description: Case ID, run phishlabs-list-cases to get it.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Case number
+      isArray: false
+      name: number
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to get the case attachments
+      isArray: false
+      name: get_attachements
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a PhishLabs case
+    execution: false
+    name: phishlabs-get-case
+    outputs:
+    - contextPath: PhishLabs.Case.ID
+      description: Case ID
+      type: String
+    - contextPath: PhishLabs.Case.Number
+      description: Case number
+      type: Number
+    - contextPath: PhishLabs.Case.Status
+      description: Case status
+      type: String
+    - contextPath: PhishLabs.Case.Type
+      description: Case type
+      type: String
+    - contextPath: PhishLabs.Case.CreatedBy
+      description: Case created by
+      type: String
+    - contextPath: PhishLabs.Case.Title
+      description: Case title
+      type: String
+    - contextPath: PhishLabs.Case.Severity
+      description: Case severity
+      type: String
+    - contextPath: PhishLabs.Case.Description
+      description: Case description
+      type: String
+    - contextPath: PhishLabs.Case.DateCreated
+      description: Case creation date
+      type: Date
+    - contextPath: PhishLabs.Case.DateClosed
+      description: Case close date
+      type: Date
+    - contextPath: PhishLabs.Case.Brand
+      description: Case brand
+      type: String
+    - contextPath: PhishLabs.Case.ResolutionStatus
+      description: Case resolution status
+      type: String
+    - contextPath: PhishLabs.Case.Resolution
+      description: Case resolution
+      type: String
+    - contextPath: PhishLabs.Case.Note.Data
+      description: Case note data
+      type: String
+    - contextPath: PhishLabs.Case.Note.DateCreated
+      description: Case note creation date
+      type: Date
+    - contextPath: PhishLabs.Case.Note.DateModified
+      description: Case note modification date
+      type: Date
+    - contextPath: PhishLabs.Case.Note.Author
+      description: Case note author
+      type: String
+    - contextPath: File.Size
+      description: Case attachment Size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the case attachment
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the case attachment
+      type: string
+    - contextPath: File.Name
+      description: The case attachment name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the case attachment
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the case attachment
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the case attachment
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the case attachment
+      type: string
+  - deprecated: false
+    description: Lists the configured case brands in PhishLabs.
+    execution: false
+    name: phishlabs-list-brands
+    outputs:
+    - contextPath: PhishLabs.Case.Brand
+      description: Case brand name
+      type: String
+  - deprecated: false
+    description: Lists the available case types in PhishLabs.
+    execution: false
+    name: phishlabs-list-case-types
+    outputs:
+    - contextPath: PhishLabs.Case.Type
+      description: Case type name
+      type: String
+  - arguments:
+    - default: false
+      description: The case type, get the available types from the phishlabds-list-case-types
+        command.
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: The case brand, get the available brands from the phishlabds-list-case-brands
+        command.
+      isArray: false
+      name: brand
+      required: true
+      secret: false
+    - default: false
+      description: The case title.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The case description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new case in PhishLabs.
+    execution: false
+    name: phishlabs-create-case
+    outputs:
+    - contextPath: PhishLabs.Case.ID
+      description: Case ID
+      type: String
+    - contextPath: PhishLabs.Case.Number
+      description: Case number
+      type: Number
+    - contextPath: PhishLabs.Case.Status
+      description: Case status
+      type: String
+  - arguments:
+    - default: true
+      description: The case ID, run the phishlabs-list-cases to get it.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The case number.
+      isArray: false
+      name: number
+      required: false
+      secret: false
+    - default: false
+      description: The note to add.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds notes to a case in PhishLabs.
+    execution: false
+    name: phishlabs-add-case-note
+  - arguments:
+    - default: true
+      description: The case ID, run the phishlabs-list-cases to get it.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The case number.
+      isArray: false
+      name: number
+      required: false
+      secret: false
+    - default: false
+      description: The file entry ID in Demisto.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: The file name
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an attachment to a case in PhishLabs.
+    execution: false
+    name: phishlabs-add-case-attachment
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
