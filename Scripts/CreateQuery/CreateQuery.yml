@@ -1,120 +1,144 @@
 args:
 - default: false
+  description: First field
   isArray: false
   name: field_1
   required: true
   secret: false
 - default: false
+  description: First operator
   isArray: false
   name: operator_1
   required: true
   secret: false
 - default: false
+  description: First Value
   isArray: false
   name: value_1
   required: true
   secret: false
 - default: false
+  description: Second field
   isArray: false
   name: field_2
   required: false
   secret: false
 - default: false
+  description: Second operator
   isArray: false
   name: operator_2
   required: false
   secret: false
 - default: false
+  description: Second Value
   isArray: false
   name: value_2
   required: false
   secret: false
 - default: false
+  description: Theird field
   isArray: false
   name: field_3
   required: false
   secret: false
 - default: false
+  description: Theird operator
   isArray: false
   name: operator_3
   required: false
   secret: false
 - default: false
+  description: Theird Value
   isArray: false
   name: value_3
   required: false
   secret: false
 - default: false
+  description: Fourth field
   isArray: false
   name: field_4
   required: false
   secret: false
 - default: false
+  description: Fourth operator
   isArray: false
   name: operator_4
   required: false
   secret: false
 - default: false
+  description: Fourth Value
   isArray: false
   name: value_4
   required: false
   secret: false
 - default: false
+  description: Fifth field
   isArray: false
   name: field_5
   required: false
   secret: false
 - default: false
+  description: Fifth operator
   isArray: false
   name: operator_5
   required: false
   secret: false
 - default: false
+  description: Fifth Value
   isArray: false
   name: value_5
   required: false
   secret: false
 - default: false
+  description: Sixth field
   isArray: false
   name: field_6
   required: false
   secret: false
 - default: false
+  description: Sixth operator
   isArray: false
   name: operator_6
   required: false
   secret: false
 - default: false
+  description: Sixth Value
   isArray: false
   name: value_6
   required: false
   secret: false
 - default: false
+  description: Seventh field
   isArray: false
   name: field_7
   required: false
   secret: false
 - default: false
+  description: Seventh operator
   isArray: false
   name: operator_7
   required: false
   secret: false
 - default: false
+  description: Seventh Value
   isArray: false
   name: value_7
   required: false
   secret: false
 - default: false
+  description: Eighth field
   isArray: false
   name: field_8
   required: false
   secret: false
 - default: false
+  description: Eighth operator
   isArray: false
   name: operator_8
   required: false
   secret: false
 - default: false
+  description: Eighth Value
   isArray: false
   name: value_8
   required: false
@@ -129,4 +153,3 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
-
