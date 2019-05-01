@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from CommonServerPython import *
+from Scripts.CommonServerPython.CommonServerPython import *
 
 import copy
-import unittest
+import pytest
 
 INFO = {'b': 1,
         'a': {
@@ -48,28 +48,28 @@ def toEntry(table):
     }
 
 
-def test_tbl_to_md():
-    tables = []
-    data = [
-        {
-            'header_1': 'a1',
-            'header_2': 'b1',
-            'header_3': 'c1'
-        },
-        {
-            'header_1': 'a2',
-            'header_2': 'b2',
-            'header_3': 'c2'
-        },
-        {
-            'header_1': 'a3',
-            'header_2': 'b3',
-            'header_3': 'c3'
-        },
-    ]
+DATA = [
+    {
+        'header_1': 'a1',
+        'header_2': 'b1',
+        'header_3': 'c1'
+    },
+    {
+        'header_1': 'a2',
+        'header_2': 'b2',
+        'header_3': 'c2'
+    },
+    {
+        'header_1': 'a3',
+        'header_2': 'b3',
+        'header_3': 'c3'
+    },
+]
 
+
+def test_tbl_to_md_only_data():
     # sanity
-    table = tableToMarkdown('tableToMarkdown test', data)
+    table = tableToMarkdown('tableToMarkdown test', DATA)
     expected_table = '''### tableToMarkdown test
 |header_2|header_3|header_1|
 |---|---|---|
@@ -77,42 +77,48 @@ def test_tbl_to_md():
 |b2|c2|a2|
 |b3|c3|a3|
 '''
-    tables.append((table, expected_table, ))
+    assert table == expected_table
 
+
+def test_tbl_to_md_header_transform_underscoreToCamelCase():
     # header transform
-    table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data,
-                                      headerTransform=underscoreToCamelCase)
-    expected_table_transform = '''### tableToMarkdown test with headerTransform
+    table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
+                            headerTransform=underscoreToCamelCase)
+    expected_table = '''### tableToMarkdown test with headerTransform
 |Header2|Header3|Header1|
 |---|---|---|
 |b1|c1|a1|
 |b2|c2|a2|
 |b3|c3|a3|
 '''
-    tables.append((table_transform, expected_table_transform, ))
+    assert table == expected_table
 
+
+def test_tbl_to_md_multiline():
     # escaping characters: multiline + md-chars
-    data2 = copy.deepcopy(data)
-    for i, d in enumerate(data2):
+    data = copy.deepcopy(DATA)
+    for i, d in enumerate(data):
         d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1, )
         d['header_3'] = 'c%d|1' % (i + 1, )
 
-    table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
-    expected_table_multiline = '''### tableToMarkdown test with multiline
+    table = tableToMarkdown('tableToMarkdown test with multiline', data)
+    expected_table = '''### tableToMarkdown test with multiline
 |header_2|header_3|header_1|
 |---|---|---|
 |b1.1<br>b1.2|c1\|1|a1|
 |b2.1<br>b2.2|c2\|1|a2|
 |b3.1<br>b3.2|c3\|1|a3|
 '''
-    tables.append((table_multiline, expected_table_multiline, ))
+    assert table == expected_table
 
+
+def test_tbl_to_md_url():
     # url + empty data
-    data3 = copy.deepcopy(data)
-    for i, d in enumerate(data3):
+    data = copy.deepcopy(DATA)
+    for i, d in enumerate(data):
         d['header_3'] = '[url](https:\\demisto.com)'
         d['header_2'] = None
-    table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
+    table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
     expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
 |header_2|header_3|header_1|
 |---|---|---|
@@ -120,10 +126,12 @@ def test_tbl_to_md():
 ||[url](https:\\demisto.com)|a2|
 ||[url](https:\\demisto.com)|a3|
 '''
-    tables.append((table_url_missing_info, expected_table_url_missing_info, ))
+    assert table_url_missing_info == expected_table_url_missing_info
 
+
+def test_tbl_to_md_single_column():
     # single column table
-    table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
+    table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
     expected_table_single_column = '''### tableToMarkdown test with single column
 |header_1|
 |---|
@@ -131,14 +139,17 @@ def test_tbl_to_md():
 |a2|
 |a3|
 '''
-    tables.append((table_single_column, expected_table_single_column, ))
+    assert table_single_column == expected_table_single_column
 
+
+def test_tbl_to_md_list_values():
     # list values
-    data4 = copy.deepcopy(data)
-    for i, d in enumerate(data4):
+    data = copy.deepcopy(DATA)
+    for i, d in enumerate(data):
         d['header_3'] = [i + 1, 'second item']
         d['header_2'] = 'hi'
-    table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
+
+    table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
     expected_table_list_field = '''### tableToMarkdown test with list field
 |header_2|header_3|header_1|
 |---|---|---|
@@ -146,17 +157,19 @@ def test_tbl_to_md():
 |hi|2,<br>second item|a2|
 |hi|3,<br>second item|a3|
 '''
-    tables.append((table_list_field, expected_table_list_field, ))
+    assert table_list_field == expected_table_list_field
 
+
+def test_tbl_to_md_empty_fields():
     # all fields are empty
-    data5 = [
+    data = [
         {
             'a': None,
             'b': None,
             'c': None,
         } for _ in range(3)
     ]
-    table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
+    table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
     expected_table_all_none = '''### tableToMarkdown test with all none fields
 |a|c|b|
 |---|---|---|
@@ -164,19 +177,21 @@ def test_tbl_to_md():
 ||||
 ||||
 '''
-    tables.append((table_all_none, expected_table_all_none, ))
+    assert table_all_none == expected_table_all_none
 
     # all fields are empty - removed
-    table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data5, removeNull=True)
+    table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data, removeNull=True)
     expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
 **No entries.**
 '''
-    tables.append((table_all_none2, expected_table_all_none2, ))
+    assert table_all_none2 == expected_table_all_none2
 
+
+def test_tbl_to_md_header_not_on_first_object():
     # header not on first object
-    data6 = copy.deepcopy(data)
-    data6[1]['extra_header'] = 'sample'
-    table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data6,
+    data = copy.deepcopy(DATA)
+    data[1]['extra_header'] = 'sample'
+    table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
                                          headers=['header_1', 'header_2', 'extra_header'])
     expected_table_extra_header = '''### tableToMarkdown test with extra header
 |header_1|header_2|extra_header|
@@ -185,20 +200,24 @@ def test_tbl_to_md():
 |a2|b2|sample|
 |a3|b3||
 '''
-    tables.append((table_extra_header, expected_table_extra_header, ))
+    assert table_extra_header == expected_table_extra_header
 
-    # no such header
+
+def test_tbl_to_md_no_header():
+    # no header
     table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', data,
                                        headers=['no', 'header', 'found'], removeNull=True)
     expected_table_no_headers = '''### tableToMarkdown test with no headers
 **No entries.**
 '''
-    tables.append((table_no_headers, expected_table_no_headers, ))
+    assert table_no_headers == expected_table_no_headers
 
+
+def test_tbl_to_md_dict_value():
     # dict value
-    data7 = copy.deepcopy(data)
-    data7[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
-    table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data7,
+    data = copy.deepcopy(DATA)
+    data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
+    table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
                                         headers=['header_1', 'header_2', 'extra_header'])
     expected_dict_record = '''### tableToMarkdown test with dict record
 |header_1|header_2|extra_header|
@@ -207,10 +226,12 @@ def test_tbl_to_md():
 |a2|b2|sample: qwerty<br>sample2: asdf|
 |a3|b3||
 '''
-    tables.append((table_dict_record, expected_dict_record, ))
+    assert table_dict_record == expected_dict_record
 
+
+def test_tbl_to_md_string_header():
     # string header (instead of list)
-    table_string_header = tableToMarkdown('tableToMarkdown string header', data, 'header_1')
+    table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
     expected_string_header_tbl = '''### tableToMarkdown string header
 |header_1|
 |---|
@@ -218,8 +239,10 @@ def test_tbl_to_md():
 |a2|
 |a3|
 '''
-    tables.append((table_string_header, expected_string_header_tbl, ))
+    assert table_string_header == expected_string_header_tbl
 
+
+def test_tbl_to_md_list_of_strings_instead_of_dict():
     # list of string values instead of list of dict objects
     table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
     expected_string_array_tbl = '''### tableToMarkdown test with string array
@@ -229,8 +252,10 @@ def test_tbl_to_md():
 |bar|
 |katz|
 '''
-    tables.append((table_string_array, expected_string_array_tbl, ))
+    assert table_string_array == expected_string_array_tbl
 
+
+def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
     # combination: string header + string values list
     table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
                                                        ['foo', 'bar', 'katz'], 'header_1')
@@ -241,50 +266,37 @@ def test_tbl_to_md():
 |bar|
 |katz|
 '''
-    tables.append((table_string_array_string_header, expected_string_array_string_header_tbl, ))
-
-    results = [actual == expected for actual, expected in tables]
-
-    assert results, results
+    assert table_string_array_string_header == expected_string_array_string_header_tbl
 
 
 def test_flatten_cell():
-    returned = []
-
     # sanity
     utf8_to_flatten = 'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
     flatten_text = flattenCell(utf8_to_flatten)
     expected_string = 'abcdefghijklmnopqrstuvwxyz1234567890!'
 
-    returned.append((flatten_text, expected_string))
+    assert flatten_text == expected_string
 
     # list of uft8 and string to flatten
     str_a = 'abcdefghijklmnopqrstuvwxyz1234567890!'
     utf8_b = str_a.decode('utf8')
     list_to_flatten = [str_a, utf8_b]
-    flatten_text = flattenCell(list_to_flatten)
+    flatten_text2 = flattenCell(list_to_flatten)
     expected_flatten_string = 'abcdefghijklmnopqrstuvwxyz1234567890!,\nabcdefghijklmnopqrstuvwxyz1234567890!'
 
-    returned.append((flatten_text, expected_flatten_string))
+    assert flatten_text2 == expected_flatten_string
 
     # special character test
     special_char = u'会'
     list_of_special = [special_char, special_char]
-    try:
-        flattenCell(list_of_special)
-        flattenCell(special_char)
-    except Exception:
-        demisto.results(toEntry('special character failure - flatten_cell'))
-        demisto.results(return_error('failure'))
+
+    flattenCell(list_of_special)
+    flattenCell(special_char)
 
     # dictionary test
     dict_to_flatten = {'first': u'会'}
     expected_flatten_dict = u'{\n    "first": "\u4f1a"\n}'
-    returned.append((dict_to_flatten, expected_flatten_dict))
-
-    results = [actual == expected for actual, expected in returned]
-
-    assert results, results
+    assert dict_to_flatten == expected_flatten_dict
 
 
 def test_hash_djb2():
@@ -333,16 +345,6 @@ def test_argToList():
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
 
 
-def test_return_outputs():
-    return_outputs(readable_output="foo", outputs={"foo": "foo1"})
-
-    return_outputs(readable_output='', outputs={"foo": "foo1"})
-
-    return_outputs(readable_output="foo", outputs={})
-
-    return_outputs("foo", {"foo": "foo1"}, raw_response={"raw": "response"})
-
-
 def test_remove_nulls():
     temp_dictionary = {"a": "b", "c": 4, "e": [], "f": {}, "g": None, "h": "", "i": [1], "k": ()}
     expected_dictionary = {"a": "b", "c": 4, "i": [1]}
@@ -354,83 +356,75 @@ def test_remove_nulls():
                                                                                  str(expected_dictionary))
 
 
-def test_append_context():
-    appendContext('empty_string_key', '')
-    appendContext('empty_list_key', [])
-    appendContext('zero_key', 0)
-    appendContext('none_key', None)
-    demisto.results("placeholder so the run would finish")
-
-
-class TestIsError(unittest.TestCase):
-
-    def test_is_error_true(self):
-        execute_command_results = [
-            {
-                "Type": entryTypes["error"],
-                "ContentsFormat": formats["text"],
-                "Contents": "this is error message"
-            }
-        ]
-        self.assertTrue(is_error(execute_command_results))
-
-    def test_is_error_single_entry(self):
-        execute_command_results = {
+def test_is_error_true():
+    execute_command_results = [
+        {
             "Type": entryTypes["error"],
             "ContentsFormat": formats["text"],
             "Contents": "this is error message"
         }
-
-        self.assertTrue(is_error(execute_command_results))
-
-    def test_is_error_false(self):
-        execute_command_results = [
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["text"],
-                "Contents": "this is regular note"
-            }
-        ]
-        self.assertFalse(is_error(execute_command_results))
-
-    def test_not_error_entry(self):
-        execute_command_results = "invalid command results as string"
-        self.assertFalse(is_error(execute_command_results))
+    ]
+    assert is_error(execute_command_results)
 
 
-class TestGetError(unittest.TestCase):
-    def test_get_error(self):
-        execute_command_results = [
-            {
-                "Type": entryTypes["error"],
-                "ContentsFormat": formats["text"],
-                "Contents": "this is error message"
-            }
-        ]
-        error = get_error(execute_command_results)
-        self.assertEquals(error, "this is error message")
+def test_is_error_single_entry():
+    execute_command_results = {
+        "Type": entryTypes["error"],
+        "ContentsFormat": formats["text"],
+        "Contents": "this is error message"
+    }
 
-    def test_get_error_single_entry(self):
-        execute_command_results = {
+    assert is_error(execute_command_results)
+
+
+def test_is_error_false():
+    execute_command_results = [
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["text"],
+            "Contents": "this is regular note"
+        }
+    ]
+    assert not is_error(execute_command_results)
+
+
+def test_not_error_entry():
+    execute_command_results = "invalid command results as string"
+    assert not is_error(execute_command_results)
+
+
+def test_get_error():
+    execute_command_results = [
+        {
             "Type": entryTypes["error"],
             "ContentsFormat": formats["text"],
             "Contents": "this is error message"
         }
+    ]
+    error = get_error(execute_command_results)
+    assert error == "this is error message"
 
-        error = get_error(execute_command_results)
-        self.assertEquals(error, "this is error message")
 
-    def test_get_error_need_raise_error_on_non_error_input(self):
-        execute_command_results = [
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["text"],
-                "Contents": "this is not an error"
-            }
-        ]
-        try:
-            get_error(execute_command_results)
-            self.fail("get_error should raise an error")
-        except ValueError as e:
-            self.assertEquals(str(e),
-                              "execute_command_result has no error entry. before using get_error use is_error")
+def test_get_error_single_entry():
+    execute_command_results = {
+        "Type": entryTypes["error"],
+        "ContentsFormat": formats["text"],
+        "Contents": "this is error message"
+    }
+
+    error = get_error(execute_command_results)
+    assert error == "this is error message"
+
+
+def test_get_error_need_raise_error_on_non_error_input():
+    execute_command_results = [
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["text"],
+            "Contents": "this is not an error"
+        }
+    ]
+    with pytest.raises(ValueError) as exception:
+        get_error(execute_command_results)
+
+    assert str(exception) == "execute_command_result has no error entry. before using get_error use is_error"
