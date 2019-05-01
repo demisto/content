@@ -1,0 +1,105 @@
+category: Network Security
+commonfields:
+  id: Forescout
+  version: -1
+configuration:
+- defaultvalue: https://{host-ip-address}.net
+  display: |-
+    The network address of the Forescout Enterprise Manager or
+    standalone Appliance.
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Unified Device Visibility and Control Platform for IT and OT Security.
+display: Forescout
+name: Forescout
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'This is a list argument, please provide comma separated list (example:
+        "1,2,3"). This item is mandatory so it must be provided in order to use the
+        command.'
+      isArray: true
+      name: item_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Get only active items, acts as boolean
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: limit number of returned results, to avoid flooding context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get items from service.
+    execution: false
+    name: example-get-items
+    outputs:
+    - contextPath: Example.Item.ID
+      description: Item ID
+      type: number
+    - contextPath: Example.Item.Name
+      description: Item name
+      type: string
+    - contextPath: Example.Item.CreatedDate
+      description: Item creation date
+      type: date
+  - deprecated: false
+    description: Retrieve a list of active endpoints.
+    execution: false
+    name: forescout-get-hosts
+  - deprecated: false
+    description: Retrieve an index of forescout host properties.
+    execution: false
+    name: forescout-get-hostfields
+  - arguments:
+    - default: false
+      description: IP (ipv4), MAC address, or the object ID of the desired endpoint.
+        Object IDs can be found in the returned outputs when `forescout-get-hosts`
+        is executed.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: List of host properties to include in the output for the targeted
+        endpoint. If a specified host property is not found, the property is omitted
+        from the outputs. For a list of potential host properties that may be specified,
+        try executing the `forescout-get-hostfields` command.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve specified host property values for an endpoint.
+    execution: false
+    name: forescout-get-host
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
