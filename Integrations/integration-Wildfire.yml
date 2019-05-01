@@ -851,7 +851,6 @@ script:
       type: string
     description: Retrieve results for a file hash using WildFire
   - name: wildfire-upload
-    deprecated: true
     arguments:
     - name: upload
       required: true
@@ -875,7 +874,6 @@ script:
       type: string
     description: Upload file to WildFire for analysis
   - name: wildfire-upload-file-url
-    deprecated: true
     arguments:
     - name: upload
       required: true
@@ -889,7 +887,6 @@ script:
       type: string
     description: URL of remote file to be uploaded
   - name: wildfire-report
-    deprecated: true
     arguments:
     - name: md5
       description: MD5 hash to check
@@ -994,7 +991,6 @@ script:
       type: string
     description: Retrieve results for a file hash using WildFire
   - name: wildfire-get-verdict
-    deprecated: true
     arguments:
     - name: hash
       required: true
@@ -1027,7 +1023,6 @@ script:
       type: number
     description: Get a verdict regarding a hash
   - name: wildfire-get-verdicts
-    deprecated: true
     arguments:
     - name: EntryID
       required: true
@@ -1061,7 +1056,6 @@ script:
       type: number
     description: Get a verdict regarding multiple hashes, stored in a txt file
   - name: wildfire-get-sample
-    deprecated: true
     arguments:
     - name: md5
       description: MD5 hash to retrieve
