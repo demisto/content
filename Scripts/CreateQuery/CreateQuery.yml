@@ -143,6 +143,7 @@ args:
   name: value_8
   required: false
   secret: false
+comment: The script builds the Demisto generic query.
 commonfields:
   id: c10fba95-91dd-432b-b843-6e3a301ad631
   version: -1
@@ -150,6 +151,8 @@ enabled: false
 name: CreateQuery
 script: '-'
 system: false
+tags:
+- Query
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
