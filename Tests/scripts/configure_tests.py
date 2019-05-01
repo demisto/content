@@ -518,7 +518,8 @@ def get_test_list(files_string, branch_name):
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Running sample tests due to: {}'.format(','.join(sample_tests)))
         test_ids = get_test_ids(check_nightly_status=True)
-        for _ in range(3):
+        initial_tests_len = len(tests)
+        while len(tests) != initial_tests_len + 3:
             tests.add(random.choice(test_ids))
 
     if not tests:
