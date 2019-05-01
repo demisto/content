@@ -267,7 +267,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
             _id = get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
