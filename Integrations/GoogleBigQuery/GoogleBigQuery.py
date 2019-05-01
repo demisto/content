@@ -173,9 +173,7 @@ def test_module():
         query_job = bigquery_client.query(TEST_QUERY)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
-        first_item = next(results_rows_iterator)
-        if str(first_item.get("name")) != "Ruby":
-            raise ValueError("Data from DB not matching expected results")
+        next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
         return_error(str(ex))
