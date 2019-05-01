@@ -33,6 +33,11 @@ configuration:
   name: fetch_incidents_limit
   required: false
   type: 0
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: first_fetch_time
+  required: false
+  type: 0
 description: Looker is a business intelligence software and big data analytics platform
   that helps you explore, analyze and share real-time business analytics easily.
 display: Looker
@@ -56,6 +61,13 @@ script:
       description: Name of the look
       isArray: false
       name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of looks to return (0 for looker-determined limit)
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -88,6 +100,15 @@ script:
       name: user_id
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of looks to return (0 for looker-determined limit)
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
     deprecated: false
     description: Find saved looks matching search criteria.
     execution: false
@@ -110,41 +131,59 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Name of the model
+      description: Name of the model - can be found in the explore's URL
       isArray: false
       name: model
       required: false
       secret: false
     - default: false
-      description: Name of the view / Explore
+      description: Name of the view / Explore - can be found in the explore's URL
       isArray: false
       name: view
       required: false
       secret: false
     - default: false
-      description: List of fields to display
+      description: 'List of fields to display. (Field name format: "object_name.field_name")'
       isArray: true
       name: fields
       required: false
       secret: false
     - default: false
       description: 'Filters for the query, passed as a list with the format: "field
-        name: filter value", ...'
+        name=filter value,..." (Field name format: "object_name.field_name")'
       isArray: true
       name: filters
       required: false
       secret: false
     - default: false
-      description: Pivots
+      description: 'List of pivots. (Field name format: "object_name.field_name")'
       isArray: true
       name: pivots
       required: false
       secret: false
     - default: false
-      description: Sorting for the query results
+      description: 'Sorting for the query results. (Field name format: "object_name.field_name")'
       isArray: true
       name: sorts
       required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of looks to return (0 for looker-determined limit)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Format of result
+      isArray: false
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
       secret: false
     deprecated: false
     description: Run a query by defining it in the command arguments, rather than
@@ -157,38 +196,38 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Name of the model
+      description: Name of the model - can be found in the explore's URL
       isArray: false
       name: model
       required: true
       secret: false
     - default: false
-      description: Name of the view / Explore
+      description: Name of the view / Explore - can be found in the explore's URL
       isArray: false
       name: view
       required: true
       secret: false
     - default: false
-      description: List of fields to display
+      description: 'List of fields to display. (Field name format: "object_name.field_name")'
       isArray: true
       name: fields
       required: true
       secret: false
     - default: false
       description: 'Filters for the query, passed as a list with the format: "field
-        name: filter value", ...'
+        name=filter value,..." (Field name format: "object_name.field_name")'
       isArray: true
       name: filters
       required: false
       secret: false
     - default: false
-      description: List of pivots
+      description: 'List of pivots. (Field name format: "object_name.field_name")'
       isArray: true
       name: pivots
       required: false
       secret: false
     - default: false
-      description: Sorting for the query results
+      description: 'Sorting for the query results. (Field name format: "object_name.field_name")'
       isArray: true
       name: sorts
       required: false
