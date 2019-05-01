@@ -26,9 +26,9 @@ script: |-
                   upReply = demisto.executeCommand('wildfire-upload', {'upload': entry['ID']})
                   if upReply[0]['Type'] != entryTypes['error']:
                       uploaded.append(demisto.get(entry, 'FileMetadata.md5'))
-  # Wait for the uploaded files to be processed - 15 min
+  # Wait for the uploaded files to be processed - 6 min
   if len(uploaded) > 0:
-      time.sleep(15 * 60)
+      time.sleep(6 * 60)
   for u in uploaded:
       rep = demisto.executeCommand('wildfire-report', {'md5': u})
       notFound = False
