@@ -6,6 +6,8 @@ from CommonServerUserPython import *
 import json
 import requests
 from distutils.util import strtobool
+from datetime import datetime, timedelta, timezone
+from dateutil.parser import parse as parsedate
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -20,23 +22,23 @@ BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
 AUTH = ''
-# Headers to be sent in requests
-# HEADERS = {
-#     'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
-#     'Content-Type': 'application/json',
-#     'Accept': 'application/json'
-# }
+LAST_JWT_FETCH = None
+# Default JWT validity time set in Forescout Web API
+JWT_VALIDITY_TIME = timedelta(minutes=5)
 
 
 ''' HELPER FUNCTIONS '''
 
 
 def login():
-    url_suffix = '/api/login'
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    params = {'username': USERNAME, 'password': PASSWORD}
-    response = http_request('POST', url_suffix, headers=headers, params=params)
-    AUTH = response
+    if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
+        url_suffix = '/api/login'
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        params = {'username': USERNAME, 'password': PASSWORD}
+        response = http_request('POST', url_suffix, headers=headers, params=params)
+        fetch_time = parsedate(response.headers.get('Date', ''))
+        AUTH = response.text
+        LAST_JWT_FETCH = fetch_time
 
 
 def http_request(method, url_suffix, full_url=None, headers=None, auth=None, params=None, data=None, files=None):
@@ -96,6 +98,11 @@ def http_request(method, url_suffix, full_url=None, headers=None, auth=None, par
 
         return res.json()
 
+    except json.decoder.JSONDecodeError:
+        if res.text != '':
+            return res
+        else:
+            return return_error('No contents in the response.')
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
         return_error(err_msg)
