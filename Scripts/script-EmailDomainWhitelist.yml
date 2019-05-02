@@ -1,0 +1,39 @@
+commonfields:
+  id: EmailDomainWhitelist
+  version: -1
+name: EmailDomainWhitelist
+script: |-
+  domainList = demisto.args()['domainList'].replace(' ', '').replace('\n','').split(',')
+  emailAddresses = demisto.args()['value']
+
+  filteredAddresses = []
+
+  for address in emailAddresses:
+    [user, domain] = address.split('@')
+
+    if domain in domainList:
+        filteredAddresses.append(address)
+
+  demisto.results(filteredAddresses)
+type: python
+tags:
+- transformer
+- general
+- entirelist
+comment: Accepts an array of domains as a whitelist, and a list of email addresses.   It
+  will then then filter out any email address whose domain is not in the whitelist.  The
+  filtered list will be returned as an array.
+system: false
+enabled: true
+args:
+- name: value
+  required: true
+  description: An array of email addresses to be filtered by domain
+  isArray: true
+- name: domainList
+  required: true
+  description: An array containing domains to whitelist
+  isArray: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
