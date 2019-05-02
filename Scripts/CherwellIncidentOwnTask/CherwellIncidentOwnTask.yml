@@ -26,6 +26,7 @@ system: false
 timeout: '0'
 type: python
 tags: [Cherwell]
+releaseNotes: Added tags and 'dependsOn' commands
 dependson:
   must:
   - Cherwell|||cherwell-link-business-objects

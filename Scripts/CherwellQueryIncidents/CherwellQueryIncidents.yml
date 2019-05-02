@@ -57,5 +57,6 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
+releaseNotes: Added tags and 'dependsOn' commands
 tests:
   - Cherwell Example Scripts - test
