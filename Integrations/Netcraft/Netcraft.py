@@ -23,13 +23,25 @@ HEADERS = {
 
 USE_SSL = not demisto.params().get('unsecure', False)
 
+
 # Service base URL
 BASE_URL = "https://takedown.netcraft.com/" # should be parameter? or hard coded like this?
+
+
+# codes for maicious site report
+MALICIOUS_REPORT_SUCCESS = "TD_OK"
+MALICIOUS_REPORT_ALREADY_EXISTS = "TD_EXISTS"
+MALICIOUS_REPORT_URL_IS_WILDCARD = "TD_WILDCARD"
+MALICIOUS_REPORT_ACCESS_DENIED = "TD_DENIED"
+MALICIOUS_REPORT_ERROR = "TD_ERROR"
+
 
 # suffix endpoints
 REPORT_MALICIOUS_SUFFIX = "authorise.php"
 GET_TAKEDOWN_INFO_SUFFIX = "apis/get-info.php"
 ACCESS_TAKEDOWN_NOTES_SUFFIX = "apis/note.php"
+ESCALATE_TAKEDOWN_SUFFIX = "apis/escalate.php"
+
 
 # Table Headers
 TAKEDOWN_INFO_HEADER = ["ID", "Status", "Attack Type", "Date Submitted", "Last Updated", "Reporter", "Group ID",
@@ -73,21 +85,22 @@ def http_request(method, request_url, params=None, data=None, should_convert_to_
         return res.text.splitlines()
 
 
+
 def generate_report_malicious_site_human_readable(response_lines_array):
     response_status_code = response_lines_array[0]
     human_readable = ""
-    if response_status_code == "TD_OK":
+    if response_status_code == MALICIOUS_REPORT_SUCCESS:
         human_readable = "### Takedown successfully submitted \n ID number of the new takedown: {}.".format(response_lines_array[1])
-    elif response_status_code == "TD_EXISTS":
+    elif response_status_code == MALICIOUS_REPORT_ALREADY_EXISTS:
         human_readable = "### Takedown not submitted.\n " \
                          "A takedown for this URL already exists.\n" \
                          "ID number of the existing takedown: {}.".format(response_lines_array[1])
-    elif response_status_code == "TD_WILDCARD":
+    elif response_status_code == MALICIOUS_REPORT_URL_IS_WILDCARD:
         human_readable = "### Takedown not submitted\n " \
                          "This URL is a wildcard sub-domain variation of an existing takedown.\n"
-    elif response_status_code == "TD_WILDCARD":
+    elif response_status_code == MALICIOUS_REPORT_ACCESS_DENIED:
         human_readable = "### Takedown not submitted\n Access is denied."
-    elif response_status_code == "TD_ERROR":
+    elif response_status_code == MALICIOUS_REPORT_ERROR:
         human_readable = "### Takedown not submitted\n " \
                          "An error has occurred while submitting your takedown.\n" \
                          "Error is: {}".format(" ".join(response_lines_array))
@@ -175,6 +188,8 @@ def generate_takedown_note_context(takedown_note_json):
         "Note": takedown_note_json.get("note", None),
         "Time": takedown_note_json.get("time", None)
     }
+    takedown_note_context = return_dict_without_none_values(takedown_note_context)
+    return takedown_note_context
 
 
 def generate_list_of_takedown_notes_contexts(list_of_takedowns_notes):
@@ -204,7 +219,6 @@ def gen_takedown_notes_human_readable(entry_context):
 
 
 def generate_add_note_human_readable(response):
-    human_readable = ""
     # if the request was successful, the response includes the id of the created note
     if "note_id" in response:
         human_readable = "### Note added succesfully\n" \
@@ -214,7 +228,7 @@ def generate_add_note_human_readable(response):
                          "An error occured while trying to add the note.\n" \
                          "The error code is: {0}.\n" \
                          "The error message is: {1}.".format(response["error_code"], response["error_code"])
-
+    return human_readable
 
 
 
@@ -223,26 +237,38 @@ def string_to_bool(string_representing_bool):
     return string_representing_bool.lower() == "true"
 
 
-
-
-
-
-
+def generate_escalate_takedown_human_readable(response):
+    if "status" in response:
+        human_readable = "### Takedown escalated successfully"
+    else:
+        human_readable = "### Takedown escalation failed\n" \
+                         "An error occured on the takedown escalation attempt.\n" \
+                         "Error code is: {0}\n" \
+                         "Error message from Netcraft is: {1}".format(response["error_code"], response["error_message"])
+    return human_readable
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-
-
-
-
 def escalate_takedown(takedown_id):
+    data_for_request = {
+        "takedown_id": takedown_id
+    }
+    request_url = BASE_URL + ESCALATE_TAKEDOWN_SUFFIX
+    request_result = http_request("POST", request_url, data=data_for_request)
+    return request_result
 
 
 
-
-def escalate_takedown_command()
+def escalate_takedown_command():
+    args = demisto.args()
+    response = escalate_takedown(args["takedown_id"])
+    human_readable = generate_escalate_takedown_human_readable(response)
+    return_outputs(
+        readable_output=human_readable,
+        outputs=response
+    )
 
 
 
@@ -282,10 +308,6 @@ def add_notes_to_takedown_command():
     )
 
 
-
-
-
-
 def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
     data_for_request = {
         "takedown_id": takedown_id,
@@ -317,11 +339,6 @@ def get_takedown_notes_command():
         outputs=entry_context,
         raw_response=list_of_takedowns_notes
     )
-
-
-
-
-
 
 
 def get_takedown_info(id, ip, url, updated_since, date_from, region):
@@ -361,20 +378,6 @@ def get_takedown_info_command():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def report_malicious_site(malicious_site_url, comment):
     data_for_request = {
         "attack": malicious_site_url,
@@ -388,12 +391,21 @@ def report_malicious_site(malicious_site_url, comment):
 
 def report_malicious_site_command():
     args = demisto.args()
+    entry_context = None
     response_lines_array = report_malicious_site(args["malicious_site_url"], args["comment"]) #not sure this line works
     result_answer = response_lines_array[0]
+    if result_answer == MALICIOUS_REPORT_SUCCESS:
+        new_takedown_id = response_lines_array[1]
+        entry_context = {
+            "TakedownID": new_takedown_id
+        }
+
     human_readable = generate_report_malicious_site_human_readable(response_lines_array)
+
     return_outputs(
         readable_output=human_readable,
-        outputs= '\n'.join(response_lines_array)
+        outputs='\n'.join(response_lines_array),
+        raw_response=entry_context
     )
 
 
@@ -425,6 +437,8 @@ try:
         get_takedown_notes_command()
     elif demisto.command() == 'netcraft-add-notes-to-takedown':
         add_notes_to_takedown_command()
+    elif demisto.command() == 'netcraft-escalate-takedown':
+        escalate_takedown_command()
 
 
 # Log exceptions
