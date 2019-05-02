@@ -235,18 +235,19 @@ tasks:
       email:
         complex:
           root: Account
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Account.Email.NetworkType
-                iscontext: true
-              right:
+          accessor: Email
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
                 value:
                   simple: Internal
-              ignorecase: true
-          accessor: Email.Address
-          transformers:
+              field:
+                value:
+                  simple: NetworkType
+              getField:
+                value:
+                  simple: Address
           - operator: uniq
       limit: {}
       name: {}
