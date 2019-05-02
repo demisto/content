@@ -226,6 +226,6 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 releaseNotes: "Replaced old Active Directory integration with the new Active Directory v2 Query integration.
-  Removed redundant outputs."
+Removed redundant outputs."
 tests:
   - Account Enrichment - Generic v2.1 - Test
