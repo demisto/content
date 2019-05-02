@@ -4,8 +4,8 @@ from CommonServerUserPython import *
 import yaml
 import sys
 
-# reload(sys)
-# sys.setdefaultencoding('utf-8')
+reload(sys)
+sys.setdefaultencoding('utf-8')
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?')
 
 
