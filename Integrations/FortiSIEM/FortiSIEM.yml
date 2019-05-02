@@ -380,6 +380,5 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - No Test
