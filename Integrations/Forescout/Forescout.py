@@ -19,6 +19,7 @@ PASSWORD = PARAMS.get('credentials').get('password')
 BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
+AUTH = ''
 # Headers to be sent in requests
 # HEADERS = {
 #     'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
@@ -30,21 +31,74 @@ USE_SSL = not PARAMS.get('insecure', False)
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        # headers=HEADERS
-    )
-    # Handle error responses gracefully
-    if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+def login():
+    url_suffix = '/api/login'
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    params = {'username': USERNAME, 'password': PASSWORD}
+    response = http_request('POST', url_suffix, headers=headers, params=params)
+    AUTH = response
 
-    return res.json()
+
+def http_request(method, url_suffix, full_url=None, headers=None, auth=None, params=None, data=None, files=None):
+    """
+    A wrapper for requests lib to send our requests and handle requests
+    and responses better
+
+    Parameters
+    ----------
+    method : str
+        HTTP method, e.g. 'GET', 'POST' ... etc.
+    url_suffix : str
+        API endpoint.
+    full_url : str
+        Bypasses the use of BASE_URL + url_suffix. Useful if there is a need to
+        make a request to an address outside of the scope of the integration
+        API.
+    headers : dict
+        Headers to send in the request.
+    auth : tuple
+        Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+    params : dict
+        URL parameters.
+    data : dict
+        Data to be sent in a 'POST' request.
+    files : dict
+        File data to be sent in a 'POST' request.
+
+    Returns
+    -------
+    dict
+        Response JSON from having made the request.
+    """
+    try:
+        address = full_url if full_url else BASE_URL + url_suffix
+        res = requests.request(
+            method,
+            address,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            files=files,
+            headers=headers,
+            auth=auth
+        )
+
+        # Handle error responses gracefully
+        if 300 <= res.status_code < 200:
+            err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
+            try:
+                res_json = res.json()
+                if res_json.get('error'):
+                    err_msg += '\n{}'.format(res_json.get('message'))
+                return_error(err_msg)
+            except json.decoder.JSONDecodeError:
+                return_error(err_msg)
+
+        return res.json()
+
+    except requests.exceptions.ConnectionError:
+        err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+        return_error(err_msg)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
