@@ -81,30 +81,32 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
 
     if str(result.reason) == 'Not Found':
         # sample not found
-        if url.find('/get/sample') != -1:
+        if url.find(URL_DICT["sample"]) != -1:
             demisto.results(
                 'Sample was not found. '
                 'Please note that grayware and benign samples are available for 14 days only. '
                 'For more info contact your wildfire representative.')
             sys.exit(0)
         # report not found
-        if url.find('/get/report') != -1:
+        if url.find(URL_DICT["report"]) != -1:
             demisto.results('Report not found.')
             sys.exit(0)
 
     if result.status_code < 200 or result.status_code >= 300:
         if result.status_code in ERROR_DICT:
-            return_error('Request Failed with status: {status} Reason is: {reason}'.format(
-                status=result.status_code, reason=ERROR_DICT[str(result.status_code)]))
+            return_error(
+                f'Request Failed with status: {result.status_code} Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
-            return_error('Request Failed with status: {status} Reason is: {reason}'.format(
-                status=result.status_code, reason=result.reason))
+            return_error(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
 
     if result.headers['Content-Type'] == 'application/octet-stream':
         return result
     else:
-        json_res = json.loads(xml2json(result.text))
-        return json_res
+        try:
+            json_res = json.loads(xml2json(result.text))
+            return json_res
+        except Exception as ex:
+            return_error(f'Failed to parse response to json. response: {result.text}')
 
 
 def prettify_upload(upload_body):
@@ -284,15 +286,24 @@ def wildfire_upload_file(upload):
     upload_file_uri = URL + URL_DICT["upload_file"]
     body = {'apikey': TOKEN}
 
-    shutil.copy(demisto.getFilePath(upload)['path'],
-                demisto.getFilePath(upload)['name'])
-    with open(demisto.getFilePath(upload)['name'], 'rb') as f:
-        result = http_request(
-            upload_file_uri,
-            'POST',
-            body=body,
-            files={'file': f}
-        )
+    file_path = demisto.getFilePath(upload)['path']
+    file_name = demisto.getFilePath(upload)['name']
+
+    try:
+        shutil.copy(file_path, file_name)
+    except Exception as ex:
+        return_error('Failed to prepare file for upload.')
+
+    try:
+        with open(file_name, 'rb') as f:
+            result = http_request(
+                upload_file_uri,
+                'POST',
+                body=body,
+                files={'file': f}
+            )
+    finally:
+        shutil.rmtree(file_name, ignore_errors=True)
 
     upload_file_data = result["wildfire"]["upload-file-info"]
 
@@ -309,15 +320,15 @@ def wildfire_upload_file_command():
 @logger
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
-    body = '''--upload_boundry
+    body = f'''--upload_boundry
 Content-Disposition: form-data; name="apikey"
 
-{apikey}
+{TOKEN}
 --upload_boundry
 Content-Disposition: form-data; name="url"
 
-{url}
---upload_boundry--'''.format(apikey=TOKEN, url=upload)
+{upload}
+--upload_boundry--'''
 
     result = http_request(
         upload_file_url_uri,
