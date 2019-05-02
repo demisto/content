@@ -447,7 +447,7 @@ tasks:
       id: 42285b15-afd4-4163-8b9d-20adc26e11a9
       version: -1
       name: Get URL report from VirusTotal Private API
-      description: Retrieves a report from VirusTotal Private API for a specified URL.
+      description: Retrieves a report from VirusTotal API for a specified URL.
       script: '|||vt-private-get-url-report'
       type: regular
       iscommand: true
@@ -563,5 +563,6 @@ outputs:
 - contextPath: URL.Description
   description: Additional information for the URL.
   type: string
+releaseNotes: "Updated names and descriptions."
 tests:
   - url_enrichment_-_generic_test

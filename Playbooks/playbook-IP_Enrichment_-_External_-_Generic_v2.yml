@@ -676,5 +676,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name.
   type: string
+releaseNotes: "A new generic playbook for external IP enrichment (now as a separate playbook)"
 tests:
   - IP Enrichment - Generic v2 - Test

@@ -315,5 +315,6 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, and Vendor.
   type: unknown
+releaseNotes: "Updated names and descriptions."
 tests:
   - Domain Enrichment - Generic v2 - Test

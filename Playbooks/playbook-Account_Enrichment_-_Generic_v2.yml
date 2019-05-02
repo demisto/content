@@ -237,5 +237,6 @@ outputs:
 - contextPath: Account.Manager
   description: The account's manager.
   type: string
+releaseNotes: "Updated names and descriptions."
 tests:
   - Account Enrichment - Generic v2 - Test
