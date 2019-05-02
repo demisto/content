@@ -61,7 +61,7 @@ def http_request(method, path, params=None, data=None):
         message = res.reason
         details = ''
         if res.status_code == 500:
-            details = details + ' A possible cause is multiple requests made simultaneously.'
+            details = details + '\nA possible cause is that multiple requests were made simultaneously.'
         try:
             error_json = res.json()
             message = error_json.get('statusMessage')
@@ -99,8 +99,8 @@ def get_policy_uuid(uuid, name):
         if not policy or len(policy) == 0:
             return_error('Policy not found')
         if len(policy) > 1:
-            return_error('Found more than one policy')
-        uuid = policy[0]['uuid']
+            return_error('Found more than one policy for the provided name')
+        uuid = policy[0].get('uuid')
 
     return uuid
 
