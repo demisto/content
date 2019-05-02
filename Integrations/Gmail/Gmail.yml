@@ -833,7 +833,7 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
-releaseNotes: added gmail-list-filters and gmail-remove-filter commands
+releaseNotes: Added human readable output for cases when an email does not contain an attachment.
 tests:
   - Gmail Convert Html Test
   - GmailTest
