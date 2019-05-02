@@ -427,7 +427,7 @@ def validate_params_for_fetch(max_result, objects_to_fetch):
         max_result = int(max_result)
         if max_result < 0:
             raise ValueError
-    except ValueError as e:
+    except ValueError:
         return_error('Max results to fetch must be a number grater than 0')
     # Make sure that there are objects to fetch
     if len(objects_to_fetch) == 0:
