@@ -101,6 +101,8 @@ def get_policy_uuid(uuid, name):
         if len(policy) > 1:
             return_error('Found more than one policy for the provided name')
         uuid = policy[0].get('uuid')
+        if not uuid:
+            return_error('Policy not found')
 
     return uuid
 
