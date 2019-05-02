@@ -61,6 +61,6 @@ tags:
 - autoextract
 timeout: 3µs
 type: python
-dockerimage: faker3
+dockerimage: demisto/faker3:1.0.0.247
 runas: DBotWeakRole
 runonce: false
