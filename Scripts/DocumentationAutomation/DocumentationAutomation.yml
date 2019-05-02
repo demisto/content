@@ -1,0 +1,84 @@
+args:
+- default: false
+  description: War-room entry ID of sample file
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Documentation overview
+  isArray: false
+  name: overview
+  required: false
+  secret: false
+- default: false
+  description: Setting to work with Demisto instructions. Number the steps by 'x.'
+    (i.e. '1.')
+  isArray: false
+  name: setupOnIntegration
+  required: false
+  secret: false
+- default: false
+  description: Top use-cases. Number the steps by 'x.' (i.e. '1.')
+  isArray: false
+  name: useCases
+  required: false
+  secret: false
+- default: false
+  description: Integration troubleshooting
+  isArray: false
+  name: troubleshooting
+  required: false
+  secret: false
+- default: false
+  description: Fetched incidents data. Number the steps by 'x.' (i.e. '1.')
+  isArray: false
+  name: fetchedData
+  required: false
+  secret: false
+- default: false
+  description: Additional information. Number the steps by 'x.' (i.e. '1.')
+  isArray: false
+  name: addInfo
+  required: false
+  secret: false
+- default: false
+  description: Known limitations. Number the steps by 'x.' (i.e. '1.')
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Flag for creating documentation with errors
+  isArray: false
+  name: withErrors
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: 'Entry ID for file containing command examples. Each Command should
+    be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
+  isArray: false
+  name: commands
+  required: false
+  secret: false
+comment: |-
+  Automates integration documentation.
+  See (https://github.com/demisto/content/tree/master/docs/integration_documentation)[https://github.com/demisto/content/tree/master/docs/integration_documentation]
+commonfields:
+  id: DocumentationAutomation
+  version: -1
+enabled: true
+name: DocumentationAutomation
+system: false
+timeout: '0'
+script: '-'
+tags: []
+type: python
+runonce: false
+tests:
+- DocumentationTest
