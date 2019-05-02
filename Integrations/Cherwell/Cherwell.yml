@@ -522,5 +522,6 @@ script:
   runonce: false
   script: '-'
   type: python
+releaseNotes: Enhanced 'Test Module' abilities and fixed some syntax error
 tests:
 - Cherwell - test
