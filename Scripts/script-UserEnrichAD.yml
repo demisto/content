@@ -21,4 +21,3 @@ dependson:
   - activedir|||ad-search
 tests:
   - No test
-releaseNotes: "update dependency for 'activedir' brand"

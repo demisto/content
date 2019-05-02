@@ -621,6 +621,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score.
   type: number
-releaseNotes: "Added a new playbook for email address enrichment. Multiple fixes to enrichment uniqueness and to performance, fixed a bug where domains were not sent as inputs to the playbook, and removed reputation tasks."
 tests:
   - Email Address Enrichment - Generic v2 - Test
