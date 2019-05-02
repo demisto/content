@@ -39,4 +39,6 @@ dependson:
   must:
   - wildfire-upload
 timeout: 0s
+tests:
+- No tests
 releaseNotes: Deprecated, use wildfire-upload instead

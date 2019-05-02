@@ -66,5 +66,5 @@ dependson:
   - panorama
 timeout: 0s
 tests:
-- palo_alto_firewall_test_pb
+- No tests
 releaseNotes: Deprecated, use panorama-get-pcap instead

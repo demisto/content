@@ -52,4 +52,6 @@ dependson:
   must:
   - wildfire-report
 timeout: 0s
+tests:
+- No tests
 releaseNotes: Deprecated, use wildfire-report instead

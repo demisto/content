@@ -60,4 +60,6 @@ dependson:
   - wildfire-upload
   - wildfire-report
 timeout: 0s
+tests:
+- No tests
 releaseNotes: Deprecated, use "WildFire - Detonate File" playbook instead
