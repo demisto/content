@@ -1624,6 +1624,10 @@
         "Google Cloud Compute": "checking",
         "jira-v2": "inconsistent test (uploads randomly generated file each time)",
         "Microsoft Graph User": "checking",
-        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy"
+        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy",
+        "AWS - CloudWatchLogs": "Integration requires SSL",
+        "AWS - CloudTrail": "Integration requires SSL",
+        "AWS - EC2": "Integration requires SSL",
+        "AWS - S3": "Integration requires SSL"
     }
 }
