@@ -12,7 +12,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M Playbooks/playbook-IP_Enrichment_-_Generic.yml"
+            return "M Playbooks/playbook-BitDam_Scan_File.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -39,8 +39,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
             filterd_tests = filter_file.readlines()
             filterd_tests = [line.strip('\n') for line in filterd_tests]
 
-        self.assertEqual(filterd_tests, ['ip_enrichment_generic_test', 'Phishing test - Inline',
-                                         'Phishing test - attachment', 'entity_enrichment_generic_test'])
+        self.assertEquals(filterd_tests, ['Detonate File - BitDam Test'])
 
     def tearDown(self):
         os.remove(FILTER_CONF)
@@ -89,7 +88,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M Integrations/PagerDuty/PagerDuty.py\nM Playbooks/playbook-IP_Enrichment_-_Generic.yml"
+            return "M Integrations/PagerDuty/PagerDuty.py\nM Playbooks/playbook-BitDam_Scan_File.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -117,8 +116,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
             filterd_tests = [line.strip('\n') for line in filterd_tests]
 
         self.assertEqual(sorted(filterd_tests),
-                         sorted(['PagerDuty Test', 'ip_enrichment_generic_test', 'Phishing test - Inline',
-                                'Phishing test - attachment', 'entity_enrichment_generic_test']))
+                         sorted(['PagerDuty Test', 'Detonate File - BitDam Test']))
 
     def tearDown(self):
         os.remove(FILTER_CONF)
