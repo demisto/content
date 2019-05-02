@@ -56,7 +56,10 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellUpdateIncident
-tags: []
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-update-business-object
 outputs:
 - contextPath: Cherwell.BusinessObjects.PublicId
   description: Incident public ID
