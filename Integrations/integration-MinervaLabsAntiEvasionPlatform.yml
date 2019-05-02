@@ -104,6 +104,17 @@ script:
                 'Last modified on': data['lastModifiedOn']
             }
             ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
+        elif context_id.endswith('exclusions'):
+            context = {
+                'Id': data['id'],
+                'Type': data['type'],
+                'Exclusion data': data['data'],
+                'Description': data['description'],
+                'Last modified by': data['lastModifiedBy'],
+                'Last modified on': data['lastModifiedOn'],
+                'Applied groups': data['appliedGroupsIds']
+            }
+            ec['Minerva.Exclusion(val.Id === obj.Id)'] = context
         else:
             LOG('Failed to create entry context for {}'.format(context_id))
 
@@ -111,6 +122,25 @@ script:
 
 
     ''' FUNCTIONS '''
+    def get_from_url(url):
+        url_text = url.split('/')[-1]
+        response = session.get(url)
+        if response.status_code is not 200:
+            return_error('Error while fetching {}. More information: {}, {}'.format(url_text, response.status_code, response.reason))
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown(pascalToSpace(url_text), response.json(), headerTransform=pascalToSpace, removeNull=True)
+        }
+
+        if response.json():
+            results['EntryContext'] = create_entry_context(url_text, response.json()[0])
+
+        return results
+
+
     @logger
     def login():
         return session.post(BASE_URL + '/api/login',
@@ -173,16 +203,42 @@ script:
             'data': exclusion_data,
             'appliedGroupsIds': groups_ids_list
         }
-        response = session.post(BASE_URL + '/api/exclusions',
-                                json=json_params)
+        exclusions_url= BASE_URL + '/api/exclusions'
+        response = session.post(exclusions_url, json=json_params)
+        if response.status_code == 409 and response.reason == 'Conflict':
+            demisto.results('Exclusion already exists')
+            return
         if response.status_code is not 200:
             return_error('Error while adding exclusion. More information: {}, {}'.format(response.status_code, response.reason))
-        demisto.results({
+        results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
             'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), headerTransform=pascalToSpace, removeNull=True)
-        })
+        }
+
+        if response.json():
+            results['EntryContext'] = create_entry_context(exclusions_url, response.json())
+
+        demisto.results(results)
+
+
+    @logger
+    def get_exclusions():
+        results = get_from_url(BASE_URL + '/api/exclusions')
+        demisto.results(results)
+
+
+    @logger
+    def delete_exclusion(exclusion_id, exclusion_type):
+        json_params = {
+            'id': exclusion_id,
+            'type': exclusion_type
+        }
+        response = session.post(BASE_URL + '/api/exclusions/delete', json=[json_params])
+        if response.status_code is not 200:
+            return_error('Error while deleting exclusions. More information: {}, {}'.format(response.status_code, response.reason))
+        demisto.results('Exclusions {} were deleted'.format(exclusion_id))
 
 
     @logger
@@ -191,43 +247,34 @@ script:
                        'description': vaccine_desc,
                        'isMonitorOnly': monitor_only,
                        'type': 'mutex'}
-        response = session.post(BASE_URL + '/api/vaccination',
-                                json=json_params)
+        vaccination_url = BASE_URL + '/api/vaccination'
+        response = session.post(vaccination_url, json=json_params)
         if response.status_code == 409 and response.reason == 'Conflict':
             demisto.results('Vaccination already exists')
             return
         if response.status_code is not 200:
             return_error('Error while adding a vaccine. More information: {}, {}'.format(response.status_code, response.reason))
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), headerTransform=pascalToSpace, removeNull=True)
-        })
-
-
-    @logger
-    def get_vaccines():
-        response = session.get(BASE_URL + '/api/vaccination')
-        if response.status_code is not 200:
-            return_error('Error while fetching vaccination. More information: {}, {}'.format(response.status_code, response.reason))
 
         results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Vaccinations', response.json(), headerTransform=pascalToSpace, removeNull=True)
+            'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), headerTransform=pascalToSpace, removeNull=True)
         }
 
         if response.json():
-            results['EntryContext'] = create_entry_context('vaccination', response.json()[0])
+            results['EntryContext'] = create_entry_context(vaccination_url, response.json())
+        return results
 
+
+    @logger
+    def get_vaccines():
+        results = get_from_url(BASE_URL + '/api/vaccination')
         demisto.results(results)
 
 
     @logger
     def delete_vaccines(vaccine_ids):
-        # demisto.log(vaccine_ids)
         vaccine_ids_list = [vaccine_id.strip() for vaccine_id in vaccine_ids.split(',')]
         response = session.delete(BASE_URL + '/api/vaccination', params={'ids': vaccine_ids_list})
         if response.status_code is not 200:
@@ -258,6 +305,14 @@ script:
         demisto.results(results)
 
 
+    @logger
+    def unarchive_events():
+        response = session.put(BASE_URL + '/api/events/archive', json={'shouldArchive': False})
+        if response.status_code is not 200:
+            return_error('Error while un-archiving events. More information: {}, {}'.format(response.status_code, response.reason))
+        demisto.results('Events were un-archived')
+
+
     ''' EXECUTION '''
     session = get_session()
     try:
@@ -270,6 +325,10 @@ script:
             groups_id = args.get('appliedGroupsIds')
             add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_id)
 
+        def delete_exclusion_command():
+            exclusion_id = args.get('id')
+            exclusion_type = args.get('type')
+            delete_exclusion(exclusion_id, exclusion_type)
 
         def add_vaccine_command():
             vaccine_name = args.get('name')
@@ -288,14 +347,12 @@ script:
             search_value = args.get('value')
             search(processes_search_url, search_param, search_condition, search_value)
 
-
         def search_endpoint_command():
             endpoint_search_url = BASE_URL + '/api/endpoints'
             search_param = args.get('param')
             search_condition = args.get('condition')
             search_value = args.get('value')
             search(endpoint_search_url, search_param, search_condition, search_value)
-
 
         def get_groups_command():
             get_groups()
@@ -315,6 +372,10 @@ script:
                 return_error('Failed to log in. More information: {}, {}', minerva_login.status_code, minerva_login.reason)
         elif demisto.command() == 'minerva-add-exclusion':
             add_exclusion_command()
+        elif demisto.command() == 'minerva-get-exclusions':
+            get_exclusions()
+        elif demisto.command() == 'minerva-delete-exclusion':
+            delete_exclusion_command()
         elif demisto.command() == 'minerva-add-vaccine':
             add_vaccine_command()
         elif demisto.command() == 'minerva-get-vaccines':
@@ -327,6 +388,8 @@ script:
             search_endpoint_command()
         elif demisto.command() == 'minerva-get-groups':
             get_groups_command()
+        elif demisto.command() == 'minerva-unarchive-events':
+            unarchive_events()
     except Exception, e:
         LOG('Cannot perform the command: {}. Error: {}'.format(demisto.command(), e.message))
         LOG.print_log()
@@ -354,6 +417,28 @@ script:
     - name: description
       required: true
       description: description
+    outputs:
+    - contextPath: Minerva.Exclusion.Id
+      description: Exclusion id
+      type: string
+    - contextPath: Minerva.Exclusion.Type
+      description: Exclusion type
+      type: string
+    - contextPath: Minerva.Exclusion.Data
+      description: Exclusion data
+      type: string
+    - contextPath: Minerva.Exclusion.Description
+      description: Exclusion description
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedBy
+      description: The user that was the last to modify this exclusion
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedOn
+      description: The date this exclusion was modified on
+      type: date
+    - contextPath: Minerva.Exclusion.appliedGroupsIds
+      description: Group ids this exclusion applies to
+      type: string
     description: Add exclusions to Minerva Console
     execution: true
   - name: minerva-add-vaccine
@@ -370,6 +455,25 @@ script:
       - "False"
       description: isMonitorOnly
       defaultValue: "False"
+    outputs:
+    - contextPath: Minerva.Vaccine.Name
+      description: Mutex vaccination name
+      type: string
+    - contextPath: Minerva.Vaccine.Description
+      description: Mutex vaccination description
+      type: string
+    - contextPath: Minerva.Vaccine.isMonitorOnly
+      description: Whether this mutex vaccination is only monitored or not
+      type: boolean
+    - contextPath: Minerva.Vaccine.lastModifiedBy
+      description: The user that was the last to modify this mutex vaccination
+      type: string
+    - contextPath: Minerva.Vaccine.lastModifiedOn
+      description: The date this mutex vaccination was modified on
+      type: date
+    - contextPath: Minerva.Vaccine.Id
+      description: Mutex vaccination id
+      type: string
     description: Vaccinate with Minerva
     execution: true
   - name: minerva-search-process
@@ -509,6 +613,9 @@ script:
     - contextPath: MInerva.Vaccine.lastModifiedOn
       description: The date this mutex vaccination was modified on
       type: date
+    - contextPath: Minerva.Vaccine.Id
+      description: Mutex vaccination id
+      type: string
     description: Retrieves all the mutex vaccines
   - name: minerva-delete-vaccine
     arguments:
@@ -516,5 +623,49 @@ script:
       required: true
       isArray: true
     description: Deletes given vaccines
+  - name: minerva-get-exclusions
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Exclusion.Id
+      description: Exclusion id
+      type: string
+    - contextPath: Minerva.Exclusion.Type
+      description: Exclusion type
+      type: string
+    - contextPath: Minerva.Exclusion.Data
+      description: Exclusion data
+      type: string
+    - contextPath: Minerva.Exclusion.Description
+      description: 'Exclusion description '
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedBy
+      description: The user that was the last to modify this exclusion
+      type: string
+    - contextPath: MInerva.Exclusion.lastModifiedOn
+      description: The date this exclusion was modified on
+      type: date
+    - contextPath: Minerva.Exclusion.appliedGroupsIds
+      description: Group ids this exclusion applies to
+      type: string
+    description: Retrieves all the exclusions
+  - name: minerva-delete-exclusion
+    arguments:
+    - name: id
+      required: true
+      description: Exclusion id
+      isArray: true
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - path
+      - script
+      - certificate
+      description: Exclusion type
+    description: Deletes an exclusion by the id
+  - name: minerva-unarchive-events
+    arguments: []
+    description: Moves all the events from Archive state to New event state
   isfetch: true
   runonce: false
