@@ -12,12 +12,6 @@ requests.packages.urllib3.disable_warnings()
 """GLOBAL VARIABLES/CONSTANTS"""
 THRESHOLD = int(demisto.params().get('threshold'))
 USE_SSL = not demisto.params().get('insecure', False)
-PROXY = demisto.params().get('proxy')
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 """COMMAND FUNCTIONS"""
@@ -79,6 +73,7 @@ def test_module_command():
 
 """EXECUTION BLOCK"""
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_result = test_module_command()
         demisto.results(test_result)
