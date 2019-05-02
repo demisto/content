@@ -833,7 +833,7 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
-releaseNotes: Added human readable in case there is no attachments to email
+releaseNotes: Added human readable output for cases when an email does not contain an attachment.
 tests:
   - Gmail Convert Html Test
   - GmailTest
