@@ -591,8 +591,8 @@ outputs:
 - contextPath: DBotScore
   description: The DBotScore object.
   type: unknown
-releaseNotes: "Fixed a bug where DomainSquatting filter was performing an incorrect check. Fixed a bug where
-the playbook input received a fixed value instead of a reference to a domain value. Replaced Active Directory
-with the Active Directory v2 Query integration. Removed redundant outputs and improved an output description."
+releaseNotes: "Fixed a bug where DomainSquatting and Active Directory filters were performing an incorrect check.
+Fixed a bug where the playbook input received a fixed value instead of a reference to a domain value. Replaced Active
+Directory with the Active Directory v2 Query integration. Removed redundant outputs and improved an output description."
 tests:
   - Email Address Enrichment - Generic v2.1 - Test
