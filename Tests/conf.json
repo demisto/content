@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test"
+        },
+        {
             "integrations": "Symantec Management Center",
             "playbookID": "SymantecMC_TestPlaybook"
         },
@@ -327,6 +331,15 @@
         {
           "integrations": "Devo",
           "playbookID": "devo_test_playbook"
+        },
+        {
+          "playbookID": "URL Enrichment - Generic v2 - Test",
+          "integrations": [
+              "Rasterize",
+              "VirusTotal - Private API"
+          ],
+            "instance_names": "virus_total_private_api_general",
+            "timeout": 500
         },
         {
             "integrations": "urlscan.io",
@@ -1133,6 +1146,28 @@
             ]
         },
         {
+            "playbookID": "Phishing v2 Test - Attachment",
+            "timeout": 600,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
+            "playbookID": "Phishing v2 Test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
         },
@@ -1158,6 +1193,9 @@
         {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
+        },
+        {
+            "playbookID": "Email Address Enrichment - Generic v2 - Test"
         },
         {
             "integrations": "Phishme Intelligence",
@@ -1187,6 +1225,14 @@
             "playbookID": "Kafka Test"
         },
         {
+            "playbookID": "File Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_private_api_general",
+            "integrations": [
+                "VirusTotal - Private API",
+                "Cylance Protect v2"
+            ]
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500
@@ -1213,13 +1259,25 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
+            "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "File Enrichment - Generic Test"
+            "playbookID": "Account Enrichment - Generic v2 - Test",
+            "integrations": "activedir"
+        },
+       {
+            "playbookID": "Endpoint Enrichment - Generic v2 - Test",
+            "integrations": [
+                "FalconHost",
+                "Cylance Protect",
+                "carbonblack",
+                "epo",
+                "activedir"
+            ]
         },
         {
             "playbookID": "EmailReputationTest",
@@ -1237,6 +1295,10 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Cisco Umbrella Investigate",
+            "playbookID": "Domain Enrichment - Generic v2 - Test"
+        },
+        {
             "integrations": "Google BigQuery",
             "playbookID": "Google BigQuery Test"
         },
@@ -1251,6 +1313,11 @@
         {
             "integrations": "Palo Alto Networks Cortex",
             "playbookID": "Palo Alto Networks Cortex Test",
+            "fromversion": "4.1.0"
+        },
+        {
+            "playbookID": "IP Enrichment - Generic v2 - Test",
+            "integrations": "Threat Crowd",
             "fromversion": "4.1.0"
         },
         {
@@ -1281,14 +1348,12 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate URL - ANYRUN - Test"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
+        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "detonate_file_-_generic_test": "relevant only for v3.6",
+        "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1299,6 +1364,8 @@
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
+        "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
+        "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test"
@@ -1333,6 +1400,7 @@
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
+        "Snowflake": "Looks like account expired, needs looking into",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",

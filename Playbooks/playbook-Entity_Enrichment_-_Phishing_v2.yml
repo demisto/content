@@ -1,0 +1,507 @@
+id: Entity Enrichment - Phishing v2
+version: -1
+fromversion: 4.1.0
+name: Entity Enrichment - Phishing v2
+description: Enrich entities using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+    type: start
+    task:
+      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+      - "18"
+      - "19"
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
+    type: title
+    task:
+      id: 38007764-1687-47b1-8490-0f3cded9dc95
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 721
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 9b97858b-33e7-4b02-8b00-b72debacc0db
+    type: playbook
+    task:
+      id: 9b97858b-33e7-4b02-8b00-b72debacc0db
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 1a32d820-2625-491e-8185-1e44c5d329ed
+    type: playbook
+    task:
+      id: 1a32d820-2625-491e-8185-1e44c5d329ed
+      version: -1
+      name: Email Address Enrichment - Generic v2
+      description: |-
+        Enrich email addresses.  Email address enrichment currently involves:
+        - Getting information from Active Directory for internal addresses
+        - Getting domain-squatting reputation for external addresses
+      playbookName: Email Address Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: inputs.Email
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 8189698a-475c-433b-8fbf-20275b3b2084
+    type: playbook
+    task:
+      id: 8189698a-475c-433b-8fbf-20275b3b2084
+      version: -1
+      name: File Enrichment - Generic v2
+      description: ""
+      playbookName: File Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
+    type: playbook
+    task:
+      id: b00cb02f-d44b-4e40-8c27-281d17a94723
+      version: -1
+      name: URL Enrichment - Generic v2
+      description: ""
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 6245f7fc-b1cc-4120-81da-d3320f809b03
+    type: playbook
+    task:
+      id: 6245f7fc-b1cc-4120-81da-d3320f809b03
+      version: -1
+      name: Domain Enrichment - Generic v2
+      description: |-
+        Enrich domains using one or more integrations.
+        Domain enrichment includes:
+        * Threat information
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 716,
+        "width": 800,
+        "x": 70,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The IP addresses to enrich
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: File MD5 to enrich
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: File SHA256 to enrich
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: uniq
+  required: false
+  description: File SHA1 to enrich
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL to enrich
+- key: Email
+  value:
+    complex:
+      root: Account
+      accessor: Email.Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The email addresses to enrich
+- key: Hostname
+  value:
+    complex:
+      root: Endpoint
+      accessor: Hostname
+      transformers:
+      - operator: uniq
+  required: false
+  description: The hostname to enrich
+- key: Username
+  value:
+    complex:
+      root: Account
+      accessor: Username
+      transformers:
+      - operator: uniq
+  required: false
+  description: The Username to enrich
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+      transformers:
+      - operator: uniq
+  required: false
+  description: The domain name to enrich
+- key: ResolveIP
+  value:
+    simple: "False"
+  required: false
+  description: Determines whether the IP Enrichment - Generic playbook should convert
+    IP addresses to hostnames using a DNS query. You can set this to either True or
+    False.
+- key: InternalDomains
+  value: {}
+  required: false
+  description: A list of internal domains, separated by commas. The list will be used
+    to determine whether an email address is internal or external.
+outputs:
+- contextPath: Account
+  description: The Account's object
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Domain
+  description: The domain objects
+  type: unknown
+- contextPath: URL
+  description: The URL's object
+  type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string
+- contextPath: URL.Address
+  description: The enriched URL
+  type: string
+- contextPath: Account.Email.Address
+  description: The Email account full address
+  type: string
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Account.Email.Domain
+  description: The Email account domain
+  type: string
+- contextPath: Account.Email.NetworkType
+  description: The Email account NetworkType (could be Internal/External)
+  type: string
+- contextPath: Account.Email.Username
+  description: The Email account username
+  type: string
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain
+  type: unknown
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain '
+  type: string
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The Indicator Type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The DBot score vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The DBot score
+  type: number
+releaseNotes: "A new entity enrichment playbook for phishing to avoid enrichment of irrelevant entities."
+tests:
+  - no test - each entity has or will have its own test
