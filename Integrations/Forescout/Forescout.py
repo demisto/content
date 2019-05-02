@@ -25,23 +25,38 @@ AUTH = ''
 LAST_JWT_FETCH = None
 # Default JWT validity time set in Forescout Web API
 JWT_VALIDITY_TIME = timedelta(minutes=5)
+# For use of Entity Tags (ETags) to reduce bandwidth by eliminating transactions
+# when previously reported data hasn't changed.
+ETAGS = {}
 
 
 ''' HELPER FUNCTIONS '''
 
 
+def log_entity_tag(api_calling_func):
+    def api_calling_func_wrapper(*args, **kwargs):
+        response = api_calling_func(*args, **kwargs)
+        etag_hash = response.headers.get('ETag')
+        cur_etag = ETAGS.setdefault(api_calling_func.__qualname__, etag_hash)
+        if cur_etag != etag_hash:
+            ETAGS[api_calling_func.__qualname__] = etag_hash
+        return response
+    return api_calling_func_wrapper
+
+
 def login():
-    if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
+    if LAST_JWT_FETCH is None or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
         url_suffix = '/api/login'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         params = {'username': USERNAME, 'password': PASSWORD}
-        response = http_request('POST', url_suffix, headers=headers, params=params)
+        response = http_request('POST', url_suffix, headers=headers, params=params, resp_type='response')
         fetch_time = parsedate(response.headers.get('Date', ''))
         AUTH = response.text
         LAST_JWT_FETCH = fetch_time
 
 
-def http_request(method, url_suffix, full_url=None, headers=None, auth=None, params=None, data=None, files=None):
+def http_request(method, url_suffix, full_url=None, headers=None,
+                 auth=None, params=None, data=None, files=None, resp_type='json'):
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -66,6 +81,10 @@ def http_request(method, url_suffix, full_url=None, headers=None, auth=None, par
         Data to be sent in a 'POST' request.
     files : dict
         File data to be sent in a 'POST' request.
+    resp_type : str
+        Determines what to return from having made the HTTP request. The default
+        is 'json'. Other options are 'text', 'content' or 'response' if the user
+        would like the full response object returned.
 
     Returns
     -------
@@ -86,7 +105,7 @@ def http_request(method, url_suffix, full_url=None, headers=None, auth=None, par
         )
 
         # Handle error responses gracefully
-        if 300 <= res.status_code < 200:
+        if res.status_code not in {200, 201, 304}:
             err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
             try:
                 res_json = res.json()
@@ -96,13 +115,21 @@ def http_request(method, url_suffix, full_url=None, headers=None, auth=None, par
             except json.decoder.JSONDecodeError:
                 return_error(err_msg)
 
-        return res.json()
-
-    except json.decoder.JSONDecodeError:
-        if res.text != '':
-            return res
+        resp_type = resp_type.casefold()
+        if resp_type == 'json':
+            return res.json()
+        elif resp_type == 'text':
+            return res.text
+        elif resp_type == 'content':
+            return res.content
         else:
-            return return_error('No contents in the response.')
+            return res
+
+    # except json.decoder.JSONDecodeError:
+    #     if res.text != '':
+    #         return res
+    #     else:
+    #         return return_error('No contents in the response.')
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
         return_error(err_msg)
@@ -113,9 +140,10 @@ def http_request(method, url_suffix, full_url=None, headers=None, auth=None, par
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Performs basic get request that requires proper authentication
     """
-    samples = http_request('GET', 'items/samples')
+    login()
+    demisto.results('ok')
 
 
 def get_items_command():
@@ -193,21 +221,63 @@ def get_host():
 def get_host_command():
     pass
 
-
+@log_entity_tag
 def get_hosts():
-    pass
+    login()
+    url_suffix = '/api/hosts'
+    headers = {
+        'Authorization': AUTH,
+        'Accept': 'application/hal+json'
+    }
+    entity_tag = ETAGS.get('get_hosts')
+    if entity_tag:
+        headers['If-None-Match'] = entity_tag
+    params = {}
+    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
+    return response
 
 
 def get_hosts_command():
-    pass
+    response = get_hosts().json()
+    content = {
+        'Host': [
+            {
+                'ID': x.get('hostId'),
+                'IP': x.get('ip'),
+                'MAC': x.get('mac'),
+                'EndpointURL': x.get('_links', {}).get('self', {}).get('href')
+            } for x in response.get('hosts', [])
+        ]
+    }
+    context = {'Forescout': content}
+    title = 'Active Endpoints'
+    human_readable = tableToMarkdown(title, content, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
 
 
+@log_entity_tag
 def get_hostfields():
-    pass
+    login()
+    url_suffix = '/api/hostfields'
+    headers = {
+        'Authorization': AUTH,
+        'Accept': 'application/hal+json'
+    }
+    entity_tag = ETAGS.get('get_hosts')
+    if entity_tag:
+        headers['If-None-Match'] = entity_tag
+    params = {}
+    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
+    return response
 
 
 def get_hostfields_command():
-    pass
+    response = get_hostfields().json()
+    content = {'HostField': [{key.title(): val for key, val in x.items()} for x in response.get('hostFields', [])]}
+    context = {'Forescout': content}
+    title = 'Index of Host Properties'
+    human_readable = tableToMarkdown(title, content, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

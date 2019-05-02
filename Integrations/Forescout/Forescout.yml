@@ -73,6 +73,20 @@ script:
     description: Retrieve a list of active endpoints.
     execution: false
     name: forescout-get-hosts
+    outputs:
+    - contextPath: Forescout.Host.ID
+      description: Forescout ID for the host.
+      type: Number
+    - contextPath: Forescout.Host.IP
+      description: IP Address of the host.
+      type: String
+    - contextPath: Forescout.Host.MAC
+      description: MAC Address of the host.
+      type: String
+    - contextPath: Forescout.Host.EndpointURL
+      description: Endpoint URL to make an API call to in order to retrieve details
+        about the host.
+      type: String
   - deprecated: false
     description: Retrieve an index of forescout host properties.
     execution: false
@@ -99,6 +113,7 @@ script:
     description: Retrieve specified host property values for an endpoint.
     execution: false
     name: forescout-get-host
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: '-'
