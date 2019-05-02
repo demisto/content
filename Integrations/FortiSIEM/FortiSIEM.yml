@@ -144,9 +144,9 @@ script:
       description: Destination IP address for the web.
       type: string
     - contextPath: FortiSIEM.Events.SourceIP
-      description: 'IP address of the traffic’s origin. The source varies by the direction:
+      description: "IP address of the traffic's origin. The source varies by the direction:
         l In HTTP requests, this is the web browser or other client. l In HTTP responses,
-        this is the physical server.'
+        this is the physical server."
       type: string
     - contextPath: FortiSIEM.Events.ExtendedData
       description: All additional data returned by FortiSIEM.
@@ -380,5 +380,6 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
   - No Test
