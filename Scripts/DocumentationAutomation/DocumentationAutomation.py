@@ -5,7 +5,7 @@ import yaml
 import sys
 
 reload(sys)
-sys.setdefaultencoding('utf-8')
+sys.setdefaultencoding('utf-8')  # pylint: disable=E110
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?')
 
 
@@ -26,7 +26,7 @@ def get_command_examples(entry_id):
     if entry_id is None:
         return commands, errors
 
-    if re.match('[\d]+@[\d]+', entry_id) is not None:
+    if re.match(r'[\d]+@[\d]+', entry_id) is not None:
         examples_path = demisto.getFilePath(entry_id)['path']
         with open(examples_path, 'r') as examples_file:
             commands = examples_file.read().split('\n')
