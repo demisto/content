@@ -2,7 +2,6 @@
 	"typeId": "Phishing",
 	"kind": "details",
 	"fromVersion": "4.1.0",
-	"releaseNotes": "Updated Phishing incident type layout",
 	"layout": {
 		"id": "Phishing",
 		"version": -1,

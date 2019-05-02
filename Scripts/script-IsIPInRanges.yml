@@ -63,6 +63,5 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Script configuration changed to be of a non-condition script. Improved description and of IP range input."
 tests:
   - IP Enrichment - Generic v2 - Test

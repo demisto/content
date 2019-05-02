@@ -237,6 +237,5 @@ outputs:
 - contextPath: Account.Manager
   description: The account's manager.
   type: string
-releaseNotes: "Added a new playbook for account enrichment, with improvements to uniqueness of indicators, names, descriptions, input selectors, and auto-extract settings."
 tests:
   - Account Enrichment - Generic v2 - Test

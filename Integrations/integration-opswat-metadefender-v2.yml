@@ -324,5 +324,3 @@ script:
   runonce: false
 tests:
   - No tests - no instance
-releaseNotes:
-  'Version 2 adds support  MetaDefender Core v4 v4.14.3 API'

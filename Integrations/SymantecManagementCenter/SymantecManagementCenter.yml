@@ -716,4 +716,3 @@ script:
   type: python
 tests:
 - SymantecMC_TestPlaybook
-releaseNotes: '-'

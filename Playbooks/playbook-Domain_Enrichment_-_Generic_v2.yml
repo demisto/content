@@ -315,6 +315,5 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, and Vendor.
   type: unknown
-releaseNotes: "Added a new playbook for domain enrichment. The new playbook features, among other things - improved indicator uniqueness, adjusted autoextract settings, fixed descriptions and task names and removed reputation command."
 tests:
   - Domain Enrichment - Generic v2 - Test

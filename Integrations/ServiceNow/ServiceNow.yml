@@ -4130,7 +4130,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: Added option to choose the timestamp field to filter by when fetching
-  incidents; Enforcement for the fetch incidents limit and last run;
 tests:
 - No test - Hibernating instance
