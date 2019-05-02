@@ -105,7 +105,7 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
         try:
             json_res = json.loads(xml2json(result.text))
             return json_res
-        except Exception as ex:
+        except Exception:
             return_error(f'Failed to parse response to json. response: {result.text}')
 
 
@@ -291,7 +291,7 @@ def wildfire_upload_file(upload):
 
     try:
         shutil.copy(file_path, file_name)
-    except Exception as ex:
+    except Exception:
         return_error('Failed to prepare file for upload.')
 
     try:
