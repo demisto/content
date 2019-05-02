@@ -10,6 +10,7 @@ import traceback
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+LAST_RUN_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_RESULTS_LIMIT = 50
 MAX_TIMEOUT_MINUTES = 5
 SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
@@ -134,6 +135,27 @@ def full_path_headers(src_data, base_path):
     return [full_path_headers_for_dict(x) for x in src_data]
 
 
+def parse_filters_arg(filters_arg_value):
+    error_message = "'filters' argument format is invalid.\n"
+
+    filters_list = argToList(filters_arg_value)
+    filters_list = [elem for elem in [x.strip() for x in filters_list] if elem]  # Remove empty elems
+    if not filters_list:
+        return
+
+    filters = {}
+    filters_and_indices_list = zip(range(len(filters_list)), filters_list)  # Track element index for error messages
+    for i, elem in filters_and_indices_list:
+        k, v = elem.split(':', 1)
+        k = k.strip()
+        if not k:
+            return_error(f"{error_message}Filter in position {i+1}: field is empty.")
+        v = v.strip()
+        if not v:
+            return_error(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
+        filters[k] = v
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -145,15 +167,23 @@ def test_module():
 
 
 def fetch_incidents_command():
-
     look = demisto.params().get('fetch_incidents_look')
     limit = demisto.params().get('fetch_incidents_limit', '500')
+
     if not look:
         raise Exception("Integration configuration parameter 'Look name or ID to fetch incidents from' is empty.")
 
+    last_run = demisto.getLastRun()
+    if not last_run:
+        last_run = parse_date_range(demisto.params().get('first_fetch_time', '10 minutes'), LAST_RUN_TIME_FORMAT)
+
     incidents = []
+    new_last_run = datetime.strftime(datetime.now(), LAST_RUN_TIME_FORMAT)
     raw_response = run_look_request(look, 'json', limit, '')
 
+    # TODO: filter results - compare created_date values to last_run
+
+    demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
 
 
@@ -254,6 +284,23 @@ def search_looks_request(args):
     ]
 
 
+def run_inline_query_command():
+    str_args = ('model', 'view')  # (required) String-type arguments
+    list_args = ('fields', 'pivots', 'sorts')  # (optional) List-type arguments
+
+    for k in str_args:
+        if not demisto.args().get(k):
+            return_error(f"Missing mandatory argument {k}")
+
+    args_dict = {k: argToList(demisto.args()[k]) for k in list_args if k in demisto.args()}  # Parse list-type arguments
+    args_dict.update({k: demisto.args()[k] for k in str_args})  # Add string-type arguments
+
+    # Handle special argument
+    filters = parse_filters_arg(demisto.args().get('filters'))
+    if filters:
+        args_dict['filters'] = filters
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -271,6 +318,8 @@ try:
         run_look_command()
     elif demisto.command() == 'looker-search-looks':
         search_looks_command()
+    elif demisto.command() == 'looker-run-inline-query':
+        run_inline_query_command()
 
 # Log exceptions
 except Exception as e:
