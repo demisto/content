@@ -1146,6 +1146,28 @@
             ]
         },
         {
+            "playbookID": "Phishing v2 Test - Attachment",
+            "timeout": 600,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
+            "playbookID": "Phishing v2 Test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
         },
@@ -1294,6 +1316,11 @@
             "fromversion": "4.1.0"
         },
         {
+            "playbookID": "IP Enrichment - Generic v2 - Test",
+            "integrations": "Threat Crowd",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "Cherwell",
             "playbookID": "Cherwell Example Scripts - test"
         },
@@ -1321,10 +1348,6 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate URL - ANYRUN - Test"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
@@ -1341,6 +1364,7 @@
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
+        "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",

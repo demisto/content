@@ -73,8 +73,8 @@ tasks:
     task:
       id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
       version: -1
-      name: Is ePolicy Orchestrator enabled?
-      description: Checks if there is any active instance of McAfee ePolicy Orchestrator.
+      name: Is McAfee ePolicy Orchestrator enabled?
+      description: Checks if there is any active instance of the McAfee ePolicy Orchestrator integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -125,7 +125,7 @@ tasks:
       id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
       version: -1
       name: Is there an endpoint to enrich?
-      description: Checks whether there is an endpoint to enrich by hostname.
+      description: Checks whether there is at least one endpoint to enrich (by hostname).
       type: condition
       iscommand: false
       brand: ""
@@ -223,7 +223,7 @@ tasks:
       id: 9cee85fe-c940-400e-88e8-b0afb46fbb36
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is any active instance of Carbon Black Enterprise
+      description: Checks if there is any active instance of the Carbon Black Enterprise integration enabled.
         Response.
       scriptName: Exists
       type: condition
@@ -352,7 +352,7 @@ tasks:
       id: 216aed2b-2f34-4c5e-8c54-60b978218896
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
-      description: Checks if there is any active instance of CrowdStrike Falcon Host.
+      description: Checks if there is any active instance of the CrowdStrike Falcon Host integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -403,7 +403,7 @@ tasks:
       id: 1d8f2002-479e-45f0-80c2-866cea427467
       version: -1
       name: Is Cylance Protect enabled?
-      description: Checks if there is any active instance of Cylance Protect.
+      description: Checks if there is any active instance of the Cylance Protect integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -605,7 +605,7 @@ tasks:
       id: d55e2614-b89c-4e02-85ec-5e63ea3026aa
       version: -1
       name: Is Active Directory enabled?
-      description: Checks if there is any active instance of Active Directory.
+      description: Checks if there is any active instance of the Active Directory integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -660,8 +660,8 @@ tasks:
       version: -1
       name: Get host information from Active Directory
       description: |-
-        Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email or as an Active Directory Distinguished Name (DN).
-        If no filters are provided, the result will show all computers.
+        Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN).
+        If no filters are specified, the result will show all computers.
       scriptName: ADGetComputer
       type: regular
       iscommand: false
@@ -794,15 +794,15 @@ outputs:
   description: The hostnames of the endpoints that were enriched.
   type: string
 - contextPath: Endpoint.OS
-  description: The operating systems that run on the endpoints that were enriched.
+  description: The operating systems running on the endpoints that were enriched.
   type: string
 - contextPath: Endpoint.IP
   description: A list of the IP addresses of the endpoints.
 - contextPath: Endpoint.MAC
   description: A list of the MAC addresses of the endpoints that were enriched.
 - contextPath: Endpoint.Domain
-  description: The domain name of the endpoints that were enriched.
+  description: The domain names of the endpoints that were enriched.
   type: string
-releaseNotes: "Added a new playbook for endpoint enrichment. The new playbook features improved uniqueness of indicators, improved names and descriptions, visual reorganization, improved stability, performance (better defined auto-extract), and DT selectors were changed to user-friendly selectors. Removed deprecated SentinelOne integration."
+releaseNotes: "Updated names and descriptions."
 tests:
   - Endpoint Enrichment - Generic v2 - Test
