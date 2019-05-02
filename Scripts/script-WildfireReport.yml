@@ -39,7 +39,7 @@ tags:
 - enhancement
 - wildfire
 - sandbox
-comment: Deprecated, use wildfire-report instead
+comment: Deprecated. Use the "wildfire-report" command instead.
 system: true
 args:
 - name: md5
@@ -54,4 +54,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated, use wildfire-report instead
+releaseNotes: Deprecated. Use the "wildfire-report" command instead.

@@ -19,7 +19,7 @@ type: javascript
 tags:
 - panorama
 - firewall
-comment: Deprecated, use panorama-move-rule instead
+comment: Deprecated. Use the "panorama-move-rule" command instead.
 system: true
 args:
 - name: xpath
@@ -43,4 +43,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated, use panorama-move-rule instead
+releaseNotes: Deprecated. Use the "panorama-move-rule" command instead.

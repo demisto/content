@@ -62,4 +62,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated, use "WildFire - Detonate File" playbook instead
+releaseNotes: Deprecated. Use the "Wildfire - Detonate File" playbook instead.

@@ -38,7 +38,7 @@ type: javascript
 tags:
 - panorama
 - firewall
-comment: Deprecated, use panorama-get-pcap instead
+comment: Deprecated. Use the "panorama-get-pcap" command instead.
 system: true
 args:
 - name: pcapType
@@ -67,4 +67,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated, use panorama-get-pcap instead
+releaseNotes: Deprecated. Use the "panorama-get-pcap" command instead.

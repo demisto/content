@@ -27,7 +27,7 @@ type: javascript
 tags:
 - wildfire
 - sandbox
-comment: Deprecated, use wildfire-upload instead
+comment: Deprecated. Use the "wildfire-upload" command instead.
 system: true
 args:
 - name: upload
@@ -41,4 +41,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated, use wildfire-upload instead
+releaseNotes: Deprecated. Use the "wildfire-upload" command instead.
