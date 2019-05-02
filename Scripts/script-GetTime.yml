@@ -78,6 +78,7 @@ script: |-
 type: javascript
 tags:
 - Utility
+- transformer
 comment: |
   Retrieves the current date and time.
 enabled: true
