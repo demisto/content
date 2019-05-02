@@ -135,7 +135,7 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'problem_id', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input',
              'watch_list', 'work_end', 'work_notes', 'work_notes_list',
-             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
+             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state', 'caller']
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
