@@ -432,6 +432,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: New Integration
 tests:
 - ANYRUN-Test

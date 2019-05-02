@@ -1185,4 +1185,3 @@ script:
   runonce: false
 tests:
 - Wildfire Test
-releaseNotes: "Added md5,sha256 arguments options to !file command, regard non valid hash in the !file command as a warning. add sha256 argument and deprecate hash argument for wildfire-report. Added wildfire-get-sample command."

@@ -29,7 +29,6 @@ args:
   defaultValue: "no"
 scripttarget: 0
 runonce: false
-releaseNotes: Improve script to work with older demisto/python images 
 tests:
   - CheckDockerImageAvailableTest
 runas: DBotWeakRole

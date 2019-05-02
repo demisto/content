@@ -803,6 +803,5 @@ outputs:
 - contextPath: Endpoint.Domain
   description: The domain names of the endpoints that were enriched.
   type: string
-releaseNotes: "Added a new playbook for endpoint enrichment. The new playbook features improved uniqueness of indicators, improved names and descriptions, visual reorganization, improved stability, performance (better defined auto-extract), and DT selectors were changed to user-friendly selectors. Removed deprecated SentinelOne integration."
 tests:
   - Endpoint Enrichment - Generic v2 - Test
