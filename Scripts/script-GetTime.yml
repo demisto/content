@@ -105,3 +105,4 @@ scripttarget: 0
 runonce: false
 tests:
 - GetTime-Test
+releaseNotes: "Make GetTime available as a transformer"
