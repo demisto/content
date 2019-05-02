@@ -41,7 +41,7 @@ tasks:
       id: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
       version: -1
       name: Is there a domain to enrich?
-      description: Checks whether the playbook's input contains a domain name to enrich.
+      description: Checks whether the playbook's input contains at least one domain name to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -101,7 +101,7 @@ tasks:
       id: 3ab86896-10aa-45be-83cf-7dcca9b6aa92
       version: -1
       name: Is VirusTotal Private API enabled?
-      description: Checks if there is an active instance of Virus Total Private API
+      description: Checks if there is an active instance of the Virus Total Private API integration enabled.
         enabled.
       type: condition
       iscommand: false
@@ -230,7 +230,7 @@ tasks:
       id: 29cca13b-1b82-4db3-8463-2a4f537546d0
       version: -1
       name: Is Cisco Umbrella Investigate enabled?
-      description: Checks if there is an active instance of Cisco Umbrella Investigate
+      description: Checks if there is an active instance of the Cisco Umbrella Investigate integration enabled.
         enabled.
       type: condition
       iscommand: false
@@ -307,14 +307,14 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The domain name to enrich
+  description: The domain name to enrich.
 outputs:
 - contextPath: Domain
-  description: The domain objects
+  description: The domain objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, and Vendor.
   type: unknown
-releaseNotes: "Added a new playbook for domain enrichment. The new playbook features, among other things - improved indicator uniqueness, adjusted autoextract settings, fixed descriptions and task names and removed reputation command."
+releaseNotes: "Updated names and descriptions."
 tests:
   - Domain Enrichment - Generic v2 - Test
