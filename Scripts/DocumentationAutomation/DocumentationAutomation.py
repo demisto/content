@@ -5,7 +5,7 @@ import yaml
 import sys
 
 reload(sys)
-sys.setdefaultencoding('utf-8')  # pylint: disable=E110
+sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?')
 
 
