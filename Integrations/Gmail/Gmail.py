@@ -686,8 +686,10 @@ def get_attachments_command():
     _id = args.get('message-id')
 
     attachments = get_attachments(user_id, _id)
-
-    return [fileResult(name, data) for name, data in attachments]
+    if attachments:
+        return [fileResult(name, data) for name, data in attachments]
+    else:
+        return 'No Attachments Found'
 
 
 def get_attachments(user_id, _id):

@@ -502,5 +502,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
+releaseNotes: "A new entity enrichment playbook for phishing to avoid enrichment of irrelevant entities."
 tests:
   - no test - each entity has or will have its own test

@@ -587,5 +587,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
+releaseNotes: Various fixes and improvements to performance & stability to all enrichment playbooks.
 tests:
   - no test - each enrichment sub-playbook has or will have its own test
