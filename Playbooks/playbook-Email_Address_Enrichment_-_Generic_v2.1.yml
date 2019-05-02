@@ -442,7 +442,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: activedir
+                  simple: Active Directory Query v2
           - - operator: isEqualString
               left:
                 value:
