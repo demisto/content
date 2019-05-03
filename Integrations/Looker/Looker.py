@@ -314,8 +314,7 @@ def run_inline_query_command():
 
 def run_inline_query_request(result_format, args_dict):
     endpoint_url = f'/queries/run/{result_format}'
-    params = args_dict
-    return http_request('POST', endpoint_url, params=params, response_type=result_format)
+    return http_request('POST', endpoint_url, data=args_dict, response_type=result_format)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
