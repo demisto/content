@@ -41,4 +41,3 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated. Use the "wildfire-upload" command instead.

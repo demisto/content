@@ -348,6 +348,5 @@ inputs:
   required: true
   description: Compliance Search query
 outputs: []
-releaseNotes: "-"
 tests:
   - No test

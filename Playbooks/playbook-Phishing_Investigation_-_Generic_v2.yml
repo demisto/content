@@ -1046,7 +1046,6 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
-releaseNotes: "A new Phishing Investigation playbook that now utilizes a customized Entity Enrichment playbook to avoid enrichment of irrelevant entities."
 tests:
 - Phishing v2 Test - Attachment
 - Phishing v2 Test - Inline

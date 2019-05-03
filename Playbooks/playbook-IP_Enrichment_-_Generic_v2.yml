@@ -230,6 +230,5 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-releaseNotes: "A new IP Enrichment playbook that includes multiple fixes and improvements. The new playbook calls 2 separate sub-playbooks. One for internal IPs, the other for external ones."
 tests:
   - IP Enrichment - Generic v2 - Test
