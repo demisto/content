@@ -44,6 +44,19 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: opened_at
+  display: |-
+    Timestamp field to filter by (e.g., `opened_at`)
+    This is how the filter is applied to the query: “ORDERBYopened_at^opened_at>[Last Run]. To prevent duplicate incidents, this field is mandatory for fetching incidents.
+  name: timestamp_field
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -3743,12 +3756,6 @@ script:
       description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
       isArray: false
       name: custom_fields
-      required: false
-      secret: false
-    - default: false
-      description: Template name to use as a base to create new records.
-      isArray: false
-      name: template
       required: false
       secret: false
     deprecated: false

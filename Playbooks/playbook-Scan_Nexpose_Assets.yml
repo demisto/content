@@ -333,4 +333,4 @@ outputs:
   description: The total number of vulnerabilities.
 fromversion: 4.0.0
 tests:
-  - No Test
+- No test

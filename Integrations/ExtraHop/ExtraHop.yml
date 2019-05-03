@@ -885,6 +885,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: '-'
 tests:
 - ExtraHop-Test
