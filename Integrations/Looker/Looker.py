@@ -185,22 +185,24 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
             hr_title = 'Inline Query Results'
             full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.InlineQuery')
 
-        entries += {
+        entries.append({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(hr_title, full_path_header_content, removeNull=True),
             'EntryContext': context
-        }
+        })
 
         if contents:
-            entries += 'This command has dynamic output keys.\nTo access them in the context, ' \
-                       'copy the key\'s path from the column header in the results table.'
+            entries.append(
+                'This command has dynamic output keys.\n'
+                'To access them in the context, copy the key\'s path from the column header in the results table.'
+            )
 
     elif result_format == 'csv':
-        entries += fileResult('look_result.csv' if look_id else 'inline_query_result.csv', contents,
-                              entryTypes['entryInfoFile'])
+        entries.append(fileResult('look_result.csv' if look_id else 'inline_query_result.csv', contents,
+                                  entryTypes['entryInfoFile']))
 
     return entries
 
