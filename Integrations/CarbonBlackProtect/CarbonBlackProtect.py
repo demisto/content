@@ -1213,7 +1213,7 @@ def search_policy_command():
     """
     args = demisto.args()
     raw_policy = search_policy(args.get('query'), args.get('limit'), args.get('offset'),
-                               args.get('sort'),  args.get('group'),
+                               args.get('sort'), args.get('group'),
                                args.get('enforcementLevel'), args.get('disconnectedEnforcementLevel'))
     hr_policies = []
     policies = []
