@@ -237,7 +237,7 @@ script:
       description: Title of the look
       isArray: false
       name: look_title
-      required: false
+      required: true
       secret: false
     - default: false
       description: Description of the look
@@ -249,7 +249,7 @@ script:
       description: ID of the space that will contain the look
       isArray: false
       name: look_space_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Create a look from a query

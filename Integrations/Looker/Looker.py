@@ -70,10 +70,10 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
 
     res_obj = res.json()
 
-    # More error handling
+    # Handle non-http type error messages from looker
     if isinstance(res_obj, list) and len(res_obj) == 1 and \
             isinstance(res_obj[0], dict) and 'looker_error' in res_obj[0]:
-        raise Exception(f"Looker Error: {res_obj[0]['looker_error']}")
+        raise Exception(res_obj[0]['looker_error'])
 
     return res_obj
 
@@ -207,6 +207,21 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
     return entries
 
 
+def get_query_args():
+    str_args = ('model', 'view')  # (required) String-type arguments
+    list_args = ('fields', 'pivots', 'sorts')  # (optional) List-type arguments
+    for k in str_args:
+        if not demisto.args().get(k):
+            return_error(f"Missing mandatory argument {k}")
+    args_dict = {k: argToList(demisto.args()[k]) for k in list_args if k in demisto.args()}  # Parse list-type arguments
+    args_dict.update({k: demisto.args()[k] for k in str_args})  # Add string-type arguments
+    # Handle special arguments
+    filters = parse_filters_arg(demisto.args().get('filters'))
+    if filters:
+        args_dict['filters'] = filters
+    return args_dict
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -309,20 +324,9 @@ def search_looks_request(args):
 
 def run_inline_query_command():
     result_format = demisto.args()['result_format']
-    str_args = ('model', 'view')  # (required) String-type arguments
-    list_args = ('fields', 'pivots', 'sorts')  # (optional) List-type arguments
+    args_dict = get_query_args()
 
-    for k in str_args:
-        if not demisto.args().get(k):
-            return_error(f"Missing mandatory argument {k}")
-
-    args_dict = {k: argToList(demisto.args()[k]) for k in list_args if k in demisto.args()}  # Parse list-type arguments
-    args_dict.update({k: demisto.args()[k] for k in str_args})  # Add string-type arguments
-
-    # Handle special argument
-    filters = parse_filters_arg(demisto.args().get('filters'))
-    if filters:
-        args_dict['filters'] = filters
+    args_dict['limit'] = get_limit()
 
     contents = run_inline_query_request(result_format, args_dict)
 
@@ -330,9 +334,58 @@ def run_inline_query_command():
 
 
 def run_inline_query_request(result_format, args_dict):
-    endpoint_url = f'/queries/run/{result_format}'
-    return http_request('POST', endpoint_url, data=json.dumps(args_dict), response_type=result_format)
+    return http_request(
+        method='POST',
+        url_suffix=f'/queries/run/{result_format}',
+        data=json.dumps(args_dict),
+        response_type=result_format
+    )
 
+
+def create_look_command():
+    space_id = demisto.args()['look_space_id']
+    look_title = demisto.args()['look_title']
+    look_description = demisto.args().get('look_description')
+    args_dict = get_query_args()
+
+    create_query_response = create_query_request(args_dict)
+    query_id = create_query_response['id']
+
+    contents = create_look_request(query_id, space_id, look_title, look_description)
+    context = {f'Looker.Look(val.ID && val.ID === {look["ID"]})': look for look in contents}
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'Look search results', contents, removeNull=True),
+        'EntryContext': context
+    })
+
+
+def create_query_request(args_dict):
+    return http_request(method='POST', url_suffix=f'/queries/', data=json.dumps(args_dict))
+
+
+def create_look_request(query_id, space_id, look_title, look_description=""):
+    data = {
+        'query_id': query_id,
+        'space_id': space_id,
+        'look_title': look_title
+    }
+    if look_description:
+        data['look_description'] = look_description
+
+    look =  http_request(method='POST', url_suffix=f'/looks', data=data)
+
+    return {
+        'ID': look['id'],
+        'Name': look['title'],
+        'SpaceID': look['space']['id'],
+        'SpaceName': look['space']['name'],
+        'LastUpdated': look['updated_at'].replace('+00:00', 'Z')
+    }
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -353,6 +406,8 @@ try:
         search_looks_command()
     elif demisto.command() == 'looker-run-inline-query':
         run_inline_query_command()
+    elif demisto.command() == 'looker-create-look':
+        create_look_command()
 
 # Log exceptions
 except Exception as e:
