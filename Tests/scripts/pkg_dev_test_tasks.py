@@ -132,13 +132,6 @@ def docker_image_create(docker_base_image, requirements):
 def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
     workdir = '/devwork'
     pylint_files = get_lint_files(project_dir)
-    # copy demistomock and common server
-    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
-    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
-    shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
-    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
-                           'Scripts/script-CommonServerPython.yml', '-o',
-                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
     run_params = ['docker', 'create', '-v', workdir, '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
     if no_test:
@@ -170,6 +163,16 @@ def run_mypy(project_dir, py_num):
     print("========= Running mypy ===============")
     subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), get_lint_files(project_dir)], cwd=project_dir)
     print("mypy completed")
+
+
+def setup_dev_files(project_dir):
+    # copy demistomock and common server
+    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
+    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
+    shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
+    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
+                           'Scripts/script-CommonServerPython.yml', '-o',
+                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
 
 
 def main():
@@ -210,6 +213,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     docker = get_docker_image(script_obj)
     print_v("Using docker image: {}".format(docker))
     py_num = get_python_version(project_dir, docker)
+    setup_dev_files(project_dir)
     try:
         if not args.no_flake8:
             run_flake8(project_dir, py_num)
