@@ -1794,8 +1794,10 @@ def search_file_analysis_command():
     :return: EntryObject of the file analysis
     """
     args = demisto.args()
-    raw_file_analysis = search_file_analysis(args.get('query'), args.get('limit'), args.get('offset'),
-                                             args.get('sort'), args.get('group'))
+    raw_file_analysis = search_file_analysis(args.get('query'), args.get('limit'), args.get('offset'), args.get('sort'),
+                                             args.get('group'), args.get('fileCatalogId'), args.get('connectorId'),
+                                             args.get('fileName'), args.get('analysisStatus'),
+                                             args.get('analysisResult'))
     file_analysis = []
     if raw_file_analysis:
         for analysis in raw_file_analysis:
@@ -1818,7 +1820,8 @@ def search_file_analysis_command():
 
 
 @logger
-def search_file_analysis(q=None, limit=None, offset=None, sort=None, group=None):
+def search_file_analysis(q=None, limit=None, offset=None, sort=None, group=None, file_catalog_id=None,
+                         connector_id=None, file_name=None, status=None, result=None):
     """
     Sends the request for file analysis, and returns the result json
     :param q: Query to be executed
@@ -1826,19 +1829,55 @@ def search_file_analysis(q=None, limit=None, offset=None, sort=None, group=None)
     :param offset: Offset of the file analysis to be fetched
     :param sort: Sort argument for request
     :param group: Group argument for request
+    :param file_catalog_id: Id of fileCatalog entry associated with this analysis
+    :param connector_id: Id of connector associated with this analysis
+    :param file_name: Name of the file where file exists on the endpoint
+    :param status: Status of analysis
+    :param result: Result of the analysis
     """
     url_params = {
         "limit": limit,
         "offset": offset,
         "sort": sort,
-        "group": group
+        "group": group,
+        "q": q.split('&') if q else []  # handle multi condition queries in the following formats: a&b
     }
-    if q:
-        # handle multi condition queries in the following formats: a&b
-        q = q.split('&')
-        url_params['q'] = q
+    if file_catalog_id:
+        url_params['q'].append(f'fileCatalogId:{file_catalog_id}')
+    if connector_id:
+        url_params['q'].append(f'connectorId:{connector_id}')
+    if file_name:
+        url_params['q'].append(f'fileName:{file_name}')
+    if status:
+        url_params['q'].append(f'analysisStatus:{file_analysis_status_to_int(status)}')
+    if result:
+        url_params['q'].append(f'analysisResult:{file_analysis_result_to_int(result)}')
 
     return http_request('GET', '/fileAnalysis', params=url_params)
+
+
+@logger
+def file_analysis_status_to_int(status):
+    status_dict = {
+        'scheduled': 0,
+        'submitted (file is sent for analysis)': 1,
+        'processed (file is processed but results are not available yet)': 2,
+        'analyzed (file is processed and results are available)': 3,
+        'error': 4,
+        'cancelled': 5
+    }
+    return status_dict.get(status, status)
+
+
+@logger
+def file_analysis_result_to_int(result):
+    result_dict = {
+        'Not yet available': 0,
+        'File is clean': 1,
+        'File is a potential threat': 2,
+        'File is malicious': 3
+    }
+    return result_dict.get(result, result)
 
 
 def get_file_upload_command():

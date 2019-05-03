@@ -476,8 +476,8 @@ script:
       secret: false
     - default: false
       description: (Boolean) If "True", debug and CC properties of the computer will
-                     be updated from the object sent in the body the request. This action requires
-                     "Change advanced options" permission. Default is "False".
+        be updated from the object sent in the body the request. This action requires
+        "Change advanced options" permission. Default is "False".
       isArray: false
       name: changeDiagnostics
       required: false
@@ -1681,6 +1681,65 @@ script:
       name: sort
       required: false
       secret: false
+    - default: false
+      description: Id of fileCatalog entry associated with this analysis. You can
+        get this by executing cbp-fileCatalog-search
+      isArray: false
+      name: fileCatalogId
+      required: false
+      secret: false
+    - default: false
+      description: Id of connector associated with this analysis. You can get this
+        by executing cbp-connector-search
+      isArray: false
+      name: connectorId
+      required: false
+      secret: false
+    - default: false
+      description: |
+        Name of the file where file exists on the endpoint
+      isArray: false
+      name: fileName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Status of analysis. Can be one of:
+        0 = scheduled
+        1 = submitted (file is sent for analysis)
+        2 = processed (file is processed but results are not available yet)
+        3 = analyzed (file is processed and results are available)
+        4 = error
+        5 = cancelled
+      isArray: false
+      name: analysisStatus
+      predefined:
+      - scheduled
+      - submitted (file is sent for analysis)
+      - processed (file is processed but results are not available yet)
+      - analyzed (file is processed and results are available)
+      - error
+      - cancelled
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Result of the analysis. Can be one of:
+        0 = Not yet available
+        1 = File is clean
+        2 = File is a potential threat
+        3 = File is malicious
+      isArray: false
+      name: analysisResult
+      predefined:
+      - Not yet available
+      - File is clean
+      - File is a potential threat
+      - File is malicious
+      required: false
+      secret: false
     deprecated: false
     description: Returns objects that match the specified criteria.
     execution: false
@@ -2199,7 +2258,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: (Boolean) "True" if reputation approvals are enabled for this file.
-                     "False" if reputation approvals are disabled for this file.
+        "False" if reputation approvals are disabled for this file.
       isArray: false
       name: 'reputationApprovalsEnabled '
       predefined:
@@ -2338,7 +2397,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: (Boolean) "True" if reputation approvals are enabled for this file.
-                     "False" if reputation approvals are disabled for this file.
+        "False" if reputation approvals are disabled for this file.
       isArray: false
       name: 'reputationApprovalsEnabled '
       predefined:

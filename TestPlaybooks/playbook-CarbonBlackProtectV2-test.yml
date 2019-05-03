@@ -1470,7 +1470,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "55"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1968,6 +1968,84 @@ tasks:
         "position": {
           "x": -370,
           "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 6f1dd1a1-a9b5-48b7-8903-7de2c1868ae2
+    type: regular
+    task:
+      id: 6f1dd1a1-a9b5-48b7-8903-7de2c1868ae2
+      version: -1
+      name: Search file analysis using custom filters
+      description: Returns objects that match the specified criteria.
+      script: CarbonBlackProtectionV2|||cbp-fileAnalysis-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      analysisResult:
+        simple: Not yet available
+      analysisStatus:
+        simple: error
+      connectorId:
+        simple: "1"
+      fileCatalogId:
+        simple: "2"
+      fileName: {}
+      group: {}
+      limit: {}
+      offset: {}
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 352f753c-cfc3-45d0-807c-ce3f55f5a369
+    type: condition
+    task:
+      id: 352f753c-cfc3-45d0-807c-ce3f55f5a369
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: CBP.FileAnalysis.ID
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 1240
         }
       }
     note: false
