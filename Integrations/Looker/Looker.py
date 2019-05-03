@@ -106,12 +106,9 @@ def get_limit():
 
 
 def get_look_id_from_name(name):
-
     looks = search_looks_request({'title': name})
-
     if len(looks) < 1:
         raise Exception(f'No Look found with the name {name}.')
-
     if len(looks) > 1:
         raise Exception(f'There is more than one Look with the name {name}.'
                         f"Use look ID instead - It can be found in the Look's URL or by running looker-search-looks")
@@ -155,6 +152,43 @@ def parse_filters_arg(filters_arg_value):
             return_error(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
         filters[k] = v
 
+    return filters
+
+
+def get_entries_for_search_results(contents, look_id=None, result_format='json'):
+    entries = []
+    if result_format == 'json':
+        camelized = camelize(contents, delim='_')
+        formatted_contents = replace_in_keys(camelized)
+        if not isinstance(formatted_contents, list):
+            formatted_contents = [formatted_contents]
+        context = {
+            'LookerResults(val.LookID && val.LookID === obj.LookID)': {
+                'LookID': int(look_id),
+                'Results': formatted_contents
+            }
+        }
+
+        full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
+
+        entries += {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', full_path_header_content, removeNull=True),
+            'EntryContext': context
+        }
+
+        if contents:
+            entries += 'This command has dynamic output keys.\nTo access them in the context, ' \
+                       'copy the key\'s path from the column header in the results table.'
+
+    elif result_format == 'csv':
+        entries += fileResult('look_result.csv', contents, entryTypes['entryInfoFile'])
+
+    return entries
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -191,7 +225,7 @@ def run_look_command():
     look_id = demisto.args().get('id')
     look_name = demisto.args().get('name')
     if not any((look_id, look_name)):
-        raise Exception(f'Provide Look id or name.')
+        raise Exception('Provide Look id or name.')
     if look_name and not look_id:
         look_id = get_look_id_from_name(look_name)
 
@@ -201,35 +235,7 @@ def run_look_command():
 
     contents = run_look_request(look_id, result_format, limit, fields)
 
-    if result_format == 'json':
-        camelized = camelize(contents, delim='_')
-        formatted_contents = replace_in_keys(camelized)
-        if not isinstance(formatted_contents, list):
-            formatted_contents = [formatted_contents]
-        context = {
-            'LookerResults(val.LookID && val.LookID === obj.LookID)': {
-                'LookID': int(look_id),
-                'Results': formatted_contents
-            }
-        }
-
-        full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': contents,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', full_path_header_content, removeNull=True),
-            'EntryContext': context
-        })
-
-        if contents:
-            demisto.results('This command has dynamic output keys.\nTo access them in the context, '
-                            'copy the key\'s path from the column header in the results table.')
-
-    elif result_format == 'csv':
-        demisto.results(fileResult('look_result.csv', contents, entryTypes['entryInfoFile']))
+    demisto.results(get_entries_for_search_results(contents, look_id, result_format))
 
 
 def run_look_request(look_id, result_format, limit, fields):
@@ -285,6 +291,7 @@ def search_looks_request(args):
 
 
 def run_inline_query_command():
+    result_format = demisto.args()['result_format']
     str_args = ('model', 'view')  # (required) String-type arguments
     list_args = ('fields', 'pivots', 'sorts')  # (optional) List-type arguments
 
@@ -299,6 +306,16 @@ def run_inline_query_command():
     filters = parse_filters_arg(demisto.args().get('filters'))
     if filters:
         args_dict['filters'] = filters
+
+    contents = run_inline_query_request(result_format, args_dict)
+
+    demisto.results(get_entries_for_search_results(contents, result_format=result_format))
+
+
+def run_inline_query_request(result_format, args_dict):
+    endpoint_url = f'/queries/run/{result_format}'
+    params = args_dict
+    return http_request('POST', endpoint_url, params=params, response_type=result_format)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
