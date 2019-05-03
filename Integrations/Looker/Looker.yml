@@ -39,8 +39,8 @@ configuration:
   name: first_fetch_time
   required: false
   type: 0
-description: Looker is a business intelligence software and big data analytics platform
-  that helps you explore, analyze and share real-time business analytics easily.
+description: Query an Explore, save queries as looks, run looks, fetch look results
+  as incidents.
 display: Looker
 name: Looker
 script:

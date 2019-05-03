@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import requests
 import traceback
+import json
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -55,7 +56,14 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
     )
     # Handle error responses gracefully
     if res.status_code not in {200}:
-        raise requests.exceptions.HTTPError('Error in API call to Looker [%d] - %s' % (res.status_code, res.reason))
+        error_message = f'Error in API call to Looker [{res.status_code}] - {res.reason}'
+        if res.status_code in {400}:
+            try:
+                inner_error = res.json()['message']
+                error_message += f'\nLooker Error: {inner_error}'
+            except (KeyError, ValueError):
+                pass
+        raise requests.exceptions.HTTPError(error_message)
 
     if response_type != 'json':
         return res.content
@@ -162,21 +170,27 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
         formatted_contents = replace_in_keys(camelized)
         if not isinstance(formatted_contents, list):
             formatted_contents = [formatted_contents]
-        context = {
-            'LookerResults(val.LookID && val.LookID === obj.LookID)': {
-                'LookID': int(look_id),
-                'Results': formatted_contents
-            }
-        }
 
-        full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
+        if look_id:
+            context = {
+                'LookerResults(val.LookID && val.LookID === obj.LookID)': {
+                    'LookID': int(look_id),
+                    'Results': formatted_contents
+                }
+            }
+            hr_title = f'Results for look #{look_id}'
+            full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
+        else:
+            context = {'LookerResults.InlineQuery': formatted_contents}
+            hr_title = 'Inline Query Results'
+            full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.InlineQuery')
 
         entries += {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(f'Results for look #{look_id}', full_path_header_content, removeNull=True),
+            'HumanReadable': tableToMarkdown(hr_title, full_path_header_content, removeNull=True),
             'EntryContext': context
         }
 
@@ -185,7 +199,8 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
                        'copy the key\'s path from the column header in the results table.'
 
     elif result_format == 'csv':
-        entries += fileResult('look_result.csv', contents, entryTypes['entryInfoFile'])
+        entries += fileResult('look_result.csv' if look_id else 'inline_query_result.csv', contents,
+                              entryTypes['entryInfoFile'])
 
     return entries
 
@@ -314,7 +329,7 @@ def run_inline_query_command():
 
 def run_inline_query_request(result_format, args_dict):
     endpoint_url = f'/queries/run/{result_format}'
-    return http_request('POST', endpoint_url, data=args_dict, response_type=result_format)
+    return http_request('POST', endpoint_url, data=json.dumps(args_dict), response_type=result_format)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
