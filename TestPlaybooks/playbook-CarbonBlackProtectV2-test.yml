@@ -1522,10 +1522,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: c5e2683f-8349-4089-893f-f8c5f7b39461
+    taskid: 14948a98-e911-4c3e-8f71-acdfc50f0e16
     type: regular
     task:
-      id: c5e2683f-8349-4089-893f-f8c5f7b39461
+      id: 14948a98-e911-4c3e-8f71-acdfc50f0e16
       version: -1
       name: Search file upload
       description: Returns objects that match given criteria
@@ -1537,6 +1537,9 @@ tasks:
       '#none#':
       - "44"
     scriptarguments:
+      computerId: {}
+      fileCatalogId: {}
+      fileName: {}
       group: {}
       headers: {}
       limit:
@@ -1544,6 +1547,7 @@ tasks:
       offset: {}
       query: {}
       sort: {}
+      uploadStatus: {}
     separatecontext: false
     view: |-
       {
@@ -1557,10 +1561,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: 74b7171b-62a9-4857-8348-2dcea3eba799
+    taskid: 28d5d9a6-58d6-4178-82a2-032686fd409e
     type: regular
     task:
-      id: 74b7171b-62a9-4857-8348-2dcea3eba799
+      id: 28d5d9a6-58d6-4178-82a2-032686fd409e
       version: -1
       name: Get file upload
       description: Returns object instance of this class
@@ -1570,11 +1574,11 @@ tasks:
       brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
-      - "45"
+      - "57"
     scriptarguments:
       headers: {}
       id:
-        simple: "66"
+        simple: "67"
     separatecontext: false
     view: |-
       {
@@ -1588,10 +1592,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: f7ba3727-a51d-4ec3-861f-f3fe39ea4ac4
+    taskid: c314c159-de78-47b2-88e0-fe6cfdd94906
     type: condition
     task:
-      id: f7ba3727-a51d-4ec3-861f-f3fe39ea4ac4
+      id: c314c159-de78-47b2-88e0-fe6cfdd94906
       version: -1
       name: Verify context
       type: condition
@@ -1624,11 +1628,21 @@ tasks:
           right:
             value:
               simple: c:\program files (x86)\bit9\parity agent
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileUpload.ID
+            iscontext: true
+          right:
+            value:
+              simple: "67"
     view: |-
       {
         "position": {
           "x": -2250,
-          "y": 690
+          "y": 890
         }
       }
     note: false
@@ -2046,6 +2060,47 @@ tasks:
         "position": {
           "x": 2410,
           "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 3bce972a-4d21-495a-8ce0-aa8e82d0b472
+    type: regular
+    task:
+      id: 3bce972a-4d21-495a-8ce0-aa8e82d0b472
+      version: -1
+      name: Search with specific query arguments
+      description: Returns objects that match the specified criteria.
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      computerId:
+        simple: "1"
+      fileCatalogId:
+        simple: "2"
+      fileName:
+        simple: vcruntime140.dll
+      group: {}
+      limit: {}
+      offset: {}
+      query: {}
+      sort: {}
+      uploadStatus:
+        simple: Completed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2250,
+          "y": 690
         }
       }
     note: false

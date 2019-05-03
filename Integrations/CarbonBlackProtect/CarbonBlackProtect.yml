@@ -1965,6 +1965,49 @@ script:
       name: sort
       required: false
       secret: false
+    - default: false
+      description: Id of computer entry associated with this analysis. This can be
+        fetched via cbp-computer-search
+      isArray: false
+      name: computerId
+      required: false
+      secret: false
+    - default: false
+      description: Id of fileCatalog entry associated with this upload. This can be
+        fetched via cbp-fileCatalog-search
+      isArray: false
+      name: fileCatalogId
+      required: false
+      secret: false
+    - default: false
+      description: Name of the file where file exists on the endpoint
+      isArray: false
+      name: fileName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Status of upload. Can be one of:
+        0 = Queued
+        1 = Initiated
+        2 = Uploading
+        3 = Completed
+        4 = Error
+        5 = Cancelled
+        6 = Deleted
+      isArray: false
+      name: uploadStatus
+      predefined:
+      - Queued
+      - Initiated
+      - Uploading
+      - Completed
+      - Error
+      - Cancelled
+      - Deleted
+      required: false
+      secret: false
     deprecated: false
     description: Returns objects that match the specified criteria.
     execution: false

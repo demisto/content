@@ -1733,8 +1733,9 @@ def search_file_upload_command():
     :return: EntryObject of the file upload
     """
     args = demisto.args()
-    raw_file_uploads = search_file_upload(args.get('query'), args.get('limit'), args.get('offset'),
-                                          args.get('sort'), args.get('group'))
+    raw_file_uploads = search_file_upload(args.get('query'), args.get('limit'), args.get('offset'), args.get('sort'),
+                                          args.get('group'), args.get('computerId'), args.get('fileCatalogId'),
+                                          args.get('fileName'), args.get('uploadStatus'))
     hr_file_uploads = []
     file_uploads = []
     if raw_file_uploads:
@@ -1765,7 +1766,8 @@ def search_file_upload_command():
 
 
 @logger
-def search_file_upload(q=None, limit=None, offset=None, sort=None, group=None):
+def search_file_upload(q=None, limit=None, offset=None, sort=None, group=None, computer_id=None, file_catalog_id=None,
+                       file_name=None, upload_status=None):
     """
     Sends the request for file upload, and returns the result json
     :param q: Query to be executed
@@ -1773,19 +1775,47 @@ def search_file_upload(q=None, limit=None, offset=None, sort=None, group=None):
     :param offset: Offset of the file uploads to be fetched
     :param sort: Sort argument for request
     :param group: Group argument for request
+    :param computer_id: Id of computer entry associated with this analysis
+    :param file_catalog_id: Id of fileCatalog entry associated with this upload
+    :param file_name: Name of the file where file exists on the endpoint
+    :param upload_status: Status of upload
     """
     url_params = {
         "limit": limit,
         "offset": offset,
         "sort": sort,
-        "group": group
+        "group": group,
+        "q": q.split('&') if q else []  # handle multi condition queries in the following formats: a&b
     }
-    if q:
-        # handle multi condition queries in the following formats: a&b
-        q = q.split('&')
-        url_params['q'] = q
+    if computer_id:
+        url_params['q'].append(f'computerId:{computer_id}')
+    if file_catalog_id:
+        url_params['q'].append(f'fileCatalogId:{file_catalog_id}')
+    if file_name:
+        url_params['q'].append(f'fileName:{file_name}')
+    if upload_status:
+        url_params['q'].append(f'uploadStatus:{file_upload_status_to_int(upload_status)}')
 
     return http_request('GET', '/fileUpload', params=url_params)
+
+
+@logger
+def file_upload_status_to_int(upload_status):
+    """
+    Returns the upload status in int
+    :param upload_status: Upload status string
+    """
+    status_dict = {
+        'Queued': 0,
+        'Initiated': 1,
+        'Uploading': 2,
+        'Completed': 3,
+        'Error': 4,
+        'Cancelled': 5,
+        'Deleted': 6
+    }
+
+    return status_dict.get(upload_status, upload_status)
 
 
 def search_file_analysis_command():
