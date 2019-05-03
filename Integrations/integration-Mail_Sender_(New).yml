@@ -414,6 +414,5 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
-releaseNotes: "Improved error messages"
 tests:
   - Mail Sender (New) Test
