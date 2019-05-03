@@ -60,7 +60,7 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
         if res.status_code in {400}:
             try:
                 inner_error = res.json()['message']
-                error_message += f'\nLooker Error: {inner_error}'
+                error_message += f'\n{inner_error}'
             except (KeyError, ValueError):
                 pass
         raise requests.exceptions.HTTPError(error_message)
@@ -358,7 +358,5 @@ try:
 except Exception as e:
     LOG(e)
     LOG(traceback.format_exc())
-    LOG.print_log()
-    if demisto.command() != 'test-module':
-        raise
+    LOG.print_log(verbose=True)  # TODO: Remove verbosity
     demisto.results(e)
