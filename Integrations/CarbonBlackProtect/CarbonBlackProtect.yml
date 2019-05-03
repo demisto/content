@@ -2128,13 +2128,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: Created integration. This integration replaces the existing Carbon Black
-  Enterprise Protection integration. It is recommended to use this integration instead
-  of the original Carbon Black Protection integration, as it contains all the commands
-  from V1 (except for cbp-notification-search because it's not supported in the API
-  anymore), with the same inputs with improved features. Please note, if you switch
-  from V1 to V2, the output paths of the commands have changed - if you have a script
-  or a playbook that uses these outputs you will need to update it with the new output
-  paths.
 tests:
 - Carbon Black Enterprise Protection V2 Test

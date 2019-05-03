@@ -426,6 +426,5 @@ script:
     description: Runs a query on the Cortex logging service, according to preset queries.
   dockerimage: demisto/python_pancloud:1.0.0.170
   isfetch: true
-releaseNotes: "-"
 tests:
   - Palo Alto Networks Cortex Test
