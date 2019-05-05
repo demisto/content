@@ -3,420 +3,344 @@ commonfields:
   id: WildFire-v2
   version: -1
 configuration:
-- defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
-  display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://192.168.0.1)
   name: server
-  required: true
+  defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   type: 0
+  required: true
 - display: API Key
   name: token
-  required: true
+  defaultvalue: ""
   type: 4
+  required: true
 - display: Trust any certificate (unsecure)
   name: insecure
-  required: false
+  defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
+  defaultvalue: ""
   type: 8
+  required: false
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
 fromversion: 4.0.0
 script:
   commands:
-  - arguments:
-    - default: true
-      description: file hash to check
+  - name: file
+    arguments:
+    - name: file
+      default: true
+      description: File hash to check.
       isArray: true
-      name: file
-      required: false
-      secret: false
-    - default: false
-      description: md5 hash to check
+    - name: md5
+      description: MD5 hash to check.
       isArray: true
-      name: md5
-      required: false
-      secret: false
-    - default: false
-      description: sha256 hash to check
+    - name: sha256
+      description: SHA256 hash to check.
       isArray: true
-      name: sha256
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieve results for a file hash using WildFire
-    execution: false
-    name: file
     outputs:
     - contextPath: File.Name
-      description: Filename
+      description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: File type e.g. "PE"
+      description: 'File type, for example: "PE"'
       type: string
     - contextPath: File.Size
-      description: File size
+      description: Size of the file.
       type: string
     - contextPath: File.MD5
-      description: MD5 hash of the file
+      description: MD5 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: SHA1 hash of the file
+      description: SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: WildFire.Report.Status
-      description: The status of the submission
+      description: The status of the submission.
       type: string
     - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission
+      description: SHA256 hash of the submission.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report file
+      description: The EntryID of the report file.
       type: Unknown
     - contextPath: InfoFile.Extension
-      description: The extension of the report file
+      description: Extension of the report file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the report file
+      description: Name of the report file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the report file
+      description: Details of the report file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the report file
+      description: Size of the report file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the report file
+      description: The report file type.
       type: string
-  - arguments:
-    - default: false
+    description: Retrieve results for a file hash using WildFire
+  - name: wildfire-upload
+    arguments:
+    - name: upload
+      required: true
       description: ID of the entry containing the file to upload
       isArray: true
-      name: upload
-      required: true
-      secret: false
-    deprecated: false
-    description: Upload file to WildFire for analysis
-    execution: false
-    name: wildfire-upload
     outputs:
     - contextPath: WildFire.Report.MD5
-      description: MD5 of the submission
+      description: MD5 hash of the submission.
       type: string
     - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission
+      description: SHA256 hash of the submission.
       type: string
     - contextPath: WildFire.Report.FileType
-      description: The type of the submission
+      description: The submission type.
       type: string
     - contextPath: WildFire.Report.Size
-      description: The size of the submission
+      description: The size of the submission.
       type: number
     - contextPath: WildFire.Report.Status
-      description: The status of the submission
+      description: The status of the submission.
       type: string
-  - arguments:
-    - default: false
-      description: URL of remote file to be uploaded
-      isArray: false
-      name: upload
-      required: true
-      secret: false
-    deprecated: false
-    description: Upload a URL of remote file to WildFire for analysis
-    execution: false
-    name: wildfire-upload-file-url
-    outputs:
-    - contextPath: WildFire.Report.MD5
-      description: MD5 of the submission
-      type: string
-    - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission
-      type: string
-    - contextPath: WildFire.Report.Status
-      description: The status of the submission
-      type: string
-    - contextPath: WildFire.Report.URL
-      description: URL of the submission
-      type: string
-  - arguments:
-      - default: false
-        description: Upload a URL of a webpage to WildFire for analysis
-        isArray: true
-        name: upload
-        required: true
-        secret: false
-    deprecated: false
-    description: submit a url
-    execution: false
-    name: wildfire-upload-url
-    outputs:
-    - contextPath: WildFire.Report.MD5
-      description: MD5 of the submission
-      type: string
-    - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission
-      type: string
-    - contextPath: WildFire.Report.Status
-      description: The status of the submission
-      type: string
-    - contextPath: WildFire.Report.URL
-      description: URL of the submission
-      type: string
-  - name: wildfire-get-sample
+    description: Uploads a file to WildFire for analysis.
+  - name: wildfire-upload-file-url
     arguments:
-      - name: md5
-        description: MD5 hash to retrieve
-        isArray: true
-      - name: sha256
-        description: SHA256 hash to retrieve
-        isArray: true
+    - name: upload
+      required: true
+      description: URL of the remote file to upload.
     outputs:
-    - contextPath: File.Size
-      description: File size
-      type: number
-    - contextPath: File.SHA1
-      description: SHA1 hash of the file
+    - contextPath: WildFire.Report.MD5
+      description: MD5 hash of the submission.
       type: string
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 hash of the submission.
       type: string
-    - contextPath: File.Name
-      description: The sample name
+    - contextPath: WildFire.Report.Status
+      description: The status of the submission.
       type: string
-    - contextPath: File.SSDeep
-      description: SSDeep hash of the file
+    - contextPath: WildFire.Report.URL
+      description: URL of the submission.
       type: string
-    - contextPath: File.EntryID
-      description: War-Room Entry ID of the file
-      type: string
-    - contextPath: File.Info
-      description: Basic information of the file
-      type: string
-    - contextPath: File.Type
-      description: File type e.g. "PE"
-      type: string
-    - contextPath: File MD5
-      description: MD5 hash of the file
-      type: string
-    - contextPath: File.Extension
-      description: File Extension
-      type: string
-    description: Retrieve a sample from WildFire
-  - arguments:
-    - default: false
-      description: MD5 hash to check
+    description: Uploads the URL of a remote file to WildFire for analysis.
+  - name: wildfire-report
+    arguments:
+    - name: md5
+      description: MD5 hash to check.
       isArray: true
-      name: md5
-      required: false
-      secret: false
-    - default: false
+    - name: sha256
       description: SHA256 hash to check
       isArray: true
-      name: sha256
-      required: false
-      secret: false
-    - default: false
-      description: Deprecated - use sha256 argument
+    - name: hash
+      description: Deprecated - Use the sha256 argument instead.
       isArray: true
-      name: hash
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: pdf
-      description: Optional - request a structured report (formatted as XML/PDF)
-      isArray: false
-      name: format
+    - name: format
+      auto: PREDEFINED
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
-    - default: false
-      description: Receive extended information from WildFire
-      isArray: false
-      name: verbose
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieve results for a file hash using WildFire
-    execution: false
-    name: wildfire-report
+      description: Request a structured report (XML PDF).
+      defaultValue: pdf
+    - name: verbose
+      description: Receive extended information from WildFire.
     outputs:
     - contextPath: File.Name
-      description: Filename
+      description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: File type e.g. "PE"
+      description: 'File type, for example: "PE"'
       type: string
     - contextPath: File.Size
-      description: File size
+      description: Size of the file.
       type: number
     - contextPath: File.MD5
-      description: MD5 hash of the file
+      description: MD5 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: SHA1 hash of the file
+      description: SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: WildFire.Report.Status
-      description: The status of the submissiom
+      description: The status of the submissiom.
       type: string
     - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission
+      description: SHA256 hash of the submission.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report file
+      description: The EntryID of the report file.
       type: string
     - contextPath: InfoFile.Extension
-      description: The extension of the report file
+      description: The extension of the report file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the report file
+      description: The name of the report file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the report file
+      description: Details of the report file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the report file
+      description: The size of the report file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the report file
+      description: The report file type.
       type: string
     - contextPath: WildFire.Report.Network.UDP.IP
-      description: Submission related IPs in UDP protocol
+      description: Submission related IPs, in UDP protocol.
       type: string
     - contextPath: WildFire.Report.Network.UDP.Port
-      description: Submission related ports in UDP protocol
+      description: Submission related ports, in UDP protocol.
       type: string
     - contextPath: WildFire.Report.Network.TCP.IP
-      description: Submission related IPs in TCP protocol
+      description: Submission related IPs, in TCP protocol.
       type: string
     - contextPath: WildFire.Report.Network.TCP.Port
-      description: Submission related ports in TCP protocol
+      description: Submission related ports, in TCP protocol.
       type: string
     - contextPath: WildFire.Report.Network.DNS.Query
-      description: Submission DNS queries
+      description: Submission DNS queries.
       type: string
     - contextPath: WildFire.Report.Network.DNS.Response
-      description: Submission DNS responses
+      description: Submission DNS responses.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
-      description: Submission evidence md5
+      description: Submission evidence MD5 hash.
       type: string
     - contextPath: WildFire.Report.Evidence.Text
-      description: Submission evidence text
+      description: Submission evidence text.
       type: string
-  - arguments:
-    - default: false
-      description: Hash to get verdict for
-      isArray: true
-      name: hash
+    description: Retrieves results for a file hash using WildFire.
+  - name: wildfire-get-verdict
+    arguments:
+    - name: hash
       required: true
-      secret: false
-    deprecated: false
-    description: Get a verdict regarding a hash
-    execution: false
-    name: wildfire-get-verdict
+      description: Hash to get the verdict for.
+      isArray: true
     outputs:
     - contextPath: WildFire.Verdicts.MD5
-      description: File MD5
+      description: MD5 hash of the file.
       type: string
     - contextPath: WildFire.Verdicts.SHA256
-      description: File SHA256
+      description: SHA256 hash of the file.
       type: string
     - contextPath: WildFire.Verdicts.Verdict
-      description: File verdict
+      description: Verdict of the file.
       type: number
     - contextPath: WildFire.Verdicts.VerdictDescription
-      description: File verdict description
+      description: Description of the file verdict.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
-  - arguments:
-    - default: false
+    description: Returns a verdict for a hash.
+  - name: wildfire-get-verdicts
+    arguments:
+    - name: EntryID
       description: EntryID of the text file that contains multiple hashes. Limit is
         500 hashes.
       isArray: true
-      name: EntryID
-      required: true
-      secret: false
-    deprecated: false
-    description: Get a verdict regarding multiple hashes, stored in a txt file or given as list
-    execution: false
-    name: wildfire-get-verdicts
+    - name: hash_list
+      description: A list of hashes to get verdicts for.
+      isArray: true
     outputs:
     - contextPath: WildFire.Verdicts.MD5
-      description: File MD5
+      description: MD5 hash of the file.
       type: string
     - contextPath: WildFire.Verdicts.SHA256
-      description: File SHA256
+      description: SHA256 hash of the file.
       type: string
     - contextPath: WildFire.Verdicts.Verdict
-      description: File verdict
+      description: Verdict of the file.
       type: number
     - contextPath: WildFire.Verdicts.VerdictDescription
-      description: File verdict description
+      description: Description of the file verdict.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file or
+      given as list.
+  - name: wildfire-upload-url
+    arguments:
+    - name: upload
+      required: true
+      description: URL to submit to WildFire.
+      isArray: true
+    outputs:
+    - contextPath: WildFire.Report.MD5
+      description: MD5 of the submission.
+      type: string
+    - contextPath: WildFire.Report.SHA256
+      description: SHA256 of the submission.
+      type: string
+    - contextPath: WildFire.Report.Status
+      description: The status of the submission.
+      type: string
+    - contextPath: WildFire.Report.URL
+      description: URL of the submission.
+      type: string
+    description: Uploads a URL of a webpage to WildFire for analysis.
+  - name: wildfire-get-sample
+    arguments:
+    - name: md5
+      description: MD5 hash of the sample.
+      isArray: true
+    - name: sha256
+      description: SHA256 hash of the sample.
+    description: Retrieves a sample.
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
