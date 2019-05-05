@@ -171,3 +171,6 @@ script:
   script: '-'
   type: python
 image: ''
+releaseNotes: New integration to manage big lists stored in files hosted in web-servers. using SCP protocol to update the file, using demisto as SSOT.
+tests:
+  - Remote File Management - Test

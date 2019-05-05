@@ -1295,6 +1295,10 @@
             "playbookID": "Snowflake-Test"
         },
         {
+            "integrations": "Remote File Management",
+            "playbookID": "Remote File Management - Test"
+        },
+        {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Domain Enrichment - Generic v2 - Test"
         },

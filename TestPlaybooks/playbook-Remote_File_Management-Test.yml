@@ -1,0 +1,335 @@
+id: Remote File Management - Test
+version: -1
+name: Remote File Management - Test
+description: non scale testing of RFM integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 745f5a0b-cbd2-41e9-8ad0-c737134f93ce
+    type: start
+    task:
+      id: 745f5a0b-cbd2-41e9-8ad0-c737134f93ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 030cca6a-b30b-4485-896e-ab6a58319bc6
+    type: regular
+    task:
+      id: 030cca6a-b30b-4485-896e-ab6a58319bc6
+      version: -1
+      name: rfm-update-internal-list
+      description: Updates the instance context with the list name and items given
+      script: '|||rfm-update-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      add_or_remove:
+        simple: add
+      list_items:
+        simple: '["koko.com","jojo.com"]'
+      list_name:
+        simple: test_playbook_list4
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ea8abdca-211f-4e06-8433-f5bb2198d5f4
+    type: regular
+    task:
+      id: ea8abdca-211f-4e06-8433-f5bb2198d5f4
+      version: -1
+      name: rfm-dump-internal-list
+      description: Dump instance context to either incident context or file
+      script: '|||rfm-dump-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      destination:
+        simple: incident_context
+      list_name:
+        simple: test_playbook_list4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f30bee0c-3940-44aa-8d8c-8bfe8e657686
+    type: condition
+    task:
+      id: f30bee0c-3940-44aa-8d8c-8bfe8e657686
+      version: -1
+      name: test internal list commands
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: RemoteFileManagement.ListItems
+            iscontext: true
+          right:
+            value:
+              simple: koko.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: dab900a4-590e-426c-83cc-8003941d6aca
+    type: regular
+    task:
+      id: dab900a4-590e-426c-83cc-8003941d6aca
+      version: -1
+      name: rfm-print-internal-list
+      description: Display internal list data in the war-room
+      script: '|||rfm-print-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      list_name:
+        simple: test_playbook_list4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9ed9de6f-c737-4936-853e-252dbf01c6c5
+    type: regular
+    task:
+      id: 9ed9de6f-c737-4936-853e-252dbf01c6c5
+      version: -1
+      name: rfm-update-external-list
+      description: Override external file with internal list data given
+      script: '|||rfm-update-external-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file_path:
+        simple: /var/www/html/files/test_pb_list_edl4
+      list_name:
+        simple: test_playbook_list4
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e72abc0d-d4b2-4f6d-8993-0bffdf99cb5f
+    type: regular
+    task:
+      id: e72abc0d-d4b2-4f6d-8993-0bffdf99cb5f
+      version: -1
+      name: rfm-search-external-file
+      description: Search a string on external file
+      script: '|||rfm-search-external-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file_path:
+        simple: /var/www/html/files/test_pb_list_edl4
+      search_string:
+        simple: jojo.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: e3d4da58-a84f-40b9-8170-94f17fe0bc94
+    type: regular
+    task:
+      id: e3d4da58-a84f-40b9-8170-94f17fe0bc94
+      version: -1
+      name: rfm-get-external-file
+      description: Display external file content in the war-room
+      script: '|||rfm-get-external-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file_path:
+        simple: /var/www/html/files/test_pb_list_edl4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 0eeb7ed6-395c-48b6-89a6-6a31df06b973
+    type: regular
+    task:
+      id: 0eeb7ed6-395c-48b6-89a6-6a31df06b973
+      version: -1
+      name: rfm-delete-external-file
+      description: Delete external file
+      script: '|||rfm-delete-external-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      file_path:
+        simple: /var/www/html/files/test_pb_list_edl4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: f0582d22-1a3d-4e50-8cf4-d49eb27a69bd
+    type: regular
+    task:
+      id: f0582d22-1a3d-4e50-8cf4-d49eb27a69bd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
