@@ -4142,5 +4142,6 @@ script:
   runonce: false
   script: '-'
   type: python
+releaseNotes: 'Added caller as optional field for ticket creation and update'
 tests:
 - No test - Hibernating instance
