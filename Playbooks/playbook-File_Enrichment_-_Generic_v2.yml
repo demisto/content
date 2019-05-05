@@ -1,0 +1,326 @@
+id: File Enrichment - Generic v2
+version: -1
+fromversion: 4.1.0
+name: File Enrichment - Generic v2
+description: |-
+  Enrich a file using one or more integrations.
+
+  - Provide threat information
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
+    type: start
+    task:
+      id: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d2deb7de-75cc-4f33-8ba3-6f83370096f8
+    type: title
+    task:
+      id: d2deb7de-75cc-4f33-8ba3-6f83370096f8
+      version: -1
+      name: Done
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 9ce11d97-a210-4566-8929-a2c7236c34dd
+    type: condition
+    task:
+      id: 9ce11d97-a210-4566-8929-a2c7236c34dd
+      version: -1
+      name: Is there a SHA256 hash?
+      description: Check if there is a SHA256 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "27"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 96571487-7027-42f8-8c89-ca96f16b2a33
+    type: condition
+    task:
+      id: 96571487-7027-42f8-8c89-ca96f16b2a33
+      version: -1
+      name: Is Cylance Protect v2 enabled?
+      description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 49c6d1e2-ac63-4783-8733-794570f1bdb5
+    type: regular
+    task:
+      id: 49c6d1e2-ac63-4783-8733-794570f1bdb5
+      version: -1
+      name: Get threat information from Cylance Protect v2
+      description: Gets threat information from the Cylance Protect v2 integration.
+      script: Cylance Protect v2|||cylance-protect-get-threat
+      type: regular
+      iscommand: true
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 4e009c34-dfb2-4626-8c6e-b8da7850d084
+    type: playbook
+    task:
+      id: 4e009c34-dfb2-4626-8c6e-b8da7850d084
+      version: -1
+      name: File Enrichment - Virus Total Private API
+      description: Get file information using the Virus Total Private API integration.
+      playbookName: File Enrichment - Virus Total Private API
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_27_yes": 0.59,
+      "25_7_#default#": 0.44,
+      "27_28_yes": 0.57,
+      "27_7_#default#": 0.63
+    },
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 900,
+        "x": 470,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: File MD5 hash to enrich.
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: The file SHA256 hash to enrich.
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: uniq
+  required: false
+  description: The file SHA1 hash to enrich.
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: File
+  description: The file object
+  type: unknown
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: File.VirusTotal.Scans
+  description: The scan object.
+  type: unknown
+- contextPath: File.VirusTotal.Scans.Source
+  description: Vendor that scanned this hash.
+- contextPath: File.VirusTotal.Scans.Detected
+  description: Whether a scan was detected for this hash (True/False).
+- contextPath: File.VirusTotal.Scans.Result
+  description: Scan result for this hash - signature, etc.
+tests:
+  - File Enrichment - Generic v2 - Test

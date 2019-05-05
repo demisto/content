@@ -1,5 +1,7 @@
 id: email_test
 name: Email Address Enrichment - Generic - Test
+fromversion: 3.6.0
+toversion: 4.0.9
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +45,7 @@ tasks:
       Domain:
         simple: demisto.int
       Email:
-        simple: ${Account.Email.Address}
+        simple: ${Account.Email.Address}w
     separatecontext: false
     loop:
       iscommand: false
