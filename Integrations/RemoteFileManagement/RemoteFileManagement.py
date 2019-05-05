@@ -277,9 +277,7 @@ def main():
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':
-            command = 'echo 1'
-            # result = connect(command)
-            result = run_command(command)
+            run_command('echo 1')
             demisto.results('ok')
 
         elif demisto.command() == 'rfm-get-external-file':
