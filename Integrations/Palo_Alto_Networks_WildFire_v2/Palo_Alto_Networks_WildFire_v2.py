@@ -98,6 +98,8 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
                 f'Request Failed with status: {result.status_code} Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
             return_error(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
+    if result.text.find("Forbidden. (403)") != -1:
+        return_error('Request Forbidden - 403, check SERVER URL and API Key')
 
     if result.headers['Content-Type'] == 'application/octet-stream':
         return result
@@ -421,13 +423,16 @@ def wildfire_get_verdicts(file_path):
     get_verdicts_uri = URL + URL_DICT["verdicts"]
     body = {'apikey': TOKEN}
 
-    with open(file_path, 'rb') as f:
-        result = http_request(
-            get_verdicts_uri,
-            'POST',
-            body=body,
-            files={'file': f}
-        )
+    try:
+        with open(file_path, 'rb') as f:
+            result = http_request(
+                get_verdicts_uri,
+                'POST',
+                body=body,
+                files={'file': f}
+            )
+    finally:
+        shutil.rmtree(file_path, ignore_errors=True)
 
     verdicts_data = result["wildfire"]["get-verdict-info"]
 
@@ -587,7 +592,8 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         md = tableToMarkdown('WildFire Report', prettify_report_entry(file_info))
         if verbose:
             for report in reports:
-                md += tableToMarkdown('Report ', report, report.keys(), removeNull=True)
+                if isinstance(report, dict):
+                    md += tableToMarkdown('Report ', report, report.keys(), removeNull=True)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -633,7 +639,7 @@ def wildfire_get_report_command():
     md5 = demisto.args().get('md5', None)
     inputs = hash_args_handler(sha256, md5)
 
-    verbose = demisto.args().get('verbose', False) == 'true'
+    verbose = demisto.args().get('verbose', 'false').lower() == 'true'
     format_ = demisto.args().get('format', 'xml')
     for element in inputs:
         file_hash, report, file_info = wildfire_get_report(element)

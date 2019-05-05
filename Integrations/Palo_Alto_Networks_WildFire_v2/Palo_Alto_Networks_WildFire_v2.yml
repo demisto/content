@@ -161,7 +161,12 @@ script:
       description: Request a structured report (XML PDF).
       defaultValue: pdf
     - name: verbose
+      auto: PREDEFINED
+      predefined:
+        - true
+        - false
       description: Receive extended information from WildFire.
+      defaultValue: false
     outputs:
     - contextPath: File.Name
       description: Name of the file.
