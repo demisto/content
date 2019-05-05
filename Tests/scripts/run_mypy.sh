@@ -20,7 +20,7 @@ PY_BACKUP=""
 
 if [[ "$PY_VERSION" = "2.7" ]]; then
     # typing import if not present
-    grep -E '^(from typing import|import typing)' ServiceNow.py > /dev/null 2>&1
+    grep -E '^(from typing import|import typing)' "$PY_FILE" > /dev/null 2>&1
     if [[ $? -ne 0 ]]; then
         PY_BACKUP="$PY_FILE.mypy_bak"
         mv "$PY_FILE" "$PY_BACKUP" || exit 2
