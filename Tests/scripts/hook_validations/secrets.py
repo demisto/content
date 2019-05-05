@@ -310,7 +310,7 @@ def get_file_contents(file_path, file_extension):
         return file_contents
     except Exception as ex:
         print("Failed opening file: {}. Exception: {}".format(file_path, ex))
-        raise ex
+        raise
 
 
 def extract_text_from_pdf(file_path):
