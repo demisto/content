@@ -247,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4570
+          "y": 5095
         }
       }
     note: false
@@ -655,10 +655,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: d3488183-cf56-4ce9-85d0-dbed004c0592
+    taskid: 420b6ed9-a560-4993-8a91-65ba9f44cdda
     type: regular
     task:
-      id: d3488183-cf56-4ce9-85d0-dbed004c0592
+      id: 420b6ed9-a560-4993-8a91-65ba9f44cdda
       version: -1
       name: commentsToContext
       description: "Takes the comments of a given entry ID and stores them in the
@@ -962,7 +962,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "38"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -987,6 +987,110 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 42535e46-9dae-4023-8349-77b3cce008be
+    type: regular
+    task:
+      id: 42535e46-9dae-4023-8349-77b3cce008be
+      version: -1
+      name: wildfire-get-sample benign
+      description: Retrieve a sample
+      script: '|||wildfire-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      md5: {}
+      sha256:
+        simple: 4b4f3e336514eedf8c8a1f9d929b97e42921f757056eb640706bd17e096ddad0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 33c30ad5-f151-4d6c-84f8-ad32cb5eb87c
+    type: regular
+    task:
+      id: 33c30ad5-f151-4d6c-84f8-ad32cb5eb87c
+      version: -1
+      name: comments to context
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      contextKey:
+        simple: benignSample
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 54fdac96-2f29-4a1a-87db-5c3c0475c900
+    type: condition
+    task:
+      id: 54fdac96-2f29-4a1a-87db-5c3c0475c900
+      version: -1
+      name: info message of sample not found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: benignSample
+            iscontext: true
+          right:
+            value:
+              simple: Sample was not found.
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -994,7 +1098,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4585,
+        "height": 5110,
         "width": 810,
         "x": 50,
         "y": 50

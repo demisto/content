@@ -13,7 +13,7 @@ configuration:
   type: 4
   required: false
 - display: Trust any certificate (unsecure)
-  name: insecure
+  name: insecure_new
   defaultvalue: "false"
   type: 8
   required: false
@@ -29,7 +29,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: '-'
+  script: ''
   type: python
   commands:
   - name: urlscan-search
@@ -260,7 +260,47 @@ script:
       description: Effective URL of the original URL
       type: string
     description: Submit a url to scan
+  - name: urlscan-get-http-transaction-list
+    deprecated: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the URL to search the transaction list for.
+    - name: limit
+      description: Limits the results in the war room(Maximum limit allowed is 100)
+      defaultValue: "20"
+    - name: url
+      required: true
+      description: The URL to search the transaction list for.
+    outputs:
+    - contextPath: URLScan.URL
+      description: The URL address that was examined.
+      type: string
+    - contextPath: URLScan.httpTransaction
+      description: A link to the http transaction made during the search on the given
+        URL.
+      type: string
+    description: Get http transaction list for a given url. (This command should be used only apart from
+      urlscan-get-http-transactions script)
+  - name: urlscan-submit-url-command
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      description: The URL sought after.
+    description: Submit a URL to get its uuid.
+  - name: urlscan-poll-uri
+    deprecated: true
+    arguments:
+    - name: uri
+      required: true
+      description: The uri of the sought after result.
+    description: Poll the UrlScan service regarding the results for a given uri.
+  - name: urlscan-get-result-page
+    deprecated: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the URL you want to search
+    description: Get the results page for the given UUID
   runonce: false
-fromversion: 3.1.1
-tests:
-  - urlscan_malicious_Test
