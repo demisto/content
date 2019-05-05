@@ -377,4 +377,3 @@ script:
   runonce: false
 tests:
 - Intezer Testing
-releaseNotes: Added sha256 argument option to !file command, regard non valid hash in the !file command as a warning

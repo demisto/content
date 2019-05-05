@@ -12,9 +12,12 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 
 DEMISTO_APP_TOKEN = demisto.params().get('token')
-FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 USE_SSL = not demisto.params().get('insecure', False)
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
+FETCH_QUERY = None
+FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
+if not FIRST_FETCH_TIMESTAMP:
+    FIRST_FETCH_TIMESTAMP = '24 hours'
 
 if not demisto.params().get('proxy', False):
     os.environ.pop('HTTP_PROXY', '')
@@ -26,8 +29,6 @@ FETCH_QUERY_DICT = {
     'Traps Threats': 'SELECT * FROM tms.threat',
     'Firewall Threats': 'SELECT * FROM panw.threat'
 }
-
-FETCH_QUERY = FETCH_QUERY_DICT[demisto.params().get('fetch_query', 'Traps Threats')]
 
 THREAT_TABLE_HEADERS = [
     'id', 'score', 'risk-of-app', 'type', 'action', 'app', 'pcap_id', 'proto', 'dst', 'reportid',
@@ -47,6 +48,50 @@ COMMON_HEADERS = [
     'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc', 'filetype',
     'SHA256', 'filename'
 ]
+
+''' HELPER FUNCTIONS '''
+
+
+def prepare_fetch_query(fetch_timestamp):
+    query = FETCH_QUERY_DICT[demisto.params().get('fetch_query', 'Traps Threats')]
+    if 'tms' in query:
+        query += f" WHERE serverTime>'{fetch_timestamp}'"
+        FETCH_SEVERITY = demisto.params().get('traps_severity')
+        if not FETCH_SEVERITY:
+            FETCH_SEVERITY = ['all']
+        if 'all' not in FETCH_SEVERITY:
+            query += ' AND ('
+            for index, severity in enumerate(FETCH_SEVERITY):
+                if index == (len(FETCH_SEVERITY) - 1):
+                    query += f"messageData.trapsSeverity='{severity}'"
+                else:
+                    query += f"messageData.trapsSeverity='{severity}' OR "
+            query += ')'
+    if 'panw' in query:
+        query += f' WHERE receive_time>{fetch_timestamp}'
+        FETCH_SEVERITY = demisto.params().get('firewall_severity')
+        if not FETCH_SEVERITY:
+            FETCH_SEVERITY = ['all']
+        FETCH_SUBTYPE = demisto.params().get('firewall_subtype')
+        if not FETCH_SUBTYPE:
+            FETCH_SUBTYPE = ['all']
+        if 'all' not in FETCH_SUBTYPE:
+            query += ' AND ('
+            for index, subtype in enumerate(FETCH_SUBTYPE):
+                if index == (len(FETCH_SUBTYPE) - 1):
+                    query += f"subtype='{subtype}'"
+                else:
+                    query += f"subtype='{subtype}' OR "
+            query += ')'
+        if 'all' not in FETCH_SEVERITY:
+            query += ' AND ('
+            for index, severity in enumerate(FETCH_SEVERITY):
+                if index == (len(FETCH_SEVERITY) - 1):
+                    query += f"severity='{severity}'"
+                else:
+                    query += f"severity='{severity}' OR "
+            query += ')'
+    return query
 
 
 def epoch_seconds(d=None):
@@ -111,28 +156,33 @@ def get_access_token():
     return access_token
 
 
-''' HELPER FUNCTIONS '''
-
-
 def query_loggings(query_data):
     '''
     This function handles all the querying of Cortex Logging service
     '''
     api_url = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
     credentials = Credentials(
-        access_token=get_access_token()
+        access_token=get_access_token(),
+        verify=USE_SSL
     )
     logging_service = LoggingService(
         url=api_url,
         credentials=credentials
     )
 
-    query_result = logging_service.query(query_data).json()
+    response = logging_service.query(query_data)
+    query_result = response.json()
+
+    if not response.ok:
+        status_code = query_result.get('statusCode', '')
+        error = query_result.get('error', '')
+        message = query_result.get('payload', {}).get('message', '')
+        raise Exception(f"Error in query to Cortex [{status_code}] - {error}: {message}")
 
     try:
         query_id = query_result['queryId']  # access 'queryId' from 'query' response
     except Exception as e:
-        raise Exception('Received error %s when querying logs. Please check if your authentication token is valid' % e)
+        raise Exception('Received error %s when querying logs.' % e)
     poll_params = {  # Prepare 'poll' params
         "maxWaitTime": 3000  # waiting for response up to 3000ms
     }
@@ -198,16 +248,14 @@ def convert_log_to_incident(log):
     log_contents = log.get('_source')
     log_contents['id'] = log.get('_id')
     log_contents['score'] = log.get('_score')
-    if 'tms.' in FETCH_QUERY:
+    if 'Traps' in FETCH_QUERY:
         occurred = log_contents.get('generatedTime')
         time_received = log_contents.get('serverTime')
-    elif 'panw.' in FETCH_QUERY:
+    elif 'Firewall' in FETCH_QUERY:
         time_generated = log_contents.get('time_generated')
         occurred = datetime.utcfromtimestamp(time_generated).isoformat() + 'Z'
         time_received = log_contents.get('receive_time')
     # stringifying dictionary values for fetching. (json.dumps() doesn't stringify dictionary values)
-    for key, value in log_contents.items():
-        log_contents[key] = str(value)
     event_id = log.get('_id', '')
     incident = {
         'name': 'Cortex Event ' + event_id,
@@ -514,17 +562,15 @@ def fetch_incidents():
     # Need sometime in the future, so the timestamp will be taken from the query
     service_end_date_epoch = int(datetime.now().strftime('%s')) + 1000
 
-    global FETCH_QUERY
+    if 'Firewall' in FETCH_QUERY:
+        fetch_timestamp = int(last_fetched_event_timestamp.strftime('%s'))
+    elif 'Traps' in FETCH_QUERY:
+        fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-    if 'panw.' in FETCH_QUERY:
-        service_start_date_epoch = int(last_fetched_event_timestamp.strftime('%s'))
-        FETCH_QUERY += f' WHERE receive_time>{service_start_date_epoch}'
-    elif 'tms.' in FETCH_QUERY:
-        service_start_date_iso = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        FETCH_QUERY += f" WHERE serverTime>'{service_start_date_iso}'"
+    query = prepare_fetch_query(fetch_timestamp)
 
     query_data = {
-        'query': FETCH_QUERY,
+        'query': query,
         'startTime': 0,
         'endTime': service_end_date_epoch,
     }
@@ -542,9 +588,9 @@ def fetch_incidents():
     max_fetched_event_timestamp = last_fetched_event_timestamp
     for page in pages:
         incident, time_received = convert_log_to_incident(page)
-        if 'panw.' in FETCH_QUERY:
+        if 'Firewall' in FETCH_QUERY:
             time_received_dt = datetime.fromtimestamp(time_received)
-        elif 'tms.' in FETCH_QUERY:
+        elif 'Traps' in FETCH_QUERY:
             time_received_dt = datetime.strptime(time_received, '%Y-%m-%dT%H:%M:%S.%fZ')
         incident_pairs.append((incident, time_received_dt))
     if incident_pairs:
@@ -561,9 +607,14 @@ def fetch_incidents():
 
 
 def main():
+    global FETCH_QUERY
+    FETCH_QUERY = demisto.params().get('fetch_query', 'Traps Threats')
+
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
+            if demisto.params().get('isFetch'):
+                last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
             test_args = {
                 "query": "SELECT * FROM panw.threat LIMIT 1",
                 "startTime": 0,
