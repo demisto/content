@@ -1,0 +1,173 @@
+category: Utilities
+commonfields:
+  id: Remote File Management
+  version: -1
+configuration:
+- display: Hostname or IP of server
+  name: hostname
+  required: true
+  type: 0
+- defaultvalue: '22'
+  display: SSH Port
+  name: port
+  required: true
+  type: 0
+- display: SSH credentials to server
+  name: Username
+  required: true
+  type: 9
+description: This integration allows managing and editing files located on a remote
+  web-server via SSH using integration context as Single Source of Truth
+display: Remote File Management
+name: Remote File Management
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Unique path to external file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Display external file content in the war-room
+    execution: false
+    name: rfm-get-external-file
+  - arguments:
+    - default: false
+      description: Unique path to file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: String to search in the external file
+      isArray: false
+      name: search_string
+      required: true
+      secret: false
+    deprecated: false
+    description: Search a string on external file
+    execution: false
+    name: rfm-search-external-file
+  - arguments:
+    - default: false
+      description: Unique path to file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: List from instance context to override the external file
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Print updated external file to the war-rrom. default is "false"
+      defaultValue: 'false'
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Override external file with internal list data given
+    execution: true
+    name: rfm-update-external-file
+  - arguments:
+    - default: false
+      description: Unique path to file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete external file
+    execution: true
+    name: rfm-delete-external-file
+  - arguments:
+    - default: false
+      description: Name of list
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - default: false
+      description: Items of list
+      isArray: true
+      name: list_items
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: add
+      description: Add or Remove from list
+      isArray: false
+      name: add_or_remove
+      predefined:
+      - add
+      - remove
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Print updated external file to the war-rrom. default is "false"
+      defaultValue: 'false'
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the instance context with the list name and items given
+    execution: false
+    name: rfm-update-internal-list
+  - arguments:
+    - default: false
+      description: Name of list
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Display internal list data in the war-room
+    execution: false
+    name: rfm-print-internal-list
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: List data destination
+      isArray: false
+      name: destination
+      predefined:
+      - file
+      - incident_context
+      required: true
+      secret: false
+    - default: false
+      description: Name of list
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Dump instance context to either incident context or file
+    execution: false
+    name: rfm-dump-internal-list
+  - deprecated: false
+    description: Display instance context lists names
+    execution: false
+    name: rfm-list-internal-lists
+  dockerimage: rfm2:latest
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+image: ''
