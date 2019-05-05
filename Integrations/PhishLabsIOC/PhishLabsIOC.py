@@ -14,48 +14,67 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
-TOKEN = demisto.params().get('token')
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+SERVER = (demisto.params()['url'][:-1]
+          if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+FETCH_TIME = demisto.params().get('fetch_time').strip()
 # Service base URL
-BASE_URL = SERVER + '/api/v2.0/'
+BASE_URL = SERVER + '/api/v1'
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=HEADERS
-    )
-    # Handle error responses gracefully
-    if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+def http_request(method, path, params=None, data=None):
+    """
+    Sends an HTTP request using the provided arguments
+    :param method: HTTP method
+    :param path: URL path
+    :param params: URL query params
+    :param data: Request body
+    :return: JSON response
+    """
+    params = params if params is not None else {}
+    data = data if data is not None else {}
+    res = None
 
-    return res.json()
+    try:
+        res = requests.request(
+            method,
+            BASE_URL + path,
+            auth=(USERNAME, PASSWORD),
+            verify=USE_SSL,
+            params=params,
+            data=json.dumps(data, sort_keys=True),
+            headers=HEADERS)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+        return_error('Could not connect to PhishLabs IOC Feed: {}'.format(str(e)))
+
+    if res.status_code < 200 or res.status_code > 300:
+        status = res.status_code
+        message = res.reason
+        details = ''
+        try:
+            error_json = res.json()
+            message = error_json.get('statusMessage')
+            details = error_json.get('message')
+        except Exception:
+            pass
+        return_error('Error in API call to PhishLabs IOC API, status code: {}, reason: {}, details: {}'
+                     .format(status, message, details))
+
+    try:
+        return res.json()
+    except Exception:
+        return_error('Failed parsing the response from PhishLabs IOC API: {}'.format(res.content))
 
 
 def item_to_incident(item):
@@ -79,40 +98,35 @@ def test_module():
     samples = http_request('GET', 'items/samples')
 
 
-def get_items_command():
+def get_global_feed_command():
     """
-    Gets details about a items using IDs or some other filters
+    Gets the global feed data using the provided arguments
     """
-    # Init main vars
-    headers = []
+    indicator_headers = ['ID', 'Indicator', 'CreatedAt', 'FalsePositive']
+    attribute_headers = ['Name', 'Value', 'CreatedAt']
     contents = []
     context = {}
-    context_entries = []
-    title = ''
-    # Get arguments from user
-    item_ids = argToList(demisto.args().get('item_ids', []))
-    is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
-    limit = int(demisto.args().get('limit', 10))
-    # Make request and get raw response
-    items = get_items_request(item_ids, is_active)
-    # Parse response into context & content entries
-    if items:
+    indicator_type = ''
+    since = demisto.args().get('since')
+    limit = demisto.args().get('limit')
+    indicator = demisto.args().get('indicator_type')
+    offset = demisto.args().get('offset')
+    remove_protocol = demisto.args().get('remove_protocol')
+    remove_query = demisto.args().get('remove_query')
+
+    feed = get_global_feed_request(since, limit, indicator, offset, remove_protocol, remove_query)
+    if feed and feed.get('data'):
+        results = feed['data']
         if limit:
-            items = items[:limit]
+            results = results[:limit]
         title = 'Example - Getting Items Details'
 
-        for item in items:
+        for result in results:
             contents.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'Created Date': item.get('createdDate')
-            })
-            context_entries.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'CreatedDate': item.get('createdDate')
+                'ID': result.get('id'),
+                'Indicator': result.get('description'),
+                'CreatedAt': result.get('name'),
+                'FalsePositive': result.get('createdDate')
             })
 
         context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
@@ -127,7 +141,7 @@ def get_items_command():
     })
 
 
-def get_items_request(item_ids, is_active):
+def get_global_feed_request(since, limit, indicator, offset, remove_protocol, remove_query):
     # The service endpoint to request from
     endpoint_url = 'items'
     # Dictionary of params for the request
@@ -157,7 +171,7 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     incidents = []
-    items = get_items_request()
+    items = get_global_feed_request()
     for item in items:
         incident = item_to_incident(item)
         incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -166,14 +180,14 @@ def fetch_incidents():
             last_fetch = incident_date
             incidents.append(incident)
 
-    demisto.setLastRun({'time' : last_fetch})
+    demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
-
+handle_proxy()
 try:
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -184,10 +198,10 @@ try:
         fetch_incidents()
     elif demisto.command() == 'example-get-items':
         # An example command
-        get_items_command()
+        get_global_feed_command()
 
 # Log exceptions
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(str(e))
     LOG.print_log()
     raise
