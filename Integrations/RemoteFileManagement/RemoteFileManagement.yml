@@ -16,6 +16,10 @@ configuration:
   name: Username
   required: true
   type: 9
+- display: Ciphers
+  name: ciphers
+  required: false
+  type: 0
 description: This integration allows managing and editing files located on a remote
   web-server via SSH using integration context as Single Source of Truth
 display: Remote File Management

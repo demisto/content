@@ -17,6 +17,10 @@ PORT = int(demisto.params().get('port'))
 USERNAME = demisto.params().get('Username').get('identifier')
 PASSWORD = demisto.params().get('Username').get('password')
 
+CIPHERS = demisto.params().get('ciphers', None)
+if CIPHERS:
+    paramiko.Transport._preferred_ciphers = (CIPHERS,)
+
 CLIENT = paramiko.SSHClient()
 CLIENT.load_system_host_keys()
 CLIENT.set_missing_host_key_policy(paramiko.AutoAddPolicy())
