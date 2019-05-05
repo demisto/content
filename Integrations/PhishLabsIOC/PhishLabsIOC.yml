@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -53,7 +53,7 @@ script:
       default: false
       description: Filter the data by indicator type.
       isArray: false
-      name: indicator
+      name: indicator_type
       predefined:
       - E-mail
       - ' Attachment'
@@ -97,6 +97,9 @@ script:
     - contextPath: PhishLabs.URL.Data
       description: URL address
       type: String
+    - contextPath: PhishLabs.URL.ID
+      description: URL PhishLabs ID
+      type: String
     - contextPath: PhishLabs.URL.CreatedAt
       description: URL creation time in PhishLabs
       type: Date
@@ -117,6 +120,9 @@ script:
       type: String
     - contextPath: PhishLabs.Domain.Name
       description: Domain name
+      type: String
+    - contextPath: PhishLabs.Domain.ID
+      description: Domain PhishLabs ID
       type: String
     - contextPath: PhishLabs.Domain.CreatedAt
       description: Domain creation time in PhishLabs
@@ -141,6 +147,9 @@ script:
       type: String
     - contextPath: Email.Subject
       description: Subject of the email
+      type: String
+    - contextPath: PhishLabs.Email.ID
+      description: Email PhishLabs ID
       type: String
     - contextPath: PhishLabs.Email.To
       description: Recipient of the email
@@ -171,6 +180,9 @@ script:
       type: String
     - contextPath: File.Type
       description: File type
+      type: String
+    - contextPath: PhishLabs.File.ID
+      description: File PhishLabs ID
       type: String
     - contextPath: PhishLabs.File.Name
       description: Full Filename
