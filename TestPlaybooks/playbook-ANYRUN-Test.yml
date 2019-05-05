@@ -1,0 +1,166 @@
+id: ANYRUN-Test
+version: -1
+name: ANYRUN-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2eae9c58-286f-47ed-8e58-bea80fe53944
+    type: start
+    task:
+      id: 2eae9c58-286f-47ed-8e58-bea80fe53944
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 4d86d5f2-e0b2-4783-8b4e-cda748a48485
+    type: regular
+    task:
+      id: 4d86d5f2-e0b2-4783-8b4e-cda748a48485
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 930b9610-9e0a-4c02-8826-ba317f830ce3
+    type: regular
+    task:
+      id: 930b9610-9e0a-4c02-8826-ba317f830ce3
+      version: -1
+      name: ANYRUN Get History
+      description: Get analysis history.
+      script: ANYRUN|||anyrun-get-history
+      type: regular
+      iscommand: true
+      brand: ANYRUN
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      skip: {}
+      team: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4d0f9194-5c86-4e9b-8964-fa1d61901f1b
+    type: condition
+    task:
+      id: 4d0f9194-5c86-4e9b-8964-fa1d61901f1b
+      version: -1
+      name: Check that output field is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ANYRUN
+                accessor: Task.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 37d2963a-f81a-471a-82e5-c4eff0223228
+    type: title
+    task:
+      id: 37d2963a-f81a-471a-82e5-c4eff0223228
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -18,12 +18,12 @@ script: |-
   if demisto.args().get("subject"):
       args["Subject"] = demisto.args().get("subject")
   if demisto.args().get("attachmentName"):
-      args["AttachmentName"] = demisto.args().get("attachmentName")
+      args["Attachment"] = demisto.args().get("attachmentName")
   if demisto.args().get("body"):
       args["Body"] = demisto.args().get("body")
 
   stripSubject = True if demisto.args().get("stripSubject").lower() == "true" else False
-  if stripSubject and args["Subject"]:
+  if stripSubject and args.get("Subject"):
       # Recursively remove the regex matches only from the beginning of the string
       match_string = args["Subject"]
       location_match = p.match(match_string)

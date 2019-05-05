@@ -159,6 +159,5 @@ type: python
 dockerimage: demisto/dl:1.2
 runas: DBotWeakRole
 runonce: true
-releaseNotes: Add new script
 tests:
 - No test
