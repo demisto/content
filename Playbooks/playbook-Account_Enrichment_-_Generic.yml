@@ -167,10 +167,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 03d20c71-9bee-4a97-8a4d-47135ec38828
+    taskid: a1a5ffca-8dcd-4d0a-863a-dd6168d7effd
     type: regular
     task:
-      id: 03d20c71-9bee-4a97-8a4d-47135ec38828
+      id: a1a5ffca-8dcd-4d0a-863a-dd6168d7effd
       version: -1
       name: Get Account info from Active Directory
       description: Query "Active Directory" for the username's info
@@ -193,7 +193,10 @@ tasks:
       nestedSearch: {}
       userAccountControlOut: {}
       username:
-        simple: ${inputs.Username}
+        complex:
+          root: ${inputs.Username}
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -257,10 +260,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c562e7a5-a6db-4150-8d9e-3b594070e6d8
+    taskid: 572ce56b-6947-4742-8427-8a6f277a402f
     type: regular
     task:
-      id: c562e7a5-a6db-4150-8d9e-3b594070e6d8
+      id: 572ce56b-6947-4742-8427-8a6f277a402f
       version: -1
       name: Get Account info from Active Directory
       description: Retrieves detailed information about a user account. The user can
@@ -284,7 +287,10 @@ tasks:
         simple: ${inputs.Username}
       user-account-control-out: {}
       username:
-        simple: ${inputs.Username}
+        complex:
+          root: ${inputs.Username}
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
