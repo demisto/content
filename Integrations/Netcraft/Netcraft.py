@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 import json
 from base64 import b64encode
 import requests
+
 from distutils.util import strtobool
 
 # Disable insecure warnings
@@ -17,9 +18,6 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
 USERNAME_AND_PASSWORD_ENCODED = b64encode("{0}:{1}".format(USERNAME,PASSWORD)) #should maybe add .decode("ascii")
-HEADERS = {
-    'Authorization': "Base {}".format(USERNAME_AND_PASSWORD_ENCODED)
-}
 
 USE_SSL = not demisto.params().get('unsecure', False)
 
@@ -41,6 +39,7 @@ REPORT_MALICIOUS_SUFFIX = "authorise.php"
 GET_TAKEDOWN_INFO_SUFFIX = "apis/get-info.php"
 ACCESS_TAKEDOWN_NOTES_SUFFIX = "apis/note.php"
 ESCALATE_TAKEDOWN_SUFFIX = "apis/escalate.php"
+TEST_MODULE_SUFFIX = "authorise-test.php"
 
 
 # Table Headers
@@ -72,11 +71,9 @@ def http_request(method, request_url, params=None, data=None, should_convert_to_
         verify=USE_SSL,
         params=params,
         data=data,
-        headers=HEADERS
+        auth=HTTPBasicAuth(USERNAME, PASSWORD)
     )
     # Handle error responses gracefully
-    if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
 
     if should_convert_to_json:
         return res.json()
@@ -378,12 +375,15 @@ def get_takedown_info_command():
 
 
 
-def report_malicious_site(malicious_site_url, comment):
+def report_malicious_site(malicious_site_url, comment, is_test_request = False):
     data_for_request = {
         "attack": malicious_site_url,
         "comment": comment
     }
-    request_url = BASE_URL + REPORT_MALICIOUS_SUFFIX
+    if is_test_request:
+        request_url = BASE_URL + TEST_MODULE_SUFFIX
+    else:
+        request_url = BASE_URL + REPORT_MALICIOUS_SUFFIX
     request_result = http_request("POST", request_url, data = data_for_request, should_convert_to_json=False)
     return request_result
 
@@ -415,7 +415,13 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    samples = http_request('GET', 'items/samples')
+    try:
+        test_result = report_malicious_site("https://www.test.com", "test", True)
+        if test_result[0] != MALICIOUS_REPORT_SUCCESS:
+            raise Exception("Test request failed.")
+    except Exception as ex:
+        raise Exception(str(ex))
+    demisto.results("ok")
 
 
 
@@ -426,9 +432,7 @@ LOG('Command being called is %s' % (demisto.command()))
 
 try:
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
         test_module()
-        demisto.results('ok')
     elif demisto.command() == 'netcraft-report-malicious-site':
         report_malicious_site_command()
     elif demisto.command() == 'netcraft-get-takedown-info':
