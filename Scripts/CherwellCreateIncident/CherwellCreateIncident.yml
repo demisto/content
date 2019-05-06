@@ -55,8 +55,7 @@ outputs:
   type: String
 script: '-'
 system: false
-tags:
-- Cherwell
+tags: [Cherwell]
 timeout: '0'
 type: python
 dependson:
