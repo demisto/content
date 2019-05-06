@@ -407,7 +407,7 @@
             "nightly": true
         },
         {
-            "integrations": "WildFire",
+            "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test"
         },
         {
@@ -1051,7 +1051,7 @@
         {
             "integrations": [
                 "Lastline",
-                "WildFire",
+                "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
                 "McAfee Advanced Threat Defense"
@@ -1519,7 +1519,6 @@
         "McAfee ESM-v10": "Checking",
         "Salesforce": "Checking",
         "okta": "Checking",
-        "WildFire": "Checking",
         "WhatsMyBrowser": "Checking",
         "Check Point": "Checking",
         "Awake Security": "Checking",
