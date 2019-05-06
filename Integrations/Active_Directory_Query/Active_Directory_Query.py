@@ -90,6 +90,7 @@ def account_entry(person_object, custome_attributes):
         'Email': person_object.get('email'),
         'Username': person_object.get('samAccountName'),
         'DisplayName': person_object.get('displayName'),
+        'Managr': person_object.get('manager'),
         'Manager': person_object.get('manager'),
         'Groups': person_object.get('memberOf')
     }
