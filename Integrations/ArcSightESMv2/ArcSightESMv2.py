@@ -62,10 +62,10 @@ def decode_ip(address_by_bytes):
         decoded_string = base64.b64decode(address_by_bytes).encode('hex')
         if len(address_by_bytes) >= 20:
             # split the IPv6 address into 8 chunks of 4
-            decoded_string = [decoded_string[i:i + 4] for i in range(0, len(decoded_string), 4)]
+            decoded_string = [decoded_string[i:i + 4] for i in range(0, len(decoded_string), 4)]  # type: ignore
             return "{}:{}:{}:{}:{}:{}:{}:{}".format(*decoded_string)
         elif len(address_by_bytes) >= 6:
-            decoded_string = int(decoded_string, 16)
+            decoded_string = int(decoded_string, 16)  # type: ignore
             return int_to_ip(decoded_string)
         else:
             return address_by_bytes
@@ -244,6 +244,7 @@ def get_query_viewer_results(query_viewer_id):
 
     else:
         return_error('Invalid response structure. Open ticket to Demisto support and attach the logs')
+        return
 
     fields = return_object.get('columnHeaders', [])
     if not isinstance(fields, (list,)):

@@ -447,3 +447,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
+tests:
+  - no test - each enrichment sub-playbook has or will have its own test
