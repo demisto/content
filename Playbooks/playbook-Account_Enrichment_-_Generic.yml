@@ -194,7 +194,7 @@ tasks:
       userAccountControlOut: {}
       username:
         complex:
-          root: ${inputs.Username}
+          root: inputs.Username
           transformers:
           - operator: uniq
     separatecontext: false
@@ -283,12 +283,11 @@ tasks:
       dn: {}
       email: {}
       limit: {}
-      name:
-        simple: ${inputs.Username}
+      name: {}
       user-account-control-out: {}
       username:
         complex:
-          root: ${inputs.Username}
+          root: inputs.Username
           transformers:
           - operator: uniq
     separatecontext: false
