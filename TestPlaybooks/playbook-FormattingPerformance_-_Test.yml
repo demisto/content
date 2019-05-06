@@ -1,7 +1,7 @@
 id: FormattingPerformance - Test
 version: -1
 name: FormattingPerformance - Test
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: Test to ensure that indicator extraction and formatting for 1000 indicator
   string (used as a benchmark amount) executes in less than 1 second.
 starttaskid: "0"
