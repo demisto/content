@@ -33,7 +33,43 @@ ETAGS = {}
 ''' HELPER FUNCTIONS '''
 
 
-def create_web_api_headers(entity_tag):
+def format_policies_data(data):
+    """
+    Return policies formatted to Demisto standards
+
+    Parameters
+    ----------
+    data : dict
+        The data returned from making API call to Forescout Web API policies endpoint
+
+    Returns
+    -------
+    list
+        Formatted Policies
+    """
+    formatted_policies = []
+    policies = data.get('policies', [])
+    for policy in policies:
+        formatted_policy = {
+            'ID': policy.get('policyId'),
+            'Name': policy.get('name'),
+            'Description': policy.get('description')
+        }
+        formatted_rules = []
+        rules = policy.get('rules', [])
+        for rule in rules:
+            formatted_rule = {
+                'ID': rule.get('ruleId'),
+                'Name': rule.get('name'),
+                'Description': rule.get('description')
+            }
+            formatted_rules.append(formatted_rule)
+        formatted_policy['Rule'] = formatted_rules
+        formatted_policies.append(formatted_policy)
+    return formatted_policies
+
+
+def create_web_api_headers(entity_tag=''):
     """
     Return headers object that formats to Forescout Web API expectations and takes
     into account if an entity tag exists for a request to an endpoint.
@@ -41,11 +77,20 @@ def create_web_api_headers(entity_tag):
     Parameters
     ----------
     entity_tag : str
+        Entity tag to include in the headers if not None.
 
     Returns
     -------
-
+    dict
+        Headers object for the Forescout Web API calls
     """
+    headers = {
+        'Authorization': AUTH,
+        'Accept': 'application/hal+json'
+    }
+    if entity_tag:
+        headers['If-None-Match'] = entity_tag
+    return headers
 
 
 def log_entity_tag(api_calling_func):
@@ -334,12 +379,33 @@ def get_hostfields():
 
 
 def get_hostfields_command():
-    response = get_hostfields().json()
-    content = [{key.title(): val for key, val in x.items()} for x in response.get('hostFields', [])]
+    response = get_hostfields()
+    data = response.json()
+    content = [{key.title(): val for key, val in x.items()} for x in data.get('hostFields', [])]
     context = {'Forescout.HostField': content}
     title = 'Index of Host Properties'
     human_readable = tableToMarkdown(title, content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+
+
+@log_entity_tag
+def get_policies():
+    url_suffix = '/api/policies'
+    entity_tag = ETAGS.get('get_policies')
+    headers = create_web_api_headers(entity_tag)
+    response = http_request('GET', url_suffix, headers=headers, resp_type='response')
+    return response
+
+
+def get_policies_command():
+    response = get_policies()
+    data = response.json()
+    content = format_policies_data(data)
+    context = {'Forescout.Policy(val.ID && val.ID === obj.ID)': content}
+    title = 'Forescout Policies'
+    human_readable = tableToMarkdown(title, content, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+
 
 
 def update_host_properties()
@@ -357,6 +423,7 @@ COMMANDS = {
     'forescout-get-host': get_host_command,
     'forescout-get-hosts': get_hosts_command,
     'forescout-get-hostfields': get_hostfields_command,
+    'forescout-get-policies': get_policies_command,
     'forescout-update-host-properties': update_host_properties_command
 }
 

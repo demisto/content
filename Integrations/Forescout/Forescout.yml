@@ -158,6 +158,12 @@ script:
       command.
     execution: false
     name: forescout-update-host-properties
+  - deprecated: false
+    description: |-
+      Retrieves a list of all policies defined in the Forescout platform and
+      their sub-rules.
+    execution: false
+    name: forescout-get-policies
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
