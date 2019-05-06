@@ -1267,6 +1267,10 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate File From URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
