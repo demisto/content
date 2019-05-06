@@ -786,6 +786,7 @@ script:
   - name: file
     arguments:
     - name: file
+      deprecated: true
       default: true
       description: file hash to check
       isArray: true
