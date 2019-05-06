@@ -18,6 +18,8 @@ error_message = ''
 
 
 def rasterize_email(html, friendlyName):
+    global return_code
+    global error_message
 
     f = open('htmlBody.html', 'w')
     f.write('<html style="background:white";>' + html + '</html>')
@@ -31,6 +33,11 @@ def rasterize_email(html, friendlyName):
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
     if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
         command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+    try:
+        error_message = subprocess.check_output(command)
+    except Exception as e:
+        return_code = -1
+        error_message = e.message
 
 
 if demisto.command() == 'test-module':
@@ -41,7 +48,7 @@ if demisto.command() == 'test-module':
         demisto.results(error_message)
     sys.exit(0)
 
-if demisto.command() == 'rasterize-image':
+elif demisto.command() == 'rasterize-image':
     res = demisto.getFilePath(demisto.args()['EntryID'])
     with open(res['path'], 'r') as f:
         data = f.read()
@@ -73,9 +80,8 @@ if demisto.command() == 'rasterize-image':
     else:
         demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'],
                          'Contents': 'PhantomJS returned - ' + error_message})
-    sys.exit(0)
 
-if demisto.command() == 'rasterize-email':
+elif demisto.command() == 'rasterize-email':
     html = demisto.args()['htmlBody']
     friendlyName = 'email.png'
     if demisto.get(demisto.args(), 'type') == 'pdf':
@@ -88,9 +94,8 @@ if demisto.command() == 'rasterize-email':
     else:
         demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'],
                          'Contents': 'PhantomJS returned - ' + error_message})
-    sys.exit(0)
 
-if demisto.command() == 'rasterize':
+elif demisto.command() == 'rasterize':
     return_code = 0
     error_message = ''
     url = demisto.args()['url']
@@ -118,7 +123,6 @@ if demisto.command() == 'rasterize':
     except subprocess.CalledProcessError:
         return_code = -1
         error_message = "Can't access the URL. It might be malicious, or unreacahable for one of several reasons."
-        return_error(error_message)
 
     if return_code == 0:
         file = file_result_existing_file(friendlyName)
@@ -127,5 +131,5 @@ if demisto.command() == 'rasterize':
     else:
         demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'],
                          'Contents': 'PhantomJS returned - ' + error_message})
-    sys.exit(0)
-demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'Unrecognized command'})
+else:
+    demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'Unrecognized command'})
