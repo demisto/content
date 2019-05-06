@@ -1360,6 +1360,10 @@
         {
             "integrations": "Google Cloud Compute",
             "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
