@@ -61,7 +61,7 @@ def alexa_domain_command():
 
 def test_module_command():
     domain = 'google.com'
-    resp = requests.request('GET', 'http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
+    resp = requests.request('GET', 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
     root = ET.fromstring(str(resp.content))
     rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
     if rank == '1':
