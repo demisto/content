@@ -212,7 +212,7 @@ script:
       description: 'List of fields to display. (Field name format: "object_name.field_name")'
       isArray: true
       name: fields
-      required: true
+      required: false
       secret: false
     - default: false
       description: 'Filters for the query, passed as a list with the format: "field

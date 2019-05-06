@@ -54,9 +54,12 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
         data=data,
         headers=HEADERS
     )
+
     # Handle error responses gracefully
     if res.status_code not in {200}:
         error_message = f'Error in API call to Looker [{res.status_code}] - {res.reason}'
+
+        # Try to get an error message from looker json response
         if res.status_code in {400}:
             try:
                 inner_error = res.json()['message']
@@ -65,6 +68,7 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
                 pass
         raise requests.exceptions.HTTPError(error_message)
 
+    # Return by expected type
     if response_type != 'json':
         return res.content
 
@@ -208,17 +212,14 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
 
 
 def get_query_args():
-    str_args = ('model', 'view')  # (required) String-type arguments
-    list_args = ('fields', 'pivots', 'sorts')  # (optional) List-type arguments
-    for k in str_args:
-        if not demisto.args().get(k):
-            return_error(f"Missing mandatory argument {k}")
+    str_args = ('model', 'view')
+    list_args = ('fields', 'pivots', 'sorts')
     args_dict = {k: argToList(demisto.args()[k]) for k in list_args if k in demisto.args()}  # Parse list-type arguments
     args_dict.update({k: demisto.args()[k] for k in str_args})  # Add string-type arguments
-    # Handle special arguments
-    filters = parse_filters_arg(demisto.args().get('filters'))
+    filters = parse_filters_arg(demisto.args().get('filters'))  # Handle special argument
     if filters:
         args_dict['filters'] = filters
+
     return args_dict
 
 
@@ -344,6 +345,11 @@ def run_inline_query_request(result_format, args_dict):
 
 def create_look_command():
     space_id = demisto.args()['look_space_id']
+    try:
+        space_id = int(space_id)
+    except ValueError:
+        return_error(f'space_id: invalid number: {space_id}')
+
     look_title = demisto.args()['look_title']
     look_description = demisto.args().get('look_description')
     args_dict = get_query_args()
@@ -352,32 +358,33 @@ def create_look_command():
     query_id = create_query_response['id']
 
     contents = create_look_request(query_id, space_id, look_title, look_description)
-    context = {f'Looker.Look(val.ID && val.ID === {look["ID"]})': look for look in contents}
+
+    context = {f'Looker.Look(val.ID && val.ID === {contents["ID"]})': contents}
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'Look search results', contents, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'New look details', contents, removeNull=True),
         'EntryContext': context
     })
 
 
 def create_query_request(args_dict):
-    return http_request(method='POST', url_suffix=f'/queries/', data=json.dumps(args_dict))
+    return http_request(method='POST', url_suffix='/queries', data=json.dumps(args_dict))
 
 
 def create_look_request(query_id, space_id, look_title, look_description=""):
     data = {
+        'title': look_title,
         'query_id': query_id,
-        'space_id': space_id,
-        'look_title': look_title
+        'space_id': space_id
     }
     if look_description:
         data['look_description'] = look_description
 
-    look =  http_request(method='POST', url_suffix=f'/looks', data=data)
+    look = http_request(method='POST', url_suffix='/looks', data=json.dumps(data))
 
     return {
         'ID': look['id'],
@@ -386,6 +393,7 @@ def create_look_request(query_id, space_id, look_title, look_description=""):
         'SpaceName': look['space']['name'],
         'LastUpdated': look['updated_at'].replace('+00:00', 'Z')
     }
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
