@@ -2121,7 +2121,7 @@ def fetch_incidents():
 def main():
     handle_proxy()
     command = demisto.command()
-    LOG(f'Command being called is {command}') 
+    LOG(f'Command being called is {command}')
     # should raise error in case of issue
     if command == 'fetch-incidents':
         demisto.incidents(fetch_incidents())
