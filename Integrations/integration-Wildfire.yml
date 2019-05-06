@@ -786,7 +786,6 @@ script:
   - name: file
     arguments:
     - name: file
-      deprecated: true
       default: true
       description: file hash to check
       isArray: true
@@ -1185,4 +1184,5 @@ script:
     description: Deprecated, use detonate playbook instead
   runonce: false
 tests:
-- Wildfire Test
+- No test
+releaseNotes: "Added md5,sha256 arguments options to !file command, regard non valid hash in the !file command as a warning. add sha256 argument and deprecate hash argument for wildfire-report. Added wildfire-get-sample command."
