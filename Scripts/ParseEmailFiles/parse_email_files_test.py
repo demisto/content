@@ -1,6 +1,44 @@
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold
 from CommonServerPython import entryTypes
 import demistomock as demisto
+
+
+def exec_command_for_file(path):
+    """
+    Return a executeCommand function which will return the passed path as an entry to the call 'getFilePath'
+
+    Arguments:
+        path {string} -- path
+
+    Raises:
+        ValueError: if call with differed name from getFilePath or getEntry
+
+    Returns:
+        [function] -- function to be used for mocking
+    """
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': path,
+                        'name': 'test_email.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'RFC 822 mail text, ISO-8859 text, with very long lines, with CRLF line terminators'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+    return executeCommand
 
 
 def test_msg_html_with_attachments():
@@ -285,3 +323,30 @@ def test_utf_subject_convert():
     assert 'utf-8' not in decoded
     assert 'Votre' in decoded
     assert 'chez' in decoded
+
+
+def test_unfold():
+    assert unfold('test\n\tthis') == 'test this'
+    assert unfold('test\r\n\tthis') == 'test this'
+    assert unfold('test   \r\n this') == 'test this'
+
+
+def test_email_raw_headers(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('test_data/multiple_to_cc.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == 'test@test.com'
+    assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
+    assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == 'Guy Test <test@test.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>, Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, Guy Test1 <example1@example.com>'

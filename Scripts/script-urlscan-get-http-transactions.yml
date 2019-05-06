@@ -64,4 +64,3 @@ dependson:
   - urlscan.io|||urlscan-poll-uri
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Added the option to get the http transactions made at a given URL address using the UrlScan service."

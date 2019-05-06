@@ -19,7 +19,7 @@ scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
 scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current
-COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
+COPY_CONTENT_COMMAND="sudo unzip -qq -o ~/content/content_new.zip -d /usr/local/demisto/res \
     && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
