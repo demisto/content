@@ -1,13 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import os
-import subprocess
-import sys
-import base64
+import os, subprocess, sys, base64
+from subprocess import Popen, PIPE
 reload(sys)
 sys.setdefaultencoding("utf-8")
-proxy = demisto.get(demisto.params(),"proxy")
+proxy = demisto.get(demisto.params(), "proxy")
 
 if proxy:
     http_proxy = os.environ["http_proxy"]
@@ -19,23 +17,23 @@ error_message = ''
 
 def rasterize_email(html, friendlyName):
 
-    f = open('htmlBody.html','w')
+    f = open('htmlBody.html', 'w')
     f.write('<html style="background:white";>' + html + '</html>')
     f.close()
 
-  proxy_flag = ""
-  if proxy:
-      proxy_flag = "--proxy=" + http_proxy
-  demisto.debug('rasterize proxy settings: ' + proxy_flag)
+    proxy_flag = ""
+    if proxy:
+        proxy_flag = "--proxy=" + http_proxy
+    demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
-  command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
-  if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-      command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
-  try:
-      error_message = subprocess.check_output(command)
-  except Exception as e:
-      return_code = -1
-      error_message = e.message
+    command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
+    if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
+        command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+    try:
+        error_message = subprocess.check_output(command)
+    except Exception as e:
+        return_code = -1
+        error_message = e.message
 
 
 if demisto.command() == 'test-module':
@@ -107,7 +105,6 @@ if demisto.command() == 'rasterize':
     if demisto.get(demisto.args(), 'type') == 'pdf':
         friendlyName = 'url.pdf'
 
-
     proxy_flag = ""
     if proxy:
         if url.startswith("https"):
@@ -123,7 +120,7 @@ if demisto.command() == 'rasterize':
         error_message = subprocess.check_output(command)
     except subprocess.CalledProcessError:
         return_code = -1
-        error_message = "Can't access the URL. It might be malicious, or unreachable for one of several reasons."
+        error_message = "Can't access the URL. It might be malicious, or unreacahable for one of several reasons."
         return_error(error_message)
 
     if return_code == 0:
