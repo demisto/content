@@ -1555,7 +1555,7 @@ def create_file_analysis_result(raw_file_analysis, raw_file_rule, cbp_ec_key):
     }
     # analysisResult == 3 -> Malicious
     if int(raw_file_analysis.get('analysisResult', 0)) == 3:
-        result[outputPaths['file']].update({
+        result[outputPaths['file']].update({  # type: ignore
             'Malicious': {
                 'Vendor': 'Carbon Black Protection',
                 'Description': 'Carbon Black Protection found this file to be malicious.'

@@ -297,17 +297,20 @@ def get_white_list():
 
 
 def get_file_contents(file_path, file_extension):
-    # if pdf file, parse text
-    if file_extension == '.pdf':
-        file_contents = extract_text_from_pdf(file_path)
-    else:
-        # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
-        with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
-            file_contents = commited_file.read()
+    try:
+        # if pdf file, parse text
+        if file_extension == '.pdf':
+            file_contents = extract_text_from_pdf(file_path)
+        else:
+            # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
+            with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
+                file_contents = commited_file.read()
 
-    file_contents = ignore_base64(file_contents)
-
-    return file_contents
+        file_contents = ignore_base64(file_contents)
+        return file_contents
+    except Exception as ex:
+        print("Failed opening file: {}. Exception: {}".format(file_path, ex))
+        raise
 
 
 def extract_text_from_pdf(file_path):
