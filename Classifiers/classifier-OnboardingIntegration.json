@@ -112,7 +112,6 @@
 	},
 	"unclassifiedCases": {},
 	"custom": true,
-	"releaseNotes": "Mapping to Phishing incidents",
 	"transformer": {
 		"simple": "",
 		"complex": null
