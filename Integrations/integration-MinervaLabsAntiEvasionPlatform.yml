@@ -71,7 +71,8 @@ script:
                 'CommandLine': data['processCommandLine'],
                 'Username': data['username'],
                 'CreateTime': data['startTime'],
-                'Pid': data['processId']
+                'Pid': data['processId'],
+                'Name': data['processName']
             }
             ec['Minerva.Process(val.CreateTime === obj.CreateTime && val.Pid === val.Pid)'] = context
         elif context_id.endswith('endpoints'):
@@ -521,6 +522,9 @@ script:
     - contextPath: Minerva.Process.Pid
       description: The process id
       type: number
+    - contextPath: Minerva.Process.Name
+      description: The process name
+      type: string
     description: Search process with Minerva
   - name: minerva-search-endpoint
     arguments:
