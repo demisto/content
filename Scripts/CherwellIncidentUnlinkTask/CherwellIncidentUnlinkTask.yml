@@ -29,7 +29,7 @@ dockerimage: demisto/python3:3.7.2.214
 tags: [Cherwell]
 dependson:
   must:
-  - '|||cherwell-unlink-business-objects'
+  - Cherwell|||cherwell-unlink-business-objects
 releaseNotes: Added tags and 'dependsOn' commands
 tests:
   - Cherwell Example Scripts - test

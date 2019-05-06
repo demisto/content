@@ -59,7 +59,7 @@ name: CherwellUpdateIncident
 tags: [Cherwell]
 dependson:
   must:
-  - '|||cherwell-update-business-object'
+  - Cherwell|||cherwell-update-business-object
 outputs:
 - contextPath: Cherwell.BusinessObjects.PublicId
   description: Incident public ID
