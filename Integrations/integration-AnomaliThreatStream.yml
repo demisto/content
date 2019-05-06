@@ -682,6 +682,5 @@ script:
       defaultValue: "100"
     description: Push indicator into ThreatStream
   runonce: false
-releaseNotes: Handle missing responses gracefully
 tests:
   - Anomali_ThreatStream_Test
