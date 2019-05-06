@@ -32,7 +32,7 @@ def rasterize_email(html, friendlyName):
 
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
     if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-        command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+        command.append(demisto.get(demisto.args(), 'width') + '*' + demisto.get(demisto.args(), 'height'))
     try:
         error_message = subprocess.check_output(command)
     except Exception as e:
@@ -65,7 +65,7 @@ elif demisto.command() == 'rasterize-image':
 
     command = ['phantomjs', '/usr/local/bin/rasterize.js', 'htmlImage.html', friendlyName]
     if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-        command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+        command.append(demisto.get(demisto.args(), 'width') + '*' + demisto.get(demisto.args(), 'height'))
     try:
         error_message = subprocess.check_output(command)
     except Exception as e:
@@ -117,7 +117,7 @@ elif demisto.command() == 'rasterize':
 
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', url, friendlyName]
     if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-        command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+        command.append(demisto.get(demisto.args(), 'width') + '*' + demisto.get(demisto.args(), 'height'))
     try:
         error_message = subprocess.check_output(command)
     except subprocess.CalledProcessError:
