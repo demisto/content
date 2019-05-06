@@ -155,7 +155,7 @@ tasks:
       id: 97ec5ca3-8754-49ff-8797-627ef7e6cd33
       version: -1
       name: Get account info from Active Directory
-      description: Queries Active Directory for the username’s information.
+      description: Queries Active Directory and returns information for the specified username.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -218,14 +218,14 @@ outputs:
   description: The account object.
   type: unknown
 - contextPath: ActiveDirectory.Users.sAMAccountName
-  description: The user's sAMAccountName.
+  description: The user's samAccountName.
 - contextPath: ActiveDirectory.Users.userAccountControl
   description: The user's account control flag.
 - contextPath: ActiveDirectory.Users.mail
   description: The user's email address.
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
-releaseNotes: "Replaced old Active Directory integration with the new Active Directory v2 Query integration.
+releaseNotes: "Replaced the Active Directory integration with the Active Directory v2 Query integration.
 Removed redundant outputs."
 tests:
   - Account Enrichment - Generic v2.1 - Test
