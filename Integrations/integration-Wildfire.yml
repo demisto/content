@@ -1186,4 +1186,4 @@ script:
   runonce: false
 tests:
 - Wildfire Test
-releaseNotes: ''
+releaseNotes: '-'
