@@ -59,7 +59,7 @@ type: python
 tags: [Cherwell]
 dependson:
   must:
-  - Cherwell|||cherwell-get-business-object
+  - '|||cherwell-get-business-object'
 dockerimage: demisto/python3:3.7.2.214
 releaseNotes: Added tags and 'dependsOn' commands
 tests:
