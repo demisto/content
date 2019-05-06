@@ -72,21 +72,21 @@ def test_module():
 def add_host(dataArgs):
 
     template = '{' + \
-    '	"entity": {' + \
-    '		"id": {{entity_id}},' + \
-    '		"name": "{{entity_name}}"' + \
-    '	},' +  \
-    '	"name": "{{name}}",' + \
-    '	"shortDesc": "{{short-desc}}",' +  \
-    '	"longDesc": "{{long-desc}}",' +  \
-    '	"riskLevel": "{{risk-level}}",' +  \
-    '	"threatLevel": "{{threat-level}}",' + \
-    '	"threatLevelComments": "{{threat-level-comments}}",' + \
-    '	"recordStatusName": "{{record-status-name}}",' +  \
-    '	"hostZone": "{{host-zone}}",' +  \
-    '	"os": "{{os}}",' +  \
-    '	"useEventlogCredentials": {{use-eventlog-credentials}},' + \
-    '	"osType": "{{os-type}}"' +  \
+    '    "entity": {' + \
+    '        "id": {{entity_id}},' + \
+    '        "name": "{{entity_name}}"' + \
+    '    },' +  \
+    '    "name": "{{name}}",' + \
+    '    "shortDesc": "{{short-desc}}",' +  \
+    '    "longDesc": "{{long-desc}}",' +  \
+    '    "riskLevel": "{{risk-level}}",' +  \
+    '    "threatLevel": "{{threat-level}}",' + \
+    '    "threatLevelComments": "{{threat-level-comments}}",' + \
+    '    "recordStatusName": "{{record-status-name}}",' +  \
+    '    "hostZone": "{{host-zone}}",' +  \
+    '    "os": "{{os}}",' +  \
+    '    "useEventlogCredentials": {{use-eventlog-credentials}},' + \
+    '    "osType": "{{os-type}}"' +  \
     '}'
 
     data = fix_template(template, dataArgs)
@@ -95,7 +95,17 @@ def add_host(dataArgs):
     return res
 
 def get_hosts(dataArgs):
-    res = http_request('GET', 'lr-admin-api/hosts?entity=' + dataArgs['entity_name'])
+
+    try:
+        res = http_request('GET', 'lr-admin-api/hosts?entity=' + dataArgs['entity_name'])
+    except Exception, e:
+        if 'No hosts found or the user does not have permission' in e.message:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': 'No hosts',
+                'ContentsFormat': formats['text']
+            })
+            return
 
     context = {}
     context['Logrhythm.Hosts(val.Name && val.Name === obj.Name)'] = res
@@ -210,12 +220,11 @@ try:
         # This is the call made when pressing the integration test button.
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'add-host':
+    elif demisto.command() == 'lr-add-host':
         add_host(demisto.args())
         demisto.results('ok')
-    elif demisto.command() == 'get-hosts-by-entity':
+    elif demisto.command() == 'lr-get-hosts-by-entity':
         get_hosts(demisto.args())
-        demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
 except Exception, e:
