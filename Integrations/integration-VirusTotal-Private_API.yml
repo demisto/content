@@ -165,8 +165,10 @@ script:
 
 
         except Exception, e:
-            LOG(e)
-            raise (e)
+            error_message = str(e)
+            error_message = re.sub('apikey=[a-zA-Z0-9]+', 'apikey=*apikey*', error_message)
+            LOG(error_message)
+            raise type(e)(error_message)
 
 
     def create_scans_table(scans):
@@ -1642,3 +1644,4 @@ script:
 tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
+releaseNotes: 'hide api key value from virus total private api response'
