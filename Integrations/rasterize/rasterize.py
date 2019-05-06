@@ -67,7 +67,7 @@ def rasterize():
         error_message = subprocess.check_output(command)
     except subprocess.CalledProcessError:
         return_code = -1
-        error_message = "Can't access the URL. It might be malicious, or unreacahable for one of several reasons."
+        error_message = "Can't access the URL. It might be malicious, or unreachable for one of several reasons."
     if return_code == 0:
         file = file_result_existing_file(friendlyName)
         file['Type'] = entryTypes['image']
