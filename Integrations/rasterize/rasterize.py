@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import os, subprocess, sys, base64
-from subprocess import Popen, PIPE
 reload(sys)
 sys.setdefaultencoding("utf-8")
 proxy = demisto.get(demisto.params(), "proxy")
@@ -29,11 +28,6 @@ def rasterize_email(html, friendlyName):
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
     if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
         command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
-    try:
-        error_message = subprocess.check_output(command)
-    except Exception as e:
-        return_code = -1
-        error_message = e.message
 
 
 if demisto.command() == 'test-module':
@@ -55,7 +49,7 @@ if demisto.command() == 'rasterize-image':
     error_message = ''
 
     friendlyName = 'image.png'
-    f = open('htmlImage.html','w')
+    f = open('htmlImage.html', 'w')
     f.write('<html style="background:white;"><body>' + html + '</body></html>')
     f.close()
 
