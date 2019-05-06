@@ -366,7 +366,7 @@ def create_look_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'New look details', contents, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Look "{look_title}" created successfully', contents, removeNull=True),
         'EntryContext': context
     })
 
