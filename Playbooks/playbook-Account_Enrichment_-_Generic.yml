@@ -117,10 +117,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: e20b8aa1-b0b6-4052-8f18-ae8ad93b446f
+    taskid: 64684715-e0fd-44e4-8ba8-973e87eec920
     type: condition
     task:
-      id: e20b8aa1-b0b6-4052-8f18-ae8ad93b446f
+      id: 64684715-e0fd-44e4-8ba8-973e87eec920
       version: -1
       name: Is Active Directory enabled?
       description: Checks if there's an active "Active Directory" instance
@@ -154,6 +154,7 @@ tasks:
               right:
                 value:
                   simple: active
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -167,10 +168,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: a1a5ffca-8dcd-4d0a-863a-dd6168d7effd
+    taskid: 1f64970f-99a7-477e-83c0-f54dc2e7e4ec
     type: regular
     task:
-      id: a1a5ffca-8dcd-4d0a-863a-dd6168d7effd
+      id: 1f64970f-99a7-477e-83c0-f54dc2e7e4ec
       version: -1
       name: Get Account info from Active Directory
       description: Query "Active Directory" for the username's info
@@ -210,10 +211,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: b3863ef8-aed7-4405-8a7d-33f89bba4d3b
+    taskid: 34d20cba-51b1-4f99-8689-7b1bf0e108f4
     type: condition
     task:
-      id: b3863ef8-aed7-4405-8a7d-33f89bba4d3b
+      id: 34d20cba-51b1-4f99-8689-7b1bf0e108f4
       version: -1
       name: Is Active Directory v2 enabled?
       description: Checks if there's an active "Active Directory" instance
@@ -247,6 +248,7 @@ tasks:
               right:
                 value:
                   simple: active
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -260,10 +262,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 572ce56b-6947-4742-8427-8a6f277a402f
+    taskid: 35f69528-ad0b-4672-8864-c4e62cb11c4f
     type: regular
     task:
-      id: 572ce56b-6947-4742-8427-8a6f277a402f
+      id: 35f69528-ad0b-4672-8864-c4e62cb11c4f
       version: -1
       name: Get Account info from Active Directory
       description: Retrieves detailed information about a user account. The user can
