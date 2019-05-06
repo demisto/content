@@ -1472,6 +1472,12 @@
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
+        "block_endpoint_-_carbon_black_response_-_test": "Test for deprecated integration",
+        "get_file_sample_from_path_-_generic_-_test": "Test for deprecated integration",
+        "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test": "Test for deprecated integration",
+        "EWS test": "Test for deprecated integration",
+        "DomainTools-Test": "No instance",
+        "Remedy-On-Demand-Test": "No instance",
         "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks"
     },
     "skipped_integrations": {
@@ -1507,6 +1513,8 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
+        "RSA Archer": "No instance",
+        "Cisco Spark": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1638,6 +1646,10 @@
         "Google Cloud Compute": "checking",
         "jira-v2": "inconsistent test (uploads randomly generated file each time)",
         "Microsoft Graph User": "checking",
-        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy"
+        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy",
+        "AWS - CloudWatchLogs": "Integration requires SSL",
+        "AWS - CloudTrail": "Integration requires SSL",
+        "AWS - EC2": "Integration requires SSL",
+        "AWS - S3": "Integration requires SSL"
     }
 }
