@@ -19,4 +19,3 @@ def test_rasterize_error(mocker):
     assert results[0]['Type'] == entryTypes['error']
     assert results[0]['Contents'] == "PhantomJS returned - Can't access the URL. It might be malicious, " \
                                      "or unreachable for one of several reasons."
-
