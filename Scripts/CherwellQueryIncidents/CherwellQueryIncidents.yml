@@ -23,7 +23,7 @@ name: CherwellQueryIncidents
 tags: [Cherwell]
 dependson:
   must:
-  - Cherwell|||cherwell-query-business-object
+  - '|||cherwell-query-business-object'
 outputs:
 - contextPath: Cherwell.QueryResults.RecordId
   description: Recoed ID
