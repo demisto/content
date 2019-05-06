@@ -96,7 +96,7 @@ def main():
         res.raise_for_status()
         layers = res.json().get('layers')
         if not layers:
-            raise ValueError("No 'layers' found in json response: {}".format(res.content()))
+            raise ValueError("No 'layers' found in json response: {}".format(res.content))
         layer_min = docker_min_layer(layers)
         headers['Range'] = "bytes=0-99"
         res = requests.get("https://{}/v2/{}/blobs/{}".format(registry, image_name, layer_min['digest']),
