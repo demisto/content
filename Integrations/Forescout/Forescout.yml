@@ -87,10 +87,89 @@ script:
       description: Endpoint URL to make an API call to in order to retrieve details
         about the host.
       type: String
-  - deprecated: false
-    description: Retrieve an index of Forescout host properties.
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: name
+      description: Each host field has three searchable parts, the 'name', 'label'
+        and 'description'. By default only the 'name' will be searched. If you want
+        to expand the search to include the description as well, for example, you
+        would enter 'name,description' for this argument.
+      isArray: true
+      name: search_in
+      predefined:
+      - name
+      - description
+      - label
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'False'
+      description: Determines whether to match the case of the entered search term.
+      isArray: false
+      name: case_sensitive
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'False'
+      description: Determines whether the search term is matched against the entirety
+        of the potential hostfield instead of just seeing whether the hostfield contains
+        the search term.
+      isArray: false
+      name: match_exactly
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    - default: false
+      description: The term to filter hostfields by. By default the the search will
+        be case insensive and checked to see if a hostfield contains the search term
+        unless otherwise specified in the 'case_sensitive' and 'match_exactly' arguments
+        respectively.
+      isArray: false
+      name: search_term
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all_types
+      description: Limit the search to host fields whose values of are a certain type.
+        For example, to limit the search to host properties whose values are either
+        boolean, ip or a date enter 'boolean,ip,date'.
+      isArray: true
+      name: host_field_type
+      predefined:
+      - string
+      - boolean
+      - appliance
+      - port
+      - service
+      - list_change
+      - change
+      - ip
+      - composite
+      - ipv6
+      - session
+      - date
+      - integer
+      - tree_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve an index of Forescout host properties that match the specified
+      criteria.
     execution: false
     name: forescout-get-hostfields
+    outputs:
+    - contextPath: Forescout.HostField
+      description: List index of host properties.
+      type: Unknown
   - arguments:
     - default: false
       description: IP (ipv4), MAC address, or the object ID of the desired endpoint.

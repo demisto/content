@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from copy import deepcopy
 from distutils.util import strtobool
 from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse as parsedate
@@ -33,14 +34,89 @@ ETAGS = {}
 ''' HELPER FUNCTIONS '''
 
 
+def filter_hostfields_data(args, data):
+    """
+    Filter hostfields data by get_hostfields_command arguments.
+
+    Parameters
+    ----------
+    args : dict
+        The get_hostfields_command arguments.
+    data : dict
+        The data to filter.
+
+    Returns
+    -------
+    list
+        Filtered list of hostfields
+    """
+    search_term = args.get('search_term')
+    host_fields = data.get('hostFields', [])
+    if not search_term:
+        return host_fields
+    case_sensitive = args.get('case_sensitive', 'False')
+    case_sensitive = False if case_sensitive.casefold() == 'false' else True
+    if not case_sensitive:
+        search_term = search_term.casefold()
+    match_exactly = args.get('match_exactly', 'False')
+    match_exactly = False if match_exactly.casefold() == 'false' else True
+    host_field_type = args.get('host_field_type', 'all_types')
+    if host_field_type != 'all_types':
+        host_field_type = argToList(host_field_type)
+    search_in = args.get('search_in', 'name')
+    search_in = argToList(search_in)
+
+    filtered_hostfields = []
+    for host_field in host_fields:
+        if isinstance(host_field_type, list):
+            if host_field.get('type') not in host_field_type:
+                continue
+        vals_to_search = [host_field.get(part) for part in search_in]
+        vals_to_search = ['' if val is None else val for val in vals_to_search]
+        for val in vals_to_search:
+            val_to_search = val
+            if not case_sensitive:
+                val_to_search = val.casefold()
+            if match_exactly:
+                if search_term == val_to_search:
+                    filtered_hostfields.append(host_field)
+                    break
+                else:
+                    continue
+            else:
+                if search_term in val_to_search:
+                    filtered_hostfields.append(host_field)
+                    break
+
+    return filtered_hostfields
+
+
+
+def dict_to_formatted_string(dictionary):
+    """
+    Return dictionary as clean string for war room output.
+
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to format as a string.
+
+    Returns
+    -------
+    str
+        Clean string version of dictionary argument
+    """
+    return json.dumps(dictionary).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
+
+
 def format_policies_data(data):
     """
-    Return policies formatted to Demisto standards
+    Return policies formatted to Demisto standards.
 
     Parameters
     ----------
     data : dict
-        The data returned from making API call to Forescout Web API policies endpoint
+        The data returned from making API call to Forescout Web API policies endpoint.
 
     Returns
     -------
@@ -379,17 +455,23 @@ def get_hostfields():
 
 
 def get_hostfields_command():
+    args = demisto.args()
     response = get_hostfields()
     data = response.json()
-    content = [{key.title(): val for key, val in x.items()} for x in data.get('hostFields', [])]
-    context = {'Forescout.HostField': content}
-    title = 'Index of Host Properties'
-    human_readable = tableToMarkdown(title, content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+    filtered_data = filter_hostfields_data(args, data)
+    if not filtered_data:
+        demisto.results('No hostfields matched the specified filters.')
+    else:
+        content = [{key.title(): val for key, val in x.items()} for x in filtered_data]
+        context = {'Forescout.HostField': content}
+        title = 'Index of Host Properties'
+        human_readable = tableToMarkdown(title, content, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=context, raw_response=filtered_data)
 
 
 @log_entity_tag
 def get_policies():
+    login()
     url_suffix = '/api/policies'
     entity_tag = ETAGS.get('get_policies')
     headers = create_web_api_headers(entity_tag)
@@ -401,18 +483,24 @@ def get_policies_command():
     response = get_policies()
     data = response.json()
     content = format_policies_data(data)
+    readable_content = deepcopy(content)
+    for policy in readable_content:
+        readable_rules = []
+        for rule in policy.get('Rule', []):
+            readable_rules.append(dict_to_formatted_string(rule))
+        policy['Rule'] = readable_rules
     context = {'Forescout.Policy(val.ID && val.ID === obj.ID)': content}
     title = 'Forescout Policies'
-    human_readable = tableToMarkdown(title, content, removeNull=True)
+    human_readable = tableToMarkdown(title, readable_content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 
 
-def update_host_properties()
+def update_host_properties():
     pass
 
 
-def update_host_properties_command()
+def update_host_properties_command():
     pass
 
 
