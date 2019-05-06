@@ -60,7 +60,7 @@ timeout: '0'
 type: python
 dependson:
   must:
-  - '|||cherwell-create-business-object'
+  - Cherwell|||cherwell-create-business-object
 dockerimage: demisto/python3:3.7.2.214
 releaseNotes: Added tags and 'dependsOn' commands
 tests:

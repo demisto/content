@@ -29,6 +29,6 @@ tags: [Cherwell]
 releaseNotes: Added tags and 'dependsOn' commands
 dependson:
   must:
-  - '|||cherwell-link-business-objects'
+  - Cherwell|||cherwell-link-business-objects
 tests:
   - Cherwell Example Scripts - test
