@@ -581,8 +581,7 @@ def main():
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
         for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
-                # TODO: remove the and condition once version 4.5 is out
+            if ami_instance_name == server_version:
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)

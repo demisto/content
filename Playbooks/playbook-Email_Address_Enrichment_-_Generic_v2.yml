@@ -621,6 +621,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score.
   type: number
-releaseNotes: "Updated names and descriptions."
 tests:
   - Email Address Enrichment - Generic v2 - Test

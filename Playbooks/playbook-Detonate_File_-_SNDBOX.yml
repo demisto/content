@@ -647,6 +647,5 @@ outputs:
 - contextPath: File.Extension
   description: File Extension
   type: string
-releaseNotes: "-"
 tests:
   - Detonate File - SNDBOX - Test
