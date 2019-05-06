@@ -383,7 +383,7 @@ def get_takedown_info_command():
     region = args.get("region", None)
     list_of_takedowns_infos = get_takedown_info(takedown_id, ip, url, updated_since, date_from, region)
     if takedown_id:
-        list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, "id", int(takedown_id))
+        list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, "id", takedown_id)
     list_of_takedowns_contexts = generate_list_of_takedowns_context(list_of_takedowns_infos)
     human_readable = gen_takedown_info_human_readable(list_of_takedowns_contexts)
     entry_context = {
