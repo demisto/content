@@ -7,8 +7,8 @@ from CommonServerUserPython import *
 import json
 from base64 import b64encode
 import requests
-
 from distutils.util import strtobool
+from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
-USERNAME_AND_PASSWORD_ENCODED = b64encode("{0}:{1}".format(USERNAME,PASSWORD)) #should maybe add .decode("ascii")
+USERNAME_AND_PASSWORD_ENCODED = b64encode("{0}:{1}".format(USERNAME,PASSWORD))
 
 USE_SSL = not demisto.params().get('unsecure', False)
 
@@ -46,6 +46,7 @@ TEST_MODULE_SUFFIX = "authorise-test.php"
 TAKEDOWN_INFO_HEADER = ["ID", "Status", "Attack Type", "Date Submitted", "Last Updated", "Reporter", "Group ID",
                         "Region", "Evidence URL", "Attack URL", "IP", "Domain", "Hostname", "Country Code", "Domain Attack",
                         "Targeted URL", "Certificate"]
+TAKEDOWN_NOTE_HEADERS = ["Takedown ID", "Note ID", "Note", "Author", "Time", "Group ID"]
 
 # Titles for human readables
 TAKEDOWN_INFO_TITLE = "Takedowns information found"
@@ -73,14 +74,27 @@ def http_request(method, request_url, params=None, data=None, should_convert_to_
         data=data,
         auth=HTTPBasicAuth(USERNAME, PASSWORD)
     )
-    # Handle error responses gracefully
 
     if should_convert_to_json:
         return res.json()
     else:
-        # not sure this will work, the answer should be plain text but could be a file
         return res.text.splitlines()
 
+
+def filter_by_id(result_list_to_filter, filtering_id_field, desired_id):
+    """ Given a list of results, returns only the ones that are tied to a given ID.
+
+    Args:
+         result_list_to_filter (list): list of dictionaries, containing data about entries.
+         filtering_id_field: The name of the field containing the IDs to filter.
+         desired_id: The ID to keep when filtering.
+
+    Returns:
+        list: A copy of the input list, containing only entries with the desired ID.
+    """
+
+    new_results_list = [result for result in result_list_to_filter if result[filtering_id_field] == desired_id]
+    return new_results_list
 
 
 def generate_report_malicious_site_human_readable(response_lines_array):
@@ -107,7 +121,15 @@ def generate_report_malicious_site_human_readable(response_lines_array):
 
 
 def return_dict_without_none_values(dict_with_none_values):
-    new_dict = {key: dict_with_none_values[key] for key in dict_with_none_values if dict_with_none_values[key]}
+    """ Removes all keys from given dict which have None as a value.
+
+    Args:
+        dict_with_none_values (dict): dict which may include keys with None as their value.
+
+    Returns:
+        dict: A new copy of the input dictionary, from which all keys with None as a value were removed.
+    """
+    new_dict = {key: dict_with_none_values[key] for key in dict_with_none_values if dict_with_none_values[key] is not None}
     return new_dict
 
 
@@ -132,15 +154,14 @@ def generate_takedown_info_context(takedown_info):
         "Certificate": takedown_info.get("certificate", None)
     }
 
-    # remove nulls from dict
     takedown_info_context = return_dict_without_none_values(takedown_info_context)
     return takedown_info_context
 
 
 
-def gen_takedown_info_human_readable(entry_context):
+def gen_takedown_info_human_readable(list_of_takedowns_contexts):
     contexts_in_human_readable_format = []
-    for takedown_info_context in entry_context:
+    for takedown_info_context in list_of_takedowns_contexts:
         human_readable_dict = {
             "ID": takedown_info_context.get("ID", None),
             "Status": takedown_info_context.get("Status", None),
@@ -163,7 +184,7 @@ def gen_takedown_info_human_readable(entry_context):
         human_readable_dict = return_dict_without_none_values(human_readable_dict)
         contexts_in_human_readable_format.append(human_readable_dict)
 
-    human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, human_readable_dict, headers=TAKEDOWN_INFO_HEADER)
+    human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, contexts_in_human_readable_format, headers=TAKEDOWN_INFO_HEADER)
     return human_readable
 
 
@@ -171,6 +192,7 @@ def generate_list_of_takedowns_context(list_of_takedowns_infos):
     takedowns_contexts_list = []
     for takedown_info in list_of_takedowns_infos:
         takedown_context = generate_takedown_info_context(takedown_info)
+        takedown_context = return_dict_without_none_values(takedown_context)
         takedowns_contexts_list.append(takedown_context)
     return takedowns_contexts_list
 
@@ -211,7 +233,7 @@ def gen_takedown_notes_human_readable(entry_context):
         human_readable_dict = return_dict_without_none_values(human_readable_dict)
         contexts_in_human_readable_format.append(human_readable_dict)
 
-    human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, human_readable_dict, headers=TAKEDOWN_INFO_HEADER)
+    human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, contexts_in_human_readable_format, headers=TAKEDOWN_NOTE_HEADERS)
     return human_readable
 
 
@@ -268,21 +290,11 @@ def escalate_takedown_command():
     )
 
 
-
-
-
-
-
-
-
-
-
-
 def add_notes_to_takedown(takedown_id, note, notify):
     data_for_request = {
-        "takedown_id": takedown_id,
+        "takedown_id": int(takedown_id) if takedown_id else None,
         "note": note,
-        "notify": string_to_bool(notify)
+        "notify": string_to_bool(notify) if notify else None
     }
     # removing keys with None as value
     data_for_request = return_dict_without_none_values(data_for_request)
@@ -307,8 +319,8 @@ def add_notes_to_takedown_command():
 
 def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
     data_for_request = {
-        "takedown_id": takedown_id,
-        "group_id": group_id,
+        "takedown_id": int(takedown_id) if takedown_id else None,
+        "group_id": int(group_id) if group_id else None,
         "date_to": date_to,
         "date_from": date_from,
         "author": author
@@ -329,8 +341,13 @@ def get_takedown_notes_command():
     date_to = args.get("date_to", None)
     author = args.get("author", None)
     list_of_takedowns_notes = get_takedown_notes(takedown_id, group_id, date_from, date_to, author)
-    entry_context = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)
-    human_readable = gen_takedown_notes_human_readable(entry_context)
+    if takedown_id:
+        list_of_takedowns_notes = filter_by_id(list_of_takedowns_notes, "takedown_id", int(takedown_id))
+    list_of_takedowns_contexts = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)
+    human_readable = gen_takedown_notes_human_readable(list_of_takedowns_contexts)
+    entry_context = {
+        'Netcraft.Takedown.Note(val.NoteID == obj.NoteID)': list_of_takedowns_contexts
+    }
     return_outputs(
         readable_output=human_readable,
         outputs=entry_context,
@@ -338,9 +355,9 @@ def get_takedown_notes_command():
     )
 
 
-def get_takedown_info(id, ip, url, updated_since, date_from, region):
+def get_takedown_info(takedown_id, ip, url, updated_since, date_from, region):
     data_for_request = {
-        "id": id,
+        "id": int(takedown_id),
         "ip": ip,
         "url": url,
         "updated_since": updated_since,
@@ -358,19 +375,24 @@ def get_takedown_info(id, ip, url, updated_since, date_from, region):
 
 def get_takedown_info_command():
     args = demisto.args()
-    id = args.get("id", None)
+    takedown_id = args.get("id", None)
     ip = args.get("ip", None)
     url = args.get("url", None)
     updated_since = args.get("updated_since", None)
     date_from = args.get("date_from", None)
     region = args.get("region", None)
-    list_of_takedowns_infos = get_takedown_info(id, ip, url, updated_since, date_from, region)
-    entry_context = generate_list_of_takedowns_context(list_of_takedowns_infos)
-    human_readable = gen_takedown_info_human_readable(entry_context)
+    list_of_takedowns_infos = get_takedown_info(takedown_id, ip, url, updated_since, date_from, region)
+    if takedown_id:
+        list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, "id", int(takedown_id))
+    list_of_takedowns_contexts = generate_list_of_takedowns_context(list_of_takedowns_infos)
+    human_readable = gen_takedown_info_human_readable(list_of_takedowns_contexts)
+    entry_context = {
+        'Netcraft.Takedown(val.ID == obj.ID)': list_of_takedowns_contexts
+    }
     return_outputs(
         readable_output=human_readable,
+        raw_response=list_of_takedowns_infos,
         outputs=entry_context,
-        raw_response=list_of_takedowns_infos
     )
 
 
