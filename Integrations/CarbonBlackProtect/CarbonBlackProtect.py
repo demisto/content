@@ -28,12 +28,7 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    os.environ.pop('HTTP_PROXY', None)
-    os.environ.pop('HTTPS_PROXY', None)
-    os.environ.pop('http_proxy', None)
-    os.environ.pop('https_proxy', None)
+
 
 ''' HUMAN READABLE HEADERS '''
 
@@ -2124,67 +2119,68 @@ def fetch_incidents():
 
 # main added for unit tests
 def main():
-    LOG(f'Command being called is {demisto.command()}')
-
+    handle_proxy()
+    command = demisto.command()
+    LOG(f'Command being called is {command}') 
     # should raise error in case of issue
-    if demisto.command() == 'fetch-incidents':
+    if command == 'fetch-incidents':
         demisto.incidents(fetch_incidents())
 
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
-        elif demisto.command() == 'cbp-fileCatalog-search':
+        elif command == 'cbp-fileCatalog-search':
             search_file_catalog_command()
-        elif demisto.command() == 'cbp-computer-search':
+        elif command == 'cbp-computer-search':
             search_computer_command()
-        elif demisto.command() == 'cbp-computer-update':
+        elif command == 'cbp-computer-update':
             update_computer_command()
-        elif demisto.command() == 'cbp-fileInstance-search':
+        elif command == 'cbp-fileInstance-search':
             search_file_instance_command()
-        elif demisto.command() == 'cbp-event-search':
+        elif command == 'cbp-event-search':
             search_event_command()
-        elif demisto.command() == 'cbp-approvalRequest-search':
+        elif command == 'cbp-approvalRequest-search':
             search_approval_request_command()
-        elif demisto.command() == 'cbp-fileRule-search':
+        elif command == 'cbp-fileRule-search':
             search_file_rule_command()
-        elif demisto.command() == 'cbp-fileRule-get':
+        elif command == 'cbp-fileRule-get':
             get_file_rule_command()
-        elif demisto.command() == 'cbp-fileRule-delete':
+        elif command == 'cbp-fileRule-delete':
             delete_file_rule_command()
-        elif demisto.command() in ('cbp-fileRule-update', 'cbp-fileRule-createOrUpdate'):
+        elif command in ('cbp-fileRule-update', 'cbp-fileRule-createOrUpdate'):
             update_file_rule_command()
-        elif demisto.command() == 'cbp-policy-search':
+        elif command == 'cbp-policy-search':
             search_policy_command()
-        elif demisto.command() == 'cbp-serverConfig-search':
+        elif command == 'cbp-serverConfig-search':
             search_server_config_command()
-        elif demisto.command() == 'cbp-publisher-search':
+        elif command == 'cbp-publisher-search':
             search_publisher_command()
-        elif demisto.command() == 'cbp-fileAnalysis-search':
+        elif command == 'cbp-fileAnalysis-search':
             search_file_analysis_command()
-        elif demisto.command() == 'cbp-fileAnalysis-get':
+        elif command == 'cbp-fileAnalysis-get':
             get_file_analysis_command()
-        elif demisto.command() == 'cbp-fileAnalysis-createOrUpdate':
+        elif command == 'cbp-fileAnalysis-createOrUpdate':
             update_file_analysis_command()
-        elif demisto.command() == 'cbp-fileUpload-createOrUpdate':
+        elif command == 'cbp-fileUpload-createOrUpdate':
             update_file_upload_command()
-        elif demisto.command() == 'cbp-fileUpload-download':
+        elif command == 'cbp-fileUpload-download':
             download_file_upload_command()
-        elif demisto.command() == 'cbp-fileUpload-search':
+        elif command == 'cbp-fileUpload-search':
             search_file_upload_command()
-        elif demisto.command() == 'cbp-fileUpload-get':
+        elif command == 'cbp-fileUpload-get':
             get_file_upload_command()
-        elif demisto.command() == 'cbp-computer-get':
+        elif command == 'cbp-computer-get':
             get_computer_command()
-        elif demisto.command() == 'cbp-connector-get':
+        elif command == 'cbp-connector-get':
             get_connector_command()
-        elif demisto.command() == 'cbp-connector-search':
+        elif command == 'cbp-connector-search':
             search_connector_command()
-        elif demisto.command() == 'cbp-approvalRequest-resolve':
+        elif command == 'cbp-approvalRequest-resolve':
             resolve_approval_request_command()
         else:
-            return_error(f"Command {demisto.command()} is not supported.")
+            return_error(f"Command {command} is not supported.")
     # Log exceptions
     except Exception as e:
         return_error(str(e))
