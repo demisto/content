@@ -5,6 +5,9 @@ import os
 import subprocess
 import sys
 import base64
+
+# pylint: disable=E1103
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 proxy = demisto.get(demisto.params(), "proxy")
