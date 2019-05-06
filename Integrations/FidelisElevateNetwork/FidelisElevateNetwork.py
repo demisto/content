@@ -24,7 +24,7 @@ SESSION_ID = None
 
 def http_request(method, url_suffix, params=None, data=None, files=None, is_json=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
-    headers = {}
+    headers = {}  # type: Dict[str, str]
     if SESSION_ID is not None:
         headers['x-uid'] = SESSION_ID
         if files is None:
