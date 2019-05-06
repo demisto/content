@@ -1,7 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import os, subprocess, sys, base64
+import os
+import subprocess
+import sys
+import base64
 reload(sys)
 sys.setdefaultencoding("utf-8")
 proxy = demisto.get(demisto.params(), "proxy")
