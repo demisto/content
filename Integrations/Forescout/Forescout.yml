@@ -88,14 +88,18 @@ script:
         about the host.
       type: String
   - deprecated: false
-    description: Retrieve an index of forescout host properties.
+    description: Retrieve an index of Forescout host properties.
     execution: false
     name: forescout-get-hostfields
   - arguments:
     - default: false
       description: IP (ipv4), MAC address, or the object ID of the desired endpoint.
-        Object IDs can be found in the returned outputs when `forescout-get-hosts`
-        is executed.
+        Endpoint identifiers - IPs, MAC addresses and object IDs - can be found in
+        the returned outputs when `forescout-get-hosts` is executed. To retrieve an
+        endpoint by its IP address enter 'ip={ip-address}' where {ip-address} is replaced
+        by the desired IP address. Similarly to search by MAC address or object ID
+        enter 'mac={mac-address}' and 'id={object-id}' respectively where the contents
+        between the curly braces is replaced by the actual identifier.
       isArray: false
       name: identifier
       required: true
@@ -104,7 +108,8 @@ script:
       description: List of host properties to include in the output for the targeted
         endpoint. If a specified host property is not found, the property is omitted
         from the outputs. For a list of potential host properties that may be specified,
-        try executing the `forescout-get-hostfields` command.
+        try executing the `forescout-get-hostfields` command. Requested fields should
+        be comma separated.
       isArray: true
       name: fields
       required: false
@@ -113,6 +118,46 @@ script:
     description: Retrieve specified host property values for an endpoint.
     execution: false
     name: forescout-get-host
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: update
+      description: Type of update perform. Options are 'update', 'delete', 'add_list_values',
+        'delete_list_values' and 'delete_all_list_values'.
+      isArray: false
+      name: update_type
+      predefined:
+      - update
+      - delete
+      - add_list_values
+      - delete_list_values
+      - delete_all_list_values
+      required: true
+      secret: false
+    - default: false
+      description: The target host's IP address.
+      isArray: false
+      name: host_ip
+      required: true
+      secret: false
+    - default: false
+      description: List of properties. If update_type is 'update' or 'add_list_values'
+        then it is properties and their associated values, otherwise only the properties
+        themselves. If update_type is 'update' or 'add_list_values' then data should
+        be entered as '{prop1}={val1},{val2},{val3}&{prop2}={val4}&{prop-n}={val-n}'
+        where {prop1} through {prop-n} are replaced by actual property names and {val1}
+        through {val-n} are replaced by actual values and multiple property value(s)
+        assignments are separated by an ampersand.
+      isArray: true
+      name: properties
+      required: true
+      secret: false
+    deprecated: false
+    description: Set property values for the specified host. Note that the host properties
+      must be defined in the Forescout platform before trying to alter them with this
+      command.
+    execution: false
+    name: forescout-update-host-properties
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false

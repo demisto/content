@@ -33,6 +33,21 @@ ETAGS = {}
 ''' HELPER FUNCTIONS '''
 
 
+def create_web_api_headers(entity_tag):
+    """
+    Return headers object that formats to Forescout Web API expectations and takes
+    into account if an entity tag exists for a request to an endpoint.
+
+    Parameters
+    ----------
+    entity_tag : str
+
+    Returns
+    -------
+
+    """
+
+
 def log_entity_tag(api_calling_func):
     def api_calling_func_wrapper(*args, **kwargs):
         response = api_calling_func(*args, **kwargs)
@@ -45,7 +60,9 @@ def log_entity_tag(api_calling_func):
 
 
 def login():
-    if LAST_JWT_FETCH is None or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
+    global LAST_JWT_FETCH
+    global AUTH
+    if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
         url_suffix = '/api/login'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         params = {'username': USERNAME, 'password': PASSWORD}
@@ -214,12 +231,59 @@ def get_items_request(item_ids, is_active):
     return {}
 
 
-def get_host():
-    pass
+@log_entity_tag
+def get_host(args):
+    identifier = args.get('identifier', '')
+    fields = args.get('fields', '')
+    login()
+    url_suffix = '/api/hosts/'
+    id_type, *ident = identifier.split('=')
+    id_type = id_type.casefold()
+    if len(ident) != 1 or id_type not in {'id', 'ip', 'mac'}:
+        err_msg = 'The entered endpoint identifier should be prefaced by the identifier type,' \
+                ' (\'ip\', \'mac\', or \'id\') followed by \'=\' and the actual ' \
+                'identifier, e.g. \'ip=123.123.123.123\'.' #disable-secrets-detection
+        raise ValueError(err_msg)
+
+    if id_type == 'ip':
+        # API endpoint format - https://{EM.IP}/api/hosts/ip/{ipv4}?fields={prop},..,{prop_n}
+        url_suffix += 'ip/'
+    elif id_type == 'mac':
+        # API endpoint format - https://{EM.IP}/api/hosts/mac/{mac}?fields={prop},..,{prop_n}
+        url_suffix += 'mac/'
+    # if id_type == 'id' don't change url_suffix -it's already in desired format as shown below
+    # API endpoint format - https://{EM.IP}/api/hosts/{obj_ID}?fields={prop},..,{prop_n}
+
+    url_suffix += ident[0]
+    params = {'fields': fields} if fields != '' else None
+    headers = {
+        'Authorization': AUTH,
+        'Accept': 'application/hal+json'
+    }
+    entity_tag = ETAGS.get('get_host')
+    if entity_tag:
+        headers['If-None-Match'] = entity_tag
+    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
+    return response
 
 
 def get_host_command():
-    pass
+    args = demisto.args()
+    identifier = args.get('identifier', '')
+    response = get_host(args)
+    host = response.get('host', {})
+    fields = host.get('fields', {})
+    content = {
+        'ID': host.get('id'),
+        'IP': host.get('ip'),
+        'MAC': host.get('mac'),
+        'EndpointURL': response.get('_links', {}).get('self', {}).get('href'),
+        'Field': fields
+    }
+    context = {'Forescout.Host(val.ID && val.ID === obj.ID)': content}
+    title = 'Endpoint Details for {}'.format(identifier) if identifier else 'Endpoint Details'
+    human_readable = tableToMarkdown(title, content, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
 
 @log_entity_tag
 def get_hosts():
@@ -239,17 +303,15 @@ def get_hosts():
 
 def get_hosts_command():
     response = get_hosts().json()
-    content = {
-        'Host': [
-            {
-                'ID': x.get('hostId'),
-                'IP': x.get('ip'),
-                'MAC': x.get('mac'),
-                'EndpointURL': x.get('_links', {}).get('self', {}).get('href')
-            } for x in response.get('hosts', [])
-        ]
-    }
-    context = {'Forescout': content}
+    content = [
+        {
+            'ID': x.get('hostId'),
+            'IP': x.get('ip'),
+            'MAC': x.get('mac'),
+            'EndpointURL': x.get('_links', {}).get('self', {}).get('href')
+        } for x in response.get('hosts', [])
+    ]
+    context = {'Forescout.Host(val.ID && val.ID === obj.ID)': content}
     title = 'Active Endpoints'
     human_readable = tableToMarkdown(title, content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
@@ -273,11 +335,19 @@ def get_hostfields():
 
 def get_hostfields_command():
     response = get_hostfields().json()
-    content = {'HostField': [{key.title(): val for key, val in x.items()} for x in response.get('hostFields', [])]}
-    context = {'Forescout': content}
+    content = [{key.title(): val for key, val in x.items()} for x in response.get('hostFields', [])]
+    context = {'Forescout.HostField': content}
     title = 'Index of Host Properties'
     human_readable = tableToMarkdown(title, content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
+
+
+def update_host_properties()
+    pass
+
+
+def update_host_properties_command()
+    pass
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -286,7 +356,8 @@ COMMANDS = {
     'test-module': test_module,
     'forescout-get-host': get_host_command,
     'forescout-get-hosts': get_hosts_command,
-    'forescout-get-hostfields': get_hostfields_command
+    'forescout-get-hostfields': get_hostfields_command,
+    'forescout-update-host-properties': update_host_properties_command
 }
 
 ''' EXECUTION '''
