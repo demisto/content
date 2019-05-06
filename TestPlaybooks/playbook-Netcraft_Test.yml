@@ -168,10 +168,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 7d81bdb3-f78c-4b29-8ef4-8afead29800a
+    taskid: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
     type: regular
     task:
-      id: 7d81bdb3-f78c-4b29-8ef4-8afead29800a
+      id: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
       version: -1
       name: Get takedown notes
       description: Get notes for takedowns
@@ -188,7 +188,7 @@ tasks:
       date_to: {}
       group_id: {}
       takedown_id:
-        simple: "2071408"
+        simple: "493542"
     separatecontext: false
     view: |-
       {
