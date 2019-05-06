@@ -46,7 +46,6 @@ if demisto.command() == 'test-module':
         demisto.results('ok')
     else:
         demisto.results(error_message)
-    sys.exit(0)
 
 elif demisto.command() == 'rasterize-image':
     res = demisto.getFilePath(demisto.args()['EntryID'])
