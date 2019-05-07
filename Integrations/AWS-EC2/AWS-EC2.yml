@@ -6014,4 +6014,4 @@ script:
   type: python
 releaseNotes: Added ability to use AWS Access Keys in lieu of STS
 tests:
-- EC2-Test-Read
+- 2142f8de-29d5-4288-8426-0db39abe988b
