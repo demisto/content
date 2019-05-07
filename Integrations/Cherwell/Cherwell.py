@@ -323,7 +323,7 @@ def get_attachments_details(id_type, object_id, object_type_name, object_type_id
         f'/type/{type}' \
         f'/attachmenttype/{attachment_type}'
     response = make_request('GET', url, is_fetch=is_fetch)
-    return parse_response(response, f'Unable to get attachments for {object_type} {object_id}', is_fetch)
+    return parse_response(response, f'Unable to get attachments for {object_type} {object_id}', is_fetch=is_fetch)
 
 
 def download_attachments(id_type, object_id, business_object_type_name=None, business_object_type_id=None,
