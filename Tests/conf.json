@@ -407,7 +407,7 @@
             "nightly": true
         },
         {
-            "integrations": "WildFire",
+            "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test"
         },
         {
@@ -1051,7 +1051,7 @@
         {
             "integrations": [
                 "Lastline",
-                "WildFire",
+                "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
                 "McAfee Advanced Threat Defense"
@@ -1348,6 +1348,22 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "EclecticIQ Platform",
+            "playbookID": "EclecticIQ Test"
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -1368,7 +1384,8 @@
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
-        "Zoom_test": "Added here because test existed but was not configured - need to review the test"
+        "Zoom_test": "Added here because test existed but was not configured - need to review the test",
+        "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1377,6 +1394,8 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
+        "EclecticIQ Platform": "Instance Issues",
+        "Google Cloud Compute": "Can't test yet",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1414,6 +1433,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1499,7 +1519,6 @@
         "McAfee ESM-v10": "Checking",
         "Salesforce": "Checking",
         "okta": "Checking",
-        "WildFire": "Checking",
         "WhatsMyBrowser": "Checking",
         "Check Point": "Checking",
         "Awake Security": "Checking",

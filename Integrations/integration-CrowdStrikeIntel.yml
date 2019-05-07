@@ -826,4 +826,3 @@ script:
   runonce: false
 tests:
 - CrowdStrike Falcon Intel v2
-releaseNotes: "Fixed date parsing in cs-report"

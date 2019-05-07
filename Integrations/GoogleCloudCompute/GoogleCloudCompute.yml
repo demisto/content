@@ -12795,6 +12795,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: "Fixing description and changing instance configuration"
 tests:
 - No tests

@@ -322,6 +322,5 @@ outputs:
   description: Whether a scan was detected for this hash (True/False).
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
-releaseNotes: "Updated names and descriptions."
 tests:
   - File Enrichment - Generic v2 - Test

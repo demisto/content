@@ -1206,6 +1206,5 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-releaseNotes: "Fixed a bug where SetIncident was retrieving data from the wrong context fields."
 tests:
   - process_email_-_generic_-_test
