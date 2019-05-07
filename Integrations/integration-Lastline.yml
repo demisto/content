@@ -1009,4 +1009,3 @@ script:
       type: string
     description: Check submissions status
   runonce: false
-releaseNotes: Add ___lastline-check-status___ command

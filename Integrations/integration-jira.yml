@@ -830,4 +830,3 @@ script:
     description: deletes an issue (Deprecated)
   isfetch: true
   runonce: false
-releaseNotes: "Deprecated"

@@ -426,6 +426,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-releaseNotes: "-"
 tests:
 - VxStream Test

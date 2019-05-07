@@ -52,13 +52,14 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     from email.mime.audio import MIMEAudio
     from email.mime.base import MIMEBase
     from email.mime.image import MIMEImage
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     from smtplib import SMTP
+    from smtplib import SMTPRecipientsRefused
     import base64
     import json
     import mimetypes
@@ -66,7 +67,6 @@ script:
     import re
     import random
     import string
-
     FQDN = demisto.params().get('fqdn')
 
     # Following methods raise exceptions so no need to check for return codes
@@ -79,8 +79,8 @@ script:
             SERVER.starttls()
         if demisto.getParam('credentials') and demisto.getParam('credentials').get('identifier') and demisto.getParam('credentials').get('password'):
             SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
-    except Exception, e:
-        return_error(e)
+    except Exception as e:
+        return_error_mail_sender(e)
 
     FROM = demisto.getParam('from')
 
@@ -93,17 +93,12 @@ script:
         return ''.join(random.choice(letters) for i in range(length))
 
 
-    def return_error(data):
+    def return_error_mail_sender(data):
         """
         Return error as result and exit
         """
         SERVER.quit()
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': data
-        })
-        sys.exit(0)
+        return_error(data)
 
 
     def guess_type(filename):
@@ -228,7 +223,7 @@ script:
                     'cid': cid
                 })
             except:
-                return_error('Entry %s is not valid or is not a file entry' % (aid))
+                return_error_mail_sender('Entry %s is not valid or is not a file entry' % (aid))
 
         # handle transient files
         args = demisto.args()
@@ -264,7 +259,7 @@ script:
             try:
                 params = json.loads(paramsStr)
             except ValueError as e:
-                return_error('Unable to parse templateParams: %s' % (str(e)))
+                return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
             # Build a simple key/value
             for p in params:
                 if params[p].get('value'):
@@ -300,7 +295,7 @@ script:
             # Basic validation - we allow pretty much everything but you have to have at least a recipient
             # We allow messages without subject and also without body
             if not to and not cc and not bcc:
-                return_error('You must have at least one recipient')
+                return_error_mail_sender('You must have at least one recipient')
 
             attachments = collect_attachments()
             attachments.extend(collect_manual_attachments())
@@ -356,9 +351,12 @@ script:
             SERVER.quit()
             demisto.results('Mail sent successfully')
         else:
-            return_error('Command not recognized')
-    except Exception, e:
-        return_error(e)
+            return_error_mail_sender('Command not recognized')
+    except SMTPRecipientsRefused as e:
+        error_msg = ''.join('{}\n'.format(val) for key, val in e.args[0].iteritems())
+        return_error_mail_sender("Encountered error: {}".format(error_msg))
+    except Exception as e:
+        return_error_mail_sender(str(e))
   type: python
   commands:
   - name: send-mail
@@ -395,22 +393,19 @@ script:
         email itself
       isArray: true
     - name: transientFile
-      description: Desired name for attached file. Multiple files are
-        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test 2,temporary file content,third file content"
-        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: Desired name for attached file. Multiple files are supported as
+        comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: transientFileContent
-      description: Content for attached file. Multiple files are
-        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test 2,temporary file content,third file content"
-        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: Content for attached file. Multiple files are supported as comma-separated
+        list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: transientFileCID
       description: CID for attached file if we want it inline. Multiple files are
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test 2,temporary file content,third file content"
-        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: templateParams
       description: 'Replace {varname} variables with values from this argument. Expected
@@ -419,3 +414,5 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
+tests:
+  - Mail Sender (New) Test

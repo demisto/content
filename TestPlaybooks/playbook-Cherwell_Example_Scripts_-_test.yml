@@ -1,0 +1,800 @@
+id: Cherwell Example Scripts - test
+version: -1
+name: Cherwell Example Scripts - test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 674cdb44-008e-4eeb-8165-d51d29d15c25
+    type: start
+    task:
+      id: 674cdb44-008e-4eeb-8165-d51d29d15c25
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 040357c3-b866-4889-8a8e-d4174775b2a3
+    type: regular
+    task:
+      id: 040357c3-b866-4889-8a8e-d4174775b2a3
+      version: -1
+      name: Cherwell Create Incident - script
+      description: This script is an example script of how to create an incident in
+        Cherwell. The scruot wraps the create business bject command in the cherwell
+        integration. When writing your own script to creat a business object, follow
+        the instructions in the configuration part, leace the execution part untouched
+      scriptName: CherwellCreateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      customer_display_name:
+        simple: Playbook customer
+      description:
+        simple: 'Example scripts test playbook '
+      owned_by: {}
+      priority:
+        simple: "1"
+      service:
+        simple: Account Management
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: bda86488-fd9b-4df3-8414-32d5b610381a
+    type: regular
+    task:
+      id: bda86488-fd9b-4df3-8414-32d5b610381a
+      version: -1
+      name: Cherwell Create Task - command
+      description: Create a business object
+      script: '|||cherwell-create-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      json:
+        simple: "{\n\"Title\": \"Test task\", \n\"Description\": \"Test task generated
+          from scripts test playbook\", \n\"OwnedByTeam\": \"HR\",\n\"Type\":\"Work
+          Item\", \n\"Status\":\"New\"\n}"
+      type:
+        simple: task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: dad626cf-5a97-4b36-8af5-417d4e0cce91
+    type: regular
+    task:
+      id: dad626cf-5a97-4b36-8af5-417d4e0cce91
+      version: -1
+      name: Cherwell Get Incident
+      description: This script is an example script of how to retreive an incident
+        from Cherwell. The script wraps the cherwell-get-business-object command of
+        the cherwell integration. When writing your own script to get a business object,
+        follow the instructions found in the configuration section of the script,
+        leave the execution part untouched.
+      scriptName: CherwellGetIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.PublicId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: af10d747-90fc-4739-8d73-fb185b562ebe
+    type: regular
+    task:
+      id: af10d747-90fc-4739-8d73-fb185b562ebe
+      version: -1
+      name: Cherwell Update Incident
+      description: This script is an example script of how to update an incident in
+        Cherwell. The script wraps the update-business-object command of the cherwell
+        integration. When writing your own script to update a business object, follow
+        the instructions found in the configuration section of the script, leave the
+        execution part untouched.
+      scriptName: CherwellUpdateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      description: {}
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.PublicId}
+      owned_by: {}
+      priority:
+        simple: "2"
+      service: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e76a825b-0d16-4b5e-81e5-ca0ae2ed1542
+    type: regular
+    task:
+      id: e76a825b-0d16-4b5e-81e5-ca0ae2ed1542
+      version: -1
+      name: Cherwell Query Incident
+      description: This script is an example script of how to query incidents from
+        Cherwell. The script wraps the cherwell-query-business-object command of the
+        cherwell integration. When writing your own script to query  business objects,
+        follow the instructions found in the configuration section of the script,
+        leave the execution part untouched.
+      scriptName: CherwellQueryIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      query:
+        complex:
+          root: Example scripts
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[["Priority","lt","3"],["Description","contains","'
+              suffix:
+                value:
+                  simple: '"]]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5ae9173e-b57f-4db3-8b5c-41a88e1d8b44
+    type: condition
+    task:
+      id: 5ae9173e-b57f-4db3-8b5c-41a88e1d8b44
+      version: -1
+      name: Validate Create Incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.PublicId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.RecordId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: aa4ec6fd-d256-4577-89f4-8d364bb9fef9
+    type: condition
+    task:
+      id: aa4ec6fd-d256-4577-89f4-8d364bb9fef9
+      version: -1
+      name: Validate Get Incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.Priority
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.RecordId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.PublicId
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.Description
+            iscontext: true
+          right:
+            value:
+              simple: Example scripts test playbook
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.Service
+            iscontext: true
+          right:
+            value:
+              simple: Account Management
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.CustomerDisplayName
+            iscontext: true
+          right:
+            value:
+              simple: Playbook customer
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.TotalTasks
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.OwnedBy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 031a8f28-32ff-4536-84dd-ee82379a92c0
+    type: regular
+    task:
+      id: 031a8f28-32ff-4536-84dd-ee82379a92c0
+      version: -1
+      name: Cherwell Incident Own Task
+      description: This script is an example script of how to link an Incident to
+        a Task in Cherwell. The script wraps the cherwell-link-business-object command
+        of the cherwell integration. When writing your own script to link business
+        objects, follow the instructions found in the configuration section of the
+        script, leave the execution part untouched.
+      scriptName: CherwellIncidentOwnTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      incident_record_id:
+        simple: ${Cherwell.BusinessObjects(val.Description).RecordId}
+      task_record_id:
+        simple: ${Cherwell.BusinessObjects(!val.Description).RecordId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: c780343b-5f25-4e25-836c-59fca30748d9
+    type: regular
+    task:
+      id: c780343b-5f25-4e25-836c-59fca30748d9
+      version: -1
+      name: Cherwell Get Task
+      description: Get a business objects by an id
+      script: '|||cherwell-get-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects(!val.Description).PublicId}
+      type:
+        simple: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: f445c4b8-c7c7-4fa2-8885-b0cf07dce6bb
+    type: regular
+    task:
+      id: f445c4b8-c7c7-4fa2-8885-b0cf07dce6bb
+      version: -1
+      name: Cherwell Incident Unlink Task
+      description: This script is an example script of how to unlink a Task from am
+        Incident in Cherwell. The script wraps the cherwell-unlink-business-object
+        command of the cherwell integration. When writing your own script to unlink
+        business objects, follow the instructions found in the configuration section
+        of the script, leave the execution part untouched.
+      scriptName: CherwellIncidentUnlinkTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      incident_record_id:
+        simple: ${Cherwell.BusinessObjects(!val.Type).RecordId}
+      task_record_id:
+        simple: ${Cherwell.BusinessObjects(val.Type == 'Work Item').RecID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8ffa243e-bbe0-4394-874b-8dcaf5a13838
+    type: title
+    task:
+      id: 8ffa243e-bbe0-4394-874b-8dcaf5a13838
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 64f296cd-acc4-44af-87a7-9c5b75da8d5f
+    type: regular
+    task:
+      id: 64f296cd-acc4-44af-87a7-9c5b75da8d5f
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 1a6a733b-556e-4b5f-8364-064d7207cfb7
+    type: condition
+    task:
+      id: 1a6a733b-556e-4b5f-8364-064d7207cfb7
+      version: -1
+      name: Validate Incident Own Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Cherwell
+                accessor: BusinessObjects(val.Type == 'Work Item').ParentRecID}
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: ${Cherwell
+                accessor: BusinessObjects(!val.Type).RecordId}
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 055cd3f0-fb15-4669-8abc-525f7d2694e1
+    type: condition
+    task:
+      id: 055cd3f0-fb15-4669-8abc-525f7d2694e1
+      version: -1
+      name: Validate Get Incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Cherwell.QueryResults.Priority
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.QueryResults.RecordId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.QueryResults.PublicId
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Cherwell.QueryResults.Description
+            iscontext: true
+          right:
+            value:
+              simple: Example scripts test playbook
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.QueryResults.OwnedBy
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Cherwell.QueryResults.Service
+            iscontext: true
+          right:
+            value:
+              simple: Account Management
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Cherwell.QueryResults.CustomerDisplayName
+            iscontext: true
+          right:
+            value:
+              simple: Playbook customer
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.QueryResults.CreatedDateTime
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Cherwell.QueryResults.TotalTasks
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b49c5447-bb74-4e11-8153-fbcbc1e6efd3
+    type: condition
+    task:
+      id: b49c5447-bb74-4e11-8153-fbcbc1e6efd3
+      version: -1
+      name: Validate Incident Unlink Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${Cherwell.BusinessObjects(val.Type).ParentPublicID}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 21e9cbd7-76c2-4c5a-858b-9cee51d5a983
+    type: regular
+    task:
+      id: 21e9cbd7-76c2-4c5a-858b-9cee51d5a983
+      version: -1
+      name: 'Delete Incident '
+      description: Delete a given business object
+      script: '|||cherwell-delete-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects(!val.Type).PublicId}
+      type:
+        simple: Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 570eacbd-c602-41bc-8fa7-39b774643eb0
+    type: regular
+    task:
+      id: 570eacbd-c602-41bc-8fa7-39b774643eb0
+      version: -1
+      name: 'Delete Task '
+      description: Delete a given business object
+      script: '|||cherwell-delete-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects(val.Type).PublicId}
+      type:
+        simple: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 6eb2e4b9-378b-4256-877b-712bd7d862cb
+    type: regular
+    task:
+      id: 6eb2e4b9-378b-4256-877b-712bd7d862cb
+      version: -1
+      name: Cherwell Get Task
+      description: Get a business objects by an id
+      script: '|||cherwell-get-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects(val.Type).PublicId}
+      type:
+        simple: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

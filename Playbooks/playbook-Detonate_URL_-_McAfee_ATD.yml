@@ -555,7 +555,6 @@ outputs:
 - contextPath: URL.Malicious
   description: URL Malicious object
   type: unknown
-releaseNotes: Added missing outputs
 tests:
 - Test Playbook McAfee ATD
 - Detonate URL - Generic Test
