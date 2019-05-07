@@ -1093,7 +1093,7 @@ def run_instances(args):
         'MinCount': int(args.get('count')),
         'MaxCount': int(args.get('count'))
     }  # type: dict
-    BlockDeviceMappings = None  # type: ignore
+    BlockDeviceMappings = {}  # type: dict
     if args.get('imageId') is not None:
         kwargs.update({'ImageId': (args.get('imageId'))})
     if args.get('instanceType') is not None:
@@ -2175,7 +2175,7 @@ def create_launch_template(args):
     obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
 
-    BlockDeviceMappings = None  # type: ignore
+    BlockDeviceMappings = {}  # type: dict
 
     LaunchTemplateData = {}  # type: dict
 
