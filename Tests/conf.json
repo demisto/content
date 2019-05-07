@@ -1348,6 +1348,10 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "AWS - S3",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
         }
     ],
     "skipped_tests": {
