@@ -287,4 +287,3 @@ script:
   runonce: false
 tests:
 - PhishAi-Test
-releaseNotes: Replaced the _url_ argument with the  _scan_id_ argument in the ___phish-ai-check-status___ command. You must replace the _url_ argument with the _scan_id_ argument in automations and playbooks. Backward compatibility is not supported. Added outputs that enable the Detonate URL playbook to initiate as expected.

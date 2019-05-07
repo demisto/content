@@ -1662,4 +1662,3 @@ script:
     description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
-releaseNotes: "Fetch incidents fixed."

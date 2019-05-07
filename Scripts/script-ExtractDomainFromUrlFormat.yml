@@ -101,7 +101,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/tld
 runas: DBotWeakRole
-releaseNotes: Update script to UnEscapeURLs before extracting domain
 tests:
   - ExtractDomainFromEmailTest
   - ExtractDomainFromUrlAndEmail-Test

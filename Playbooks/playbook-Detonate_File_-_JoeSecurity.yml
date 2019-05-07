@@ -506,6 +506,5 @@ outputs:
 - contextPath: DBotScore.Malicious
   description: DBotScore Malicious object
   type: unknown
-releaseNotes: Added missing outputs
 tests:
 - Detonate File - Generic Test
