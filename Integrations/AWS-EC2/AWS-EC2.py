@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import boto3  # mypy: ignore
+import boto3  # type: ignore
 import json
 import re
 import datetime
