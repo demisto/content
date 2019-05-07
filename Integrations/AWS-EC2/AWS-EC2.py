@@ -1093,7 +1093,7 @@ def run_instances(args):
         'MinCount': int(args.get('count')),
         'MaxCount': int(args.get('count'))
     }  # type: dict
-    BlockDeviceMappings = None
+    BlockDeviceMappings = None  # type: dict
     if args.get('imageId') is not None:
         kwargs.update({'ImageId': (args.get('imageId'))})
     if args.get('instanceType') is not None:
@@ -1115,21 +1115,21 @@ def run_instances(args):
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
-        if args.get('ebsVolumeSize') is not None:
-            BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
-        if args.get('ebsVolumeType') is not None:
-            BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
-        if args.get('ebsIops') is not None:
-            BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
-        if args.get('ebsDeleteOnTermination') is not None:
-            BlockDeviceMappings['Ebs'].update(
-                {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
-        if args.get('ebsKmsKeyId') is not None:
-            BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
-        if args.get('ebsSnapshotId') is not None:
-            BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
-        if args.get('ebsEncrypted') is not None:
-            BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+    if args.get('ebsVolumeSize') is not None:
+        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+    if args.get('ebsVolumeType') is not None:
+        BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
+    if args.get('ebsIops') is not None:
+        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+    if args.get('ebsDeleteOnTermination') is not None:
+        BlockDeviceMappings['Ebs'].update(
+            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+    if args.get('ebsKmsKeyId') is not None:
+        BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
+    if args.get('ebsSnapshotId') is not None:
+        BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
+    if args.get('ebsEncrypted') is not None:
+        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
     if BlockDeviceMappings:
         kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})  # type: ignore
 
@@ -2132,10 +2132,7 @@ def modify_fleet(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)  # noqa:F841
-    data = []  # noqa:F841
     kwargs = {}
-    output = []  # noqa:F841
     if args.get('FleetId') is not None:
         kwargs.update({'FleetIds': args.get('FleetId')})
     if args.get('ExcessCapacityTerminationPolicy') is not None:
@@ -2180,7 +2177,7 @@ def create_launch_template(args):
 
     LaunchSpecification = {}  # noqa:F841
 
-    BlockDeviceMappings = None
+    BlockDeviceMappings = None  # type: dict
 
     LaunchTemplateData = {}  # type: dict
 
@@ -2301,7 +2298,7 @@ def create_launch_template(args):
             {'InstanceInitiatedShutdownBehavior': args.get('InstanceInitiatedShutdownBehavior')})
     if args.get('UserData') is not None:
         LaunchTemplateData.update({'UserData': args.get('UserData')})
-    TagSpecifications = []
+    TagSpecifications = []  # type: list
     if args.get('Tags') is not None:
         arr = args.get('Tags').split('#')
         for i, item in enumerate(arr):
