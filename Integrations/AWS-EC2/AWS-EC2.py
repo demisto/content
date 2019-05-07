@@ -1,5 +1,3 @@
-# type: ignore
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -2184,7 +2182,7 @@ def create_launch_template(args):
 
     BlockDeviceMappings = None
 
-    LaunchTemplateData = {}
+    LaunchTemplateData = {}  # type: dict
 
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': args.get('ClientToken')})
@@ -2208,29 +2206,29 @@ def create_launch_template(args):
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
-        if args.get('VirtualName') is not None:
-            BlockDeviceMappings.update({'VirtualName': {args.get('VirtualName')}})
-        if args.get('ebsVolumeSize') is not None:
-            BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
-        if args.get('ebsVolumeType') is not None:
-            BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
-        if args.get('ebsIops') is not None:
-            BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
-        if args.get('ebsDeleteOnTermination') is not None:
-            BlockDeviceMappings['Ebs'].update(
-                {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
-        if args.get('ebsKmsKeyId') is not None:
-            BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
-        if args.get('ebsSnapshotId') is not None:
-            BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
-        if args.get('ebsEncrypted') is not None:
-            BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
-        if args.get('NoDevice') is not None:
-            BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
+    if args.get('VirtualName') is not None:
+        BlockDeviceMappings.update({'VirtualName': {args.get('VirtualName')}})
+    if args.get('ebsVolumeSize') is not None:
+        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+    if args.get('ebsVolumeType') is not None:
+        BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
+    if args.get('ebsIops') is not None:
+        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+    if args.get('ebsDeleteOnTermination') is not None:
+        BlockDeviceMappings['Ebs'].update(
+            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+    if args.get('ebsKmsKeyId') is not None:
+        BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
+    if args.get('ebsSnapshotId') is not None:
+        BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
+    if args.get('ebsEncrypted') is not None:
+        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+    if args.get('NoDevice') is not None:
+        BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
     if BlockDeviceMappings:
         LaunchTemplateData.update({'BlockDeviceMappings': [BlockDeviceMappings]})
 
-    NetworkInterfaces = {}
+    NetworkInterfaces = {}  # type: dict
     if args.get('AssociatePublicIpAddress') is not None:
         NetworkInterfaces.update({'AssociatePublicIpAddress': args.get('AssociatePublicIpAddress')})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
@@ -2315,7 +2313,7 @@ def create_launch_template(args):
                 'Tags': parse_tag_field(tg[1])
             })
 
-    ElasticGpuSpecifications = []
+    ElasticGpuSpecifications = []  # type: list
     if args.get('ElasticGpuSpecificationsType') is not None:
         arr = multi_split(args.get('ElasticGpuSpecificationsType'))
         for i, item in enumerate(arr):
@@ -2328,7 +2326,7 @@ def create_launch_template(args):
     if ElasticGpuSpecifications:
         LaunchTemplateData.update({'ElasticGpuSpecifications': ElasticGpuSpecifications})
 
-    ElasticInferenceAccelerators = []
+    ElasticInferenceAccelerators = []  # type: list
     if args.get('ElasticInferenceAcceleratorsType') is not None:
         arr = multi_split(args.get('ElasticInferenceAcceleratorsType'))
         for i, item in enumerate(arr):
@@ -2346,13 +2344,13 @@ def create_launch_template(args):
     if args.get('securityGroups') is not None:
         LaunchTemplateData.update({'SecurityGroups': parse_resource_ids(args.get('securityGroups'))})
 
-    InstanceMarketOptions = {}
+    InstanceMarketOptions = {}  # type: dict
     if args.get('MarketType') is not None:
         InstanceMarketOptions.update({
             'MarketType': args.get('MarketType')
         })
 
-    SpotOptions = {}
+    SpotOptions = {}  # type: dict
     if args.get('SpotInstanceType') is not None:
         SpotOptions.update({
             'SpotInstanceType': args.get('SpotInstanceType')
@@ -2455,7 +2453,7 @@ def modify_image_attribute(args):
     if args.get('ImageId') is not None:
         kwargs.update({'ImageId': args.get('ImageId')})
 
-    LaunchPermission = {"Add": [], "Remove": []}
+    LaunchPermission = {"Add": [], "Remove": []}  # type: dict
     if args.get('LaunchPermission-Add-Group') is not None:
         LaunchPermission["Add"].append({'Group': args.get('LaunchPermission-Add-Group')})
     if args.get('LaunchPermission-Add-UserId') is not None:
