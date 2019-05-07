@@ -457,10 +457,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 8c6d778c-6e82-46bb-8c98-c0373abdd8c7
-    type: regular
+    taskid: f21e5787-2e08-4d74-8142-7cfad3d169ec
+    type: condition
     task:
-      id: 8c6d778c-6e82-46bb-8c98-c0373abdd8c7
+      id: f21e5787-2e08-4d74-8142-7cfad3d169ec
       version: -1
       name: VerifyContext
       description: |-
@@ -469,20 +469,28 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "20"
-    scriptarguments:
-      expectedValue:
-        simple: "true"
-      fields: {}
-      path:
-        simple: Jask.Entity=>val.length == 10
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Jask
+                accessor: Entity
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
     view: |-
       {
         "position": {

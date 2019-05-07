@@ -486,4 +486,3 @@ outputs:
   type: unknown
 tests:
 - Detonate URL - Generic Test
-releaseNotes: Added missing outputs

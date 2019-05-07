@@ -915,4 +915,3 @@ script:
     description: Gets host information from McAfee Active Response
   dockerimage: demisto/dxl
   runonce: false
-releaseNotes: "add logs"

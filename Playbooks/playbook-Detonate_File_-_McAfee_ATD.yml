@@ -670,7 +670,6 @@ outputs:
 - contextPath: InfoFile
   description: Report file object
   type: unknown
-releaseNotes: Added missing outputs
 tests:
 - Test Playbook McAfee ATD
 - Detonate File - Generic Test

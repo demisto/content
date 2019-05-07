@@ -42,4 +42,3 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - DemistoUploadFileToIncident Test
-releaseNotes: "Add body argument, fixed description"

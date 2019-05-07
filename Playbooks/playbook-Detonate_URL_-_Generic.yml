@@ -24,15 +24,18 @@ tasks:
       - "14"
       - "15"
       - "16"
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 40c6a1c6-dce9-4a0b-87b8-fec50f7933ae
@@ -49,11 +52,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 7902e341-c29c-4037-8e6a-6c2289d3806e
@@ -102,6 +107,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 7119396c-ac89-473c-82fa-c634c25788d6
@@ -141,6 +148,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 7a53b305-64ef-47c4-85f7-8ff702cb4209
@@ -187,6 +196,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
     taskid: 2555400f-2fd3-4bdc-82e4-3e5be8948952
@@ -229,6 +240,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: 4e47aa4e-bef0-4566-8aae-b249bdf06ce0
@@ -267,6 +280,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: 317e29bb-856f-4081-8fdd-f4a189d01c90
@@ -275,9 +290,9 @@ tasks:
       id: 317e29bb-856f-4081-8fdd-f4a189d01c90
       version: -1
       name: Detonate URL - Cuckoo
+      description: Detonates a file using Cuckoo sandbox
       playbookName: Detonate URL - Cuckoo
       type: playbook
-      description: "Detonates a file using Cuckoo sandbox"
       iscommand: false
       brand: ""
     nexttasks:
@@ -301,13 +316,42 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: a2cbc7cf-2d9e-4eda-87e9-909b88265839
+    type: playbook
+    task:
+      id: a2cbc7cf-2d9e-4eda-87e9-909b88265839
+      version: -1
+      name: Detonate URL - ANYRUN
+      description: Detonates a URL using ANYRUN sandbox
+      playbookName: Detonate URL - ANYRUN
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2530,
+        "width": 2960,
         "x": 50,
         "y": 50
       }
@@ -470,5 +514,185 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
+- contextPath: ANYRUN.Task.AnalysisDate
+  description: Date and time the analysis was executed.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Category
+  description: Category of a process behavior.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Action
+  description: Actions performed by a process.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.ThreatLevel
+  description: Threat score associated with a process behavior.
+  type: Number
+- contextPath: ANYRUN.Task.Behavior.ProcessUUID
+  description: Unique ID of the process whose behaviors are being profiled.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Reputation
+  description: Connection reputation.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ProcessUUID
+  description: ID of the process that created the connection.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ASN
+  description: Connection autonomous system network.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Country
+  description: Connection country.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Protocol
+  description: Connection protocol.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Port
+  description: Connection port number.
+  type: Number
+- contextPath: ANYRUN.Task.Connection.IP
+  description: Connection IP number.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.Reputation
+  description: Reputation of the DNS request.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.IP
+  description: IP addresses associated with a DNS request.
+  type: Unknown
+- contextPath: ANYRUN.Task.DnsRequest.Domain
+  description: Domain resolution of a DNS request.
+  type: String
+- contextPath: ANYRUN.Task.Threat.ProcessUUID
+  description: Unique process ID from where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Msg
+  description: Threat message.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Class
+  description: Class of the threat.
+  type: String
+- contextPath: ANYRUN.Task.Threat.SrcPort
+  description: Port on which the threat originated.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.DstPort
+  description: Destination port of the threat.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.SrcIP
+  description: Source IP address where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.DstIP
+  description: Destination IP address of the threat.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Reputation
+  description: Reputation of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Country
+  description: HTTP request country.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+  description: ID of the process making the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Body
+  description: HTTP request body parameters and details.
+  type: Unknown
+- contextPath: ANYRUN.Task.HttpRequest.HttpCode
+  description: HTTP request response code.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.Status
+  description: Status of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+  description: Whether the HTTP request was made through a proxy.
+  type: Boolean
+- contextPath: ANYRUN.Task.HttpRequest.Port
+  description: HTTP request port.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.IP
+  description: HTTP request IP address.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.URL
+  description: HTTP request URL.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Host
+  description: HTTP request host.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Method
+  description: HTTP request method type.
+  type: String
+- contextPath: ANYRUN.Task.FileInfo
+  description: Details of the submitted file.
+  type: String
+- contextPath: ANYRUN.Task.OS
+  description: OS of the sandbox in which the file was analyzed.
+  type: String
+- contextPath: ANYRUN.Task.ID
+  description: The unique ID of the task.
+  type: String
+- contextPath: ANYRUN.Task.MIME
+  description: The MIME of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.Verdict
+  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  type: String
+- contextPath: ANYRUN.Task.Process.FileName
+  description: File name of the process.
+  type: String
+- contextPath: ANYRUN.Task.Process.PID
+  description: Process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.PPID
+  description: Parent process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.ProcessUUID
+  description: Unique process ID (used by ANY.RUN).
+  type: String
+- contextPath: ANYRUN.Task.Process.CMD
+  description: Process command.
+  type: String
+- contextPath: ANYRUN.Task.Process.Path
+  description: Path of the executed command.
+  type: String
+- contextPath: ANYRUN.Task.Process.User
+  description: User who executed the command.
+  type: String
+- contextPath: ANYRUN.Task.Process.IntegrityLevel
+  description: The process integrity level.
+  type: String
+- contextPath: ANYRUN.Task.Process.ExitCode
+  description: Process exit code.
+  type: Number
+- contextPath: ANYRUN.Task.Process.MainProcess
+  description: Whether the process is the main process.
+  type: Boolean
+- contextPath: ANYRUN.Task.Process.Version.Company
+  description: Company responsible for the program executed.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Description
+  description: Description of the type of program.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Version
+  description: Version of the program executed.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Type
+  description: Type of indicator.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: String
+- contextPath: URL.Data
+  description: URL data.
+  type: String
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision.
+  type: String
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision.
+  type: String
+- contextPath: ANYRUN.Task.Status
+  description: Task analysis status.
+  type: String
 tests:
 - Detonate URL - Generic Test

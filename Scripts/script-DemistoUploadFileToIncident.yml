@@ -35,4 +35,3 @@ dependson:
   - demisto-api-multipart
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Add body argument, fixed description"
