@@ -8,7 +8,7 @@ script: |-
 
   email = demisto.args()['email']
   domains = [x.lower() for x in argToList(demisto.get(demisto.args(),'domain'))]
-  include_subdomain = strtobool(demisto.getArg('includeSubdomain'))
+  include_subdomains = strtobool(demisto.getArg('include_subdomains') or 'no')
 
   parts = email.split('@',1)
 
@@ -16,7 +16,7 @@ script: |-
   in_domain = "no"
 
   if len(parts) > 1:
-      if parts[1].lower() in domains or include_subdomain and re.match("^(.*\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
+      if parts[1].lower() in domains or include_subdomains and re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
           in_domain = "yes"
           network_type = "Internal"
       else:
@@ -46,7 +46,7 @@ script: |-
 type: python
 tags:
 - email
-comment: Checks if the email address in part of the internal domains
+comment: Checks if the email address is part of the internal domains
 enabled: true
 args:
 - name: email
@@ -55,7 +55,8 @@ args:
   description: The email address to check
 - name: domain
   description: List of internal domains to check, comma separated
-- name: includeSubdomain
+  isArray: true
+- name: include_subdomains
   auto: PREDEFINED
   predefined:
   - "yes"
