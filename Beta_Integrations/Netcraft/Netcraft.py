@@ -3,12 +3,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-
-import json
-from base64 import b64encode
 import requests
-from distutils.util import strtobool
 from requests.auth import HTTPBasicAuth
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,13 +14,12 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
-USERNAME_AND_PASSWORD_ENCODED = b64encode("{0}:{1}".format(USERNAME,PASSWORD))
 
 USE_SSL = not demisto.params().get('unsecure', False)
 
 
 # Service base URL
-BASE_URL = "https://takedown.netcraft.com/" # should be parameter? or hard coded like this?
+BASE_URL = "https://takedown.netcraft.com/"
 
 
 # codes for maicious site report
@@ -52,7 +48,6 @@ TAKEDOWN_NOTE_HEADERS = ["Takedown ID", "Note ID", "Note", "Author", "Time", "Gr
 TAKEDOWN_INFO_TITLE = "Takedowns information found"
 
 
-
 # Remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
     del os.environ['HTTP_PROXY']
@@ -64,7 +59,7 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, request_url, params=None, data=None, should_convert_to_json = True):
+def http_request(method, request_url, params=None, data=None, should_convert_to_json=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
@@ -101,7 +96,8 @@ def generate_report_malicious_site_human_readable(response_lines_array):
     response_status_code = response_lines_array[0]
     human_readable = ""
     if response_status_code == MALICIOUS_REPORT_SUCCESS:
-        human_readable = "### Takedown successfully submitted \n ID number of the new takedown: {}.".format(response_lines_array[1])
+        human_readable = "### Takedown successfully submitted \n ID number of the new " \
+                         "takedown: {}.".format(response_lines_array[1])
     elif response_status_code == MALICIOUS_REPORT_ALREADY_EXISTS:
         human_readable = "### Takedown not submitted.\n " \
                          "A takedown for this URL already exists.\n" \
@@ -116,8 +112,6 @@ def generate_report_malicious_site_human_readable(response_lines_array):
                          "An error has occurred while submitting your takedown.\n" \
                          "Error is: {}".format(" ".join(response_lines_array))
     return human_readable
-
-
 
 
 def return_dict_without_none_values(dict_with_none_values):
@@ -158,7 +152,6 @@ def generate_takedown_info_context(takedown_info):
     return takedown_info_context
 
 
-
 def gen_takedown_info_human_readable(list_of_takedowns_contexts):
     contexts_in_human_readable_format = []
     for takedown_info_context in list_of_takedowns_contexts:
@@ -195,7 +188,6 @@ def generate_list_of_takedowns_context(list_of_takedowns_infos):
         takedown_context = return_dict_without_none_values(takedown_context)
         takedowns_contexts_list.append(takedown_context)
     return takedowns_contexts_list
-
 
 
 def generate_takedown_note_context(takedown_note_json):
@@ -250,8 +242,6 @@ def generate_add_note_human_readable(response):
     return human_readable
 
 
-
-
 def string_to_bool(string_representing_bool):
     return string_representing_bool.lower() == "true"
 
@@ -279,7 +269,6 @@ def escalate_takedown(takedown_id):
     return request_result
 
 
-
 def escalate_takedown_command():
     args = demisto.args()
     response = escalate_takedown(args["takedown_id"])
@@ -296,7 +285,7 @@ def add_notes_to_takedown(takedown_id, note, notify):
         "note": note,
         "notify": string_to_bool(notify) if notify else None
     }
-    # removing keys with None as value
+
     data_for_request = return_dict_without_none_values(data_for_request)
 
     request_url = BASE_URL + ACCESS_TAKEDOWN_NOTES_SUFFIX
@@ -364,13 +353,12 @@ def get_takedown_info(takedown_id, ip, url, updated_since, date_from, region):
         "date_from": date_from,
         "region": region,
     }
-    # removing keys with None as value
+
     data_for_request = return_dict_without_none_values(data_for_request)
 
     request_url = BASE_URL + GET_TAKEDOWN_INFO_SUFFIX
     request_result = http_request("GET", request_url, data=data_for_request)
     return request_result
-
 
 
 def get_takedown_info_command():
@@ -396,8 +384,7 @@ def get_takedown_info_command():
     )
 
 
-
-def report_malicious_site(malicious_site_url, comment, is_test_request = False):
+def report_malicious_site(malicious_site_url, comment, is_test_request=False):
     data_for_request = {
         "attack": malicious_site_url,
         "comment": comment
@@ -406,15 +393,14 @@ def report_malicious_site(malicious_site_url, comment, is_test_request = False):
         request_url = BASE_URL + TEST_MODULE_SUFFIX
     else:
         request_url = BASE_URL + REPORT_MALICIOUS_SUFFIX
-    request_result = http_request("POST", request_url, data = data_for_request, should_convert_to_json=False)
+    request_result = http_request("POST", request_url, data=data_for_request, should_convert_to_json=False)
     return request_result
-
 
 
 def report_malicious_site_command():
     args = demisto.args()
     entry_context = None
-    response_lines_array = report_malicious_site(args["malicious_site_url"], args["comment"]) #not sure this line works
+    response_lines_array = report_malicious_site(args["malicious_site_url"], args["comment"])
     result_answer = response_lines_array[0]
     if result_answer == MALICIOUS_REPORT_SUCCESS:
         new_takedown_id = response_lines_array[1]
@@ -431,8 +417,6 @@ def report_malicious_site_command():
     )
 
 
-
-
 def test_module():
     """
     Performs basic get request to get item samples
@@ -444,8 +428,6 @@ def test_module():
     except Exception as ex:
         raise Exception(str(ex))
     demisto.results("ok")
-
-
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
