@@ -63,6 +63,7 @@ script:
     import os
     import sys
     import getopt
+    import ast
     import json
     import jwt
     from datetime import datetime, timedelta
@@ -430,7 +431,7 @@ script:
     def uptycs_get_alerts_command():
         query_results = uptycs_get_alerts()
         context = query_results.get('items')
-        context_entries_to_keep = ['id', 'host_name', 'grouping', 'assigned_to',
+        context_entries_to_keep = ['id', 'host_name', 'grouping', 'code', 'assigned_to',
             'alert_time', 'updated_at', 'metadata', 'asset', 'status', 'upt_asset_id',
             'created_at', 'description', 'severity', 'value']
 
@@ -506,7 +507,7 @@ script:
     def uptycs_get_events_command():
         query_results = uptycs_get_events()
         context = query_results.get('items')
-        context_entries_to_keep = ['host_name', 'grouping', 'assigned_to',
+        context_entries_to_keep = ['upt_asset_id', 'host_name', 'grouping', 'code', 'assigned_to',
             'event_time', 'updated_at', 'metadata', 'asset', 'status', 'id',
             'created_at', 'description', 'severity', 'value']
 
@@ -620,13 +621,13 @@ script:
 
     def uptycs_get_process_open_files_command():
         query_results = uptycs_get_process_open_files()
-        human_readable = tableToMarkdown('PID for process which has opened a file',
+        human_readable = tableToMarkdown('Process which has opened a file',
             query_results.get('items'),
             ['upt_hostname', 'pid', 'path', 'fd',
                 'upt_time'])
         context = query_results.get('items')
-        context_entries_to_keep = ['upt_hostname', 'pid', 'path', 'fd',
-                'upt_time']
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
+        'path', 'fd', 'upt_time']
         if context != None:
             remove_context_entries(context, context_entries_to_keep)
 
@@ -685,11 +686,17 @@ script:
 
     def uptycs_get_process_open_sockets_command():
         query_results = uptycs_get_process_open_sockets()
-        human_readable = tableToMarkdown('PID for process with open connection',
+        human_readable = tableToMarkdown('process_open_sockets',
             query_results.get('items'),
             ['upt_hostname', 'pid', 'local_address', 'remote_address',
                 'upt_time', 'local_port', 'remote_port', 'socket'])
         context = query_results.get('items')
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
+        'local_address', 'remote_address', 'upt_time', 'local_port',
+        'remote_port', 'socket', 'family', 'path', 'state', 'protocol']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -752,6 +759,13 @@ script:
                 'upt_time', 'local_port', 'action'])
         context = query_results.get('items')
 
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
+        'local_address', 'remote_address', 'upt_time', 'local_port',
+        'remote_port', 'socket', 'family', 'path', 'action', 'protocol']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
+
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
                  'Contents': query_results,
@@ -768,10 +782,8 @@ script:
         http_method = 'post'
         api_call = '/query'
 
-        query=("WITH last_conn AS (SELECT upt_time FROM socket_events WHERE upt_time <= CAST('%s' AS TIMESTAMP) \
-        AND remote_address='%s' GROUP BY upt_time ORDER BY upt_time DESC LIMIT 1) \
-        SELECT s.* FROM socket_events s JOIN last_conn l ON s.upt_time=l.upt_time WHERE remote_address='%s'" % \
-            (demisto.args().get('time'), demisto.args().get('ip'), demisto.args().get('ip')))
+        query=("SELECT * FROM socket_events WHERE upt_time <= CAST('%s' AS TIMESTAMP) AND remote_address='%s' ORDER BY upt_time DESC LIMIT 1" % \
+            (demisto.args().get('time'), demisto.args().get('ip')))
 
         equal_cuts = {
             "upt_asset_id":demisto.args().get('asset_id'),
@@ -796,12 +808,19 @@ script:
                 'upt_time', 'local_port', 'action'])
         context = query_results.get('items')
 
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
+        'local_address', 'remote_address', 'upt_time', 'local_port',
+        'remote_port', 'socket', 'family', 'path', 'action', 'protocol']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
+
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
                  'Contents': query_results,
                  'HumanReadable': human_readable,
                  'EntryContext': {
-                    'Uptycs.ProcEvent': context
+                    'Uptycs.SocketEvent': context
                     }
                 }
 
@@ -855,6 +874,12 @@ script:
             ['upt_hostname', 'pid', 'name', 'path',
                 'upt_time', 'parent', 'cmdline'])
         context = query_results.get('items')
+
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'name', 'path',
+                'upt_time', 'parent', 'cmdline', 'pgroup', 'cwd']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -916,6 +941,12 @@ script:
                 'upt_time', 'parent', 'cmdline'])
         context = query_results.get('items')
 
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
+                'upt_time', 'parent', 'cmdline', 'cwd']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
+
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
                  'Contents': query_results,
@@ -937,7 +968,8 @@ script:
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
             aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr ON aa.upt_hash=rr.upt_hash), \
-            new_proc AS (SELECT *, coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
+            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_add_time, \
+            coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
             SELECT * FROM new_proc WHERE pid=%s AND CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time" \
             % (demisto.args().get('pid'), demisto.args().get('time')))
 
@@ -1008,6 +1040,12 @@ script:
             ['upt_hostname', 'parent', 'pid', 'path', 'cmdline'])
         context = query_results.get('items')
 
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
+                'upt_time', 'parent', 'cmdline', 'cwd']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
+
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
                  'Contents': query_results,
@@ -1029,7 +1067,8 @@ script:
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
             aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr ON aa.upt_hash=rr.upt_hash), \
-            new_proc AS (SELECT *, coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
+            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_add_time, \
+            coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
             SELECT * FROM new_proc WHERE pid=%s AND CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time" \
             % (demisto.args().get('parent'), demisto.args().get('child_add_time')))
 
@@ -1100,6 +1139,12 @@ script:
             ['upt_hostname', 'parent', 'pid', 'path', 'cmdline'])
         context = query_results.get('items')
 
+        context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
+                'upt_time', 'parent', 'cmdline', 'cwd']
+
+        if context != None:
+            remove_context_entries(context, context_entries_to_keep)
+
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
                  'Contents': query_results,
@@ -1128,7 +1173,8 @@ script:
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
             aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr on aa.upt_hash=rr.upt_hash), \
-            new_proc AS (SELECT *, coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
+            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_add_time, \
+            coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
             SELECT * FROM new_proc WHERE parent = %s AND upt_asset_id = '%s' AND \
             upt_add_time BETWEEN CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP) ORDER BY upt_add_time DESC" % \
             (parent, asset_id, parent_start, parent_end))
@@ -1146,7 +1192,7 @@ script:
 
     def uptycs_get_process_child_processes_command():
         query_results = uptycs_get_process_child_processes()
-        human_readable = tableToMarkdown('PIDs for child processes of a specified pid',
+        human_readable = tableToMarkdown('Child processes of a specified pid',
             query_results.get('items'),
             ['upt_hostname', 'pid', 'name', 'path', 'cmdline', 'upt_add_time'])
         context = query_results.get('items')
@@ -1209,12 +1255,6 @@ script:
         human_readable = tableToMarkdown('Uptycs Asset Tags for asset id: %s' % demisto.args().get('asset_id'),
             query_results, 'Tags')
         context = query_results
-        #context_entries_to_keep = ['hostName', 'tags']
-
-        #if context != None:
-        #    for key in context.keys():
-        #        if key not in context_entries_to_keep:
-        #            context.pop(key, None)
 
         entry = {'ContentsFormat': formats['json'],
                  'Type': entryTypes['note'],
@@ -1550,10 +1590,6 @@ script:
         api_call = '/threatVendors'
         limit = demisto.args().get('limit')
 
-        threat_vendor_id = demisto.args().get('threat_vendor_id')
-        if threat_vendor_id!=None:
-            api_call = '%s/%s' % (api_call, threat_vendor_id)
-
         if limit != -1 and limit != None:
             api_call = ("%s?limit=%s" % (api_call,limit))
 
@@ -1610,6 +1646,165 @@ script:
                  'Type': entryTypes['note'],
                  'Contents': response.json(),
                  'HumanReadable': human_readable,
+                }
+
+        return entry
+
+    def uptycs_get_saved_queries():
+        '''return a list of threat vendors'''
+        http_method = 'get'
+        api_call = '/queries'
+        limit = demisto.args().get('limit')
+
+        query_id = demisto.args().get('query_id')
+        if query_id!=None:
+            api_call = '%s/%s' % (api_call, query_id)
+
+        name = demisto.args().get('name')
+        if name!=None:
+            api_call = '%s?name=%s' % (api_call, name)
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        return restcall(http_method, api_call)
+
+    def uptycs_get_saved_queries_command():
+        query_results = uptycs_get_saved_queries()
+        context = query_results.get('items')
+
+        if context != None:
+            for index in range(len(context)):
+                context[index].pop('links', None)
+
+        human_readable = tableToMarkdown('Uptycs Saved Queries', context, ['name', 'description', 'query', 'executionType', 'grouping', 'id'])
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': context,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.SavedQueries': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_run_saved_query():
+        '''return a list of threat vendors'''
+        http_method = 'get'
+        api_call = '/queries'
+
+        query_id = demisto.args().get('query_id')
+        if query_id!=None:
+            api_call = '%s/%s' % (api_call, query_id)
+
+        name = demisto.args().get('name')
+        if name!=None:
+            api_call = '%s?name=%s' % (api_call, name)
+
+        query_results = restcall(http_method, api_call).get('items')[0]
+        query = query_results.get('query')
+
+        var_args = demisto.args().get('variable_arguments')
+        if var_args!=None:
+            for key, value in ast.literal_eval(var_args).items():
+                query = query.replace(key,value)
+
+        http_method = 'post'
+
+        if(query_results.get('executionType')=='realtime'):
+            api_call = '/assets/query'
+            if(demisto.args().get('asset_id')!=None):
+                ID =  {
+                        "id" : {
+                            "equals": demisto.args().get('asset_id')
+                            }
+                        }
+            elif(demisto.args().get('host_name_is')!=None):
+                ID =  {
+                        "host_name" : {
+                            "equals": demisto.args().get('host_name_is')
+                            }
+                        }
+            elif(demisto.args().get('host_name_like')!=None):
+                ID =  {
+                        "host_name" : {
+                            "like": '%'+demisto.args().get('host_name_like')+'%'
+                            }
+                        }
+            else:
+                ID =  {
+                        "host_name" : {
+                            "like": '%%'
+                            }
+                        }
+
+            post_data = {
+                        "type": "realtime",
+                        "query": query,
+                        "filtering": {
+                            "filters": ID
+                                    }
+
+                        }
+        else:
+            post_data = {"query":query}
+            api_call = '/query'
+
+        return restcall(http_method, api_call, json = post_data)
+
+    def uptycs_run_saved_query_command():
+        query_results = uptycs_run_saved_query()
+        context = query_results.get('items')
+
+        if context != None:
+            for index in range(len(context)):
+                context[index].pop('links', None)
+
+        human_readable = tableToMarkdown('Uptycs Query Results', context)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': context,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.RunQuery': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_post_saved_query():
+        '''return a list of threat vendors'''
+        http_method = 'post'
+        api_call = '/queries'
+
+        post_data = {
+                    "name": demisto.args().get('name'),
+                    "type": demisto.args().get('type'),
+                    "description": demisto.args().get('description'),
+                    "query": demisto.args().get('query'),
+                    "executionType": demisto.args().get('execution_type'),
+                    "grouping": demisto.args().get('grouping'),
+                    "custom": True
+        }
+
+
+        return restcall(http_method, api_call, json = post_data)
+
+    def uptycs_post_saved_query_command():
+        query_results = uptycs_post_saved_query()
+
+        human_readable = tableToMarkdown('Uptycs Posted Query', query_results, ['name','type','description','query','executionType','grouping','custom'])
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.PostedQuery': query_results
+                    }
                 }
 
         return entry
@@ -1768,6 +1963,15 @@ script:
     if demisto.command() == 'uptycs-get-threat-vendors':
         demisto.results(uptycs_get_threat_vendors_command())
 
+    if demisto.command() == 'uptycs-get-saved-queries':
+        demisto.results(uptycs_get_saved_queries_command())
+
+    if demisto.command() == 'uptycs-run-saved-query':
+        demisto.results(uptycs_run_saved_query_command())
+
+    if demisto.command() == 'uptycs-post-saved-query':
+        demisto.results(uptycs_post_saved_query_command())
+
     if demisto.command() == 'uptycs-post-threat-source':
         demisto.results(uptycs_post_threat_source_command())
 
@@ -1812,25 +2016,25 @@ script:
     - contextPath: Uptycs.Assets.id
       description: 'Uptycs asset id '
       type: string
-    - contextPath: Uptycs.Assets.createdAt
+    - contextPath: Uptycs.Assets.created_at
       description: Time asset was enrolled with Uptycs
       type: date
-    - contextPath: Uptycs.Assets.hostName
+    - contextPath: Uptycs.Assets.host_name
       description: Hostname in Uptycs DB
       type: string
     - contextPath: Uptycs.Assets.os
       description: os installed on asset (Windows, Linux, Mac OS X)
       type: string
-    - contextPath: Uptycs.Assets.osVersion
+    - contextPath: Uptycs.Assets.os_version
       description: os version
       type: string
-    - contextPath: Uptycs.Assets.lastActivityAt
+    - contextPath: Uptycs.Assets.last_activity_at
       description: Last activity
       type: date
-    - contextPath: Uptycs.Assets.deletedAt
+    - contextPath: Uptycs.Assets.deleted_at
       description: Time asset was unenrolled from Uptycs
       type: date
-    - contextPath: Uptycs.Assets.osqueryVersion
+    - contextPath: Uptycs.Assets.osquery_version
       description: Current version of osquery installed on the asset
       type: string
     description: return assets enrolled with Uptycs
@@ -1940,7 +2144,7 @@ script:
       description: Alert code in Uptycs DB
       type: string
     - contextPath: Uptycs.Alerts.severity
-      description: Severity
+      description: The severity of the alert
       type: string
     - contextPath: Uptycs.Alerts.alert_time
       description: Time alert was created at
@@ -2043,15 +2247,33 @@ script:
     - contextPath: Uptycs.Events.description
       description: Description of event
       type: string
-    - contextPath: Uptycs.Events.assetId
+    - contextPath: Uptycs.Events.asset_id
       description: Uptycs asset ID
       type: string
     - contextPath: Uptycs.Events.code
       description: Event code in Uptycs DB
       type: string
-    - contextPath: Uptycs.Events.createdAt
+    - contextPath: Uptycs.Events.created_at
       description: Time event was created at
       type: date
+    - contextPath: Uptycs.Events.id
+      description: Uptycs event id for this particular event
+      type: string
+    - contextPath: Uptycs.Events.host_name
+      description: Hostname for the assets this event occurred on
+      type: string
+    - contextPath: Uptycs.Events.grouping
+      description: Group that this event belongs to
+      type: string
+    - contextPath: Uptycs.Events.value
+      description: The value will be different for different types of events.  It
+        is that which triggered the event.  For example, a Bad IP connection will
+        have the IP address here, and a program crash will have the name of the program
+        that crashed here.
+      type: string
+    - contextPath: Uptycs.Events.severity
+      description: The severity of the event
+      type: string
     description: return events from Uptycs DB
   - name: uptycs-get-process-open-sockets
     arguments:
@@ -2112,9 +2334,17 @@ script:
     - contextPath: Uptycs.Sockets.upt_asset_id
       description: asset id for asset which ran the specified process
       type: string
-    - contextPath: Uptycs.Sockets.parent
-      description: pid for the parent process which spawned the process which opened
-        the connection
+    - contextPath: Uptycs.Sockets.socket
+      description: socket used to open the connection
+      type: number
+    - contextPath: Uptycs.Sockets.family
+      description: network protocol
+      type: number
+    - contextPath: Uptycs.Sockets.state
+      description: state of the connection
+      type: string
+    - contextPath: Uptycs.Sockets.protocol
+      description: transport protocol
       type: number
     description: find processes which opened a socket
   - name: uptycs-get-process-information
@@ -2149,6 +2379,21 @@ script:
     - contextPath: Uptycs.Proc.upt_remove_time
       description: time that the process was removed
       type: date
+    - contextPath: Uptycs.Proc.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Proc.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Proc.cmdline
+      description: complete argv of the process
+      type: string
+    - contextPath: Uptycs.Proc.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Proc.cwd
+      description: process current working directory
+      type: string
     description: get information for a particular process
   - name: uptycs-get-process-child-processes
     arguments:
@@ -2185,6 +2430,24 @@ script:
     - contextPath: Uptycs.Children.upt_remove_time
       description: time that the process was removed
       type: date
+    - contextPath: Uptycs.Children.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Children.parent
+      description: parent pid
+      type: number
+    - contextPath: Uptycs.Children.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Children.cmdline
+      description: complete argv for the process
+      type: string
+    - contextPath: Uptycs.Children.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Children.cwd
+      description: process current working directory
+      type: string
     description: get all the child processes for a given parent process
   - name: uptycs-get-processes
     arguments:
@@ -2231,6 +2494,21 @@ script:
     - contextPath: Uptycs.Process.upt_time
       description: time at which the process was spawned
       type: date
+    - contextPath: Uptycs.Process.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Process.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Process.cmdline
+      description: comeplete argv for the process
+      type: string
+    - contextPath: Uptycs.Process.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Process.cwd
+      description: process current working directory
+      type: string
     description: find processes which are running or have run on a registered Uptycs
       asset
   - name: uptycs-get-process-open-files
@@ -2278,6 +2556,9 @@ script:
     - contextPath: Uptycs.Files.upt_time
       description: time at which the file was opened
       type: date
+    - contextPath: Uptycs.Files.path
+      description: filesystem path of the file descriptor
+      type: string
     description: find processes which have opened files
   - name: uptycs-set-alert-status
     arguments:
@@ -2342,9 +2623,6 @@ script:
     description: get Uptycs threat sources
   - name: uptycs-get-threat-vendors
     arguments:
-    - name: threat_vendor_id
-      description: unique Uptycs id which identifies the vendor of this specific threat
-        source
     - name: limit
       description: Limit the number of entries returned.  Use -1 to return all entries
         (may run slow or cause a time out).
@@ -2384,6 +2662,21 @@ script:
     - contextPath: Uptycs.Parent.upt_remove_time
       description: time that the process was removed
       type: date
+    - contextPath: Uptycs.Parent.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Parent.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Parent.cmdline
+      description: complete argv for the process
+      type: string
+    - contextPath: Uptycs.Parent.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Parent.cwd
+      description: process current working directory
+      type: string
     description: get the parent process information for a particular child process
   - name: uptycs-post-threat-source
     arguments:
@@ -2419,6 +2712,18 @@ script:
     - contextPath: Uptycs.Users.email
       description: Uptycs user's email address
       type: string
+    - contextPath: Uptycs.Users.createdAt
+      description: datetime this user was added
+      type: date
+    - contextPath: Uptycs.Users.updatedAt
+      description: last time this user was updated
+      type: date
+    - contextPath: Uptycs.Users.admin
+      description: true if this user has admin privileges, false otherwise
+      type: boolean
+    - contextPath: Uptycs.Users.active
+      description: true if this user is currently active, false otherwise
+      type: boolean
     description: get a list of Uptycs users
   - name: uptycs-get-asset-groups
     arguments:
@@ -2430,6 +2735,15 @@ script:
     - contextPath: Uptycs.AssetGroups.id
       description: unique Uptycs id for a particular object group
       type: string
+    - contextPath: Uptycs.AssetGroups.custom
+      description: true if this is a custom asset group, false otherwise
+      type: boolean
+    - contextPath: Uptycs.AssetGroups.createdAt
+      description: datetime the group was created
+      type: date
+    - contextPath: Uptycs.AssetGroups.updatedAt
+      description: datetime the group was last updated
+      type: date
     description: get Uptycs asset groups
   - name: uptycs-get-user-asset-groups
     arguments:
@@ -2450,6 +2764,22 @@ script:
     - contextPath: Uptycs.ThreatIndicator.threat_vendor_id
       description: unique Uptycs id which identifies the vendor of this specific threat
         source
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.indicatorType
+      description: type of threat indicator (IPv4, domain,...)
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.indicator
+      description: threat indicator
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.createdAt
+      description: datetime the threat indicator was created
+      type: date
+    - contextPath: Uptycs.ThreatIndicator.threadId
+      description: unique id for the group of threat indicators this thread indicator
+        belongs to
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.id
+      description: unique id for this particular threat indicator
       type: string
     description: retrieve information about a specific threat indicator using a unique
       threat indicator id
@@ -2504,6 +2834,15 @@ script:
     - contextPath: Uptycs.ProcessEvents.upt_time
       description: time at which the process was spawned
       type: date
+    - contextPath: Uptycs.ProcessEvents.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.ProcessEvents.cmdline
+      description: comeplete argv for the process
+      type: string
+    - contextPath: Uptycs.ProcessEvents.cwd
+      description: process current working directory
+      type: string
     description: find process events which are running or have run on a registered
       Uptycs asset
   - name: uptycs-get-process-event-information
@@ -2535,6 +2874,15 @@ script:
     - contextPath: Uptycs.ProcEvent.upt_time
       description: time that the process was spawned
       type: date
+    - contextPath: Uptycs.ProcEvent.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.ProcEvent.cmdline
+      description: comeplete argv for the process
+      type: string
+    - contextPath: Uptycs.ProcEvent.cwd
+      description: process current working directory
+      type: string
     description: get information for a particular process event
   - name: uptycs-get-socket-events
     arguments:
@@ -2595,6 +2943,18 @@ script:
     - contextPath: Uptycs.SocketEvents.upt_asset_id
       description: asset id for asset which ran the specified process
       type: string
+    - contextPath: Uptycs.SocketEvents.socket
+      description: socket used to open the connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.family
+      description: network protocol
+      type: number
+    - contextPath: Uptycs.SocketEvents.action
+      description: type of socket event (accept, connect, or bind)
+      type: string
+    - contextPath: Uptycs.SocketEvents.protocol
+      description: transfer protocol
+      type: number
     description: find processes which opened a socket
   - name: uptycs-get-parent-event-information
     arguments:
@@ -2627,6 +2987,15 @@ script:
     - contextPath: Uptycs.ParentEvent.upt_time
       description: time that the process was spawned
       type: date
+    - contextPath: Uptycs.ParentEvent.path
+      description: path to the parent process binary
+      type: string
+    - contextPath: Uptycs.ParentEvent.cmdline
+      description: complete argv for the parent process
+      type: string
+    - contextPath: Uptycs.ParentEvent.cwd
+      description: parent process current working cirectory
+      type: string
     description: find information for parent process events which are running or have
       run on a registered Uptycs assert
   - name: uptycs-get-socket-event-information
@@ -2670,6 +3039,18 @@ script:
     - contextPath: Uptycs.SocketEvents.upt_asset_id
       description: asset id for asset which ran the specified process
       type: string
+    - contextPath: Uptycs.SocketEvents.action
+      description: type of socket event (accept, connect, or bind)
+      type: string
+    - contextPath: Uptycs.SocketEvents.family
+      description: network protocol
+      type: number
+    - contextPath: Uptycs.SocketEvents.socket
+      description: socket used to open the connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.protocol
+      description: transfer protocol
+      type: number
     description: get information for a particular socket event
   - name: uptycs-get-asset-tags
     arguments:
@@ -2677,6 +3058,67 @@ script:
       required: true
       description: Uptycs asset id for the asset you are looking for.
     description: Retrieve a list of tags for a particular asset
+  - name: uptycs-get-saved-queries
+    arguments:
+    - name: limit
+      description: limit the number of entries returned
+    - name: query_id
+      description: Only return the query with this unique id
+    - name: name
+      description: Only return the query with this name
+    description: Retrieve a saved query or list of all saved queries
+  - name: uptycs-run-saved-query
+    arguments:
+    - name: name
+      description: The name of the query you want to run
+    - name: query_id
+      description: The unique id for the query you want to run
+    - name: asset_id
+      description: '*realtime queries only*  This argument should be used when one
+        wants to run a realtime query on a particular asset.'
+    - name: host_name_is
+      description: '*realtime queries only*  Only return assets with this hostname'
+    - name: host_name_like
+      description: '*realtime queries only* . Only return assets with this string
+        in the hostname.'
+    - name: variable_arguments
+      description: If your saved query has variable arguments, write them here in
+        a json format where the key is the name of the variable argument and value
+        is the value you want to use for this particular query.
+    description: Run a saved query
+  - name: uptycs-post-saved-query
+    arguments:
+    - name: description
+      description: A short description for the query
+      defaultValue: '""'
+    - name: execution_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - global
+      - realtime
+      description: The type of query (global or realtime).
+    - name: name
+      required: true
+      description: The name for the query.  This should be unique to this query.
+    - name: query
+      required: true
+      description: The query which will be saved
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - default
+      - compliance
+      - hardware
+      - incident
+      - system
+      - vulnerability
+      description: Type of issue the query addresses.
+      defaultValue: default
+    - name: grouping
+      description: Add the query to a group of queries.
+      defaultValue: '""'
+    description: Save a query to the Uptycs DB
   dockerimage: bkschmolluptycs/demisto_uptycs:latest
   isfetch: true
   runonce: true
