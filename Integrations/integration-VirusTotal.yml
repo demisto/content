@@ -1316,4 +1316,3 @@ script:
   runonce: false
 tests:
 - virusTotal-test-playbook
-releaseNotes: Added fullResponseGlobal parameter. Determines whether to return all results, which can number in the thousands. If "true", returns all results and overrides the _fullResponse_, _long_ arguments (if set to "false") in a command. If "false", the _fullResponse_, _long_ arguments in the command determines how results are returned.

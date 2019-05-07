@@ -1959,6 +1959,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
 tests:
   - 'Test CommonServer'

@@ -304,4 +304,3 @@ script:
       description: The uuid of the URL you want to search
     description: Get the results page for the given UUID
   runonce: false
-releaseNotes: "Add the functionality to support the urlscan-get-http-transactions script."

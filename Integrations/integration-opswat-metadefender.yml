@@ -327,5 +327,3 @@ script:
   runonce: false
 tests:
   - No tests - no instance
-releaseNotes:
-  'Deprecated use version 2 of integration'
