@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import boto3
 import json
 import re
-import datetime
+from datetime import datetime, date
 from botocore.config import Config
 import urllib3.util
 
@@ -165,13 +165,9 @@ def parse_tag_field(tags_str):
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
-        if isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):  # pylint: disable=E0602
+        elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
@@ -191,7 +187,7 @@ def multi_split(data):
 
 def parse_date(dt):
     arr = dt.split("-")
-    return (datetime.datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
+    return (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
 
 
 """MAIN FUNCTIONS"""
@@ -247,7 +243,7 @@ def describe_instances(args):
                 'PublicIPAddress': instance.get('PublicIpAddress'),
                 'Region': obj['_user_provided_options']['region_name'],
                 'Type': instance['InstanceType'],
-                'LaunchDate': datetime.datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
+                'LaunchDate': datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
                 'PublicDNSName': instance['PublicDnsName'],
                 'Monitoring': instance['Monitoring']['State'],
             })
@@ -396,7 +392,7 @@ def describe_snapshots(args):
             'OwnerId': snapshot['OwnerId'],
             'Progress': snapshot['Progress'],
             'SnapshotId': snapshot['SnapshotId'],
-            'StartTime': datetime.datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'StartTime': datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
             'State': snapshot['State'],
             'VolumeId': snapshot['VolumeId'],
             'VolumeSize': snapshot['VolumeSize'],
@@ -442,7 +438,7 @@ def describe_volumes(args):
             'State': volume['State'],
             'VolumeId': volume['VolumeId'],
             'VolumeType': volume['VolumeType'],
-            'CreateTime': datetime.datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'CreateTime': datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
         })
         if 'Tags' in volume:
             for tag in volume['Tags']:
@@ -486,7 +482,7 @@ def describe_launch_templates(args):
             'CreatedBy': template['CreatedBy'],
             'DefaultVersionNumber': template['DefaultVersionNumber'],
             'LatestVersionNumber': template['LatestVersionNumber'],
-            'CreateTime': datetime.datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'CreateTime': datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
             'Region': obj['_user_provided_options']['region_name'],
         })
 
@@ -753,7 +749,7 @@ def create_snapshot(args):
         'State': response['State'],
         'VolumeId': response['VolumeId'],
         'VolumeSize': response['VolumeSize'],
-        'StartTime': datetime.datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'StartTime': datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
         'Region': obj['_user_provided_options']['region_name'],
     })
 
@@ -859,7 +855,7 @@ def modify_volume(args):
         'OriginalSize': volumeModification['OriginalSize'],
         'OriginalIops': volumeModification['OriginalIops'],
         'OriginalVolumeType': volumeModification['OriginalVolumeType'],
-        'StartTime': datetime.datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'StartTime': datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
         'Progress': volumeModification['Progress'],
         'Region': obj['_user_provided_options']['region_name'],
     })
@@ -989,7 +985,7 @@ def create_volume(args):
 
     data = ({
         'AvailabilityZone': response['AvailabilityZone'],
-        'CreateTime': datetime.datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'CreateTime': datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
         'Encrypted': response['Encrypted'],
         'Size': response['Size'],
         'State': response['State'],
@@ -1028,7 +1024,7 @@ def attach_volume(args):
     }
     response = client.attach_volume(**kwargs)
     data = ({
-        'AttachTime': datetime.datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'AttachTime': datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ'),
         'Device': response['Device'],
         'InstanceId': response['InstanceId'],
         'State': response['State'],
@@ -1061,7 +1057,7 @@ def detach_volume(args):
 
     response = client.detach_volume(**kwargs)
     data = ({
-        'AttachTime': datetime.datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'AttachTime': datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ'),
         'Device': response['Device'],
         'InstanceId': response['InstanceId'],
         'State': response['State'],
@@ -1098,7 +1094,7 @@ def run_instances(args):
     kwargs = {
         'MinCount': int(args.get('count')),
         'MaxCount': int(args.get('count'))
-    }
+    }  # type: dict
     BlockDeviceMappings = None
     if args.get('imageId') is not None:
         kwargs.update({'ImageId': (args.get('imageId'))})
@@ -1121,23 +1117,23 @@ def run_instances(args):
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
-    if args.get('ebsVolumeSize') is not None:
-        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
-    if args.get('ebsVolumeType') is not None:
-        BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
-    if args.get('ebsIops') is not None:
-        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
-    if args.get('ebsDeleteOnTermination') is not None:
-        BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
-    if args.get('ebsKmsKeyId') is not None:
-        BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
-    if args.get('ebsSnapshotId') is not None:
-        BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
-    if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+        if args.get('ebsVolumeSize') is not None:
+            BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+        if args.get('ebsVolumeType') is not None:
+            BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
+        if args.get('ebsIops') is not None:
+            BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+        if args.get('ebsDeleteOnTermination') is not None:
+            BlockDeviceMappings['Ebs'].update(
+                {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+        if args.get('ebsKmsKeyId') is not None:
+            BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
+        if args.get('ebsSnapshotId') is not None:
+            BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
+        if args.get('ebsEncrypted') is not None:
+            BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
     if BlockDeviceMappings:
-        kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})
+        kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})  # type: ignore
 
     if args.get('iamInstanceProfileArn') is not None:
         kwargs.update({
@@ -1145,7 +1141,7 @@ def run_instances(args):
                 'Arn': args.get('iamInstanceProfileArn')}
         })
     if args.get('iamInstanceProfileName') is not None:
-        kwargs.update({
+        kwargs.update({  # type: ignore
             'IamInstanceProfile': {
                 'Name': args.get('iamInstanceProfileName')}
         })
@@ -1160,7 +1156,7 @@ def run_instances(args):
                 'LaunchTemplateName': args.get('launchTemplateName')}
         })
     if args.get('launchTemplateVersion') is not None:
-        kwargs['LaunchTemplate'].update({
+        kwargs['LaunchTemplate'].update({  # type: ignore
             'Version': args.get('launchTemplateVersion')
         })
     if args.get('tags') is not None:
@@ -1180,7 +1176,7 @@ def run_instances(args):
             'PublicIPAddress': instance.get('PublicIpAddress'),
             'Region': obj['_user_provided_options']['region_name'],
             'Type': instance['InstanceType'],
-            'LaunchDate': datetime.datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'LaunchDate': datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
             'PublicDNSName': instance['PublicDnsName'],
             'KeyName': instance['KeyName'],
             'Monitoring': instance['Monitoring']['State'],
@@ -1348,7 +1344,7 @@ def get_latest_ami(args):
     )
     obj = vars(client._client_config)
     kwargs = {}
-    data = []
+    data = {}  # type: dict
 
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1563,8 +1559,8 @@ def describe_reserved_instances(args):
     for i, reservation in enumerate(response['ReservedInstances']):
         data.append({
             'ReservedInstancesId': reservation['ReservedInstancesId'],
-            'Start': datetime.datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ'),
-            'End': datetime.datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ'),
+            'Start': datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ'),
+            'End': datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ'),
             'Duration': reservation['Duration'],
             'InstanceType': reservation['InstanceType'],
             'InstanceCount': reservation['InstanceCount'],
@@ -1653,7 +1649,7 @@ def get_password_data(args):
     data = {
         'InstanceId': response['InstanceId'],
         'PasswordData': response['PasswordData'],
-        'Timestamp': datetime.datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+        'Timestamp': datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
     }
 
     ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
@@ -1793,10 +1789,10 @@ def create_fleet(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)  # noqa:F841
-    kwargs = {}
+    # obj = vars(client._client_config)
+    kwargs = {}  # type: dict
 
-    LaunchSpecification = {}  # noqa:F841
+    # LaunchSpecification = {}
 
     BlockDeviceMappings = None  # noqa:F841
     if args.get('DryRun') is not None:
@@ -1856,7 +1852,7 @@ def create_fleet(args):
     if args.get('ExcessCapacityTerminationPolicy') is not None:
         kwargs.update({'ExcessCapacityTerminationPolicy': (args.get('ExcessCapacityTerminationPolicy'))})
 
-    LaunchTemplateConfigs = {}
+    LaunchTemplateConfigs = {}  # type: dict
     LaunchTemplateSpecification = {}
     if args.get('LaunchTemplateId') is not None:
         LaunchTemplateSpecification.update({
@@ -1874,7 +1870,7 @@ def create_fleet(args):
     if LaunchTemplateSpecification:
         LaunchTemplateConfigs.update({'LaunchTemplateSpecification': LaunchTemplateSpecification})
 
-    Overrides = []
+    Overrides = []  # type: list
 
     if args.get('OverrideInstanceType') is not None:
         arr = multi_split(args.get('OverrideInstanceType'))
@@ -1971,7 +1967,7 @@ def create_fleet(args):
     if args.get('ReplaceUnhealthyInstances') is not None:
         kwargs.update({'ReplaceUnhealthyInstances': (args.get('ReplaceUnhealthyInstances'))})
 
-    TagSpecifications = []
+    TagSpecifications = []  # type: List[dict]
     if args.get('Tags') is not None:
         arr = args.get('Tags').split('#')
         for i, item in enumerate(arr):
@@ -2069,7 +2065,7 @@ def describe_fleets(args):
             'FulfilledOnDemandCapacity': item['FulfilledOnDemandCapacity'],
             'LaunchTemplateId': item['LaunchTemplateConfigs'][0]['LaunchTemplateSpecification'][
                 'LaunchTemplateId'],
-            'CreateTime': datetime.datetime.strftime(item['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'CreateTime': datetime.strftime(item['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
             'TotalTargetCapacity': item['TargetCapacitySpecification']['TotalTargetCapacity'],
             'OnDemandTargetCapacity': item['TargetCapacitySpecification']['OnDemandTargetCapacity'],
             'SpotTargetCapacity': item['TargetCapacitySpecification']['SpotTargetCapacity'],
@@ -2212,25 +2208,25 @@ def create_launch_template(args):
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
-    if args.get('VirtualName') is not None:
-        BlockDeviceMappings.update({'VirtualName': {args.get('VirtualName')}})
-    if args.get('ebsVolumeSize') is not None:
-        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
-    if args.get('ebsVolumeType') is not None:
-        BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
-    if args.get('ebsIops') is not None:
-        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
-    if args.get('ebsDeleteOnTermination') is not None:
-        BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
-    if args.get('ebsKmsKeyId') is not None:
-        BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
-    if args.get('ebsSnapshotId') is not None:
-        BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
-    if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
-    if args.get('NoDevice') is not None:
-        BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
+        if args.get('VirtualName') is not None:
+            BlockDeviceMappings.update({'VirtualName': {args.get('VirtualName')}})
+        if args.get('ebsVolumeSize') is not None:
+            BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+        if args.get('ebsVolumeType') is not None:
+            BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
+        if args.get('ebsIops') is not None:
+            BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+        if args.get('ebsDeleteOnTermination') is not None:
+            BlockDeviceMappings['Ebs'].update(
+                {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+        if args.get('ebsKmsKeyId') is not None:
+            BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
+        if args.get('ebsSnapshotId') is not None:
+            BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
+        if args.get('ebsEncrypted') is not None:
+            BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+        if args.get('NoDevice') is not None:
+            BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
     if BlockDeviceMappings:
         LaunchTemplateData.update({'BlockDeviceMappings': [BlockDeviceMappings]})
 
@@ -2429,7 +2425,7 @@ def delete_launch_template(args):
     data.append({
         'LaunchTemplateId': item['LaunchTemplateId'],
         'LaunchTemplateName': item['LaunchTemplateName'],
-        'CreateTime': datetime.datetime.strftime(item['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'CreateTime': datetime.strftime(item['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
         'CreatedBy': item['CreatedBy'],
         'DefaultVersionNumber': item['DefaultVersionNumber'],
         'LatestVersionNumber': item['LatestVersionNumber'],
