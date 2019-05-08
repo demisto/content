@@ -407,7 +407,7 @@
             "nightly": true
         },
         {
-            "integrations": "WildFire",
+            "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test"
         },
         {
@@ -1051,7 +1051,7 @@
         {
             "integrations": [
                 "Lastline",
-                "WildFire",
+                "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
                 "McAfee Advanced Threat Defense"
@@ -1472,13 +1472,13 @@
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
+        "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
         "block_endpoint_-_carbon_black_response_-_test": "Test for deprecated integration",
         "get_file_sample_from_path_-_generic_-_test": "Test for deprecated integration",
         "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test": "Test for deprecated integration",
         "EWS test": "Test for deprecated integration",
         "DomainTools-Test": "No instance",
-        "Remedy-On-Demand-Test": "No instance",
-        "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks"
+        "Remedy-On-Demand-Test": "No instance"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1614,7 +1614,6 @@
         "McAfee ESM-v10": "Checking",
         "Salesforce": "Checking",
         "okta": "Checking",
-        "WildFire": "Checking",
         "WhatsMyBrowser": "Checking",
         "Check Point": "Checking",
         "Awake Security": "Checking",
@@ -1642,11 +1641,12 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Snowflake": "Isn't working with mocking enabled - needs investigation",
+        "Snowflake": "Trust any cert not working: issue #16572",
         "Google Cloud Compute": "checking",
         "jira-v2": "inconsistent test (uploads randomly generated file each time)",
         "Microsoft Graph User": "checking",
-        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy",
+        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: (Caused by ProxyError('Cannot connect to proxy",
+        "DUO Admin": "Missing proxy and trust any cert option #16893",
         "AWS - CloudWatchLogs": "Integration requires SSL",
         "AWS - CloudTrail": "Integration requires SSL",
         "AWS - EC2": "Integration requires SSL",
