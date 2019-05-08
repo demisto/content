@@ -256,6 +256,7 @@ script:
             return
         if response.status_code is not 200:
             return_error('Error while adding a vaccine. More information: {}, {}'.format(response.status_code, response.reason))
+
         results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
@@ -276,12 +277,21 @@ script:
 
 
     @logger
-    def delete_vaccines(vaccine_ids):
-        vaccine_ids_list = [vaccine_id.strip() for vaccine_id in vaccine_ids.split(',')]
-        response = session.delete(BASE_URL + '/api/vaccination', params={'ids': vaccine_ids_list})
+    def delete_vaccines(vaccine_id):
+        response = session.delete(BASE_URL + '/api/vaccination', params={'ids': [vaccine_id]})
+        if response.status_code == 404:
+            demisto.results('Vaccination with id {} was not found'.format(vaccine_id))
+            return
         if response.status_code is not 200:
-            return_error('Error while deleting vaccination ids: {}. More information: {}, {}'.format(vaccine_ids, response.status_code, response.reason))
-        demisto.results('Vaccines {} were deleted'.format(vaccine_ids))
+            return_error('Error while deleting vaccination id: {}. More information: {}, {}'.format(vaccine_id, response.status_code, response.reason))
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Vaccine \'{}\' was deleted'.format(vaccine_id), response.json(), headerTransform=pascalToSpace, removeNull=True)
+        }
+
+        demisto.results(results)
 
 
     @logger
@@ -339,8 +349,8 @@ script:
             add_vaccine(vaccine_name, vaccine_desc, monitor_only)
 
         def delete_vaccines_command():
-            vaccine_ids = args.get('vaccine_ids')
-            delete_vaccines(vaccine_ids)
+            vaccine_id = args.get('vaccine_id')
+            delete_vaccines(vaccine_id)
 
         def search_process_command():
             processes_search_url = BASE_URL + '/api/processes'
@@ -627,9 +637,9 @@ script:
     description: Retrieves all the mutex vaccines
   - name: minerva-delete-vaccine
     arguments:
-    - name: vaccine_ids
+    - name: vaccine_id
       required: true
-      isArray: true
+      description: The vaccine id
     description: Deletes given vaccines
   - name: minerva-get-exclusions
     arguments: []
