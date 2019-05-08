@@ -1396,6 +1396,7 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
+        "McAfee Advanced Threat Defense": "License expired",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
