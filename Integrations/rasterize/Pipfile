@@ -7,14 +7,8 @@ verify_ssl = true
 pylint = "*"
 pytest = "*"
 pytest-mock = "*"
-flake8 = "*"
 
 [packages]
-oauth2client = "*"
-google-api-python-client = "*"
-google-auth-httplib2 = "*"
-google-auth-oauthlib = "*"
-httplib2 = "*"
 
 [requires]
 python_version = "2.7"

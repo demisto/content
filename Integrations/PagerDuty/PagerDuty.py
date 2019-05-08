@@ -162,8 +162,8 @@ def extract_on_call_user_data(users):
 
 def extract_on_call_now_user_data(users_on_call_now):
     """Extract the user data from the oncalls json."""
-    outputs = []
-    contexts = []
+    outputs = []  # type: List[Dict]
+    contexts = []  # type: List[Dict]
     oncalls = users_on_call_now.get('oncalls', {})
 
     for i in xrange(len(oncalls)):
@@ -307,7 +307,7 @@ def extract_all_schedules_data(schedules):
     contexts = []
     for i in range(len(schedules)):
         output = {}
-        context = {}
+        context = {}  # type: Dict
         data = schedules[i]
 
         output['ID'] = data.get('id')
