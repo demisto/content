@@ -99,6 +99,7 @@ script:
             context = {
                 'Id': data['id'],
                 'Name': data['name'],
+                'Type': data['type'],
                 'Description': data['description'],
                 "IsMonitorOnly": data['isMonitorOnly'],
                 'Last modified by': data['lastModifiedBy'],
@@ -255,7 +256,6 @@ script:
             return
         if response.status_code is not 200:
             return_error('Error while adding a vaccine. More information: {}, {}'.format(response.status_code, response.reason))
-
         results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
@@ -265,7 +265,8 @@ script:
 
         if response.json():
             results['EntryContext'] = create_entry_context(vaccination_url, response.json())
-        return results
+
+        demisto.results(results)
 
 
     @logger
@@ -475,6 +476,9 @@ script:
     - contextPath: Minerva.Vaccine.Id
       description: Mutex vaccination id
       type: string
+    - contextPath: Minerva.Vaccine.Type
+      description: Vaccine type (e.g. Mutex)
+      type: string
     description: Vaccinate with Minerva
     execution: true
   - name: minerva-search-process
@@ -483,22 +487,22 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - '"fileHash"'
-      - '"processCommandLine"'
-      - '"processName"'
-      - '"username"'
-      - '"endpoint"'
+      - fileHash
+      - processCommandLine
+      - processName
+      - username
+      - endpoint
       description: param
     - name: condition
       required: true
       auto: PREDEFINED
       predefined:
-      - '"equalTo"'
-      - '"notEqualTo"'
-      - '"contain"'
-      - '"notContain"'
-      - '"startWith"'
-      - '"endWith"'
+      - equalTo
+      - notEqualTo
+      - contain
+      - notContain
+      - startWith
+      - endWith
       description: condition
     - name: value
       required: true
@@ -532,24 +536,24 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - '"group"'
-      - '"endpoint"'
-      - '"loggedOnUsers"'
-      - '"armorVersion"'
-      - '"receivedIpAddress"'
-      - '"reportedIpAddress"'
-      - '"operatingSystem"'
+      - group
+      - endpoint
+      - loggedOnUsers
+      - armorVersion
+      - receivedIpAddress
+      - reportedIpAddress
+      - operatingSystem
       description: param
     - name: condition
       required: true
       auto: PREDEFINED
       predefined:
-      - '"equalTo"'
-      - '"notEqualTo"'
-      - '"contain"'
-      - '"notContain"'
-      - '"startWith"'
-      - '"endWith"'
+      - equalTo
+      - notEqualTo
+      - contain
+      - notContain
+      - startWith
+      - endWith
       description: condition
     - name: value
       required: true
@@ -605,16 +609,16 @@ script:
     - contextPath: Minerva.Vaccine.Name
       description: Mutex vaccination name
       type: string
-    - contextPath: MInerva.Vaccine.Description
+    - contextPath: Minerva.Vaccine.Description
       description: Mutex vaccination description
       type: string
-    - contextPath: MInerva.Vaccine.isMonitorOnly
+    - contextPath: Minerva.Vaccine.isMonitorOnly
       description: Whether this mutex vaccination is only monitored without simulation
       type: boolean
-    - contextPath: MInerva.Vaccine.lastModifiedBy
+    - contextPath: Minerva.Vaccine.lastModifiedBy
       description: The user that was the last to modify this mutex vaccination
       type: string
-    - contextPath: MInerva.Vaccine.lastModifiedOn
+    - contextPath: Minerva.Vaccine.lastModifiedOn
       description: The date this mutex vaccination was modified on
       type: date
     - contextPath: Minerva.Vaccine.Id
@@ -645,7 +649,7 @@ script:
     - contextPath: Minerva.Exclusion.lastModifiedBy
       description: The user that was the last to modify this exclusion
       type: string
-    - contextPath: MInerva.Exclusion.lastModifiedOn
+    - contextPath: Minerva.Exclusion.lastModifiedOn
       description: The date this exclusion was modified on
       type: date
     - contextPath: Minerva.Exclusion.appliedGroupsIds
