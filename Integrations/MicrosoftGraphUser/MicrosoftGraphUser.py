@@ -21,7 +21,7 @@ DEMISTOBOT = "https://demistobot.demisto.com/msg-user-token"
 PRODUCT = "MicrosoftGraphUser"
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
-NO_OUTPUTS = {}
+NO_OUTPUTS: dict = {}
 
 
 def camel_case_to_readable(text):
