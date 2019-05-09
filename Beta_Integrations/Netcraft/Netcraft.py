@@ -272,6 +272,21 @@ def generate_escalate_takedown_human_readable(response):
     return human_readable
 
 
+def add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown):
+    if isinstance(cur_notes_in_takedown, dict):
+        return [note_context]
+    else:
+        note_already_in_context = False
+        for i in range(len(cur_notes_in_takedown)):
+            cur_note_context = cur_notes_in_takedown[i]
+            if cur_note_context["NoteID"] == note_context["NoteID"]:
+                note_already_in_context = True
+                cur_notes_in_takedown[i] = note_context
+        if not note_already_in_context:
+            cur_notes_in_takedown.append(note_context)
+        return cur_notes_in_takedown
+
+
 def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context):
     note_takedown_index = -1
     if isinstance(all_takedowns_entry_context, dict):
@@ -279,7 +294,8 @@ def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_c
             "ID": note_context["TakedownID"],
             "Note": [note_context]
         }
-        return_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] if all_takedowns_entry_context else [new_takedown_entry_context]
+        return_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] \
+            if all_takedowns_entry_context else [new_takedown_entry_context]
     else:
         for i in range(len(all_takedowns_entry_context)):
             cur_takedown_context = all_takedowns_entry_context[i]
@@ -295,17 +311,18 @@ def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_c
         else:
             takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]
             cur_notes_in_takedown = takedown_context_to_change["Note"]
-            takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown)
+            takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context,
+                                                                                        cur_notes_in_takedown)
             return_takedowns_entry_context = all_takedowns_entry_context
             return_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
     return return_takedowns_entry_context
 
 
-
 def generate_netcraft_context_with_notes(list_of_notes_contexts):
     all_takedowns_entry_context = demisto.context().get("Netcraft", {}).get("Takedown", {})
     for note_context in list_of_notes_contexts:
-        all_takedowns_entry_context = add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context)
+        all_takedowns_entry_context = add_note_to_suitable_takedown_in_context(note_context,
+                                                                               all_takedowns_entry_context)
     return all_takedowns_entry_context
 
 
