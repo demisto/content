@@ -53,14 +53,12 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '5'
       description: Limit the number of results.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
       description: Number of rows to skip.
       isArray: false
       name: offset
@@ -421,6 +419,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
   script: '-'
