@@ -304,523 +304,262 @@ script:
     name: netcraft-escalate-takedown
   isfetch: false
   runonce: false
-  script: |-
-    ''' IMPORTS '''
-    import requests
-    from requests.auth import HTTPBasicAuth
-
-
-    # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    ''' GLOBALS/PARAMS '''
-
-    USERNAME = demisto.params().get('username')
-    PASSWORD = demisto.params().get('password')
-    LIMIT = demisto.params().get('limit')
-
-    USE_SSL = not demisto.params().get('unsecure', False)
-
-
-    # Service base URL
-    BASE_URL = "https://takedown.netcraft.com/"
-
-
-    # codes for maicious site report
-    MALICIOUS_REPORT_SUCCESS = "TD_OK"
-    MALICIOUS_REPORT_ALREADY_EXISTS = "TD_EXISTS"
-    MALICIOUS_REPORT_URL_IS_WILDCARD = "TD_WILDCARD"
-    MALICIOUS_REPORT_ACCESS_DENIED = "TD_DENIED"
-    MALICIOUS_REPORT_ERROR = "TD_ERROR"
-
-
-    # suffix endpoints
-    REPORT_MALICIOUS_SUFFIX = "authorise.php"
-    GET_TAKEDOWN_INFO_SUFFIX = "apis/get-info.php"
-    ACCESS_TAKEDOWN_NOTES_SUFFIX = "apis/note.php"
-    ESCALATE_TAKEDOWN_SUFFIX = "apis/escalate.php"
-    TEST_MODULE_SUFFIX = "authorise-test.php"
-
-
-    # Table Headers
-    TAKEDOWN_INFO_HEADER = ["ID", "Status", "Attack Type", "Date Submitted", "Last Updated", "Reporter", "Group ID",
-                            "Region", "Evidence URL", "Attack URL", "IP", "Domain", "Hostname", "Country Code",
-                            "Domain Attack", "Targeted URL", "Certificate"]
-    TAKEDOWN_NOTE_HEADERS = ["Takedown ID", "Note ID", "Note", "Author", "Time", "Group ID"]
-
-    # Titles for human readables
-    TAKEDOWN_INFO_TITLE = "Takedowns information found"
-    REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
-
-
-    # Remove proxy if not set to true in params
-    if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
-
-    ''' HELPER FUNCTIONS '''
-
-
-    @logger
-    def http_request(method, request_suffix, params=None, data=None, should_convert_to_json=True):
-        # A wrapper for requests lib to send our requests and handle requests and responses better
-        res = requests.request(
-            method,
-            BASE_URL + request_suffix,
-            verify=USE_SSL,
-            params=params,
-            data=data,
-            auth=HTTPBasicAuth(USERNAME, PASSWORD)
-        )
-
-        if should_convert_to_json:
-            return res.json()
-        else:
-            return res.text.splitlines()
-
-
-    @logger
-    def filter_by_id(result_list_to_filter, filtering_id_field, desired_id):
-        """ Given a list of results, returns only the ones that are tied to a given ID.
-
-        Args:
-             result_list_to_filter (list): list of dictionaries, containing data about entries.
-             filtering_id_field: The name of the field containing the IDs to filter.
-             desired_id: The ID to keep when filtering.
-
-        Returns:
-            list: A copy of the input list, containing only entries with the desired ID.
-        """
-
-        new_results_list = [result for result in result_list_to_filter if result[filtering_id_field] == desired_id]
-        return new_results_list
-
-
-    @logger
-    def generate_report_malicious_site_human_readable(response_lines_array):
-        response_status_code = response_lines_array[0]
-        human_readable = ""
-        if response_status_code == MALICIOUS_REPORT_ALREADY_EXISTS:
-            human_readable = "### Takedown not submitted.\n " \
-                             "A takedown for this URL already exists.\n" \
-                             "ID number of the existing takedown: {}.".format(response_lines_array[1])
-        elif response_status_code == MALICIOUS_REPORT_URL_IS_WILDCARD:
-            human_readable = "### Takedown not submitted\n " \
-                             "This URL is a wildcard sub-domain variation of an existing takedown.\n"
-        elif response_status_code == MALICIOUS_REPORT_ACCESS_DENIED:
-            human_readable = "### Takedown not submitted\n Access is denied."
-        elif response_status_code == MALICIOUS_REPORT_ERROR:
-            human_readable = "### Takedown not submitted\n " \
-                             "An error has occurred while submitting your takedown.\n" \
-                             "Error is: {}".format(" ".join(response_lines_array))
-        return human_readable
-
-
-    @logger
-    def return_dict_without_none_values(dict_with_none_values):
-        """ Removes all keys from given dict which have None as a value.
-
-        Args:
-            dict_with_none_values (dict): dict which may include keys with None as their value.
-
-        Returns:
-            dict: A new copy of the input dictionary, from which all keys with None as a value were removed.
-        """
-        new_dict = {key: dict_with_none_values[key] for key in dict_with_none_values if
-                    dict_with_none_values[key] is not None}
-        return new_dict
-
-
-    @logger
-    def generate_takedown_info_context(takedown_info):
-        takedown_info_context = {
-            "ID": takedown_info.get("id"),
-            "GroupID": takedown_info.get("group_id"),
-            "Status": takedown_info.get("status"),
-            "AttackType": takedown_info.get("attack_type"),
-            "AttackURL": takedown_info.get("attack_url"),
-            "Region": takedown_info.get("region"),
-            "DateSubmitted": takedown_info.get("date_submitted"),
-            "LastUpdated": takedown_info.get("last_updated"),
-            "EvidenceURL": takedown_info.get("evidence_url"),
-            "Reporter": takedown_info.get("reporter"),
-            "IP": takedown_info.get("ip"),
-            "Domain": takedown_info.get("domain"),
-            "Hostname": takedown_info.get("hostname"),
-            "CountryCode": takedown_info.get("country_code"),
-            "DomainAttack": takedown_info.get("domain_attack"),
-            "TargetedURL": takedown_info.get("targeted_url"),
-            "Certificate": takedown_info.get("certificate")
-        }
-
-        # takedown_info_context = return_dict_without_none_values(takedown_info_context)
-        # return takedown_info_context
-        return createContext(takedown_info_context, removeNull=True)
-
-
-    @logger
-    def gen_takedown_info_human_readable(list_of_takedowns_contexts, title=TAKEDOWN_INFO_TITLE):
-        contexts_in_human_readable_format = []
-        for takedown_info_context in list_of_takedowns_contexts:
-            human_readable_dict = {
-                "ID": takedown_info_context.get("ID"),
-                "Status": takedown_info_context.get("Status"),
-                "Attack Type": takedown_info_context.get("AttackType"),
-                "Date Submitted": takedown_info_context.get("DateSubmitted"),
-                "Last Updated": takedown_info_context.get("LastUpdated"),
-                "Reporter": takedown_info_context.get("Reporter"),
-                "Group ID": takedown_info_context.get("GroupID"),
-                "Region": takedown_info_context.get("Region"),
-                "Evidence URL": takedown_info_context.get("EvidenceURL"),
-                "Attack URL": takedown_info_context.get("AttackURL"),
-                "IP": takedown_info_context.get("IP"),
-                "Domain": takedown_info_context.get("Domain"),
-                "Hostname": takedown_info_context.get("Hostname"),
-                "Country Code": takedown_info_context.get("CountryCode"),
-                "Domain Attack": takedown_info_context.get("DomainAttack"),
-                "Targeted URL": takedown_info_context.get("TargetedURL"),
-                "Certificate": takedown_info_context.get("Certificate")
-            }
-            human_readable_dict = return_dict_without_none_values(human_readable_dict)
-            contexts_in_human_readable_format.append(human_readable_dict)
-
-        human_readable = tableToMarkdown(title, contexts_in_human_readable_format,
-                                         headers=TAKEDOWN_INFO_HEADER)
-        return human_readable
-
-
-    @logger
-    def generate_list_of_takedowns_context(list_of_takedowns_infos):
-        takedowns_contexts_list = []
-        for takedown_info in list_of_takedowns_infos:
-            takedown_context = generate_takedown_info_context(takedown_info)
-            takedowns_contexts_list.append(takedown_context)
-        return takedowns_contexts_list
-
-
-    @logger
-    def generate_takedown_note_context(takedown_note_json):
-        takedown_note_context = {
-            "TakedownID": takedown_note_json.get("takedown_id"),
-            "NoteID": takedown_note_json.get("note_id"),
-            "GroupID": takedown_note_json.get("group_id"),
-            "Author": takedown_note_json.get("author"),
-            "Note": takedown_note_json.get("note"),
-            "Time": takedown_note_json.get("time")
-        }
-        takedown_note_context = return_dict_without_none_values(takedown_note_context)
-        return takedown_note_context
-
-
-    @logger
-    def generate_list_of_takedown_notes_contexts(list_of_takedowns_notes):
-        takedown_notes_contexts_list = []
-        for takedown_note in list_of_takedowns_notes:
-            takedown_note_context = generate_takedown_note_context(takedown_note)
-            takedown_notes_contexts_list.append(takedown_note_context)
-        return takedown_notes_contexts_list
-
-
-    @logger
-    def gen_takedown_notes_human_readable(entry_context):
-        contexts_in_human_readable_format = []
-        for takedown_note_context in entry_context:
-            human_readable_dict = {
-                "Takedown ID": takedown_note_context.get("TakedownID"),
-                "Note ID": takedown_note_context.get("NoteID"),
-                "Group ID": takedown_note_context.get("GroupID"),
-                "Author": takedown_note_context.get("Author"),
-                "Note": takedown_note_context.get("Note"),
-                "Time": takedown_note_context.get("Time")
-            }
-            human_readable_dict = return_dict_without_none_values(human_readable_dict)
-            contexts_in_human_readable_format.append(human_readable_dict)
-
-        human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, contexts_in_human_readable_format,
-                                         headers=TAKEDOWN_NOTE_HEADERS)
-        return human_readable
-
-
-    @logger
-    def generate_add_note_human_readable(response):
-        # if the request was successful, the response includes the id of the created note
-        if "note_id" in response:
-            human_readable = "### Note added succesfully\n" \
-                             "ID of the note created: {0}".format(response["note_id"])
-        else:
-            human_readable = "### Failed to add note\n" \
-                             "An error occured while trying to add the note.\n" \
-                             "The error code is: {0}.\n" \
-                             "The error message is: {1}.".format(response["error_code"], response["error_code"])
-        return human_readable
-
-
-    @logger
-    def string_to_bool(string_representing_bool):
-        return string_representing_bool.lower() == "true"
-
-
-    @logger
-    def generate_escalate_takedown_human_readable(response):
-        if "status" in response:
-            human_readable = "### Takedown escalated successfully"
-        else:
-            human_readable = "### Takedown escalation failed\n" \
-                             "An error occured on the takedown escalation attempt.\n" \
-                             "Error code is: {0}\n" \
-                             "Error message from Netcraft is: {1}".format(response["error_code"], response["error_message"])
-        return human_readable
-
-
-    ''' COMMANDS + REQUESTS FUNCTIONS '''
-
-
-    @logger
-    def escalate_takedown(takedown_id):
-        data_for_request = {
-            "takedown_id": takedown_id
-        }
-        request_result = http_request("POST", ESCALATE_TAKEDOWN_SUFFIX, data=data_for_request)
-        return request_result
-
-
-    def escalate_takedown_command():
-        args = demisto.args()
-        response = escalate_takedown(args["takedown_id"])
-        human_readable = generate_escalate_takedown_human_readable(response)
-        return_outputs(
-            readable_output=human_readable,
-            outputs={},
-            raw_response=response
-        )
-
-
-    @logger
-    def add_notes_to_takedown(takedown_id, note, notify):
-        data_for_request = {
-            "takedown_id": takedown_id,
-            "note": note,
-            "notify": notify
-        }
-
-        data_for_request = return_dict_without_none_values(data_for_request)
-
-        request_result = http_request("POST", ACCESS_TAKEDOWN_NOTES_SUFFIX, data=data_for_request)
-        return request_result
-
-
-    def add_notes_to_takedown_command():
-        args = demisto.args()
-        note = args.get("note")
-        notify = string_to_bool(args.get("notify")) if args.get("notify") else None
-        takedown_id = int(args["takedown_id"])
-        response = add_notes_to_takedown(takedown_id, note, notify)
-        human_readable = generate_add_note_human_readable(response)
-        return_outputs(
-            readable_output=human_readable,
-            outputs=response
-        )
-
-
-    def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
-        data_for_request = {
-            "takedown_id": takedown_id,
-            "group_id": group_id,
-            "date_to": date_to,
-            "date_from": date_from,
-            "author": author
-        }
-
-        data_for_request = return_dict_without_none_values(data_for_request)
-
-        request_result = http_request("GET", ACCESS_TAKEDOWN_NOTES_SUFFIX, data=data_for_request)
-        return request_result
-
-
-    def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context):
-        note_takedown_index = -1
-        if isinstance(all_takedowns_entry_context, dict):
-            new_takedown_entry_context = {
-                "ID": note_context["TakedownID"],
-                "Note": [note_context]
-            }
-            return_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] if all_takedowns_entry_context else [new_takedown_entry_context]
-        else:
-            for i in range(len(all_takedowns_entry_context)):
-                cur_takedown_context = all_takedowns_entry_context[i]
-                if cur_takedown_context["ID"] == note_context["TakedownID"]:
-                    note_takedown_index = i
-            if note_takedown_index == -1:
-                new_takedown_entry_context = {
-                    "ID": note_context["TakedownID"],
-                    "Note": [note_context]
-                }
-                return_takedowns_entry_context = all_takedowns_entry_context
-                return_takedowns_entry_context.append(new_takedown_entry_context)
-            else:
-                takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]
-                cur_notes_in_takedown = takedown_context_to_change["Note"]
-                takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown)
-                return_takedowns_entry_context = all_takedowns_entry_context
-                return_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
-        return return_takedowns_entry_context
-
-
-
-    def generate_netcraft_context_with_notes(list_of_notes_contexts):
-        all_takedowns_entry_context = demisto.context().get("Netcraft", {}).get("Takedown", {})
-        for note_context in list_of_notes_contexts:
-            all_takedowns_entry_context = add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context)
-        return all_takedowns_entry_context
-
-
-    def get_takedown_notes_command():
-        args = demisto.args()
-        takedown_id = int(args.get("takedown_id")) if args.get("takedown_id") else None
-        group_id = int(args.get("group_id")) if args.get("group_id") else None
-        date_from = args.get("date_from")
-        date_to = args.get("date_to")
-        author = args.get("author")
-        list_of_takedowns_notes = get_takedown_notes(takedown_id, group_id, date_from, date_to, author)
-        if len(list_of_takedowns_notes) > LIMIT:
-            list_of_takedowns_notes = list_of_takedowns_notes[:LIMIT]
-        if takedown_id:
-            list_of_takedowns_notes = filter_by_id(list_of_takedowns_notes, "takedown_id", int(takedown_id))
-        list_of_notes_contexts = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)
-        entry_context = {
-            "Netcraft.Takedown(val.ID == obj.ID)": generate_netcraft_context_with_notes(list_of_notes_contexts)
-        }
-        human_readable = gen_takedown_notes_human_readable(list_of_notes_contexts)
-        return_outputs(
-            readable_output=human_readable,
-            outputs=entry_context,
-            raw_response=list_of_takedowns_notes
-        )
-
-
-    @logger
-    def get_takedown_info(takedown_id, ip, url, updated_since, date_from, region):
-        data_for_request = {
-            "id": takedown_id,
-            "ip": ip,
-            "url": url,
-            "updated_since": updated_since,
-            "date_from": date_from,
-            "region": region,
-        }
-
-        data_for_request = return_dict_without_none_values(data_for_request)
-
-        request_result = http_request("GET", GET_TAKEDOWN_INFO_SUFFIX, data=data_for_request)
-        return request_result
-
-
-    def get_takedown_info_command():
-        args = demisto.args()
-        takedown_id = int(args.get("id")) if args.get("id") else None
-        ip = args.get("ip")
-        url = args.get("url")
-        updated_since = args.get("updated_since")
-        date_from = args.get("date_from")
-        region = args.get("region")
-        list_of_takedowns_infos = get_takedown_info(takedown_id, ip, url, updated_since, date_from, region)
-        if len(list_of_takedowns_infos) > LIMIT:
-            list_of_takedowns_infos = list_of_takedowns_infos[:LIMIT]
-        if takedown_id:
-            list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, "id", str(takedown_id))
-        list_of_takedowns_contexts = generate_list_of_takedowns_context(list_of_takedowns_infos)
-        human_readable = gen_takedown_info_human_readable(list_of_takedowns_contexts)
-        entry_context = {
-            'Netcraft.Takedown(val.ID == obj.ID)': list_of_takedowns_contexts
-        }
-        return_outputs(
-            readable_output=human_readable,
-            raw_response=list_of_takedowns_infos,
-            outputs=entry_context,
-        )
-
-
-    @logger
-    def report_malicious_site(malicious_site_url, comment, is_test_request=False):
-        data_for_request = {
-            "attack": malicious_site_url,
-            "comment": comment
-        }
-        if is_test_request:
-            request_url_suffix = TEST_MODULE_SUFFIX
-        else:
-            request_url_suffix = REPORT_MALICIOUS_SUFFIX
-        request_result = http_request("POST", request_url_suffix, data=data_for_request, should_convert_to_json=False)
-        return request_result
-
-
-    def report_malicious_site_command():
-        args = demisto.args()
-        entry_context = {}
-        response_lines_array = report_malicious_site(args["malicious_site_url"], args["comment"])
-        result_answer = response_lines_array[0]
-        if result_answer == MALICIOUS_REPORT_SUCCESS:
-            new_takedown_id = response_lines_array[1]
-            # Until the API bug is fixed, this list will include info of all takedowns and not just the new one
-            new_takedown_infos = get_takedown_info(new_takedown_id)
-            if len(new_takedown_infos) > LIMIT:
-                new_takedown_infos = new_takedown_infos[:LIMIT]
-            new_takedown_infos = filter_by_id(new_takedown_infos, "id", new_takedown_id)
-            list_of_new_takedown_contexts = generate_list_of_takedowns_context(new_takedown_infos)
-            human_readable = gen_takedown_info_human_readable(list_of_new_takedown_contexts, REPORT_MALICIOUS_SUCCESS_TITLE)
-            entry_context = {
-                'Netcraft.Takedown(val.ID == obj.ID)': list_of_new_takedown_contexts
-            }
-        else:
-            human_readable = generate_report_malicious_site_human_readable(response_lines_array)
-
-        return_outputs(
-            readable_output=human_readable,
-            outputs=entry_context,
-            raw_response=entry_context
-        )
-
-
-    def test_module():
-        """
-        Performs basic get request to get item samples
-        """
-        try:
-            test_result = report_malicious_site("https://www.test.com", "test", True)
-            if test_result[0] != MALICIOUS_REPORT_SUCCESS:
-                raise Exception("Test request failed.")
-        except Exception as ex:
-            raise Exception(str(ex))
-        demisto.results("ok")
-
-
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-    LOG('Command being called is %s' % (demisto.command()))
-
-    try:
-        if demisto.command() == 'test-module':
-            test_module()
-        elif demisto.command() == 'netcraft-report-malicious-site':
-            report_malicious_site_command()
-        elif demisto.command() == 'netcraft-get-takedown-info':
-            get_takedown_info_command()
-        elif demisto.command() == 'netcraft-get-takedown-notes':
-            get_takedown_notes_command()
-        elif demisto.command() == 'netcraft-add-notes-to-takedown':
-            add_notes_to_takedown_command()
-        elif demisto.command() == 'netcraft-escalate-takedown':
-            escalate_takedown_command()
-
-
-    # Log exceptions
-    except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
-        raise
+  script: "''' IMPORTS '''\nimport requests\nfrom requests.auth import HTTPBasicAuth\n\
+    \n\n# Disable insecure warnings\nrequests.packages.urllib3.disable_warnings()\n\
+    \n''' GLOBALS/PARAMS '''\n\nUSERNAME = demisto.params().get('username')\nPASSWORD\
+    \ = demisto.params().get('password')\nLIMIT = demisto.params().get('limit')\n\n\
+    USE_SSL = not demisto.params().get('unsecure', False)\n\n\n# Service base URL\n\
+    BASE_URL = \"https://takedown.netcraft.com/\"\n\n\n# codes for maicious site report\n\
+    MALICIOUS_REPORT_SUCCESS = \"TD_OK\"\nMALICIOUS_REPORT_ALREADY_EXISTS = \"TD_EXISTS\"\
+    \nMALICIOUS_REPORT_URL_IS_WILDCARD = \"TD_WILDCARD\"\nMALICIOUS_REPORT_ACCESS_DENIED\
+    \ = \"TD_DENIED\"\nMALICIOUS_REPORT_ERROR = \"TD_ERROR\"\n\n\n# suffix endpoints\n\
+    REPORT_MALICIOUS_SUFFIX = \"authorise.php\"\nGET_TAKEDOWN_INFO_SUFFIX = \"apis/get-info.php\"\
+    \nACCESS_TAKEDOWN_NOTES_SUFFIX = \"apis/note.php\"\nESCALATE_TAKEDOWN_SUFFIX =\
+    \ \"apis/escalate.php\"\nTEST_MODULE_SUFFIX = \"authorise-test.php\"\n\n\n# Table\
+    \ Headers\nTAKEDOWN_INFO_HEADER = [\"ID\", \"Status\", \"Attack Type\", \"Date\
+    \ Submitted\", \"Last Updated\", \"Reporter\", \"Group ID\",\n               \
+    \         \"Region\", \"Evidence URL\", \"Attack URL\", \"IP\", \"Domain\", \"\
+    Hostname\", \"Country Code\",\n                        \"Domain Attack\", \"Targeted\
+    \ URL\", \"Certificate\"]\nTAKEDOWN_NOTE_HEADERS = [\"Takedown ID\", \"Note ID\"\
+    , \"Note\", \"Author\", \"Time\", \"Group ID\"]\n\n# Titles for human readables\n\
+    TAKEDOWN_INFO_TITLE = \"Takedowns information found\"\nREPORT_MALICIOUS_SUCCESS_TITLE\
+    \ = \"New takedown successfully created\"\n\n\n# Remove proxy if not set to true\
+    \ in params\nif not demisto.params().get('proxy'):\n    del os.environ['HTTP_PROXY']\n\
+    \    del os.environ['HTTPS_PROXY']\n    del os.environ['http_proxy']\n    del\
+    \ os.environ['https_proxy']\n\n\n''' HELPER FUNCTIONS '''\n\n\n@logger\ndef http_request(method,\
+    \ request_suffix, params=None, data=None, should_convert_to_json=True):\n    #\
+    \ A wrapper for requests lib to send our requests and handle requests and responses\
+    \ better\n    res = requests.request(\n        method,\n        BASE_URL + request_suffix,\n\
+    \        verify=USE_SSL,\n        params=params,\n        data=data,\n       \
+    \ auth=HTTPBasicAuth(USERNAME, PASSWORD)\n    )\n\n    if should_convert_to_json:\n\
+    \        return res.json()\n    else:\n        return res.text.splitlines()\n\n\
+    \n@logger\ndef filter_by_id(result_list_to_filter, filtering_id_field, desired_id):\n\
+    \    \"\"\" Given a list of results, returns only the ones that are tied to a\
+    \ given ID.\n\n    Args:\n         result_list_to_filter (list): list of dictionaries,\
+    \ containing data about entries.\n         filtering_id_field: The name of the\
+    \ field containing the IDs to filter.\n         desired_id: The ID to keep when\
+    \ filtering.\n\n    Returns:\n        list: A copy of the input list, containing\
+    \ only entries with the desired ID.\n    \"\"\"\n\n    new_results_list = [result\
+    \ for result in result_list_to_filter if result[filtering_id_field] == desired_id]\n\
+    \    return new_results_list\n\n\n@logger\ndef generate_report_malicious_site_human_readable(response_lines_array):\n\
+    \    response_status_code = response_lines_array[0]\n    human_readable = \"\"\
+    \n    if response_status_code == MALICIOUS_REPORT_ALREADY_EXISTS:\n        human_readable\
+    \ = \"### Takedown not submitted.\\n \" \\\n                         \"A takedown\
+    \ for this URL already exists.\\n\" \\\n                         \"ID number of\
+    \ the existing takedown: {}.\".format(response_lines_array[1])\n    elif response_status_code\
+    \ == MALICIOUS_REPORT_URL_IS_WILDCARD:\n        human_readable = \"### Takedown\
+    \ not submitted\\n \" \\\n                         \"This URL is a wildcard sub-domain\
+    \ variation of an existing takedown.\\n\"\n    elif response_status_code == MALICIOUS_REPORT_ACCESS_DENIED:\n\
+    \        human_readable = \"### Takedown not submitted\\n Access is denied.\"\n\
+    \    elif response_status_code == MALICIOUS_REPORT_ERROR:\n        human_readable\
+    \ = \"### Takedown not submitted\\n \" \\\n                         \"An error\
+    \ has occurred while submitting your takedown.\\n\" \\\n                     \
+    \    \"Error is: {}\".format(\" \".join(response_lines_array))\n    return human_readable\n\
+    \n\n@logger\ndef return_dict_without_none_values(dict_with_none_values):\n   \
+    \ \"\"\" Removes all keys from given dict which have None as a value.\n\n    Args:\n\
+    \        dict_with_none_values (dict): dict which may include keys with None as\
+    \ their value.\n\n    Returns:\n        dict: A new copy of the input dictionary,\
+    \ from which all keys with None as a value were removed.\n    \"\"\"\n    new_dict\
+    \ = {key: dict_with_none_values[key] for key in dict_with_none_values if\n   \
+    \             dict_with_none_values[key] is not None}\n    return new_dict\n\n\
+    \n@logger\ndef generate_takedown_info_context(takedown_info):\n    takedown_info_context\
+    \ = {\n        \"ID\": takedown_info.get(\"id\"),\n        \"GroupID\": takedown_info.get(\"\
+    group_id\"),\n        \"Status\": takedown_info.get(\"status\"),\n        \"AttackType\"\
+    : takedown_info.get(\"attack_type\"),\n        \"AttackURL\": takedown_info.get(\"\
+    attack_url\"),\n        \"Region\": takedown_info.get(\"region\"),\n        \"\
+    DateSubmitted\": takedown_info.get(\"date_submitted\"),\n        \"LastUpdated\"\
+    : takedown_info.get(\"last_updated\"),\n        \"EvidenceURL\": takedown_info.get(\"\
+    evidence_url\"),\n        \"Reporter\": takedown_info.get(\"reporter\"),\n   \
+    \     \"IP\": takedown_info.get(\"ip\"),\n        \"Domain\": takedown_info.get(\"\
+    domain\"),\n        \"Hostname\": takedown_info.get(\"hostname\"),\n        \"\
+    CountryCode\": takedown_info.get(\"country_code\"),\n        \"DomainAttack\"\
+    : takedown_info.get(\"domain_attack\"),\n        \"TargetedURL\": takedown_info.get(\"\
+    targeted_url\"),\n        \"Certificate\": takedown_info.get(\"certificate\")\n\
+    \    }\n\n    # takedown_info_context = return_dict_without_none_values(takedown_info_context)\n\
+    \    # return takedown_info_context\n    return createContext(takedown_info_context,\
+    \ removeNull=True)\n\n\n@logger\ndef gen_takedown_info_human_readable(list_of_takedowns_contexts,\
+    \ title=TAKEDOWN_INFO_TITLE):\n    contexts_in_human_readable_format = []\n  \
+    \  for takedown_info_context in list_of_takedowns_contexts:\n        human_readable_dict\
+    \ = {\n            \"ID\": takedown_info_context.get(\"ID\"),\n            \"\
+    Status\": takedown_info_context.get(\"Status\"),\n            \"Attack Type\"\
+    : takedown_info_context.get(\"AttackType\"),\n            \"Date Submitted\":\
+    \ takedown_info_context.get(\"DateSubmitted\"),\n            \"Last Updated\"\
+    : takedown_info_context.get(\"LastUpdated\"),\n            \"Reporter\": takedown_info_context.get(\"\
+    Reporter\"),\n            \"Group ID\": takedown_info_context.get(\"GroupID\"\
+    ),\n            \"Region\": takedown_info_context.get(\"Region\"),\n         \
+    \   \"Evidence URL\": takedown_info_context.get(\"EvidenceURL\"),\n          \
+    \  \"Attack URL\": takedown_info_context.get(\"AttackURL\"),\n            \"IP\"\
+    : takedown_info_context.get(\"IP\"),\n            \"Domain\": takedown_info_context.get(\"\
+    Domain\"),\n            \"Hostname\": takedown_info_context.get(\"Hostname\"),\n\
+    \            \"Country Code\": takedown_info_context.get(\"CountryCode\"),\n \
+    \           \"Domain Attack\": takedown_info_context.get(\"DomainAttack\"),\n\
+    \            \"Targeted URL\": takedown_info_context.get(\"TargetedURL\"),\n \
+    \           \"Certificate\": takedown_info_context.get(\"Certificate\")\n    \
+    \    }\n        human_readable_dict = return_dict_without_none_values(human_readable_dict)\n\
+    \        contexts_in_human_readable_format.append(human_readable_dict)\n\n   \
+    \ human_readable = tableToMarkdown(title, contexts_in_human_readable_format,\n\
+    \                                     headers=TAKEDOWN_INFO_HEADER)\n    return\
+    \ human_readable\n\n\n@logger\ndef generate_list_of_takedowns_context(list_of_takedowns_infos):\n\
+    \    takedowns_contexts_list = []\n    for takedown_info in list_of_takedowns_infos:\n\
+    \        takedown_context = generate_takedown_info_context(takedown_info)\n  \
+    \      takedowns_contexts_list.append(takedown_context)\n    return takedowns_contexts_list\n\
+    \n\n@logger\ndef generate_takedown_note_context(takedown_note_json):\n    takedown_note_context\
+    \ = {\n        \"TakedownID\": takedown_note_json.get(\"takedown_id\"),\n    \
+    \    \"NoteID\": takedown_note_json.get(\"note_id\"),\n        \"GroupID\": takedown_note_json.get(\"\
+    group_id\"),\n        \"Author\": takedown_note_json.get(\"author\"),\n      \
+    \  \"Note\": takedown_note_json.get(\"note\"),\n        \"Time\": takedown_note_json.get(\"\
+    time\")\n    }\n    takedown_note_context = return_dict_without_none_values(takedown_note_context)\n\
+    \    return takedown_note_context\n\n\n@logger\ndef generate_list_of_takedown_notes_contexts(list_of_takedowns_notes):\n\
+    \    takedown_notes_contexts_list = []\n    for takedown_note in list_of_takedowns_notes:\n\
+    \        takedown_note_context = generate_takedown_note_context(takedown_note)\n\
+    \        takedown_notes_contexts_list.append(takedown_note_context)\n    return\
+    \ takedown_notes_contexts_list\n\n\n@logger\ndef gen_takedown_notes_human_readable(entry_context):\n\
+    \    contexts_in_human_readable_format = []\n    for takedown_note_context in\
+    \ entry_context:\n        human_readable_dict = {\n            \"Takedown ID\"\
+    : takedown_note_context.get(\"TakedownID\"),\n            \"Note ID\": takedown_note_context.get(\"\
+    NoteID\"),\n            \"Group ID\": takedown_note_context.get(\"GroupID\"),\n\
+    \            \"Author\": takedown_note_context.get(\"Author\"),\n            \"\
+    Note\": takedown_note_context.get(\"Note\"),\n            \"Time\": takedown_note_context.get(\"\
+    Time\")\n        }\n        human_readable_dict = return_dict_without_none_values(human_readable_dict)\n\
+    \        contexts_in_human_readable_format.append(human_readable_dict)\n\n   \
+    \ human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, contexts_in_human_readable_format,\n\
+    \                                     headers=TAKEDOWN_NOTE_HEADERS)\n    return\
+    \ human_readable\n\n\n@logger\ndef generate_add_note_human_readable(response):\n\
+    \    # if the request was successful, the response includes the id of the created\
+    \ note\n    if \"note_id\" in response:\n        human_readable = \"### Note added\
+    \ succesfully\\n\" \\\n                         \"ID of the note created: {0}\"\
+    .format(response[\"note_id\"])\n    else:\n        human_readable = \"### Failed\
+    \ to add note\\n\" \\\n                         \"An error occured while trying\
+    \ to add the note.\\n\" \\\n                         \"The error code is: {0}.\\\
+    n\" \\\n                         \"The error message is: {1}.\".format(response[\"\
+    error_code\"], response[\"error_code\"])\n    return human_readable\n\n\n@logger\n\
+    def string_to_bool(string_representing_bool):\n    return string_representing_bool.lower()\
+    \ == \"true\"\n\n\n@logger\ndef generate_escalate_takedown_human_readable(response):\n\
+    \    if \"status\" in response:\n        human_readable = \"### Takedown escalated\
+    \ successfully\"\n    else:\n        human_readable = \"### Takedown escalation\
+    \ failed\\n\" \\\n                         \"An error occured on the takedown\
+    \ escalation attempt.\\n\" \\\n                         \"Error code is: {0}\\\
+    n\" \\\n                         \"Error message from Netcraft is: {1}\".format(response[\"\
+    error_code\"], response[\"error_message\"])\n    return human_readable\n\n\ndef\
+    \ add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown):\n\
+    \    if isinstance(cur_notes_in_takedown, dict):\n        return [note_context]\n\
+    \    else:\n        note_already_in_context = False\n        for i in range(len(cur_notes_in_takedown)):\n\
+    \            cur_note_context = cur_notes_in_takedown[i]\n            if cur_note_context[\"\
+    NoteID\"] == note_context[\"NoteID\"]:\n                note_already_in_context\
+    \ = True\n                cur_notes_in_takedown[i] = note_context\n        if\
+    \ not note_already_in_context:\n            cur_notes_in_takedown.append(note_context)\n\
+    \        return cur_notes_in_takedown\n            \n\n\ndef add_note_to_suitable_takedown_in_context(note_context,\
+    \ all_takedowns_entry_context):\n    note_takedown_index = -1\n    if isinstance(all_takedowns_entry_context,\
+    \ dict):\n        new_takedown_entry_context = {\n            \"ID\": note_context[\"\
+    TakedownID\"],\n            \"Note\": [note_context]\n        }\n        return_takedowns_entry_context\
+    \ = [all_takedowns_entry_context, new_takedown_entry_context] \\\n           \
+    \ if all_takedowns_entry_context else [new_takedown_entry_context]\n    else:\n\
+    \        for i in range(len(all_takedowns_entry_context)):\n            cur_takedown_context\
+    \ = all_takedowns_entry_context[i]\n            if cur_takedown_context[\"ID\"\
+    ] == note_context[\"TakedownID\"]:\n                note_takedown_index = i\n\
+    \        if note_takedown_index == -1:\n            new_takedown_entry_context\
+    \ = {\n                \"ID\": note_context[\"TakedownID\"],\n               \
+    \ \"Note\": [note_context]\n            }\n            return_takedowns_entry_context\
+    \ = all_takedowns_entry_context\n            return_takedowns_entry_context.append(new_takedown_entry_context)\n\
+    \        else:\n            takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]\n\
+    \            cur_notes_in_takedown = takedown_context_to_change[\"Note\"]\n  \
+    \          takedown_context_to_change[\"Note\"] = add_or_update_note_context_in_takedown(note_context,\
+    \ cur_notes_in_takedown)\n            return_takedowns_entry_context = all_takedowns_entry_context\n\
+    \            return_takedowns_entry_context[note_takedown_index] = takedown_context_to_change\n\
+    \    return return_takedowns_entry_context\n\n\n\ndef generate_netcraft_context_with_notes(list_of_notes_contexts):\n\
+    \    all_takedowns_entry_context = demisto.context().get(\"Netcraft\", {}).get(\"\
+    Takedown\", {})\n    for note_context in list_of_notes_contexts:\n        all_takedowns_entry_context\
+    \ = add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context)\n\
+    \    return all_takedowns_entry_context\n\n\n''' COMMANDS + REQUESTS FUNCTIONS\
+    \ '''\n\n\n@logger\ndef escalate_takedown(takedown_id):\n    data_for_request\
+    \ = {\n        \"takedown_id\": takedown_id\n    }\n    request_result = http_request(\"\
+    POST\", ESCALATE_TAKEDOWN_SUFFIX, data=data_for_request)\n    return request_result\n\
+    \n\ndef escalate_takedown_command():\n    args = demisto.args()\n    response\
+    \ = escalate_takedown(args[\"takedown_id\"])\n    human_readable = generate_escalate_takedown_human_readable(response)\n\
+    \    return_outputs(\n        readable_output=human_readable,\n        outputs={},\n\
+    \        raw_response=response\n    )\n\n\n@logger\ndef add_notes_to_takedown(takedown_id,\
+    \ note, notify):\n    data_for_request = {\n        \"takedown_id\": takedown_id,\n\
+    \        \"note\": note,\n        \"notify\": notify\n    }\n\n    data_for_request\
+    \ = return_dict_without_none_values(data_for_request)\n\n    request_result =\
+    \ http_request(\"POST\", ACCESS_TAKEDOWN_NOTES_SUFFIX, data=data_for_request)\n\
+    \    return request_result\n\n\ndef add_notes_to_takedown_command():\n    args\
+    \ = demisto.args()\n    note = args.get(\"note\")\n    notify = string_to_bool(args.get(\"\
+    notify\")) if args.get(\"notify\") else None\n    takedown_id = int(args[\"takedown_id\"\
+    ])\n    response = add_notes_to_takedown(takedown_id, note, notify)\n    human_readable\
+    \ = generate_add_note_human_readable(response)\n    return_outputs(\n        readable_output=human_readable,\n\
+    \        outputs=response\n    )\n\n\ndef get_takedown_notes(takedown_id, group_id,\
+    \ date_from, date_to, author):\n    data_for_request = {\n        \"takedown_id\"\
+    : takedown_id,\n        \"group_id\": group_id,\n        \"date_to\": date_to,\n\
+    \        \"date_from\": date_from,\n        \"author\": author\n    }\n\n    data_for_request\
+    \ = return_dict_without_none_values(data_for_request)\n\n    request_result =\
+    \ http_request(\"GET\", ACCESS_TAKEDOWN_NOTES_SUFFIX, data=data_for_request)\n\
+    \    return request_result\n\n\ndef get_takedown_notes_command():\n    args =\
+    \ demisto.args()\n    takedown_id = int(args.get(\"takedown_id\")) if args.get(\"\
+    takedown_id\") else None\n    group_id = int(args.get(\"group_id\")) if args.get(\"\
+    group_id\") else None\n    date_from = args.get(\"date_from\")\n    date_to =\
+    \ args.get(\"date_to\")\n    author = args.get(\"author\")\n    list_of_takedowns_notes\
+    \ = get_takedown_notes(takedown_id, group_id, date_from, date_to, author)\n  \
+    \  if len(list_of_takedowns_notes) > LIMIT:\n        list_of_takedowns_notes =\
+    \ list_of_takedowns_notes[:LIMIT]\n    if takedown_id:\n        list_of_takedowns_notes\
+    \ = filter_by_id(list_of_takedowns_notes, \"takedown_id\", int(takedown_id))\n\
+    \    list_of_notes_contexts = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)\n\
+    \    entry_context = {\n        \"Netcraft.Takedown(val.ID == obj.ID)\": generate_netcraft_context_with_notes(list_of_notes_contexts)\n\
+    \    }\n    human_readable = gen_takedown_notes_human_readable(list_of_notes_contexts)\n\
+    \    return_outputs(\n        readable_output=human_readable,\n        outputs=entry_context,\n\
+    \        raw_response=list_of_takedowns_notes\n    )\n\n\n@logger\ndef get_takedown_info(takedown_id,\
+    \ ip, url, updated_since, date_from, region):\n    data_for_request = {\n    \
+    \    \"id\": takedown_id,\n        \"ip\": ip,\n        \"url\": url,\n      \
+    \  \"updated_since\": updated_since,\n        \"date_from\": date_from,\n    \
+    \    \"region\": region,\n    }\n\n    data_for_request = return_dict_without_none_values(data_for_request)\n\
+    \n    request_result = http_request(\"GET\", GET_TAKEDOWN_INFO_SUFFIX, data=data_for_request)\n\
+    \    return request_result\n\n\ndef get_takedown_info_command():\n    args = demisto.args()\n\
+    \    takedown_id = int(args.get(\"id\")) if args.get(\"id\") else None\n    ip\
+    \ = args.get(\"ip\")\n    url = args.get(\"url\")\n    updated_since = args.get(\"\
+    updated_since\")\n    date_from = args.get(\"date_from\")\n    region = args.get(\"\
+    region\")\n    list_of_takedowns_infos = get_takedown_info(takedown_id, ip, url,\
+    \ updated_since, date_from, region)\n    if len(list_of_takedowns_infos) > LIMIT:\n\
+    \        list_of_takedowns_infos = list_of_takedowns_infos[:LIMIT]\n    if takedown_id:\n\
+    \        list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, \"id\"\
+    , str(takedown_id))\n    list_of_takedowns_contexts = generate_list_of_takedowns_context(list_of_takedowns_infos)\n\
+    \    human_readable = gen_takedown_info_human_readable(list_of_takedowns_contexts)\n\
+    \    entry_context = {\n        'Netcraft.Takedown(val.ID == obj.ID)': list_of_takedowns_contexts\n\
+    \    }\n    return_outputs(\n        readable_output=human_readable,\n       \
+    \ raw_response=list_of_takedowns_infos,\n        outputs=entry_context,\n    )\n\
+    \n\n@logger\ndef report_malicious_site(malicious_site_url, comment, is_test_request=False):\n\
+    \    data_for_request = {\n        \"attack\": malicious_site_url,\n        \"\
+    comment\": comment\n    }\n    if is_test_request:\n        request_url_suffix\
+    \ = TEST_MODULE_SUFFIX\n    else:\n        request_url_suffix = REPORT_MALICIOUS_SUFFIX\n\
+    \    request_result = http_request(\"POST\", request_url_suffix, data=data_for_request,\
+    \ should_convert_to_json=False)\n    return request_result\n\n\ndef report_malicious_site_command():\n\
+    \    args = demisto.args()\n    entry_context = {}\n    response_lines_array =\
+    \ report_malicious_site(args[\"malicious_site_url\"], args[\"comment\"])\n   \
+    \ result_answer = response_lines_array[0]\n    if result_answer == MALICIOUS_REPORT_SUCCESS:\n\
+    \        new_takedown_id = response_lines_array[1]\n        # Until the API bug\
+    \ is fixed, this list will include info of all takedowns and not just the new\
+    \ one\n        new_takedown_infos = get_takedown_info(new_takedown_id)\n     \
+    \   if len(new_takedown_infos) > LIMIT:\n            new_takedown_infos = new_takedown_infos[:LIMIT]\n\
+    \        new_takedown_infos = filter_by_id(new_takedown_infos, \"id\", new_takedown_id)\n\
+    \        list_of_new_takedown_contexts = generate_list_of_takedowns_context(new_takedown_infos)\n\
+    \        human_readable = gen_takedown_info_human_readable(list_of_new_takedown_contexts,\
+    \ REPORT_MALICIOUS_SUCCESS_TITLE)\n        entry_context = {\n            'Netcraft.Takedown(val.ID\
+    \ == obj.ID)': list_of_new_takedown_contexts\n        }\n    else:\n        human_readable\
+    \ = generate_report_malicious_site_human_readable(response_lines_array)\n\n  \
+    \  return_outputs(\n        readable_output=human_readable,\n        outputs=entry_context,\n\
+    \        raw_response=entry_context\n    )\n\n\ndef test_module():\n    \"\"\"\
+    \n    Performs basic get request to get item samples\n    \"\"\"\n    try:\n \
+    \       test_result = report_malicious_site(\"https://www.test.com\", \"test\"\
+    , True)\n        if test_result[0] != MALICIOUS_REPORT_SUCCESS:\n            raise\
+    \ Exception(\"Test request failed.\")\n    except Exception as ex:\n        raise\
+    \ Exception(str(ex))\n    demisto.results(\"ok\")\n\n\n''' COMMANDS MANAGER /\
+    \ SWITCH PANEL '''\n\nLOG('Command being called is %s' % (demisto.command()))\n\
+    \ntry:\n    if demisto.command() == 'test-module':\n        test_module()\n  \
+    \  elif demisto.command() == 'netcraft-report-malicious-site':\n        report_malicious_site_command()\n\
+    \    elif demisto.command() == 'netcraft-get-takedown-info':\n        get_takedown_info_command()\n\
+    \    elif demisto.command() == 'netcraft-get-takedown-notes':\n        get_takedown_notes_command()\n\
+    \    elif demisto.command() == 'netcraft-add-notes-to-takedown':\n        add_notes_to_takedown_command()\n\
+    \    elif demisto.command() == 'netcraft-escalate-takedown':\n        escalate_takedown_command()\n\
+    \n\n# Log exceptions\nexcept Exception as e:\n    LOG(str(e))\n    LOG.print_log()\n\
+    \    raise"
   type: python
 image: data:image/png;base64,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
 releaseNotes: New Netcraft beta integration
