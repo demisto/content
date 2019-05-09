@@ -272,6 +272,43 @@ def generate_escalate_takedown_human_readable(response):
     return human_readable
 
 
+def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context):
+    note_takedown_index = -1
+    if isinstance(all_takedowns_entry_context, dict):
+        new_takedown_entry_context = {
+            "ID": note_context["TakedownID"],
+            "Note": [note_context]
+        }
+        return_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] if all_takedowns_entry_context else [new_takedown_entry_context]
+    else:
+        for i in range(len(all_takedowns_entry_context)):
+            cur_takedown_context = all_takedowns_entry_context[i]
+            if cur_takedown_context["ID"] == note_context["TakedownID"]:
+                note_takedown_index = i
+        if note_takedown_index == -1:
+            new_takedown_entry_context = {
+                "ID": note_context["TakedownID"],
+                "Note": [note_context]
+            }
+            return_takedowns_entry_context = all_takedowns_entry_context
+            return_takedowns_entry_context.append(new_takedown_entry_context)
+        else:
+            takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]
+            cur_notes_in_takedown = takedown_context_to_change["Note"]
+            takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown)
+            return_takedowns_entry_context = all_takedowns_entry_context
+            return_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
+    return return_takedowns_entry_context
+
+
+
+def generate_netcraft_context_with_notes(list_of_notes_contexts):
+    all_takedowns_entry_context = demisto.context().get("Netcraft", {}).get("Takedown", {})
+    for note_context in list_of_notes_contexts:
+        all_takedowns_entry_context = add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context)
+    return all_takedowns_entry_context
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -337,37 +374,6 @@ def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
     return request_result
 
 
-def add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown_context):
-    note_index = -1
-    for i in range(len(cur_notes_in_takedown_context)):
-        if cur_notes_in_takedown_context[i]["NoteID"] == note_context["NoteID"]:
-            note_index = i
-    if i == -1:
-        cur_notes_in_takedown_context.append(note_context)
-    else:
-        cur_notes_in_takedown_context[note_index] = note_context
-    return cur_notes_in_takedown_context
-
-
-def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context):
-
-
-def generate_netcraft_context_with_notes(list_of_notes_contexts):
-    all_takedowns_entry_context = demisto.context().get("Netcraft", {}).get("Takedown", {})
-    for note_context in list_of_notes_contexts:
-        all_takedowns_entry_context = add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context)
-
-
-
-    for takedown_context in all_takedowns_entry_context:
-        cur_notes_in_takedown_context = takedown_context["Notes"]
-        for note_context in list_of_notes_contexts:
-            if note_context["TakedownID"] == takedown_context["ID"]:
-                cur_notes_in_takedown_context = add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown_context)
-        takedown_context["Notes"] = cur_notes_in_takedown_context
-    return all_takedowns_entry_context
-
-
 def get_takedown_notes_command():
     args = demisto.args()
     takedown_id = int(args.get("takedown_id")) if args.get("takedown_id") else None
@@ -382,7 +388,7 @@ def get_takedown_notes_command():
         list_of_takedowns_notes = filter_by_id(list_of_takedowns_notes, "takedown_id", int(takedown_id))
     list_of_notes_contexts = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)
     entry_context = {
-        "Netcraft.Takedown": generate_netcraft_context_with_notes(list_of_notes_contexts)
+        "Netcraft.Takedown(val.ID == obj.ID)": generate_netcraft_context_with_notes(list_of_notes_contexts)
     }
     human_readable = gen_takedown_notes_human_readable(list_of_notes_contexts)
     return_outputs(
