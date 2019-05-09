@@ -87,7 +87,8 @@ def http_request(method, path, params=None, data=None):
 
 def populate_context(dbot_scores, domain_entries, file_entries, url_entries, email_entries=None):
     """
-    Populate the context object with data
+    Populate the context object with entries as tuples -
+    the first element contains global objects and the second contains PhishLabs objects
     :param dbot_scores: Indicator DBotScore
     :param domain_entries: Domain indicators
     :param file_entries: File indicators
@@ -108,7 +109,8 @@ def populate_context(dbot_scores, domain_entries, file_entries, url_entries, ema
         context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda f: f[1], file_entries)))
     if email_entries:
         context['Email'] = createContext(list(map(lambda e: e[0], email_entries)))
-        context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda e: e[1], email_entries)))
+        context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda e: e[1],
+                                                                                         email_entries)))
     if dbot_scores:
         context[outputPaths['dbotscore']] = dbot_scores
     return context
@@ -240,6 +242,7 @@ def get_global_feed_command():
     false_positive = demisto.args().get('false_positive')
 
     feed = get_global_feed_request(since, limit, indicator, offset, remove_protocol, remove_query, false_positive)
+
     if feed and feed.get('data'):
         results = feed['data']
 
@@ -286,7 +289,8 @@ def get_global_feed_command():
             dbot_scores.append(dbot_score)
 
         context = populate_context(dbot_scores, domain_entries, file_entries, url_entries)
-        human_readable = tableToMarkdown('PhishLabs Global Feed', contents, headers=indicator_headers, removeNull=True)
+        human_readable = tableToMarkdown('PhishLabs Global Feed', contents, headers=indicator_headers,
+                                         removeNull=True, headerTransform=pascalToSpace)
     else:
         human_readable = 'No indicators found'
 
@@ -460,6 +464,10 @@ def get_feed_request(since=None, limit=None, indicator=None, offset=None):
 
 
 def fetch_incidents():
+    """
+    Fetches incidents from the PhishLabs user feed.
+    :return: Demisto incidents
+    """
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time') if last_run else None
 
