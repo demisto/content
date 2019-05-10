@@ -474,7 +474,7 @@ def report_malicious_site(malicious_site_url, comment, is_test_request=False):
 
 def report_malicious_site_command():
     args = demisto.args()
-    entry_context = {}  # type : dict
+    entry_context: dict = {}
     response_lines_array = report_malicious_site(args["malicious_site_url"], args["comment"])
     result_answer = response_lines_array[0]
     if result_answer == MALICIOUS_REPORT_SUCCESS:
