@@ -5,6 +5,7 @@ name: Netcraft
 display: Netcraft
 category: Authentication
 description: Integration Template
+
 configuration:
 - display: Use system proxy
   name: proxy
@@ -30,6 +31,7 @@ configuration:
 script:
   script: ''
   type: python
+  dockerimage: demisto/python3:3.7.3.221
   commands:
   - name: netcraft-report-attack
     arguments:
