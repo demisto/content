@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Script will run tesseract via the docker image configured for the integration
+# Can be used for running unit testing in your favorite editor
+#
+# Need to configure the editor to have this script on the path
+# For example run pycharm from the command line like this:
+# PATH=$PATH:`pwd`/test_data charm . &
+# Or vscode like this:
+# PATH=$PATH:`pwd`/test_data code . &
+#
+
+SCRIPT_DIR=$(dirname ${BASH_SOURCE})
+
+DOCKER=$(grep dockerimage $SCRIPT_DIR/../ImageOCR.yml | awk '{print $2}')
+
+docker run --rm -i -v `pwd`:/work "$DOCKER" sh -c "cd /work; tesseract $*"
