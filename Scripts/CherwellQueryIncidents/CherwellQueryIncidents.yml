@@ -20,7 +20,10 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellQueryIncidents
-tags: []
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-query-business-object
 outputs:
 - contextPath: Cherwell.QueryResults.RecordId
   description: Recoed ID
@@ -54,5 +57,6 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
+releaseNotes: Added tags and 'dependsOn' commands
 tests:
   - Cherwell Example Scripts - test
