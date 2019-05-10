@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
-LIMIT = demisto.params().get('limit')
+LIMIT = int(demisto.params().get('limit'))
 
 USE_SSL = not demisto.params().get('unsecure', False)
 
