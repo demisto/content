@@ -481,7 +481,7 @@ def report_malicious_site_command():
     if result_answer == MALICIOUS_REPORT_SUCCESS:
         new_takedown_id = response_lines_array[1]
         # Until the API bug is fixed, this list will include info of all takedowns and not just the new one
-        new_takedown_infos = get_takedown_info(new_takedown_id)
+        new_takedown_infos = get_takedown_info(new_takedown_id, None, None, None, None, None, None)
         if len(new_takedown_infos) > LIMIT:
             new_takedown_infos = new_takedown_infos[:LIMIT]
         new_takedown_infos = filter_by_id(new_takedown_infos, "id", new_takedown_id)
