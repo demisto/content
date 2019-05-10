@@ -1404,6 +1404,7 @@
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
+        "McAfee Advanced Threat Defense": "no license, issue 16909",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1550,10 +1551,11 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Snowflake": "Isn't working with mocking enabled - needs investigation",
+        "Snowflake": "Trust any cert not working: issue #16572",
         "Google Cloud Compute": "checking",
         "jira-v2": "inconsistent test (uploads randomly generated file each time)",
         "Microsoft Graph User": "checking",
-        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy"
+        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: (Caused by ProxyError('Cannot connect to proxy",
+        "DUO Admin": "Missing proxy and trust any cert option #16893"
     }
 }
