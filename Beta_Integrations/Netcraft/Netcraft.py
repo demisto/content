@@ -64,6 +64,7 @@ if not demisto.params().get('proxy'):
 @logger
 def http_request(method, request_suffix, params=None, data=None, should_convert_to_json=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
+    # the Netcraft API gets the arguments as params for GET requests, as data for POST
     res = requests.request(
         method,
         BASE_URL + request_suffix,
@@ -377,7 +378,7 @@ def add_notes_to_takedown_command():
 
 
 def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
-    data_for_request = {
+    params_for_request = {
         "takedown_id": takedown_id,
         "group_id": group_id,
         "date_to": date_to,
@@ -385,9 +386,9 @@ def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
         "author": author
     }
 
-    data_for_request = return_dict_without_none_values(data_for_request)
+    params_for_request = return_dict_without_none_values(params_for_request)
 
-    request_result = http_request("GET", ACCESS_TAKEDOWN_NOTES_SUFFIX, data=data_for_request)
+    request_result = http_request("GET", ACCESS_TAKEDOWN_NOTES_SUFFIX, params=params_for_request)
     return request_result
 
 
@@ -417,7 +418,7 @@ def get_takedown_notes_command():
 
 @logger
 def get_takedown_info(takedown_id, ip, url, updated_since, date_from, region):
-    data_for_request = {
+    params_for_request = {
         "id": takedown_id,
         "ip": ip,
         "url": url,
@@ -426,9 +427,9 @@ def get_takedown_info(takedown_id, ip, url, updated_since, date_from, region):
         "region": region,
     }
 
-    data_for_request = return_dict_without_none_values(data_for_request)
+    params_for_request = return_dict_without_none_values(params_for_request)
 
-    request_result = http_request("GET", GET_TAKEDOWN_INFO_SUFFIX, data=data_for_request)
+    request_result = http_request("GET", GET_TAKEDOWN_INFO_SUFFIX, params=params_for_request)
     return request_result
 
 
