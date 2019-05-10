@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: ImageOCR
+  id: Image OCR
   version: -1
 configuration:
 - display: Language(s) to use for OCR (leave empty to use defaults)
@@ -9,7 +9,8 @@ configuration:
   type: 0
 description: Extract text from images
 display: Image OCR
-name: ImageOCR
+name: Image OCR
+defaultEnabled: true
 script:
   commands:
   - deprecated: false
