@@ -19,9 +19,10 @@ script: |-
       except:
           return_error('indicators argument is invalid json object')
 
-  isIndicator = True
+
   counter = 0
   for indicator_fields in all_args:
+      isIndicator = True
       demisto_indicator_type = all_args[indicator_fields].get('indicator_type','Unknown')
       value = all_args[indicator_fields].get('value','')
       source_system = all_args[indicator_fields].get('source','')
