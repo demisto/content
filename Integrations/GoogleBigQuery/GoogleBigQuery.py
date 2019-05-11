@@ -170,6 +170,7 @@ def query_command():
                 'Query': args['query'],
                 'Row': rows_contexts
             }
+            rows_contexts = convert_datetime_objects_to_string(rows_contexts)
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
 
