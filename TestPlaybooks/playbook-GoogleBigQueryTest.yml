@@ -1,6 +1,6 @@
-id: BigQuery Test
+id: Google BigQuery Test
 version: -1
-name: BigQuery Test
+name: Google BigQuery Test
 starttaskid: "0"
 tasks:
   "0":
