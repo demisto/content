@@ -97,6 +97,21 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
     return query_job_config
 
 
+def convert_to_string_if_datetime(object_that_may_be_datetime):
+    if isinstance(object_that_may_be_datetime, datetime):
+        return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
+    else:
+        return object_that_may_be_datetime
+
+
+def convert_datetime_objects_to_string(rows_context):
+    for row_index in range(len(rows_context)):
+        cur_row = rows_context[row_index]
+        cur_row = {key: convert_to_string_if_datetime(value) for key, value in cur_row.items()}
+        rows_context[row_index] = cur_row
+    return rows_context
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -144,16 +159,17 @@ def query_command():
                          'bytes'.format(query_results.total_bytes_processed)
 
     else:
+
         for row in query_results:
             row_context = {underscoreToCamelCase(k): v for k, v in row.items()}
             rows_contexts.append(row_context)
 
         if rows_contexts:
+
             context['BigQuery(val.Query && val.Query == obj.Query)'] = {
                 'Query': args['query'],
                 'Row': rows_contexts
             }
-
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
 
@@ -173,12 +189,12 @@ def test_module():
         query_job = bigquery_client.query(TEST_QUERY)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
-        next(results_rows_iterator)
+        first_item = next(results_rows_iterator)
+        if str(first_item.get("name")) != "Ruby":
+            raise ValueError("Data from DB not matching expected results")
         demisto.results("ok")
     except Exception as ex:
-        return_error("There was a problem creating a BigQuery client.\n"
-                     "Please make sure the credentials JSON you entered is valid.\n"
-                     "Error recieved from BigQuery: {}".format(str(ex)))
+        return_error(str(ex))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
