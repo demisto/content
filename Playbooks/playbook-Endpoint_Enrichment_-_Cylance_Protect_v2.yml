@@ -175,7 +175,7 @@ tasks:
       id: 83e2be36-d5ef-43df-80b3-c77e95e19780
       version: -1
       name: Set device list
-        description: Sets the devices in another context key - "CylanceProtectAllDevices". Setting them under that key ensures proper filtering in the next tasks.
+      description: Sets the devices in another context key - "CylanceProtectAllDevices". Setting them under that key ensures proper filtering in the next tasks.
       scriptName: Set
       type: regular
       iscommand: false
