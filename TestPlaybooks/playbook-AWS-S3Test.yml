@@ -33,10 +33,10 @@ tasks:
       version: -1
       name: aws-s3-create-bucket
       description: Create AWS S3 bucket
-      script: AWS - S3v2|||aws-s3-create-bucket
+      script: AWS - S3|||aws-s3-create-bucket
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "9"
@@ -72,10 +72,10 @@ tasks:
       version: -1
       name: aws-s3-list-buckets
       description: List all S3 buckets in AWS account
-      script: AWS - S3v2|||aws-s3-list-buckets
+      script: AWS - S3|||aws-s3-list-buckets
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "10"
@@ -101,10 +101,10 @@ tasks:
       version: -1
       name: aws-s3-get-bucket-policy
       description: Get AWS S3 Bucket Policy
-      script: AWS - S3v2|||aws-s3-get-bucket-policy
+      script: AWS - S3|||aws-s3-get-bucket-policy
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "11"
@@ -135,10 +135,10 @@ tasks:
       name: aws-s3-put-bucket-policy
       description: Replaces a policy on a bucket. If the bucket already has a policy,
         the one in this request completely replaces it.
-      script: AWS - S3v2|||aws-s3-put-bucket-policy
+      script: AWS - S3|||aws-s3-put-bucket-policy
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "3"
@@ -186,10 +186,10 @@ tasks:
       version: -1
       name: aws-s3-delete-bucket-policy
       description: Deletes the policy from the bucket.
-      script: AWS - S3v2|||aws-s3-delete-bucket-policy
+      script: AWS - S3|||aws-s3-delete-bucket-policy
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "8"
@@ -217,10 +217,10 @@ tasks:
       version: -1
       name: aws-s3-delete-bucket
       description: Delete AWS S3 bucket
-      script: AWS - S3v2|||aws-s3-delete-bucket
+      script: AWS - S3|||aws-s3-delete-bucket
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     scriptarguments:
       bucket:
         simple: demisto-test-playbook
@@ -245,10 +245,10 @@ tasks:
       version: -1
       name: aws-s3-download-file
       description: Download a file from S3 bucket to war room
-      script: AWS - S3v2|||aws-s3-download-file
+      script: AWS - S3|||aws-s3-download-file
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "6"
@@ -278,10 +278,10 @@ tasks:
       version: -1
       name: aws-s3-list-bucket-objects
       description: List object in S3 bucket.
-      script: AWS - S3v2|||aws-s3-list-bucket-objects
+      script: AWS - S3|||aws-s3-list-bucket-objects
       type: regular
       iscommand: true
-      brand: AWS - S3v2
+      brand: AWS - S3
     nexttasks:
       '#none#':
       - "15"
