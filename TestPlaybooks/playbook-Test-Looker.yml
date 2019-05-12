@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 50
         }
       }
@@ -44,6 +44,7 @@ tasks:
       '#none#':
       - "2"
       - "3"
+      - "6"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 195
         }
       }
@@ -115,9 +116,11 @@ tasks:
       fields: {}
       id:
         simple: "3"
-      limit: {}
+      limit:
+        simple: "0"
       name: {}
-      result_format: {}
+      result_format:
+        simple: json
     separatecontext: false
     view: |-
       {
@@ -131,10 +134,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 15279fd5-ea03-4d4c-8093-aa0b0cd41cad
+    taskid: 37586f7b-f5fa-4f1d-8903-039ecb7615a4
     type: condition
     task:
-      id: 15279fd5-ea03-4d4c-8093-aa0b0cd41cad
+      id: 37586f7b-f5fa-4f1d-8903-039ecb7615a4
       version: -1
       name: Verify Context
       type: condition
@@ -150,7 +153,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: LookerResults.Results
+              simple: LookerResults.Results.[49]
             iscontext: true
       - - operator: isEqualString
           left:
@@ -165,10 +168,15 @@ tasks:
             value:
               simple: Looker.Look.ID
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LookerResults.InlineQuery
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 545
         }
       }
@@ -190,8 +198,51 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 678b6c89-2b6c-42fb-82b8-587adffcc0f7
+    type: regular
+    task:
+      id: 678b6c89-2b6c-42fb-82b8-587adffcc0f7
+      version: -1
+      name: looker-run-inline-query
+      description: Run a query by defining it in the command arguments, rather than
+        a saved query in looker.
+      script: '|||looker-run-inline-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fields:
+        simple: order_items.status, order_items.order_id, products.brand
+      filters:
+        simple: products.brand=Ray-Ban, Calvin Klein
+      limit:
+        simple: "5"
+      model:
+        simple: thelook
+      pivots: {}
+      result_format:
+        simple: json
+      sorts: {}
+      view:
+        simple: order_items
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -199,13 +250,11 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "4_5_yes": 0.5
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 810,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
