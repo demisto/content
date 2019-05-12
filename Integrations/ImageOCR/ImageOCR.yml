@@ -3,7 +3,7 @@ commonfields:
   id: Image OCR
   version: -1
 configuration:
-- display: Language(s) to use for OCR (leave empty to use defaults)
+- display: Language(s) to use for OCR (leave empty to use defaults).
   name: langs
   required: false
   type: 0
