@@ -301,7 +301,7 @@ def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_c
                 "ID": note_context["TakedownID"],
                 "Note": [note_context]
             }
-            return_takedowns_entry_context = all_takedowns_entry_context
+            return_takedowns_entry_context = list(all_takedowns_entry_context)
             return_takedowns_entry_context.append(new_takedown_entry_context)
         else:
             takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]
@@ -435,8 +435,7 @@ def get_takedown_info_command():
     date_from = args.get("date_from")
     region = args.get("region")
     list_of_takedowns_infos = get_takedown_info(takedown_id, ip, url, updated_since, date_from, region)
-    if len(list_of_takedowns_infos) > LIMIT:
-        list_of_takedowns_infos = list_of_takedowns_infos[:LIMIT]
+    list_of_takedowns_infos = list_of_takedowns_infos[:LIMIT]
     if takedown_id:
         list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, "id", str(takedown_id))
     list_of_takedowns_contexts = generate_list_of_takedowns_context(list_of_takedowns_infos)
