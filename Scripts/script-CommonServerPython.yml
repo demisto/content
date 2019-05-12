@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+fromversion: 4.5.0
 script: |-
   # Common functions script
   # =======================
@@ -28,31 +29,31 @@ script: |-
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
 
-  SAVE_PROXIES = {}
+  def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
+      """
+          Handle logic for routing traffic through the system proxy.
+           Should usually be called at the beginning of the integration, depending on proxy checkbox state.
 
-  def disable_proxy():
-      """
-          Disable routing traffic through the system proxy.
-          Should usually be called at the beginning of the integration, depeding on proxy checkbox state.
-          :rtype: ``None``
-          :return: None
-      """
-      global SAVE_PROXIES
-      for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-          SAVE_PROXIES[k] = os.environ[k]
-          del os.environ[k]
+          :type proxy_param_name: ``string``
+          :param proxy_param_name: name of the "use system proxy" integration parameter
 
-  def enable_proxy():
+          :type checkbox_default_value: ``bool``
+          :param checkbox_default_value: Default value of the proxy param checkbox
+
+          :rtype: ``dict``
+          :return: proxies dict for the 'proxies' parameter of 'requests' functions
       """
-          Re-enable routing traffic through the system proxy (for container re-use).
-          Should usually be called in a "finally" block at the bottom of the integration.
-          :rtype: ``None``
-          :return: None
-      """
-      global SAVE_PROXIES
-      for k, v in SAVE_PROXIES.iteritems():
-          os.environ[k] = v
-      SAVE_PROXIES = {}
+      proxies = {}
+      if demisto.params().get(proxy_param_name, checkbox_default_value):
+          proxies = {
+              'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
+              'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
+          }
+      else:
+          for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+              if k in os.environ:
+                  del os.environ[k]
+      return proxies
 
   def urljoin(url, suffix=""):
       """
@@ -537,11 +538,7 @@ script: |-
       :return: string representation of all the arguments
       :rtype: ``string``
       """
-      allargs = [repr(a) for a in args]
-      for key,item in kwds.items():
-          allargs.append('{}={}'.format(key, item))
-      formattedArgs = ', '.join(allargs)
-
+      formattedArgs = ','.join([repr(a) for a in args]) + ',' + str(kwds).replace(':', "=").replace(" ", "")[1:-1]
       return formattedArgs
 
 
@@ -556,7 +553,7 @@ script: |-
       :rtype: ``any``
       """
       def func_wrapper(*args, **kwargs):
-          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
           return func(*args, **kwargs)
 
       return func_wrapper
@@ -666,7 +663,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if not data:
+      if data is None:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1239,7 +1236,7 @@ script: |-
       :type outputs: ``dict``
       :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
 
-      :type raw_response: ``dict``
+      :type raw_response: ``dict`` | ``list``
       :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
       raw response from the 3rd party service (originally Contents)
 
@@ -1541,6 +1538,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added proxy enable/disable methods."
 tests:
-  - TestPYCommonServer
+  - TestCommonPython

@@ -45,5 +45,4 @@ args:
 outputs:
 - contextPath: FileData
   description: Data read from war room file
-releaseNotes: "Fixing unicode parsing error"
 scripttarget: 0

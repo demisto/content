@@ -1,6 +1,6 @@
 commonfields:
   id: PanoramaMove
-  version: 1
+  version: -1
 name: PanoramaMove
 script: |-
   var req = {
@@ -19,7 +19,7 @@ type: javascript
 tags:
 - panorama
 - firewall
-comment: Move panorama rules
+comment: Deprecated. Use the "panorama-move-rule" command instead.
 system: true
 args:
 - name: xpath
@@ -42,4 +42,4 @@ dependson:
   - panorama
 timeout: 0s
 tests:
-- palo_alto_firewall_test_pb
+- No tests

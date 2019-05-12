@@ -12,7 +12,7 @@ script: |
 type: javascript
 tags:
 - Utility
-comment: Prints text to war room (Markdown supprted)
+comment: Prints text to war room (Markdown supported)
 enabled: true
 args:
 - name: value

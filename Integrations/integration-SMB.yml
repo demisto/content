@@ -152,6 +152,5 @@ script:
     description: Upload a file to the SMB server
   dockerimage: demisto/pysmb
   runonce: false
-releaseNotes: "Added command to upload a file. Added option to print out the contents of a file instead of downloading it."
 tests:
   - SMB test
