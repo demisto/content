@@ -733,5 +733,3 @@ script:
   type: python
 tests:
 - SymantecMC_TestPlaybook
-releaseNotes: Added option to get and modify content to a policy using its name. Additional
-  description fixes.

@@ -185,6 +185,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: Documentation and settings description updates
 tests:
 - Snowflake-Test

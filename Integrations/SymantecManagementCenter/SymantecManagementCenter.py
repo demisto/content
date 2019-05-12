@@ -54,7 +54,7 @@ def http_request(method, path, params=None, data=None):
             headers=HEADERS)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        return_error('Could not connect to Symantec MC: {}'.format(str(e)))
+        return return_error('Could not connect to Symantec MC: {}'.format(str(e)))
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
@@ -199,8 +199,8 @@ def get_device_command():
     :return: An entry with the device data
     """
     uuid = demisto.args()['uuid']
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     device = get_device_request(uuid)
     if device:
@@ -368,8 +368,8 @@ def get_device_status_command():
     :return: An entry with the device status data
     """
     uuid = demisto.args()['uuid']
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     device = get_device_status_request(uuid)
     if device:
@@ -484,14 +484,14 @@ def get_policy_command():
     """
     uuid = demisto.args().get('uuid')
     name = demisto.args().get('name')
-    policy_content_data = {}
-    revision_content = {}
+    policy_content_data: dict = {}
+    revision_content: dict = {}
     policy_content_content = []
     content_title = ''
     human_readable = ''
-    content_headers = []
+    content_headers: list = []
     content_key = ''
-    context = {}
+    context: dict = {}
 
     if not name and not uuid:
         return_error('Either a UUID or a name must be provided')
@@ -610,8 +610,8 @@ def create_policy_command():
     shared = demisto.args().get('shared')
     replace_variables = demisto.args().get('replace_variables')
 
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     policy = create_policy_request(name, content_type, description, reference_id, tenant, shared, replace_variables)
     if policy:
@@ -675,8 +675,8 @@ def update_policy_command():
     reference_id = demisto.args().get('reference_id')
     replace_variables = demisto.args().get('replace_variables')
 
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     policy = update_policy_request(uuid, name, description, reference_id, replace_variables)
     if policy:
@@ -953,7 +953,7 @@ def list_tenants_request():
     """
 
     path = 'tenants'
-    params = {}
+    params: dict = {}
 
     response = http_request('GET', path, params)
     return response
