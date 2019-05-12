@@ -1,6 +1,6 @@
-id: 94d088d3-dbc0-4326-827d-7aad599bc0e6
-version: 92
-name: Minerva Test playbook1
+id: Minerva Test playbook
+version: -1
+name: Minerva Test playbook
 description: This is a test playbook that executes all the supported commands
 starttaskid: "0"
 tasks:
