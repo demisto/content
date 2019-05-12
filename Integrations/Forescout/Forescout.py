@@ -19,7 +19,7 @@ requests.packages.urllib3.disable_warnings()
 
 PARAMS = demisto.params()
 
-CREDENTIALS = PARAMS.get('credentials')
+CREDENTIALS = PARAMS.get('credentials', {})
 USERNAME = CREDENTIALS.get('identifier')
 PASSWORD = CREDENTIALS.get('password')
 
@@ -89,7 +89,7 @@ HOSTFIELDS_TO_INCLUDE = {
 ''' HELPER FUNCTIONS '''
 
 
-def create_update_request_body(host_ip: str, update_type: str, properties: str) -> str:
+def create_update_request_body(host_ip: str, update_type: str, properties: str, composite_property: str) -> str:
     """
     Create XML request body formatted to DEX expectations
 
@@ -111,11 +111,11 @@ def create_update_request_body(host_ip: str, update_type: str, properties: str) 
     transaction = ET.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
     if update_type == 'update':
         ET.SubElement(transaction, 'OPTIONS', attrib={'CREATE_NEW_HOST': 'false'})
-    host_key = ET.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
 
     if update_type in {'update', 'delete'}:
+        host_key = ET.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
         props_xml = ET.SubElement(transaction, 'PROPERTIES')
-        prop_val_pairs = properties.split('&')
+        prop_val_pairs = properties.split('&') if properties else []
         for pair in prop_val_pairs:
             prop, *value = pair.split('=')
             prop_xml = ET.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
@@ -123,6 +123,51 @@ def create_update_request_body(host_ip: str, update_type: str, properties: str) 
                 list_of_vals = value[0].split(':')
                 for val in list_of_vals:
                     val_xml = ET.SubElement(prop_xml, 'VALUE')
+                    val_xml.text = val
+        if composite_property:
+            composite_property = json.loads(composite_property)
+            table_property_name = list(composite_property.keys())[0]
+            table_property_xml = ET.SubElement(props_xml, 'TABLE_PROPERTY', attrib={'NAME': table_property_name})
+            if update_type == 'update':
+                values = composite_property.get(table_property_name)
+                if isinstance(values, list):
+
+                    for row in values:
+                        row_xml = ET.SubElement(table_property_xml, 'ROW')
+
+                        for key, val in row.items():
+                            key_xml = ET.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+
+                            if isinstance(val, list):
+                                for value in val:
+                                    value_xml = ET.SubElement(key_xml, 'CVALUE')
+                                    value_xml.text = value
+
+                            else:
+                                value_xml = ET.SubElement(key_xml, 'CVALUE')
+                                value_xml.text = val
+                else:
+                    row_xml = ET.SubElement(table_property_xml, 'ROW')
+                    for key, val in values.items():
+                        key_xml = ET.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+                        if isinstance(val, list):
+                            for value in val:
+                                value_xml = ET.SubElement(key_xml, 'CVALUE')
+                                value_xml.text = value
+                        else:
+                            value_xml = ET.SubElement(key_xml, 'CVALUE')
+                            value_xml.text = val
+
+    elif update_type in {'add_list_values', 'delete_list_values', 'delete_all_list_values'}:
+        lists_xml = ET.SubElement(transaction, 'LISTS')
+        prop_val_pairs = properties.split('&')
+        for list_prop_pair in prop_val_pairs:
+            list_prop, *value = list_prop_pair.split('=')
+            list_xml = ET.SubElement(lists_xml, 'LIST', attrib={'NAME': list_prop})
+            if update_type != 'delete_all_list_values' and value:
+                list_of_vals = value[0].split(':')
+                for val in list_of_vals:
+                    val_xml = ET.SubElement(list_xml, 'VALUE')
                     val_xml.text = val
 
     return root
@@ -349,6 +394,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
                 if res.status_code in {400, 401, 501}:
                     # Try to parse xml error response
                     resp_xml = ET.fromstring(res.content)
+                    demisto.info(str(res.content))
                     codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
                     messages = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
                     err_msg += ''.join([f'\n{code}: {msg}' for code, msg in zip(codes, messages)])
@@ -378,74 +424,6 @@ def test_module():
     """
     login()
     demisto.results('ok')
-
-
-def get_items_command():
-    """
-    Gets details about a items using IDs or some other filters
-    """
-    # Init main vars
-    headers = []
-    contents = []
-    context = {}
-    context_entries = []
-    title = ''
-    # Get arguments from user
-    item_ids = argToList(demisto.args().get('item_ids', []))
-    is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
-    limit = int(demisto.args().get('limit', 10))
-    # Make request and get raw response
-    items = get_items_request(item_ids, is_active)
-    # Parse response into context & content entries
-    if items:
-        if limit:
-            items = items[:limit]
-        title = 'Example - Getting Items Details'
-
-        for item in items:
-            contents.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'Created Date': item.get('createdDate')
-            })
-            context_entries.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'CreatedDate': item.get('createdDate')
-            })
-
-        context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def get_items_request(item_ids, is_active):
-    # The service endpoint to request from
-    endpoint_url = 'items'
-    # Dictionary of params for the request
-    params = {
-        'ids': item_ids,
-        'isActive': is_active
-    }
-    # Send a request using our http_request wrapper
-    response = http_request('GET', endpoint_url, params)
-    # Check if response contains errors
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    # Check if response contains any data to parse
-    if 'data' in response:
-        return response.get('data')
-    # If neither was found, return back empty results
-    return {}
 
 
 @log_entity_tag
@@ -515,6 +493,7 @@ def get_host_command():
     title = 'Endpoint Details for {}'.format(identifier) if identifier else 'Endpoint Details'
     human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+
 
 @log_entity_tag
 def get_hosts():
@@ -610,7 +589,8 @@ def update_host_properties(args={}):
     host_ip = args.get('host_ip', '')
     update_type = args.get('update_type', '')
     properties = args.get('properties', '')
-    req_body = create_update_request_body(host_ip, update_type, properties)
+    composite_property = args.get('composite_property', '').replace('\'', '"')
+    req_body = create_update_request_body(host_ip, update_type, properties, composite_property)
     data = ET.tostring(req_body, encoding='UTF-8', method='xml')
     demisto.info(str(data))
 
@@ -627,7 +607,21 @@ def update_host_properties(args={}):
 
 def update_host_properties_command():
     args = demisto.args()
+    update_type = args.get('update_type', '')
+    properties = args.get('properties', '')
     response = update_host_properties(args)
+
+    # Because the API has an error and says it deletes multiple things when it only deletes one
+    # have to take care of it behind the curtains
+    if update_type == 'delete':
+        args_copy = deepcopy(args)
+        args_copy['properties'] = ''
+        update_host_properties(args_copy)  # Takes care of composite_property
+        args_copy['composite_property'] = ''
+        for prop in properties.split('&'):
+            args_copy['properties'] = prop
+            update_host_properties(args_copy)
+
     resp_xml = ET.fromstring(response.content)
     code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
     msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
