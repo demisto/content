@@ -153,7 +153,7 @@ def query_command():
     else:
 
         for row in query_results:
-            row_context = {underscoreToCamelCase(k): v for k, v in row.items()}
+            row_context = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
             row_context = {key: convert_to_string_if_datetime(value) for key, value in row_context.items()}
             rows_contexts.append(row_context)
 
