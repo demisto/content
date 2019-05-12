@@ -23,6 +23,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Data Exchange (DEX) Username
+  name: dex_credentials
+  required: false
+  type: 9
+- display: The Data Exchange (DEX) Account
+  name: dex_account
+  required: true
+  type: 0
 description: Unified Device Visibility and Control Platform for IT and OT Security.
 display: Forescout
 name: Forescout
@@ -197,12 +205,20 @@ script:
     description: Retrieve specified host property values for an endpoint.
     execution: false
     name: forescout-get-host
+  - deprecated: false
+    description: |-
+      Retrieves a list of all policies defined in the Forescout platform and
+      their sub-rules.
+    execution: false
+    name: forescout-get-policies
   - arguments:
     - auto: PREDEFINED
-      default: false
+      default: true
       defaultValue: update
-      description: Type of update perform. Options are 'update', 'delete', 'add_list_values',
-        'delete_list_values' and 'delete_all_list_values'.
+      description: The type of update to perform on a host property. If the property
+        is defined as a List Property then the 'add_list_values', 'delete_list_values',
+        and 'delete_all_list_values' update types will be relevant. For Single Value
+        Properties, use either 'update' or 'delete'.
       isArray: false
       name: update_type
       predefined:
@@ -214,35 +230,27 @@ script:
       required: true
       secret: false
     - default: false
-      description: The target host's IP address.
+      description: Enter the property names and their associated values in the following
+        format, '{prop-1}={val-1}:{val-2}:{val-3}&{prop-2}={val-4}& ... &{prop-n}={val-n}'
+        where {prop-1} through {prop-n} would be replaced by actual property names
+        and {val-1} through {val-n} would be replaced by the values you wished to
+        assign to the respective properties. Multiple property-value(s) pairs should
+        be separated by an ampersand ('&') and in the case that the value of a property
+        is a list, list values should be separated using a colon (':').
+      isArray: false
+      name: properties
+      required: true
+      secret: false
+    - default: false
+      description: The IP address of the target host.
       isArray: false
       name: host_ip
       required: true
       secret: false
-    - default: false
-      description: List of properties. If update_type is 'update' or 'add_list_values'
-        then it is properties and their associated values, otherwise only the properties
-        themselves. If update_type is 'update' or 'add_list_values' then data should
-        be entered as '{prop1}={val1},{val2},{val3}&{prop2}={val4}&{prop-n}={val-n}'
-        where {prop1} through {prop-n} are replaced by actual property names and {val1}
-        through {val-n} are replaced by actual values and multiple property value(s)
-        assignments are separated by an ampersand.
-      isArray: true
-      name: properties
-      required: true
-      secret: false
     deprecated: false
-    description: Set property values for the specified host. Note that the host properties
-      must be defined in the Forescout platform before trying to alter them with this
-      command.
+    description: Update a host's properties.
     execution: false
     name: forescout-update-host-properties
-  - deprecated: false
-    description: |-
-      Retrieves a list of all policies defined in the Forescout platform and
-      their sub-rules.
-    execution: false
-    name: forescout-get-policies
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false

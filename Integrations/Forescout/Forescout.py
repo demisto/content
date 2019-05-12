@@ -5,6 +5,8 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from typing import Dict, List, Tuple
+import xml.etree.ElementTree as ET
 from copy import deepcopy
 from distutils.util import strtobool
 from datetime import datetime, timedelta, timezone
@@ -16,8 +18,17 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 PARAMS = demisto.params()
-USERNAME = PARAMS.get('credentials').get('identifier')
-PASSWORD = PARAMS.get('credentials').get('password')
+
+CREDENTIALS = PARAMS.get('credentials')
+USERNAME = CREDENTIALS.get('identifier')
+PASSWORD = CREDENTIALS.get('password')
+
+DEX_CREDENTIALS = PARAMS.get('dex_credentials', {})
+DEX_USERNAME = DEX_CREDENTIALS.get('identifier')
+DEX_USERNAME = DEX_USERNAME if DEX_USERNAME != '' else USERNAME
+DEX_PASSWORD = DEX_CREDENTIALS.get('password')
+DEX_PASSWORD = DEX_PASSWORD if DEX_PASSWORD != '' else PASSWORD
+DEX_ACCOUNT = PARAMS.get('dex_account')
 # Remove trailing slash to prevent wrong URL path to service
 BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
@@ -29,12 +40,95 @@ JWT_VALIDITY_TIME = timedelta(minutes=5)
 # For use of Entity Tags (ETags) to reduce bandwidth by eliminating transactions
 # when previously reported data hasn't changed.
 ETAGS = {}
+# Host fields to be included in output of get_host_command
+HOSTFIELDS_TO_INCLUDE = {
+    'os_classification': 'OSClassification',
+    'classification_source_os': 'ClassificationSourceOS',
+    'onsite': 'Onsite',
+    'access_ip': 'AccessIP',
+    'mac': 'MACAddress',
+    'openports': 'OpenPort',
+    'mac_vendor_string': 'MacVendorString',
+    'cl_type': 'ClType',
+    'cl_rule': 'ClRule',
+    'vendor': 'Vendor',
+    'fingerprint': 'Fingerprint',
+    'gst_signed_in_stat': 'GstSignedInStat',
+    'misc': 'Misc',
+    'prim_classification': 'PrimClassification',
+    'agent_install_mode': 'AgentInstallMode',
+    'vendor_classification': 'VendorClassification',
+    'user_def_fp': 'UserDefFp',
+    'agent_visible_mode': 'AgentVisibleMode',
+    'classification_source_func': 'ClassificationSourceFunc',
+    'dhcp_class': 'DhcpClass',
+    'samba_open_ports': 'SambaOpenPort',
+    'mac_prefix32': 'MacPrefix32',
+    'adm': 'ADM',
+    'last_nbt_report_time': 'LastNbtReportTime',
+    'agent_version': 'AgentVersion',
+    'matched_fingerprints': 'MatchedFingerprint',
+    'manage_agent': 'ManageAgent',
+    'dhcp_req_fingerprint': 'DhcpReqFingerprint',
+    'dhcp_opt_fingerprint': 'DhcpOptFingerprint',
+    '_times': 'Time',
+    'macs': 'MAC',
+    'online': 'Online',
+    'nmap_def_fp7': 'NmapDefFp7',
+    'ipv4_report_time': 'Ipv4ReportTime',
+    'nmap_def_fp5': 'NmapDefFp5',
+    'va_netfunc': 'VaNetfunc',
+    'dhcp_os': 'DhcpOS',
+    'engine_seen_packet': 'EngineSeenPacket',
+    'nmap_netfunc7': 'NmapNetfunc7',
+    'nmap_fp7': 'NmapFp7',
+    'dhcp_hostname': 'DhcpHostname'
+}
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def filter_hostfields_data(args, data):
+def create_update_request_body(host_ip: str, update_type: str, properties: str) -> str:
+    """
+    Create XML request body formatted to DEX expectations
+
+    Parameters
+    ----------
+    host_ip : str
+        IP address of the target host.
+    update_type : str
+        The type of update to execute.
+    properties : str
+        The property names and associated values to update the property with.
+
+    Returns
+    -------
+        XML Request Body as String
+    """
+    root = ET.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
+    # tree = ET.ElementTree(root)
+    transaction = ET.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
+    if update_type == 'update':
+        ET.SubElement(transaction, 'OPTIONS', attrib={'CREATE_NEW_HOST': 'false'})
+    host_key = ET.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
+
+    if update_type in {'update', 'delete'}:
+        props_xml = ET.SubElement(transaction, 'PROPERTIES')
+        prop_val_pairs = properties.split('&')
+        for pair in prop_val_pairs:
+            prop, *value = pair.split('=')
+            prop_xml = ET.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
+            if update_type != 'delete' and value:
+                list_of_vals = value[0].split(':')
+                for val in list_of_vals:
+                    val_xml = ET.SubElement(prop_xml, 'VALUE')
+                    val_xml.text = val
+
+    return root
+
+
+def filter_hostfields_data(args: Dict, data: Dict) -> List:
     """
     Filter hostfields data by get_hostfields_command arguments.
 
@@ -92,7 +186,7 @@ def filter_hostfields_data(args, data):
 
 
 
-def dict_to_formatted_string(dictionary):
+def dict_to_formatted_string(dictionary: Dict) -> str:
     """
     Return dictionary as clean string for war room output.
 
@@ -104,12 +198,12 @@ def dict_to_formatted_string(dictionary):
     Returns
     -------
     str
-        Clean string version of dictionary argument
+        Clean string version of a dictionary
     """
     return json.dumps(dictionary).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
 
 
-def format_policies_data(data):
+def format_policies_data(data: Dict) -> List:
     """
     Return policies formatted to Demisto standards.
 
@@ -145,7 +239,7 @@ def format_policies_data(data):
     return formatted_policies
 
 
-def create_web_api_headers(entity_tag=''):
+def create_web_api_headers(entity_tag: str = '') -> Dict:
     """
     Return headers object that formats to Forescout Web API expectations and takes
     into account if an entity tag exists for a request to an endpoint.
@@ -193,8 +287,8 @@ def login():
         LAST_JWT_FETCH = fetch_time
 
 
-def http_request(method, url_suffix, full_url=None, headers=None,
-                 auth=None, params=None, data=None, files=None, resp_type='json'):
+def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None, auth: Tuple = None,
+                 params: Dict = None, data: Dict = None, files: Dict = None, resp_type: str = 'json'):
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -246,11 +340,18 @@ def http_request(method, url_suffix, full_url=None, headers=None,
         if res.status_code not in {200, 201, 304}:
             err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
             try:
+                # Try to parse json error response
                 res_json = res.json()
                 if res_json.get('error'):
                     err_msg += '\n{}'.format(res_json.get('message'))
                 return_error(err_msg)
             except json.decoder.JSONDecodeError:
+                if res.status_code in {400, 401, 501}:
+                    # Try to parse xml error response
+                    resp_xml = ET.fromstring(res.content)
+                    codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
+                    messages = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
+                    err_msg += ''.join([f'\n{code}: {msg}' for code, msg in zip(codes, messages)])
                 return_error(err_msg)
 
         resp_type = resp_type.casefold()
@@ -263,11 +364,6 @@ def http_request(method, url_suffix, full_url=None, headers=None,
         else:
             return res
 
-    # except json.decoder.JSONDecodeError:
-    #     if res.text != '':
-    #         return res
-    #     else:
-    #         return return_error('No contents in the response.')
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
         return_error(err_msg)
@@ -392,19 +488,33 @@ def get_host_command():
     args = demisto.args()
     identifier = args.get('identifier', '')
     response = get_host(args)
-    host = response.get('host', {})
+    data = response.json()
+    host = data.get('host', {})
     fields = host.get('fields', {})
+
+    included_fields = {
+        HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+    }
     content = {
         'ID': host.get('id'),
         'IP': host.get('ip'),
         'MAC': host.get('mac'),
-        'EndpointURL': response.get('_links', {}).get('self', {}).get('href'),
-        'Field': fields
+        'EndpointURL': data.get('_links', {}).get('self', {}).get('href'),
+        'Field': included_fields
     }
+
+    included_fields_readable = {
+        HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
+            for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+    }
+    human_readable_content = deepcopy(content)
+    human_readable_content['Field'] = included_fields_readable
+
     context = {'Forescout.Host(val.ID && val.ID === obj.ID)': content}
+
     title = 'Endpoint Details for {}'.format(identifier) if identifier else 'Endpoint Details'
-    human_readable = tableToMarkdown(title, content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
+    human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 @log_entity_tag
 def get_hosts():
@@ -496,12 +606,33 @@ def get_policies_command():
 
 
 
-def update_host_properties():
-    pass
+def update_host_properties(args={}):
+    host_ip = args.get('host_ip', '')
+    update_type = args.get('update_type', '')
+    properties = args.get('properties', '')
+    req_body = create_update_request_body(host_ip, update_type, properties)
+    data = ET.tostring(req_body, encoding='UTF-8', method='xml')
+    demisto.info(str(data))
+
+    url_suffix = '/fsapi/niCore/'
+    url_suffix += 'Hosts' if update_type in {'update', 'delete'} else 'Lists'
+    headers = {
+        'Content-Type': 'application/xml',
+        'Accept': 'application/xml'
+    }
+    auth = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
+    response = http_request('POST', url_suffix, headers=headers, auth=auth, data=data, resp_type='response')
+    return response
 
 
 def update_host_properties_command():
-    pass
+    args = demisto.args()
+    response = update_host_properties(args)
+    resp_xml = ET.fromstring(response.content)
+    code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
+    msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
+    result_msg = f'{code}: {msg}'
+    demisto.results(result_msg)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
