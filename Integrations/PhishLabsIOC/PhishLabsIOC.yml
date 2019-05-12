@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PhishLabsIOC
+  id: PhishLabs IOC
   version: -1
 configuration:
 - defaultvalue: https://ioc.phishlabs.com
@@ -39,8 +39,8 @@ configuration:
   required: false
   type: 13
 description: Get live feeds of IOC data from PhishLabs
-display: PhishLabsIOC
-name: PhishLabsIOC
+display: PhishLabs IOC
+name: PhishLabs IOC
 script:
   commands:
   - arguments:
@@ -83,6 +83,7 @@ script:
       name: remove_protocol
       predefined:
       - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -93,6 +94,7 @@ script:
       name: remove_query
       predefined:
       - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -424,3 +426,6 @@ script:
   runonce: false
   script: '-'
   type: python
+releaseNotes: "-"
+test:
+  - PhishLabsIOC TestPlaybook
