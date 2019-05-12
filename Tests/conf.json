@@ -1556,6 +1556,7 @@
         "jira-v2": "inconsistent test (uploads randomly generated file each time)",
         "Microsoft Graph User": "checking",
         "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: (Caused by ProxyError('Cannot connect to proxy",
-        "DUO Admin": "Missing proxy and trust any cert option #16893"
+        "DUO Admin": "Missing proxy and trust any cert option #16893",
+        "AWS - S3": "AWS doesn't appreciate being mocked"
     }
 }
