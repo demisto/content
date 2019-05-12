@@ -159,19 +159,25 @@ def create_domain_context(indicator):
     }
 
 
-def create_url_context(indicator):
+def create_url_context(indicator, classification):
     """
     Create a URL context object
     :param indicator: The URL indicator
+    :param: classification: The indicator classification
     :return: The URL context object
     """
-    return {
-        'Data': indicator.get('value'),
-        'Malicious': {
+
+    url_object = {
+        'Data': indicator.get('value')
+    }
+
+    if classification == 'Malicious':
+        url_object['Malicious'] = {
             'Vendor': 'PhishLabs',
             'Description': 'URL in PhishLabs feed'
         }
-    }
+
+    return url_object
 
 
 def create_phishlabs_object(indicator):
@@ -235,7 +241,7 @@ def get_global_feed_command():
 
     since = demisto.args().get('since')
     limit = demisto.args().get('limit')
-    indicator = demisto.args().get('indicator_type')
+    indicator = argToList(demisto.args().get('indicator_type', []))
     offset = demisto.args().get('offset')
     remove_protocol = demisto.args().get('remove_protocol')
     remove_query = demisto.args().get('remove_query')
@@ -259,7 +265,7 @@ def get_global_feed_command():
             }
 
             if indicator_type == 'URL':
-                context_object = create_url_context(result)
+                context_object = create_url_context(result, 'Malicious')
                 phishlabs_object['Data'] = result.get('value')
                 dbot_score['type'] = 'url'
                 url_entries.append((context_object, phishlabs_object))
@@ -349,7 +355,7 @@ def get_incident_indicators_command():
     incident_id = demisto.args().get('id')
     since = demisto.args().get('since')
     limit = demisto.args().get('limit')
-    indicator = demisto.args().get('indicator_type')
+    indicator = argToList(demisto.args().get('indicator_type', []))
     offset = demisto.args().get('offset')
     classification = demisto.args().get('indicators_classification', 'Suspicious')
     human_readable = 'Indicators for incident ' + incident_id + '\n'
@@ -380,7 +386,7 @@ def get_incident_indicators_command():
                 }
 
                 if indicator_type == 'URL':
-                    context_object = create_url_context(result)
+                    context_object = create_url_context(result, classification)
                     phishlabs_object['Data'] = result.get('value')
                     dbot_score['type'] = 'url'
                     url_entries.append((context_object, phishlabs_object))
@@ -510,7 +516,6 @@ COMMAND_DICT = {
     'phishlabs-global-feed': get_global_feed_command,
     'phishlabs-get-incident-indicators': get_incident_indicators_command
 }
-
 
 try:
     command_func = COMMAND_DICT[demisto.command()]
