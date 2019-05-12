@@ -7,9 +7,16 @@ display: Palo Alto Networks Cortex
 category: Analytics & SIEM
 description: This framework manages all PA's cloud managed products
 configuration:
-- display: Demisto App Token
+- display: Authentication ID
   name: token
-  defaultvalue: ""
+  type: 4
+  required: true
+- display: Authentication Token
+  name: auth_id
+  type: 4
+  required: true
+- display: Authentication Key
+  name: auth_key
   type: 4
   required: true
 - display: Use system proxy settings
@@ -428,3 +435,4 @@ script:
   isfetch: true
 tests:
   - Palo Alto Networks Cortex Test
+releaseNotes: new integration
