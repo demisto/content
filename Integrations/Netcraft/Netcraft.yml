@@ -4,8 +4,7 @@ commonfields:
 name: Netcraft
 display: Netcraft
 category: Authentication
-description: Integration Template
-
+description: An integration for Netcraft, allowing you to open and handle takedown requests.
 configuration:
 - display: Use system proxy
   name: proxy
