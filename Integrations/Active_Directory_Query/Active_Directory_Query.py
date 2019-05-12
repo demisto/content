@@ -1,14 +1,15 @@
 import demistomock as demisto
 from CommonServerPython import *
-from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls
-from ldap3.core.exceptions import LDAPSocketOpenError
+from typing import *
+from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry
 from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
+import traceback
 
 
 # global connection
-conn = None
+conn: Optional[Connection] = None
 
 ''' GLOBAL VARS '''
 
@@ -91,6 +92,7 @@ def account_entry(person_object, custome_attributes):
         'Username': person_object.get('samAccountName'),
         'DisplayName': person_object.get('displayName'),
         'Managr': person_object.get('manager'),
+        'Manager': person_object.get('manager'),
         'Groups': person_object.get('memberOf')
     }
 
@@ -144,6 +146,7 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
         attributes: the attributes to specify for each entry found in the DIT
 
     """
+    assert conn is not None
     success = conn.search(
         search_base=search_base,
         search_filter=search_filter,
@@ -153,7 +156,7 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
     )
 
     if not success:
-        raise("Search failed")
+        raise Exception("Search failed")
     return conn.entries
 
 
@@ -167,12 +170,12 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         attributes: the attributes to specify for each entrxy found in the DIT
 
     """
-
+    assert conn is not None
     total_entries = 0
     cookie = None
     start = datetime.now()
 
-    entries = []
+    entries: List[Entry] = []
     entries_left_to_fetch = size_limit
     while True:
         if 0 < entries_left_to_fetch < page_size:
@@ -300,8 +303,8 @@ def search_users(default_base_dn, page_size):
 
     args = demisto.args()
 
-    attributes = []
-    custome_attributes = []
+    attributes: List[str] = []
+    custome_attributes: List[str] = []
 
     # zero is actually no limitation
     limit = int(args.get('limit', '0'))
@@ -335,7 +338,7 @@ def search_users(default_base_dn, page_size):
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
 
-    attributes = set(custome_attributes + DEFAULT_PERSON_ATTRIBUTES)
+    attributes = list(set(custome_attributes + DEFAULT_PERSON_ATTRIBUTES))
 
     entries = search_with_paging(
         query,
@@ -373,8 +376,8 @@ def search_computers(default_base_dn, page_size):
 
     args = demisto.args()
 
-    attributes = []
-    custome_attributes = []
+    attributes: List[str] = []
+    custome_attributes: List[str] = []
 
     # default query - list all users (computer category)
     query = "(&(objectClass=user)(objectCategory=computer))"
@@ -397,7 +400,7 @@ def search_computers(default_base_dn, page_size):
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
 
-    attributes = set(custome_attributes + DEFAULT_COMPUTER_ATTRIBUTES)
+    attributes = list(set(custome_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
 
     entries = search_with_paging(
         query,
@@ -430,13 +433,13 @@ def search_group_members(default_base_dn, page_size):
     member_type = args.get('member-type')
     group_dn = args.get('group-dn')
 
-    custome_attributes = []
+    custome_attributes: List[str] = []
     default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
 
-    attributes = set(custome_attributes + default_attributes)
+    attributes = list(set(custome_attributes + default_attributes))
 
     # neasted search
     query = "(&(objectCategory={})(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={}))".format(member_type,
@@ -483,6 +486,7 @@ def search_group_members(default_base_dn, page_size):
 
 
 def create_user():
+    assert conn is not None
     args = demisto.args()
 
     object_classes = ["top", "person", "organizationalPerson", "user"]
@@ -547,13 +551,14 @@ def create_user():
 
 
 def create_contact():
+    assert conn is not None
     args = demisto.args()
 
     object_classes = ["top", "person", "organizationalPerson", "contact"]
     contact_dn = args.get('contact-dn')
 
     # set contact attributes
-    attributes = {}
+    attributes: Dict = {}
     if args.get('custom-attributes'):
         try:
             attributes = json.loads(args['custom-attributes'])
@@ -596,6 +601,7 @@ def modify_object(dn, modification):
     """
     modifys object in the DIT
     """
+    assert conn is not None
     success = conn.modify(dn, modification)
     if not success:
         raise Exception("Failed to update object {} with the following modofication: {}".format(
@@ -645,6 +651,7 @@ def update_contact():
 
 
 def modify_computer_ou(default_base_dn):
+    assert conn is not None
     args = demisto.args()
 
     computer_name = args.get('computer-name')
@@ -687,6 +694,7 @@ def expire_user_password(default_base_dn):
 
 
 def set_user_password(default_base_dn):
+    assert conn is not None
     args = demisto.args()
 
     # get user DN
@@ -853,6 +861,7 @@ def unlock_account(default_base_dn):
 
 def delete_user():
     # can acually delete any object...
+    assert conn is not None
     success = conn.delete(demisto.args().get('user-dn'))
     if not success:
         raise Exception('Failed to delete user')
@@ -884,6 +893,10 @@ def main():
     UNSECURE = demisto.params().get('unsecure', False)
     PORT = demisto.params().get('port')
 
+    if PORT:
+        # port was configured, cast to int
+        PORT = int(PORT)
+
     try:
         server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
     except Exception as e:
@@ -908,9 +921,10 @@ def main():
             demisto.info(message)
             return_error(message)
             return
-    except LDAPSocketOpenError as e:
+    except Exception as e:
         exc_msg = str(e)
-        demisto.info(exc_msg)
+        demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
+                     + "\nTrace:\n{}".format(traceback.format_exc())))
         message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
         if 'ssl wrapping error' in exc_msg:
             message = "Failed to access LDAP server. SSL error."

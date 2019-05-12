@@ -2,42 +2,51 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build:1.0.0.159 # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.252 # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.3.1"
-      GIT_SHA1: "eae9e2c8c301dc8d01e450f4c334fe90dc84d995" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.4.2"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "28fc5480343d1b7bb759f3742670eac2afaa3e38" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
           name: Prepare Environment
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV
+              echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+              echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              sudo pip install mock
+              pyenv versions
+              python --version
+              python3 --version
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
               - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
-          name: Infrastucture testing
-          command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
-            pytest ./Tests/scripts/infrastructure_tests/ -v
-      - run:
           name: Create ID Set
           command: |
             python ./Tests/scripts/update_id_set.py -r
       - run:
+          name: Infrastucture testing
+          command: |
+            pytest ./Tests/scripts/hook_validations/tests/ -v
+            pytest ./Tests/scripts/infrastructure_tests/ -v
+            pytest ./Tests/scripts/test_configure_tests.py -v
+      - run:
           name: Validate Files and Yaml
           command: |
-              ./Tests/scripts/pyflake.sh
-              python ./Tests/scripts/validate_files.py -c true
+              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+              ./Tests/scripts/pyflake.sh *.py
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+
+              [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
           name: Configure Test Filter
           command: |
@@ -45,7 +54,7 @@ jobs:
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
       - run:
           name: Common Server Documentation
           command: ./Documentation/commonServerDocs.sh
@@ -55,6 +64,10 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
+      - setup_remote_docker
+      - run:
+          name: Run Unit Testing and Lint
+          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
           name: Download Artifacts
           command: |

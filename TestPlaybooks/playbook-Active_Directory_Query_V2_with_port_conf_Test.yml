@@ -1,0 +1,104 @@
+id: Active Directory Query V2 configuration with port
+version: 3
+name: Active Directory Query V2 configuration with port
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 97ad5ed7-060f-41c6-88e2-fc7d69177bc8
+    type: start
+    task:
+      id: 97ad5ed7-060f-41c6-88e2-fc7d69177bc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c0c1ffaf-0c25-4a8f-8035-ff68b1c44518
+    type: title
+    task:
+      id: c0c1ffaf-0c25-4a8f-8035-ff68b1c44518
+      version: -1
+      name: Instance configuration success!
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 661f7226-6769-4774-835a-e33f5fa7b156
+    type: regular
+    task:
+      id: 661f7226-6769-4774-835a-e33f5fa7b156
+      version: -1
+      name: Get user
+      description: Run a simple command just to test instance configuration with port
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit:
+        simple: "10"
+      name:
+        simple: '*'
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

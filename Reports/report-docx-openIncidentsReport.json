@@ -777,7 +777,6 @@
   },
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
-  "releaseNotes": "changed occurred time format in decoder",
   "recipients": [],
   "type": "docx",
   "tags": [],

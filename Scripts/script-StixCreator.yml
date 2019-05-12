@@ -109,34 +109,33 @@ script: |-
                      raw_response="{}")
 type: python
 tags: []
-comment: Get list of indicators in argument 'indicators' and create out of them a
-  json file in STIX 2.0 format
+comment: Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
 enabled: true
 args:
 - name: indicators
   required: true
-  description: json object of all indicators  fields index mapped to indicators fields
+  description: A JSON object of all indicators and their fields, indicator index mapped to Demisto indicator fields.
 outputs:
 - contextPath: StixExportedIndicators.created
-  description: Indicator creation date
+  description: The date/time that the indicator was created.
   type: date
 - contextPath: StixExportedIndicators.firstSeen
-  description: Indicator first use
+  description: The date/time that the indicator was first seen.
   type: date
 - contextPath: StixExportedIndicators.source
-  description: Source system for this indicator
+  description: The source system for this indicator.
   type: string
 - contextPath: StixExportedIndicators.type
-  description: Type always exported as indicator
+  description: The STIX type (always exported as "indicator").
   type: string
 - contextPath: StixExportedIndicators.pattern
-  description: type and value of indicators (URL, IPv4, domain, email, etc)
+  description: ' The type and value of indicators, for example: URL, IPv4, domain, email, and so on. '
   type: string
 - contextPath: StixExportedIndicators.score
-  description: STIX impact score can be High, Medium, None or Not Specified
+  description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
   type: string
 - contextPath: StixExportedIndicators.modified
-  description: Indicator last appearance
+  description: The date/time that the indicator was last seen.
   type: date
 scripttarget: 0
 runonce: false
