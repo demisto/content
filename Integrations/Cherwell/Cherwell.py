@@ -647,9 +647,11 @@ def cherwell_get_business_object_id(business_object_name):
 
 def raise_or_return_error(msg, raise_flag):
     """
-    This function handles errors occurred in functions within fetch incidents flow.
-    If the error occirred as part of a fetch-incidents flow then an exception will be thrown otherwise a regular error
+    This function handles errors occurred in functions that are within the fetch incidents flow.
+    If the error occurred as part of a fetch-incidents flow then an exception will be thrown otherwise a regular error
     entry will be returned.
+    This is needed when running fetch-incidents process since regular error entries are not handled correctly by the
+    server
     :param msg: error msg to raise/return
     :param raise_flag: if true should raise, otherwise throw
     """
