@@ -1129,4 +1129,3 @@ script:
   runonce: false
 tests:
   - minemeld_test
-releaseNotes: change display name - Palo Alto Networks Minemeld

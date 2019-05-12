@@ -6,14 +6,14 @@ from CommonServerUserPython import *
 import requests
 import collections
 from urlparse import urlparse
-from requests.utils import quote
+from requests.utils import quote  # type: ignore
 import time
 
 """ POLLING FUNCTIONS"""
 try:
     from Queue import Queue
 except ImportError:
-    from queue import Queue
+    from queue import Queue  # type: ignore
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -23,7 +23,8 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-INSECURE = demisto.params().get('insecure')
+INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
+    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
 PROXY = demisto.params().get('proxy')
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
@@ -37,7 +38,7 @@ if not demisto.params().get('proxy', False):
 
 def http_request(method, url_suffix, json=None, wait=0, retries=0):
     if method == 'GET':
-        headers = {}
+        headers = {}  # type: Dict[str, str]
     elif method == 'POST':
         headers = {
             'API-Key': APIKEY,
@@ -82,6 +83,12 @@ def is_valid_ip(s):
     return True
 
 
+def get_result_page():
+    uuid = demisto.args().get('uuid')
+    uri = BASE_URL + 'result/{}'.format(uuid)
+    return uri
+
+
 def polling(uuid):
     if demisto.args().get('timeout') is None:
         TIMEOUT = 60
@@ -97,6 +104,11 @@ def polling(uuid):
         timeout=int(TIMEOUT)
     )
     return ready
+
+
+def poll_uri():
+    uri = demisto.args().get('uri')
+    demisto.results(requests.get(uri, verify=INSECURE).status_code)
 
 
 def step_constant(step):
@@ -499,6 +511,37 @@ def urlscan_search_command():
     })
 
 
+def format_http_transaction_list():
+    url = demisto.args().get('url')
+    uuid = demisto.args().get('uuid')
+
+    # Scan Lists sometimes returns empty
+    scan_lists = {}  # type: dict
+    while not scan_lists:
+        response = urlscan_submit_request(uuid)
+        scan_lists = response.get('lists', {})
+
+    limit = int(demisto.args().get('limit'))
+    metadata = None
+    if limit > 100:
+        limit = 100
+        metadata = "Limited the data to the first 100 http transactions"
+
+    url_list = scan_lists.get('urls', [])[:limit]
+
+    context = {
+        'URL': url,
+        'httpTransaction': url_list
+    }
+
+    ec = {
+        'URLScan(val.URL && val.URL == obj.URL)': context,
+    }
+
+    human_readable = tableToMarkdown('{} - http transaction list'.format(url), url_list, ['URLs'], metadata=metadata)
+    return_outputs(human_readable, ec, response)
+
+
 """COMMAND FUNCTIONS"""
 try:
     if demisto.command() == 'test-module':
@@ -510,6 +553,15 @@ try:
         urlscan_submit_command()
     if demisto.command() == 'urlscan-search':
         urlscan_search_command()
+    if demisto.command() == 'urlscan-submit-url-command':
+        demisto.results(urlscan_submit_url())
+    if demisto.command() == 'urlscan-get-http-transaction-list':
+        format_http_transaction_list()
+    if demisto.command() == 'urlscan-get-result-page':
+        demisto.results(get_result_page())
+    if demisto.command() == 'urlscan-poll-uri':
+        poll_uri()
+
 
 except Exception as e:
     LOG(e)
