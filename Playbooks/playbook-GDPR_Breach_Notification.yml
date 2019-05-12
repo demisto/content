@@ -2,7 +2,7 @@ id: GDPR Breach Notification
 version: -1
 fromversion: 4.5.0
 name: GDPR Breach Notification
-description: This playbook triggers by a GDPR breach incident, and then performs the required tasks that are detailed
+description: "This playbook triggers by a GDPR breach incident, and then performs the required tasks that are detailed
   in GDPR Article 33.
 
   The General Data Protection Regulation (the GDPR) is a regulation in EU law on data protection and privacy
@@ -11,7 +11,7 @@ description: This playbook triggers by a GDPR breach incident, and then performs
   data have been affected by the breach.
 
   ***Disclaimer: This playbook does not ensure compliance to the GDPR regulation. Before using this playbook,
-  we advise consulting with the relevant authority, and adjusting it to the organization's needs.
+  we advise consulting with the relevant authority, and adjusting it to the organization's needs."
 starttaskid: "0"
 tasks:
   "0":
