@@ -225,7 +225,6 @@ tasks:
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
-        Response integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
