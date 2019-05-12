@@ -363,7 +363,7 @@ def get_key_value_dict_from_template(key, val, business_object_id):
 
 
 def get_all_incidents(objects_names, last_created_time, max_results, query_string):
-    all_incidents = []
+    all_incidents: list = []
     for business_object_name in objects_names:
         business_object_id = resolve_business_object_id_by_name(business_object_name)
         query_list = [['CreatedDateTime', 'gt', last_created_time]]
@@ -421,11 +421,38 @@ def fetch_incidents_attachments(incidents):
     return incidents
 
 
-def fetch_incidents(objects_names, last_created_time, max_result, query_string, fetch_attachments):
-    incidents = get_all_incidents(objects_names, last_created_time, max_result, query_string)
+def validate_params_for_fetch(max_result, objects_to_fetch):
+    # Check that max result is positive integer
+    try:
+        max_result = int(max_result)
+        if max_result < 0:
+            raise ValueError
+    except ValueError:
+        return_error('Max results to fetch must be a number grater than 0')
+    # Make sure that there are objects to fetch
+    if len(objects_to_fetch) == 0:
+        return_error('No objects to fetch were given')
+    return
+
+
+def fetch_incidents(objects_names, fetch_time, max_results, query_string, fetch_attachments, test_fetch=False):
+    validate_params_for_fetch(max_results, objects_names)
+    max_results = int(max_results)
+    last_run = demisto.getLastRun()
+    last_objects_fetched = last_run.get('objects_names_to_fetch')
+    if 'last_created_time' in last_run and last_objects_fetched == objects_names:
+        last_created_time = last_run.get('last_created_time')
+    else:
+        try:
+            last_created_time, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT, to_timestamp=False)
+        except ValueError:
+            return_error(f'First fetch time stamp should be of the form: <number> <time unit>, e.g., 12 hours, 7 days. '
+                         f'Received: "{fetch_time}"')
+    incidents = get_all_incidents(objects_names, last_created_time, max_results, query_string)
     if fetch_attachments:
         incidents = fetch_incidents_attachments(incidents)
-    save_incidents(incidents)
+    if not test_fetch:
+        save_incidents(incidents)
     return incidents
 
 
@@ -589,7 +616,7 @@ def cherwell_run_saved_search(association_id, scope, scope_owner, search_name):
         "Association": association_id,
         "scope": scope,
         "scopeOwner": scope_owner,
-        "searchname": search_name,
+        "searchName": search_name,
         "includeAllFields": True,
     }
 
@@ -614,12 +641,7 @@ Commands
 
 def test_command():
     if FETCHES_INCIDENTS:
-        if not OBJECTS_TO_FETCH[0]:
-            return_error('No objects to fetch were given')
-        for object_name in OBJECTS_TO_FETCH:
-            resolve_business_object_id_by_name(object_name)
-        if QUERY_STRING:
-            validate_query_for_fetch_incidents(OBJECTS_TO_FETCH, QUERY_STRING)
+        fetch_incidents(OBJECTS_TO_FETCH, FETCH_TIME, MAX_RESULT, QUERY_STRING, FETCH_ATTACHMENTS, test_fetch=True)
     else:
         get_access_token(True)
     return
@@ -708,18 +730,12 @@ def delete_business_object_command():
 
 
 def fetch_incidents_command():
-    last_run = demisto.getLastRun()
-    objects_names_to_fetch = OBJECTS_TO_FETCH if OBJECTS_TO_FETCH[0] else ['incident']
+    objects_names_to_fetch = OBJECTS_TO_FETCH
     fetch_attachments = FETCH_ATTACHMENTS
-    max_result = int(MAX_RESULT) if MAX_RESULT else 30
-    fetch_time = FETCH_TIME if FETCH_TIME else '3 days'
+    max_result = MAX_RESULT
+    fetch_time = FETCH_TIME
     query_string = QUERY_STRING
-    last_objects_fetched = last_run.get('objects_names_to_fetch')
-    if 'last_created_time' in last_run and last_objects_fetched == objects_names_to_fetch:
-        last_created_time = last_run.get('last_created_time')
-    else:
-        last_created_time, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT, to_timestamp=False)
-    incidents = fetch_incidents(objects_names_to_fetch, last_created_time, max_result, query_string, fetch_attachments)
+    incidents = fetch_incidents(objects_names_to_fetch, fetch_time, max_result, query_string, fetch_attachments)
     if incidents:
         last_incident_created_time = incidents[-1].get('CreatedDateTime')
         next_created_time_to_fetch = \
@@ -968,7 +984,7 @@ try:
 
 # Log exceptions
 except Exception as e:
-    message = f'Unexpected error: {e}, traceback: {traceback.print_exc()}'
+    message = f'Unexpected error: {e}, traceback: {traceback.format_exc()}'
     LOG(message)
     LOG(str(e))
     LOG.print_log()

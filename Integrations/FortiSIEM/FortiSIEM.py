@@ -18,7 +18,7 @@ HOST = demisto.params()['host']
 QUERY_URL = HOST + "/phoenix/rest/query/"
 REST_ADDRESS = HOST + "/phoenix/rest/h5"
 
-EXTENDED_KEYS = {}
+EXTENDED_KEYS = {}  # type: dict
 
 
 def load_extended_keys():
@@ -96,7 +96,7 @@ def login():
         'javax.faces.ViewState': VIEW_STATE
     }
 
-    response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)
+    response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)  # type: ignore
     return session
 
 
@@ -204,7 +204,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         cur["ExtendedData"] = {}
         for extItem in key["extData"]:
             if EXTENDED_KEYS.get(extItem["left"]) is not None:
-                cur[EXTENDED_KEYS.get(extItem["left"]).replace(' ', '')] = extItem["right"]
+                cur[EXTENDED_KEYS.get(extItem["left"]).replace(' ', '')] = extItem["right"]  # type: ignore
             else:
                 cur["ExtendedData"][extItem["left"]] = extItem["right"]
         eventData.append(cur)
