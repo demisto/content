@@ -11,22 +11,17 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Username
-  name: username
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Password
-  name: password
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: The max number of entries (takedowns / notes) that can be returned. Default
     is 100.
   name: limit
   defaultvalue: "100"
   type: 0
   required: false
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
 script:
   script: ''
   type: python
