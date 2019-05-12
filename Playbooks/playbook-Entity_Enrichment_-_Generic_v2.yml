@@ -473,7 +473,7 @@ inputs:
 - key: InternalDomains
   value: {}
   required: false
-  description: A list of internal domains, separated by commas. The list will be used
+  description: A CSV list of internal domains. The list will be used
     to determine whether an email address is internal or external.
 outputs:
 - contextPath: IP
