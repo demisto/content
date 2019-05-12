@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: Cherwell_2
+  id: Cherwell
   version: -1
 configuration:
 - display: 'URL (example: https://my.domain.com)'
@@ -48,8 +48,8 @@ configuration:
   required: false
   type: 8
 description: Cloud-based IT service management solution
-display: Cherwell_2
-name: Cherwell_2
+display: Cherwell
+name: Cherwell
 script:
   commands:
   - arguments:
