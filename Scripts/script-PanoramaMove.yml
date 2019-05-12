@@ -43,4 +43,3 @@ dependson:
 timeout: 0s
 tests:
 - No tests
-releaseNotes: Deprecated. Use the "panorama-move-rule" command instead.
