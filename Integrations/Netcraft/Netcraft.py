@@ -52,11 +52,7 @@ REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
 
 
 # Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy()
 
 
 ''' HELPER FUNCTIONS '''
@@ -155,8 +151,6 @@ def generate_takedown_info_context(takedown_info):
         "Certificate": takedown_info.get("certificate")
     }
 
-    # takedown_info_context = return_dict_without_none_values(takedown_info_context)
-    # return takedown_info_context
     return createContext(takedown_info_context, removeNull=True)
 
 
@@ -183,11 +177,10 @@ def gen_takedown_info_human_readable(list_of_takedowns_contexts, title=TAKEDOWN_
             "Targeted URL": takedown_info_context.get("TargetedURL"),
             "Certificate": takedown_info_context.get("Certificate")
         }
-        human_readable_dict = return_dict_without_none_values(human_readable_dict)
         contexts_in_human_readable_format.append(human_readable_dict)
 
     human_readable = tableToMarkdown(title, contexts_in_human_readable_format,
-                                     headers=TAKEDOWN_INFO_HEADER)
+                                     headers=TAKEDOWN_INFO_HEADER, removeNull=True)
     return human_readable
 
 
@@ -279,7 +272,7 @@ def add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown):
         return [note_context]
     else:
         note_already_in_context = False
-        for i in range(len(cur_notes_in_takedown)):
+        for i, cur_note_context in enumerate(cur_notes_in_takedown):
             cur_note_context = cur_notes_in_takedown[i]
             if cur_note_context["NoteID"] == note_context["NoteID"]:
                 note_already_in_context = True
@@ -315,7 +308,7 @@ def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_c
             cur_notes_in_takedown = takedown_context_to_change["Note"]
             takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context,
                                                                                         cur_notes_in_takedown)
-            return_takedowns_entry_context = all_takedowns_entry_context
+            return_takedowns_entry_context = list(all_takedowns_entry_context)
             return_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
     return return_takedowns_entry_context
 
@@ -401,8 +394,7 @@ def get_takedown_notes_command():
     date_to = args.get("date_to")
     author = args.get("author")
     list_of_takedowns_notes = get_takedown_notes(takedown_id, group_id, date_from, date_to, author)
-    if len(list_of_takedowns_notes) > LIMIT:
-        list_of_takedowns_notes = list_of_takedowns_notes[:LIMIT]
+    list_of_takedowns_notes = list_of_takedowns_notes[:LIMIT]
     if takedown_id:
         list_of_takedowns_notes = filter_by_id(list_of_takedowns_notes, "takedown_id", int(takedown_id))
     list_of_notes_contexts = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)
@@ -482,8 +474,7 @@ def report_malicious_site_command():
         new_takedown_id = response_lines_array[1]
         # Until the API bug is fixed, this list will include info of all takedowns and not just the new one
         new_takedown_infos = get_takedown_info(new_takedown_id, None, None, None, None, None)
-        if len(new_takedown_infos) > LIMIT:
-            new_takedown_infos = new_takedown_infos[:LIMIT]
+        new_takedown_infos = new_takedown_infos[:LIMIT]
         new_takedown_infos = filter_by_id(new_takedown_infos, "id", new_takedown_id)
         list_of_new_takedown_contexts = generate_list_of_takedowns_context(new_takedown_infos)
         human_readable = gen_takedown_info_human_readable(list_of_new_takedown_contexts, REPORT_MALICIOUS_SUCCESS_TITLE)
@@ -504,12 +495,9 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    try:
-        test_result = report_malicious_site("https://www.test.com", "test", True)
-        if test_result[0] != MALICIOUS_REPORT_SUCCESS:
-            raise Exception("Test request failed.")
-    except Exception as ex:
-        raise Exception(str(ex))
+    test_result = report_malicious_site("https://www.test.com", "test", True)
+    if test_result[0] != MALICIOUS_REPORT_SUCCESS:
+        raise Exception("Test request failed.")
     demisto.results("ok")
 
 
@@ -536,4 +524,4 @@ try:
 except Exception as e:
     LOG(str(e))
     LOG.print_log()
-    raise
+    return_error(str(e))
