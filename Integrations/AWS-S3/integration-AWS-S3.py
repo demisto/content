@@ -6,7 +6,7 @@ import boto3
 import io
 import math
 import json
-import datetime
+from datetime import datetime, date
 from botocore.config import Config
 
 AWS_DEFAULT_REGION = None  # demisto.params()['defaultRegion']
@@ -133,13 +133,9 @@ def convert_size(size_bytes):
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
-        if isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):  # pylint: disable=E0602
+        elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
@@ -205,7 +201,7 @@ def list_buckets(args):
     for bucket in response['Buckets']:
         data.append({
             'BucketName': bucket['Name'],
-            'CreationDate': datetime.datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')
+            'CreationDate': datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')
         })
     ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName)': data}
     human_readable = tableToMarkdown('AWS S3 Buckets', data)
@@ -297,7 +293,7 @@ def list_objects(args):
         data.append({
             'Key': key['Key'],
             'Size': convert_size(key['Size']),
-            'LastModified': datetime.datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+            'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
         })
 
     ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
