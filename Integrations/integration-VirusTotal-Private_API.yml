@@ -164,7 +164,7 @@ script:
                 return_error("You've reached your API call quota. Contact your VirusTotal representative.")
 
 
-        except Exception, e:
+        except Exception as e:
             error_message = str(e)
             error_message = re.sub('apikey=[a-zA-Z0-9]+', 'apikey=*apikey*', error_message)
             LOG(error_message)
