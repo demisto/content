@@ -1,0 +1,58 @@
+commonfields:
+  id: 3093db30-1f57-466e-8d2e-d5d05f9cd5da
+  version: 9
+name: IntezerScanHost
+script: |2+
+
+  demisto.executeCommand('createNewIndicator', {'value':demisto.args()['host'], 'type': 'Hostname'})
+  endpoint_analysis = str(uuid.uuid4())
+  scanner_result = demisto.executeCommand('IntezerRunScanner', {'endpoint_analysis_id':endpoint_analysis,
+                                                                'api_key':demisto.args()['intezer_api_key'],
+                                                                'using':demisto.args()['host']})
+  if isError(scanner_result[0]):
+      demisto.results(scanner_result)
+  else:
+      analysis_result = demisto.executeCommand('intezer-get-analysis-result', {'analysisType':'Endpoint',
+                                                                               'analysisId':endpoint_analysis,
+                                                                               'indicatorName': demisto.args()['host']})
+      demisto.results(analysis_result)
+
+
+type: python
+tags: []
+enabled: true
+args:
+- name: host
+  required: true
+  description: Computer name
+- name: os
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - linux
+  - osx
+  - windows
+  description: OS
+- name: intezer_api_key
+  required: true
+  secret: true
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: Endpoint.metadata
+  description: 'Metadata returned from Intezer analysis (analysis id, analysis url,
+    families,  verdict, computer name, scan start time, scan end time, analysis time). '
+scripttarget: 0
+timeout: 900ns
+runonce: false
+runas: DBotWeakRole
