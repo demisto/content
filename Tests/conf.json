@@ -1354,6 +1354,10 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
+            "integrations": "Netcraft",
+            "playbookID": "Netcraft test"
+        },
+        {
             "integrations": "EclecticIQ Platform",
             "playbookID": "EclecticIQ Test"
         },
@@ -1451,6 +1455,9 @@
         {
             "integrations": "Google Cloud Compute",
             "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
+            "playbookID": "TestIsEmailAddressInternal"
         }
     ],
     "skipped_tests": {
@@ -1542,6 +1549,7 @@
     ],
     "unmockable_integrations": {
         "Google BigQuery": "SSL problem",
+        "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
