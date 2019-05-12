@@ -991,4 +991,3 @@ script:
   runonce: false
 tests:
 - LogRhythm-Test-Playbook
-releaseNotes: "add outputs and update context"

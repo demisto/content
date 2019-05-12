@@ -31,7 +31,12 @@ def create_instance(ami_name):
     run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         instance_id = instance_file.read()
-
+    with open('image_id.txt', 'r') as image_id_file:
+        image_data = image_id_file.read()
+        print('Image data is {}'.format(image_data))
+        with open("./Tests/images_data.txt", "a") as image_data_file:
+            image_data_file.write(
+                '{name} Image info is: {data}\n'.format(name=AMI_NAME_TO_READABLE[ami_name], data=image_data))
     return instance_id
 
 
@@ -53,8 +58,6 @@ def main():
 
     else:
         for ami_name in AMI_LIST:
-            if ami_name == SERVER_TWO_BEFORE_GA:  # Skipping this version until new Server version will be released.
-                continue
             instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[ami_name], create_instance(ami_name)))
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:

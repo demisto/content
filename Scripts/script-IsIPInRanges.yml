@@ -38,18 +38,19 @@ script: |
 type: javascript
 tags:
 - ip
-- Condition
-comment: Returns yes if ip is in one of the ranges provided, returns no otherwise.
+comment: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
 enabled: true
-system: true
 args:
 - name: ip
   required: true
   default: true
   description: IP to check in ranges
 - name: ipRanges
-  description: list of IP ranges to check the ip in (if list is not provided, will
-    use default list (e.g  192.16.0.0/16)
+  description: 'A list of IP ranges to check the IP in. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
 outputs:
 - contextPath: "yes"
   description: if given value is an IP range
@@ -60,3 +61,7 @@ outputs:
 - contextPath: IP.InRange
   description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+  - IP Enrichment - Generic v2 - Test

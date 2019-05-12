@@ -181,7 +181,7 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def __configure_proxy_in_demisto(self, proxy=''):
+    def configure_proxy_in_demisto(self, proxy=''):
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
@@ -267,13 +267,11 @@ class MITMProxy:
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
-        self.__configure_proxy_in_demisto(self.ami.docker_ip + ':' + self.PROXY_PORT)
 
     def stop(self):
         if not self.process:
             raise Exception("Cannot stop proxy - not running.")
 
-        self.__configure_proxy_in_demisto('')  # Clear proxy configuration in demisto server
         self.process.send_signal(signal.SIGINT)  # Terminate proxy process
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
 

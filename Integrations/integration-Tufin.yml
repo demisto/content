@@ -1,0 +1,365 @@
+commonfields:
+  id: Tufin
+  version: -1
+name: Tufin
+display: Tufin
+category: Network Security
+image: data:image/png;base64,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
+description: Retrieve and analyze network access controls across Tufin-managed firewalls,
+  SDN, and public cloud to identify vulnerable access paths of an attack
+detaileddescription: Learn more about Tufin at [https://www.tufin.com/](https://www.tufin.com/)
+configuration:
+- display: SecureTrack IP or FQDN
+  name: SecureTrack-Server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: SecureTrack User Credentials
+  name: SecureTrack-User
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Maximum number of rules returned from device durring a policy search
+  name: MaxRules
+  defaultvalue: "100"
+  type: 0
+  required: false
+script:
+  script: |-
+    import json
+    import requests
+    import socket
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    def tos_request(path, params=None, headers=None):
+        """ Function to access TOS via REST API """
+        if headers is None:
+            headers = {
+                'accept': 'application/json',
+                'content-type': 'application/json',
+                'cache-control': 'no-cache'
+            }
+
+        # Get Configuration
+        st_ip = demisto.params()['SecureTrack-Server']
+        st_user = demisto.params()['SecureTrack-User']['identifier']
+        st_pass = demisto.params()['SecureTrack-User']['password']
+        verify_ssl = not demisto.params().get('unsecure', False)
+        url = 'https://' + st_ip + path
+
+        # Go do
+        try:
+            res = requests.get(url, params=params, headers=headers, auth=(st_user, st_pass), verify=verify_ssl)
+        except requests.exceptions.RequestException as e:
+            return_error(str(e))
+
+        # Check output
+        if res.status_code != requests.codes.ok:
+            if res.status_code == 401:
+                return_error('TOS Reached, Auth Failed. Please check your credentials')
+            else:
+                return_error('Error {} Reaching {} to TOS: {}'.format(res.status_code, res.url, res.reason))
+        else:
+            try:
+                return res.json()
+            except:
+                return res.content
+
+    def valid_ip(ipa):
+        # ipaddress module not installed by default, using this approach
+        try:
+            socket.inet_aton(ipa)
+            return True
+        except socket.error:
+            return False
+
+    def path_finder(querystring):
+        # Define the basic output for the function, augmenting later with TOS data
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': '',
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '',
+            'EntryContext': {}
+        }
+
+        # Ask TOS for the path
+        o = tos_request('/securetrack/api/topology/path', querystring)
+
+        # Verify the data and return
+        try:
+            entry['EntryContext']['Tufin.Topology.TrafficAllowed'] = o['path_calc_results']['traffic_allowed']
+            # entry['EntryContext']['Tufin.TrafficRawJSON'] = o['path_calc_results']['device_info']
+            entry['EntryContext']['Tufin.Topology.TrafficDevices'] = [d['name'] for d in o['path_calc_results']['device_info']]
+            entry['Contents'] = o['path_calc_results']['device_info']
+            entry['HumanReadable'] = tableToMarkdown('Tufin Topology Search for {} to {} via Service {}. Traffic is {}'.format(querystring['src'],
+                                                    querystring['dst'], querystring['service'], ('**Denied**', '**Allowed**')[o['path_calc_results']['traffic_allowed']]),
+                                                    {'Start': querystring['src'], 'Devices in Path' : '-->'.join(['**' + d['name'] + '**' + ' ({})'.format(d['vendor']) for d in o['path_calc_results']['device_info']]),
+                                                    'End': querystring['dst']}, ['Start', 'Devices in Path', 'End'])
+        except KeyError:
+            return_error('Unknown Output Returned')
+        # Send back to Demisto inside function
+        return entry
+
+    def path_finder_command():
+        """ Sample query: querystring = {'src':'10.80.80.0','dst':'172.16.200.80','service':'tcp:22','includeIncompletePaths':'true'} """
+        # Build the query from user input
+        querystring = {
+            'src': demisto.args()['source'],
+            'dst': demisto.args()['destination'],
+            'service': demisto.args().get('service', 'Any'),
+            'includeIncompletePaths': 'true'
+        }
+        e = path_finder(querystring)
+        demisto.results(e)
+
+    def path_finder_image(querystring):
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': '',
+            'ContentsFormat': formats['text'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '',
+            'EntryContext': {}
+        }
+
+        try:
+            headers = {'accept': 'image/png','content-type': 'application/json','cache-control': 'no-cache'}
+            img = tos_request('/securetrack/api/topology/path_image', querystring, headers)
+            # simple check if we have an image or error message.
+            if len(img) > 100:
+                # Send back to Demisto inside function
+                return fileResult('topo.png', img, entryTypes['image'])
+            else:
+                entry['HumanReadable'] = 'No Valid Path Found'
+                entry['Contents'] = 'No Valid Path Found'
+                # Send back to Demisto inside function
+                return entry
+        except:
+            return_error('Error Running Query')
+
+    def path_finder_image_command():
+        """ Sample query: querystring = {'src':'10.80.80.0','dst':'172.16.200.80','service':'tcp:80','includeIncompletePaths':'true','displayBlockedStatus':'true'} """
+        querystring = {
+            'src': demisto.args()['source'],
+            'dst': demisto.args()['destination'],
+            'service': demisto.args().get('service', 'Any'),
+            'includeIncompletePaths': 'true',
+            'displayBlockedStatus': 'true'
+        }
+        e = path_finder_image(querystring)
+        demisto.results(e)
+
+    def device_name(devices, device_id):
+        return [e['name'] + ' ({} {})'.format(e['vendor'], e['model']) for e in devices if int(e['id']) == int(device_id)][0]
+
+    def object_lookup(querystring):
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': '',
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '',
+            'EntryContext': {}
+        }
+
+        return_json = {'objects': []}
+
+        o = tos_request('/securetrack/api/network_objects/search', querystring)
+
+        # Validate result
+        try:
+            total = int(o['network_objects']['count'])
+        except KeyError:
+            total = 0
+
+        if total > 0:
+            device_json = tos_request('/securetrack/api/devices')['devices']['device']
+            objs = o['network_objects']['network_object']
+            if not isinstance(o['network_objects']['network_object'], list):
+                objs = [objs]
+            for obj in objs:
+                # display_name device_id
+                return_json['objects'].append({'object_name': obj['display_name'], 'device': device_name(device_json, obj['device_id']), 'comment': obj['comment']})
+        else:
+            entry['HumanReadable'] = 'No Results'
+            entry['EntryContext']['Tufin.ObjectResolve.NumberOfObjects'] = 0
+            return entry
+
+        # Return to Demisto
+        entry['Contents'] = json.dumps(return_json)
+        entry['EntryContext']['Tufin.ObjectResolve.NumberOfObjects'] = total
+        entry['HumanReadable'] = tableToMarkdown('Object Lookup for {}'.format(querystring['exact_subnet']), return_json['objects'], ['object_name', 'device', 'comment'], underscoreToCamelCase, removeNull=True)
+        # Send back to Demisto inside function
+        return entry
+
+    def object_lookup_command():
+        """ Sample query: querystring = {'filter':'subnet','count':'50','exact_subnet':'1.1.1.1'} """
+        querystring = {
+            'filter': 'subnet',
+            'count': '50',
+            'exact_subnet': demisto.args()['ip']
+        }
+        if not valid_ip(querystring['exact_subnet']):
+            return_error('Invalid IP Address')
+            return False
+
+        e = object_lookup(querystring)
+        demisto.results(e)
+
+
+    def policy_search(querystring, max_rules_per_device=100):
+        """ Search policy across all devices.  See docs for syntax """
+        u = '/securetrack/api/rule_search'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': '',
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '',
+            'EntryContext': {}
+        }
+
+        matches = tos_request(u, querystring)
+        search_devices = [e['device_id'] for e in matches['device_list']['device'] if int(e['rule_count']) > 0]
+
+        if not len(search_devices):
+            entry['HumanReadable'] = 'No Results Found'
+            entry['EntryContext']['Tufin.Policysearch.NumberRulesFound'] = 0
+            # Send back to Demisto inside function
+            return entry
+        else:
+            rule_total = 0
+            querystring['count'] = max_rules_per_device
+            querystring['start'] = 0
+            rule_return = []
+            device_json = tos_request('/securetrack/api/devices')['devices']['device']
+            for d in search_devices:
+                rules = tos_request(u + '/{}'.format(d), querystring)
+                # If no matches(there should be) just break the iteration
+                if rules['rules']['count'] == 0:
+                    break
+
+                current_device = device_name(device_json, d)
+
+                for rule in rules['rules']['rule']:
+                    rule_total = rule_total + 1
+                    rule_return.append({
+                        'Device': current_device,
+                        'Source': [d['display_name'] for d in rule['src_network']],
+                        'Source Service': [d['display_name'] for d in rule['src_service']],
+                        'Destination': [d['display_name'] for d in rule['dst_network']],
+                        'Destination Service': [d['display_name'] for d in rule['dst_service']],
+                        'Action': rule['action']
+                    })
+            # Send back to Demisto
+            entry['Contents'] = json.dumps(rule_return)
+            entry['EntryContext']['Tufin.Policysearch.NumberRulesFound'] = rule_total
+            entry['HumanReadable'] = tableToMarkdown('Policy Search Results for {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service', 'Destination', 'Destination Service', 'Action'], removeNull=True)
+            # Send back to Demisto inside function
+            return entry
+
+    def policy_search_command():
+        max_rules_per_device = demisto.params()['MaxRules']
+        querystring = {'search_text': demisto.args()['search']}
+        e = policy_search(querystring, max_rules_per_device)
+        demisto.results(e)
+
+    def test_command():
+        tos_request('/securetrack/api/devices')
+        demisto.results('ok')
+
+    # Demisto Command Routing
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_command()
+        elif demisto.command() == 'tufin-search-topology':
+            path_finder_command()
+        elif demisto.command() == 'tufin-object-resolve':
+            object_lookup_command()
+        elif demisto.command() == 'tufin-search-topology-image':
+            path_finder_image_command()
+        elif demisto.command() == 'tufin-policy-search':
+            policy_search_command()
+    except Exception as e:
+        return_error(e)
+  type: python
+  commands:
+  - name: tufin-search-topology
+    arguments:
+    - name: source
+      required: true
+      description: Source address/addresses (may contain multiple, comma separated
+        values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
+    - name: destination
+      required: true
+      description: Destination address/addresses (may contain multiple, comma separated
+        values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
+    - name: service
+      description: Service parameter can be a port (for example, “tcp:80”, “any”)
+        or an application (for example, “Skype”, “Facebook”).
+    outputs:
+    - contextPath: Tufin.Topology.TrafficAllowed
+      description: Traffic Permitted
+      type: boolean
+    - contextPath: Tufin.Topology.TrafficDevices
+      description: List of devices in path
+      type: string
+    description: Search the Tufin Topology Map
+  - name: tufin-search-topology-image
+    arguments:
+    - name: source
+      required: true
+      description: Source address/addresses (may contain multiple, comma separated
+        values)
+    - name: destination
+      required: true
+      description: Destination address/addresses (may contain multiple, comma separated
+        values)
+    - name: service
+      description: Service parameter can be a port (for example, “tcp:80”, “any”)
+        or an application (for example, “Skype”, “Facebook”).
+    description: Search the Tufin Topology Map, returning an image
+  - name: tufin-object-resolve
+    arguments:
+    - name: ip
+      required: true
+      description: IP Address to Resolve to Network Object
+    outputs:
+    - contextPath: Tufin.ObjectResolve.NumberOfObjects
+      description: Number of objects that resolve to given IP address.
+      type: number
+    description: Resolve IP address to Network Object
+  - name: tufin-policy-search
+    arguments:
+    - name: search
+      required: true
+      description: The text format is for a field is <fieldname>:<text> for example
+        source:192.168.1.1 or bareword for free text search. See the search info documentation
+        in Securetrack Policy Browser page for more information.
+    outputs:
+    - contextPath: Tufin.Policysearch.NumberRulesFound
+      description: Number of rules found via search
+      type: number
+    description: Search the policies of all devices managed by Tufin
+  runonce: false

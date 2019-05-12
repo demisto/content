@@ -12,3 +12,7 @@ CommonServerUserPython.py
 demistomock.py
 Tests/filter_file.txt
 Tests/id_set.json
+.mypy_cache
+Scripts/*/*_unified.yml
+Integrations/*/*_unified.yml
+Beta_Integrations/*/*_unified.yml

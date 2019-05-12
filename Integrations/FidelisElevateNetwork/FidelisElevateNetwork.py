@@ -10,20 +10,13 @@ requests.packages.urllib3.disable_warnings()
 
 
 ''' GLOBALS / PARAMS '''
-IS_FETCH = demisto.params()['isFetch']
-INCIDENT_TYPE = demisto.params()['incidentType']
-SERVER_URL = demisto.params()['server_url']
-CREDENTIALS = demisto.params()['credentials']
-INSECURE = demisto.params()['unsecure']
-PROXY = demisto.params()['proxy']
+IS_FETCH = demisto.params().get('isFetch')
+SERVER_URL = demisto.params().get('server_url', '')
+CREDENTIALS = demisto.params().get('credentials')
+INSECURE = demisto.params().get('unsecure')
+PROXY = demisto.params().get('proxy')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 SESSION_ID = None
-
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 ''' HELPER FUNCTIONS '''
@@ -31,7 +24,7 @@ if not demisto.params().get('proxy', False):
 
 def http_request(method, url_suffix, params=None, data=None, files=None, is_json=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
-    headers = {}
+    headers = {}  # type: Dict[str, str]
     if SESSION_ID is not None:
         headers['x-uid'] = SESSION_ID
         if files is None:
@@ -108,9 +101,25 @@ def generate_pagination():
     }
 
 
+def get_ioc_filter(ioc):
+    if re.match(ipv4Regex, ioc):
+        return {'simple': {'column': 'ANY_IP', 'operator': '=', 'value': ioc}}
+    elif md5Regex.match(ioc):
+        return {'simple': {'column': 'MD5', 'operator': '=', 'value': ioc}}
+    elif sha256Regex.match(ioc):
+        return {'simple': {'column': 'SHA256', 'operator': '=', 'value': ioc}}
+    elif sha1Regex.match(ioc):
+        return {'simple': {'column': 'SHA1_HASH', 'operator': '=', 'value': ioc}}
+    else:
+        return {'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}}
+
+
 def to_fidelis_time_format(t):
-    if isinstance(t, basestring):
-        t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+    if isinstance(t, STRING_TYPES):
+        try:
+            t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError:
+            t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
 
     return datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
 
@@ -142,6 +151,7 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
             settings['value'] = '48:00:00'
         else:
             raise ValueError('Could not parse time frame: {}'.format(time_frame))
+
     elif time_frame == 'Custom':
         settings['key'] = 'custom'
         if start_time is None and end_time is None:
@@ -370,7 +380,7 @@ def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, 
     if threat_score is not None:
         filters.append({'simple': {'column': 'FIDELIS_SCORE', 'operator': '>', 'value': threat_score}})
     if ioc is not None:
-        filters.append({'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}})
+        filters.append(get_ioc_filter(ioc))
 
     data = {
         'columns': columns + ['ALERT_ID', 'ALERT_TIME', 'SUMMARY', 'SEVERITY', 'ALERT_TYPE', ],
@@ -440,8 +450,6 @@ def run_pcap(component_ip, file_names):
 
 
 def list_pcap_components_command():
-    args = demisto.args()  # noqa
-
     results = list_pcap_components()
     output = [{
         'IP': r['ip'],
@@ -494,7 +502,7 @@ def fetch_incidents():
         incident = {
             'Type': 'Fidelis',
             'name': '{} {}'.format(item['ALERT_ID'], item['SUMMARY']),
-            'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%S'),
+            'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item),
         }
         latest = max(latest, incident_date)
@@ -508,48 +516,56 @@ def fetch_incidents():
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
-try:
-    command = demisto.command()
-    LOG('Command being called is {}'.format(command))
-    login()
-    if command == 'test-module':
-        test_integration()
-    elif command == 'fetch-incidents':
-        fetch_incidents()
-
-    elif command == 'fidelis-get-alert':
-        get_alert_command()
-
-    elif command == 'fidelis-delete-alert':
-        delete_alert_command()
-
-    elif command == 'fidelis-get-malware-data':
-        get_malware_data_command()
-
-    elif command == 'fidelis-get-alert-pcap':
-        get_alert_pcap_command()
-
-    elif command == 'fidelis-get-alert-report':
-        get_alert_report_command()
-
-    elif command == 'fidelis-sandbox-upload':
-        sandbox_upload_command()
-
-    elif command == 'fidelis-list-alerts':
-        list_alerts_command()
-
-    elif command == 'fidelis-upload-pcap':
-        upload_pcap_command()
-
-    elif command == 'fidelis-run-pcap':
-        run_pcap_command()
-
-    elif command == 'fidelis-list-pcap-components':
-        list_pcap_components_command()
 
 
-except Exception as e:
-    return_error('error has occurred: {}\n{}'.format(type(e), e.message, ))
+def main():
+    try:
+        handle_proxy()
+        command = demisto.command()
+        LOG('Command being called is {}'.format(command))
+        login()
+        if command == 'test-module':
+            test_integration()
+        elif command == 'fetch-incidents':
+            fetch_incidents()
 
-finally:
-    logout()
+        elif command == 'fidelis-get-alert':
+            get_alert_command()
+
+        elif command == 'fidelis-delete-alert':
+            delete_alert_command()
+
+        elif command == 'fidelis-get-malware-data':
+            get_malware_data_command()
+
+        elif command == 'fidelis-get-alert-pcap':
+            get_alert_pcap_command()
+
+        elif command == 'fidelis-get-alert-report':
+            get_alert_report_command()
+
+        elif command == 'fidelis-sandbox-upload':
+            sandbox_upload_command()
+
+        elif command == 'fidelis-list-alerts':
+            list_alerts_command()
+
+        elif command == 'fidelis-upload-pcap':
+            upload_pcap_command()
+
+        elif command == 'fidelis-run-pcap':
+            run_pcap_command()
+
+        elif command == 'fidelis-list-pcap-components':
+            list_pcap_components_command()
+
+    except Exception as e:
+        return_error('error has occurred: {}'.format(str(e)))
+
+    finally:
+        logout()
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
