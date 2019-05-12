@@ -8,6 +8,7 @@ import math
 import json
 from datetime import datetime, date
 from botocore.config import Config
+import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
