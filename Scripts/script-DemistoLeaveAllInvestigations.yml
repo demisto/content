@@ -49,7 +49,5 @@ runas: DBotWeakRole
 dependson:
   must:
   - demisto-api-post
-releaseNotes: Automation to leave all investigations that a user is part of (clears out the incidents in
-  the left pane).
 tests:
 - No test
