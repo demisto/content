@@ -59,13 +59,20 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
     if res.status_code not in {200}:
         error_message = f'Error in API call to Looker [{res.status_code}] - {res.reason}'
 
-        # Try to get an error message from looker json response
-        if res.status_code in {400}:
+        # Try to get detailed errors from looker json response
+        if res.status_code in (400, 422):
             try:
-                inner_error = res.json()['message']
-                error_message += f'\n{inner_error}'
+                error_json = res.json()
+                error_message += f"\n{error_json['message']}"
+
+                if res.status_code == 422:
+                    validation_error_message = ""
+                    for validation_error in error_json['errors']:
+                        validation_error_message += f"\n{validation_error['field']} {validation_error['message']}"
+                    error_message += validation_error_message
             except (KeyError, ValueError):
                 pass
+
         raise requests.exceptions.HTTPError(error_message)
 
     # Return by expected type
@@ -147,7 +154,7 @@ def full_path_headers(src_data, base_path):
 def parse_filters_arg(filters_arg_value):
     error_message = "'filters' argument format is invalid.\n"
 
-    filters_list = argToList(filters_arg_value)
+    filters_list = argToList(filters_arg_value, ';')
     filters_list = [elem for elem in [x.strip() for x in filters_list] if elem]  # Remove empty elems
     if not filters_list:
         return
@@ -155,14 +162,17 @@ def parse_filters_arg(filters_arg_value):
     filters = {}
     filters_and_indices_list = zip(range(len(filters_list)), filters_list)  # Track element index for error messages
     for i, elem in filters_and_indices_list:
-        k, v = elem.split(':', 1)
-        k = k.strip()
-        if not k:
-            return_error(f"{error_message}Filter in position {i+1}: field is empty.")
-        v = v.strip()
-        if not v:
-            return_error(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
-        filters[k] = v
+        try:
+            k, v = elem.split('=', 1)
+            k = k.strip()
+            if not k:
+                return_error(f"{error_message}Filter in position {i+1}: field is empty.")
+            v = v.strip()
+            if not v:
+                return_error(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
+            filters[k] = v
+        except ValueError:
+            return_error(f"{error_message}Filter in position {i+1} is missing '=' separator")
 
     return filters
 

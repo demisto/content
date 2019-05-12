@@ -151,7 +151,7 @@ script:
       secret: false
     - default: false
       description: 'Filters for the query, passed as a list with the format: "field
-        name=filter value,..." (Field name format: "object_name.field_name")'
+        name=filter value;..." (Field name format: "object_name.field_name")'
       isArray: true
       name: filters
       required: false
@@ -216,7 +216,7 @@ script:
       secret: false
     - default: false
       description: 'Filters for the query, passed as a list with the format: "field
-        name=filter value,..." (Field name format: "object_name.field_name")'
+        name=filter value;..." (Field name format: "object_name.field_name")'
       isArray: true
       name: filters
       required: false
