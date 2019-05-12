@@ -76,7 +76,7 @@ script: |-
           demisto_score = "Not Specified"
       if isIndicator:
           try:
-              indicator = Indicator(labels=["x-{}".format(label_as_type)],
+              indicator = Indicator(labels=[label_as_type],
                               pattern=stix_type_and_value,
                               source=source_system,
                               created=first_seen,
