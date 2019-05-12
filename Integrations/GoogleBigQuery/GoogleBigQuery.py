@@ -104,14 +104,6 @@ def convert_to_string_if_datetime(object_that_may_be_datetime):
         return object_that_may_be_datetime
 
 
-def convert_datetime_objects_to_string(rows_context):
-    for row_index in range(len(rows_context)):
-        cur_row = rows_context[row_index]
-        cur_row = {key: convert_to_string_if_datetime(value) for key, value in cur_row.items()}
-        rows_context[row_index] = cur_row
-    return rows_context
-
-
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -162,6 +154,7 @@ def query_command():
 
         for row in query_results:
             row_context = {underscoreToCamelCase(k): v for k, v in row.items()}
+            row_context = {key: convert_to_string_if_datetime(value) for key, value in row_context.items()}
             rows_contexts.append(row_context)
 
         if rows_contexts:
@@ -170,7 +163,6 @@ def query_command():
                 'Query': args['query'],
                 'Row': rows_contexts
             }
-            rows_contexts = convert_datetime_objects_to_string(rows_contexts)
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
 
@@ -190,9 +182,7 @@ def test_module():
         query_job = bigquery_client.query(TEST_QUERY)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
-        first_item = next(results_rows_iterator)
-        if str(first_item.get("name")) != "Ruby":
-            raise ValueError("Data from DB not matching expected results")
+        next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
         return_error(str(ex))
