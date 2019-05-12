@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # type: ignore
 import requests
 
 # Disable insecure warnings
@@ -19,10 +19,10 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 def alexa_domain_command():
     domain = demisto.args().get('domain')
-    resp = requests.request('GET', 'http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
+    resp = requests.request('GET', 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
     root = ET.fromstring(str(resp.content))
     try:
-        rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
+        rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
         if int(rank) > THRESHOLD:
             dbot_score = 2
             dbot_score_text = 'suspicious'
@@ -61,9 +61,9 @@ def alexa_domain_command():
 
 def test_module_command():
     domain = 'google.com'
-    resp = requests.request('GET', 'http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
+    resp = requests.request('GET', 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
     root = ET.fromstring(str(resp.content))
-    rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
+    rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
     if rank == '1':
         result = 'ok'
     else:

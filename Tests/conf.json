@@ -407,7 +407,7 @@
             "nightly": true
         },
         {
-            "integrations": "WildFire",
+            "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test"
         },
         {
@@ -1051,7 +1051,7 @@
         {
             "integrations": [
                 "Lastline",
-                "WildFire",
+                "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
                 "McAfee Advanced Threat Defense"
@@ -1354,12 +1354,23 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
+            "integrations": "Netcraft",
+            "playbookID": "Netcraft test"
+        },
+        {
             "integrations": "EclecticIQ Platform",
             "playbookID": "EclecticIQ Test"
         },
         {
             "integrations": "Google Cloud Compute",
             "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "TestIsEmailAddressInternal"
         }
     ],
     "skipped_tests": {
@@ -1380,7 +1391,8 @@
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
-        "Zoom_test": "Added here because test existed but was not configured - need to review the test"
+        "Zoom_test": "Added here because test existed but was not configured - need to review the test",
+        "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1391,10 +1403,12 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
+        "McAfee Advanced Threat Defense": "License expired",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
+        "McAfee Advanced Threat Defense": "no license, issue 16909",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1428,6 +1442,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1439,6 +1454,7 @@
     ],
     "unmockable_integrations": {
         "Google BigQuery": "SSL problem",
+        "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
@@ -1513,7 +1529,6 @@
         "McAfee ESM-v10": "Checking",
         "Salesforce": "Checking",
         "okta": "Checking",
-        "WildFire": "Checking",
         "WhatsMyBrowser": "Checking",
         "Check Point": "Checking",
         "Awake Security": "Checking",
@@ -1541,10 +1556,11 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Snowflake": "Isn't working with mocking enabled - needs investigation",
+        "Snowflake": "Trust any cert not working: issue #16572",
         "Google Cloud Compute": "checking",
         "jira-v2": "inconsistent test (uploads randomly generated file each time)",
         "Microsoft Graph User": "checking",
-        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: http://ec2-18-194-166-130.eu-central-1.compute.amazonaws.com/CherwellAPI/token (Caused by ProxyError('Cannot connect to proxy"
+        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: (Caused by ProxyError('Cannot connect to proxy",
+        "DUO Admin": "Missing proxy and trust any cert option #16893"
     }
 }
