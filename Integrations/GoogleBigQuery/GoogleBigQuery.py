@@ -203,3 +203,6 @@ except Exception as e:
     LOG(str(e))
     LOG.print_log()
     raise
+
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
