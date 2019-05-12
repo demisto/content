@@ -4,7 +4,7 @@ fromversion: 4.1.0
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
-  Currently, the following integrations are supported:
+  Supported integrations:
   - Active Directory Query v2
   - McAfee ePolicy Orchestrator
   - Carbon Black Enterprise Response v2
@@ -74,7 +74,7 @@ tasks:
       id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
       version: -1
       name: Is McAfee ePolicy Orchestrator enabled?
-      description: Checks if there is any active instance of the McAfee ePolicy Orchestrator
+      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator integration enabled.
         integration enabled.
       scriptName: Exists
       type: condition
@@ -188,7 +188,7 @@ tasks:
     task:
       id: 44a06d71-1772-47af-8d41-8c6dbdd149e7
       version: -1
-      name: Get host information from ePO
+      name: Get host information from McAfee ePO
       description: Gets host information from McAfee ePolicy Orchestrator.
       script: epo|||epo-find-system
       type: regular
@@ -224,7 +224,7 @@ tasks:
       id: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is any active instance of the Carbon Black Enterprise
+      description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
         Response integration enabled.
       scriptName: Exists
       type: condition
@@ -314,8 +314,7 @@ tasks:
       id: 216aed2b-2f34-4c5e-8c54-60b978218896
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
-      description: Checks if there is any active instance of the CrowdStrike Falcon
-        Host integration enabled.
+      description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -470,8 +469,7 @@ tasks:
       id: 6a8160b7-fe32-4ab0-8396-e9bcafc98194
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there is any active instance of the Active Directory
-        Query v2 integration enabled.
+      description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -527,7 +525,7 @@ tasks:
       name: Get host information from Active Directory
       description: |-
         Uses Active Directory to retrieve detailed information about the computer of the account specified. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN).
-        If no filters are specified, the result will show all computers.
+        If no filters are specified, returns all computers.
       script: Active Directory Query v2|||ad-get-computer
       type: regular
       iscommand: true
@@ -591,7 +589,7 @@ tasks:
       id: 71baffa3-cd35-4cb0-8f50-0bd4c45fbc70
       version: -1
       name: CrowdStrike Endpoint Enrichment
-      description: Enrich Endpoint with CrowdStrike
+      description: Enrich an endpoint using CrowdStrike.
       playbookName: CrowdStrike Endpoint Enrichment
       type: playbook
       iscommand: false

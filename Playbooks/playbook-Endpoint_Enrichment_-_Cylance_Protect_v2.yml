@@ -38,7 +38,7 @@ tasks:
       id: 50264655-eac1-4439-809b-32f93a19c825
       version: -1
       name: Is Cylance Protect v2 enabled?
-      description: Checks if there is any active instance of the Cylance Protect v2
+      description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
         integration enabled.
       type: condition
       iscommand: false
@@ -123,7 +123,7 @@ tasks:
       id: ec7a9e06-60d0-4c25-8ed4-1cb9d0fe92f6
       version: -1
       name: Set enriched device to context
-      description: Sets the device that has been enriched into context.
+      description: Sets the device that was enriched into context.
       scriptName: Set
       type: regular
       iscommand: false
