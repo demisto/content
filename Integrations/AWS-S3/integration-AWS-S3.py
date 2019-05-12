@@ -9,6 +9,9 @@ import json
 from datetime import datetime, date
 from botocore.config import Config
 
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 AWS_DEFAULT_REGION = None  # demisto.params()['defaultRegion']
 AWS_roleArn = demisto.params()['roleArn']
 AWS_roleSessionName = demisto.params()['roleSessionName']
