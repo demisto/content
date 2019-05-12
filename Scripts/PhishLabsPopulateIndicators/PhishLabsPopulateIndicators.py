@@ -64,6 +64,6 @@ else:
         indicator_res = demisto.executeCommand('createNewIndicator', demisto_indicator)
 
         if isError(indicator_res[0]):
-            return_error('Error creating indiciator - {}'.format(indicator_res[0]['Contents']))
+            return_error('Error creating indicator - {}'.format(indicator_res[0]['Contents']))
 
 demisto.results('Successfully populated indicators')
