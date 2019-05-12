@@ -234,6 +234,11 @@ def get_query_args():
     return args_dict
 
 
+def event_to_incident(event):
+    # TODO: Generic parsing of looker events (rows) to demisto incidents
+    pass
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -259,7 +264,10 @@ def fetch_incidents_command():
     new_last_run = datetime.strftime(datetime.now(), LAST_RUN_TIME_FORMAT)
     raw_response = run_look_request(look, 'json', limit, '')
 
-    # TODO: filter results - compare created_date values to last_run
+    # TODO: filter results - compare created_date values to last_run, e.g.:
+    for event in raw_response:
+        if datetime.strptime(event['date'], LAST_RUN_TIME_FORMAT) >= datetime.strptime(last_run, LAST_RUN_TIME_FORMAT):
+            incidents.append(event_to_incident(event))
 
     demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
