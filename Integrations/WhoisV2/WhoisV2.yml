@@ -129,7 +129,6 @@ script:
       description: ID of the domain
       type: string
     description: Provides data enrichment for Domains, URLs, and IP addresses.
-  dockerimage: demisto/whopy2:latest
   runonce: false
 releaseNotes: V2 uses a more powerful python package to return more complete results
 tests:
