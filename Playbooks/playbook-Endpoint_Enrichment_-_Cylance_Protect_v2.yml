@@ -122,8 +122,9 @@ tasks:
     task:
       id: ec7a9e06-60d0-4c25-8ed4-1cb9d0fe92f6
       version: -1
-      name: Set enriched device to context
-      description: Sets the device that was enriched into context.
+      name: Set enriched device details
+      description: Sets the device that was enriched in another context key.
+      That key will contain only the device that was enriched using the provided hostname, and will be the output of the playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -174,8 +175,9 @@ tasks:
     task:
       id: 83e2be36-d5ef-43df-80b3-c77e95e19780
       version: -1
-      name: Set devices to context
-      description: Sets a value into the context with the given context key.
+      name: Set device list
+        description: Sets the devices in another context key - "CylanceProtectAllDevices".
+        Setting them under that key ensures proper filtering in the next tasks.
       scriptName: Set
       type: regular
       iscommand: false
