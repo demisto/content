@@ -1,4 +1,3 @@
-from CommonServerPython import *
 import datetime
 from GoogleBigQuery import convert_to_string_if_datetime
 
