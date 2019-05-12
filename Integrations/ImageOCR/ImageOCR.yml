@@ -7,7 +7,7 @@ configuration:
   name: langs
   required: false
   type: 0
-description: Extract text from images
+description: Extract text from images.
 display: Image OCR
 name: Image OCR
 defaultEnabled: true
@@ -15,7 +15,7 @@ fromversion: 4.0.0
 script:
   commands:
   - deprecated: false
-    description: List supported languages which can be configured
+    description: List supported languages which can be configured.
     execution: false
     name: image-ocr-list-languages
   - arguments:
@@ -26,19 +26,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specify language(s) used for OCR. Overrides default configured
+      description: Specify language(s) used for OCR. Overrides default configured.
         langauges.
       isArray: true
       name: langs
       required: false
       secret: false
     deprecated: false
-    description: Extract test from an image
+    description: Extract test from an image.
     execution: false
     name: image-ocr-extract-text
     outputs:
     - contextPath: File.Text
-      description: Extracted Text from the passed in image file
+      description: Extracted Text from the passed in image file.
       type: String
   dockerimage: demisto/tesseract:1.0.0.274
   isfetch: false
