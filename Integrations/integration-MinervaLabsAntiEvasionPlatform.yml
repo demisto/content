@@ -240,7 +240,7 @@ script:
         response = session.post(BASE_URL + '/api/exclusions/delete', json=[json_params])
         if response.status_code is not 200:
             return_error('Error while deleting exclusions. More information: {}, {}'.format(response.status_code, response.reason))
-        demisto.results('Exclusions {} were deleted'.format(exclusion_id))
+        demisto.results('Exclusion {} was deleted'.format(exclusion_id))
 
 
     @logger
