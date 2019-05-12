@@ -1976,6 +1976,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Fix fetching credentials from vault instances"
 tests:
   - 'Test CommonServer'
