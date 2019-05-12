@@ -3,7 +3,7 @@
 echo "Starting flake8 run"
 errors=0
 
-flake8_out=$(python -m flake8 2>&1)
+flake8_out=$(python -m flake8 $* 2>&1)
 if [[ $? -ne 0 ]]
   then
     # perform second pass with python3

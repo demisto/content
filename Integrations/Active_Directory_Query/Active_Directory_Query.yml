@@ -388,5 +388,6 @@ script:
       specified group
   runonce: false
   dockerimage: demisto/ldap:1.0.0.75
+releaseNotes: "-"
 tests:
   - Active Directory Test
