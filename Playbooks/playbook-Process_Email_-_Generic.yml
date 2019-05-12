@@ -29,6 +29,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
@@ -50,14 +52,13 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||  
-          val.Type.toLowerCase().indexOf('smtp mail') >= 0 || 
-          val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || 
-          val.Type.toLowerCase().indexOf('news or mail') >= 0 || 
-          (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && 
-          val.Extension.toLowerCase() == 'msg') || 
-          (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && 
-          val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0
+          || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2
+          microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news
+          or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase()
+          == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf')
+          >= 0)).EntryID}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -68,6 +69,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 0dd910be-f198-4b5d-8dbb-8d7170049463
@@ -102,6 +105,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 4ac2b332-b76d-463e-824e-717895c5b644
@@ -110,7 +115,9 @@ tasks:
       id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
-      description: "Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages."
+      description: Parses an email from an EML or MSG file and populates all relevant
+        context data to investigate the email. Also extracts indicators from the email
+        messages.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -120,14 +127,13 @@ tasks:
       - "19"
     scriptarguments:
       entryid:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||  
-          val.Type.toLowerCase().indexOf('smtp mail') >= 0 || 
-          val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || 
-          val.Type.toLowerCase().indexOf('news or mail') >= 0 || 
-          (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && 
-          val.Extension.toLowerCase() == 'msg') || 
-          (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && 
-          val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0
+          || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2
+          microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news
+          or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase()
+          == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf')
+          >= 0)).EntryID}
     reputationcalc: 2
     results:
     - AttachmentName
@@ -140,6 +146,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: be6f6daf-0497-423e-8a48-d669ccad567f
@@ -176,6 +184,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: c18ef7a3-f278-4255-86ac-5b127f991302
@@ -212,6 +222,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: dd0d5106-965e-4a81-8e67-79392ea47d7f
@@ -233,6 +245,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 104966c4-8595-4a5a-8c75-c84f55e51c84
@@ -257,6 +271,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 9d6defc4-5ef1-4523-8136-08372aa15544
@@ -265,7 +281,8 @@ tasks:
       id: 9d6defc4-5ef1-4523-8136-08372aa15544
       version: -1
       name: Set incident with the Email object data
-      description: "Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message."
+      description: Updates Demisto incident fields using data from the email object.
+        Also extracts indicators from the email message.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -598,6 +615,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: bc0dd5a2-6073-4f44-8abc-9bc48e3e08c1
@@ -636,6 +655,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: e6915e5d-bdca-4d59-8636-2e65b2e680e1
@@ -663,10 +684,12 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 430
+          "y": 450
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: 9a505e0b-27c1-424a-880a-253135d80683
@@ -702,17 +725,18 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 25b31351-c536-4730-8d45-d94bac0fb343
+    taskid: 040c1852-c639-4322-80d0-e10d0dfc9b09
     type: regular
     task:
-      id: 25b31351-c536-4730-8d45-d94bac0fb343
+      id: 040c1852-c639-4322-80d0-e10d0dfc9b09
       version: -1
       name: Set incident with the Email object data
+      description: Updates Demisto incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
-      description: "Updates Demisto incident fields using data from the email object."
       iscommand: true
       brand: Builtin
     nexttasks:
@@ -779,6 +803,8 @@ tasks:
       ccc: {}
       ccipaddress: {}
       cleanname: {}
+      closeNotes: {}
+      closeReason: {}
       compliance: {}
       constvalue: {}
       customFields: {}
@@ -801,7 +827,7 @@ tasks:
       emailbcc:
         complex:
           root: Email
-          accessor: BCC
+          accessor: HeadersMap.BCC
           transformers:
           - operator: uniq
           - operator: Stringify
@@ -821,6 +847,7 @@ tasks:
           accessor: HTML
           transformers:
           - operator: Stringify
+      emailbodyhtmlraw: {}
       emailcc:
         complex:
           root: Email
@@ -839,6 +866,7 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      emailfromdisplayname: {}
       emailimage:
         complex:
           root: Email
@@ -854,31 +882,41 @@ tasks:
       emailmessageid:
         complex:
           root: Email
-          accessor: ID
-      emailreceived:
-        complex:
-          root: Email
-          accessor: Received
+          accessor: HeadersMap.Message-ID
+          transformers:
+          - operator: uniq
+      emailreceived: {}
       emailreplyto:
         complex:
           root: Email
-          accessor: ReplyTo
+          accessor: HeadersMap.Reply-To
+          transformers:
+          - operator: uniq
       emailreturnpath:
         complex:
           root: Email
-          accessor: ReturnPath
+          accessor: HeadersMap.Return-Path
+          transformers:
+          - operator: uniq
+      emailsenderdomain: {}
       emailsenderip:
         complex:
           root: Email
           accessor: SenderIP
+          transformers:
+          - operator: uniq
       emailsize:
         complex:
           root: Email
           accessor: Size
+          transformers:
+          - operator: uniq
       emailsource:
         complex:
           root: Email
           accessor: Source
+          transformers:
+          - operator: uniq
       emailsubject:
         complex:
           root: Email
@@ -886,17 +924,13 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      emailsubjectlanguage: {}
       emailto:
         complex:
           root: Email
           accessor: To
           transformers:
           - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
       emailtocount:
         complex:
           root: Email
@@ -972,6 +1006,7 @@ tasks:
       relatedincidentssummary: {}
       replacePlaybook: {}
       reporteduser: {}
+      reportinguser: {}
       riskmitigationactionrequirements: {}
       riskscore: {}
       roles: {}
@@ -1045,6 +1080,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1171,5 +1207,4 @@ outputs:
   description: The File object
   type: unknown
 tests:
-  - No test
-releaseNotes: "fix bug - process Email is extracting indicators twice on the same data"
+  - process_email_-_generic_-_test
