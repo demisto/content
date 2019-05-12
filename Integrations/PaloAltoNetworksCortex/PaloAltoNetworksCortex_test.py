@@ -103,5 +103,4 @@ def test_get_encrypted():
     from PaloAltoNetworksCortex import get_encrypted
     auth_id = random_string(50)
     auth_key = random_string(32)
-    a = get_encrypted(auth_id, auth_key)
-    print(a)
+    get_encrypted(auth_id, auth_key)
