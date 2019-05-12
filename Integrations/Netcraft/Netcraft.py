@@ -47,7 +47,7 @@ TAKEDOWN_INFO_HEADER = ["ID", "Status", "Attack Type", "Date Submitted", "Last U
 TAKEDOWN_NOTE_HEADERS = ["Takedown ID", "Note ID", "Note", "Author", "Time", "Group ID"]
 
 # Titles for human readables
-TAKEDOWN_INFO_TITLE = "Takedowns information found"
+TAKEDOWN_INFO_TITLE = "Takedowns information found:"
 REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
 
 
