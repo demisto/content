@@ -1354,6 +1354,10 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
+            "integrations": "Netcraft",
+            "playbookID": "Netcraft test"
+        },
+        {
             "integrations": "EclecticIQ Platform",
             "playbookID": "EclecticIQ Test"
         },
@@ -1364,6 +1368,9 @@
         {
             "playbookID": "FormattingPerformance - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "TestIsEmailAddressInternal"
         }
     ],
     "skipped_tests": {
@@ -1396,6 +1403,7 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
+        "McAfee Advanced Threat Defense": "License expired",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1446,6 +1454,7 @@
     ],
     "unmockable_integrations": {
         "Google BigQuery": "SSL problem",
+        "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
