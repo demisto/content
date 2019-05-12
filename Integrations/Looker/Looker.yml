@@ -71,6 +71,17 @@ script:
       name: limit
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Format of result
+      isArray: false
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
+      secret: false
     deprecated: false
     description: Run a saved look and return the results in the requested format.
     execution: false
