@@ -66,16 +66,8 @@ def parse_response(response, error_operation, file_content=False, is_fetch=False
         except Exception:
             err_msg = response.content.decode('utf-8')
         raise_or_return_error(error_operation + ": " + str(err_msg), is_fetch)
-        # if is_fetch:
-        #     raise Exception(error_operation + ": " + str(err_msg))
-        # else:
-        #     return_error(error_operation + ": " + str(err_msg))
     except Exception as error:
         raise_or_return_error(f'Could not parse response {error}', is_fetch)
-        # if is_fetch:
-        #     raise Exception(f'Could not parse response {error}')
-        # else:
-        #     return_error(f'Could not parse response {error}')
 
 
 def cherwell_dict_parser(key, value, item_list):
@@ -127,10 +119,6 @@ def http_request(method, url, payload, token=None, custom_headers=None, is_fetch
     except requests.exceptions.ConnectionError as e:
         err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {e}'
         raise_or_return_error(err_message, is_fetch)
-        # if is_fetch:
-        #     raise Exception(err_message)
-        # else:
-        #     return_error(err_message)
     return response
 
 
@@ -205,10 +193,6 @@ def resolve_business_object_id_by_name(name, is_fetch=False):
     if not res:
         err_message = f'Could not retrieve "{name}" business object id. Make sure "{name}" is a valid business object.'
         raise_or_return_error(err_message, is_fetch)
-        # if is_fetch:
-        #     raise Exception(err_message)
-        # else:
-        #     return_error(err_message)
     return res[0].get('busObId')
 
 
@@ -453,18 +437,10 @@ def validate_params_for_fetch(max_result, objects_to_fetch, real_fetch):
     except ValueError:
         max_result_err_message = 'Max results to fetch must be a number grater than 0'
         raise_or_return_error(max_result_err_message, real_fetch)
-        # if real_fetch:
-        #     raise Exception(max_result_err_message)
-        # else:
-        #     return_error(max_result_err_message)
     # Make sure that there are objects to fetch
     if len(objects_to_fetch) == 0:
         objects_to_fetch_err_message = 'No objects to fetch were given'
         raise_or_return_error(objects_to_fetch_err_message, real_fetch)
-        # if real_fetch:
-        #     raise Exception(objects_to_fetch_err_message)
-        # else:
-        #     return_error(objects_to_fetch_err_message)
     return
 
 
@@ -482,11 +458,6 @@ def fetch_incidents(objects_names, fetch_time, max_results, query_string, fetch_
             error_message = f'First fetch time stamp should be of the form: <number> <time unit>, e.g., 12 hours, ' \
                 f'7 days. Received: "{fetch_time}"'
             raise_or_return_error(error_message, real_fetch)
-            # if real_fetch:
-            #     raise Exception(error_message)
-            # else:
-            #     return_error(error_message)
-
     incidents = get_all_incidents(objects_names, last_created_time, max_results, query_string, real_fetch)
     if fetch_attachments:
         incidents = fetch_incidents_attachments(incidents, real_fetch)
@@ -559,18 +530,10 @@ def validate_query_list(query_list, is_fetch):
             length_err_message = f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
                 f'["FieldName","Operator","Value"],...]`. Filter in index {index} is malformed: {query}'
             raise_or_return_error(length_err_message, is_fetch)
-            # if is_fetch:
-            #     raise Exception(length_err_message)
-            # else:
-            #     return_error(length_err_message)
         if query[1] not in QUERY_OPERATORS:
             operator_err_message = f'Operator should be one of the following: {", ".join(QUERY_OPERATORS)}. Filter in' \
                 f' index {index}, was: {query[1]}'
             raise_or_return_error(operator_err_message, is_fetch)
-            # if is_fetch:
-            #     raise Exception(operator_err_message)
-            # else:
-            #     return_error(operator_err_message)
     return
 
 
@@ -579,18 +542,10 @@ def validate_query_for_fetch_incidents(objects_names, query_string, real_fetch):
         no_objects_err_message = f'No business object name was given. \n In order to run advanced query, ' \
             f'fill the integration parameter-`Objects to fetch` with exactly one business object name.'
         raise_or_return_error(no_objects_err_message, real_fetch)
-        # if real_fetch:
-        #     raise Exception(no_objects_err_message)
-        # else:
-        #     return_error(no_objects_err_message)
     if len(objects_names) > 1:
         multiple_objects_error_message = f'Advanced query operation is supported for a single business object. ' \
             f'{len(objects_names)} objects were given: {",".join(objects_names)}'
         raise_or_return_error(multiple_objects_error_message, real_fetch)
-        # if real_fetch:
-        #     raise Exception(multiple_objects_error_message)
-        # else:
-        #     return_error(multiple_objects_error_message)
     return parse_string_query_to_list(query_string, real_fetch)
 
 
@@ -602,9 +557,6 @@ def build_query_dict(query, filed_ids_dict, is_fetch):
     if not field_id:
         err_message = f'Field name: {field_name} does not exit in the given business objects'
         raise_or_return_error(err_message, is_fetch)
-        # if is_fetch:
-        #     raise Exception(err_message)
-        # demisto.results(err_message)
     return {
         'fieldId': filed_ids_dict.get(field_name),
         'operator': operator,
@@ -635,10 +587,6 @@ def parse_string_query_to_list(query_string, is_fetch=False):
         err_message = f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
             f'["FieldName","Operator","Value"]]`.'
         raise_or_return_error(err_message, is_fetch)
-        # if is_fetch:
-        #     raise Exception(err_message)
-        # else:
-        #     return_error(err_message)
     validate_query_list(query_list, is_fetch)
     return query_list
 
@@ -698,6 +646,13 @@ def cherwell_get_business_object_id(business_object_name):
 
 
 def raise_or_return_error(msg, raise_flag):
+    """
+    This function handles errors occurred in functions within fetch incidents flow.
+    If the error occirred as part of a fetch-incidents flow then an exception will be thrown otherwise a regular error
+    entry will be returned.
+    :param msg: error msg to raise/return
+    :param raise_flag: if true should raise, otherwise throw
+    """
     if raise_flag:
         raise Exception(msg)
     else:
