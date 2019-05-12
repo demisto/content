@@ -289,7 +289,7 @@ def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_c
             "ID": note_context["TakedownID"],
             "Note": [note_context]
         }
-        return_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] \
+        all_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] \
             if all_takedowns_entry_context else [new_takedown_entry_context]
     else:
         for i in range(len(all_takedowns_entry_context)):
@@ -301,16 +301,14 @@ def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_c
                 "ID": note_context["TakedownID"],
                 "Note": [note_context]
             }
-            return_takedowns_entry_context = list(all_takedowns_entry_context)
-            return_takedowns_entry_context.append(new_takedown_entry_context)
+            all_takedowns_entry_context.append(new_takedown_entry_context)
         else:
             takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]
             cur_notes_in_takedown = takedown_context_to_change["Note"]
             takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context,
                                                                                         cur_notes_in_takedown)
-            return_takedowns_entry_context = list(all_takedowns_entry_context)
-            return_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
-    return return_takedowns_entry_context
+            all_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
+    return all_takedowns_entry_context
 
 
 def generate_netcraft_context_with_notes(list_of_notes_contexts):
