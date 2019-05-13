@@ -48,7 +48,7 @@ tasks:
       display-name:
         simple: Samurai Jack
       email:
-        simple: jack@AssasinsFoeRent.com
+        simple: jack@AssasinsForRent.com
       password:
         simple: 1q2w3e4r!
       telephone-number: {}
@@ -937,7 +937,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: jack@AssasinsFoeRent.com
+              simple: jack@AssasinsForRent.com
             iscontext: true
       - - operator: isEqualString
           left:
@@ -946,7 +946,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: jack@AssasinsFoeRent.com
+              simple: jack@AssasinsForRent.com
     view: |-
       {
         "position": {
