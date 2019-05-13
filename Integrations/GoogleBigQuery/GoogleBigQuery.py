@@ -184,7 +184,7 @@ def test_module():
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error(str(ex))
+        return_error("Authentication error: credentials JSON provided is invalid.")
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
