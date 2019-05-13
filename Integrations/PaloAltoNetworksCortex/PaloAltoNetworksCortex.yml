@@ -575,7 +575,7 @@ script:
     - contextPath: Cortex.Logging.severity
       description: Threat Severity.
       type: Unknown
-  dockerimage: devtesting/python_pancloud:1.0.0.1557754040
+  dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
   runonce: false
   script: ''
