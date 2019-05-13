@@ -17,6 +17,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 DOMAIN = demisto.args().get('query')
 
 ''' HELPER FUNCTIONS '''
+# About the drop some mean regex right now disable-secrets-detection-start
 tlds = {
     "_": {
         "schema": "2",
@@ -8192,6 +8193,8 @@ def get_whois(domain, normalized=None):
     raw_data, server_list = get_whois_raw(domain, with_server_list=True)
     return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
                            handle_server=server_list[-1])
+
+# Drops the mic disable-secrets-detection-end
 
 
 '''COMMANDS'''
