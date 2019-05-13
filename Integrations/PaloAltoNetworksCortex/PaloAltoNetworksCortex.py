@@ -248,10 +248,10 @@ def convert_log_to_incident(log):
     log_contents = log.get('_source')
     log_contents['id'] = log.get('_id')
     log_contents['score'] = log.get('_score')
-    if 'Traps' in FETCH_QUERY:
+    if 'Traps' in FETCH_QUERY:  # type: ignore
         occurred = log_contents.get('generatedTime')
         time_received = log_contents.get('serverTime')
-    elif 'Firewall' in FETCH_QUERY:
+    elif 'Firewall' in FETCH_QUERY:  # type: ignore
         time_generated = log_contents.get('time_generated')
         occurred = datetime.utcfromtimestamp(time_generated).isoformat() + 'Z'
         time_received = log_contents.get('receive_time')
@@ -562,9 +562,9 @@ def fetch_incidents():
     # Need sometime in the future, so the timestamp will be taken from the query
     service_end_date_epoch = int(datetime.now().strftime('%s')) + 1000
 
-    if 'Firewall' in FETCH_QUERY:
+    if 'Firewall' in FETCH_QUERY:  # type: ignore
         fetch_timestamp = int(last_fetched_event_timestamp.strftime('%s'))
-    elif 'Traps' in FETCH_QUERY:
+    elif 'Traps' in FETCH_QUERY:  # type: ignore
         fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     query = prepare_fetch_query(fetch_timestamp)
@@ -588,9 +588,9 @@ def fetch_incidents():
     max_fetched_event_timestamp = last_fetched_event_timestamp
     for page in pages:
         incident, time_received = convert_log_to_incident(page)
-        if 'Firewall' in FETCH_QUERY:
+        if 'Firewall' in FETCH_QUERY:  # type: ignore
             time_received_dt = datetime.fromtimestamp(time_received)
-        elif 'Traps' in FETCH_QUERY:
+        elif 'Traps' in FETCH_QUERY:  # type: ignore
             time_received_dt = datetime.strptime(time_received, '%Y-%m-%dT%H:%M:%S.%fZ')
         incident_pairs.append((incident, time_received_dt))
     if incident_pairs:

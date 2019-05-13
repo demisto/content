@@ -182,4 +182,3 @@ dockerimage: demisto/pdfx
 runas: DBotWeakRole
 tests:
   - Extract Indicators From File - test
-releaseNotes: "Added error for failing to read image file"

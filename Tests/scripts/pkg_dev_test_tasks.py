@@ -19,6 +19,7 @@ RUN_SH_FILE_NAME = 'run_dev_tasks.sh'
 RUN_SH_FILE = '{}/{}'.format(SCRIPT_DIR, RUN_SH_FILE_NAME)
 CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'
 CONTAINER_SETUP_SCRIPT = '{}/{}'.format(SCRIPT_DIR, CONTAINER_SETUP_SCRIPT_NAME)
+RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
 
 
@@ -31,13 +32,40 @@ def print_v(msg):
         print(msg)
 
 
-def get_dev_requirements(project_dir, docker_image):
+def get_python_version(project_dir, docker_image):
+    """
+    Get the python version of a docker image
+
+    Arguments:
+        project_dir {string} -- project directory
+        docker_image {string} -- Docker image being used by the project
+
+    Return:
+        python version as a float (2.7, 3.7)
+
+    Raises:
+        ValueError -- if version is not supported
+    """
+    stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
+    py_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
+                                      "python", "-c",
+                                      "import sys;print('{}.{}'.format(sys.version_info[0], sys.version_info[1]))"],
+                                     universal_newlines=True, stderr=stderr_out).strip()
+    print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
+    py_num = float(py_ver)
+    if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
+        raise ValueError("Python vesion for docker image: {} is not supported: {}. "
+                         "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
+    return py_num
+
+
+def get_dev_requirements(project_dir, py_version):
     """
     Get the requirements for the specified project. Will detect if python 2 or 3 is used and
     generate requirements file based on default required dev libs.
 
     Arguments:
-        project_dir {string} -- Directory of the project
+        py_version {float} -- python version as float (2.7, 3.7)
         docker_image {stiring} -- Docker image being used by the project
 
     Raises:
@@ -46,24 +74,15 @@ def get_dev_requirements(project_dir, docker_image):
     Returns:
         string -- requirement required for the project
     """
+    env_dir = "{}{}".format(ENVS_DIRS_BASE, int(py_version))
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
-    py_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
-                                      "python", "-c",
-                                      "import sys;print('{}.{}'.format(sys.version_info[0], sys.version_info[1]))"],
-                                     universal_newlines=True, stderr=stderr_out).strip()
-    print_v("detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
-    py_num = float(py_ver)
-    if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
-        raise ValueError("Python vesion for docker image: {} is not supported: {}. "
-                         "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
-    env_dir = "{}{}".format(ENVS_DIRS_BASE, int(py_num))
     requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True,
                                            stderr=stderr_out)
     print_v("dev requirements:\n{}".format(requirements))
     return requirements
 
 
-def get_pylint_files(project_dir):
+def get_lint_files(project_dir):
     code_file = get_code_file(project_dir, '.py')
     return os.path.basename(code_file)
 
@@ -112,14 +131,7 @@ def docker_image_create(docker_base_image, requirements):
 
 def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
     workdir = '/devwork'
-    pylint_files = get_pylint_files(project_dir)
-    # copy demistomock and common server
-    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
-    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
-    shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
-    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
-                           'Scripts/script-CommonServerPython.yml', '-o',
-                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
+    pylint_files = get_lint_files(project_dir)
     run_params = ['docker', 'create', '-v', workdir, '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
     if no_test:
@@ -139,21 +151,48 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
             print("Test container [{}] was left available".format(container_id))
 
 
+def run_flake8(project_dir, py_num):
+    print("========= Running flake8 ===============")
+    python_exe = 'python2' if py_num < 3 else 'python3'
+    print_v('Using: {} to run flake8'.format(python_exe))
+    subprocess.check_call([python_exe, '-m', 'flake8', project_dir], cwd=CONTENT_DIR)
+    print("flake8 completed")
+
+
+def run_mypy(project_dir, py_num):
+    print("========= Running mypy ===============")
+    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), get_lint_files(project_dir)], cwd=project_dir)
+    print("mypy completed")
+
+
+def setup_dev_files(project_dir):
+    # copy demistomock and common server
+    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
+    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
+    shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
+    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
+                           'Scripts/script-CommonServerPython.yml', '-o',
+                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
+
+
 def main():
-    description = """Run pylint and/or pytest within the docker image of an integration/script.
+    description = """Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run within the docker image
+of an integration/script.
 Meant to be used with integrations/scripts that use the folder (package) structure.
 Will lookup up what docker image to use and will setup the dev dependencies and file in the target folder. """
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-d", "--dir", help="Specify directory of integration/script", required=True)
-    parser.add_argument("--no-lint", help="Do NOT lint (skip pylint)", action='store_true')
+    parser.add_argument("--no-pylint", help="Do NOT run pylint linter", action='store_true')
+    parser.add_argument("--no-mypy", help="Do NOT run mypy static type checking", action='store_true')
+    parser.add_argument("--no-flake8", help="Do NOT run flake8 linter", action='store_true')
     parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
     parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
 
     args = parser.parse_args()
 
-    if args.no_test and args.no_lint:
-        raise ValueError("Nothing to run as both --no-lint and --no-test specified.")
+    if args.no_test and args.no_pylint and args.no_flake8 and args.no_mypy:
+        raise ValueError("Nothing to run as all --no-* options specified.")
 
     global LOG_VERBOSE
     LOG_VERBOSE = args.verbose
@@ -173,10 +212,17 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         return 1
     docker = get_docker_image(script_obj)
     print_v("Using docker image: {}".format(docker))
-    requirements = get_dev_requirements(project_dir, docker)
-    docker_image_created = docker_image_create(docker, requirements)
+    py_num = get_python_version(project_dir, docker)
+    setup_dev_files(project_dir)
     try:
-        docker_run(project_dir, docker_image_created, args.no_test, args.no_lint, args.keep_container)
+        if not args.no_flake8:
+            run_flake8(project_dir, py_num)
+        if not args.no_mypy:
+            run_mypy(project_dir, py_num)
+        if not args.no_test or not args.no_pylint:
+            requirements = get_dev_requirements(project_dir, py_num)
+            docker_image_created = docker_image_create(docker, requirements)
+            docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
     except subprocess.CalledProcessError as ex:
         sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
         return 2
