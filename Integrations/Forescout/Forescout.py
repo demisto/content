@@ -474,7 +474,7 @@ def get_host_command():
     host = data.get('host', {})
     fields = host.get('fields', {})
 
-    if requested_fields and set(requested_fields).issubset(HOSTFIELDS_TO_INCLUDE.keys()):
+    if requested_fields and set(requested_fields).issubset(HOSTFIELDS_TO_INCLUDE.keys()) or not requested_fields:
         included_fields = {
             HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
         }
@@ -482,7 +482,7 @@ def get_host_command():
             HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
             for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
         }
-    else:
+    elif requested_fields:
         included_fields = fields
         included_fields_readable = {key: dict_to_formatted_string(val) for key, val in fields.items()}
 
@@ -516,7 +516,7 @@ def get_hosts(args={}):
         url_suffix += '?matchRuleId=' + rule_ids
     elif properties:
         url_suffix += '?' + properties
-    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response', catch_500=True)
+    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
     return response
 
 
@@ -540,7 +540,7 @@ def get_hosts_command():
 def get_hostfields():
     url_suffix = '/api/hostfields'
     headers = create_web_api_headers()
-    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
+    response = http_request('GET', url_suffix, headers=headers, resp_type='response')
     return response
 
 
