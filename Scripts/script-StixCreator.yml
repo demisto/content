@@ -11,7 +11,7 @@ script: |-
   indicators = []
 
   userArgs = demisto.args().get('indicators','Unknown')
-  doubleBackSlaeshes = demisto.args().get('doubleBackslashes',True)
+  doubleBackslash = demisto.args().get('doubleBackslash',True)
   if isinstance(userArgs, dict) == True:
       all_args = json.loads(json.dumps(userArgs))
   else:
@@ -20,13 +20,11 @@ script: |-
       except:
           return_error('indicators argument is invalid json object')
 
-
   counter = 0
   for indicator_fields in all_args:
       isIndicator = True
       demisto_indicator_type = all_args[indicator_fields].get('indicator_type','Unknown')
-      value = all_args[indicator_fields].get('value','')
-      if doubleBackSlaeshes:
+      if doubleBackslash:
           value = all_args[indicator_fields].get('value','').replace('\\', r'\\')
       else:
           value = all_args[indicator_fields].get('value','')
@@ -113,11 +111,11 @@ script: |-
                      raw_response=str(indicators[0]))
   else:
       context = {
-          'StixExportedIndicators': json.loads("{}")
+          'StixExportedIndicators': {}
       }
       return_outputs(readable_output="",
                      outputs=context,
-                     raw_response="{}")
+                     raw_response={})
 type: python
 tags: []
 comment: Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
@@ -127,9 +125,9 @@ args:
   required: true
   description: A JSON object of all indicators and their fields, indicator index mapped
     to Demisto indicator fields.
-- name: doubleBackslashes
+- name: doubleBackslash
   default: true
-  description: Double the back slashes in every value
+  description: Adds a second backslash to all existing backslashes in the value field.
   defaultValue: "true"
 outputs:
 - contextPath: StixExportedIndicators.created
@@ -145,7 +143,7 @@ outputs:
   description: The STIX type (always exported as "indicator").
   type: string
 - contextPath: StixExportedIndicators.pattern
-  description: ' The type and value of indicators, for example: URL, IPv4, domain, email, and so on. '
+  description: ' The type and value of indicators, for example: URL, IPv4, domain,email, and so on. '
   type: string
 - contextPath: StixExportedIndicators.score
   description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
