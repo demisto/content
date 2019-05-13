@@ -1,0 +1,601 @@
+id: Forescout-Test
+version: -1
+name: Forescout-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e7282b89-73a7-47a2-801e-5c453d2f20c3
+    type: start
+    task:
+      id: e7282b89-73a7-47a2-801e-5c453d2f20c3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8fc6b0c3-dc06-4000-813e-8ec188d69a95
+    type: regular
+    task:
+      id: 8fc6b0c3-dc06-4000-813e-8ec188d69a95
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d42786b7-b537-4156-85b3-e14c24ada413
+    type: regular
+    task:
+      id: d42786b7-b537-4156-85b3-e14c24ada413
+      version: -1
+      name: forescout-get-hostfields
+      description: Retrieve an index of Forescout host properties that match the specified
+        criteria.
+      script: Forescout|||forescout-get-hostfields
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      case_sensitive: {}
+      host_field_type: {}
+      match_exactly: {}
+      search_in: {}
+      search_term:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 19aa2568-18f1-4300-856a-3762949cd81d
+    type: condition
+    task:
+      id: 19aa2568-18f1-4300-856a-3762949cd81d
+      version: -1
+      name: Verify that 'demisto_prop' was return ed by `forescout-get-hostfields`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Forescout
+                accessor: HostField
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: demisto_prop
+                    field:
+                      value:
+                        simple: Label
+                    getField: {}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: c695d5df-5137-4e2c-807e-b27db5064508
+    type: regular
+    task:
+      id: c695d5df-5137-4e2c-807e-b27db5064508
+      version: -1
+      name: forescout-get-policies
+      description: |-
+        Retrieves a list of all policies defined in the Forescout platform and
+        their sub-rules.
+      script: Forescout|||forescout-get-policies
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a6a02050-fd0f-48dc-89bf-e01fb571eaed
+    type: condition
+    task:
+      id: a6a02050-fd0f-48dc-89bf-e01fb571eaed
+      version: -1
+      name: Verify Policies Returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: "2101168655015691125"
+          right:
+            value:
+              complex:
+                root: Forescout
+                accessor: Policy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: cc6de8fe-ecd4-4d67-894b-c18ce2777819
+    type: regular
+    task:
+      id: cc6de8fe-ecd4-4d67-894b-c18ce2777819
+      version: -1
+      name: forescout-get-hosts
+      description: Retrieve a list of active endpoints.
+      script: Forescout|||forescout-get-hosts
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      properties: {}
+      rule_ids:
+        simple: "2101168655015691125"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 58432d90-1c28-4190-878a-cd515f338adc
+    type: condition
+    task:
+      id: 58432d90-1c28-4190-878a-cd515f338adc
+      version: -1
+      name: Verify Expected Host is Returned by `forescout-get-hosts` command with
+        filter
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: 192.168.1.212
+          right:
+            value:
+              complex:
+                root: Forescout
+                accessor: Host.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 32bcdd7e-cab6-4036-8e34-d05f00cc539f
+    type: regular
+    task:
+      id: 32bcdd7e-cab6-4036-8e34-d05f00cc539f
+      version: -1
+      name: forescout-get-host
+      description: Retrieve specified host property values for an endpoint.
+      script: Forescout|||forescout-get-host
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      fields: {}
+      identifier:
+        simple: ip=192.168.1.212
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 68dec1a2-4768-44a9-8471-729f1aa572f4
+    type: condition
+    task:
+      id: 68dec1a2-4768-44a9-8471-729f1aa572f4
+      version: -1
+      name: Verify `forescout-get-host` returned expected field
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Forescout
+                accessor: Host.Field.OSClassification
+            iscontext: true
+          right:
+            value:
+              simple: Linux
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 2f11e633-edff-417c-8e62-715d1b3c214d
+    type: regular
+    task:
+      id: 2f11e633-edff-417c-8e62-715d1b3c214d
+      version: -1
+      name: forescout-update-host-properties
+      description: Update a host's properties. Note that if a List Property or Composite
+        Property has not been defined in Forescout to 'Aggregate new values from each
+        update' that performing an update operation on a property will overwrite previous
+        data written to that property.
+      script: Forescout|||forescout-update-host-properties
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      composite_property: {}
+      host_ip:
+        simple: 192.168.1.212
+      properties:
+        simple: fsapi_demisto_prop=billie jean is not my girl
+      update_type:
+        simple: update
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 8d8459da-eeb1-482d-86b0-4896f4e396df
+    type: regular
+    task:
+      id: 8d8459da-eeb1-482d-86b0-4896f4e396df
+      version: -1
+      name: forescout-get-host Get Updated Host
+      description: Retrieve specified host property values for an endpoint.
+      script: '|||forescout-get-host'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      fields:
+        simple: fsapi_demisto_prop
+      identifier:
+        simple: 192.168.1.212
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: acc0b210-91fe-4ef0-86a2-e360ab8d3ece
+    type: condition
+    task:
+      id: acc0b210-91fe-4ef0-86a2-e360ab8d3ece
+      version: -1
+      name: Verify `forescout-update-host-properties` executed properly
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Forescout
+                accessor: Host.Field
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: demisto_prop
+            iscontext: true
+          right:
+            value:
+              simple: billie jean is not my girl
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0b27ebbd-fe6d-4b96-891b-772262b0f4a6
+    type: regular
+    task:
+      id: 0b27ebbd-fe6d-4b96-891b-772262b0f4a6
+      version: -1
+      name: forescout-update-host-properties Delete Previously Updated Property
+      description: Update a host's properties. Note that if a List Property or Composite
+        Property has not been defined in Forescout to 'Aggregate new values from each
+        update' that performing an update operation on a property will overwrite previous
+        data written to that property.
+      script: Forescout|||forescout-update-host-properties
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      composite_property: {}
+      host_ip:
+        simple: 192.168.1.212
+      properties:
+        simple: fsapi_demisto_prop
+      update_type:
+        simple: delete
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 8c185b56-452d-4167-814d-ff30946be4e2
+    type: regular
+    task:
+      id: 8c185b56-452d-4167-814d-ff30946be4e2
+      version: -1
+      name: forescout-update-lists Add List Values
+      description: Update Forescout lists.
+      script: Forescout|||forescout-update-lists
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      lists:
+        simple: disallowed_names=Ignatius Quaternello,Dominic Venetzi,Pietro Fulmineschi
+      update_type:
+        simple: add_list_values
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 28290230-c5d6-4433-88b6-c8c60f23d9fa
+    type: regular
+    task:
+      id: 28290230-c5d6-4433-88b6-c8c60f23d9fa
+      version: -1
+      name: forescout-update-lists Delete List Values (Cleanup)
+      description: Update Forescout lists.
+      script: Forescout|||forescout-update-lists
+      type: regular
+      iscommand: true
+      brand: Forescout
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      lists:
+        simple: disallowed_names
+      update_type:
+        simple: delete_all_list_values
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 3e64bdf7-f264-4b15-8ce9-3fdc59bdcf85
+    type: title
+    task:
+      id: 3e64bdf7-f264-4b15-8ce9-3fdc59bdcf85
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
