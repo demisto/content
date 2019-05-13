@@ -3,7 +3,7 @@ commonfields:
   id: Forescout
   version: -1
 configuration:
-- defaultvalue: https://{host-ip-address}.net
+- defaultvalue: https://{host-ip-address}
   display: |-
     The network address of the Forescout Enterprise Manager or
     standalone Appliance.
