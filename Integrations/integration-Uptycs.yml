@@ -271,19 +271,19 @@ script:
             if(demisto.args().get('asset_id')!=None):
                 ID =  {
                         "id" : {
-                            "equals": demisto.args().get('asset_id')
+                            "equals": demisto.args().get('asset_id').encode('utf-8')
                             }
                         }
             elif(demisto.args().get('host_name_is')!=None):
                 ID =  {
                         "host_name" : {
-                            "equals": demisto.args().get('host_name_is')
+                            "equals": demisto.args().get('host_name_is').encode('utf-8')
                             }
                         }
             elif(demisto.args().get('host_name_like')!=None):
                 ID =  {
                         "host_name" : {
-                            "like": '%'+demisto.args().get('host_name_like')+'%'
+                            "like": "%{0}%".format(demisto.args().get('host_name_like')).encode('utf-8')      #'%'+demisto.args().get('host_name_like')+'%'
                             }
                         }
             else:
@@ -294,8 +294,8 @@ script:
                         }
 
             post_data = {
+                        "query": query.encode('utf-8'),
                         "type": "realtime",
-                        "query": query,
                         "filtering": {
                             "filters": ID
                                     }
@@ -1707,6 +1707,7 @@ script:
         query = query_results.get('query')
 
         var_args = demisto.args().get('variable_arguments')
+
         if var_args!=None:
             for key, value in ast.literal_eval(var_args).items():
                 query = query.replace(key,value)
@@ -2082,15 +2083,13 @@ script:
       predefined:
       - BAD_DOMAIN
       - CRITICAL_FILE
-      - EXCESSIVE_LOGINS
       - INBOUND_NETWORK_CONNECTIONS
       - KERNULE_MODULE_MOD
-      - MANUAL_FILE_EDITS
       - MANUAL_PACKAGE_INSTALL
       - OPEN_SOCKET_BAD_IP
       - OSX_ATTACK
       - OSX_CRASHES
-      - OUTBOUND_NETWORK_CONNECTIONS
+      - OUTBOUND_CONNECTION_TO_THREAT_IOC
       - PRIVILEGED_ACCOUNT_ACTIVITY
       - PRIVILEGED_REMOTE_LOGIN
       - PRIVILEGE_ESCALATION
