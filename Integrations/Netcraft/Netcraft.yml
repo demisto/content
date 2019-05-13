@@ -11,7 +11,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: The max number of entries (takedowns / notes) that can be returned. Default
+- display: The maximum number of entries (takedowns/notes) to return. Default
     is 100.
   name: limit
   defaultvalue: "100"
@@ -31,11 +31,11 @@ script:
     arguments:
     - name: attack
       required: true
-      description: The attack location you want taken down e.g. a phishing URL or
+      description: The attack location you want taken down. For example, a phishing URL or
         fraudulent email address.
     - name: comment
       required: true
-      description: The reason for submission, such as a description of the attack.
+      description: The reason for submitting the attack, such as a description of the attack.
     outputs:
     - contextPath: Netcraft.Takedown.DateSubmitted
       description: The date and time of reporting.
@@ -51,20 +51,20 @@ script:
       type: String
     - contextPath: Netcraft.Takedown.Domain
       description: The domain of the URL or email address being taken down. This will
-        be blank for attacks with no domain name.
+        be blank for attacks without a domain name.
       type: String
     - contextPath: Netcraft.Takedown.Hostname
       description: The full hostname of the URL or email address being taken down.
-        This will be blank for attacks with no hostname.
+        This will be blank for attacks without a hostname.
       type: String
     - contextPath: Netcraft.Takedown.CountryCode
       description: ISO country code of the hosting country.
       type: String
     - contextPath: Netcraft.Takedown.DomainAttack
-      description: Whether or not the domain is believed to be fraudulent.
+      description: Whether the domain is thought to be fraudulent.
       type: String
     - contextPath: Netcraft.Takedown.TargetedURL
-      description: The URL which this attack is masquarading as, e.g. the URL of the
+      description: The URL that this attack is masquarading as. For example, the URL of the
         legitimate login form that the attack targets.
       type: String
     - contextPath: Netcraft.Takedown.Certificate
@@ -72,10 +72,10 @@ script:
         was found. The value returned is the output of PHP's openssl_x509_parse function.
       type: Unknown
     - contextPath: Netcraft.Takedown.ID
-      description: The takedown's ID.
+      description: The ID of the takedown.
       type: Number
     - contextPath: Netcraft.Takedown.GroupID
-      description: The takedown's group ID, can potentially be the same as id or empty
+      description: The group ID of the takedown, can potentially be the same as ID, or empty
         if there is no group.
       type: Number
     - contextPath: Netcraft.Takedown.Status
@@ -88,12 +88,12 @@ script:
       description: The location of the attack being taken down.
       type: String
     - contextPath: Netcraft.Takedown.Region
-      description: The customer area that the attack resides in.
+      description: The customer area in which the attack resides.
       type: String
     - contextPath: Netcraft.Takedown.IP
       description: The IPv4 address of the attack.
       type: String
-    description: Report an attack to Netcraft
+    description: Reports an attack to Netcraft.
   - name: netcraft-get-takedown-info
     arguments:
     - name: id
