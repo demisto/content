@@ -8,4 +8,4 @@ def test_convert_to_string_if_datetime():
     now = datetime.datetime.now()
     convert_to_string_if_datetime(now)
     test_conversion_for_empty_string = convert_to_string_if_datetime("")
-    assert test_conversion_for_empty_string is ""
+    assert test_conversion_for_empty_string == ""
