@@ -405,11 +405,11 @@ class EmailFormatter(object):
             if maintype == 'text' or "message" in maintype:
                 attach = MIMEText(data, _subtype=subtype)
             elif maintype == 'image':
-                attach = MIMEImage(data, _subtype=subtype)
+                attach = MIMEImage(data, _subtype=subtype)  # type: ignore
             elif maintype == 'audio':
-                attach = MIMEAudio(data, _subtype=subtype)
+                attach = MIMEAudio(data, _subtype=subtype)  # type: ignore
             else:
-                attach = MIMEBase(maintype, subtype)
+                attach = MIMEBase(maintype, subtype)  # type: ignore
                 attach.set_payload(data)
 
                 # Encode the payload using Base64
@@ -2642,7 +2642,7 @@ class Message(object):
             parent_directory_path = []
 
         self._streams = self._process_directory_entries(directory_entries)
-        self.embedded_messages = []
+        self.embedded_messages = []  # type: list
         self._data_model = DataModel()
         self._parent_directory_path = parent_directory_path
         self._nested_attachments_depth = 0
@@ -2758,7 +2758,7 @@ class Message(object):
             "properties": {},
             "recipients": {},
             "attachments": {}
-        }
+        }  # type: dict
         for name, stream in directory_entries.iteritems():
             # collect properties
             if "__substg1.0_" in name:
@@ -2792,7 +2792,7 @@ class Message(object):
                 continue
 
             if isinstance(directory_entry, list):
-                directory_values = {}
+                directory_values = {}  # type: dict
                 for property_entry in directory_entry:
                     property_data = self._get_property_data(directory_name, property_entry, is_list=True)
                     if property_data:
@@ -2819,7 +2819,7 @@ class Message(object):
                 continue
 
             if isinstance(directory_entry, list):
-                directory_values = {}
+                directory_values = {}  # type: dict
                 for property_entry in directory_entry:
                     property_data = self._get_property_data(directory_name, property_entry, is_list=True)
                     if property_data:
@@ -2904,7 +2904,7 @@ class Message(object):
         if property_value:
             property_detail = {property_name: property_value}
         else:
-            property_detail = None
+            property_detail = None  # type: ignore
 
         return property_detail
 
@@ -3130,7 +3130,7 @@ def parse_email_headers(header, raw=False):
     if raw:
         return headers
 
-    email_address_headers = {
+    email_address_headers = {  # type: ignore
         "To": [],
         "From": [],
         "CC": [],
@@ -3173,19 +3173,19 @@ def extract_address_eml(eml, s):
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
-    md = "### Results:\n"
+    md = u"### Results:\n"
     if email_file_name:
-        md = "### {}\n".format(email_file_name)
+        md = u"### {}\n".format(email_file_name)
 
     if print_only_headers:
         return tableToMarkdown("Email Headers: " + email_file_name, email_data['HeadersMap'])
 
     if parent_email_file:
-        md += "### Containing email: {}\n".format(parent_email_file)
+        md += u"### Containing email: {}\n".format(parent_email_file)
 
-    md += "* {0}:\t{1}\n".format('From', email_data['From'] or "")
-    md += "* {0}:\t{1}\n".format('To', email_data['To'] or "")
-    md += "* {0}:\t{1}\n".format('CC', email_data['CC'] or "")
+    md += u"* {0}:\t{1}\n".format('From', email_data['From'] or "")
+    md += u"* {0}:\t{1}\n".format('To', email_data['To'] or "")
+    md += u"* {0}:\t{1}\n".format('CC', email_data['CC'] or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data['Subject'] or "")
 
     if email_data['Text']:
@@ -3194,8 +3194,8 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if email_data['HTML']:
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
-    md += "* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
-    md += "\n\n" + tableToMarkdown("Headers", email_data['HeadersMap'])
+    md += u"* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
+    md += u"\n\n" + tableToMarkdown("Headers", email_data['HeadersMap']).decode("utf-8", "ignore")
     return md
 
 
@@ -3295,6 +3295,20 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     return email_data, attached_emails_emls + attached_emails_msg
 
 
+def unfold(s):
+    r"""
+    Remove folding whitespace from a string by converting line breaks (and any
+    whitespace adjacent to line breaks) to a single space and removing leading
+    & trailing whitespace.
+    From: https://github.com/jwodder/headerparser/blob/master/headerparser/types.py#L39
+    >>> unfold('This is a \n folded string.\n')
+    'This is a folded string.'
+    :param string s: a string to unfold
+    :rtype: string
+    """
+    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
+
+
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3):
     global ENCODINGS_TYPES
 
@@ -3311,11 +3325,12 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         headers = parser.parsestr(file_data)
 
         header_list = []
-        headers_map = {}
+        headers_map = {}  # type: dict
         for item in headers.items():
+            value = unfold(convert_to_unicode(item[1]))
             item_dict = {
                 "name": item[0],
-                "value": convert_to_unicode(item[1])
+                "value": value
             }
 
             # old way to map headers
@@ -3330,17 +3345,13 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     headers_map[item[0]] = [headers_map[item[0]]]
 
                 # add the new value to the value array
-                headers_map[item[0]].append(convert_to_unicode(item[1]))
+                headers_map[item[0]].append(value)
             else:
-                headers_map[item[0]] = convert_to_unicode(item[1])
+                headers_map[item[0]] = value
 
         eml = message_from_string(file_data)
         if not eml:
             raise Exception("Could not parse eml file!")
-
-        headers_map['From'] = extract_address_eml(eml, 'from')
-        headers_map['To'] = extract_address_eml(eml, 'to')
-        headers_map['Cc'] = extract_address_eml(eml, 'cc')
 
         if parse_only_headers:
             return {
@@ -3380,12 +3391,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                        .get('Subject', "no_name_mail_attachment") + ".eml"
 
                         file_content = part.get_payload()[0].as_string()
+                        demisto.results(fileResult(attachment_file_name, file_content))
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
 
-                    demisto.results(fileResult(attachment_file_name, file_content))
-
-                    if max_depth - 1 > 0:
+                    if file_content and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
                         try:
                             f.write(file_content)
@@ -3478,9 +3488,9 @@ def main():
 
         file_type = result[0]['FileMetadata']['info']
 
-    except Exception, ex:
+    except Exception as ex:
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id,
-                     str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex)))
+                     str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
     try:
         file_type_lower = file_type.lower()
@@ -3563,12 +3573,12 @@ def main():
 
             except Exception as e:
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
-                             .format(str(e), traceback.format_exc(e)))
+                             .format(str(e), traceback.format_exc()))
         else:
             return_error("Unknown file format: " + file_type)
 
-    except Exception, ex:
-        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
+    except Exception as ex:
+        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
         return_error(ex.message)
 
 
