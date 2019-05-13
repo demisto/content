@@ -38,7 +38,37 @@ script:
   commands:
   - arguments:
     - default: false
+      description: Filter hosts by those selected by policies or policy sub-rules.
+        Policies and/or rules should be specified by their IDs. To find policy and
+        rule IDs by which you may filter, try executing the 'forescout-get-policies'
+        command. If multiple policy and/or rule IDs are entered, only hosts that are
+        selected by all of the policies and/or rules specifed will be returned. Multiple
+        policy or rule IDs should be separated by a comma.
+      isArray: true
+      name: rule_ids
+      required: false
+      secret: false
+    - default: false
+      description: Filter hosts based on host property values. Enter properties with
+        their associated values in the following format, '{prop_1}={val_1}&{prop_2}={val_2}
+        … &{prop_n}={val_n}' where '{prop_1}' through '{prop_n}' are replaced by actual
+        property names and '{val_1}' through '{val_n}' are replaced by the desired
+        matching values. Note that a list property may be specified with the values
+        separated by commas. Only hosts whose properties match all the specified values
+        will be returned. A composite property may also be specified. If entered in
+        the format where all the field-value pairs are in a single set of square brackets,
+        for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]' then
+        only hosts for which the specified composite property's fields all match the
+        values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
+        where each field-value pair is enclosed in its own set of brackets, then hosts
+        for which the composite property's contains any of the field-values specified
+        will be returned. Note that for composite properties, sub-fields should be
+        entered as their internal representation in Forescout. To find internal representation
+        for a composite property's sub-fields try executing 'forescout-get-host' command
+        with the host specified in the 'identifier' argument and the name of the composite
+        property entered in the 'fields'  argument of the command.
       isArray: false
+      name: properties
       required: false
       secret: false
     deprecated: false
@@ -154,6 +184,16 @@ script:
       isArray: false
       name: identifier
       required: true
+      secret: false
+    - default: false
+      description: List of host properties to include in the output for the targeted
+        endpoint. If a specified host property is not found, the property is omitted
+        from the outputs. For a list of potential host properties that may be specified,
+        try executing the 'forescout-get-hostfields' command. Requested fields should
+        be comma separated.
+      isArray: true
+      name: fields
+      required: false
       secret: false
     deprecated: false
     description: Retrieve specified host property values for an endpoint.

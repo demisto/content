@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from typing import Dict, List,  Tuple
+from typing import Dict, List, Tuple, Any, Union
 import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
@@ -156,7 +156,7 @@ def create_update_hostproperties_request_body(host_ip: str, update_type: str,
         prop, *value = pair.split('=')
         prop_xml = ET_PHONE_HOME.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
         if update_type != 'delete' and value:
-            list_of_vals = value[0].split(':')
+            list_of_vals = '='.join(value).split(':')
             for val in list_of_vals:
                 val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
                 val_xml.text = val
@@ -216,15 +216,24 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
     """
     search_term = args.get('search_term')
     host_fields = data.get('hostFields', [])
+    host_field_type = args.get('host_field_type', 'all_types')
     if not search_term:
-        return host_fields
+        # Still check to see if should filter host properties by their type
+        if host_field_type == 'all_types':
+            return host_fields
+        else:
+            host_field_types = argToList(host_field_type)
+            filtered_hostfields = []
+            for host_field in host_fields:
+                if host_field.get('type') in host_field_types:
+                    filtered_hostfields.append(host_field)
+            return filtered_hostfields
     case_sensitive = args.get('case_sensitive', 'False')
     case_sensitive = False if case_sensitive.casefold() == 'false' else True
     if not case_sensitive:
         search_term = search_term.casefold()
     match_exactly = args.get('match_exactly', 'False')
     match_exactly = False if match_exactly.casefold() == 'false' else True
-    host_field_type = args.get('host_field_type', 'all_types')
     if host_field_type != 'all_types':
         host_field_type = argToList(host_field_type)
     search_in = args.get('search_in', 'name')
@@ -255,14 +264,14 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
     return filtered_hostfields
 
 
-def dict_to_formatted_string(dictionary: Dict) -> str:
+def dict_to_formatted_string(dictionary: Union[Dict, List]) -> str:
     """
     Return dictionary as clean string for war room output.
 
     Parameters
     ----------
-    dictionary : dict
-        The dictionary to format as a string.
+    dictionary : dict | list
+        The dictionary or list to format as a string.
 
     Returns
     -------
@@ -357,7 +366,7 @@ def login():
 
 
 def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None, auth: Tuple = None,
-                 params: Dict = None, data: Dict = None, files: Dict = None, resp_type: str = 'json'):
+                 params: Dict = None, data: Dict = None, files: Dict = None, resp_type: str = 'json') -> Any:
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -389,7 +398,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
 
     Returns
     -------
-    dict
+    dict | str | bytes | obj
         Response JSON from having made the request.
     """
     try:
@@ -411,8 +420,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             try:
                 # Try to parse json error response
                 res_json = res.json()
-                if res_json.get('error'):
-                    err_msg += '\n{}'.format(res_json.get('message'))
+                err_msg += '\n{}'.format(res_json.get('message'))
                 return_error(err_msg)
             except json.decoder.JSONDecodeError:
                 if res.status_code in {400, 401, 501}:
@@ -473,7 +481,7 @@ def get_host(args):
     # if id_type == 'id' don't change url_suffix -it's already in desired format as shown below
     # API endpoint format - https://{EM.IP}/api/hosts/{obj_ID}?fields={prop},..,{prop_n}
 
-    url_suffix += ident[0]
+    url_suffix += '='.join(ident)
     params = {'fields': fields} if fields != '' else None
     headers = {
         'Authorization': AUTH,
@@ -489,14 +497,24 @@ def get_host(args):
 def get_host_command():
     args = demisto.args()
     identifier = args.get('identifier', '')
+    requested_fields = argToList(args.get('fields', ''))
     response = get_host(args)
     data = response.json()
     host = data.get('host', {})
     fields = host.get('fields', {})
 
-    included_fields = {
-        HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
-    }
+    if requested_fields and set(requested_fields).issubset(HOSTFIELDS_TO_INCLUDE.keys()):
+        included_fields = {
+            HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+        }
+        included_fields_readable = {
+            HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
+            for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+        }
+    else:
+        included_fields = fields
+        included_fields_readable = {key: dict_to_formatted_string(val) for key, val in fields.items()}
+
     content = {
         'ID': host.get('id'),
         'IP': host.get('ip'),
@@ -505,10 +523,6 @@ def get_host_command():
         'Field': included_fields
     }
 
-    included_fields_readable = {
-        HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
-        for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
-    }
     human_readable_content = deepcopy(content)
     human_readable_content['Field'] = included_fields_readable
 
@@ -520,7 +534,7 @@ def get_host_command():
 
 
 @log_entity_tag
-def get_hosts():
+def get_hosts(args={}):
     login()
     url_suffix = '/api/hosts'
     headers = {
@@ -531,12 +545,21 @@ def get_hosts():
     if entity_tag:
         headers['If-None-Match'] = entity_tag
     params: Dict = {}
-    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
+    rule_ids = args.get('rule_ids')
+    properties = args.get('properties')
+    if rule_ids and properties:
+        url_suffix += '?matchRuleId=' + rule_ids + '&' + properties
+    elif rule_ids:
+        url_suffix += '?matchRuleId=' + rule_ids
+    elif properties:
+        url_suffix += '?' + properties
+    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response', catch_500=True)
     return response
 
 
 def get_hosts_command():
-    response = get_hosts().json()
+    args = demisto.args()
+    response = get_hosts(args).json()
     content = [
         {
             'ID': x.get('hostId'),
@@ -579,7 +602,7 @@ def get_hostfields_command():
         context = {'Forescout.HostField': content}
         title = 'Index of Host Properties'
         human_readable = tableToMarkdown(title, content, removeNull=True)
-        return_outputs(readable_output=human_readable, outputs=context, raw_response=filtered_data)
+        return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 
 @log_entity_tag
