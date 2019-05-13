@@ -298,7 +298,7 @@ def test_flatten_cell():
     # dictionary test
     dict_to_flatten = {'first': u'会'}
     expected_flatten_dict = u'{\n    "first": "\u4f1a"\n}'
-    assert dict_to_flatten == expected_flatten_dict
+    assert flattenCell(dict_to_flatten) == expected_flatten_dict
 
 
 def test_hash_djb2():
@@ -429,4 +429,4 @@ def test_get_error_need_raise_error_on_non_error_input():
     with pytest.raises(ValueError) as exception:
         get_error(execute_command_results)
 
-    assert str(exception) == "execute_command_result has no error entry. before using get_error use is_error"
+    assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
