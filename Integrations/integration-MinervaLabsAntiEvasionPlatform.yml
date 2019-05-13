@@ -76,7 +76,7 @@ script:
                     'Name': process['processName']
                 }
                 context.append(process_context)
-            ec['Minerva.Process'] = context
+            ec['Minerva.Process(val.Id === obj.Id)'] = context
         elif context_id.endswith('endpoints'):
             context = []
             for endpoint in data:
@@ -88,7 +88,7 @@ script:
                     'OS': endpoint['operatingSystem']
                 }
                 context.append(endpoint_context)
-            ec['Minerva.Endpoint'] = context
+            ec['Minerva.Endpoint(val.Id === obj.Id)'] = context
         elif context_id.endswith('groups'):
             context = []
             for group in data:
@@ -102,7 +102,7 @@ script:
                     'CreationTime': group['creationTime']
                 }
                 context.append(group_context)
-            ec['Minerva.Group'] = context
+            ec['Minerva.Group(val.Id === obj.Id)'] = context
         elif context_id.endswith('vaccination'):
             context = []
             if isinstance(data, list):
@@ -117,7 +117,7 @@ script:
                         'Last modified on': vaccine['lastModifiedOn']
                     }
                     context.append(vaccine_context)
-                ec['Minerva.Vaccine'] = context
+                ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
             else:
                 context = {
                     'Id': data['id'],
@@ -143,7 +143,7 @@ script:
                         'Applied groups': exclusion['appliedGroupsIds']
                     }
                     context.append(exclusion_context)
-                ec['Minerva.Exclusion'] = context
+                ec['Minerva.Exclusion(val.Id === obj.Id)'] = context
             else:
                 context = {
                     'Id': data['id'],
@@ -228,7 +228,8 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Available groups', t=response.json(), headerTransform=pascalToSpace, removeNull=True)
+            'HumanReadable': tableToMarkdown('Available groups', t=response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(get_groups_url, response.json())
         }
         demisto.results(results)
 
