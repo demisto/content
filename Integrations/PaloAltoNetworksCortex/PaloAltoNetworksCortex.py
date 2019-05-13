@@ -13,9 +13,12 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-
-TOKEN = demisto.params().get('token')
 AUTH_ID = demisto.params().get('auth_id')
+# If there's a stored token in integration context, it's newer than current
+TOKEN = demisto.getIntegrationContext().get('token')
+if not TOKEN:
+    TOKEN = demisto.params().get('token')
+
 ENC_KEY = demisto.params().get('auth_key')
 
 USE_SSL = not demisto.params().get('insecure', False)
@@ -161,14 +164,14 @@ def get_access_token():
         if epoch_seconds() - stored < 60 * 60 - 30:
             return access_token
     headers = {
-        'Authorization': TOKEN,
+        'Authorization': AUTH_ID,
         'Accept': 'application/json'
     }
 
     dbot_response = requests.get(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={'token': get_encrypted(AUTH_ID, ENC_KEY)},
+        params={'token': get_encrypted(TOKEN, ENC_KEY)},
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
@@ -192,10 +195,13 @@ def get_access_token():
         )
     access_token = parsed_response.get('access_token')
     api_url = parsed_response.get('url')
+    token = parsed_response.get("token")
+
     demisto.setIntegrationContext({
         'access_token': access_token,
         'stored': epoch_seconds(),
-        'api_url': api_url
+        'api_url': api_url,
+        "token": token
     })
     return access_token
 
