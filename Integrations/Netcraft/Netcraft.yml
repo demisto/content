@@ -200,7 +200,7 @@ script:
       description: The content (text) of the note.
       type: string
     - contextPath: Netcraft.Takedown.Note.Time
-      description: The date/time the note was created. Format (UTC): YYYY-MM-DD HH:MM:SS.
+      description: 'The date/time the note was created. Format (UTC): YYYY-MM-DD HH:MM:SS.'
       type: string
     description: Returns notes for takedowns.
   - name: netcraft-add-notes-to-takedown
