@@ -8,6 +8,7 @@ script: |-
 
   emails = [x.lower() for x in argToList(demisto.get(demisto.args(),'email'))]
   domains = [x.lower() for x in argToList(demisto.get(demisto.args(),'domain'))]
+  include_subdomains = strtobool(demisto.getArg('include_subdomains') or 'no')
 
   results = []
   ec = {}
@@ -15,9 +16,8 @@ script: |-
   for email in emails:
       parts = email.split('@',1)
       network_type = "Unknown"
-
       if len(parts) > 1:
-          if parts[1].lower() in domains:
+          if parts[1].lower() in domains or include_subdomains and re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
               network_type = "Internal"
           else:
               network_type = "External"
