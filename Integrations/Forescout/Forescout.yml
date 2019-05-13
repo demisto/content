@@ -155,16 +155,6 @@ script:
       name: identifier
       required: true
       secret: false
-    - default: false
-      description: List of host properties to include in the output for the targeted
-        endpoint. If a specified host property is not found, the property is omitted
-        from the outputs. For a list of potential host properties that may be specified,
-        try executing the `forescout-get-hostfields` command. Requested fields should
-        be comma separated.
-      isArray: true
-      name: fields
-      required: false
-      secret: false
     deprecated: false
     description: Retrieve specified host property values for an endpoint.
     execution: false
