@@ -1,5 +1,6 @@
 id: Account Enrichment - Generic v2.1 - Test
 version: -1
+fromversion: 4.1.0
 name: Account Enrichment - Generic v2.1 - Test
 description: A test for the Account Enrichment - Generic v2 playbook.
 starttaskid: "0"
