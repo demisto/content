@@ -1370,6 +1370,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Image OCR",
+            "playbookID": "TestImageOCR"
+        },
+        {
             "playbookID": "TestIsEmailAddressInternal"
         }
     ],
