@@ -4,11 +4,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-import datetime
 import re
 import socket
 import sys
 from codecs import encode, decode
+
+# flake8: noqa
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -7078,11 +7079,11 @@ def whois_request(domain, server, port=43):
     return d
 
 
-airports = {}
-countries = {}
-states_au = {}
-states_us = {}
-states_ca = {}
+airports = {} # type: dict
+countries = {} # type: dict
+states_au = {} # type: dict
+states_us = {} # type: dict
+states_ca = {} # type: dict
 
 
 class WhoisException(Exception):
@@ -7565,15 +7566,15 @@ organization_regexes = (
     r"\ss\.?a\.?r\.?l\.?($|\s)",
 )
 
-grammar["_data"]["id"] = precompile_regexes(grammar["_data"]["id"], re.IGNORECASE)
-grammar["_data"]["status"] = precompile_regexes(grammar["_data"]["status"], re.IGNORECASE)
-grammar["_data"]["creation_date"] = precompile_regexes(grammar["_data"]["creation_date"], re.IGNORECASE)
-grammar["_data"]["expiration_date"] = precompile_regexes(grammar["_data"]["expiration_date"], re.IGNORECASE)
-grammar["_data"]["updated_date"] = precompile_regexes(grammar["_data"]["updated_date"], re.IGNORECASE)
-grammar["_data"]["registrar"] = precompile_regexes(grammar["_data"]["registrar"], re.IGNORECASE)
-grammar["_data"]["whois_server"] = precompile_regexes(grammar["_data"]["whois_server"], re.IGNORECASE)
-grammar["_data"]["nameservers"] = precompile_regexes(grammar["_data"]["nameservers"], re.IGNORECASE)
-grammar["_data"]["emails"] = precompile_regexes(grammar["_data"]["emails"], re.IGNORECASE)
+grammar["_data"]["id"] = precompile_regexes(grammar["_data"]["id"], re.IGNORECASE)    # type: ignore
+grammar["_data"]["status"] = precompile_regexes(grammar["_data"]["status"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["creation_date"] = precompile_regexes(grammar["_data"]["creation_date"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["expiration_date"] = precompile_regexes(grammar["_data"]["expiration_date"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["updated_date"] = precompile_regexes(grammar["_data"]["updated_date"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["registrar"] = precompile_regexes(grammar["_data"]["registrar"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["whois_server"] = precompile_regexes(grammar["_data"]["whois_server"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["nameservers"] = precompile_regexes(grammar["_data"]["nameservers"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["emails"] = precompile_regexes(grammar["_data"]["emails"], re.IGNORECASE)  # type: ignore
 
 grammar["_dateformats"] = precompile_regexes(grammar["_dateformats"], re.IGNORECASE)
 
@@ -7601,12 +7602,12 @@ else:
 
 def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_server=""):
     normalized = normalized or []
-    data = {}
+    data = {}  # type: dict
 
     raw_data = [segment.replace("\r", "") for segment in raw_data]  # Carriage returns are the devil
 
     for segment in raw_data:
-        for rule_key, rule_regexes in grammar['_data'].items():
+        for rule_key, rule_regexes in grammar['_data'].items():  # type: ignore
             if (rule_key in data) == False:
                 for line in segment.splitlines():
                     for regex in rule_regexes:
@@ -7625,12 +7626,12 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("[ ]*(.+)\n", chunk):
-                if match.strip() != "":
-                    if not re.match("^[a-zA-Z]+:", match):
+                if match.strip() != "":  # type: ignore
+                    if not re.match("^[a-zA-Z]+:", match):  # type: ignore
                         try:
-                            data["nameservers"].append(match.strip())
+                            data["nameservers"].append(match.strip())  # type: ignore
                         except KeyError as e:
-                            data["nameservers"] = [match.strip()]
+                            data["nameservers"] = [match.strip()]  # type: ignore
         # Nominet also needs some special attention
         match = re.search("    Registrar:\n        (.+)\n", segment)
         if match is not None:
@@ -7642,11 +7643,11 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("        (.+)\n", chunk):
-                match = match.split()[0]
+                match = match.split()[0]  # type: ignore
                 try:
-                    data["nameservers"].append(match.strip())
+                    data["nameservers"].append(match.strip())  # type: ignore
                 except KeyError as e:
-                    data["nameservers"] = [match.strip()]
+                    data["nameservers"] = [match.strip()]  # type: ignore
         # janet (.ac.uk) is kinda like Nominet, but also kinda not
         match = re.search("Registered By:\n\t(.+)\n", segment)
         if match is not None:
@@ -7664,21 +7665,21 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("\t(.+)\n", chunk):
-                match = match.split()[0]
+                match = match.split()[0]  # type: ignore
                 try:
-                    data["nameservers"].append(match.strip())
+                    data["nameservers"].append(match.strip())  # type: ignore
                 except KeyError as e:
-                    data["nameservers"] = [match.strip()]
+                    data["nameservers"] = [match.strip()]  # type: ignore
         # .am plays the same game
         match = re.search("   DNS servers:([\s\S]*?\n)\n", segment)
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("      (.+)\n", chunk):
-                match = match.split()[0]
+                match = match.split()[0]  # type: ignore
                 try:
-                    data["nameservers"].append(match.strip())
+                    data["nameservers"].append(match.strip())  # type: ignore
                 except KeyError as e:
-                    data["nameservers"] = [match.strip()]
+                    data["nameservers"] = [match.strip()]  # type: ignore
         # SIDN isn't very standard either. And EURid uses a similar format.
         match = re.search("Registrar:\n\s+(?:Name:\s*)?(\S.*)", segment)
         if match is not None:
@@ -7687,13 +7688,13 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("\s+?(.+)\n", chunk):
-                match = match.split()[0]
+                match = match.split()[0]  # type: ignore
                 # Prevent nameserver aliases from being picked up.
-                if not match.startswith("[") and not match.endswith("]"):
+                if not match.startswith("[") and not match.endswith("]"):  # type: ignore
                     try:
-                        data["nameservers"].append(match.strip())
+                        data["nameservers"].append(match.strip())  # type: ignore
                     except KeyError as e:
-                        data["nameservers"] = [match.strip()]
+                        data["nameservers"] = [match.strip()]  # type: ignore
         # The .ie WHOIS server puts ambiguous status information in an unhelpful order
         match = re.search('ren-status:\s*(.+)', segment)
         if match is not None:
@@ -7707,21 +7708,21 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("(.+)\n", chunk):
-                match = match.split()[0]
+                match = match.split()[0]  # type: ignore
                 try:
-                    data["nameservers"].append(match.strip())
+                    data["nameservers"].append(match.strip())  # type: ignore
                 except KeyError as e:
-                    data["nameservers"] = [match.strip()]
+                    data["nameservers"] = [match.strip()]  # type: ignore
         # ... and again for TWNIC.
         match = re.search("   Domain servers in listed order:\n([\s\S]*?\n)\n", segment)
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("      (.+)\n", chunk):
-                match = match.split()[0]
+                match = match.split()[0]  # type: ignore
                 try:
-                    data["nameservers"].append(match.strip())
+                    data["nameservers"].append(match.strip())  # type: ignore
                 except KeyError as e:
-                    data["nameservers"] = [match.strip()]
+                    data["nameservers"] = [match.strip()]  # type: ignore
 
     data["contacts"] = parse_registrants(raw_data, never_query_handles, handle_server)
 
@@ -7763,9 +7764,9 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
     # Remove e-mail addresses if they are already listed for any of the contacts
     known_emails = []
     for contact in ("registrant", "tech", "admin", "billing"):
-        if data["contacts"][contact] is not None:
+        if data["contacts"][contact] is not None:  # type: ignore
             try:
-                known_emails.append(data["contacts"][contact]["email"])
+                known_emails.append(data["contacts"][contact]["email"])  # type: ignore
             except KeyError as e:
                 pass  # No e-mail recorded for this contact...
     try:
@@ -7921,7 +7922,7 @@ def parse_dates(dates):
     parsed_dates = []
 
     for date in dates:
-        for rule in grammar['_dateformats']:
+        for rule in grammar['_dateformats']:  # type: ignore
             result = re.match(rule, date)
 
             if result is not None:
@@ -7942,7 +7943,7 @@ def parse_dates(dates):
                     except ValueError as e:
                         # Apparently not a number. Look up the corresponding number.
                         try:
-                            month = grammar['_months'][result.group("month").lower()]
+                            month = grammar['_months'][result.group("month").lower()]  # type: ignore
                         except KeyError as e:
                             # Unknown month name, default to 0
                             month = 0
@@ -7981,11 +7982,11 @@ def parse_dates(dates):
         try:
             if year > 0:
                 try:
-                    parsed_dates.append(datetime.datetime(year, month, day, hour, minute, second))
+                    parsed_dates.append(datetime(year, month, day, hour, minute, second))
                 except ValueError as e:
                     # We might have gotten the day and month the wrong way around, let's try it the other way around
                     # If you're not using an ISO-standard date format, you're an evil registrar!
-                    parsed_dates.append(datetime.datetime(year, day, month, hour, minute, second))
+                    parsed_dates.append(datetime(year, day, month, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
@@ -7996,7 +7997,7 @@ def parse_dates(dates):
 
 
 def remove_duplicates(data):
-    cleaned_list = []
+    cleaned_list = []  # type: ignore
 
     for entry in data:
         if entry not in cleaned_list:
@@ -8011,7 +8012,7 @@ def remove_suffixes(data):
     cleaned_list = []
 
     for entry in data:
-        cleaned_list.append(re.search("([^\s]+)\s*[\s]*", entry).group(1).lstrip())
+        cleaned_list.append(re.search("([^\s]+)\s*[\s]*", entry).group(1).lstrip())  # type: ignore
 
     return cleaned_list
 
@@ -8054,7 +8055,7 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
     handle_contacts = parse_nic_contact(data)
 
     # Find NIC handle references and process them
-    missing_handle_contacts = []
+    missing_handle_contacts = []  # type: list
     for category in nic_contact_references:
         for regex in nic_contact_references[category]:
             for segment in data:
