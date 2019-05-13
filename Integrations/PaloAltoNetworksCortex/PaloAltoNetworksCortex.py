@@ -204,9 +204,9 @@ def get_access_token():
 
 
 def query_loggings(query_data):
-    '''
+    """
     This function handles all the querying of Cortex Logging service
-    '''
+    """
     api_url = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
     credentials = Credentials(
         access_token=get_access_token(),
@@ -258,9 +258,9 @@ def transform_row_keys(row):
 
 
 def results_screener(table_name, full_results):
-    '''
+    """
     This function is used to make sure we include only pre-defined metrics in the human readable
-    '''
+    """
     screened_results = []
 
     if table_name == "traffic":
@@ -332,9 +332,10 @@ def query_logs_command():
         else:
             raise Exception('Enter timeRange and timeValue, or startTime and endTime')
     else:
-        # parses user input to datetime object
-        service_start_date = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        service_end_date = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+        time_format = '%Y-%m-%d %H:%M:%S'
+        # Thu Jan 01 02:00:00 IST 1970' does not match format '%Y-%m-%d %H:%M:%S'
+        service_start_date = datetime.strptime(start_time, time_format)
+        service_end_date = datetime.strptime(end_time, time_format)
 
     # transforms datetime object to epoch time
     service_start_date_epoch = int(service_start_date.strftime('%s'))
@@ -342,7 +343,7 @@ def query_logs_command():
 
     query = args.get('query')
 
-    if ('limit' not in query.lower()):
+    if 'limit' not in query.lower():
         query += ' LIMIT 100'
 
     query_data = {
@@ -398,8 +399,8 @@ def get_critical_logs_command():
     time_range = args.get('timeRange')
     time_value = args.get('rangeValue')
 
-    if (time_range):
-        if (time_value):
+    if time_range:
+        if time_value:
             service_end_date = datetime.now()
             service_start_date = get_start_time(time_range, int(time_value))
         else:
@@ -465,8 +466,8 @@ def get_social_applications_command():
     time_range = args.get('timeRange')
     time_value = args.get('rangeValue')
 
-    if (time_range):
-        if (time_value):
+    if time_range:
+        if time_value:
             service_end_date = datetime.now()
             service_start_date = get_start_time(time_range, int(time_value))
         else:

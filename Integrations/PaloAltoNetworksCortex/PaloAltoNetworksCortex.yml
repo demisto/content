@@ -96,14 +96,14 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: Thu Jan 01 02:00:00 IST 1970
+      defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: true
-      defaultValue: Wed Jan 01 02:00:00 IST 2020
+      defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
       isArray: false
       name: endTime
@@ -749,7 +749,7 @@ script:
         dbot_response = requests.get(
             TOKEN_RETRIEVAL_URL,
             headers=headers,
-            params={'token': get_encrypted(AUTH_ID, ENC_KEY)},
+            params={"token": get_encrypted(AUTH_ID, ENC_KEY)},
             verify=USE_SSL
         )
         if dbot_response.status_code not in {200, 201}:
@@ -910,9 +910,10 @@ script:
             else:
                 raise Exception('Enter timeRange and timeValue, or startTime and endTime')
         else:
-            # parses user input to datetime object
-            service_start_date = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-            service_end_date = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+            time_format = '%Y-%m-%d %H:%M:%S'
+            # Thu Jan 01 02:00:00 IST 1970' does not match format '%Y-%m-%d %H:%M:%S'
+            service_start_date = datetime.strptime(start_time, time_format)
+            service_end_date = datetime.strptime(end_time, time_format)
 
         # transforms datetime object to epoch time
         service_start_date_epoch = int(service_start_date.strftime('%s'))
@@ -920,7 +921,7 @@ script:
 
         query = args.get('query')
 
-        if ('limit' not in query.lower()):
+        if 'limit' not in query.lower():
             query += ' LIMIT 100'
 
         query_data = {
