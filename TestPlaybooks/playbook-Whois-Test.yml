@@ -84,7 +84,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GOOGLE.COM
+              simple: google.com
     view: |-
       {
         "position": {
