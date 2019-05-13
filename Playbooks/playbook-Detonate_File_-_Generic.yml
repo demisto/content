@@ -941,6 +941,5 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-releaseNotes: Add ANYRUN File Detonation playbook
 tests:
 - Detonate File - Generic Test

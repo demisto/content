@@ -803,6 +803,5 @@ outputs:
 - contextPath: Endpoint.Domain
   description: The domain names of the endpoints that were enriched.
   type: string
-releaseNotes: "Updated names and descriptions."
 tests:
   - Endpoint Enrichment - Generic v2 - Test

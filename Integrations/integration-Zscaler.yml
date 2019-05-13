@@ -1161,4 +1161,3 @@ script:
   runonce: false
 tests:
   - Zscaler Test
-releaseNotes: added sandbox report command
