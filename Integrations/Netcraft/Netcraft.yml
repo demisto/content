@@ -110,7 +110,7 @@ script:
       description: The IP you'd like to filter by.
     - name: region
       description: The specific region you'd like to filter by. If the region is invalid
-        or not specified then all regions are shown.
+        or not specified, all regions are shown.
     outputs:
     - contextPath: Netcraft.Takedown.ID
       description: The takedown's ID.
@@ -231,3 +231,4 @@ script:
       description: The id of a takedown to escalate.
     description: Escalate a takedown.
   runonce: false
+releaseNotes: "-"
