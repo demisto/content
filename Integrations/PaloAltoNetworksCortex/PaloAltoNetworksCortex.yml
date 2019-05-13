@@ -578,6 +578,7 @@ script:
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
   runonce: false
+  script: ''
   type: python
 tests:
 - Palo Alto Networks Cortex Test
