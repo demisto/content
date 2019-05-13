@@ -41,9 +41,6 @@ AUTH = ''
 LAST_JWT_FETCH = None
 # Default JWT validity time set in Forescout Web API
 JWT_VALIDITY_TIME = timedelta(minutes=5)
-# For use of Entity Tags (ETags) to reduce bandwidth by eliminating transactions
-# when previously reported data hasn't changed.
-ETAGS: Dict[str, str] = {}
 # Host fields to be included in output of get_host_command
 HOSTFIELDS_TO_INCLUDE = {
     'os_classification': 'OSClassification',
@@ -336,20 +333,7 @@ def create_web_api_headers(entity_tag: str = '') -> Dict:
         'Authorization': AUTH,
         'Accept': 'application/hal+json'
     }
-    if entity_tag:
-        headers['If-None-Match'] = entity_tag
     return headers
-
-
-def log_entity_tag(api_calling_func):
-    def api_calling_func_wrapper(*args, **kwargs):
-        response = api_calling_func(*args, **kwargs)
-        etag_hash = response.headers.get('ETag')
-        cur_etag = ETAGS.setdefault(api_calling_func.__qualname__, etag_hash)
-        if cur_etag != etag_hash:
-            ETAGS[api_calling_func.__qualname__] = etag_hash
-        return response
-    return api_calling_func_wrapper
 
 
 def login():
@@ -458,7 +442,6 @@ def test_module():
     demisto.results('ok')
 
 
-@log_entity_tag
 def get_host(args):
     identifier = args.get('identifier', '')
     fields = args.get('fields', '')
@@ -533,7 +516,6 @@ def get_host_command():
     return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 
-@log_entity_tag
 def get_hosts(args={}):
     login()
     url_suffix = '/api/hosts'
@@ -574,7 +556,6 @@ def get_hosts_command():
     return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
 
 
-@log_entity_tag
 def get_hostfields():
     login()
     url_suffix = '/api/hostfields'
@@ -605,7 +586,6 @@ def get_hostfields_command():
         return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 
-@log_entity_tag
 def get_policies():
     login()
     url_suffix = '/api/policies'
