@@ -1,0 +1,227 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Intezer_cpy
+  version: -1
+configuration:
+- display: API Key
+  name: APIKey
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Malware detection and analysis based on code reuse
+display: Intezer_cpy
+name: Intezer_cpy
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: Item type - File (file), Memory Module (memory_module) or Memory
+        Fileless Code (fileless_code)
+      isArray: false
+      name: codeItemType
+      predefined:
+      - file
+      - memory_module
+      - fileless_code
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Number of retries for polling the analysis report
+      isArray: false
+      name: maxRetries
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Delay in seconds between polling of analysis results
+      isArray: false
+      name: delay
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and
+      MD5
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.ExistsInIntezer
+      description: 'File exists in Intezer genome database (in case file does not
+        exist, consider upload the file) '
+      type: boolean
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: unknown
+  - arguments:
+    - default: true
+      description: The file entry id to upload
+      isArray: false
+      name: fileEntryId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: Item type - File (file), Memory Module (memory_module) or Memory
+        Fileless Code (fileless_code)
+      isArray: false
+      name: codeItemType
+      predefined:
+      - file
+      - memory_module
+      - fileless_code
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Number of retries for polling the analysis report
+      isArray: false
+      name: maxRetries
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Delay in seconds between polling of analysis results
+      isArray: false
+      name: delay
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks file reputation for uploaded file (up to 20MB)
+    execution: false
+    name: intezer-upload
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The analysis ID we want to get results for
+      isArray: false
+      name: analysisId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: File
+      description: The type of the analysis
+      isArray: false
+      name: analysisType
+      predefined:
+      - File
+      - Endpoint
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Number of retries for polling the analysis report
+      isArray: false
+      name: maxRetries
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Delay in seconds between polling of analysis results
+      isArray: false
+      name: delay
+      required: false
+      secret: false
+    - default: false
+      description: indicator to classify
+      isArray: false
+      name: indicatorName
+      required: false
+      secret: false
+    deprecated: false
+    description: Wait and get analysis result, support file and endpoint analysis
+    execution: false
+    name: intezer-get-analysis-result
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: Unknown
+    - contextPath: Endpoint.Metadata
+      description: Metadata returned from Intezer analysis (endpoint analysis id,
+        endpoint analysis url, families,  verdict, host_name)
+      type: Unknown
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python

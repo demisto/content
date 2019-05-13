@@ -1,0 +1,2 @@
+Intezer’s cloud-based malware detection and analysis provides a fast, in-depth understanding of any file by mapping its code DNA.
+See [https://analyze.intezer.com](https://analyze.intezer.com) for creating API key and more details.
