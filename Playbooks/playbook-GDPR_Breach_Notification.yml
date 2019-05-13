@@ -491,7 +491,7 @@ tasks:
       - id: "25"
         label: ""
         labelarg:
-          simple: Does the company have insurance for the type of the incident incurred?
+          simple: Does the company have insurance for this type of the breach?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -888,7 +888,7 @@ tasks:
         simple: ${Suspected GDPR data breach.Answers.6}
       companycountry:
         simple: ${Suspected GDPR data breach.Answers.7}
-      companyhasinsurancefortheincident:
+      companyhasinsuranceforthebreach:
         simple: ${Suspected GDPR data breach.Answers.25}
       companyname:
         simple: ${Suspected GDPR data breach.Questions.3}
