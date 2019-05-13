@@ -21,7 +21,8 @@ AUTH_ID = demisto.params().get('auth_id')
 # Encryption key
 ENC_KEY = demisto.params().get('auth_key')
 USE_SSL = not demisto.params().get('insecure', False)
-TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
+# TODO revert to demistobot
+TOKEN_RETRIEVAL_URL = 'https://ec2-18-197-54-7.eu-central-1.compute.amazonaws.com/panw-token'
 FETCH_QUERY = None
 
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
@@ -170,7 +171,7 @@ def get_access_token():
     dbot_response = requests.get(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={'token': get_encrypted(AUTH_ID, ENC_KEY)},
+        params={"token": get_encrypted(AUTH_ID, ENC_KEY)},
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
