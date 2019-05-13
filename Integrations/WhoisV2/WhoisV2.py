@@ -7779,7 +7779,7 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
 
     data["raw"] = raw_data
 
-    if normalized != []:
+    if normalized:
         data = normalize_data(data, normalized)
 
     return data
@@ -8069,11 +8069,11 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
                             if contact["handle"] == data_reference["handle"]:
                                 found = True
                                 data_reference.update(contact)
-                        if found == False:
+                        if not found:
                             # The contact definition was not found in the supplied raw WHOIS data. If the
                             # method has been called with never_query_handles=False, we can use the supplied
                             # WHOIS server for looking up the handle information separately.
-                            if never_query_handles == False:
+                            if not never_query_handles:
                                 try:
                                     contact = fetch_nic_contact(data_reference["handle"], handle_server)
                                     data_reference.update(contact)
@@ -8165,7 +8165,7 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
 
 def fetch_nic_contact(handle, lookup_server):
     response = get_whois_raw(handle, lookup_server)
-    response = [segment.replace("\r", "") for segment in response]  # Carriage returns are the devil
+    response = [segment.replace("\r", "") for segment in response]
     results = parse_nic_contact(response)
 
     if len(results) > 0:
@@ -8189,9 +8189,6 @@ def get_whois(domain, normalized=None):
     if normalized is None:
         normalized = []
     raw_data, server_list = get_whois_raw(domain, with_server_list=True)
-    # Unlisted handles will be looked up on the last WHOIS server that was queried. This may be changed to also query
-    # other servers in the future, if it turns out that there are cases where the last WHOIS server in the chain doesn't
-    # actually hold the handle contact details, but another WHOIS server in the chain does.
     return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
                            handle_server=server_list[-1])
 
@@ -8202,11 +8199,6 @@ def get_whois(domain, normalized=None):
 def whois_command():
     try:
         whois_result = get_whois(DOMAIN)
-        # data = parse_raw_whois(whois_result)
-        # whois_result = parse_raw_whois(whois_result)
-
-        # demisto.results(data)
-
         md = {'Name': DOMAIN}
         ec = {'Name': DOMAIN}
         if 'status' in whois_result:
@@ -8284,7 +8276,6 @@ def test_command():
 LOG('command is %s' % (demisto.command(),))
 try:
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
         test_command()
     elif demisto.command() == 'whois':
         whois_command()

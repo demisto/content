@@ -391,5 +391,3 @@ script:
 releaseNotes: "-"
 tests:
   - Active Directory Test
-releaseNotes: "Added new argument 'context-output' to command 'ad-search' - If set to no, will not output results.
-          Improved functionality of 'size-limit' argument in command 'ad-search'"

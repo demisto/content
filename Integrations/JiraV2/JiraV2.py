@@ -91,7 +91,8 @@ def run_query(query, start_at='', max_results=None):
         "startAt": start_at,
         "maxResults": max_results,
     }
-    query_params.update(OAUTH)
+    if OAUTH:
+        query_params.update(OAUTH)  # type: ignore
 
     result = requests.get(
         url=url,
@@ -146,7 +147,7 @@ def expand_urls(data, depth=0):
 
 
 def generate_md_context_get_issue(data):
-    get_issue_obj = {"md": [], "context": []}
+    get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
 
@@ -207,8 +208,8 @@ def generate_md_context_create_issue(data, project_name=None, project_key=None):
     elif demisto.getParam('projectKey'):
         data["projectKey"] = demisto.getParam('projectKey')
 
-    create_issue_obj['md'].append(data)
-    create_issue_obj['context']['Ticket'].append({"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})
+    create_issue_obj['md'].append(data)  # type: ignore
+    create_issue_obj['context']['Ticket'].append({"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
     return create_issue_obj
 
 
@@ -283,9 +284,13 @@ def get_issue_fields(issue_creating=False, **issue_args):
     :param issue_creating: flag that indicates this function is called when creating an issue
     :param issue_args: issue argument
     """
-    issue = {}
+    issue = {}  # type: dict
     if 'issueJson' in issue_args:
-        issue = json.dumps(issue_args['issueJson'])
+        try:
+            issue = json.loads(issue_args['issueJson'])
+        except TypeError as te:
+            demisto.debug(str(te))
+            return_error("issueJson must be in a valid json format")
 
     if not issue.get('fields'):
         issue['fields'] = {}
@@ -311,7 +316,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
         issue['fields']['project']['id'] = project_id
 
     if issue_args.get('issueTypeName'):
-        issue['fields']['issuetype']['name'] = issue_args['issueTypeName'].title()
+        issue['fields']['issuetype']['name'] = issue_args['issueTypeName']
 
     if issue_args.get('issueTypeId'):
         issue['fields']['issuetype']['id'] = issue_args['issueTypeId']
