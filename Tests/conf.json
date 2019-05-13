@@ -1315,10 +1315,6 @@
             "playbookID": "Palo Alto Networks Cortex Test"
         },
         {
-            "integrations": "WhoisV2",
-            "playbookID": "WhoisV2-Test"
-        },
-        {
             "playbookID": "Palo Alto Networks Cortex Test",
             "fromversion": "4.1.0"
         },

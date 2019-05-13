@@ -13,6 +13,8 @@ from codecs import encode, decode
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+""""""
+
 ''' GLOBAL VARS '''
 DOMAIN = demisto.args().get('query')
 
