@@ -298,4 +298,3 @@ script:
   runonce: false
 tests:
   - Jira-v2-Test
-releaseNotes: better URL handling

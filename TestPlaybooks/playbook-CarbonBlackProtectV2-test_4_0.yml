@@ -1,0 +1,2077 @@
+id: Carbon Black Enterprise Protection V2 Test
+version: -1
+name: Carbon Black Enterprise Protection V2 Test
+toversion: 4.0.9
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 36acaa6e-9052-478b-8a9d-6b519f69f2b9
+    type: start
+    task:
+      id: 36acaa6e-9052-478b-8a9d-6b519f69f2b9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "7"
+      - "12"
+      - "15"
+      - "18"
+      - "21"
+      - "28"
+      - "31"
+      - "34"
+      - "37"
+      - "42"
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 09969783-7e3e-4401-816c-f5c432521da5
+    type: regular
+    task:
+      id: 09969783-7e3e-4401-816c-f5c432521da5
+      version: -1
+      name: Search connector
+      description: Returns objects that match given criteria
+      script: CarbonBlackProtectionV2|||cbp-connector-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit: {}
+      offset:
+        simple: "2"
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b0a9c6bf-f061-4e01-84c4-cc5017d66e54
+    type: title
+    task:
+      id: b0a9c6bf-f061-4e01-84c4-cc5017d66e54
+      version: -1
+      name: Connector
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: d54cde88-8966-4417-8e05-644e339ea645
+    type: regular
+    task:
+      id: d54cde88-8966-4417-8e05-644e339ea645
+      version: -1
+      name: Get 3rd connector
+      description: Returns object instance of this class
+      script: CarbonBlackProtectionV2|||cbp-connector-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      headers: {}
+      id:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4287cf2d-8e08-4830-8dc6-518b5d367263
+    type: title
+    task:
+      id: 4287cf2d-8e08-4830-8dc6-518b5d367263
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: e3a594c0-2baf-4c4c-89a5-3945929dacdf
+    type: title
+    task:
+      id: e3a594c0-2baf-4c4c-89a5-3945929dacdf
+      version: -1
+      name: Computer
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c8994521-3062-4f16-8588-65b228a59b2b
+    type: regular
+    task:
+      id: c8994521-3062-4f16-8588-65b228a59b2b
+      version: -1
+      name: Search computer
+      description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+      script: CarbonBlackProtectionV2|||cbp-computer-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      group: {}
+      headers: {}
+      ipAddress:
+        simple: 34.247.165.10
+      limit: {}
+      macAddress:
+        simple: 0A:02:C7:AF:87:7C
+      name:
+        simple: WORKGROUP\\WIN-40PO3OKHP48
+      offset: {}
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 68c3d2e7-590d-4a82-85f0-3f17f3dec509
+    type: condition
+    task:
+      id: 68c3d2e7-590d-4a82-85f0-3f17f3dec509
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: IPAddress
+            iscontext: true
+          right:
+            value:
+              simple: 34.247.165.10
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: Hostname
+            iscontext: true
+          right:
+            value:
+              simple: WORKGROUP\WIN-40PO3OKHP48
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 301308a7-bf2c-41d2-83e8-bb523ee22e35
+    type: regular
+    task:
+      id: 301308a7-bf2c-41d2-83e8-bb523ee22e35
+      version: -1
+      name: Get computer
+      description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
+      script: CarbonBlackProtectionV2|||cbp-computer-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      headers: {}
+      id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e16d3463-3035-433f-8fd7-a95faecff69b
+    type: condition
+    task:
+      id: e16d3463-3035-433f-8fd7-a95faecff69b
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: IPAddress
+            iscontext: true
+          right:
+            value:
+              simple: 34.247.165.10
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: Hostname
+            iscontext: true
+          right:
+            value:
+              simple: WORKGROUP\WIN-40PO3OKHP48
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 3a94fe27-2a6b-4a0e-8f77-53690c68b271
+    type: title
+    task:
+      id: 3a94fe27-2a6b-4a0e-8f77-53690c68b271
+      version: -1
+      name: File Catalog
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 4a60c725-b7e4-460d-874a-4c200ffbf881
+    type: regular
+    task:
+      id: 4a60c725-b7e4-460d-874a-4c200ffbf881
+      version: -1
+      name: Search file catalog using query
+      description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filecatalog'
+      script: CarbonBlackProtectionV2|||cbp-fileCatalog-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit: {}
+      offset: {}
+      query:
+        simple: MD5:bfcde7f24baa5f4e05b0525e5a4a79e4
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 8e6b8fda-ac50-49dd-8a85-11defb1cdebb
+    type: condition
+    task:
+      id: 8e6b8fda-ac50-49dd-8a85-11defb1cdebb
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: File
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              simple: "29"
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Size
+            iscontext: true
+          right:
+            value:
+              simple: "1084760"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: crawler.exe
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: af99c287-b257-4e50-87b2-ddd0da170961
+    type: title
+    task:
+      id: af99c287-b257-4e50-87b2-ddd0da170961
+      version: -1
+      name: File Instance
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 4f9ab454-2beb-4cbf-8f8b-9f5e7aaf673e
+    type: regular
+    task:
+      id: 4f9ab454-2beb-4cbf-8f8b-9f5e7aaf673e
+      version: -1
+      name: Search file instance
+      description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#fileinstance'
+      script: CarbonBlackProtectionV2|||cbp-fileInstance-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit:
+        simple: "2"
+      offset:
+        simple: "10"
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 06a8a5e3-eff5-4dd4-8677-cb9d5aae501d
+    type: condition
+    task:
+      id: 06a8a5e3-eff5-4dd4-8677-cb9d5aae501d
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileInstance.ID
+            iscontext: true
+          right:
+            value:
+              simple: "12"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileInstance.ID
+            iscontext: true
+          right:
+            value:
+              simple: "11"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileInstance.Path
+            iscontext: true
+          right:
+            value:
+              simple: c:\program files (x86)\citrix\xentools
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileInstance.Name
+            iscontext: true
+          right:
+            value:
+              simple: msdtc.exe
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileInstance.CatalogID
+            iscontext: true
+          right:
+            value:
+              simple: "7710"
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: cd2d826a-a37c-4ea0-8429-f514134f558d
+    type: title
+    task:
+      id: cd2d826a-a37c-4ea0-8429-f514134f558d
+      version: -1
+      name: Event
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 11152902-4ca4-47c3-81bd-be544e910e32
+    type: regular
+    task:
+      id: 11152902-4ca4-47c3-81bd-be544e910e32
+      version: -1
+      name: Search events using sort and limit
+      description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#event'
+      script: CarbonBlackProtectionV2|||cbp-event-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit:
+        simple: "1"
+      offset: {}
+      query: {}
+      sort:
+        simple: stringId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 0cc97752-7c37-4373-8e8a-16eb0e43462b
+    type: condition
+    task:
+      id: 0cc97752-7c37-4373-8e8a-16eb0e43462b
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Event.StringID
+            iscontext: true
+          right:
+            value:
+              simple: "247"
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Event.ID
+            iscontext: true
+          right:
+            value:
+              simple: "430108"
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 1e8e915c-1c44-4116-8a9b-752a2613eda5
+    type: title
+    task:
+      id: 1e8e915c-1c44-4116-8a9b-752a2613eda5
+      version: -1
+      name: File rule
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 7ed2223d-36a8-4fd5-8513-c143c3e74547
+    type: regular
+    task:
+      id: 7ed2223d-36a8-4fd5-8513-c143c3e74547
+      version: -1
+      name: Create file rule
+      description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+      script: CarbonBlackProtectionV2|||cbp-fileRule-update
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      description:
+        simple: Test file rule
+      fileCatalogId:
+        simple: "2"
+      fileState:
+        simple: "2"
+      forceInstaller: {}
+      forceNotInstaller: {}
+      hash: {}
+      headers: {}
+      id: {}
+      name: {}
+      platformFlags: {}
+      policyIds: {}
+      reportOnly: {}
+      'reputationApprovalsEnabled ': {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: d1e5a3ef-9c80-4044-8116-a560cb293ef6
+    type: regular
+    task:
+      id: d1e5a3ef-9c80-4044-8116-a560cb293ef6
+      version: -1
+      name: Delete file rule
+      description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+      script: CarbonBlackProtectionV2|||cbp-fileRule-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      headers: {}
+      id:
+        complex:
+          root: CBP
+          accessor: FileRule.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 8b6815f2-300d-49ac-8590-18868e55cf59
+    type: regular
+    task:
+      id: 8b6815f2-300d-49ac-8590-18868e55cf59
+      version: -1
+      name: Get deleted file rule
+      description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+      script: CarbonBlackProtectionV2|||cbp-fileRule-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      headers: {}
+      id:
+        complex:
+          root: CBP
+          accessor: FileRule.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 5d9be80c-668b-48b9-8669-78a0f2e2695d
+    type: condition
+    task:
+      id: 5d9be80c-668b-48b9-8669-78a0f2e2695d
+      version: -1
+      name: Verify file was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileRule.FileState
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 604c360b-b525-4b29-8231-1d3435ae982d
+    type: regular
+    task:
+      id: 604c360b-b525-4b29-8231-1d3435ae982d
+      version: -1
+      name: Search file rule
+      description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
+      script: CarbonBlackProtectionV2|||cbp-fileRule-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      fileCatalogId: {}
+      fileName: {}
+      fileState:
+        simple: Unapproved
+      group: {}
+      hash:
+        simple: eab19a382c081ad2d37799ae842cd70631ea0daac8dd5092cb4de450dbd33880
+      headers: {}
+      limit:
+        simple: "1"
+      name:
+        simple: b9systemproxy
+      offset: {}
+      query: {}
+      sort: {}
+      sourceType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: d789ea93-2202-43bb-86f1-ca6a262ea4d8
+    type: condition
+    task:
+      id: d789ea93-2202-43bb-86f1-ca6a262ea4d8
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileRule.Hash
+            iscontext: true
+          right:
+            value:
+              simple: eab19a382c081ad2d37799ae842cd70631ea0daac8dd5092cb4de450dbd33880
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 19fe31a1-2ffb-407c-889d-b8886aaa0a65
+    type: title
+    task:
+      id: 19fe31a1-2ffb-407c-889d-b8886aaa0a65
+      version: -1
+      name: Policy
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 07cf6419-021e-4273-8a7e-d3cf1d80b58d
+    type: regular
+    task:
+      id: 07cf6419-021e-4273-8a7e-d3cf1d80b58d
+      version: -1
+      name: Policy query
+      description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#policy'
+      script: CarbonBlackProtectionV2|||cbp-policy-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit: {}
+      offset: {}
+      query:
+        simple: name:Local Approval Policy
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 22853adf-a2b8-4ad6-8ea0-2b1839e1947b
+    type: condition
+    task:
+      id: 22853adf-a2b8-4ad6-8ea0-2b1839e1947b
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Policy.EnforcementLevel
+            iscontext: true
+          right:
+            value:
+              simple: "35"
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Policy.ReadOnly
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Policy.AutomaticApprovalsOnTransition
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 58fabbc6-7437-49e9-8af5-14d9a1fc15c1
+    type: title
+    task:
+      id: 58fabbc6-7437-49e9-8af5-14d9a1fc15c1
+      version: -1
+      name: Server Config
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: cfe29157-443c-44fd-8101-23adfa78082f
+    type: regular
+    task:
+      id: cfe29157-443c-44fd-8101-23adfa78082f
+      version: -1
+      name: Search server config
+      description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
+      script: CarbonBlackProtectionV2|||cbp-serverConfig-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit:
+        simple: "3"
+      offset: {}
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 6e130841-5d60-4207-8f73-2e70a64537e9
+    type: condition
+    task:
+      id: 6e130841-5d60-4207-8f73-2e70a64537e9
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: ServerConfig.Name
+            iscontext: true
+          right:
+            value:
+              simple: PurgeEventThreshold
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: ServerConfig.Value
+            iscontext: true
+          right:
+            value:
+              simple: "3700"
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 253d0aa5-696d-48c3-8752-79db9316c2ad
+    type: title
+    task:
+      id: 253d0aa5-696d-48c3-8752-79db9316c2ad
+      version: -1
+      name: Publisher
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 28a13fd2-bedf-411e-84b9-3dea449101bd
+    type: regular
+    task:
+      id: 28a13fd2-bedf-411e-84b9-3dea449101bd
+      version: -1
+      name: Search publisher
+      script: CarbonBlackProtectionV2|||cbp-publisher-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      group: {}
+      limit: {}
+      name:
+        simple: Bit9, Inc
+      offset: {}
+      publisherReputation:
+        simple: Not trusted (Unknown)
+      publisherState:
+        simple: Approved
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: e6f38aa1-e9f7-4148-8f53-3f288df51aa2
+    type: condition
+    task:
+      id: e6f38aa1-e9f7-4148-8f53-3f288df51aa2
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Publisher.Name
+            iscontext: true
+          right:
+            value:
+              simple: Bit9, Inc
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Publisher.SignedCertificatesCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Publisher.SignedFilesCount
+            iscontext: true
+          right:
+            value:
+              simple: "12"
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 1282aaed-1459-41eb-8a6f-deda68413bed
+    type: title
+    task:
+      id: 1282aaed-1459-41eb-8a6f-deda68413bed
+      version: -1
+      name: File Analysis
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 888a99e8-f160-483e-82a6-1c9a0bb539d3
+    type: regular
+    task:
+      id: 888a99e8-f160-483e-82a6-1c9a0bb539d3
+      version: -1
+      name: Create file analysis
+      description: Creates or updates file analysis request
+      script: CarbonBlackProtectionV2|||cbp-fileAnalysis-createOrUpdate
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      analysisStatus: {}
+      analysisTarget: {}
+      computerId: {}
+      connectorId:
+        simple: "2"
+      fileCatalogId:
+        simple: "2"
+      id: {}
+      priority: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 943deb8d-76ba-4062-8712-88de75811743
+    type: condition
+    task:
+      id: 943deb8d-76ba-4062-8712-88de75811743
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileAnalysis.Priority
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileAnalysis.FileName
+            iscontext: true
+          right:
+            value:
+              simple: vcruntime140.dll
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileAnalysis.PathName
+            iscontext: true
+          right:
+            value:
+              simple: c:\program files (x86)\bit9\parity agent
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 24a99392-aa63-4e36-8a97-0f955c3e768a
+    type: regular
+    task:
+      id: 24a99392-aa63-4e36-8a97-0f955c3e768a
+      version: -1
+      name: Get file analysis
+      description: Returns object instance of this class
+      script: CarbonBlackProtectionV2|||cbp-fileAnalysis-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      id:
+        simple: "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: c75cfc1e-6f4f-4b22-80da-a286365efc26
+    type: condition
+    task:
+      id: c75cfc1e-6f4f-4b22-80da-a286365efc26
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: vccorlib140.dll
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 6a968b58-885f-409d-8df2-f32872ef3214
+    type: title
+    task:
+      id: 6a968b58-885f-409d-8df2-f32872ef3214
+      version: -1
+      name: File Upload
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2250,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 14948a98-e911-4c3e-8f71-acdfc50f0e16
+    type: regular
+    task:
+      id: 14948a98-e911-4c3e-8f71-acdfc50f0e16
+      version: -1
+      name: Search file upload
+      description: Returns objects that match given criteria
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      computerId: {}
+      fileCatalogId: {}
+      fileName: {}
+      group: {}
+      headers: {}
+      limit:
+        simple: "2"
+      offset: {}
+      query: {}
+      sort: {}
+      uploadStatus: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2250,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 28d5d9a6-58d6-4178-82a2-032686fd409e
+    type: regular
+    task:
+      id: 28d5d9a6-58d6-4178-82a2-032686fd409e
+      version: -1
+      name: Get file upload
+      description: Returns object instance of this class
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      headers: {}
+      id:
+        simple: "67"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2250,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 0c7a1d7b-9b65-42db-80e6-266b42f08e14
+    type: condition
+    task:
+      id: 0c7a1d7b-9b65-42db-80e6-266b42f08e14
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: FileUpload.ID
+            iscontext: true
+          right:
+            value:
+              simple: "67"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CBP.FileUpload.FileName
+            iscontext: true
+          right:
+            value:
+              simple: ServerLog-Auto-2018-06-30-010219.bt9
+    view: |-
+      {
+        "position": {
+          "x": -2250,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 4d880e09-24b3-47b0-8e85-5e9ae8ca2b24
+    type: title
+    task:
+      id: 4d880e09-24b3-47b0-8e85-5e9ae8ca2b24
+      version: -1
+      name: Connector
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2900,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: b6075620-2279-49c6-8d6e-d0a6cae94fba
+    type: regular
+    task:
+      id: b6075620-2279-49c6-8d6e-d0a6cae94fba
+      version: -1
+      name: Search connectors offset 1
+      description: Returns objects that match given criteria
+      script: CarbonBlackProtectionV2|||cbp-connector-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      group: {}
+      headers: {}
+      limit: {}
+      offset:
+        simple: "1"
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2900,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: f9b60c55-4303-4268-8251-7cae5fe0c1fc
+    type: regular
+    task:
+      id: f9b60c55-4303-4268-8251-7cae5fe0c1fc
+      version: -1
+      name: Get first connector
+      description: Returns object instance of this class
+      script: CarbonBlackProtectionV2|||cbp-connector-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      headers: {}
+      id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2900,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 551b5dfd-cdeb-4c0a-86b8-ba3707c97459
+    type: condition
+    task:
+      id: 551b5dfd-cdeb-4c0a-86b8-ba3707c97459
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Connector.AnalysisName
+            iscontext: true
+          right:
+            value:
+              simple: FireEye
+      - - operator: isFalse
+          left:
+            value:
+              complex:
+                root: CBP
+                accessor: Connector.Enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CBP.Connector.AnalysisTargets
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2900,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 6a097843-f759-49aa-850c-a4de8b0831f1
+    type: regular
+    task:
+      id: 6a097843-f759-49aa-850c-a4de8b0831f1
+      version: -1
+      name: Search file catalog using specific query args
+      description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filecatalog'
+      script: CarbonBlackProtectionV2|||cbp-fileCatalog-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      computerId:
+        simple: "1"
+      fileName:
+        simple: dfsvc.exe
+      fileState: {}
+      fileType: {}
+      group: {}
+      hash:
+        simple: 88a01ee91d491ccc582a97d74f63cd7f
+      limit: {}
+      offset: {}
+      query: {}
+      sort: {}
+      threat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: cdfa5498-7ac8-40cf-85c8-228c66b07f5a
+    type: condition
+    task:
+      id: cdfa5498-7ac8-40cf-85c8-228c66b07f5a
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.ID
+            iscontext: true
+          right:
+            value:
+              simple: "78"
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 03b0f292-070e-47b6-82d2-69cc525856a0
+    type: regular
+    task:
+      id: 03b0f292-070e-47b6-82d2-69cc525856a0
+      version: -1
+      name: Search file instance using specific query args
+      description: 'Search for file instances. For more information, see the Carbon
+        Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
+      script: CarbonBlackProtectionV2|||cbp-fileInstance-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      computerId:
+        simple: "1"
+      fileName:
+        simple: svchost.exe
+      group: {}
+      limit:
+        simple: "2"
+      offset: {}
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 4a359642-6776-4c65-8a4e-3b6a938473cc
+    type: regular
+    task:
+      id: 4a359642-6776-4c65-8a4e-3b6a938473cc
+      version: -1
+      name: Search events using specific query arguments
+      description: 'Search for events. For more information, see the Carbon Black
+        documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
+      script: CarbonBlackProtectionV2|||cbp-event-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      computerId:
+        simple: "1"
+      fileCatalogId:
+        simple: "2"
+      fileName:
+        simple: vcruntime140.dll
+      group: {}
+      ipAddress:
+        simple: 84.111.21.64
+      limit:
+        simple: "5"
+      offset: {}
+      query: {}
+      severity:
+        simple: Info
+      sort: {}
+      type:
+        simple: Server Management
+      userName:
+        simple: admin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 6f1dd1a1-a9b5-48b7-8903-7de2c1868ae2
+    type: regular
+    task:
+      id: 6f1dd1a1-a9b5-48b7-8903-7de2c1868ae2
+      version: -1
+      name: Search file analysis using custom filters
+      description: Returns objects that match the specified criteria.
+      script: CarbonBlackProtectionV2|||cbp-fileAnalysis-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      analysisResult:
+        simple: Not yet available
+      analysisStatus:
+        simple: error
+      connectorId:
+        simple: "1"
+      fileCatalogId:
+        simple: "2"
+      fileName: {}
+      group: {}
+      limit: {}
+      offset: {}
+      query: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 352f753c-cfc3-45d0-807c-ce3f55f5a369
+    type: condition
+    task:
+      id: 352f753c-cfc3-45d0-807c-ce3f55f5a369
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: CBP.FileAnalysis.ID
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 3bce972a-4d21-495a-8ce0-aa8e82d0b472
+    type: regular
+    task:
+      id: 3bce972a-4d21-495a-8ce0-aa8e82d0b472
+      version: -1
+      name: Search with specific query arguments
+      description: Returns objects that match the specified criteria.
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-search
+      type: regular
+      iscommand: true
+      brand: CarbonBlackProtectionV2
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      computerId:
+        simple: "1"
+      fileCatalogId:
+        simple: "2"
+      fileName:
+        simple: vcruntime140.dll
+      group: {}
+      limit: {}
+      offset: {}
+      query: {}
+      sort: {}
+      uploadStatus:
+        simple: Completed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2250,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 5530,
+        "x": -2250,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []

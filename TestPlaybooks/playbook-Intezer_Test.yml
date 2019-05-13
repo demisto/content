@@ -121,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4335
+          "y": 4480
         }
       }
     note: false
@@ -604,7 +604,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3110
+          "y": 3080
         }
       }
     note: false
@@ -640,7 +640,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3285
+          "y": 3255
         }
       }
     note: false
@@ -676,7 +676,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3460
+          "y": 3430
         }
       }
     note: false
@@ -696,14 +696,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "27"
     reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3810
+          "y": 3780
         }
       }
     note: false
@@ -762,7 +762,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3635
+          "y": 3605
         }
       }
     note: false
@@ -813,7 +813,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3985
+          "y": 4130
         }
       }
     note: false
@@ -864,7 +864,37 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4160
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: bfaaf5b7-c83b-44aa-8591-c36b0f7b799d
+    type: regular
+    task:
+      id: bfaaf5b7-c83b-44aa-8591-c36b0f7b799d
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      seconds:
+        simple: "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
         }
       }
     note: false
@@ -875,7 +905,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4350,
+        "height": 4495,
         "width": 380,
         "x": 50,
         "y": 50

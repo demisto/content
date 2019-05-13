@@ -1,0 +1,96 @@
+args:
+- default: false
+  description: The model name (or list name) in Demisto.
+  isArray: false
+  name: modelName
+  required: true
+  secret: false
+- default: false
+  description: Seed for the hash function, at the pre-process stage.
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+- default: false
+  description: Subject of the email.
+  isArray: false
+  name: emailSubject
+  required: false
+  secret: false
+- default: false
+  description: Body of the email.
+  isArray: false
+  name: emailBody
+  required: false
+  secret: false
+- default: false
+  defaultValue: '50'
+  description: 'Maximum number of positive/negative words to return for the model decision. '
+  isArray: false
+  name: topWordsLimit
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.1'
+  description: Threshold to determine word importance (range 0-1).
+  isArray: false
+  name: wordThreshold
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: list
+  description: How the model is stored in Demisto.
+  isArray: false
+  name: modelStoreType
+  predefined:
+  - list
+  - mlModel
+  required: false
+  secret: false
+- default: false
+  defaultValue: '20'
+  description: Minimum number of characters for the prediction.
+  isArray: false
+  name: minTextLength
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.8'
+  description: The label probability threshold.
+  isArray: false
+  name: labelProbabilityThreshold
+  required: false
+  secret: false
+comment: Predict text label using a pre-trained machine learning phishing model, and
+  get the most important words used in the classification decision.
+commonfields:
+  id: DBotPredictPhishingWords
+  version: -1
+enabled: false
+name: DBotPredictPhishingWords
+outputs:
+- contextPath: DBotPredictPhishingWords.Label
+  description: The predicted label.
+  type: String
+- contextPath: DBotPredictPhishingWords.Probability
+  description: The predicted probability (range 0-1).
+  type: Number
+- contextPath: DBotPredictPhishingWords.PositiveWords
+  description: A list of words in the input text that supports the model decision.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.NegativeWords
+  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.TextTokensHighlighted
+  description: The input text (after pre-processing) with the positive words that
+    support the model decision.
+  type: String
+script: '-'
+system: false
+tags:
+- ml
+- phishing
+timeout: '0'
+type: python
+dockerimage: demisto/dl:1.3

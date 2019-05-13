@@ -190,7 +190,7 @@ def validate_provisioning_state(args):
             if 'provisioningstate/failed' in status_code.lower():
                 message = status.get('message')
                 err_msg = PROVISIONING_STATE_TO_ERRORS.get('failed')
-                raise Exception(err_msg.format(vm_name, status_code, message))
+                raise Exception(err_msg.format(vm_name, status_code, message))  # type: ignore
         # In the case that the microsoft API changes and the status code is no longer
         # relevant, preventing the above exception with its detailed error message from
         # being raised, then raise the below exception with a more general error message
@@ -325,7 +325,7 @@ def create_vm_parameters(args):
     admin_username = args.get('admin_username')
     admin_password = args.get('admin_password')
     nic_name = args.get('nic_name')
-    full_nic_id = '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'
+    full_nic_id = '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'  # type: ignore
     full_nic_id += resource_group + '/providers/Microsoft.Network/networkInterfaces/' + nic_name
 
     if not image and not (sku and publisher and version and offer):
@@ -740,7 +740,7 @@ def delete_vm(args):
     parameters = {'api-version': API_VERSION}
 
     # Call API to deallocate compute resources
-    _ = http_request('POST', url_endpoint, params=parameters, codes={200, 202})
+    http_request('POST', url_endpoint, params=parameters, codes={200, 202})
 
     # Construct endpoint URI suffix (for deletion)
     url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name
@@ -766,7 +766,7 @@ def delete_vm_command():
         Success message to the war room
     """
     args = demisto.args()
-    _ = delete_vm(args)
+    delete_vm(args)
     success_msg = '"{}" VM Deletion Successfully Initiated'.format(args.get('virtual_machine_name'))
     demisto.results(success_msg)
 
@@ -805,7 +805,7 @@ def start_vm_command():
     # Raise an exception if the VM isn't in the proper provisioning state
     validate_provisioning_state(args)
 
-    _ = start_vm(args)
+    start_vm(args)
 
     vm = {
         'Name': vm_name,
@@ -860,7 +860,7 @@ def poweroff_vm_command():
     # Raise an exception if the VM isn't in the proper provisioning state
     validate_provisioning_state(args)
 
-    _ = poweroff_vm(args)
+    poweroff_vm(args)
 
     vm = {
         'Name': vm_name,
