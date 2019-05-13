@@ -3,11 +3,11 @@ commonfields:
   id: Palo Alto Networks Cortex
   version: -1
 configuration:
-- display: Authentication ID
+- display: Authentication Token
   name: token
   required: true
   type: 4
-- display: Authentication Token
+- display: Authentication ID
   name: auth_id
   required: true
   type: 4
@@ -578,7 +578,6 @@ script:
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
   runonce: false
-  script: ''
   type: python
 tests:
 - Palo Alto Networks Cortex Test

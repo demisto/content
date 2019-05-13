@@ -195,13 +195,13 @@ def get_access_token():
         )
     access_token = parsed_response.get('access_token')
     api_url = parsed_response.get('url')
-    token = parsed_response.get("token")
+    token = parsed_response.get('token')
 
     demisto.setIntegrationContext({
         'access_token': access_token,
         'stored': epoch_seconds(),
         'api_url': api_url,
-        "token": token
+        'token': token
     })
     return access_token
 
