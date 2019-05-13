@@ -130,7 +130,7 @@ script:
     - contextPath: Whois.ID
       description: ID of the domain
       type: string
-  dockerimage: demisto/ippysocks:latest
+  dockerimage: demisto/ippysocks
   isfetch: false
   runonce: false
   script: ''
