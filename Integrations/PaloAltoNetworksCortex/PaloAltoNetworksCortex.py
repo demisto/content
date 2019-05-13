@@ -14,15 +14,12 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
-# Authorization token
 TOKEN = demisto.params().get('token')
-# Refresh Token
 AUTH_ID = demisto.params().get('auth_id')
-# Encryption key
 ENC_KEY = demisto.params().get('auth_key')
+
 USE_SSL = not demisto.params().get('insecure', False)
-# TODO revert to demistobot
-TOKEN_RETRIEVAL_URL = 'https://ec2-18-197-54-7.eu-central-1.compute.amazonaws.com/panw-token'
+TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
 FETCH_QUERY = None
 
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
@@ -62,7 +59,7 @@ COMMON_HEADERS = [
 ''' HELPER FUNCTIONS '''
 
 
-def get_encrypted(auth_id: str, key: str):
+def get_encrypted(auth_id: str, key: str) -> str:
     """
 
     Args:
@@ -96,7 +93,7 @@ def get_encrypted(auth_id: str, key: str):
         ct = aes_gcm.encrypt(nonce, data, None)
         return base64.b64encode(nonce + ct)
     now = epoch_seconds()
-    return encrypt(f'{now}:{auth_id}', key).decode("utf-8")
+    return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
 
 
 def prepare_fetch_query(fetch_timestamp):
@@ -171,7 +168,7 @@ def get_access_token():
     dbot_response = requests.get(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={"token": get_encrypted(AUTH_ID, ENC_KEY)},
+        params={'token': get_encrypted(AUTH_ID, ENC_KEY)},
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
