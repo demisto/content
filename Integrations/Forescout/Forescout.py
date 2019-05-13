@@ -19,15 +19,15 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 
 CREDENTIALS = PARAMS.get('credentials', {})
-USERNAME = CREDENTIALS.get('identifier')
-PASSWORD = CREDENTIALS.get('password')
+USERNAME = CREDENTIALS.get('identifier', '')
+PASSWORD = CREDENTIALS.get('password', '')
 
 DEX_CREDENTIALS = PARAMS.get('dex_credentials', {})
 DEX_USERNAME = DEX_CREDENTIALS.get('identifier')
 DEX_USERNAME = DEX_USERNAME if DEX_USERNAME != '' else USERNAME
 DEX_PASSWORD = DEX_CREDENTIALS.get('password')
 DEX_PASSWORD = DEX_PASSWORD if DEX_PASSWORD != '' else PASSWORD
-DEX_ACCOUNT = PARAMS.get('dex_account')
+DEX_ACCOUNT = PARAMS.get('dex_account', '')
 # Remove trailing slash to prevent wrong URL path to service
 BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
