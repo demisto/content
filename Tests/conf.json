@@ -1371,11 +1371,15 @@
         },
         {
             "playbookID": "TestIsEmailAddressInternal"
+        },
+        {
+            "playbookID": "EWS test"
         }
     ],
     "skipped_tests": {
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "detonate_file_-_generic_test": "relevant only for v3.6",
+        "EWS test": "Old test",
         "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
