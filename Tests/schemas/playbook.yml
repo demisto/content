@@ -47,16 +47,7 @@ mapping:
           type:
             type: str
             required: yes
-            enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard', 'collection']
-          form:
-            type: map
-            allowempty: True
-          message:
-            type: map
-            allowempty: True
-          defaultassigneecomplex:
-            type: map
-            allowempty: True
+            enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
           scriptarguments:
             type: map
             allowempty: True
@@ -94,7 +85,7 @@ mapping:
                 - type: str
               type:
                 type: str
-                enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard', 'collection']
+                enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
               iscommand:
                 type: bool
                 required: yes
