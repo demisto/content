@@ -37,7 +37,7 @@ DEX_HEADERS = {
     'Accept': 'application/xml'
 }
 DEX_AUTH = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
-AUTH = ''
+WEB_AUTH = ''
 LAST_JWT_FETCH = None
 # Default JWT validity time set in Forescout Web API
 JWT_VALIDITY_TIME = timedelta(minutes=5)
@@ -314,23 +314,18 @@ def format_policies_data(data: Dict) -> List:
     return formatted_policies
 
 
-def create_web_api_headers(entity_tag: str = '') -> Dict:
+def create_web_api_headers() -> Dict:
     """
-    Return headers object that formats to Forescout Web API expectations and takes
-    into account if an entity tag exists for a request to an endpoint.
-
-    Parameters
-    ----------
-    entity_tag : str
-        Entity tag to include in the headers if not None.
+    Update JWT if it has expired and return headers object that formats to Forescout Web API expectations
 
     Returns
     -------
     dict
         Headers object for the Forescout Web API calls
     """
+    login()
     headers = {
-        'Authorization': AUTH,
+        'Authorization': WEB_AUTH,
         'Accept': 'application/hal+json'
     }
     return headers
@@ -338,14 +333,14 @@ def create_web_api_headers(entity_tag: str = '') -> Dict:
 
 def login():
     global LAST_JWT_FETCH
-    global AUTH
+    global WEB_AUTH
     if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
         url_suffix = '/api/login'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         params = {'username': USERNAME, 'password': PASSWORD}
         response = http_request('POST', url_suffix, headers=headers, params=params, resp_type='response')
         fetch_time = parsedate(response.headers.get('Date', ''))
-        AUTH = response.text
+        WEB_AUTH = response.text
         LAST_JWT_FETCH = fetch_time
 
 
@@ -445,7 +440,6 @@ def test_module():
 def get_host(args):
     identifier = args.get('identifier', '')
     fields = args.get('fields', '')
-    login()
     url_suffix = '/api/hosts/'
     id_type, *ident = identifier.split('=')
     id_type = id_type.casefold()
@@ -466,13 +460,7 @@ def get_host(args):
 
     url_suffix += '='.join(ident)
     params = {'fields': fields} if fields != '' else None
-    headers = {
-        'Authorization': AUTH,
-        'Accept': 'application/hal+json'
-    }
-    entity_tag = ETAGS.get('get_host')
-    if entity_tag:
-        headers['If-None-Match'] = entity_tag
+    headers = create_web_api_headers()
     response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
     return response
 
@@ -517,15 +505,8 @@ def get_host_command():
 
 
 def get_hosts(args={}):
-    login()
     url_suffix = '/api/hosts'
-    headers = {
-        'Authorization': AUTH,
-        'Accept': 'application/hal+json'
-    }
-    entity_tag = ETAGS.get('get_hosts')
-    if entity_tag:
-        headers['If-None-Match'] = entity_tag
+    headers = create_web_api_headers()
     params: Dict = {}
     rule_ids = args.get('rule_ids')
     properties = args.get('properties')
@@ -557,16 +538,8 @@ def get_hosts_command():
 
 
 def get_hostfields():
-    login()
     url_suffix = '/api/hostfields'
-    headers = {
-        'Authorization': AUTH,
-        'Accept': 'application/hal+json'
-    }
-    entity_tag = ETAGS.get('get_hosts')
-    if entity_tag:
-        headers['If-None-Match'] = entity_tag
-    params: Dict = {}
+    headers = create_web_api_headers()
     response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
     return response
 
@@ -587,10 +560,8 @@ def get_hostfields_command():
 
 
 def get_policies():
-    login()
     url_suffix = '/api/policies'
-    entity_tag = ETAGS.get('get_policies', '')
-    headers = create_web_api_headers(entity_tag)
+    headers = create_web_api_headers()
     response = http_request('GET', url_suffix, headers=headers, resp_type='response')
     return response
 
