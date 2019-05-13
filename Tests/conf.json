@@ -1208,6 +1208,9 @@
             "timeout": 500
         },
         {
+            "playbookID": "GDPRContactAuthorities Test"
+        },
+        {
             "integrations": "Google Resource Manager",
             "playbookID": "GoogleResourceManager-Test",
             "timeout": 500,
