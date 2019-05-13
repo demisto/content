@@ -1182,9 +1182,6 @@
             "playbookID": "Ping Test Playbook"
         },
         {
-            "playbookID": "GDPRContactAuthorities Test"
-        },
-        {
             "playbookID": "Active Directory Test",
             "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
