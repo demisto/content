@@ -1404,6 +1404,7 @@
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "McAfee Advanced Threat Defense": "License expired",
+        "Cymon": "The service was discontinued since April 30th, 2019.",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1534,7 +1535,6 @@
         "Awake Security": "Checking",
         "CIRCL": "Checking",
         "Thinkst Canary": "Checking",
-        "Cymon": "Checking",
         "SplunkPy": "Checking",
         "Symantec Advanced Threat Protection": "Checking",
         "ProtectWise": "Nightly - Checking",
