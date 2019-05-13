@@ -39,7 +39,6 @@ tasks:
       version: -1
       name: Is Cylance Protect v2 enabled?
       description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
-        integration enabled.
       type: condition
       iscommand: false
       brand: ""
