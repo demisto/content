@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f9f1d774-3ac7-4435-8c44-2b444d029d49
+    taskid: 836efd42-b9a2-409d-8979-099a1dd7ad73
     type: start
     task:
-      id: f9f1d774-3ac7-4435-8c44-2b444d029d49
+      id: 836efd42-b9a2-409d-8979-099a1dd7ad73
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 8a12022b-7167-4248-8ea2-c7c87b0f8d1b
+    taskid: e50d117c-df8b-44c2-87ba-906ed0625623
     type: regular
     task:
-      id: 8a12022b-7167-4248-8ea2-c7c87b0f8d1b
+      id: e50d117c-df8b-44c2-87ba-906ed0625623
       version: -1
       name: Stix2Creator with Email
       scriptName: StixCreator
@@ -43,6 +43,7 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      doubleBackslash: {}
       indicators:
         simple: |-
           {"0": {"firstSeen": "2019-03-13T11:39:11+02:00", "id": "320", "indicator_type":
@@ -62,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 02757b9e-54af-4a37-82ed-69e01d07f7f7
+    taskid: 45693cf4-7a89-42e8-8c28-259e09e9624b
     type: condition
     task:
-      id: 02757b9e-54af-4a37-82ed-69e01d07f7f7
+      id: 45693cf4-7a89-42e8-8c28-259e09e9624b
       version: -1
       name: Check STIX Export Result
       type: condition
@@ -85,7 +86,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '[email:value = ''koko@demisto.com'']'
+              simple: '[email-message:sender_ref.value = ''koko@demisto.com'']'
     view: |-
       {
         "position": {
@@ -98,10 +99,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: d92eca7a-d4c9-4f3a-8137-93d8d5d71d3d
+    taskid: f841d097-00eb-403e-8168-799cd6f3ac0c
     type: title
     task:
-      id: d92eca7a-d4c9-4f3a-8137-93d8d5d71d3d
+      id: f841d097-00eb-403e-8168-799cd6f3ac0c
       version: -1
       name: Success
       type: title
@@ -120,10 +121,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 64502c1f-1f1e-4625-83cc-9702839f9836
+    taskid: 073ee3b1-687b-4e73-8c8c-d24e1fdb228b
     type: regular
     task:
-      id: 64502c1f-1f1e-4625-83cc-9702839f9836
+      id: 073ee3b1-687b-4e73-8c8c-d24e1fdb228b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -154,10 +155,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 2b0408ca-5d9c-4a68-898e-24d1d0d4e21c
+    taskid: 7c729ae3-0b1d-4f96-8693-925524d75044
     type: regular
     task:
-      id: 2b0408ca-5d9c-4a68-898e-24d1d0d4e21c
+      id: 7c729ae3-0b1d-4f96-8693-925524d75044
       version: -1
       name: Stix2Creator with IP
       scriptName: StixCreator
@@ -168,6 +169,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      doubleBackslash: {}
       indicators:
         simple: |-
           {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
@@ -187,10 +189,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: d3de77e6-3356-4a05-8ce1-bb2b01337874
+    taskid: 41dd7376-9b63-410b-881b-69daa8628a34
     type: condition
     task:
-      id: d3de77e6-3356-4a05-8ce1-bb2b01337874
+      id: 41dd7376-9b63-410b-881b-69daa8628a34
       version: -1
       name: Check STIX Export Result
       type: condition
