@@ -1061,7 +1061,8 @@
             "nightly" : true
         },
         {
-            "playbookID": "detonate_file_-_generic_test"
+            "playbookID": "detonate_file_-_generic_test",
+            "toversion": "3.6.0"
         },
         {
             "playbookID": "STIXParserTest"
@@ -1379,8 +1380,7 @@
     ],
     "skipped_tests": {
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
-        "detonate_file_-_generic_test": "relevant only for v3.6",
-        "url_enrichment_-_generic_test": "Deprecated playbook",
+        "url_enrichment_-_generic_test": "Deprecated playbook - the playbook seems to be deleted",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1408,6 +1408,7 @@
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "McAfee Advanced Threat Defense": "License expired",
+        "Cymon": "The service was discontinued since April 30th, 2019.",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1538,7 +1539,6 @@
         "Awake Security": "Checking",
         "CIRCL": "Checking",
         "Thinkst Canary": "Checking",
-        "Cymon": "Checking",
         "SplunkPy": "Checking",
         "Symantec Advanced Threat Protection": "Checking",
         "ProtectWise": "Nightly - Checking",
