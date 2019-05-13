@@ -2,7 +2,7 @@ import copy
 import time
 import uuid
 from pprint import pformat
-import urllib.parse
+from urllib.parse import quote
 
 from Tests.test_utils import print_error
 from Tests.scripts.constants import PB_Status
@@ -201,7 +201,7 @@ def __delete_incident(client, incident):
 
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
-    res = client.req('DELETE', '/settings/integration/' + urllib.parse.quote(instance_id), {})
+    res = client.req('DELETE', '/settings/integration/' + quote(instance_id), {})
     if res.status_code != 200:
         print_error('delete integration instance failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
@@ -218,7 +218,7 @@ def __delete_integrations_instances(client, module_instances):
 
 
 def __print_investigation_error(client, playbook_id, investigation_id):
-    res = client.req('POST', '/investigation/' + urllib.parse.quote(investigation_id), {})
+    res = client.req('POST', '/investigation/' + quote(investigation_id), {})
     if res.status_code == 200:
         entries = res.json()['entries']
         print_error('Playbook ' + playbook_id + ' has failed:')
