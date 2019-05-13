@@ -1,9 +1,6 @@
-''' IMPORTS '''
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-import urllib3
 import re
 import socket
 import sys
@@ -11,9 +8,10 @@ from codecs import encode, decode
 
 # flake8: noqa
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-""""""
+"""
+    This integration is built using the joepie91 "Whois" module. For more information regarding this package please see 
+    the following - https://github.com/joepie91/python-whois
+"""
 
 ''' GLOBAL VARS '''
 DOMAIN = demisto.args().get('query')
@@ -8263,7 +8261,7 @@ def whois_command():
             'EntryContext': context
         })
     except OSError as msg:
-        return_error(msg)
+        return_error(str(msg))
 
 
 def test_command():
@@ -8279,13 +8277,13 @@ def test_command():
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(),))
+LOG('command is {}'.format(str(demisto.command())))
 try:
     if demisto.command() == 'test-module':
         test_command()
     elif demisto.command() == 'whois':
         whois_command()
 except Exception as e:
-    # LOG(e)
-    # LOG.print_log(False)
+    LOG(e)
+    LOG.print_log(False)
     return_error(e.message)
