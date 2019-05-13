@@ -1199,6 +1199,10 @@
             "playbookID": "Email Address Enrichment - Generic v2 - Test"
         },
         {
+            "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
+            "integrations": "Active Directory Query v2"
+        },
+        {
             "integrations": "Phishme Intelligence",
             "playbookID": "Test - PhishMe Intelligence",
             "timeout": 500
