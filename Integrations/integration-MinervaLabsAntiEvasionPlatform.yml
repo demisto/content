@@ -21,8 +21,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Checking this indicates that the Minerva Management Console uses insecure
-    communication
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
