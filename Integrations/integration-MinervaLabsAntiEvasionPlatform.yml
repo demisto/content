@@ -168,17 +168,20 @@ script:
         if response.status_code is not 200:
             return_error('Error while fetching {}. More information: {}, {}'.format(url_text, response.status_code, response.reason))
 
-        results = {
+        if not response.json():
+            return {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': 'No contents retrieved for {}'.format(url_text)
+            }
+
+        return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown(pascalToSpace(url_text), response.json(), headerTransform=pascalToSpace, removeNull=True)
+            'HumanReadable': tableToMarkdown(pascalToSpace(url_text), response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(url_text, response.json())
         }
-
-        if response.json():
-            results['EntryContext'] = create_entry_context(url_text, response.json())
-
-        return results
 
 
     @logger
@@ -218,7 +221,7 @@ script:
     def get_groups():
         get_groups_url = BASE_URL + '/api/groups'
         response = session.get(get_groups_url, params={'_limit': '1000'})
-        if response.status_code is not 200:
+        if response.status_code is not 200 or not response.json():
             return_error('Error while fetching groups. More information: {}, {}'.format(response.status_code, response.reason))
 
         results = {
@@ -227,10 +230,6 @@ script:
             'Contents': response.json(),
             'HumanReadable': tableToMarkdown('Available groups', t=response.json(), headerTransform=pascalToSpace, removeNull=True)
         }
-
-        if response.json():
-            results['EntryContext'] = create_entry_context(get_groups_url, response.json())
-
         demisto.results(results)
 
 
@@ -250,15 +249,14 @@ script:
             return
         if response.status_code is not 200:
             return_error('Error while adding exclusion. More information: {}, {}'.format(response.status_code, response.reason))
+
         results = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), headerTransform=pascalToSpace, removeNull=True)
+            'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(exclusions_url, response.json())
         }
-
-        if response.json():
-            results['EntryContext'] = create_entry_context(exclusions_url, response.json())
 
         demisto.results(results)
 
@@ -339,11 +337,9 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': response.json(),
-            'HumanReadable': tableToMarkdown('Search results for \'{}\''.format(search_url.split('/')[-1]), response.json(), headerTransform=pascalToSpace, removeNull=True)
+            'HumanReadable': tableToMarkdown('Search results for \'{}\''.format(search_url.split('/')[-1]), response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(search_url, response.json())
         }
-
-        if response.json():
-            results['EntryContext'] = create_entry_context(search_url, response.json())
 
         demisto.results(results)
 
