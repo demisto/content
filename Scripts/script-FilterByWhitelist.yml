@@ -13,7 +13,7 @@ script: |
   whitlisted = []
   hr = ""
   items = demisto.args().get("values", "")
-  ignore_case = demisto.args().get("ignorecase", "").lower() is "yes"
+  ignore_case = demisto.args().get("ignorecase", "").lower() == "yes"
 
   if not isinstance(items, list):
       items = items.split(",")
