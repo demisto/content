@@ -16,7 +16,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Minerva Management Console user and password
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
@@ -715,3 +715,6 @@ script:
     description: Moves all the events from Archive state to New event state
   isfetch: true
   runonce: false
+releaseNotes: "-"
+tests:
+  - Minerva Test playbook
