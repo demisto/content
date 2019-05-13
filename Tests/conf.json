@@ -1478,6 +1478,10 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Forescout",
+            "playbookID": "Forescout-Test"
         }
     ],
     "skipped_tests": {
