@@ -118,7 +118,7 @@ def word_tokenize(text):
 
         result.append(text_result)
     if len(result) == 1:
-        result = result[0]
+        result = result[0]  # type: ignore
     return {
         'Type': entryTypes['note'],
         'Contents': result,
