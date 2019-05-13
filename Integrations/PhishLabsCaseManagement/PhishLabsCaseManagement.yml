@@ -356,3 +356,6 @@ script:
   runonce: false
   script: '-'
   type: python
+releaseNotes: "-"
+tests:
+  - No test - nope
