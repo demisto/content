@@ -5,10 +5,9 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from typing import Dict, List, Tuple
-import xml.etree.ElementTree as ET
+from typing import Dict, List,  Tuple
+import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
-from distutils.util import strtobool
 from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse as parsedate
 
@@ -33,13 +32,18 @@ DEX_ACCOUNT = PARAMS.get('dex_account')
 BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
+DEX_HEADERS = {
+    'Content-Type': 'application/xml',
+    'Accept': 'application/xml'
+}
+DEX_AUTH = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
 AUTH = ''
 LAST_JWT_FETCH = None
 # Default JWT validity time set in Forescout Web API
 JWT_VALIDITY_TIME = timedelta(minutes=5)
 # For use of Entity Tags (ETags) to reduce bandwidth by eliminating transactions
 # when previously reported data hasn't changed.
-ETAGS = {}
+ETAGS: Dict[str, str] = {}
 # Host fields to be included in output of get_host_command
 HOSTFIELDS_TO_INCLUDE = {
     'os_classification': 'OSClassification',
@@ -89,7 +93,39 @@ HOSTFIELDS_TO_INCLUDE = {
 ''' HELPER FUNCTIONS '''
 
 
-def create_update_request_body(host_ip: str, update_type: str, properties: str, composite_property: str) -> str:
+def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_HOME.Element:
+    """
+    Create XML request body formatted to DEX expectations
+
+    Parameters
+    ----------
+    update_type : str
+        The type of update to execute.
+    lists : str
+        The list names and associated values to update the list with.
+
+    Returns
+    -------
+        XML Request Body Element
+    """
+    root = ET_PHONE_HOME.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
+    transaction = ET_PHONE_HOME.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
+    lists_xml = ET_PHONE_HOME.SubElement(transaction, 'LISTS')
+    list_val_pairs = lists.split('&')
+    for list_val_pair in list_val_pairs:
+        list_name, *values = list_val_pair.split('=')
+        list_xml = ET_PHONE_HOME.SubElement(lists_xml, 'LIST', attrib={'NAME': list_name})
+        if update_type != 'delete_all_list_values' and values:
+            list_of_vals = '='.join(values).split(':')
+            for val in list_of_vals:
+                val_xml = ET_PHONE_HOME.SubElement(list_xml, 'VALUE')
+                val_xml.text = val
+
+    return root
+
+
+def create_update_hostproperties_request_body(host_ip: str, update_type: str,
+                                              properties: str, composite_property: str) -> ET_PHONE_HOME.Element:
     """
     Create XML request body formatted to DEX expectations
 
@@ -104,71 +140,60 @@ def create_update_request_body(host_ip: str, update_type: str, properties: str, 
 
     Returns
     -------
-        XML Request Body as String
+        XML Request Body Element
     """
-    root = ET.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
-    # tree = ET.ElementTree(root)
-    transaction = ET.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
+    root = ET_PHONE_HOME.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
+    # tree = ET_PHONE_HOME.ElementTree(root)
+    transaction = ET_PHONE_HOME.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
     if update_type == 'update':
-        ET.SubElement(transaction, 'OPTIONS', attrib={'CREATE_NEW_HOST': 'false'})
+        ET_PHONE_HOME.SubElement(transaction, 'OPTIONS', attrib={'CREATE_NEW_HOST': 'false'})
 
-    if update_type in {'update', 'delete'}:
-        host_key = ET.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
-        props_xml = ET.SubElement(transaction, 'PROPERTIES')
-        prop_val_pairs = properties.split('&') if properties else []
-        for pair in prop_val_pairs:
-            prop, *value = pair.split('=')
-            prop_xml = ET.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
-            if update_type != 'delete' and value:
-                list_of_vals = value[0].split(':')
-                for val in list_of_vals:
-                    val_xml = ET.SubElement(prop_xml, 'VALUE')
-                    val_xml.text = val
-        if composite_property:
-            composite_property = json.loads(composite_property)
-            table_property_name = list(composite_property.keys())[0]
-            table_property_xml = ET.SubElement(props_xml, 'TABLE_PROPERTY', attrib={'NAME': table_property_name})
-            if update_type == 'update':
-                values = composite_property.get(table_property_name)
-                if isinstance(values, list):
+    # if update_type in {'update', 'delete'}:
+    ET_PHONE_HOME.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
+    props_xml = ET_PHONE_HOME.SubElement(transaction, 'PROPERTIES')
+    prop_val_pairs = properties.split('&') if properties else []
+    for pair in prop_val_pairs:
+        prop, *value = pair.split('=')
+        prop_xml = ET_PHONE_HOME.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
+        if update_type != 'delete' and value:
+            list_of_vals = value[0].split(':')
+            for val in list_of_vals:
+                val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
+                val_xml.text = val
+    if composite_property:
+        composite_property_dict = json.loads(composite_property)
+        table_property_name = list(composite_property_dict.keys())[0]
+        table_property_xml = ET_PHONE_HOME.SubElement(props_xml, 'TABLE_PROPERTY',
+                                                      attrib={'NAME': table_property_name})
+        if update_type == 'update':
+            values = composite_property_dict.get(table_property_name)
+            if isinstance(values, list):
 
-                    for row in values:
-                        row_xml = ET.SubElement(table_property_xml, 'ROW')
+                for row in values:
+                    row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
 
-                        for key, val in row.items():
-                            key_xml = ET.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+                    for key, val in row.items():
+                        key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
 
-                            if isinstance(val, list):
-                                for value in val:
-                                    value_xml = ET.SubElement(key_xml, 'CVALUE')
-                                    value_xml.text = value
-
-                            else:
-                                value_xml = ET.SubElement(key_xml, 'CVALUE')
-                                value_xml.text = val
-                else:
-                    row_xml = ET.SubElement(table_property_xml, 'ROW')
-                    for key, val in values.items():
-                        key_xml = ET.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
                         if isinstance(val, list):
                             for value in val:
-                                value_xml = ET.SubElement(key_xml, 'CVALUE')
+                                value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
                                 value_xml.text = value
-                        else:
-                            value_xml = ET.SubElement(key_xml, 'CVALUE')
-                            value_xml.text = val
 
-    elif update_type in {'add_list_values', 'delete_list_values', 'delete_all_list_values'}:
-        lists_xml = ET.SubElement(transaction, 'LISTS')
-        prop_val_pairs = properties.split('&')
-        for list_prop_pair in prop_val_pairs:
-            list_prop, *value = list_prop_pair.split('=')
-            list_xml = ET.SubElement(lists_xml, 'LIST', attrib={'NAME': list_prop})
-            if update_type != 'delete_all_list_values' and value:
-                list_of_vals = value[0].split(':')
-                for val in list_of_vals:
-                    val_xml = ET.SubElement(list_xml, 'VALUE')
-                    val_xml.text = val
+                        else:
+                            value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                            value_xml.text = val
+            else:
+                row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
+                for key, val in values.items():
+                    key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+                    if isinstance(val, list):
+                        for value in val:
+                            value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                            value_xml.text = value
+                    else:
+                        value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                        value_xml.text = val
 
     return root
 
@@ -228,7 +253,6 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
                     break
 
     return filtered_hostfields
-
 
 
 def dict_to_formatted_string(dictionary: Dict) -> str:
@@ -393,7 +417,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             except json.decoder.JSONDecodeError:
                 if res.status_code in {400, 401, 501}:
                     # Try to parse xml error response
-                    resp_xml = ET.fromstring(res.content)
+                    resp_xml = ET_PHONE_HOME.fromstring(res.content)
                     demisto.info(str(res.content))
                     codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
                     messages = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
@@ -436,8 +460,8 @@ def get_host(args):
     id_type = id_type.casefold()
     if len(ident) != 1 or id_type not in {'id', 'ip', 'mac'}:
         err_msg = 'The entered endpoint identifier should be prefaced by the identifier type,' \
-                ' (\'ip\', \'mac\', or \'id\') followed by \'=\' and the actual ' \
-                'identifier, e.g. \'ip=123.123.123.123\'.' #disable-secrets-detection
+            ' (\'ip\', \'mac\', or \'id\') followed by \'=\' and the actual ' \
+            'identifier, e.g. \'ip=123.123.123.123\'.'  # disable-secrets-detection
         raise ValueError(err_msg)
 
     if id_type == 'ip':
@@ -483,7 +507,7 @@ def get_host_command():
 
     included_fields_readable = {
         HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
-            for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+        for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
     }
     human_readable_content = deepcopy(content)
     human_readable_content['Field'] = included_fields_readable
@@ -506,7 +530,7 @@ def get_hosts():
     entity_tag = ETAGS.get('get_hosts')
     if entity_tag:
         headers['If-None-Match'] = entity_tag
-    params = {}
+    params: Dict = {}
     response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
     return response
 
@@ -538,7 +562,7 @@ def get_hostfields():
     entity_tag = ETAGS.get('get_hosts')
     if entity_tag:
         headers['If-None-Match'] = entity_tag
-    params = {}
+    params: Dict = {}
     response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
     return response
 
@@ -562,7 +586,7 @@ def get_hostfields_command():
 def get_policies():
     login()
     url_suffix = '/api/policies'
-    entity_tag = ETAGS.get('get_policies')
+    entity_tag = ETAGS.get('get_policies', '')
     headers = create_web_api_headers(entity_tag)
     response = http_request('GET', url_suffix, headers=headers, resp_type='response')
     return response
@@ -584,24 +608,35 @@ def get_policies_command():
     return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 
+def update_lists(args={}):
+    update_type = args.get('update_type', '')
+    lists = args.get('lists', '')
+    req_body = create_update_lists_request_body(update_type, lists)
+    data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
+    url_suffix = '/fsapi/niCore/Lists'
+    response = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='response')
+    return response
+
+
+def update_lists_command():
+    args = demisto.args()
+    response = update_lists(args)
+    resp_xml = ET_PHONE_HOME.fromstring(response.content)
+    code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
+    msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
+    result_msg = f'{code}: {msg}'
+    demisto.results(result_msg)
+
 
 def update_host_properties(args={}):
     host_ip = args.get('host_ip', '')
     update_type = args.get('update_type', '')
     properties = args.get('properties', '')
     composite_property = args.get('composite_property', '').replace('\'', '"')
-    req_body = create_update_request_body(host_ip, update_type, properties, composite_property)
-    data = ET.tostring(req_body, encoding='UTF-8', method='xml')
-    demisto.info(str(data))
-
-    url_suffix = '/fsapi/niCore/'
-    url_suffix += 'Hosts' if update_type in {'update', 'delete'} else 'Lists'
-    headers = {
-        'Content-Type': 'application/xml',
-        'Accept': 'application/xml'
-    }
-    auth = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
-    response = http_request('POST', url_suffix, headers=headers, auth=auth, data=data, resp_type='response')
+    req_body = create_update_hostproperties_request_body(host_ip, update_type, properties, composite_property)
+    data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
+    url_suffix = '/fsapi/niCore/Hosts'
+    response = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='response')
     return response
 
 
@@ -622,7 +657,7 @@ def update_host_properties_command():
             args_copy['properties'] = prop
             update_host_properties(args_copy)
 
-    resp_xml = ET.fromstring(response.content)
+    resp_xml = ET_PHONE_HOME.fromstring(response.content)
     code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
     msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
     result_msg = f'{code}: {msg}'
@@ -637,6 +672,7 @@ COMMANDS = {
     'forescout-get-hosts': get_hosts_command,
     'forescout-get-hostfields': get_hostfields_command,
     'forescout-get-policies': get_policies_command,
+    'forescout-update-lists': update_lists_command,
     'forescout-update-host-properties': update_host_properties_command
 }
 
