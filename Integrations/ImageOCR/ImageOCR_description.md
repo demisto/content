@@ -1,8 +1,8 @@
 ## Image OCR
-Extract text from images. Uses internally the excellent [**tesseract**](https://github.com/tesseract-ocr/tesseract/) open source OCR engine.
+Use the Image OCR integration to extract text from images. The integration utilizes the open source [**tesseract**](https://github.com/tesseract-ocr/tesseract/) OCR engine.
 
-The default language used for OCR is English. It is possible to configure additional languages by setting the configuration parameter **Languages**. Set this parameter with a comma separated list of language codes you would like to use for OCR extraction. To see all supported language codes you can run the following command:
+The default language used for OCR is English. To configure additional languages, in the **Languages** paramater specify a CSV list of language codes. For example, to set the integration for English and French, set this value: *eng,fra*. To see all supported language codes,run the following command:
 ```
 !image-ocr-list-languages
 ```
-For example: for setting the English and French languages, set the following value: *eng,fra*. 
+ 
