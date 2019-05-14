@@ -230,7 +230,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg
+        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg  # disable-secrets-detection
       username: {}
     separatecontext: false
     view: |-
