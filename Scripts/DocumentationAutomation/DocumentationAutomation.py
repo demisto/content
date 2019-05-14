@@ -21,12 +21,12 @@ def get_yaml_obj(entry_id):
 
 
 def get_command_examples(entry_id):
-    commands = []
-    errors = []
+    commands = []  # type: list
+    errors = []  # type: list
     if entry_id is None:
         return commands, errors
 
-    if re.match(r'[\d]+@[\d]+', entry_id) is not None:
+    if re.match(r'[\d]+@[0-9a-fA-F]+', entry_id) is not None:
         examples_path = demisto.getFilePath(entry_id)['path']
         with open(examples_path, 'r') as examples_file:
             commands = examples_file.read().split('\n')
@@ -49,7 +49,8 @@ def find_cmd_example(command_examples, cmd):
 
 
 def extract_command(cmd_example):
-    cmd, args = cmd_example, dict()
+    cmd = cmd_example
+    args = dict()  # type: dict
     if ' ' in cmd_example:
         cmd, args_str = cmd_example.split(' ', 1)
         args = dict([(k, v.strip('"`')) for k, v, _, _, _, _ in CMD_ARGS_REGEX.findall(args_str)])
@@ -163,7 +164,7 @@ def addErrorLines(scriptToScan, scriptType):
                     res += line[:bracketCloseIdx].lstrip() + '\n'
             else:
                 firstMatchingErrorKey = next((key for key in errorKeys if key in line), False)
-                afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)
+                afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)  # type: ignore
                 res += '* ' + line[afterErrorKeyIdx:] + '\n'
     return res
 
@@ -201,7 +202,7 @@ def generate_setup_section(yaml_data):
 
 # Commands
 def generate_commands_section(yaml_data, command_examples):
-    errors = []
+    errors = []  # type: list
     section = [
         '## Commands',
         '---',
@@ -235,7 +236,7 @@ def generate_single_command_section(index, cmd, command_examples):
     ]
 
     # Inputs
-    if len(cmd['arguments']) == 0:
+    if not cmd.get('arguments'):
         section.append('There are no input arguments for this command.')
     else:
         section.extend([
@@ -288,7 +289,7 @@ def main():
     yml_data = get_yaml_obj(args['entryID'])
     command_examples, errors = get_command_examples(args.get('commands'))
 
-    docs = []
+    docs = []  # type: list
     docs.extend(generate_section('Overview', args.get('overview')))
     docs.append('This integration was integrated and tested with version xx of {}'.format(yml_data['name']))
     # Playbooks
