@@ -64,3 +64,5 @@ dependson:
   - send-mail
 timeout: 0s
 deprecated: true
+tests:
+  - No test
