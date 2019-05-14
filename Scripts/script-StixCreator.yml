@@ -56,6 +56,8 @@ script: |-
           stix_type_and_value = "[user-account:account_login = '" + value + "']"
       elif "Domain".lower() in demisto_indicator_type.lower():
           stix_type_and_value = "[domain-name:value = '" + value + "']"
+      elif "Hostname".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[domain-name:value = '" + value + "']"
       elif "Registry Path Reputation".lower() in demisto_indicator_type.lower():
           stix_type_and_value = "[windows-registry-key:key = '{}']".format(value)
       elif "CVE CVSS Score".lower() in demisto_indicator_type.lower():
