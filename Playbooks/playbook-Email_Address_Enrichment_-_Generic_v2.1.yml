@@ -590,7 +590,6 @@ outputs:
 - contextPath: DBotScore
   description: The DBotScore object.
   type: unknown
-releaseNotes: "The DomainSquatting and Active Directory filters now work as expected.
 Improved playbook inputs. Replaced Active
 Directory with the Active Directory v2 Query integration. Improved output implementation and descriptions."
 tests:
