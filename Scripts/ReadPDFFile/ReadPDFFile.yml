@@ -1,48 +1,73 @@
+args:
+- default: true
+  description: War room entryID of the file to read.
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Password for the file, if encrypted
+  isArray: false
+  name: userPassword
+  required: false
+  secret: false
+- default: false
+  name: maxFileSize
+  description: Maximal file size to load, in bytes. Default is 1MB.
+  isArray: false
+  required: false
+  secret: false
+  deprecated: true
+comment: Load the contents and metadata of a PDF file into context.
 commonfields:
   id: ReadPDFFile_cpy
   version: -1
-name: ReadPDFFile_cpy
-fromversion: 4.1.0
-script: ''
-type: python
-tags:
-- Utility
-- ingestion
-comment: Load the contents and metadata of a PDF file into context.
 enabled: true
-args:
-- name: entryID
-  required: true
-  default: true
-  description: War room entryID of the file to read.
-- name: maxFileSize
-  description: Maximal file size to load, in bytes. Default is 1MB.
+name: ReadPDFFile_cpy
 outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
+  type: Unknown
 - contextPath: File.Text
   description: The PDF File extracted text
+  type: Unknown
 - contextPath: File.Producer
   description: The PDF File producer
+  type: Unknown
 - contextPath: File.Title
   description: The PDF File Title
+  type: Unknown
 - contextPath: File.xap
   description: The PDF File xap
+  type: Unknown
 - contextPath: File.Author
   description: The PDF File Author
+  type: Unknown
 - contextPath: File.dc
   description: The PDF File dc
+  type: Unknown
 - contextPath: File.xapmm
   description: The PDF File xapmm
+  type: Unknown
 - contextPath: File.ModDate
   description: The PDF File ModDate
+  type: Unknown
 - contextPath: File.CreationDate
   description: The PDF File CreationDate
+  type: Unknown
 - contextPath: File.Pages
   description: Number of pages in PDF file
-scripttarget: 0
-runonce: false
-dockerimage: demisto/pdfx
+  type: Unknown
+script: '-'
+system: false
+tags:
+- Utility
+- ingestion
+timeout: '0'
+type: python
+dockerimage: devtesting/readpdf:1.0.0.1557734470
 runas: DBotWeakRole
+runonce: false
 tests:
-  - Extract Indicators From File - test
+- Extract Indicators From File - test
+fromversion: 4.1.0

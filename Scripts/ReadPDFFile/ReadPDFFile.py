@@ -8,6 +8,7 @@ import errno
 import shutil
 
 ROOT_PATH = os.getcwd()
+USER_PASSWORD = demisto.getArg('userPassword')
 
 
 def mark_suspicious(suspicious_reason):
@@ -35,28 +36,31 @@ def run_shell_command(command, arg1, *args):
     return o.decode('utf8'), e.decode('utf8')
 
 
-def get_files_names_in_path(path, name_of_file):
-    # os.chdir(ROOT_PATH)
+def get_files_names_in_path(path, name_of_file, full_path=False):
+    os.chdir(ROOT_PATH)
     os.chdir(path)
     res = []
     for file_path in glob.glob(name_of_file):
+        if full_path:
+            file_path = f'{path}/{file_path}'
         res.append(file_path)
     return res
 
 
 def get_images_names_in_path(path):
-    # os.chdir(ROOT_PATH)
-    os.chdir(path)
     res = []
-    res.extend(get_files_names_in_path(path, "*.ppm"))
-    res.extend(get_files_names_in_path(path, "*.bpm"))
-    res.extend(get_files_names_in_path(path, "*.jpg"))
-    res.extend(get_files_names_in_path(path, "*.png"))
+    res.extend(get_files_names_in_path(path, "*.ppm", True))
+    res.extend(get_files_names_in_path(path, "*.bpm", True))
+    res.extend(get_files_names_in_path(path, "*.jpg", True))
+    res.extend(get_files_names_in_path(path, "*.png", True))
     return res
 
 
 def get_pdf_metadata(file_path):
-    metadata_txt, e = run_shell_command('pdfinfo', file_path)
+    if USER_PASSWORD:
+        metadata_txt, e = run_shell_command('pdfinfo', '-upw', USER_PASSWORD, file_path)
+    else:
+        metadata_txt, e = run_shell_command('pdfinfo', file_path)
     metadata = {}
     for line in metadata_txt.split('\n'):
         # split to [key, value...]
@@ -73,8 +77,13 @@ def get_pdf_metadata(file_path):
     return metadata
 
 
-def get_pdf_text(file_path):
-    run_shell_command('pdftotext', cpy_file_path, pdf_text_output_path)
+def get_pdf_text(file_path, pdf_text_output_path):
+    if USER_PASSWORD:
+        o, e = run_shell_command('pdftotext', '-upw', USER_PASSWORD, file_path, pdf_text_output_path)
+    else:
+        o, e = run_shell_command('pdftotext', file_path, pdf_text_output_path)
+    if e:
+        raise Exception(e)
     text = ''
     with open(pdf_text_output_path, 'rb') as f:
         for line in f:
@@ -83,8 +92,13 @@ def get_pdf_text(file_path):
 
 
 def get_pdf_htmls_content(pdf_path, output_folder):
-    pdf_html_output_path = f'{output_folder}/PDFHtml.html'
-    run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
+    pdf_html_output_path = f'{output_folder}/PDF.html'
+    if USER_PASSWORD:
+        o, e = run_shell_command('pdftohtml', '-upw', USER_PASSWORD, pdf_path, pdf_html_output_path)
+    else:
+        o, e = run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
+    if e:
+        raise Exception(e)
     html_file_names = get_files_names_in_path(output_folder, '*.html')
     html_content = ''
     for file_name in html_file_names:
@@ -123,12 +137,14 @@ try:
 
             # Get text:
             pdf_text_output_path = f'{output_folder}/PDFText.txt'
-            text = get_pdf_text(pdf_text_output_path)
+            text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
             # Get URLS + Images:
             pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
             urls = re.findall(urlRegex, pdf_html_content)
             urls = set(urls)
+            # this url is always generated with the pdf html file
+            urls.remove('http://www.w3.org/1999/xhtml')
             for url in urls:
                 URLs.append({"Data": url})
             images = get_images_names_in_path(output_folder)
@@ -158,14 +174,20 @@ try:
 
         md += "\n### Text"
         md += "\n{0}".format(text)
-
-        demisto.results({"Type" : entryTypes["note"],
-                         "ContentsFormat" : formats["markdown"],
-                         "Contents" : md,
-                         "HumanReadable": md,
-                         "EntryContext": {"File(val.EntryID == obj.EntryID)": pdf_file, "URL": URLs}
-                         })
-
+        results = [{"Type" : entryTypes["note"],
+                    "ContentsFormat" : formats["markdown"],
+                    "Contents" : md,
+                    "HumanReadable": md,
+                    "EntryContext": {"File(val.EntryID == obj.EntryID)": pdf_file, "URL": URLs}
+                    }]
+        if images:
+            results[0]['HumanReadable'] += '\n### Images'
+            os.chdir(ROOT_PATH)
+            for img in images:
+                file = file_result_existing_file(img)
+                # file['Type'] = entryTypes['image']
+                results.append(file)
+        demisto.results(results)
         all_pdf_data = ""
         if metadata:
             for k,v in metadata.items():
@@ -186,25 +208,6 @@ try:
             "Contents": indicators_hr,
             "HumanReadable": indicators_hr
         })
-        # if images:
-        #     demisto.results({
-        #         "Type": entryTypes["note"],
-        #         "ContentsFormat": formats["text"],
-        #         "Contents": '',
-        #         "HumanReadable": '### Images'
-        #     })
-        #     for img in images:
-        #         with open(img, 'rb') as f:
-        #             data = b''
-        #             for line in f:
-        #                 data += line
-        #             stored_img = fileResult(img, data)
-        #             demisto.results({
-        #                 'Type': entryTypes['image'],
-        #                 'ContentsFormat': formats['text'],
-        #                 'File': stored_img,
-        #                 'Contents': ''
-        #             })
     else:
         demisto.results({
             "Type" : entryTypes["error"],
