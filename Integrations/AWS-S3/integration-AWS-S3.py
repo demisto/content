@@ -320,9 +320,8 @@ def upload_file(args):
     path = get_file_path(args.get('entryID'))
 
     with open(path['path'], 'rb') as data:
-        response = client.upload_fileobj(data, args.get('bucket'), args.get('key'))
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('File {} was uploaded successfully to {}'.format(args.get('key'), args.get('bucket')))
+        client.upload_fileobj(data, args.get('bucket'), args.get('key'))
+        demisto.results('File {} was uploaded successfully to {}'.format(args.get('key'), args.get('bucket')))
 
 
 """COMMAND BLOCK"""
