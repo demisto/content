@@ -1226,7 +1226,8 @@
             "playbookID": "Autoextract - Test"
         },
         {
-            "playbookID": "FilterByList - Test"
+            "playbookID": "FilterByList - Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Kafka V2",
