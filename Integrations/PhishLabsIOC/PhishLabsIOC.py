@@ -65,15 +65,16 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
     if res.status_code < 200 or res.status_code > 300:
         status: int = res.status_code
         message: str = res.reason
-        details: str = ''
         try:
             error_json: dict = res.json()
-            message = error_json.get('statusMessage', '')
-            details = error_json.get('message', '')
+            message = error_json.get('error', '')
         except Exception:
             pass
-        error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}, reason: {}, details: {}'
-                              .format(status, message, details))
+        error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}'.format(status))
+        if status == 401:
+            error_message = 'Could not connect to PhishLabs IOC Feed: Wrong credentials'
+        if message:
+            error_message += ', reason:' + message
         if RAISE_EXCEPTION_ON_ERROR:
             raise Exception(error_message)
         else:
@@ -235,7 +236,7 @@ def get_global_feed_command():
     """
     Gets the global feed data using the provided arguments
     """
-    indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'ID', 'FalsePositive']
+    indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'FalsePositive']
     contents: list = []
     url_entries: list = []
     domain_entries: list = []
@@ -246,12 +247,11 @@ def get_global_feed_command():
     since: str = demisto.args().get('since')
     limit: str = demisto.args().get('limit')
     indicator: list = argToList(demisto.args().get('indicator_type', []))
-    offset: str = demisto.args().get('offset')
     remove_protocol: str = demisto.args().get('remove_protocol')
     remove_query: str = demisto.args().get('remove_query')
     false_positive: str = demisto.args().get('false_positive')
 
-    feed: dict = get_global_feed_request(since, limit, indicator, offset, remove_protocol, remove_query, false_positive)
+    feed: dict = get_global_feed_request(since, limit, indicator, remove_protocol, remove_query, false_positive)
 
     if feed and feed.get('data'):
         results: list = feed['data']
@@ -307,14 +307,13 @@ def get_global_feed_command():
     return_outputs(human_readable, context, feed)
 
 
-def get_global_feed_request(since: str = None, limit: str = None, indicator: list = None, offset: str = None,
+def get_global_feed_request(since: str = None, limit: str = None, indicator: list = None,
                             remove_protocol: str = None, remove_query: str = None, false_positive: str = None) -> dict:
     """
     Sends a request to PhishLabs global feed with the provided arguments
     :param since: Data updated within this duration of time from now
     :param limit: Limit the number of rows to return
     :param indicator: Indicator type filter
-    :param offset: Number of rows to skip
     :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
     :param remove_query: Removes the query string part from indicators when the rules can be applied.
     :param false_positive: Filter by indicators that are false positives.
@@ -327,8 +326,6 @@ def get_global_feed_request(since: str = None, limit: str = None, indicator: lis
         params['since'] = since
     if limit:
         params['limit'] = int(limit)
-    if offset:
-        params['offset'] = int(offset)
     if indicator:
         params['indicator'] = indicator
     if remove_protocol:
@@ -347,7 +344,7 @@ def get_incident_indicators_command():
     """
     Gets the indicators for the specified incident
     """
-    indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'ID', 'FalsePositive']
+    indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'FalsePositive']
     attribute_headers: list = ['Name', 'Type', 'Value', 'CreatedAt']
     url_entries: list = []
     domain_entries: list = []
@@ -360,11 +357,13 @@ def get_incident_indicators_command():
     since: str = demisto.args().get('since')
     limit: str = demisto.args().get('limit')
     indicator: list = argToList(demisto.args().get('indicator_type', []))
-    offset: str = demisto.args().get('offset')
     classification: str = demisto.args().get('indicators_classification', 'Suspicious')
+    remove_protocol: str = demisto.args().get('remove_protocol')
+    remove_query: str = demisto.args().get('remove_query')
+
     human_readable: str = 'Indicators for incident ' + incident_id + '\n'
 
-    feed: dict = get_feed_request(since, limit, indicator, offset)
+    feed: dict = get_feed_request(since, limit, indicator, remove_protocol, remove_query)
     if feed and feed.get('data'):
         results: list = list(filter(lambda f: f.get('referenceId', '') == incident_id, feed['data']))
         if results:
@@ -447,13 +446,15 @@ def get_incident_indicators_command():
     return_outputs(human_readable, context, feed)
 
 
-def get_feed_request(since: str = None, limit: str = None, indicator: list = None, offset: str = None) -> dict:
+def get_feed_request(since: str = None, limit: str = None, indicator: list = None,
+                     remove_protocol: str = None, remove_query: str = None,) -> dict:
     """
     Sends a request to PhishLabs user feed with the provided arguments
     :param since: Data updated within this duration of time from now
     :param limit: Limit the number of rows to return
     :param indicator: Indicator type filter
-    :param offset: Number of rows to skip
+    :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
+    :param remove_query: Removes the query string part from indicators when the rules can be applied.
     :return: User feed
     """
     path: str = 'feed'
@@ -463,10 +464,12 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
         params['since'] = since
     if limit:
         params['limit'] = int(limit)
-    if offset:
-        params['offset'] = int(offset)
     if indicator:
         params['indicator'] = indicator
+    if remove_query:
+        params['remove_query'] = remove_query
+    if remove_protocol:
+        params['remove_protocol'] = remove_protocol
 
     response = http_request('GET', path, params)
 
