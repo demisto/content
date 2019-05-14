@@ -299,7 +299,7 @@ script:
     outputs:
     - contextPath: Forescout.Policy.ID
       description: Forescout ID for the policy.
-      type: Number
+      type: String
     - contextPath: Forescout.Policy.Name
       description: Forescout name of the policy.
       type: String

@@ -296,7 +296,7 @@ def format_policies_data(data: Dict) -> List:
     policies = data.get('policies', [])
     for policy in policies:
         formatted_policy = {
-            'ID': policy.get('policyId'),
+            'ID': str(policy.get('policyId')),
             'Name': policy.get('name'),
             'Description': policy.get('description')
         }
@@ -304,7 +304,7 @@ def format_policies_data(data: Dict) -> List:
         rules = policy.get('rules', [])
         for rule in rules:
             formatted_rule = {
-                'ID': rule.get('ruleId'),
+                'ID': str(rule.get('ruleId')),
                 'Name': rule.get('name'),
                 'Description': rule.get('description')
             }
