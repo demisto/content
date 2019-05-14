@@ -794,17 +794,16 @@ tasks:
     scriptarguments:
       filter_ids:
         complex:
-          root: Gmail
+          root: GmailFilter
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Gmail.Filter.Mailbox
+                  simple: GmailFilter.Mailbox
                 iscontext: true
               right:
                 value:
                   simple: admin@demistodev.com
-          accessor: Filter
           transformers:
           - operator: getField
             args:
@@ -813,8 +812,8 @@ tasks:
                   simple: ID
       mailbox:
         complex:
-          root: Gmail
-          accessor: Filter.Mailbox
+          root: GmailFilter
+          accessor: Mailbox
       user-id:
         simple: me
     separatecontext: false
