@@ -590,7 +590,5 @@ outputs:
 - contextPath: DBotScore
   description: The DBotScore object.
   type: unknown
-Improved playbook inputs. Replaced Active
-Directory with the Active Directory v2 Query integration. Improved output implementation and descriptions."
 tests:
   - Email Address Enrichment - Generic v2.1 - Test
