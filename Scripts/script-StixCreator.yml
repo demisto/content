@@ -83,7 +83,9 @@ script: |-
                               modified=last_seen,
                               score=demisto_score,
                               allow_custom=True)
-          except:
+          except Exception as ex:
+              demisto.log("Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type,value))
+              demisto.log("Export failure excpetion: {}".format(ex))
               continue
           indicators.append(indicator)
       else:
@@ -92,7 +94,9 @@ script: |-
                                         description=label_as_type,
                                         labels=[label_as_type],
                                         external_references=[ExternalReference(source_name="cve",external_id=stix_type_and_value)])
-          except:
+          except Exception as ex:
+              demisto.log("Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type,value))
+              demisto.log("Export failure excpetion: {}".format(ex))
               continue
           indicators.append(vulnerability)
       counter+=1
