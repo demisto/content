@@ -170,9 +170,9 @@ def setup_dev_files(project_dir):
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
     open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
-    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
-                           'Scripts/script-CommonServerPython.yml', '-o',
-                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
+    if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
+        subprocess.check_call(['cp', CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py',
+                               project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
 
 
 def main():
