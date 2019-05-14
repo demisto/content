@@ -1281,7 +1281,7 @@
             "playbookID": "Account Enrichment - Generic v2 - Test",
             "integrations": "activedir"
         },
-       {
+        {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
@@ -1289,6 +1289,16 @@
                 "carbonblack",
                 "epo",
                 "activedir"
+            ]
+        },
+        {
+            "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
+            "integrations": [
+                "FalconHost",
+                "Cylance Protect v2",
+                "carbonblack-v2",
+                "epo",
+                "Active Directory Query v2"
             ]
         },
         {
