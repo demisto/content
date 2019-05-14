@@ -140,12 +140,10 @@ def create_update_hostproperties_request_body(host_ip: str, update_type: str,
         XML Request Body Element
     """
     root = ET_PHONE_HOME.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
-    # tree = ET_PHONE_HOME.ElementTree(root)
     transaction = ET_PHONE_HOME.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
     if update_type == 'update':
         ET_PHONE_HOME.SubElement(transaction, 'OPTIONS', attrib={'CREATE_NEW_HOST': 'false'})
 
-    # if update_type in {'update', 'delete'}:
     ET_PHONE_HOME.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
     props_xml = ET_PHONE_HOME.SubElement(transaction, 'PROPERTIES')
     prop_val_pairs = properties.split('&') if properties else []
@@ -225,7 +223,7 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
                 if host_field.get('type') in host_field_types:
                     filtered_hostfields.append(host_field)
             return filtered_hostfields
-    case_sensitive = args.get('case_sensitive', 'False')
+    case_sensitive = args.get('case_sensitive', 'false')
     case_sensitive = False if case_sensitive.casefold() == 'false' else True
     if not case_sensitive:
         search_term = search_term.casefold()
@@ -274,6 +272,15 @@ def dict_to_formatted_string(dictionary: Union[Dict, List]) -> str:
     -------
     str
         Clean string version of a dictionary
+
+    Examples
+    --------
+    >>> example_dict = {'again': 'FsoD',
+    ...                 'church': {'go': 'pArcB', 'month': '2009-08-11 16:42:51'},
+    ...                 'production': 5507,
+    ...                 'so': [9350, 'awzn', 7105, 'mMRxc']}
+    >>> dict_to_formatted_string(example_dict)
+    'again: FsoD, church: {go: pArcB, month: 2009-08-11 16:42:51}, production: 5507, so: [9350, awzn, 7105, mMRxc]'
     """
     return json.dumps(dictionary).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
 
@@ -412,14 +419,17 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
                 return_error(err_msg)
 
         resp_type = resp_type.casefold()
-        if resp_type == 'json':
-            return res.json()
-        elif resp_type == 'text':
-            return res.text
-        elif resp_type == 'content':
-            return res.content
-        else:
-            return res
+        try:
+            if resp_type == 'json':
+                return res.json()
+            elif resp_type == 'text':
+                return res.text
+            elif resp_type == 'content':
+                return res.content
+            else:
+                return res
+        except json.decoder.JSONDecodeError:
+            return_error(f'Failed to parse json object from response: {res.content}')
 
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
@@ -461,16 +471,15 @@ def get_host(args):
     url_suffix += '='.join(ident)
     params = {'fields': fields} if fields != '' else None
     headers = create_web_api_headers()
-    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
-    return response
+    response_data = http_request('GET', url_suffix, headers=headers, params=params, resp_type='json')
+    return response_data
 
 
 def get_host_command():
     args = demisto.args()
     identifier = args.get('identifier', '')
     requested_fields = argToList(args.get('fields', ''))
-    response = get_host(args)
-    data = response.json()
+    data = get_host(args)
     host = data.get('host', {})
     fields = host.get('fields', {})
 
@@ -516,38 +525,37 @@ def get_hosts(args={}):
         url_suffix += '?matchRuleId=' + rule_ids
     elif properties:
         url_suffix += '?' + properties
-    response = http_request('GET', url_suffix, headers=headers, params=params, resp_type='response')
-    return response
+    response_data = http_request('GET', url_suffix, headers=headers, params=params, resp_type='json')
+    return response_data
 
 
 def get_hosts_command():
     args = demisto.args()
-    response = get_hosts(args).json()
+    response_data = get_hosts(args)
     content = [
         {
             'ID': x.get('hostId'),
             'IP': x.get('ip'),
             'MAC': x.get('mac'),
             'EndpointURL': x.get('_links', {}).get('self', {}).get('href')
-        } for x in response.get('hosts', [])
+        } for x in response_data.get('hosts', [])
     ]
     context = {'Forescout.Host(val.ID && val.ID === obj.ID)': content}
     title = 'Active Endpoints'
     human_readable = tableToMarkdown(title, content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=context, raw_response=response)
+    return_outputs(readable_output=human_readable, outputs=context, raw_response=response_data)
 
 
 def get_hostfields():
     url_suffix = '/api/hostfields'
     headers = create_web_api_headers()
-    response = http_request('GET', url_suffix, headers=headers, resp_type='response')
-    return response
+    response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
+    return response_data
 
 
 def get_hostfields_command():
     args = demisto.args()
-    response = get_hostfields()
-    data = response.json()
+    data = get_hostfields()
     filtered_data = filter_hostfields_data(args, data)
     if not filtered_data:
         demisto.results('No hostfields matched the specified filters.')
@@ -562,13 +570,12 @@ def get_hostfields_command():
 def get_policies():
     url_suffix = '/api/policies'
     headers = create_web_api_headers()
-    response = http_request('GET', url_suffix, headers=headers, resp_type='response')
-    return response
+    response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
+    return response_data
 
 
 def get_policies_command():
-    response = get_policies()
-    data = response.json()
+    data = get_policies()
     content = format_policies_data(data)
     readable_content = deepcopy(content)
     for policy in readable_content:
@@ -588,16 +595,22 @@ def update_lists(args={}):
     req_body = create_update_lists_request_body(update_type, lists)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Lists'
-    response = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='response')
-    return response
+    response_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+    return response_content
 
 
 def update_lists_command():
     args = demisto.args()
-    response = update_lists(args)
-    resp_xml = ET_PHONE_HOME.fromstring(response.content)
-    code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
-    msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
+    response_content = update_lists(args)
+    resp_xml = ET_PHONE_HOME.fromstring(response_content)
+    try:
+        code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
+        msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
+    except IndexError:
+        err_msg = 'The API response did not conform to the expected format. It appears that Forescout changed their ' \
+                  'API breaking backwards compatibility. Contact your friendly neighborhood Demisto engineer for a ' \
+                  'possible fix.'
+        return_error(err_msg)
     result_msg = f'{code}: {msg}'
     demisto.results(result_msg)
 
@@ -610,15 +623,15 @@ def update_host_properties(args={}):
     req_body = create_update_hostproperties_request_body(host_ip, update_type, properties, composite_property)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Hosts'
-    response = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='response')
-    return response
+    response_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+    return response_content
 
 
 def update_host_properties_command():
     args = demisto.args()
     update_type = args.get('update_type', '')
     properties = args.get('properties', '')
-    response = update_host_properties(args)
+    response_content = update_host_properties(args)
 
     # Because the API has an error and says it deletes multiple things when it only deletes one
     # have to take care of it behind the curtains
@@ -631,9 +644,15 @@ def update_host_properties_command():
             args_copy['properties'] = prop
             update_host_properties(args_copy)
 
-    resp_xml = ET_PHONE_HOME.fromstring(response.content)
-    code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
-    msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
+    resp_xml = ET_PHONE_HOME.fromstring(response_content)
+    try:
+        code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
+        msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
+    except IndexError:
+        err_msg = 'The API response did not conform to the expected format. It appears that Forescout changed their ' \
+                  'API breaking backwards compatibility. Contact your friendly neighborhood Demisto engineer for a ' \
+                  'possible fix.'
+        return_error(err_msg)
     result_msg = f'{code}: {msg}'
     demisto.results(result_msg)
 

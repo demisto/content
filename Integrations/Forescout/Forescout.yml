@@ -3,10 +3,9 @@ commonfields:
   id: Forescout
   version: -1
 configuration:
-- defaultvalue: https://{host-ip-address}
-  display: |-
+- display: |-
     The network address of the Forescout Enterprise Manager or
-    standalone Appliance.
+    standalone Appliance, e.g. 'https://10.0.0.8'. #disable-secrets-detection
   name: url
   required: true
   type: 0
@@ -107,13 +106,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
-      defaultValue: 'False'
+      defaultValue: 'false'
       description: Determines whether to match the case of the entered search term.
       isArray: false
       name: case_sensitive
       predefined:
-      - 'False'
-      - 'True'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - auto: PREDEFINED
