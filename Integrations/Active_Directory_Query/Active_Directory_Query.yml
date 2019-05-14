@@ -390,4 +390,3 @@ script:
   dockerimage: demisto/ldap:1.0.0.75
 tests:
   - Active Directory Test
-releaseNotes: "-"
