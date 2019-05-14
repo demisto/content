@@ -52,7 +52,7 @@ TEMPLATE_1 = '''<!doctype html>
     width="100%" bgcolor="#f6f6f6">
     <tr>
       <td style="font-family:sans-serif; font-size:14px; vertical-align:top"
-        valign="top"> </td>
+        valign="top"></td>
       <td class="container"
         style="font-family:sans-serif; font-size:14px; vertical-align:top; display:block; max-width:580px;
               padding:10px; width:580px; margin:0 auto"
@@ -184,7 +184,7 @@ TEMPLATE_1 = '''<!doctype html>
         </div>
       </td>
       <td style="font-family:sans-serif; font-size:14px; vertical-align:top"
-        valign="top"> </td>
+        valign="top"></td>
     </tr>
   </table>
 </body>
@@ -257,11 +257,11 @@ TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
                                        color:#2D3445; display:none; font-size:1px; height:0; max-height:0; max-width:0;
                                        opacity:0; overflow:hidden; visibility:hidden"
                                  class="preheader" height="0">
-                                Available on GitHub and CodePen. Highly
+                                Available on GitHub and CodePen. Highly
                                 compatible. Designer friendly. More than
-                                50% of total email opens occurred on a mobile
-                                device — a mobile-friendly design is a must
-                                for email campaigns.</div>
+                                50% of total email opens occurred on a mobile
+                                device - a mobile-friendly design is a must
+                                for email campaigns.</div>
 
                             <!-- LOGO -->
                             <!-- Image text color should be opposite to background color. Set your url, image src,
@@ -427,8 +427,8 @@ TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
                                   padding-left:6.25%; padding-right:6.25%; padding-top:10px; width:87.5%"
                             class="footer" width="87.5%">
 
-                            This email template was sent to you becouse we want
-                            to make the world a better place. You could change
+                            This email template was sent to you becouse we want
+                            to make the world a better place. You could change
                             your <a
                                href="https://github.com/konsav/email-templates/"
                                target="_blank"

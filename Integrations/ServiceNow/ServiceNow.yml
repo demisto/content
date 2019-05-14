@@ -799,6 +799,12 @@ script:
       name: opened_at
       required: false
       secret: false
+    - default: false
+      description: Caller system ID
+      isArray: false
+      name: caller
+      required: false
+      secret: false
     deprecated: false
     description: Create new ServiceNow ticket
     execution: false
@@ -2233,6 +2239,12 @@ script:
       description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
       isArray: false
       name: state
+      required: false
+      secret: false
+    - default: false
+      description: Caller system ID
+      isArray: false
+      name: caller
       required: false
       secret: false
     deprecated: false
@@ -4130,5 +4142,6 @@ script:
   runonce: false
   script: '-'
   type: python
+releaseNotes: 'Added caller as optional field for ticket creation and update'
 tests:
 - No test - Hibernating instance
