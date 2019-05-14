@@ -1,0 +1,48 @@
+commonfields:
+  id: ReadPDFFile_cpy
+  version: -1
+name: ReadPDFFile_cpy
+fromversion: 4.1.0
+script: ''
+type: python
+tags:
+- Utility
+- ingestion
+comment: Load the contents and metadata of a PDF file into context.
+enabled: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: War room entryID of the file to read.
+- name: maxFileSize
+  description: Maximal file size to load, in bytes. Default is 1MB.
+outputs:
+- contextPath: URL.Data
+  description: List of URLs that were extracted from the PDF file
+- contextPath: File.Text
+  description: The PDF File extracted text
+- contextPath: File.Producer
+  description: The PDF File producer
+- contextPath: File.Title
+  description: The PDF File Title
+- contextPath: File.xap
+  description: The PDF File xap
+- contextPath: File.Author
+  description: The PDF File Author
+- contextPath: File.dc
+  description: The PDF File dc
+- contextPath: File.xapmm
+  description: The PDF File xapmm
+- contextPath: File.ModDate
+  description: The PDF File ModDate
+- contextPath: File.CreationDate
+  description: The PDF File CreationDate
+- contextPath: File.Pages
+  description: Number of pages in PDF file
+scripttarget: 0
+runonce: false
+dockerimage: demisto/pdfx
+runas: DBotWeakRole
+tests:
+  - Extract Indicators From File - test
