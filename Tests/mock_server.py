@@ -84,7 +84,7 @@ class AMIConnection:
         Returns:
             string. The IP of the AMI on the docker bridge.
         """
-        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
+        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).splitlines()
         lines_of_words = [y.strip().split(' ') for y in out]  # Split output to lines[words[]]
         address_lines = [x for x in lines_of_words if x[0] == 'inet']  # Take only lines with ipv4 addresses
         if len(address_lines) != 1:
