@@ -98,12 +98,12 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 19aa2568-18f1-4300-856a-3762949cd81d
+    taskid: f94bd468-3786-4107-8ce9-c5ad03ff61e2
     type: condition
     task:
-      id: 19aa2568-18f1-4300-856a-3762949cd81d
+      id: f94bd468-3786-4107-8ce9-c5ad03ff61e2
       version: -1
-      name: Verify that 'demisto_prop' was return ed by `forescout-get-hostfields`
+      name: Verify that 'demisto_prop' was returned by `forescout-get-hostfields`
       type: condition
       iscommand: false
       brand: ""
@@ -311,10 +311,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 68dec1a2-4768-44a9-8471-729f1aa572f4
+    taskid: 8dffbf51-1b4b-4d2f-87f4-10eef48ead98
     type: condition
     task:
-      id: 68dec1a2-4768-44a9-8471-729f1aa572f4
+      id: 8dffbf51-1b4b-4d2f-87f4-10eef48ead98
       version: -1
       name: Verify `forescout-get-host` returned expected field
       type: condition
@@ -332,7 +332,16 @@ tasks:
             value:
               complex:
                 root: Forescout
-                accessor: Host.Field.OSClassification
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Forescout.Host.IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.1.212
+                accessor: Host.Field.OSClassification.value
             iscontext: true
           right:
             value:
@@ -349,10 +358,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 2f11e633-edff-417c-8e62-715d1b3c214d
+    taskid: 798659f9-ed04-47ed-8ebe-0c2936bec608
     type: regular
     task:
-      id: 2f11e633-edff-417c-8e62-715d1b3c214d
+      id: 798659f9-ed04-47ed-8ebe-0c2936bec608
       version: -1
       name: forescout-update-host-properties
       description: Update a host's properties. Note that if a List Property or Composite
@@ -371,7 +380,7 @@ tasks:
       host_ip:
         simple: 192.168.1.212
       properties:
-        simple: fsapi_demisto_prop=billie jean is not my girl
+        simple: fsapi_DemistoTest=billie jean is not my girl
       update_type:
         simple: update
     separatecontext: false
@@ -387,10 +396,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 8d8459da-eeb1-482d-86b0-4896f4e396df
+    taskid: ffbdc120-ce96-419e-8656-5505d1c8a6d3
     type: regular
     task:
-      id: 8d8459da-eeb1-482d-86b0-4896f4e396df
+      id: ffbdc120-ce96-419e-8656-5505d1c8a6d3
       version: -1
       name: forescout-get-host Get Updated Host
       description: Retrieve specified host property values for an endpoint.
@@ -403,9 +412,9 @@ tasks:
       - "12"
     scriptarguments:
       fields:
-        simple: fsapi_demisto_prop
+        simple: fsapi_DemistoTest
       identifier:
-        simple: 192.168.1.212
+        simple: ip=192.168.1.212
     separatecontext: false
     view: |-
       {
@@ -419,10 +428,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: acc0b210-91fe-4ef0-86a2-e360ab8d3ece
+    taskid: 39eac08e-3b39-40ab-8ca6-28d60399fc76
     type: condition
     task:
-      id: acc0b210-91fe-4ef0-86a2-e360ab8d3ece
+      id: 39eac08e-3b39-40ab-8ca6-28d60399fc76
       version: -1
       name: Verify `forescout-update-host-properties` executed properly
       type: condition
@@ -440,13 +449,16 @@ tasks:
             value:
               complex:
                 root: Forescout
-                accessor: Host.Field
-                transformers:
-                - operator: getField
-                  args:
-                    field:
+                filters:
+                - - operator: isEqualString
+                    left:
                       value:
-                        simple: demisto_prop
+                        simple: Forescout.Host.IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.1.212
+                accessor: Host.Field.fsapi_DemistoTest.value
             iscontext: true
           right:
             value:
@@ -463,10 +475,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 0b27ebbd-fe6d-4b96-891b-772262b0f4a6
+    taskid: cb2f7d68-0787-4cb1-8ea7-5e1e43047e61
     type: regular
     task:
-      id: 0b27ebbd-fe6d-4b96-891b-772262b0f4a6
+      id: cb2f7d68-0787-4cb1-8ea7-5e1e43047e61
       version: -1
       name: forescout-update-host-properties Delete Previously Updated Property
       description: Update a host's properties. Note that if a List Property or Composite
@@ -485,7 +497,7 @@ tasks:
       host_ip:
         simple: 192.168.1.212
       properties:
-        simple: fsapi_demisto_prop
+        simple: fsapi_DemistoTest
       update_type:
         simple: delete
     separatecontext: false
@@ -501,10 +513,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 8c185b56-452d-4167-814d-ff30946be4e2
+    taskid: 569882fe-696f-4e58-8a38-9acfa2ba06f3
     type: regular
     task:
-      id: 8c185b56-452d-4167-814d-ff30946be4e2
+      id: 569882fe-696f-4e58-8a38-9acfa2ba06f3
       version: -1
       name: forescout-update-lists Add List Values
       description: Update Forescout lists.
@@ -533,10 +545,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 28290230-c5d6-4433-88b6-c8c60f23d9fa
+    taskid: 9a3d7c43-7993-4f9e-85cb-cc446ddf74b1
     type: regular
     task:
-      id: 28290230-c5d6-4433-88b6-c8c60f23d9fa
+      id: 9a3d7c43-7993-4f9e-85cb-cc446ddf74b1
       version: -1
       name: forescout-update-lists Delete List Values (Cleanup)
       description: Update Forescout lists.
