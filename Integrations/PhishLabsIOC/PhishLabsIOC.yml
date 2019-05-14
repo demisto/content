@@ -24,8 +24,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: 1d
-  display: Fetch for this time period, e.g., "1d", "1h", "10m"
+- defaultvalue: 1h
+  display: Fetch for this time period, e.g., "1d", "1h", "10m". The default is 1h.
   name: fetch_time
   required: false
   type: 0
@@ -58,12 +58,6 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
-      description: Number of rows to skip.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: Filter the data by indicator type.
@@ -77,6 +71,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: 'false'
       description: Removes the protocol part from indicators when the rule can be
         applied.
       isArray: false
@@ -88,6 +83,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: 'false'
       description: Removes the query string part from indicators when the rules can
         be applied.
       isArray: false
@@ -245,13 +241,6 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
-      defaultValue: '0'
-      description: Number of rows to skip.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: Filter the data by indicator type.
@@ -273,6 +262,30 @@ script:
       predefined:
       - Malicious
       - Suspicious
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Removes the protocol part from indicators when the rule can be
+        applied.
+      isArray: false
+      name: remove_protocol
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Removes the query string part from indicators when the rules can
+        be applied.
+      isArray: false
+      name: remove_query
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -426,6 +439,6 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: "-"
+releaseNotes: '-'
 tests:
-  - PhishLabsIOC TestPlaybook
+- PhishLabsIOC TestPlaybook
