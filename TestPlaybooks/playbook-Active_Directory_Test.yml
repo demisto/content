@@ -938,7 +938,6 @@ tasks:
           right:
             value:
               simple: jack@AssasinsForRent.com
-            iscontext: true
       - - operator: isEqualString
           left:
             value:
