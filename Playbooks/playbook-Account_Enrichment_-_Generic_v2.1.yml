@@ -225,6 +225,5 @@ outputs:
   description: The user's email address.
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
-Removed redundant outputs."
 tests:
   - Account Enrichment - Generic v2.1 - Test
