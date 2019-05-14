@@ -344,4 +344,3 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
   type: string
-releaseNotes: "Added support for Active Directory Query v2."
