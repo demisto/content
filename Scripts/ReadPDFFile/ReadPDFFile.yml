@@ -17,15 +17,14 @@ args:
   name: maxFileSize
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
-  description: If set to true will try to extract text from images.
+  deprecated: false
+- default: false
+  defaultValue: '20'
+  description: Maximum amount of imags to be extracted from the pdf file.
   isArray: false
-  name: extractTextFromImage
+  name: maxImages
   predefined:
-  - 'False'
-  - 'True'
+  - ''
   required: false
   secret: false
 comment: Load the contents and metadata of a PDF file into context.
@@ -81,3 +80,8 @@ runonce: false
 tests:
 - Extract Indicators From File - test
 fromversion: 4.1.0
+releaseNotes: "Reimplemented ReadPDFFile script. Deprecated maxFileSize (as it wasn't used) and added new functionality:
+               - Expanded metadata: metadata displays more information than before.
+               - Shows pdf images: The script extracts the images in the pdf, and displays them (as a fileEntry) in the war room.
+               - Added argument 'maxImages': max amount of images to extract from the pdf (default is 20).
+               - Added support for encrypted file - added new argument for encrypted files (userPassword)."

@@ -10,6 +10,7 @@ import shutil
 
 ROOT_PATH = os.getcwd()
 USER_PASSWORD = demisto.args().get('userPassword')
+MAX_IMAGES = int(demisto.args().get('maxImages', 20))
 
 
 def mark_suspicious(suspicious_reason, entry_id):
@@ -47,6 +48,12 @@ def get_files_names_in_path(path, name_of_file, full_path=False):
 
 
 def get_images_paths_in_path(path):
+    """
+    Gets images paths from path
+    :param path: path to look files in
+    :return: image path array
+    :rtype: ``list``
+    """
     res = []
     res.extend(get_files_names_in_path(path, "*.ppm", True))
     res.extend(get_files_names_in_path(path, "*.bpm", True))
@@ -137,9 +144,11 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
                 "EntryContext": {"File(val.EntryID == obj.EntryID)": pdf_file, "URL": urls}
                 }]
     if images:
-        results[0]['HumanReadable'] += '\n### Images'
+        results[0]['HumanReadable'] = f"{results[0]['HumanReadable']}\n### Images"
         os.chdir(ROOT_PATH)
-        for img in images:
+        for i, img in enumerate(images):
+            if i >= MAX_IMAGES:
+                break
             file = file_result_existing_file(img)
             results.append(file)
     all_pdf_data = ""
@@ -197,10 +206,10 @@ def main():
                 # Get URLS + Images:
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
-                urls = set(urls)
+                urls_set = set(urls)
                 # this url is always generated with the pdf html file, and that's why we remove it
-                urls.remove('http://www.w3.org/1999/xhtml')
-                for url in urls:
+                urls_set.remove('http://www.w3.org/1999/xhtml')
+                for url in urls_set:
                     urls_ec.append({"Data": url})
                 images = get_images_paths_in_path(output_folder)
 
