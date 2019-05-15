@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import subprocess
-import glob, os
+import glob
+import os
 import re
 import errno
 import shutil
@@ -111,6 +112,59 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     return html_content
 
 
+def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
+    # Add Text to file entity
+    pdf_file["Text"] = text
+
+    # Add Metadata to file entity
+    for k in metadata.keys():
+        pdf_file[k] = metadata[k]
+
+    md = "### Metadata\n"
+    md += "* " if metadata else ""
+    md += "\n* ".join(["{0}: {1}".format(k, v) for k, v in metadata.items()])
+
+    md += "\n### URLs\n"
+    md += "* " if urls else ""
+    md += "\n* ".join(["{0}".format(str(k["Data"])) for k in urls])
+
+    md += "\n### Text"
+    md += "\n{0}".format(text)
+    results = [{"Type": entryTypes["note"],
+                "ContentsFormat": formats["markdown"],
+                "Contents": md,
+                "HumanReadable": md,
+                "EntryContext": {"File(val.EntryID == obj.EntryID)": pdf_file, "URL": urls}
+                }]
+    if images:
+        results[0]['HumanReadable'] += '\n### Images'
+        os.chdir(ROOT_PATH)
+        for img in images:
+            file = file_result_existing_file(img)
+            results.append(file)
+    all_pdf_data = ""
+    if metadata:
+        for k, v in metadata.items():
+            all_pdf_data += str(v)
+    if text:
+        all_pdf_data += text
+    if urls:
+        for u in urls:
+            u = u["Data"] + " "
+            all_pdf_data += u
+
+    # Extract indicators (omitting context output, letting auto-extract work)
+    indicators_hr = demisto.executeCommand("extractIndicators", {
+        "text": all_pdf_data})[0][u"Contents"]
+    results.append({
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
+        "Contents": indicators_hr,
+        "HumanReadable": indicators_hr
+    })
+    return results
+
+
 def main():
     entry_id = demisto.args()["entryID"]
     # File entity
@@ -119,7 +173,7 @@ def main():
     }
 
     # URLS
-    URLs = []
+    urls_ec = []
     folders_to_remove = []
     try:
         path = demisto.getFilePath(entry_id).get('path')
@@ -135,22 +189,19 @@ def main():
                 folders_to_remove.append(output_folder)
                 cpy_file_path = f'{output_folder}/ReadPDF.pdf'
                 shutil.copy(path, cpy_file_path)
-
                 # Get metadata:
                 metadata = get_pdf_metadata(cpy_file_path)
-
                 # Get text:
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
-
                 # Get URLS + Images:
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
                 urls = set(urls)
-                # this url is always generated with the pdf html file
+                # this url is always generated with the pdf html file, and that's why we remove it
                 urls.remove('http://www.w3.org/1999/xhtml')
                 for url in urls:
-                    URLs.append({"Data": url})
+                    urls_ec.append({"Data": url})
                 images = get_images_paths_in_path(output_folder)
 
             except Exception as e:
@@ -160,61 +211,12 @@ def main():
                     "Contents": "Could not load pdf file in EntryID {0}\nError: {1}".format(entry_id, str(e))
                 })
                 raise e
-
-            # Add Text to file entity
-            pdf_file["Text"] = text
-
-            # Add Metadata to file entity
-            for k in metadata.keys():
-                pdf_file[k] = metadata[k]
-
-            md = "### Metadata\n"
-            md += "* " if metadata else ""
-            md += "\n* ".join(["{0}: {1}".format(k,v) for k,v in metadata.items()])
-
-            md += "\n### URLs\n"
-            md += "* " if URLs else ""
-            md += "\n* ".join(["{0}".format(str(k["Data"])) for k in URLs])
-
-            md += "\n### Text"
-            md += "\n{0}".format(text)
-            results = [{"Type" : entryTypes["note"],
-                        "ContentsFormat" : formats["markdown"],
-                        "Contents" : md,
-                        "HumanReadable": md,
-                        "EntryContext": {"File(val.EntryID == obj.EntryID)": pdf_file, "URL": URLs}
-                        }]
-            if images:
-                results[0]['HumanReadable'] += '\n### Images'
-                os.chdir(ROOT_PATH)
-                for img in images:
-                    file = file_result_existing_file(img)
-                    results.append(file)
-            demisto.results(results)
-            all_pdf_data = ""
-            if metadata:
-                for k,v in metadata.items():
-                    all_pdf_data += str(v)
-            if text:
-                all_pdf_data += text
-            if URLs:
-                for u in URLs:
-                    u = u["Data"] + " "
-                    all_pdf_data += u
-
-            # Extract indicators (omitting context output, letting auto-extract work)
-            indicators_hr = demisto.executeCommand("extractIndicators", {
-                "text": all_pdf_data})[0][u"Contents"]
-            demisto.results({
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": indicators_hr,
-                "HumanReadable": indicators_hr
-            })
+            readpdf_entry_object = build_readpdf_entry_object(pdf_file, metadata, text, urls_ec, images)
+            demisto.results(readpdf_entry_object)
         else:
             demisto.results({
-                "Type" : entryTypes["error"],
-                "ContentsFormat" : formats["text"],
+                "Type": entryTypes["error"],
+                "ContentsFormat": formats["text"],
                 "Contents": "EntryID {0} path could not be found".format(entry_id)
             })
     except Exception as e:
@@ -225,8 +227,6 @@ def main():
             shutil.rmtree(folder)
 
 
-if __name__ == "__builtin__":
-    main()
-
-if __name__ == '__main__':
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()

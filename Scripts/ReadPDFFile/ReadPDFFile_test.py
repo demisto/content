@@ -1,5 +1,3 @@
-# import ReadPDFFile
-from CommonServerPython import *
 import demistomock as demisto
 
 
@@ -13,7 +11,7 @@ def test_get_files_names_in_path():
 
 
 def test_get_images_paths_in_path():
-    from ReadPDFFile import  get_images_paths_in_path
+    from ReadPDFFile import get_images_paths_in_path
     img_file_paths = get_images_paths_in_path('test_data')
     assert 'test_data/test1.png' in img_file_paths
     assert 'test_data/test2.jpg' in img_file_paths
@@ -25,7 +23,8 @@ def test_get_pdf_metadata_with_encrypted(mocker):
     from ReadPDFFile import get_pdf_metadata
     metadata = get_pdf_metadata('test_data/encrypted.pdf')
     expected = {
-        'Title': 'sample1.pdf',
+        'Title': 'sample1.pdfkeyword'
+                 '',
         'Keywords': '',
         'Creator': 'Preview',
         'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
