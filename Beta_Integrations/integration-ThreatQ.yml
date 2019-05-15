@@ -84,7 +84,7 @@ script:
         tokens = json.loads(access_token_response.text)
         if int(access_token_response.status_code) >= 400:
             errors_string = get_errors_string_from_bad_request(access_token_response)
-            error_message = "Authentication failed, unable to retrieve an access token.\n Errors from server: {}".format(errors_string)
+            error_message = "Authentication failed, unable to retrieve an access token.\n Errors from server:\n {}".format(errors_string)
             return_error(error_message)
         token = tokens['access_token']
         return token
