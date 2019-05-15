@@ -7,6 +7,7 @@ import os
 import re
 import errno
 import shutil
+from typing import List
 
 ROOT_PATH = os.getcwd()
 USER_PASSWORD = demisto.args().get('userPassword')
