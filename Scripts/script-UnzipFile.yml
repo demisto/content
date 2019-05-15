@@ -128,7 +128,7 @@ args:
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
   deprecated: true
-  description: write 'yes' (or any other value) if zip file is last zip file in war-rpom
+  description: write 'yes' (or any other value) if zip file is last zip file in War Room
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
@@ -137,3 +137,4 @@ runonce: false
 dockerimage: demisto/7zip
 tests:
   - ZipFile-Test
+releaseNotes: Fix typo
