@@ -1310,6 +1310,10 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
+            "playbookID": "Remote File Management - Test",
+            "integrations": "remote_file_management"
+        },
+        {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
         },
