@@ -1472,6 +1472,9 @@
         },
         {
             "playbookID": "EWS test"
+        },{
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
         }
     ],
     "skipped_tests": {
