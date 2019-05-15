@@ -182,8 +182,8 @@ def get_access_token():
             err_response = dbot_response.json()
             server_msg = err_response.get('message')
             if not server_msg:
-                title = err_response.get("title")
-                detail = err_response.get("detail")
+                title = err_response.get('title')
+                detail = err_response.get('detail')
                 if title:
                     server_msg = f'{title}. {detail}'
             if server_msg:
