@@ -157,4 +157,4 @@ script:
     description: query ip in ipstack
   runonce: false
 tests:
-  - Ipstack Test
+  - Ipstack_Test
