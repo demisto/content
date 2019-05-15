@@ -30,14 +30,15 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 030cca6a-b30b-4485-896e-ab6a58319bc6
+    taskid: 776655d3-cc6a-45ef-837d-a7f8ebba5b65
     type: regular
     task:
-      id: 030cca6a-b30b-4485-896e-ab6a58319bc6
+      id: 776655d3-cc6a-45ef-837d-a7f8ebba5b65
       version: -1
-      name: rfm-update-internal-list
+      name: rfm-update
       description: Updates the instance context with the list name and items given
-      script: '|||rfm-update-internal-list'
+        and then Override external file path with internal list
+      script: '|||rfm-update'
       type: regular
       iscommand: true
       brand: ""
@@ -47,6 +48,8 @@ tasks:
     scriptarguments:
       add_or_remove:
         simple: add
+      file_path:
+        simple: test_playbook_list4.txt
       list_items:
         simple: '["koko.com","jojo.com"]'
       list_name:
@@ -134,10 +137,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: dab900a4-590e-426c-83cc-8003941d6aca
+    taskid: a8748816-0ffd-427e-82e6-14cd3c138e49
     type: regular
     task:
-      id: dab900a4-590e-426c-83cc-8003941d6aca
+      id: a8748816-0ffd-427e-82e6-14cd3c138e49
       version: -1
       name: rfm-print-internal-list
       description: Display internal list data in the war-room
@@ -147,7 +150,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       list_name:
         simple: test_playbook_list4
@@ -162,46 +165,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 9ed9de6f-c737-4936-853e-252dbf01c6c5
-    type: regular
-    task:
-      id: 9ed9de6f-c737-4936-853e-252dbf01c6c5
-      version: -1
-      name: rfm-update-external-list
-      description: Override external file with internal list data given
-      script: '|||rfm-update-external-file'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      file_path:
-        simple: /var/www/html/files/test_pb_list_edl4
-      list_name:
-        simple: test_playbook_list4
-      verbose:
-        simple: "true"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
-    taskid: e72abc0d-d4b2-4f6d-8993-0bffdf99cb5f
+    taskid: 2bbeab5b-a547-4846-8737-5f2b1cf3e2b5
     type: regular
     task:
-      id: e72abc0d-d4b2-4f6d-8993-0bffdf99cb5f
+      id: 2bbeab5b-a547-4846-8737-5f2b1cf3e2b5
       version: -1
       name: rfm-search-external-file
       description: Search a string on external file
@@ -214,7 +183,7 @@ tasks:
       - "7"
     scriptarguments:
       file_path:
-        simple: /var/www/html/files/test_pb_list_edl4
+        simple: test_playbook_list4.txt
       search_string:
         simple: jojo.com
     separatecontext: false
@@ -222,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -230,10 +199,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: e3d4da58-a84f-40b9-8170-94f17fe0bc94
+    taskid: 7e03334c-79cd-40ba-896c-d2dfe9f6df15
     type: regular
     task:
-      id: e3d4da58-a84f-40b9-8170-94f17fe0bc94
+      id: 7e03334c-79cd-40ba-896c-d2dfe9f6df15
       version: -1
       name: rfm-get-external-file
       description: Display external file content in the war-room
@@ -246,13 +215,13 @@ tasks:
       - "8"
     scriptarguments:
       file_path:
-        simple: /var/www/html/files/test_pb_list_edl4
+        simple: test_playbook_list4.txt
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -260,26 +229,22 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 0eeb7ed6-395c-48b6-89a6-6a31df06b973
-    type: regular
+    taskid: 33566099-3d30-445b-8e30-80d4d1b1f2df
+    type: title
     task:
-      id: 0eeb7ed6-395c-48b6-89a6-6a31df06b973
+      id: 33566099-3d30-445b-8e30-80d4d1b1f2df
       version: -1
-      name: rfm-delete-external-file
+      name: Done
       description: Delete external file
-      script: '|||rfm-delete-external-file'
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: ""
-    scriptarguments:
-      file_path:
-        simple: /var/www/html/files/test_pb_list_edl4
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
@@ -324,7 +289,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1640,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50

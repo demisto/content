@@ -1,23 +1,30 @@
 category: Utilities
 commonfields:
-  id: Remote File Management
+  id: remote_file_management
   version: -1
 configuration:
 - display: Hostname or IP of server
   name: hostname
   required: true
   type: 0
-- defaultvalue: '22'
-  display: SSH Port
+- display: server port
   name: port
-  required: true
+  required: false
   type: 0
-- display: SSH credentials to server
-  name: Username
+- display: SSH credentials to server (username and certificate)
+  name: Authentication
   required: true
   type: 9
-- display: Ciphers
-  name: ciphers
+- display: SSH extra params(e.g "-c ChaCha20")
+  name: ssh_extra_params
+  required: false
+  type: 0
+- display: SCP extra params(e.g "-c ChaCha20 -l 8000")
+  name: scp_extra_params
+  required: false
+  type: 0
+- display: Document root (e.g files/www/html/files)
+  name: document_root
   required: false
   type: 0
 description: This integration allows managing and editing files located on a remote
@@ -56,49 +63,27 @@ script:
     name: rfm-search-external-file
   - arguments:
     - default: false
-      description: Unique path to file
-      isArray: false
-      name: file_path
-      required: true
-      secret: false
-    - default: false
       description: List from instance context to override the external file
       isArray: false
       name: list_name
       required: true
       secret: false
+    - default: false
+      description: Unique path to file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
     - auto: PREDEFINED
       default: false
-      description: Print updated external file to the war-rrom. default is "false"
       defaultValue: 'false'
+      description: Print updated external file to the war-rrom. default is "false"
       isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
       required: false
-      secret: false
-    deprecated: false
-    description: Override external file with internal list data given
-    execution: true
-    name: rfm-update-external-file
-  - arguments:
-    - default: false
-      description: Unique path to file
-      isArray: false
-      name: file_path
-      required: true
-      secret: false
-    deprecated: false
-    description: Delete external file
-    execution: true
-    name: rfm-delete-external-file
-  - arguments:
-    - default: false
-      description: Name of list
-      isArray: false
-      name: list_name
-      required: true
       secret: false
     - default: false
       description: Items of list
@@ -117,21 +102,22 @@ script:
       - remove
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Print updated external file to the war-rrom. default is "false"
-      defaultValue: 'false'
+    deprecated: false
+    description: Updates the instance context with the list name and items given and
+      then Override external file path with internal list
+    execution: true
+    name: rfm-update
+  - arguments:
+    - default: false
+      description: Unique path to file
       isArray: false
-      name: verbose
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
+      name: file_path
+      required: true
       secret: false
     deprecated: false
-    description: Updates the instance context with the list name and items given
-    execution: false
-    name: rfm-update-internal-list
+    description: Delete external file
+    execution: true
+    name: rfm-delete-external-file
   - arguments:
     - default: false
       description: Name of list
@@ -169,12 +155,45 @@ script:
     description: Display instance context lists names
     execution: false
     name: rfm-list-internal-lists
-  dockerimage: rfm2:latest
+  - arguments:
+    - default: false
+      description: Name of list
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - default: false
+      description: String to search in the external file
+      isArray: false
+      name: search_string
+      required: true
+      secret: false
+    deprecated: false
+    description: Search a string on internal list
+    execution: false
+    name: rfm-search-internal-list
+  - arguments:
+    - default: false
+      description: Name of list
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique path to external file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Compares internal list and external file contets
+    execution: false
+    name: rfm-compare
+  dockerimage: devdemisto/openssh:1.0.0.255
   isfetch: false
   runonce: false
   script: '-'
   type: python
-image: ''
-releaseNotes: New integration to manage big lists stored in files hosted in web-servers. using SCP protocol to update the file, using demisto as SSOT.
 tests:
-  - Remote File Management - Test
+- No tests
+releaseNotes: Manage remote files hosted on a web-server using integration context
