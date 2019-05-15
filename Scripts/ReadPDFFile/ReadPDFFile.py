@@ -54,7 +54,7 @@ def get_images_paths_in_path(path):
     :return: image path array
     :rtype: ``list``
     """
-    res = []
+    res: List[str] = []
     res.extend(get_files_names_in_path(path, "*.ppm", True))
     res.extend(get_files_names_in_path(path, "*.bpm", True))
     res.extend(get_files_names_in_path(path, "*.jpg", True))
