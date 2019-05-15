@@ -200,91 +200,142 @@ script:
     name: forescout-get-host
     outputs:
     - contextPath: Forescout.Host.MatchedFingerprint
+      description: An endpoint may match multiple profiles. This property indicates
+        all the classification profiles that this endpoint matches.
       type: Unknown
     - contextPath: Forescout.Host.EngineSeenPacket
+      description: Indicates the host was seen by CounterACT
       type: String
     - contextPath: Forescout.Host.Online
+      description: Host is online
       type: String
     - contextPath: Forescout.Host.PrimClassification
+      description: Indicates the most specific endpoint function detected. If CounterACT
+        detects multiple endpoint functions, the property is resolved as the most
+        specific value that is common to all the detected functions. If there is no
+        common value, the property is resolved as 'Multiple Suggestions'.
       type: String
     - contextPath: Forescout.Host.MacVendorString
+      description: Indicates a value associated with the NIC Vendor
       type: String
     - contextPath: Forescout.Host.SambaOpenPort
+      description: NetBIOS ports are open
       type: String
     - contextPath: Forescout.Host.UserDefFp
+      description: Indicates the operating system of the endpoint, as determined by
+        classification tools.
       type: String
     - contextPath: Forescout.Host.Vendor
+      description: Network Device Vendor, Type and Model
       type: String
     - contextPath: Forescout.Host.AgentVersion
+      description: Indicates the SecureConnector version installed on a Windows host.
       type: String
     - contextPath: Forescout.Host.Fingerprint
+      description: Passive OS detection based on Syn packets
       type: String
     - contextPath: Forescout.Host.AccessIP
+      description: Indicates the last IP that was investigated for this host
       type: String
     - contextPath: Forescout.Host.VendorClassification
+      description: Indicates the most specific vendor and model detected.
       type: String
     - contextPath: Forescout.Host.ManageAgent
+      description: Indicates if the host is running SecureConnector.
       type: String
     - contextPath: Forescout.Host.Onsite
+      description: Indicates that a host is connected to the organizational network
       type: String
     - contextPath: Forescout.Host.MacPrefix32
-      type: Unknown
+      description: MAC prefix
+      type: String
     - contextPath: Forescout.Host.VaNetfunc
+      description: Reported CDP VoIP device description for VA netfunc
       type: String
     - contextPath: Forescout.Host.NmapDefFp7
+      description: Nmap-OS Fingerprint(Ver. 7.01)
       type: String
     - contextPath: Forescout.Host.NmapDefFp5
+      description: Nmap-OS Fingerprint(Ver. 5.3)
       type: String
     - contextPath: Forescout.Host.AgentInstallMode
+      description: Indicates the SecureConnector deployment mode installed on the
+        host.
       type: String
     - contextPath: Forescout.Host.NmapFp7
+      description: Nmap-OS Class(Ver. 7.01) (Obsolete)
       type: String
     - contextPath: Forescout.Host.ClType
+      description: Indicates how CounterACT determines the Network Function property
+        of the endpoint.
       type: String
     - contextPath: Forescout.Host.ClRule
+      description: Indicates the rule responsible for classifying the host
       type: String
     - contextPath: Forescout.Host.AgentVisibleMode
+      description: Indicates the SecureConnector visible mode installed on the host.
       type: String
     - contextPath: Forescout.Host.OSClassification
+      description: Operating System
       type: String
     - contextPath: Forescout.Host.ClassificationSourceOS
+      description: Indicates how the Operating System classification property was
+        determined for this endpoint.
       type: String
     - contextPath: Forescout.Host.LastNbtReportTime
+      description: Last time when NBT name was reported
       type: String
     - contextPath: Forescout.Host.Misc
+      description: Miscellaneous
       type: String
     - contextPath: Forescout.Host.ClassificationSourceFunc
+      description: Indicates how the Function classification property was determined
+        for this endpoint.
       type: String
     - contextPath: Forescout.Host.NmapNetfunc7
+      description: Nmap-Network Function(Ver. 7.01)
       type: String
     - contextPath: Forescout.Host.MACAddress
-      description: List of MAC addresses.
+      description: ARP Spoofing (Obsolete)
       type: Unknown
     - contextPath: Forescout.Host.OpenPort
+      description: Open Ports
       type: Unknown
     - contextPath: Forescout.Host.GstSignedInStat
+      description: Logged In Status
       type: String
     - contextPath: Forescout.Host.DhcpClass
+      description: The device class according to the DHCP fingerprint
       type: String
     - contextPath: Forescout.Host.ADM
+      description: Admission Events.
       type: String
     - contextPath: Forescout.Host.DhcpReqFingerprint
+      description: The host DHCP request fingerprint
       type: String
     - contextPath: Forescout.Host.DhcpOptFingerprint
+      description: The host DHCP options fingerprint
       type: String
     - contextPath: Forescout.Host.Ipv4ReportTime
+      description: Indicates the last time that IPv4 reported to the infrastructure
       type: String
     - contextPath: Forescout.Host.DhcpOS
+      description: The device OS according to the DHCP fingerprint
       type: String
     - contextPath: Forescout.Host.DhcpHostname
+      description: The device Host Name as advertised by DHCP
       type: String
     - contextPath: Forescout.Host.IP
+      description: Host IP address
       type: String
     - contextPath: Forescout.Host.MAC
+      description: Host MAC address
       type: String
     - contextPath: Forescout.Host.EndpointURL
+      description: Forescout endpoint URL for the host
       type: String
     - contextPath: Forescout.Host.ID
+      description: Forescout ID number for the host
       type: Number
   - deprecated: false
     description: |-
