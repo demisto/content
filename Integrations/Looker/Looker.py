@@ -180,7 +180,6 @@ def parse_filters_arg(filters_arg_value):
 def get_entries_for_search_results(contents, look_id=None, result_format='json'):
     entries = []
     if result_format == 'json':
-        # TODO: Figure out how to return >= 50 results (looker truncates them)
         camelized = camelize(contents, delim='_')
         formatted_contents = replace_in_keys(camelized)
         if not isinstance(formatted_contents, list):
