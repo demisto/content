@@ -12,18 +12,28 @@ args:
   required: false
   secret: false
 - default: false
-  name: maxFileSize
   description: Maximal file size to load, in bytes. Default is 1MB.
   isArray: false
+  name: maxFileSize
   required: false
   secret: false
-  deprecated: true
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: If set to true will try to extract text from images.
+  isArray: false
+  name: extractTextFromImage
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
 comment: Load the contents and metadata of a PDF file into context.
 commonfields:
-  id: ReadPDFFile_cpy
+  id: ReadPDFFile
   version: -1
 enabled: true
-name: ReadPDFFile_cpy
+name: ReadPDFFile
 outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
@@ -65,7 +75,7 @@ tags:
 - ingestion
 timeout: '0'
 type: python
-dockerimage: devtesting/readpdf:1.0.0.1557734470
+dockerimage: demisto/readpdf:1.0.0.299
 runas: DBotWeakRole
 runonce: false
 tests:
