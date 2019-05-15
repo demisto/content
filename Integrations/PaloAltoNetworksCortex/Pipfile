@@ -10,8 +10,10 @@ pytest-mock = "*"
 flake8 = "*"
 
 [packages]
-pancloud = "*"
 requests = "*"
+pancloud = "*"
+crypto = "*"
+cryptography = "*"
 
 [requires]
 python_version = "3.7"
