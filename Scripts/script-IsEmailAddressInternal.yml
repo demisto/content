@@ -11,13 +11,12 @@ script: |-
   include_subdomains = strtobool(demisto.getArg('include_subdomains') or 'no')
 
   results = []
-  ec = {}
 
   for email in emails:
       parts = email.split('@',1)
       network_type = "Unknown"
       if len(parts) > 1:
-          if parts[1].lower() in domains or include_subdomains and re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
+          if parts[1] in domains or include_subdomains and re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1]):
               network_type = "Internal"
           else:
               network_type = "External"
@@ -29,27 +28,17 @@ script: |-
               "NetworkType" : network_type
           }
 
-          ec['Account.Email(val.Address && val.Address == ' + email_dict["Address"] + ')'] = email_dict
-
-          results.append({
-              "NetworkType":email_dict["NetworkType"],
-              "Address":email_dict["Address"]
-          })
-
+          results.append(email_dict)
 
       else:
-          demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Email address ' + email + ' is not valid' })
+          return_error('Email address ' + email + ' is not valid')
 
+  ec = {
+      'Account.Email(val.Address==obj.Address)': results
+  }
 
-  md = tableToMarkdown("results:",results)
-
-  demisto.results({
-      "Type" : entryTypes["note"],
-      "ContentsFormat" : formats["json"],
-      "Contents" : '',
-      "HumanReadable" : md,
-      "EntryContext" : ec
-  })
+  human_readable = tableToMarkdown("results:",results,["Address","NetworkType"])
+  return_outputs(readable_output = human_readable, outputs = ec, raw_response = results)
 type: python
 tags:
 - email

@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 245,
           "y": 50
         }
       }
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 245,
           "y": 370
         }
       }
@@ -93,7 +93,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 245,
           "y": 545
         }
       }
@@ -115,8 +115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1965
+          "x": 592.5,
+          "y": 2660
         }
       }
     note: false
@@ -147,7 +147,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 245,
           "y": 195
         }
       }
@@ -162,7 +162,7 @@ tasks:
       id: efbe4b26-1e1c-493c-8879-87c4602c15ad
       version: -1
       name: IsEmailAddressInternal
-      description: Checks if the email address in part of the internal domains
+      description: Checks if the email address is part of the internal domains
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
@@ -180,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 245,
           "y": 720
         }
       }
@@ -216,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 875
+          "x": 245,
+          "y": 895
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       id: 68a387f2-534c-4b20-8524-7117ec0f5fda
       version: -1
       name: IsEmailAddressInternal
-      description: Checks if the email address in part of the internal domains
+      description: Checks if the email address is part of the internal domains
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
@@ -249,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1100
+          "x": 357.5,
+          "y": 1070
         }
       }
     note: false
@@ -276,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 1965
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -312,8 +312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1265
+          "x": 357.5,
+          "y": 1245
         }
       }
     note: false
@@ -327,7 +327,7 @@ tasks:
       id: 863f74df-3c57-4388-84dd-48108a32fcf1
       version: -1
       name: IsEmailAddressInternal subdomain
-      description: Checks if the email address in part of the internal domains
+      description: Checks if the email address is part of the internal domains
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
@@ -346,8 +346,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1650
+          "x": 470,
+          "y": 1595
         }
       }
     note: false
@@ -369,7 +369,7 @@ tasks:
       "no":
       - "10"
       "yes":
-      - "5"
+      - "17"
     scriptarguments:
       left:
         complex:
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1800
+          "x": 470,
+          "y": 1770
         }
       }
     note: false
@@ -414,8 +414,184 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1470
+          "x": 470,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: edef27d3-f488-49e6-8d74-5ce295b6519b
+    type: regular
+    task:
+      id: edef27d3-f488-49e6-8d74-5ce295b6519b
+      version: -1
+      name: IsEmailAddressesListInternal
+      description: Checks if the email address is part of the internal domains
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      email:
+        simple: anar@demisto.com,example3@example.com
+      include_subdomains: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b96dfc5d-7dc1-4b0e-8b32-ed7f679544ec
+    type: regular
+    task:
+      id: b96dfc5d-7dc1-4b0e-8b32-ed7f679544ec
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 73fe7978-bcb8-4ba3-8f6f-c1942ae10dc0
+    type: condition
+    task:
+      id: 73fe7978-bcb8-4ba3-8f6f-c1942ae10dc0
+      version: -1
+      name: ValidateVaules
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AccountEmail
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AccountEmail.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: anar@demisto.com
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NetworkType
+            iscontext: true
+          right:
+            value:
+              simple: Internal
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AccountEmail
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AccountEmail.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: example3@example.com
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NetworkType
+            iscontext: true
+          right:
+            value:
+              simple: External
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: e80cb3ba-389d-4ee2-8b86-2374051e8c83
+    type: regular
+    task:
+      id: e80cb3ba-389d-4ee2-8b86-2374051e8c83
+      version: -1
+      name: SetContext
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: AccountEmail
+      value:
+        simple: ${Account.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2295
         }
       }
     note: false
@@ -428,8 +604,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2010,
-        "width": 1290,
+        "height": 2690,
+        "width": 922.5,
         "x": 50,
         "y": 50
       }
@@ -437,3 +613,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "update script - check muliple email addresses"
