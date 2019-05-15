@@ -1226,7 +1226,8 @@
             "playbookID": "Autoextract - Test"
         },
         {
-            "playbookID": "FilterByList - Test"
+            "playbookID": "FilterByList - Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1277,7 +1278,7 @@
             "playbookID": "Account Enrichment - Generic v2 - Test",
             "integrations": "activedir"
         },
-       {
+        {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
@@ -1285,6 +1286,16 @@
                 "carbonblack",
                 "epo",
                 "activedir"
+            ]
+        },
+        {
+            "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
+            "integrations": [
+                "FalconHost",
+                "Cylance Protect v2",
+                "carbonblack-v2",
+                "epo",
+                "Active Directory Query v2"
             ]
         },
         {

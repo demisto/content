@@ -26,7 +26,7 @@ def get_command_examples(entry_id):
     if entry_id is None:
         return commands, errors
 
-    if re.match(r'[\d]+@[\d]+', entry_id) is not None:
+    if re.match(r'[\d]+@[0-9a-fA-F]+', entry_id) is not None:
         examples_path = demisto.getFilePath(entry_id)['path']
         with open(examples_path, 'r') as examples_file:
             commands = examples_file.read().split('\n')
@@ -236,7 +236,7 @@ def generate_single_command_section(index, cmd, command_examples):
     ]
 
     # Inputs
-    if len(cmd['arguments']) == 0:
+    if not cmd.get('arguments'):
         section.append('There are no input arguments for this command.')
     else:
         section.extend([
