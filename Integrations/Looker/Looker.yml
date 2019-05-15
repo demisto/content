@@ -39,6 +39,23 @@ configuration:
   name: first_fetch_time
   required: false
   type: 0
+- display: 'Fetch Incidents: Ingested date field'
+  name: ingested_date_field
+  required: false
+  type: 0
+- defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
+  display: 'Fetch Incidents: Ingested date field format'
+  name: ingested_format
+  required: false
+  type: 0
+- display: 'Fetch Incidents: Incident name field'
+  name: incident_name_field
+  required: false
+  type: 0
+- display: 'Fetch Incidents: Occurred date field'
+  name: occurred_date_field
+  required: false
+  type: 0
 description: Query an Explore, save queries as looks, run looks, fetch look results
   as incidents.
 display: Looker

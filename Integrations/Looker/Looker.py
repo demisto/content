@@ -11,7 +11,7 @@ import json
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-LAST_RUN_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+LAST_RUN_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_RESULTS_LIMIT = 50
 MAX_TIMEOUT_MINUTES = 5
 SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
@@ -31,6 +31,13 @@ HEADERS = {}
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def verify_fetch_incidents_params():
+    for fetch_param in ('fetch_incidents_look', 'ingested_date_field', 'timestamp_format', 'incident_name_field',
+                        'occurred_date_field', 'occurred_format'):
+        if not demisto.params().get(fetch_param).strip():
+            raise ValueError(f'Parameter {fetch_param} is required for fetch-incidents.')
 
 
 def verify_url(url):
@@ -233,9 +240,12 @@ def get_query_args():
     return args_dict
 
 
-def event_to_incident(event):
-    # TODO: Generic parsing of looker events (rows) to demisto incidents
-    pass
+def event_to_incident(event, name_field, occured_field):
+    return {
+        'Name': event[name_field],
+        'Occurred': event[occured_field],
+        'rawJSON': event
+    }
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -249,24 +259,27 @@ def test_module():
 
 
 def fetch_incidents_command():
-    look = demisto.params().get('fetch_incidents_look')
+    look = demisto.params()['fetch_incidents_look']
     limit = demisto.params().get('fetch_incidents_limit', '500')
-
-    if not look:
-        raise Exception("Integration configuration parameter 'Look name or ID to fetch incidents from' is empty.")
+    timestamp_field = demisto.params()['ingested_date_field']
+    timestamp_format = demisto.params()['timestamp_format']
+    incident_name_field = demisto.params()['incident_name_field']
+    occurred_field = demisto.params()['occurred_date_field']
 
     last_run = demisto.getLastRun()
-    if not last_run:
-        last_run = parse_date_range(demisto.params().get('first_fetch_time', '10 minutes'), LAST_RUN_TIME_FORMAT)
+    if last_run:
+        last_run = datetime.strptime(last_run, LAST_RUN_TIME_FORMAT)
+    else:
+        last_run = parse_date_range(demisto.params().get('first_fetch_time', '10 minutes'))
 
     incidents = []
     new_last_run = datetime.strftime(datetime.now(), LAST_RUN_TIME_FORMAT)
-    raw_response = run_look_request(look, 'json', limit, '')
+    raw_response = run_look_request(look, 'json', limit, '')  # TODO: Document look requirements
 
-    # TODO: filter results - compare created_date values to last_run, e.g.:
     for event in raw_response:
-        if datetime.strptime(event['date'], LAST_RUN_TIME_FORMAT) >= datetime.strptime(last_run, LAST_RUN_TIME_FORMAT):
-            incidents.append(event_to_incident(event))
+        if datetime.strptime(event[timestamp_field], timestamp_format) >= \
+                datetime.strptime(last_run, LAST_RUN_TIME_FORMAT):
+            incidents.append(event_to_incident(event, incident_name_field, occurred_field))
 
     demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
@@ -425,6 +438,7 @@ try:
         test_module()
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
+        verify_fetch_incidents_params()
         fetch_incidents_command()
     elif demisto.command() == 'looker-run-look':
         run_look_command()
