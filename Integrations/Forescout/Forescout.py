@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from typing import Dict, List, Tuple, Any, Union
+from typing import Dict, List, Tuple, Any, Union, cast
 import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
@@ -412,7 +412,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
         )
 
         # Handle error responses gracefully
-        if res.status_code not in {200, 201, 304}:
+        if res.status_code not in {200, 304}:
             err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
             try:
                 # Try to parse json error response
@@ -423,7 +423,6 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
                 if res.status_code in {400, 401, 501}:
                     # Try to parse xml error response
                     resp_xml = ET_PHONE_HOME.fromstring(res.content)
-                    demisto.info(str(res.content))
                     codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
                     messages = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
                     err_msg += ''.join([f'\n{code}: {msg}' for code, msg in zip(codes, messages)])
@@ -442,41 +441,23 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
         except json.decoder.JSONDecodeError:
             return_error(f'Failed to parse json object from response: {res.content}')
 
-    # except requests.exceptions.ConnectionError:
-    #     err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
-    #     return_error(err_msg)
-    # except requests.exceptions.ConnectionError as e:
-        # err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
-        # demisto.info(type(e))
-        # return_error(str(e))
-    except requests.exceptions.ConnectTimeout as e:
-        demisto.info(str(type(e)))
+    except requests.exceptions.ConnectTimeout:
         err_msg = 'Connection Timeout Error - check that the Server URL parameter is correct.'
         return_error(err_msg)
-    except requests.exceptions.SSLError as e:
-        demisto.info(str(type(e)))
+    except requests.exceptions.SSLError:
         err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
                   ' the integration configuration.'
         return_error(err_msg)
-    except requests.exceptions.ProxyError as e:
-        demisto.info(str(type(e)))
+    except requests.exceptions.ProxyError:
         err_msg = 'Proxy Error - try deselecting \'Use system proxy\' in the integration configuration.'
         return_error(err_msg)
-    # except (requests.packages.urllib3.exceptions.NewConnectionError, ConnectionRefusedError, ConnectionError) as e:
-    #     demisto.info(str(type(e)))
-    #     err_msg = 'Connection Error - connection refused, check that the Server URL parameter is correct.'
-    #     return_error(err_msg)
     except requests.exceptions.ConnectionError as e:
+        # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
-            demisto.info(str(type(e.__context__)))
-            demisto.info(str(e))
-            e = e.__context__
-        demisto.info(e.strerror)
-        demisto.info(str(e.__class__))
-        demisto.info(str(e.errno))
-        demisto.info(str(e.args))
+            e = cast(Any, e.__context__)
+
         error_class = str(e.__class__)
-        err_type = error_class[error_class.find('\'') + 1: error_class.rfind('\'')]
+        err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
         err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
                   f'ADVICE: Check that the Server URL parameter is correct.'
         return_error(err_msg)
@@ -487,7 +468,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
 
 def test_module():
     """
-    Performs basic get request that requires proper authentication
+    Performs API calls to Forescout Web API and DEX that require proper authentication
     """
     if WEB_API_USERNAME and WEB_API_PASSWORD:
         get_hosts({})
@@ -548,20 +529,6 @@ def get_host_command():
     included_fields_readable = {}
     for key, val in included_fields.items():
         included_fields_readable[key] = dict_to_formatted_string(val) if isinstance(val, (dict, list)) else val
-
-    # if requested_fields:
-    #     included_fields = {HOSTFIELDS_TO_INCLUDE.get(key, key): val for key, val in fields.items()}
-    #     included_fields_readable = {
-    #         HOSTFIELDS_TO_INCLUDE.get(key, key): dict_to_formatted_string(val) for key, val in fields.items()
-    #     }
-    # else:
-    #     included_fields = {
-    #         HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
-    #     }
-    #     included_fields_readable = {
-    #         HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
-    #         for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
-    #     }
 
     content = {
         'ID': host.get('id'),
@@ -802,11 +769,8 @@ def main():
         if cmd_name in COMMANDS.keys():
             COMMANDS[cmd_name]()
 
-    # Log exceptions
     except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
-        raise
+        return_error(str(e))
 
 
 # python2 uses __builtin__ python3 uses builtins
