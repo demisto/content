@@ -9,6 +9,7 @@ import collections
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+API_KEY = ""
 INSECURE = demisto.params().get('insecure')
 BASE_URL = 'https://api.github.com/'
 
