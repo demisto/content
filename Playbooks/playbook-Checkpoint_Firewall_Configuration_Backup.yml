@@ -264,3 +264,6 @@ view: |-
       }
     }
   }
+releaseNotes: "-"
+tests:
+  - No test - old playbook
