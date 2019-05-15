@@ -311,10 +311,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 8dffbf51-1b4b-4d2f-87f4-10eef48ead98
+    taskid: 47af4dc4-1071-4b78-8295-45fa5611faee
     type: condition
     task:
-      id: 8dffbf51-1b4b-4d2f-87f4-10eef48ead98
+      id: 47af4dc4-1071-4b78-8295-45fa5611faee
       version: -1
       name: Verify `forescout-get-host` returned expected field
       type: condition
@@ -341,7 +341,7 @@ tasks:
                     right:
                       value:
                         simple: 192.168.1.212
-                accessor: Host.Field.OSClassification.value
+                accessor: Host.OSClassification
             iscontext: true
           right:
             value:
@@ -428,10 +428,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 39eac08e-3b39-40ab-8ca6-28d60399fc76
+    taskid: 6dc5db0c-b230-4aef-8053-c084e81da7ae
     type: condition
     task:
-      id: 39eac08e-3b39-40ab-8ca6-28d60399fc76
+      id: 6dc5db0c-b230-4aef-8053-c084e81da7ae
       version: -1
       name: Verify `forescout-update-host-properties` executed properly
       type: condition
@@ -458,7 +458,7 @@ tasks:
                     right:
                       value:
                         simple: 192.168.1.212
-                accessor: Host.Field.fsapi_DemistoTest.value
+                accessor: Host.fsapi_DemistoTest
             iscontext: true
           right:
             value:
