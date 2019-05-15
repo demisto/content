@@ -17,37 +17,41 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 PARAMS = demisto.params()
+WEB_API_CREDENTIALS = PARAMS.get('web_api_credentials')
+WEB_API_CREDENTIALS = {} if not WEB_API_CREDENTIALS else WEB_API_CREDENTIALS
+WEB_API_USERNAME = WEB_API_CREDENTIALS.get('identifier', '')
+WEB_API_PASSWORD = WEB_API_CREDENTIALS.get('password', '')
 
-CREDENTIALS = PARAMS.get('credentials', {})
-USERNAME = CREDENTIALS.get('identifier', '')
-PASSWORD = CREDENTIALS.get('password', '')
-
-DEX_CREDENTIALS = PARAMS.get('dex_credentials', {})
-DEX_USERNAME = DEX_CREDENTIALS.get('identifier')
-DEX_USERNAME = DEX_USERNAME if DEX_USERNAME != '' else USERNAME
-DEX_PASSWORD = DEX_CREDENTIALS.get('password')
-DEX_PASSWORD = DEX_PASSWORD if DEX_PASSWORD != '' else PASSWORD
+DEX_CREDENTIALS = PARAMS.get('dex_credentials')
+DEX_CREDENTIALS = {} if not DEX_CREDENTIALS else DEX_CREDENTIALS
+DEX_USERNAME = DEX_CREDENTIALS.get('identifier', '')
+DEX_PASSWORD = DEX_CREDENTIALS.get('password', '')
 DEX_ACCOUNT = PARAMS.get('dex_account', '')
+DEX_ACCOUNT = '' if not DEX_ACCOUNT else DEX_ACCOUNT
+
 # Remove trailing slash to prevent wrong URL path to service
 BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
-DEX_HEADERS = {
-    'Content-Type': 'application/xml',
-    'Accept': 'application/xml'
-}
-DEX_AUTH = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
+
 WEB_AUTH = ''
 LAST_JWT_FETCH = None
 # Default JWT validity time set in Forescout Web API
 JWT_VALIDITY_TIME = timedelta(minutes=5)
+
+DEX_AUTH = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
+DEX_HEADERS = {
+    'Content-Type': 'application/xml',
+    'Accept': 'application/xml'
+}
+
 # Host fields to be included in output of get_host_command
 HOSTFIELDS_TO_INCLUDE = {
     'os_classification': 'OSClassification',
     'classification_source_os': 'ClassificationSourceOS',
     'onsite': 'Onsite',
     'access_ip': 'AccessIP',
-    'mac': 'MACAddress',
+    'macs': 'MACAddress',
     'openports': 'OpenPort',
     'mac_vendor_string': 'MacVendorString',
     'cl_type': 'ClType',
@@ -72,8 +76,6 @@ HOSTFIELDS_TO_INCLUDE = {
     'manage_agent': 'ManageAgent',
     'dhcp_req_fingerprint': 'DhcpReqFingerprint',
     'dhcp_opt_fingerprint': 'DhcpOptFingerprint',
-    '_times': 'Time',
-    'macs': 'MAC',
     'online': 'Online',
     'nmap_def_fp7': 'NmapDefFp7',
     'ipv4_report_time': 'Ipv4ReportTime',
@@ -108,15 +110,16 @@ def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_H
     root = ET_PHONE_HOME.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
     transaction = ET_PHONE_HOME.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
     lists_xml = ET_PHONE_HOME.SubElement(transaction, 'LISTS')
-    list_val_pairs = lists.split('&')
-    for list_val_pair in list_val_pairs:
-        list_name, *values = list_val_pair.split('=')
-        list_xml = ET_PHONE_HOME.SubElement(lists_xml, 'LIST', attrib={'NAME': list_name})
-        if update_type != 'delete_all_list_values' and values:
-            list_of_vals = '='.join(values).split(':')
-            for val in list_of_vals:
-                val_xml = ET_PHONE_HOME.SubElement(list_xml, 'VALUE')
-                val_xml.text = val
+    if lists:
+        list_val_pairs = lists.split('&')
+        for list_val_pair in list_val_pairs:
+            list_name, *values = list_val_pair.split('=')
+            list_xml = ET_PHONE_HOME.SubElement(lists_xml, 'LIST', attrib={'NAME': list_name})
+            if update_type != 'delete_all_list_values' and values:
+                list_of_vals = '='.join(values).split(':')
+                for val in list_of_vals:
+                    val_xml = ET_PHONE_HOME.SubElement(list_xml, 'VALUE')
+                    val_xml.text = val
 
     return root
 
@@ -330,7 +333,7 @@ def create_web_api_headers() -> Dict:
     dict
         Headers object for the Forescout Web API calls
     """
-    login()
+    web_api_login()
     headers = {
         'Authorization': WEB_AUTH,
         'Accept': 'application/hal+json'
@@ -338,21 +341,25 @@ def create_web_api_headers() -> Dict:
     return headers
 
 
-def login():
+def web_api_login():
+    """
+    Get a JWT (Javascript Web Token) for authorization in calls to Web API
+    """
     global LAST_JWT_FETCH
     global WEB_AUTH
     if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
         url_suffix = '/api/login'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        params = {'username': USERNAME, 'password': PASSWORD}
+        params = {'username': WEB_API_USERNAME, 'password': WEB_API_PASSWORD}
         response = http_request('POST', url_suffix, headers=headers, params=params, resp_type='response')
         fetch_time = parsedate(response.headers.get('Date', ''))
         WEB_AUTH = response.text
         LAST_JWT_FETCH = fetch_time
 
 
-def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None, auth: Tuple = None,
-                 params: Dict = None, data: Dict = None, files: Dict = None, resp_type: str = 'json') -> Any:
+def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
+                 auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
+                 timeout: float = 10, resp_type: str = 'json') -> Any:
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -377,6 +384,9 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
         Data to be sent in a 'POST' request.
     files : dict
         File data to be sent in a 'POST' request.
+    timeout : int
+        The amount of time in seconds a Request will wait for a client to
+        establish a connection to a remote machine.
     resp_type : str
         Determines what to return from having made the HTTP request. The default
         is 'json'. Other options are 'text', 'content' or 'response' if the user
@@ -397,7 +407,8 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             data=data,
             files=files,
             headers=headers,
-            auth=auth
+            auth=auth,
+            timeout=timeout
         )
 
         # Handle error responses gracefully
@@ -431,8 +442,43 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
         except json.decoder.JSONDecodeError:
             return_error(f'Failed to parse json object from response: {res.content}')
 
-    except requests.exceptions.ConnectionError:
-        err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+    # except requests.exceptions.ConnectionError:
+    #     err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+    #     return_error(err_msg)
+    # except requests.exceptions.ConnectionError as e:
+        # err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+        # demisto.info(type(e))
+        # return_error(str(e))
+    except requests.exceptions.ConnectTimeout as e:
+        demisto.info(str(type(e)))
+        err_msg = 'Connection Timeout Error - check that the Server URL parameter is correct.'
+        return_error(err_msg)
+    except requests.exceptions.SSLError as e:
+        demisto.info(str(type(e)))
+        err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                  ' the integration configuration.'
+        return_error(err_msg)
+    except requests.exceptions.ProxyError as e:
+        demisto.info(str(type(e)))
+        err_msg = 'Proxy Error - try deselecting \'Use system proxy\' in the integration configuration.'
+        return_error(err_msg)
+    # except (requests.packages.urllib3.exceptions.NewConnectionError, ConnectionRefusedError, ConnectionError) as e:
+    #     demisto.info(str(type(e)))
+    #     err_msg = 'Connection Error - connection refused, check that the Server URL parameter is correct.'
+    #     return_error(err_msg)
+    except requests.exceptions.ConnectionError as e:
+        while '__context__' in dir(e) and e.__context__:
+            demisto.info(str(type(e.__context__)))
+            demisto.info(str(e))
+            e = e.__context__
+        demisto.info(e.strerror)
+        demisto.info(str(e.__class__))
+        demisto.info(str(e.errno))
+        demisto.info(str(e.args))
+        error_class = str(e.__class__)
+        err_type = error_class[error_class.find('\'') + 1: error_class.rfind('\'')]
+        err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
+                  f'ADVICE: Check that the Server URL parameter is correct.'
         return_error(err_msg)
 
 
@@ -443,7 +489,10 @@ def test_module():
     """
     Performs basic get request that requires proper authentication
     """
-    login()
+    if WEB_API_USERNAME and WEB_API_PASSWORD:
+        get_hosts({})
+    if DEX_USERNAME and DEX_PASSWORD and DEX_ACCOUNT:
+        update_lists({'update_type': 'add_list_values'})
     demisto.results('ok')
 
 
@@ -483,30 +532,76 @@ def get_host_command():
     host = data.get('host', {})
     fields = host.get('fields', {})
 
-    if requested_fields and set(requested_fields).issubset(HOSTFIELDS_TO_INCLUDE.keys()) or not requested_fields:
-        included_fields = {
-            HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
-        }
-        included_fields_readable = {
-            HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
-            for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
-        }
-    elif requested_fields:
-        included_fields = fields
-        included_fields_readable = {key: dict_to_formatted_string(val) for key, val in fields.items()}
+    included_fields = {HOSTFIELDS_TO_INCLUDE.get(key, key): val for key, val in fields.items()}
+    for key, val in included_fields.items():
+        if isinstance(val, list):
+            new_val = [item.get('value') for item in val]
+            included_fields[key] = new_val
+        else:
+            included_fields[key] = val.get('value')
+
+    if not requested_fields:
+        for key in list(included_fields.keys()):
+            if key not in HOSTFIELDS_TO_INCLUDE.values():
+                del included_fields[key]
+
+    included_fields_readable = {}
+    for key, val in included_fields.items():
+        included_fields_readable[key] = dict_to_formatted_string(val) if isinstance(val, (dict, list)) else val
+
+    # if requested_fields:
+    #     included_fields = {HOSTFIELDS_TO_INCLUDE.get(key, key): val for key, val in fields.items()}
+    #     included_fields_readable = {
+    #         HOSTFIELDS_TO_INCLUDE.get(key, key): dict_to_formatted_string(val) for key, val in fields.items()
+    #     }
+    # else:
+    #     included_fields = {
+    #         HOSTFIELDS_TO_INCLUDE.get(key): val for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+    #     }
+    #     included_fields_readable = {
+    #         HOSTFIELDS_TO_INCLUDE.get(key): dict_to_formatted_string(val)
+    #         for key, val in fields.items() if key in HOSTFIELDS_TO_INCLUDE.keys()
+    #     }
 
     content = {
         'ID': host.get('id'),
         'IP': host.get('ip'),
         'MAC': host.get('mac'),
         'EndpointURL': data.get('_links', {}).get('self', {}).get('href'),
-        'Field': included_fields
+        **included_fields
     }
 
-    human_readable_content = deepcopy(content)
-    human_readable_content['Field'] = included_fields_readable
+    # Construct endpoint object from API data according to Demisto conventions
+    endpoint = {
+        'ID': host.get('id'),
+        'IPAddress': host.get('ip'),
+        'MACAddress': host.get('mac')
+    }
+    dhcp_server = fields.get('dhcp_server', {}).get('value')
+    if dhcp_server:
+        endpoint['DHCPServer'] = dhcp_server
+    hostname = fields.get('hostname', {}).get('value')
+    nbt_host = fields.get('nbthost', {}).get('value')
+    hostname = hostname if hostname else nbt_host
+    if hostname:
+        endpoint['Hostname'] = hostname
+    os = fields.get('os_classification', {}).get('value')
+    if os:
+        endpoint['OS'] = os
+    vendor_and_model = fields.get('vendor_classification', {}).get('value')
+    if vendor_and_model:
+        endpoint['Model'] = vendor_and_model
+    domain = fields.get('nbtdomain', {}).get('value')
+    if domain:
+        endpoint['Domain'] = domain
 
-    context = {'Forescout.Host(val.ID && val.ID === obj.ID)': content}
+    human_readable_content = deepcopy(content)
+    human_readable_content.update(included_fields_readable)
+
+    context = {
+        'Forescout.Host(val.ID && val.ID === obj.ID)': content,
+        'Endpoint(val.ID && val.ID === obj.ID)': endpoint
+    }
 
     title = 'Endpoint Details for {}'.format(identifier) if identifier else 'Endpoint Details'
     human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
@@ -516,7 +611,6 @@ def get_host_command():
 def get_hosts(args={}):
     url_suffix = '/api/hosts'
     headers = create_web_api_headers()
-    params: Dict = {}
     rule_ids = args.get('rule_ids')
     properties = args.get('properties')
     if rule_ids and properties:
@@ -525,7 +619,7 @@ def get_hosts(args={}):
         url_suffix += '?matchRuleId=' + rule_ids
     elif properties:
         url_suffix += '?' + properties
-    response_data = http_request('GET', url_suffix, headers=headers, params=params, resp_type='json')
+    response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
     return response_data
 
 
@@ -540,7 +634,17 @@ def get_hosts_command():
             'EndpointURL': x.get('_links', {}).get('self', {}).get('href')
         } for x in response_data.get('hosts', [])
     ]
-    context = {'Forescout.Host(val.ID && val.ID === obj.ID)': content}
+    endpoints = [
+        {
+            'ID': x.get('hostId'),
+            'IPAddress': x.get('ip'),
+            'MACAddress': x.get('mac')
+        } for x in response_data.get('hosts', [])
+    ]
+    context = {
+        'Forescout.Host(val.ID && val.ID === obj.ID)': content,
+        'Endpoint(val.ID && val.ID === obj.ID)': endpoints
+    }
     title = 'Active Endpoints'
     human_readable = tableToMarkdown(title, content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=context, raw_response=response_data)
@@ -595,8 +699,8 @@ def update_lists(args={}):
     req_body = create_update_lists_request_body(update_type, lists)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Lists'
-    response_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
-    return response_content
+    resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+    return resp_content
 
 
 def update_lists_command():
@@ -623,8 +727,8 @@ def update_host_properties(args={}):
     req_body = create_update_hostproperties_request_body(host_ip, update_type, properties, composite_property)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Hosts'
-    response_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
-    return response_content
+    resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+    return resp_content
 
 
 def update_host_properties_command():
@@ -636,13 +740,12 @@ def update_host_properties_command():
     # Because the API has an error and says it deletes multiple things when it only deletes one
     # have to take care of it behind the curtains
     if update_type == 'delete':
-        args_copy = deepcopy(args)
-        args_copy['properties'] = ''
-        update_host_properties(args_copy)  # Takes care of composite_property
-        args_copy['composite_property'] = ''
+        args['properties'] = ''
+        update_host_properties(args)  # Takes care of composite_property
+        args['composite_property'] = ''
         for prop in properties.split('&'):
-            args_copy['properties'] = prop
-            update_host_properties(args_copy)
+            args['properties'] = prop
+            update_host_properties(args)
 
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
     try:
@@ -676,11 +779,25 @@ def main():
     """Main execution block"""
 
     try:
+        ''' SETUP '''
+
+        if not ((WEB_API_USERNAME and WEB_API_PASSWORD) or (DEX_USERNAME and DEX_PASSWORD)):
+            err_msg = 'The username and password for at least one of the \'Data Exchange (DEX)\' or the \'Web API\' ' \
+                      'credentials are required though it is advisable to enter both in order for the integration to' \
+                      ' be fully functional.'
+            return_error(err_msg)
+
+        if (DEX_USERNAME and DEX_PASSWORD) and not DEX_ACCOUNT:
+            err_msg = 'When entering your \'Data Exchange (DEX)\' credentials, the \'Data Exchange (DEX) Account\' ' \
+                      'configuration parameter is also required. For information on the correct value to enter here' \
+                      ' - see Detailed Instructions (?).'
+            return_error(err_msg)
+
         # Remove proxy if not set to true in params
         handle_proxy()
 
         cmd_name = demisto.command()
-        LOG('Command being called is {}'.format((cmd_name)))
+        LOG('Command being called is {}'.format(cmd_name))
 
         if cmd_name in COMMANDS.keys():
             COMMANDS[cmd_name]()

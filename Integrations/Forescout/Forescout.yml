@@ -9,17 +9,17 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
-  required: true
+- display: Web API Username (see Detailed Instructions (?))
+  name: web_api_credentials
+  required: false
   type: 9
-- display: Data Exchange (DEX) Username
+- display: Data Exchange (DEX) Username (see Detailed Instructions (?))
   name: dex_credentials
   required: false
   type: 9
-- display: The Data Exchange (DEX) Account
+- display: Data Exchange (DEX) Account (see Detailed Instructions (?))
   name: dex_account
-  required: true
+  required: false
   type: 0
 - defaultvalue: 'true'
   display: Trust any certificate (not secure)
@@ -199,88 +199,85 @@ script:
     execution: false
     name: forescout-get-host
     outputs:
-    - contextPath: Forescout.Host.Field.MatchedFingerprint
+    - contextPath: Forescout.Host.MatchedFingerprint
       type: Unknown
-    - contextPath: Forescout.Host.Field.EngineSeenPacket
+    - contextPath: Forescout.Host.EngineSeenPacket
+      type: String
+    - contextPath: Forescout.Host.Online
+      type: String
+    - contextPath: Forescout.Host.PrimClassification
+      type: String
+    - contextPath: Forescout.Host.MacVendorString
+      type: String
+    - contextPath: Forescout.Host.SambaOpenPort
+      type: String
+    - contextPath: Forescout.Host.UserDefFp
+      type: String
+    - contextPath: Forescout.Host.Vendor
+      type: String
+    - contextPath: Forescout.Host.AgentVersion
+      type: String
+    - contextPath: Forescout.Host.Fingerprint
+      type: String
+    - contextPath: Forescout.Host.AccessIP
+      type: String
+    - contextPath: Forescout.Host.VendorClassification
+      type: String
+    - contextPath: Forescout.Host.ManageAgent
+      type: String
+    - contextPath: Forescout.Host.Onsite
+      type: String
+    - contextPath: Forescout.Host.MacPrefix32
       type: Unknown
-    - contextPath: Forescout.Host.Field.Online
+    - contextPath: Forescout.Host.VaNetfunc
+      type: String
+    - contextPath: Forescout.Host.NmapDefFp7
+      type: String
+    - contextPath: Forescout.Host.NmapDefFp5
+      type: String
+    - contextPath: Forescout.Host.AgentInstallMode
+      type: String
+    - contextPath: Forescout.Host.NmapFp7
+      type: String
+    - contextPath: Forescout.Host.ClType
+      type: String
+    - contextPath: Forescout.Host.ClRule
+      type: String
+    - contextPath: Forescout.Host.AgentVisibleMode
+      type: String
+    - contextPath: Forescout.Host.OSClassification
+      type: String
+    - contextPath: Forescout.Host.ClassificationSourceOS
+      type: String
+    - contextPath: Forescout.Host.LastNbtReportTime
+      type: String
+    - contextPath: Forescout.Host.Misc
+      type: String
+    - contextPath: Forescout.Host.ClassificationSourceFunc
+      type: String
+    - contextPath: Forescout.Host.NmapNetfunc7
+      type: String
+    - contextPath: Forescout.Host.MACAddress
+      description: List of MAC addresses.
       type: Unknown
-    - contextPath: Forescout.Host.Field.PrimClassification
+    - contextPath: Forescout.Host.OpenPort
       type: Unknown
-    - contextPath: Forescout.Host.Field.MacVendorString
-      type: Unknown
-    - contextPath: Forescout.Host.Field.SambaOpenPort
-      type: Unknown
-    - contextPath: Forescout.Host.Field.UserDefFp
-      type: Unknown
-    - contextPath: Forescout.Host.Field.Vendor
-      type: Unknown
-    - contextPath: Forescout.Host.Field.AgentVersion
-      type: Unknown
-    - contextPath: Forescout.Host.Field.Fingerprint
-      type: Unknown
-    - contextPath: Forescout.Host.Field.AccessIP
-      type: Unknown
-    - contextPath: Forescout.Host.Field.VendorClassification
-      type: Unknown
-    - contextPath: Forescout.Host.Field.ManageAgent
-      type: Unknown
-    - contextPath: Forescout.Host.Field.Onsite
-      type: Unknown
-    - contextPath: Forescout.Host.Field.MacPrefix32
-      type: Unknown
-    - contextPath: Forescout.Host.Field.VaNetfunc
-      type: Unknown
-    - contextPath: Forescout.Host.Field.NmapDefFp7
-      type: Unknown
-    - contextPath: Forescout.Host.Field.NmapDefFp5
-      type: Unknown
-    - contextPath: Forescout.Host.Field.AgentInstallMode
-      type: Unknown
-    - contextPath: Forescout.Host.Field.NmapFp7
-      type: Unknown
-    - contextPath: Forescout.Host.Field.Time
-      type: Unknown
-    - contextPath: Forescout.Host.Field.ClType
-      type: Unknown
-    - contextPath: Forescout.Host.Field.ClRule
-      type: Unknown
-    - contextPath: Forescout.Host.Field.AgentVisibleMode
-      type: Unknown
-    - contextPath: Forescout.Host.Field.OSClassification
-      type: Unknown
-    - contextPath: Forescout.Host.Field.ClassificationSourceOS
-      type: Unknown
-    - contextPath: Forescout.Host.Field.LastNbtReportTime
-      type: Unknown
-    - contextPath: Forescout.Host.Field.Misc
-      type: Unknown
-    - contextPath: Forescout.Host.Field.ClassificationSourceFunc
-      type: Unknown
-    - contextPath: Forescout.Host.Field.NmapNetfunc7
-      type: Unknown
-    - contextPath: Forescout.Host.Field.MACAddress
-      type: Unknown
-    - contextPath: Forescout.Host.Field.OpenPort
-      type: Unknown
-    - contextPath: Forescout.Host.Field.GstSignedInStat
-      type: Unknown
-    - contextPath: Forescout.Host.Field.DhcpClass
-      type: Unknown
-    - contextPath: Forescout.Host.Field.ADM
-      type: Unknown
-    - contextPath: Forescout.Host.Field.DhcpReqFingerprint
-      type: Unknown
-    - contextPath: Forescout.Host.Field.DhcpOptFingerprint
-      type: Unknown
-    - contextPath: Forescout.Host.Field.MAC
-      type: Unknown
-    - contextPath: Forescout.Host.Field.Ipv4ReportTime
-      type: Unknown
-    - contextPath: Forescout.Host.Field.DhcpOS
-      type: Unknown
-    - contextPath: Forescout.Host.Field.DhcpHostname
-      type: Unknown
+    - contextPath: Forescout.Host.GstSignedInStat
+      type: String
+    - contextPath: Forescout.Host.DhcpClass
+      type: String
+    - contextPath: Forescout.Host.ADM
+      type: String
+    - contextPath: Forescout.Host.DhcpReqFingerprint
+      type: String
+    - contextPath: Forescout.Host.DhcpOptFingerprint
+      type: String
+    - contextPath: Forescout.Host.Ipv4ReportTime
+      type: String
+    - contextPath: Forescout.Host.DhcpOS
+      type: String
+    - contextPath: Forescout.Host.DhcpHostname
+      type: String
     - contextPath: Forescout.Host.IP
       type: String
     - contextPath: Forescout.Host.MAC
@@ -384,7 +381,7 @@ script:
         ampersand (''&'').'
       isArray: false
       name: lists
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Update Forescout lists.
