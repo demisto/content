@@ -70,11 +70,22 @@ script:
 
     PROXY = load_proxy()
 
+    def get_errors_string_from_bad_request(bad_request_results):
+        errors_list = bad_request_results.json().get("errors", [])
+        errors_string = ""
+        for error in errors_list:
+            errors_string += "Error: {}\n".format(error)
+        return errors_string
+
     # ThreatQ auth based on OAuth 2.0 credential grand method
     def tq_access():
         data = {'grant_type': 'password','email': EMAIL, 'password': PASSWORD, 'client_id': CLIENT_ID}
         access_token_response = requests.post(API_TOKEN_URL, data=data, verify=False, allow_redirects=False)
         tokens = json.loads(access_token_response.text)
+        if int(access_token_response.status_code) >= 400:
+            errors_string = get_errors_string_from_bad_request(access_token_response)
+            error_message = "Authentication failed, unable to retrieve an access token.\n Errors from server: {}".format(errors_string)
+            return_error(error_message)
         token = tokens['access_token']
         return token
 
