@@ -1,4 +1,6 @@
 import demistomock as demisto
+import os
+import shutil
 
 
 def test_get_files_names_in_path():
@@ -21,10 +23,10 @@ def test_get_images_paths_in_path():
 def test_get_pdf_metadata_with_encrypted(mocker):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
     from ReadPDFFile import get_pdf_metadata
+    os.chmod('test_data/encrypted.pdf', 777)
     metadata = get_pdf_metadata('test_data/encrypted.pdf')
     expected = {
-        'Title': 'sample1.pdfkeyword'
-                 '',
+        'Title': 'sample1.pdf',
         'Keywords': '',
         'Creator': 'Preview',
         'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
@@ -45,10 +47,11 @@ def test_get_pdf_metadata_with_encrypted(mocker):
     assert expected == metadata
 
 
-def test_get_metadata_without_encrypted():
+def test_get_metadata_without_encrypte(tmp_path):
     from ReadPDFFile import get_pdf_metadata
     try:
-        get_pdf_metadata('test_data/encrypted.pdf')
+        shutil.copy('test_data/encrypted.pdf', tmp_path)
+        get_pdf_metadata(f'{tmp_path}/encrypted.pdf')
         raise Exception("Incorrect password exception should've been thrown")
     except TypeError as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
