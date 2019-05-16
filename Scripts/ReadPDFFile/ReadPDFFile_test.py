@@ -23,7 +23,7 @@ def test_get_images_paths_in_path():
 def test_get_pdf_metadata_with_encrypted(mocker):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
     from ReadPDFFile import get_pdf_metadata
-    assert os.listdir('test_data') == 'encrypted.pdf'
+    assert os.listdir(os.getcwd()) == 'encrypted.pdf'
     metadata = get_pdf_metadata('test_data/encrypted.pdf')
     expected = {
         'Title': 'sample1.pdf',
