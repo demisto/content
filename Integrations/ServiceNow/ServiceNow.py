@@ -1419,7 +1419,7 @@ def test_module():
     if 'result' not in res:
         return_error('ServiceNow error: ' + str(res))
     ticket = res['result']
-    if demisto.params().get('isFetch'):
+    if ticket and demisto.params().get('isFetch'):
         if isinstance(ticket, list):
             ticket = ticket[0]
         if TIMESTAMP_FIELD not in ticket:
