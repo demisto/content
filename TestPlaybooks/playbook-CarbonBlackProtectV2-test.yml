@@ -1592,10 +1592,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: c314c159-de78-47b2-88e0-fe6cfdd94906
+    taskid: 0c7a1d7b-9b65-42db-80e6-266b42f08e14
     type: condition
     task:
-      id: c314c159-de78-47b2-88e0-fe6cfdd94906
+      id: 0c7a1d7b-9b65-42db-80e6-266b42f08e14
       version: -1
       name: Verify context
       type: condition
@@ -1608,27 +1608,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CBP
-                accessor: FileUpload.UploadPath
-            iscontext: true
-          right:
-            value:
-              simple: C:\Program Files (x86)\Bit9\Parity Server\support\ServerInstall-2017522-194921.log
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CBP
-                accessor: FileUpload.PathName
-            iscontext: true
-          right:
-            value:
-              simple: c:\program files (x86)\bit9\parity agent
-      - - operator: isEqualNumber
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -1638,6 +1618,14 @@ tasks:
           right:
             value:
               simple: "67"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CBP.FileUpload.FileName
+            iscontext: true
+          right:
+            value:
+              simple: ServerLog-Auto-2018-06-30-010219.bt9
     view: |-
       {
         "position": {
