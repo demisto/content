@@ -94,10 +94,12 @@ def test_module():
         demisto.results('ok')
     else:
         demisto.results('an error occurred. reason: {}'.format(res.text))
-    try:
-        if demisto.command() == 'test-module':
-            test_module()
-        elif demisto.command() == 'ip':
-            do_ip_command()
-    except Exception, e:
-        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+
+
+try:
+    if demisto.command() == 'test-module':
+        test_module()
+    elif demisto.command() == 'ip':
+        do_ip_command()
+except Exception, e:
+    return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
