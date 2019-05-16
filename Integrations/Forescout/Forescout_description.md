@@ -1,8 +1,11 @@
 # Instructions
 
 ## Forescout Module Requirements
-In order for this integration to operate there are requirements that must be setup from within the Forescout console.
-In the Forescout console click on *Tools* in the navigation bar at the top of the window and click *Options*. In the resulting pop-up window, in the categories section on the left, click on *Modules*. In the main area of the pop-up window select the *Open Integration Module* dropdown. Make sure that it and its submodules *Data Exchange (DEX)* and *Web API* are all installed and enabled. If they aren't, install them and enable them.
+Before you can use this integration in Demisto, you need to enable certain modules in your Forescout environment.
+1. In the Forescout console, from the navigation bar select *Tools > Options*.
+2. In the dialog that appears, from the categories section on the left, click *Modules*. 
+3. In the main area of the dialog, from the drop-down menu, select *Open Integration Module*. 
+Make sure that the integration module and the following submodules are installed and enabled: *Data Exchange (DEX)* and *Web API* are all installed and enabled. If they aren't, install and enable them.
 
 ## Configuration Parameters
 
