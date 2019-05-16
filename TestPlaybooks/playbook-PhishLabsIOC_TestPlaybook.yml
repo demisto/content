@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 99edd808-d233-4d28-8bba-72da92937f84
+    taskid: c228a70e-49c7-4fb4-8030-a34ccbf4658f
     type: start
     task:
-      id: 99edd808-d233-4d28-8bba-72da92937f84
+      id: c228a70e-49c7-4fb4-8030-a34ccbf4658f
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: e686029b-188f-4350-816c-208977a8ea9e
+    taskid: 79cf305b-123e-4fb4-8ead-6a8928a9430e
     type: regular
     task:
-      id: e686029b-188f-4350-816c-208977a8ea9e
+      id: 79cf305b-123e-4fb4-8ead-6a8928a9430e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -63,17 +63,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 072a4073-a3a2-4b11-88bb-983deea06fe9
+    taskid: 5d25254b-150f-4285-8d61-7e3517af1e31
     type: regular
     task:
-      id: 072a4073-a3a2-4b11-88bb-983deea06fe9
+      id: 5d25254b-150f-4285-8d61-7e3517af1e31
       version: -1
       name: Global Feed - URL
       description: Gets the global IOC feed from PhishLabs
-      script: PhishLabsIOC|||phishlabs-global-feed
+      script: PhishLabs IOC|||phishlabs-global-feed
       type: regular
       iscommand: true
-      brand: PhishLabsIOC
+      brand: PhishLabs IOC
     nexttasks:
       '#none#':
       - "3"
@@ -101,10 +101,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 718393b6-53d3-4e48-8aae-5e61f9531022
+    taskid: d9183c47-b44a-45ef-82f4-2a8c04511ee6
     type: condition
     task:
-      id: 718393b6-53d3-4e48-8aae-5e61f9531022
+      id: d9183c47-b44a-45ef-82f4-2a8c04511ee6
       version: -1
       name: Verify URL
       type: condition
@@ -139,17 +139,17 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 545be7d3-7bf5-4752-8ea8-ebcfb6bee553
+    taskid: 83668330-28c6-4d92-8d4e-4193afda7ea3
     type: regular
     task:
-      id: 545be7d3-7bf5-4752-8ea8-ebcfb6bee553
+      id: 83668330-28c6-4d92-8d4e-4193afda7ea3
       version: -1
       name: Global Feed - Domain
       description: Gets the global IOC feed from PhishLabs
-      script: PhishLabsIOC|||phishlabs-global-feed
+      script: PhishLabs IOC|||phishlabs-global-feed
       type: regular
       iscommand: true
-      brand: PhishLabsIOC
+      brand: PhishLabs IOC
     nexttasks:
       '#none#':
       - "5"
@@ -177,10 +177,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: f390ee60-1028-4dba-884e-7ca5f5421572
+    taskid: 0780ff29-df34-4929-84fa-e61a1228a9ad
     type: condition
     task:
-      id: f390ee60-1028-4dba-884e-7ca5f5421572
+      id: 0780ff29-df34-4929-84fa-e61a1228a9ad
       version: -1
       name: Verify Domain
       type: condition
@@ -215,17 +215,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: a4be7a79-72b2-451b-8dc0-d9e74e142661
+    taskid: 67ef59fd-0605-4da3-8be8-8931afd0f61e
     type: regular
     task:
-      id: a4be7a79-72b2-451b-8dc0-d9e74e142661
+      id: 67ef59fd-0605-4da3-8be8-8931afd0f61e
       version: -1
       name: Global Feed - Attachment
       description: Gets the global IOC feed from PhishLabs
-      script: PhishLabsIOC|||phishlabs-global-feed
+      script: PhishLabs IOC|||phishlabs-global-feed
       type: regular
       iscommand: true
-      brand: PhishLabsIOC
+      brand: PhishLabs IOC
     nexttasks:
       '#none#':
       - "7"
@@ -253,10 +253,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: f07496b1-756d-4792-873d-26412185e5f1
+    taskid: f36e5da2-cb32-40fb-86a7-8da357f576a3
     type: condition
     task:
-      id: f07496b1-756d-4792-873d-26412185e5f1
+      id: f36e5da2-cb32-40fb-86a7-8da357f576a3
       version: -1
       name: Verify File
       type: condition
@@ -291,10 +291,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: de22de97-a0b0-4481-88dd-7ff2bfe98d85
+    taskid: 62a354b8-b52a-4606-85fa-9584902a3758
     type: regular
     task:
-      id: de22de97-a0b0-4481-88dd-7ff2bfe98d85
+      id: 62a354b8-b52a-4606-85fa-9584902a3758
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -325,27 +325,30 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 25bdbf84-1c7e-4193-8dbd-003e85ee10f6
+    taskid: 48d2cc22-1bb5-49ce-8714-082e4ee2e19c
     type: regular
     task:
-      id: 25bdbf84-1c7e-4193-8dbd-003e85ee10f6
+      id: 48d2cc22-1bb5-49ce-8714-082e4ee2e19c
       version: -1
       name: Get incident indicators
       description: Gets indicators from a speicifed PhishLabs incident.
-      script: PhishLabsIOC|||phishlabs-get-incident-indicators
+      script: PhishLabs IOC|||phishlabs-get-incident-indicators
       type: regular
       iscommand: true
-      brand: PhishLabsIOC
+      brand: PhishLabs IOC
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
-      id:
+      id: {}
+      incident_id:
         simple: INC0015516
       indicator_type: {}
       indicators_classification: {}
       limit: {}
       offset: {}
+      remove_protocol: {}
+      remove_query: {}
       since:
         simple: 365d
     separatecontext: false
@@ -361,10 +364,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 8b84b28b-3c8e-4067-8c31-cfd112f303e4
+    taskid: 488b5c59-2dfe-4b8e-8f9a-d818695939be
     type: condition
     task:
-      id: 8b84b28b-3c8e-4067-8c31-cfd112f303e4
+      id: 488b5c59-2dfe-4b8e-8f9a-d818695939be
       version: -1
       name: Verify URL
       type: condition
@@ -399,10 +402,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: c42454cd-fe68-49d2-8114-1f5abbc536c0
+    taskid: 2657556a-64b1-4d19-8862-dcd489cb6284
     type: condition
     task:
-      id: c42454cd-fe68-49d2-8114-1f5abbc536c0
+      id: 2657556a-64b1-4d19-8862-dcd489cb6284
       version: -1
       name: Verify Email
       type: condition
@@ -439,10 +442,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 68a2b5cc-2ef8-4787-894c-604291cd9806
+    taskid: c2ca0e75-3665-4e05-83ff-b11704efba59
     type: regular
     task:
-      id: 68a2b5cc-2ef8-4787-894c-604291cd9806
+      id: c2ca0e75-3665-4e05-83ff-b11704efba59
       version: -1
       name: Populate indicators
       description: Populate indicators by the PhishLabs IOC  global feed.
@@ -473,10 +476,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: edb614dd-925e-4234-8aa8-61ee4ae8de87
+    taskid: 6ab137a1-87a7-4c9e-8899-21528966233e
     type: regular
     task:
-      id: edb614dd-925e-4234-8aa8-61ee4ae8de87
+      id: 6ab137a1-87a7-4c9e-8899-21528966233e
       version: -1
       name: Find indicators
       description: Finds all indicators with given value.
@@ -509,10 +512,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 9fcfc739-a4b2-4788-826b-ba249e554ad8
+    taskid: 2f23e4d3-f96d-4ce5-8f5a-ede527204092
     type: condition
     task:
-      id: 9fcfc739-a4b2-4788-826b-ba249e554ad8
+      id: 2f23e4d3-f96d-4ce5-8f5a-ede527204092
       version: -1
       name: Verify PhishLabs indicators
       description: Verify given entry contains a string
@@ -546,10 +549,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: f5a88daa-96eb-4087-86d6-389b2cb814ce
+    taskid: 8bda41c9-a965-4568-8344-4b2b5bac465b
     type: regular
     task:
-      id: f5a88daa-96eb-4087-86d6-389b2cb814ce
+      id: 8bda41c9-a965-4568-8344-4b2b5bac465b
       version: -1
       name: Test fetch
       description: Execute FetchIncident for a given instance
@@ -563,7 +566,7 @@ tasks:
     scriptarguments:
       add_to_context: {}
       brand_name:
-        simple: PhishLabsIOC
+        simple: PhishLabs IOC
       error_msg_in_incident: {}
       expect_data: {}
       instance_name: {}
@@ -580,10 +583,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 0acc247a-05ee-4669-8c5e-29826e03cb61
+    taskid: 5378cd4e-edbc-4a0c-88ec-6e99d080c9a8
     type: title
     task:
-      id: 0acc247a-05ee-4669-8c5e-29826e03cb61
+      id: 5378cd4e-edbc-4a0c-88ec-6e99d080c9a8
       version: -1
       name: Done
       type: title
@@ -602,10 +605,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 523f005a-85e9-4438-8fe6-c2a08028f154
+    taskid: b702f545-7c3a-4a52-8a8a-f221683f3c1a
     type: regular
     task:
-      id: 523f005a-85e9-4438-8fe6-c2a08028f154
+      id: b702f545-7c3a-4a52-8a8a-f221683f3c1a
       version: -1
       name: Sleep
       description: Sleep for X seconds
