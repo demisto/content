@@ -30,8 +30,6 @@ def test_get_pdf_metadata_with_encrypted(mocker):
         'Keywords': '',
         'Creator': 'Preview',
         'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
-        'CreationDate': 'Wed May 15 11:18:48 2019 IDT',
-        'ModDate': 'Wed May 15 11:18:48 2019 IDT',
         'Tagged': 'no',
         'UserProperties': 'no',
         'Suspects': 'no', 'Form': 'none',
@@ -44,7 +42,7 @@ def test_get_pdf_metadata_with_encrypted(mocker):
         'Optimized': 'no',
         'PDF version': '1.6'
     }
-    assert expected == metadata
+    assert expected.items() <= metadata.items()
 
 
 def test_get_metadata_without_encrypted(tmp_path):
