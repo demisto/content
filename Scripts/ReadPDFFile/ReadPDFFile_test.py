@@ -1,5 +1,6 @@
 import demistomock as demisto
-
+# import PyPDF2
+# import shutil
 
 def test_get_files_names_in_path():
     from ReadPDFFile import get_files_names_in_path
@@ -21,6 +22,8 @@ def test_get_images_paths_in_path():
 def test_get_pdf_metadata_with_encrypted(mocker):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
     from ReadPDFFile import get_pdf_metadata
+    from ReadPDFFile import USER_PASSWORD
+    print(f'User password: {USER_PASSWORD}')
     metadata = get_pdf_metadata('encrypted.pdf')
     expected = {
         'Title': 'sample1.pdf',
@@ -44,8 +47,31 @@ def test_get_pdf_metadata_with_encrypted(mocker):
     assert expected == metadata
 
 
-def test_get_metadata_without_encrypte(tmp_path):
+# def encrypt_pdf(filename: str, password: str) -> str:
+#     """
+#     Encrypts a file and returns the filename of the encrypted file.
+#     Precondition: File is not encrypted
+#     """
+#     with open(filename, 'rb') as pdf_file:
+#         pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+#         pdf_writer = PyPDF2.PdfFileWriter()
+#
+#         for page_number in range(pdf_reader.numPages):
+#             pdf_writer.addPage(pdf_reader.getPage(page_number))
+#         pdf_writer.encrypt(password)
+#
+#         filename_encrypted = filename.rstrip('.pdf') + "_encrypted.pdf"
+#
+#         with open(filename_encrypted, 'wb') as pdf_file_encrypted:
+#             pdf_writer.write(pdf_file_encrypted)
+#     return filename_encrypted
+
+
+def test_get_metadata_without_encrypted(tmp_path):
     from ReadPDFFile import get_pdf_metadata
+    # encryp
+    # shutil.copyfile('test_data/encrypted.pdf', f'{tmp_path}/encrypted.pdf')
+    # encrypted_path = encrypt_pdf('test_data/encrypted.pdf', '1234')
     try:
         get_pdf_metadata('encrypted.pdf')
         raise Exception("Incorrect password exception should've been thrown")
@@ -59,8 +85,8 @@ def test_get_metadata_without_encrypte(tmp_path):
         'Keywords': '',
         'Creator': 'Word',
         'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
-        'CreationDate': 'Wed May 15 14:47:28 2019 IDT',
-        'ModDate': 'Wed May 15 14:47:28 2019 IDT',
+        'CreationDate': 'Wed May 15 11:47:28 2019 UTC',
+        'ModDate': 'Wed May 15 11:47:28 2019 UTC',
         'Tagged': 'no',
         'UserProperties': 'no',
         'Suspects': 'no',
