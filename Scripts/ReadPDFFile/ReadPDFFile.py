@@ -10,7 +10,6 @@ import shutil
 from typing import List
 
 ROOT_PATH = os.getcwd()
-USER_PASSWORD = demisto.args().get('userPassword')
 MAX_IMAGES = int(demisto.args().get('maxImages', 20))
 
 
@@ -65,8 +64,9 @@ def get_images_paths_in_path(path):
 
 def get_pdf_metadata(file_path):
     """Gets the metadata from the pdf as a dictionary"""
-    if USER_PASSWORD:
-        metadata_txt, e = run_shell_command('pdfinfo', '-upw', USER_PASSWORD, file_path)
+    user_password = demisto.args().get('userPassword')
+    if user_password:
+        metadata_txt, e = run_shell_command('pdfinfo', '-upw', user_password, file_path)
     else:
         metadata_txt, e = run_shell_command('pdfinfo', file_path)
     if e:
@@ -89,8 +89,9 @@ def get_pdf_metadata(file_path):
 
 def get_pdf_text(file_path, pdf_text_output_path):
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
-    if USER_PASSWORD:
-        o, e = run_shell_command('pdftotext', '-upw', USER_PASSWORD, file_path, pdf_text_output_path)
+    user_password = demisto.args().get('userPassword')
+    if user_password:
+        o, e = run_shell_command('pdftotext', '-upw', user_password, file_path, pdf_text_output_path)
     else:
         o, e = run_shell_command('pdftotext', file_path, pdf_text_output_path)
     if e:
@@ -105,8 +106,9 @@ def get_pdf_text(file_path, pdf_text_output_path):
 def get_pdf_htmls_content(pdf_path, output_folder):
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF.html'
-    if USER_PASSWORD:
-        o, e = run_shell_command('pdftohtml', '-upw', USER_PASSWORD, pdf_path, pdf_html_output_path)
+    user_password = demisto.args().get('userPassword')
+    if user_password:
+        o, e = run_shell_command('pdftohtml', '-upw', user_password, pdf_path, pdf_html_output_path)
     else:
         o, e = run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
     if e:
