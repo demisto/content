@@ -30,14 +30,14 @@ def http_request(method, path):
     if not res.ok:
         txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
         demisto.error(txt)
-        raise exception(txt)
+        raise Exception(txt)
 
     try:
         res_json = res.json()
         if res_json.get('code'):
             txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
             demisto.error(txt)
-            raise exception(txt)
+            raise Exception(txt)
         else:
             return res_json
 
