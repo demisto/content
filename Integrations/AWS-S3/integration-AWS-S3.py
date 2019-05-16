@@ -33,7 +33,7 @@ config = Config(
 """HELPER FUNCTIONS"""
 
 
-def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
+def aws_session(service='s3', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
                 rolePolicy=None):
     kwargs = {}
     if roleArn and roleSessionName is not None:
