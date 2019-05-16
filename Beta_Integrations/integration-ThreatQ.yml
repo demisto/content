@@ -73,23 +73,51 @@ script:
     def get_errors_string_from_bad_request(bad_request_results):
         errors_list = bad_request_results.json().get("errors", [])
         errors_string = ""
-        for error in errors_list:
-            errors_string += "Error: {}\n".format(error)
+        error_num = 1
+        if errors_list:
+            errors_string = "Errors from server: \n"
+            for error in errors_list:
+                errors_string += "Error #{0}: {1}\n".format(error_num, error)
+                error_num += 1
         return errors_string
 
     # ThreatQ auth based on OAuth 2.0 credential grand method
     def tq_access():
         data = {'grant_type': 'password','email': EMAIL, 'password': PASSWORD, 'client_id': CLIENT_ID}
         access_token_response = requests.post(API_TOKEN_URL, data=data, verify=False, allow_redirects=False)
+
         tokens = json.loads(access_token_response.text)
         if int(access_token_response.status_code) >= 400:
             errors_string = get_errors_string_from_bad_request(access_token_response)
-            error_message = "Authentication failed, unable to retrieve an access token.\n Errors from server:\n {}".format(errors_string)
+            error_message = "Authentication failed, unable to retrieve an access token.\n {}".format(errors_string)
             return_error(error_message)
+
+        new_integration_context = {
+            "access_token": tokens['access_token'],
+            "access_token_creation_time": int(time.time()) -1, # decrementing one second to be on the safe side
+            "access_token_expires_in": tokens['expires_in']
+        }
+        demisto.setIntegrationContext(new_integration_context)
         token = tokens['access_token']
         return token
 
-    ACCESS_TOKEN = tq_access()
+
+    def access_token_not_expired():
+            epoch_time_now = time.time()
+            epoch_time_when_token_granted = demisto.getIntegrationContext().get("access_token_creation_time")
+            token_time_until_expiration = demisto.getIntegrationContext().get("access_token_expires_in")
+            return int(epoch_time_now) - int(epoch_time_when_token_granted) < int(token_time_until_expiration)
+
+
+    def get_access_token():
+        existing_access_token = demisto.getIntegrationContext().get("access_token")
+        if existing_access_token and access_token_not_expired():
+            return existing_access_token
+        else:
+            # What if the token is expired AND there are no more available access tokens?
+            new_access_token = tq_access()
+            return new_access_token
+
 
     # remove html tags from ThreatQ description field
     def cleanhtml(raw_html):
@@ -97,14 +125,17 @@ script:
       cleantext = re.sub(cleanr, '', raw_html)
       return cleantext
 
+
     ''' Catch-all function for all command '''
     def query_tq(keyword):
         '''
         This function handles all the querying of threatq
         '''
         tq_url = API_URL + "/search?query=" + keyword
-        api_call_headers = {'Authorization': 'Bearer ' + ACCESS_TOKEN}
+        access_token = get_access_token()
+        api_call_headers = {'Authorization': 'Bearer ' + access_token}
         api_call_response = requests.get(tq_url, headers=api_call_headers, verify=False)
+
         response = json.loads(api_call_response.text)
 
         # Find ThreatQ object type and object id based on keyword search results
@@ -136,7 +167,8 @@ script:
             tq_url = API_URL + "/" + tq_obj_type + "/" + tq_obj_id
 
         # get ThreatQ response
-        api_call_headers = {'Authorization': 'Bearer ' + ACCESS_TOKEN}
+        access_token = get_access_token()
+        api_call_headers = {'Authorization': 'Bearer ' + access_token}
         api_call_response = requests.get(tq_url, headers=api_call_headers, verify=False)
         response = json.loads(api_call_response.text)
 
@@ -208,7 +240,8 @@ script:
         tq_url = API_URL + "/indicators/?value=" + indicator + "&with=score,attributes,sources"
 
         # get ThreatQ response on indicators attributes
-        api_call_headers = {'Authorization': 'Bearer ' + ACCESS_TOKEN}
+        access_token = get_access_token()
+        api_call_headers = {'Authorization': 'Bearer ' + access_token}
         api_call_response = requests.get(tq_url, headers=api_call_headers, verify=False)
         try:
             response = json.loads(api_call_response.text)
