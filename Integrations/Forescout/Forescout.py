@@ -442,14 +442,16 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             return_error(f'Failed to parse json object from response: {res.content}')
 
     except requests.exceptions.ConnectTimeout:
-        err_msg = 'Connection Timeout Error - check that the Server URL parameter is correct.'
+        err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                  ' is incorrect or that the Server is not accessible from your host.'
         return_error(err_msg)
     except requests.exceptions.SSLError:
         err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
                   ' the integration configuration.'
         return_error(err_msg)
     except requests.exceptions.ProxyError:
-        err_msg = 'Proxy Error - try deselecting \'Use system proxy\' in the integration configuration.'
+        err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+                  ' selected, try deselecting it.'
         return_error(err_msg)
     except requests.exceptions.ConnectionError as e:
         # Get originating Exception in Exception chain
@@ -459,7 +461,8 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
         error_class = str(e.__class__)
         err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
         err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
-                  f'ADVICE: Check that the Server URL parameter is correct.'
+                  f'ADVICE: Check that the Server URL parameter is correct and that you' \
+                  f' have access to the Server from your host.'
         return_error(err_msg)
 
 
