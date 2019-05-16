@@ -1,5 +1,5 @@
 id: Ipstack_Test
-version: 7
+version: 9
 name: Ipstack_Test
 starttaskid: "0"
 tasks:
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 02f23688-e0af-415e-8c48-b6e5f4380fc1
+    taskid: 0522425c-8719-4dff-81c3-0189f23fc86c
     type: condition
     task:
-      id: 02f23688-e0af-415e-8c48-b6e5f4380fc1
+      id: 0522425c-8719-4dff-81c3-0189f23fc86c
       version: -1
       name: test result
       type: condition
@@ -112,7 +112,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Geo.Country
+              simple: IP.Geo.Country
             iscontext: true
           right:
             value:
@@ -120,7 +120,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Address
+              simple: IP.Address
             iscontext: true
           right:
             value:
@@ -128,11 +128,35 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Geo.Location
+              simple: IP.Geo.Location
             iscontext: true
           right:
             value:
               simple: 52.3549,4.838
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Ipstack.ip.address
+            iscontext: true
+          right:
+            value:
+              simple: 5.57.16.220
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Ipstack.ip.latitude
+            iscontext: true
+          right:
+            value:
+              simple: "52.3549"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Ipstack.ip.longitude
+            iscontext: true
+          right:
+            value:
+              simple: "4.838"
     view: |-
       {
         "position": {
