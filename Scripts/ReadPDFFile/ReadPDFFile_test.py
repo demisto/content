@@ -1,6 +1,4 @@
 import demistomock as demisto
-import os
-import shutil
 
 
 def test_get_files_names_in_path():
@@ -23,8 +21,7 @@ def test_get_images_paths_in_path():
 def test_get_pdf_metadata_with_encrypted(mocker):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
     from ReadPDFFile import get_pdf_metadata
-    assert os.listdir(os.getcwd()) == 'encrypted.pdf'
-    metadata = get_pdf_metadata('test_data/encrypted.pdf')
+    metadata = get_pdf_metadata('encrypted.pdf')
     expected = {
         'Title': 'sample1.pdf',
         'Keywords': '',
@@ -50,13 +47,12 @@ def test_get_pdf_metadata_with_encrypted(mocker):
 def test_get_metadata_without_encrypte(tmp_path):
     from ReadPDFFile import get_pdf_metadata
     try:
-        shutil.copy('test_data/encrypted.pdf', tmp_path)
-        get_pdf_metadata(f'{tmp_path}/encrypted.pdf')
+        get_pdf_metadata('encrypted.pdf')
         raise Exception("Incorrect password exception should've been thrown")
     except TypeError as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
 
-    metadata = get_pdf_metadata('test_data/text-only.pdf')
+    metadata = get_pdf_metadata('text-only.pdf')
     print(metadata)
     expected = {
         'Title': 'Microsoft Word - Document1',
@@ -85,7 +81,7 @@ def test_get_metadata_without_encrypte(tmp_path):
 def test_get_pdf_text_with_encrypted(mocker, tmp_path):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
     from ReadPDFFile import get_pdf_text
-    text = get_pdf_text('test_data/encrypted.pdf', f'{tmp_path}/encrypted.txt')
+    text = get_pdf_text('encrypted.pdf', f'{tmp_path}/encrypted.txt')
     expected = "XSL FO Sample Copyright © 2002-2005 Antenna House, Inc. All rights reserved.\n\n" \
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
                "document, and link to the external document.\n" \
@@ -100,21 +96,21 @@ def test_get_pdf_text_with_encrypted(mocker, tmp_path):
 def test_get_pdf_text_without_encrypted(tmp_path):
     from ReadPDFFile import get_pdf_text
     try:
-        get_pdf_text('test_data/encrypted.pdf', f'{tmp_path}/encrypted.txt')
+        get_pdf_text('encrypted.pdf', f'{tmp_path}/encrypted.txt')
         raise Exception("Incorrect password exception should've been thrown")
     except TypeError as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
 
-    text = get_pdf_text('test_data/text-only.pdf', f'{tmp_path}/text-only.txt')
+    text = get_pdf_text('text-only.pdf', f'{tmp_path}/text-only.txt')
     expected = "עברית"
     assert expected in text
     assert text.startswith('This is a pdf document with a text line within it.')
 
-    text = get_pdf_text('test_data/text-with-images.pdf', f'{tmp_path}/text-with-images.txt')
+    text = get_pdf_text('text-with-images.pdf', f'{tmp_path}/text-with-images.txt')
     expected = 'Create an ETD Using Adobe Acrobat'
     assert text.startswith(expected)
 
-    text = get_pdf_text('test_data/scanned.pdf', f'{tmp_path}/scanned.txt')
+    text = get_pdf_text('scanned.pdf', f'{tmp_path}/scanned.txt')
     expected = '\x0c'
     assert expected == text
 
@@ -123,7 +119,7 @@ def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
     from ReadPDFFile import get_pdf_htmls_content
     from ReadPDFFile import get_images_paths_in_path
-    html_text = get_pdf_htmls_content('test_data/encrypted.pdf', tmp_path)
+    html_text = get_pdf_htmls_content('encrypted.pdf', tmp_path)
     expected = 'If you are end user who wishes to use XSL Formatter yourself, you may purchase ' \
                'from our Reseller or direct from Antenna<br/>House.<br/>'
     assert len(get_images_paths_in_path(tmp_path)) != 0, 'Failed to get images from html'
@@ -134,11 +130,11 @@ def test_get_pdf_htmls_content_without_encrypted(tmp_path):
     from ReadPDFFile import get_pdf_htmls_content
     from ReadPDFFile import get_images_paths_in_path
     try:
-        get_pdf_htmls_content('test_data/encrypted.pdf', tmp_path)
+        get_pdf_htmls_content('encrypted.pdf', tmp_path)
         raise Exception("Incorrect password exception should've been thrown")
     except TypeError as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
 
-    html_text = get_pdf_htmls_content('test_data/hyperlinks.pdf', tmp_path)
+    html_text = get_pdf_htmls_content('hyperlinks.pdf', tmp_path)
     assert 'http://www.antennahouse.com/purchase.htm' in html_text
     assert len(get_images_paths_in_path(tmp_path)) != 0, 'Failed to get images from html'
