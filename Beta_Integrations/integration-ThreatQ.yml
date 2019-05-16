@@ -114,7 +114,6 @@ script:
         if existing_access_token and access_token_not_expired():
             return existing_access_token
         else:
-            # What if the token is expired AND there are no more available access tokens?
             new_access_token = tq_access()
             return new_access_token
 
@@ -327,10 +326,6 @@ script:
         # demisto.results(entry3)
         return {'attributes': tq_attr_context,
                 'dbotscore': dbot_score }
-
-
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
 
 
     ''' EXECUTION CODE '''
