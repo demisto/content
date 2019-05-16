@@ -21,17 +21,17 @@ def http_request(method, path):
     res = requests.request(
         method=method,
         url=BASE_URL + path
-        )
+    )
 
     if not res.ok:
-        txt = 'error in URL {} status code: {} reason: {}'.format(url,res.status_code,res.text)
+        txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code ,res.text)
         demisto.error(txt)
         raise exception(txt)
 
     try:
         res_json = res.json()
         if res_json.get('code'):
-            txt = 'error in URL {} status code: {} reason: {}'.format(url,res.status_code,res.text)
+            txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
             demisto.error(txt)
             raise exception(txt)
         else:
@@ -39,9 +39,10 @@ def http_request(method, path):
 
     except Exception as ex:
         demisto.debug(str(ex))
-        demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : res.text } )
+        demisto.results({"Type":entryTypes["error"],"ContentsFormat":formats["text"], "Contents":res.text })
 
 ''' Commands '''
+
 
 def do_ip(ip):
     demisto.log(ip)
@@ -57,13 +58,13 @@ def do_ip_command():
          "Country": raw_response.get('country_name'),
          "Latitude": raw_response.get('latitude'),
          "Longitude": raw_response.get('longitude')
-        }
+    }
 
     outputs = {
         'IP(val.Address == obj.Address)': {
             'Address': raw_response.get('ip'),
             'Geo': {
-                'Location': "{},{}".format(raw_response.get('latitude'),raw_response.get('longitude')),
+                'Location': "{},{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
                 'Country': raw_response.get('country_name')
             }
         },
@@ -81,15 +82,15 @@ def do_ip_command():
 
 def test_module():
     path = "/1.2.3.4?access_key={}".format(API_KEY)
-    res = requests.request('GET',BASE_URL + path)
+    res = requests.request('GET', BASE_URL + path)
     if res.json().get('ip') == '1.2.3.4':
         demisto.results('ok')
     else:
         demisto.results('an error occurred. reason: {}'.format(res.text))
     try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'ip':
-        do_ip_command()
-except Exception, e:
-    return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'ip':
+            do_ip_command()
+    except Exception, e:
+        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
