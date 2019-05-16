@@ -19,10 +19,11 @@ Response = requests.models.Response
 
 USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD: str = demisto.params().get('credentials', {}).get('password')
-SERVER: str = (demisto.params()['url'][:-1]
-               if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
+SERVER: str = (demisto.params().get('url')[:-1]
+               if (demisto.params().get('url') and demisto.params().get('url').endswith('/'))
+               else demisto.params().get('url'))
 USE_SSL: bool = not demisto.params().get('insecure', False)
-BASE_URL: str = SERVER + '/api/v1/'
+BASE_URL: str = str(SERVER) + '/api/v1/'
 HEADERS: dict = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -106,18 +107,22 @@ def populate_context(dbot_scores: list, domain_entries: list, file_entries: list
     context: dict = {}
     if url_entries:
         context[outputPaths['url']] = createContext(list(map(lambda u: u[0], url_entries)))
-        context['PhishLabs.URL(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda u: u[1], url_entries)))
+        context['PhishLabs.URL(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda u: u[1], url_entries)),
+                                                                              removeNull=True)
     if domain_entries:
         context[outputPaths['domain']] = createContext(list(map(lambda d: d[0], domain_entries)))
         context['PhishLabs.Domain(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda d: d[1],
-                                                                                          domain_entries)))
+                                                                                          domain_entries)),
+                                                                                 removeNull=True)
     if file_entries:
         context[outputPaths['file']] = createContext(list(map(lambda f: f[0], file_entries)))
-        context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda f: f[1], file_entries)))
+        context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda f: f[1], file_entries)),
+                                                                               removeNull=True)
     if email_entries:
         context['Email'] = createContext(list(map(lambda e: e[0], email_entries)))
         context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda e: e[1],
-                                                                                         email_entries)))
+                                                                                         email_entries)),
+                                                                                removeNull=True)
     if dbot_scores:
         context[outputPaths['dbotscore']] = dbot_scores
     return context
