@@ -224,7 +224,7 @@ script:
     - default: true
       description: PhishLabs incident reference ID, for example, "INC123456"
       isArray: false
-      name: id
+      name: incident_id
       required: false
       secret: false
     - default: false
