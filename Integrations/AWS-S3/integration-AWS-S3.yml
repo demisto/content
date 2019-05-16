@@ -11,6 +11,10 @@ configuration:
   name: roleSessionName
   required: false
   type: 0
+- display: AWS Default Region
+  name: defaultRegion
+  required: false
+  type: 0
 - display: Role Session Duration
   name: sessionDuration
   required: false
