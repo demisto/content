@@ -206,7 +206,7 @@ script:
             incidents = []
             for event in r_events.json():
                 incident = {
-                    'name': event['type'],
+                    'name': 'Minerva Labs event - {}'.format(event['type']),
                     'rawJSON': json.dumps(event)
                 }
                 incidents.append(incident)
