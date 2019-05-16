@@ -2,6 +2,7 @@ import demistomock as demisto
 # import PyPDF2
 # import shutil
 
+
 def test_get_files_names_in_path():
     from ReadPDFFile import get_files_names_in_path
     pdf_file_names = get_files_names_in_path('test_data', '*.pdf')
