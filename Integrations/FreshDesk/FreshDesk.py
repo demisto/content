@@ -17,23 +17,24 @@ if not demisto.params().get('proxy'):
 
 ''' GLOBALS/PARAMS '''
 
-CREDS = demisto.params().get('credentials')
+PARAMS = demisto.params()
+CREDS = PARAMS.get('credentials')
 USERNAME = CREDS.get('identifier') if CREDS else None
 PASSWORD = CREDS.get('password') if CREDS else None
-TOKEN = demisto.params().get('token')
+TOKEN = PARAMS.get('token')
 
 if not (USERNAME and PASSWORD) and not TOKEN:
-    err_msg = "You must provide either your Freshdesk account API key or the " \
-              "username and password you use to sign into your Freshdesk account " \
-              "when instantiating an instance of the Freshdesk integration."
+    err_msg = 'You must provide either your Freshdesk account API key or the ' \
+              'username and password you use to sign into your Freshdesk account ' \
+              'when instantiating an instance of the Freshdesk integration.'
     return_error(err_msg)
 
 AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
 
 # How much time before the first fetch to retrieve incidents
-FETCH_TIME = demisto.params().get('fetch_time', '24 hours')
+FETCH_TIME = PARAMS.get('fetch_time', '24 hours')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+SERVER = PARAMS['url'][:-1] if (PARAMS.get('url') and PARAMS['url'].endswith('/')) else PARAMS['url']
 # Should we use SSL
 USE_SSL = not demisto.params().get('unsecure', False)
 # Service base URL
@@ -197,7 +198,7 @@ def reformat_ticket_context(context):
                 additional_fields[key] = val
         else:
             new_context[key] = val
-    new_context['AdditionalFields'] = dict(new_context.get('AdditionalFields'), **additional_fields)
+    new_context['AdditionalFields'] = dict(new_context.get('AdditionalFields', {}), **additional_fields)
     return new_context
 
 
@@ -356,8 +357,8 @@ def additional_fields_to_args(args, additional_fields_arg_name):
             field_and_val = field_and_val.split('=')
             # If the length doesn't equal 2, means there were either no equal signs or more than one
             if not len(field_and_val) == 2:
-                err_msg = "It appears you entered either too many or too few" \
-                          " equal signs in the 'additional_fields' argument."
+                err_msg = 'It appears you entered either too many or too few' \
+                          ' equal signs in the \'additional_fields\' argument.'
                 return_error(err_msg)
             field = field_and_val[0].strip()
             val = field_and_val[1]
@@ -371,8 +372,6 @@ def additional_fields_to_args(args, additional_fields_arg_name):
         del args[additional_fields_arg_name]
         return args, fields, values
     return args, None, None
-
-
 
 
 def ticket_to_incident(ticket):
@@ -437,8 +436,8 @@ def entries_to_files(entry_ids):
     attachments = []
     for entry_id in entry_ids:
         execute_results = demisto.getFilePath(entry_id)
-        file_path = execute_results["path"]
-        file_name = execute_results["name"]
+        file_path = execute_results['path']
+        file_name = execute_results['name']
         attachments.append(('attachments[]', (file_name, open(file_path, 'rb'))))
 
     return attachments
@@ -496,7 +495,7 @@ def validate_priority_input(args):
 
     # Check if the user entered status as words - aka the
     # options listed above in 'statuses'
-    err_msg = "priority should be one of these values: 1, 2, 3, 4, {}".format(', '.join(priorities))
+    err_msg = 'priority should be one of these values: 1, 2, 3, 4, {}'.format(', '.join(priorities))
     if len(priority) > 1:
         if priority.lower() in priorities:
             # Add 1 since API status numbers for tickets start at 1
@@ -535,7 +534,7 @@ def validate_status_input(args):
 
     # Check if the user entered status as words - aka the
     # options listed above in 'statuses'
-    err_msg = "status should be one of these values: 2, 3, 4, 5, 6, 7, {}".format(', '.join(statuses))
+    err_msg = 'status should be one of these values: 2, 3, 4, 5, 6, 7, {}'.format(', '.join(statuses))
     if len(status) > 1:
         if status.lower() in statuses:
             # Add 2 since API status numbers for tickets start at 2
@@ -608,8 +607,8 @@ def determine_identifier(args):
         # Otherwise assume it's an email address
         args['email'] = identifier
     else:
-        err_msg = "The entered value for the 'identifier' argument must " \
-                  "be either a Twitter handle or an Email Address."
+        err_msg = 'The entered value for the \'identifier\' argument must ' \
+                  'be either a Twitter handle or an Email Address.'
         return_error(err_msg)
     # Delete identifier field from args since it doesn't match API expected inputs
     del args['identifier']
@@ -777,7 +776,7 @@ def test_module():
     """
     Will try to make a request to the API endpoint for listing all tickets.
     """
-    response = http_request('GET', 'tickets')
+    http_request('GET', 'tickets')
 
 
 def fetch_incidents():
@@ -789,7 +788,7 @@ def fetch_incidents():
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
+    updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
     args = {'updated_since': updated_since, 'order_type': 'asc'}
 
     tickets = search_tickets(args)
@@ -883,7 +882,7 @@ def create_ticket_command():
     context, context_readable = attachments_into_context(ticket, context)
     context = reformat_ticket_context(context)
     context_readable = reformat_ticket_context(context_readable)
-    title = "Newly Created Ticket #{}".format(context.get('ID'))
+    title = 'Newly Created Ticket #{}'.format(context.get('ID'))
     human_readable = tableToMarkdown(title, context_readable, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -979,7 +978,7 @@ def update_ticket_command():
     context, context_readable = attachments_into_context(ticket, context)
     context = reformat_ticket_context(context)
     context_readable = reformat_ticket_context(context_readable)
-    title = "Ticket #{} Updated".format(context.get('ID'))
+    title = 'Ticket #{} Updated'.format(context.get('ID'))
     human_readable = tableToMarkdown(title, context_readable, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1060,7 +1059,7 @@ def get_ticket_command():
 
     context = reformat_ticket_context(context)
     context_readable = reformat_ticket_context(context_readable)
-    title = "Viewing Ticket #{}".format(ticket.get('id'))
+    title = 'Viewing Ticket #{}'.format(ticket.get('id'))
     human_readable = tableToMarkdown(title, context_readable, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1092,12 +1091,12 @@ def delete_ticket_command():
     """
     ticket_id = demisto.args().get('id')
     # Make request
-    response = delete_ticket(ticket_id)
+    delete_ticket(ticket_id)
     ticket_context = {
         'ID': int(ticket_id),
         'AdditionalFields': {'Deleted': True}
     }
-    message = "Soft-Deleted Ticket #{}".format(ticket_id)
+    message = 'Soft-Deleted Ticket #{}'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -1114,7 +1113,7 @@ def search_tickets(args):
     endpoint_url = 'tickets'
     url_params = {}
 
-    ## Filter By ##
+    # Filter By
     filter = args.get('filter')
     if filter:
         url_params['filter'] = filter
@@ -1128,7 +1127,7 @@ def search_tickets(args):
     if updated_since:
         url_params['updated_since'] = updated_since
 
-    ## Sort By ##
+    # Sort By
     order_by = args.get('order_by')
     if order_by:
         url_params['order_by'] = order_by
@@ -1136,7 +1135,7 @@ def search_tickets(args):
     if order_type:
         url_params['order_type'] = order_type
 
-    ## Embeddings (include additional information) ##
+    # Embeddings (include additional information)
     include = ''
     if args.get('include_stats') and args.get('include_stats').lower() == 'true':
         include += 'stats'
@@ -1147,17 +1146,17 @@ def search_tickets(args):
     if include != '':
         url_params['include'] = include
 
-    ## Custom Query ##
+    # Custom Query
     custom_query = args.get('custom_query')
     if custom_query and url_params:
-        err_msg = "You cannot use the custom_query argument in conjunction with the other command arguments. You can " \
-                  "either use the other arguments that allow you to choose options for filtering, sorting, " \
-                  "and including information for tickets, or to use the custom_query alone to create a custom filter " \
-                  "that determines which tickets are listed."
+        err_msg = 'You cannot use the custom_query argument in conjunction with the other command arguments. You can ' \
+                  'either use the other arguments that allow you to choose options for filtering, sorting, ' \
+                  'and including information for tickets, or to use the custom_query alone to create a custom filter ' \
+                  'that determines which tickets are listed.'
         return_error(err_msg)
     elif custom_query:
         endpoint_url = 'search/tickets'
-        url_params['query'] = "\"" + custom_query + "\""
+        url_params['query'] = '"' + custom_query + '"'
 
     page = args.get('page')
     if page:
@@ -1180,7 +1179,7 @@ def search_tickets_command():
 
     demisto parameter: (datetime) updated_since
         By default, only tickets that have been created within the past 30 days will be returned.
-        For older tickets, use this filter. Example value for this field would be "2015-01-19T02:00:00Z"
+        For older tickets, use this filter. Example value for this field would be '2015-01-19T02:00:00Z'
 
     demisto parameter: (string) order_by
         Reference field for ordering the list of tickets. The default sort order is created_at.
@@ -1228,7 +1227,9 @@ def search_tickets_command():
         context, context_readable = attachments_into_context(ticket, context)
 
         # Parse ticket for the additionally requested fields
-        context['AdditionalFields'] = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields}
+        context['AdditionalFields'] = {
+            string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields
+        }
         requester = ticket.get('requester')
         if requester:
             requester_context = {string_to_context_key(key): val for key, val in requester.iteritems() if val}
@@ -1247,7 +1248,7 @@ def search_tickets_command():
         'ID', 'Priority', 'Status', 'Subject', 'DueBy', 'FrDueBy', 'RequesterID', 'GroupID',
         'Source', 'CreatedAt', 'UpdatedAt', 'Tag', 'AdditionalFields', 'Attachment'
     ]
-    title = "Viewing All Requested Tickets"
+    title = 'Viewing All Requested Tickets'
     human_readable = tableToMarkdown(title, readable_contexts, headers=table_headers, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1259,7 +1260,6 @@ def search_tickets_command():
             'Freshdesk.Ticket(val.ID && val.ID === obj.ID)': contexts
         }
     })
-
 
 
 '''<------ CONVERSATIONS ------>'''
@@ -1328,7 +1328,7 @@ def ticket_reply_command():
         'ID': int(reply.get('ticket_id')),
         'Conversation': context
     }
-    title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
+    title = 'Reply to Ticket #{}'.format(reply.get('ticket_id'))
     human_readable = tableToMarkdown(title, context_readable, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1354,7 +1354,7 @@ def create_ticket_note(args):
     response = None
     if not args.get('attachments'):
         # Format boolean args to API expectations
-        dumped_args = json.dumps(args).replace("\"false\"", "false").replace("\"true\"", "true")
+        dumped_args = json.dumps(args).replace('"false"', 'false').replace('"true\"', 'true')
         # The service endpoint to request from
         # Send a request using our http_request wrapper
         response = http_request('POST', endpoint_url, data=dumped_args)
@@ -1527,7 +1527,7 @@ def list_contacts_command():
         context = format_contact_context(contact)
         contexts.append(context)
     filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.iteritems()])
-    title = "Contacts Filtered by {}".format(filters_as_strings) if filters else "All Contacts"
+    title = 'Contacts Filtered by {}'.format(filters_as_strings) if filters else 'All Contacts'
     human_readable = tableToMarkdown(title, contexts, removeNull=False)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1555,10 +1555,10 @@ def get_contact(args):
             contact_id = list_contacts(filters)[0].get('id')
         # If there is an IndexError, it means no results were returned for the given filter
         except IndexError as e:
-            err_msg = "Couldn't find a contact with that email address."\
-                        " Double check that you wrote the email address correctly"\
-                        " and/or that you have a FreshDesk contact with that exact"\
-                        " email address."
+            err_msg = 'Couldn\'t find a contact with that email address.'\
+                      ' Double check that you wrote the email address correctly'\
+                      ' and/or that you have a FreshDesk contact with that exact'\
+                      ' email address.'
             return_error(err_msg)
         except Exception as e:
             return_error(e.message)
@@ -1569,9 +1569,9 @@ def get_contact(args):
             contact_id = list_contacts(filters)[0].get('id')
         # If there is an IndexError, it means no results were returned for the given filter
         except IndexError as e:
-            err_msg = "Couldn't find a contact with that mobile number."\
-                    " Double check that you wrote it correctly and/or that "\
-                    "you have a FreshDesk contact with that exact mobile number."
+            err_msg = 'Couldn\'t find a contact with that mobile number.'\
+                      ' Double check that you wrote it correctly and/or that '\
+                      'you have a FreshDesk contact with that exact mobile number.'
             return_error(err_msg)
         except Exception as e:
             return_error(e.message)
@@ -1603,7 +1603,7 @@ def get_contact_command():
     contact = get_contact(args)
 
     context = format_contact_context(contact)
-    title = "Viewing Contact #{}".format(contact.get('id'))
+    title = 'Viewing Contact #{}'.format(contact.get('id'))
     human_readable = tableToMarkdown(title, context, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1642,7 +1642,7 @@ def list_canned_response_folders_command():
         context = {string_to_context_key(key): val for key, val in folder.iteritems() if val}
         context = reformat_canned_response_context(context)
         contexts.append(context)
-    title = "All Canned Response Folders"
+    title = 'All Canned Response Folders'
     human_readable = tableToMarkdown(title, contexts, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1685,7 +1685,7 @@ def get_canned_response_folder_command():
         context, context_readable = attachments_into_context(cr, context)
         contexts.append(context)
         readable_contexts.append(context_readable)
-    title = "Details of Canned Responses in CR Folder #{}".format(cr_folder_id)
+    title = 'Details of Canned Responses in CR Folder #{}'.format(cr_folder_id)
     human_readable = tableToMarkdown(title, readable_contexts, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1731,7 +1731,7 @@ def list_groups_command():
                     new_key = new_key.replace('Id', 'ID')
                 context[new_key] = val
         contexts.append(context)
-    title = "All Groups"
+    title = 'All Groups'
     human_readable = tableToMarkdown(title, contexts, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1791,7 +1791,7 @@ def list_agents_command():
                 context[new_key] = val
         context['Contact'] = {string_to_context_key(key): val for key, val in agent.get('contact').iteritems() if val}
         contexts.append(context)
-    title = "All Agents"
+    title = 'All Agents'
     human_readable = tableToMarkdown(title, contexts, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1810,20 +1810,20 @@ def list_agents_command():
 
 # Commands Switch Panel
 commands = {
-    "fd-create-ticket": create_ticket_command,
-    "fd-update-ticket": update_ticket_command,
-    "fd-get-ticket": get_ticket_command,
-    "fd-get-contact": get_contact_command,
-    "fd-list-contacts": list_contacts_command,
-    "fd-list-canned-response-folders": list_canned_response_folders_command,
-    "fd-get-canned-response-folder": get_canned_response_folder_command,
-    "fd-list-groups": list_groups_command,
-    "fd-ticket-reply": ticket_reply_command,
-    "fd-create-ticket-note": create_ticket_note_command,
-    "fd-get-ticket-conversations": get_ticket_conversations_command,
-    "fd-list-agents": list_agents_command,
-    "fd-delete-ticket": delete_ticket_command,
-    "fd-search-tickets": search_tickets_command,
+    'fd-create-ticket': create_ticket_command,
+    'fd-update-ticket': update_ticket_command,
+    'fd-get-ticket': get_ticket_command,
+    'fd-get-contact': get_contact_command,
+    'fd-list-contacts': list_contacts_command,
+    'fd-list-canned-response-folders': list_canned_response_folders_command,
+    'fd-get-canned-response-folder': get_canned_response_folder_command,
+    'fd-list-groups': list_groups_command,
+    'fd-ticket-reply': ticket_reply_command,
+    'fd-create-ticket-note': create_ticket_note_command,
+    'fd-get-ticket-conversations': get_ticket_conversations_command,
+    'fd-list-agents': list_agents_command,
+    'fd-delete-ticket': delete_ticket_command,
+    'fd-search-tickets': search_tickets_command,
 }
 
 LOG('Command being called is %s' % (demisto.command()))
