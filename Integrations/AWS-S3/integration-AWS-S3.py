@@ -147,7 +147,7 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_bucket(args):
+def create_bucket_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -182,7 +182,7 @@ def create_bucket(args):
     return_outputs(human_readable, ec)
 
 
-def delete_bucket(args):
+def delete_bucket_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -192,10 +192,10 @@ def delete_bucket(args):
 
     response = client.delete_bucket(Bucket=args.get('bucket').lower())
     if response['ResponseMetadata']['HTTPStatusCode'] == 204:
-        demisto.results("the Bucket {} was Deleted ".format(args.get('bucket')))
+        demisto.results("the Bucket {bucket} was Deleted ".format(bucket=args.get('bucket')))
 
 
-def list_buckets(args):
+def list_buckets_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -214,7 +214,7 @@ def list_buckets(args):
     return_outputs(human_readable, ec)
 
 
-def get_bucket_policy(args):
+def get_bucket_policy_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -242,7 +242,7 @@ def get_bucket_policy(args):
     return_outputs(human_readable, ec)
 
 
-def put_bucket_policy(args):
+def put_bucket_policy_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -259,10 +259,10 @@ def put_bucket_policy(args):
 
     response = client.put_bucket_policy(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('Successfully applied Bucket policy to {} bucket'.format(args.get('BucketName')))
+        demisto.results('Successfully applied Bucket policy to {bucket} bucket'.format(bucket=args.get('BucketName')))
 
 
-def delete_bucket_policy(args):
+def delete_bucket_policy_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -273,7 +273,7 @@ def delete_bucket_policy(args):
     demisto.results('Policy deleted from {}'.format(args.get('bucket')))
 
 
-def download_file(args):
+def download_file_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -286,7 +286,7 @@ def download_file(args):
     demisto.results(fileResult(args.get('key'), data.getvalue()))
 
 
-def list_objects(args):
+def list_objects_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -312,7 +312,7 @@ def get_file_path(file_id):
     return filepath_result
 
 
-def upload_file(args):
+def upload_file_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -323,12 +323,13 @@ def upload_file(args):
 
     with open(path['path'], 'rb') as data:
         client.upload_fileobj(data, args.get('bucket'), args.get('key'))
-        demisto.results('File {} was uploaded successfully to {}'.format(args.get('key'), args.get('bucket')))
+        demisto.results('File {file} was uploaded successfully to {bucket}'.format(
+            file=args.get('key'), bucket=args.get('bucket')))
 
 
 """COMMAND BLOCK"""
 try:
-    LOG('Command being called is {}'.format(demisto.command()))
+    LOG('Command being called is {command}'.format(command=demisto.command()))
     if demisto.command() == 'test-module':
         client = aws_session()
         response = client.list_buckets()
@@ -336,34 +337,32 @@ try:
             demisto.results('ok')
 
     elif demisto.command() == 'aws-s3-create-bucket':
-        create_bucket(demisto.args())
+        create_bucket_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-delete-bucket':
-        delete_bucket(demisto.args())
+        delete_bucket_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-list-buckets':
-        list_buckets(demisto.args())
+        list_buckets_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-get-bucket-policy':
-        get_bucket_policy(demisto.args())
+        get_bucket_policy_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-put-bucket-policy':
-        put_bucket_policy(demisto.args())
+        put_bucket_policy_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-delete-bucket-policy':
-        delete_bucket_policy(demisto.args())
+        delete_bucket_policy_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-download-file':
-        download_file(demisto.args())
-
-    elif demisto.command() == 'aws-s3-delete-bucket-policy':
-        delete_bucket_policy(demisto.args())
+        download_file_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-list-bucket-objects':
-        list_objects(demisto.args())
+        list_objects_command(demisto.args())
 
     elif demisto.command() == 'aws-s3-upload-file':
-        upload_file(demisto.args())
+        upload_file_command(demisto.args())
 
 except Exception as e:
-    return_error('Error has occurred in the AWS S3 Integration: {}\n {}'.format(type(e), e.message))
+    return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
+        error=type(e), message=e.message))
