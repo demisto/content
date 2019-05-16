@@ -1,6 +1,6 @@
-id: InfoArmorVigilanteATITest2
+id: InfoArmorVigilanteATITest
 version: -1
-name: InfoArmorVigilanteATITest2
+name: InfoArmorVigilanteATITest
 starttaskid: "0"
 tasks:
   "0":
