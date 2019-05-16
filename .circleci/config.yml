@@ -2,12 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:1.0.0.197 # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.4.1"
+      CONTENT_VERSION: "19.4.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "46a1d9ffbe6dbf734f9b790e7f2874f63e4b96ba" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "28fc5480343d1b7bb759f3742670eac2afaa3e38" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -41,7 +41,9 @@ jobs:
       - run:
           name: Validate Files and Yaml
           command: |
-              ./Tests/scripts/pyflake.sh
+              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+              ./Tests/scripts/pyflake.sh *.py
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
@@ -161,6 +163,11 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Validate Docker Images
+          shell: /bin/bash
+          command: ./Tests/scripts/validate_docker_images.sh
           when: always
       - run:
           name: Instance Test

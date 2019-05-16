@@ -58,8 +58,6 @@ def main():
 
     else:
         for ami_name in AMI_LIST:
-            if ami_name == SERVER_TWO_BEFORE_GA:  # Skipping this version until new Server version will be released.
-                continue
             instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[ami_name], create_instance(ami_name)))
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
