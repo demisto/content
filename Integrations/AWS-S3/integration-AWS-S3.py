@@ -13,25 +13,27 @@ import urllib3.util
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-AWS_DEFAULT_REGION = None  # demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
+"""PARAMETERS"""
+AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
+AWS_roleArn = demisto.params().get('roleArn')
+AWS_roleSessionName = demisto.params().get('roleSessionName')
+AWS_roleSessionDuration = demisto.params().get('sessionDuration')
 AWS_rolePolicy = None
 AWS_access_key_id = demisto.params().get('access_key')
 AWS_secret_access_key = demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-if not demisto.params().get('proxy', False):
-    config = Config(
-        retries=dict(
-            max_attempts=10
-        )
+config = Config(
+    connect_timeout=1,
+    retries=dict(
+        max_attempts=5
     )
-else:
-    config = None
+)
 
 
-def aws_session(service='s3', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
+"""HELPER FUNCTIONS"""
+
+
+def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
                 rolePolicy=None):
     kwargs = {}
     if roleArn and roleSessionName is not None:
