@@ -17,8 +17,8 @@ Response = requests.models.Response
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME: str = demisto.params().get('credentials').get('identifier')
-PASSWORD: str = demisto.params().get('credentials').get('password')
+USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD: str = demisto.params().get('credentials', {}).get('password')
 SERVER: str = (demisto.params()['url'][:-1]
                if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
 USE_SSL: bool = not demisto.params().get('insecure', False)
@@ -37,6 +37,7 @@ RAISE_EXCEPTION_ON_ERROR: bool = False
 ''' HELPER FUNCTIONS '''
 
 
+@logger
 def http_request(method: str, path: str, params: dict = None, data: dict = None) -> dict:
     """
     Sends an HTTP request using the provided arguments
@@ -89,6 +90,7 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
             return return_error(error_message)
 
 
+@logger
 def populate_context(dbot_scores: list, domain_entries: list, file_entries: list,
                      url_entries: list, email_entries: list = None) -> dict:
     """
@@ -121,9 +123,40 @@ def populate_context(dbot_scores: list, domain_entries: list, file_entries: list
     return context
 
 
+@logger
 def get_file_properties(indicator: dict) -> tuple:
     """
-    Extract the file properties from the indicator attributes
+    Extract the file properties from the indicator attributes.
+    Example:
+    Indicator: {
+            "attributes": [
+                {
+                    "createdAt": "2019-05-14T13:03:45Z",
+                    "id": "xyz",
+                    "name": "md5",
+                    "value": "c8092abd8d581750c0530fa1fc8d8318"
+                },
+                {
+                    "createdAt": "2019-05-14T13:03:45Z",
+                    "id": "abc",
+                    "name": "filetype",
+                    "value": "application/zip"
+                },
+                {
+                    "createdAt": "2019-05-14T13:03:45Z",
+                    "id": "qwe",
+                    "name": "name",
+                    "value": "Baycc.zip"
+                }
+            ],
+            "createdAt": "2019-05-14T13:03:45Z",
+            "falsePositive": false,
+            "id": "def",
+            "type": "Attachment",
+            "updatedAt": "0001-01-01T00:00:00Z",
+            "value": "c8092abd8d581750c0530fa1fc8d8318"
+        }
+    Return values: c8092abd8d581750c0530fa1fc8d8318, Baycc.zip, application/zip
     :param indicator: The file indicator
     :return: File MD5, name and type
     """
@@ -137,9 +170,43 @@ def get_file_properties(indicator: dict) -> tuple:
     return file_md5, file_name, file_type
 
 
+@logger
 def get_email_properties(indicator: dict) -> tuple:
     """
-    Extract the email properties from the indicator attributes
+    Extract the email properties from the indicator attributes.
+    Example:
+    Indicator:
+    {
+    "attributes":
+    [
+        {
+            "createdAt": "2019-05-13T16:54:18Z",
+            "id": "abc",
+            "name": "email-body",
+            "value": "\r\n\r\n-----Original Message-----\r\nFrom: A \r\nSent:
+            Monday, May 13, 2019 12:22 PM\r\nTo:
+        },
+        {
+            "createdAt": "2019-05-13T16:54:18Z",
+            "id": "def",
+            "name": "from",
+            "value": "someuser@contoso.com"
+        },
+        {
+            "createdAt": "2019-05-13T16:54:18Z",
+            "id": "cf3182ca-92ec-43b6-8aaa-429802a99fe5",
+            "name": "to",
+            "value": "example@gmail.com"
+        }
+    ],
+    "createdAt": "2019-05-13T16:54:18Z",
+    "falsePositive": false,
+    "id": "ghi",
+    "type": "E-mail",
+    "updatedAt": "0001-01-01T00:00:00Z",
+    "value": "FW: Task"
+    }
+    Return values:
     :param indicator: The email indicator
     :return: Email body, To and From
     """
@@ -153,6 +220,7 @@ def get_email_properties(indicator: dict) -> tuple:
     return email_body, email_to, email_from
 
 
+@logger
 def create_domain_context(indicator: dict) -> dict:
     """
     Create a domain context object
@@ -164,6 +232,7 @@ def create_domain_context(indicator: dict) -> dict:
     }
 
 
+@logger
 def create_url_context(indicator: dict, classification: str) -> dict:
     """
     Create a URL context object
@@ -185,6 +254,7 @@ def create_url_context(indicator: dict, classification: str) -> dict:
     return url_object
 
 
+@logger
 def create_phishlabs_object(indicator: dict) -> dict:
     """
     Create the context object for the PhishLabs path
@@ -205,6 +275,7 @@ def create_phishlabs_object(indicator: dict) -> dict:
     }
 
 
+@logger
 def create_indicator_content(indicator: dict) -> dict:
     """
     Create content for the human readable object
@@ -252,10 +323,11 @@ def get_global_feed_command():
     false_positive: str = demisto.args().get('false_positive')
 
     feed: dict = get_global_feed_request(since, limit, indicator, remove_protocol, remove_query, false_positive)
+    results: list = feed.get('data', []) if feed else []
 
-    if feed and feed.get('data'):
-        results: list = feed['data']
-
+    if results:
+        if not isinstance(results, list):
+            results = [results]
         for result in results:
             contents.append(create_indicator_content(result))
 
@@ -307,6 +379,7 @@ def get_global_feed_command():
     return_outputs(human_readable, context, feed)
 
 
+@logger
 def get_global_feed_request(since: str = None, limit: str = None, indicator: list = None,
                             remove_protocol: str = None, remove_query: str = None, false_positive: str = None) -> dict:
     """
@@ -353,7 +426,7 @@ def get_incident_indicators_command():
     dbot_scores: list = []
     context: dict = {}
 
-    incident_id: str = demisto.args().get('id')
+    incident_id: str = demisto.args()['incident_id']
     since: str = demisto.args().get('since')
     limit: str = demisto.args().get('limit')
     indicator: list = argToList(demisto.args().get('indicator_type', []))
@@ -361,12 +434,18 @@ def get_incident_indicators_command():
     remove_protocol: str = demisto.args().get('remove_protocol')
     remove_query: str = demisto.args().get('remove_query')
 
-    human_readable: str = 'Indicators for incident ' + incident_id + '\n'
+    human_readable: str = '## Indicators for incident ' + incident_id + '\n'
 
-    feed: dict = get_feed_request(since, limit, indicator, remove_protocol, remove_query)
-    if feed and feed.get('data'):
-        results: list = list(filter(lambda f: f.get('referenceId', '') == incident_id, feed['data']))
+    feed: dict = get_feed_request(since, indicator=indicator, remove_protocol=remove_protocol, remove_query=remove_query)
+    results: list = feed.get('data', []) if feed else []
+
+    if results:
+        if not isinstance(results, list):
+            results = [results]
+        results = list(filter(lambda f: f.get('referenceId', '') == incident_id, results))
         if results:
+            if limit:
+                results = results[:int(limit)]
             for result in results[0].get('indicators', []):
                 human_readable += tableToMarkdown('Indicator', create_indicator_content(result),
                                                   headers=indicator_headers,
@@ -439,15 +518,17 @@ def get_incident_indicators_command():
 
             context = populate_context(dbot_scores, domain_entries, file_entries, url_entries, email_entries)
         else:
-            human_readable = 'Incident not found, check your arguments'
+            human_readable = 'Incident not found'
     else:
-        human_readable = 'No incidents found, check your arguments'
+        human_readable = 'No incidents found'
 
     return_outputs(human_readable, context, feed)
 
 
+@logger
 def get_feed_request(since: str = None, limit: str = None, indicator: list = None,
-                     remove_protocol: str = None, remove_query: str = None,) -> dict:
+                     remove_protocol: str = None, remove_query: str = None,
+                     offset: str = None, sort: bool = False) -> dict:
     """
     Sends a request to PhishLabs user feed with the provided arguments
     :param since: Data updated within this duration of time from now
@@ -455,6 +536,8 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
     :param indicator: Indicator type filter
     :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
     :param remove_query: Removes the query string part from indicators when the rules can be applied.
+    :param offset: Number of incidents to skip
+    :param sort: If true, the incidents will be sorted by their creation time in ascending order.
     :return: User feed
     """
     path: str = 'feed'
@@ -464,12 +547,18 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
         params['since'] = since
     if limit:
         params['limit'] = int(limit)
+    if offset:
+        params['offset'] = int(offset)
     if indicator:
         params['indicator'] = indicator
     if remove_query:
         params['remove_query'] = remove_query
     if remove_protocol:
         params['remove_protocol'] = remove_protocol
+
+    if sort:
+        params['sort'] = 'createdAt'
+        params['direction'] = 'asc'
 
     response = http_request('GET', path, params)
 
@@ -483,57 +572,73 @@ def fetch_incidents():
     """
     last_run: dict = demisto.getLastRun()
     last_fetch: str = last_run.get('time', '') if last_run else ''
+    last_offset: str = last_run.get('offset', '0') if last_run else '0'
 
     incidents: list = []
-    count: int = 0
-    feed: dict = get_feed_request(since=FETCH_TIME, limit=FETCH_LIMIT)
+    count: int = 1
+    limit = int(FETCH_LIMIT)
+    feed: dict = get_feed_request(limit=FETCH_LIMIT, since=FETCH_TIME, offset=last_offset)
     last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
                                  else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
     max_time: datetime = last_fetch_time
-    results: list = feed.get('data', [])
-    for result in results:
-        if count > int(FETCH_LIMIT):
-            break
-        incident_time: datetime = datetime.strptime(result.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ')
-        if last_fetch_time and incident_time <= last_fetch_time:
-            continue
+    results: list = feed.get('data', []) if feed else []
 
-        incident: dict = {
-            'name': 'PhishLabs IOC Incident ' + result.get('referenceId'),
-            # 'occurred': datetime.strftime(incident_time, '%Y-%m-%dT%H:%M:%S'),
-            'rawJSON': json.dumps(result)
-        }
-        incidents.append(incident)
-        if max_time < incident_time:
-            max_time = incident_time
-        count += 1
+    if results:
+        if not isinstance(results, list):
+            results = [results]
 
-    demisto.incidents(incidents)
-    demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ')})
+        for result in results:
+            if count > limit:
+                break
+            incident_time: datetime = datetime.strptime(result.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ')
+            if last_fetch_time and incident_time <= last_fetch_time:
+                continue
+
+            incident: dict = {
+                'name': 'PhishLabs IOC Incident ' + result.get('referenceId'),
+                'occurred': datetime.strftime(incident_time, '%Y-%m-%dT%H:%M:%SZ'),
+                'rawJSON': json.dumps(result)
+            }
+            incidents.append(incident)
+            if max_time < incident_time:
+                max_time = incident_time
+            count += 1
+
+        demisto.incidents(incidents)
+        offset = int(last_offset) + count
+        demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+''' MAIN'''
 
-LOG('Command being called is {}'.format(demisto.command()))
-handle_proxy()
 
-COMMAND_DICT = {
-    'test-module': test_module,
-    'fetch-incidents': fetch_incidents,
-    'phishlabs-global-feed': get_global_feed_command,
-    'phishlabs-get-incident-indicators': get_incident_indicators_command
-}
+def main():
+    """
+    Main function
+    """
+    global RAISE_EXCEPTION_ON_ERROR
+    LOG('Command being called is {}'.format(demisto.command()))
+    handle_proxy()
+    command_dict = {
+        'test-module': test_module,
+        'fetch-incidents': fetch_incidents,
+        'phishlabs-global-feed': get_global_feed_command,
+        'phishlabs-get-incident-indicators': get_incident_indicators_command
+    }
+    try:
+        command_func: Callable = command_dict[demisto.command()]
+        if demisto.command() == 'fetch-incidents':
+            RAISE_EXCEPTION_ON_ERROR = True
+        command_func()
 
-try:
-    command_func: Callable = COMMAND_DICT[demisto.command()]
-    if demisto.command() == 'fetch-incidents':
-        RAISE_EXCEPTION_ON_ERROR = True
-    command_func()
+    except Exception as e:
+        if RAISE_EXCEPTION_ON_ERROR:
+            LOG(str(e))
+            LOG.print_log()
+            raise
+        else:
+            return_error(str(e))
 
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    if RAISE_EXCEPTION_ON_ERROR:
-        raise
-    else:
-        return_error(str(e))
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
