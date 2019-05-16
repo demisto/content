@@ -1,5 +1,8 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+import os
 import requests
-import json
 
 BASE_URL = 'http://api.ipstack.com'
 API_KEY = demisto.params().get('apikey')
@@ -18,13 +21,14 @@ def http_request(method, path):
     """
     HTTP request helper function
     """
+    url = BASE_URL + path
     res = requests.request(
         method=method,
-        url=BASE_URL + path
+        url=url
     )
 
     if not res.ok:
-        txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code ,res.text)
+        txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
         demisto.error(txt)
         raise exception(txt)
 
@@ -39,25 +43,26 @@ def http_request(method, path):
 
     except Exception as ex:
         demisto.debug(str(ex))
-        demisto.results({"Type":entryTypes["error"],"ContentsFormat":formats["text"], "Contents":res.text })
+        demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": res.text})
+
 
 ''' Commands '''
 
 
 def do_ip(ip):
     demisto.log(ip)
-    path = "/{}?access_key={}".format(ip,API_KEY)
-    return http_request('GET',path)
+    path = "/{}?access_key={}".format(ip, API_KEY)
+    return http_request('GET', path)
 
 
 def do_ip_command():
     ip = demisto.args().get('ip')
     raw_response = do_ip(ip)
     human_readable_data = {
-         "Address": raw_response.get('ip'),
-         "Country": raw_response.get('country_name'),
-         "Latitude": raw_response.get('latitude'),
-         "Longitude": raw_response.get('longitude')
+        "Address": raw_response.get('ip'),
+        "Country": raw_response.get('country_name'),
+        "Latitude": raw_response.get('latitude'),
+        "Longitude": raw_response.get('longitude')
     }
 
     outputs = {
@@ -71,13 +76,15 @@ def do_ip_command():
         'Ipstack.ip(val.ID==obj.ID)': {
             'address': raw_response.get('ip'),
             'type': raw_response.get('type'),
-            'continent_name':raw_response.get('continent_name') ,
+            'continent_name': raw_response.get('continent_name'),
             'latitude': raw_response.get('latitude'),
             'longitude': raw_response.get('longitude'),
-            }
+        }
     }
 
-    return_outputs(tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=['Address','Country','Latitude','Longitude']), outputs, raw_response)
+    headers = ['Address', 'Country', 'Latitude', 'Longitude']
+    human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=headers)
+    return_outputs(human_readable, outputs, raw_response)
 
 
 def test_module():
