@@ -6,7 +6,6 @@ import json
 import re
 from datetime import datetime, date
 from botocore.config import Config
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
@@ -14,12 +13,12 @@ urllib3.disable_warnings()
 
 """PARAMETERS"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_roleArn = demisto.params().get('roleArn')
-AWS_roleSessionName = demisto.params().get('roleSessionName')
-AWS_roleSessionDuration = demisto.params().get('sessionDuration')
-AWS_rolePolicy = None
-AWS_access_key_id = demisto.params().get('access_key')
-AWS_secret_access_key = demisto.params().get('secret_key')
+AWS_ROLE_ARN = demisto.params().get('roleArn')
+AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
+AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
+AWS_ROLE_POLICY = None
+AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 config = Config(
     connect_timeout=1,
@@ -40,24 +39,24 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
             'RoleArn': roleArn,
             'RoleSessionName': roleSessionName,
         })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
+    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
         kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
         })
 
     if roleSessionDuration is not None:
         kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
+    elif AWS_ROLE_SESSION_DURATION is not None:
+        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
 
     if rolePolicy is not None:
         kwargs.update({'Policy': rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy': AWS_rolePolicy})
-    if kwargs and AWS_access_key_id is None:
+    elif AWS_ROLE_POLICY is not None:
+        kwargs.update({'Policy': AWS_ROLE_POLICY})
+    if kwargs and AWS_ACCESS_KEY_ID is None:
 
-        if AWS_access_key_id is None:
+        if AWS_ACCESS_KEY_ID is None:
             sts_client = boto3.client('sts')
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
@@ -80,17 +79,17 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
                     verify=VERIFY_CERTIFICATE,
                     config=config
                 )
-    elif AWS_access_key_id and AWS_roleArn:
+    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
         sts_client = boto3.client(
             service_name='sts',
-            aws_access_key_id=AWS_access_key_id,
-            aws_secret_access_key=AWS_secret_access_key,
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             verify=VERIFY_CERTIFICATE,
             config=config
         )
         kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
         })
         sts_response = sts_client.assume_role(**kwargs)
         client = boto3.client(
@@ -107,8 +106,8 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
             client = boto3.client(
                 service_name=service,
                 region_name=region,
-                aws_access_key_id=AWS_access_key_id,
-                aws_secret_access_key=AWS_secret_access_key,
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                 verify=VERIFY_CERTIFICATE,
                 config=config
             )
@@ -116,8 +115,8 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
             client = boto3.client(
                 service_name=service,
                 region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_access_key_id,
-                aws_secret_access_key=AWS_secret_access_key,
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                 verify=VERIFY_CERTIFICATE,
                 config=config
             )
@@ -2674,9 +2673,7 @@ try:
     elif demisto.command() == 'aws-ec2-modify-instance-attribute':
         modify_instance_attribute_command(demisto.args())
 
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
 except Exception as e:
+    LOG(e.message)
     return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
         code=type(e), message=e.message))
