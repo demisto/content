@@ -23,7 +23,6 @@ script:
     import requests
     import json
 
-
     BASE_URL = 'http://api.ipstack.com'
     API_KEY = demisto.params().get('apikey')
 
@@ -46,74 +45,70 @@ script:
         )
 
         if not res.ok:
-            demisto.debug(res.text)
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not execute the request' } )
+            txt = 'error in URL {} status code: {} reason: {}'.format(url,res.status_code,res.text)
+            demisto.error(txt)
+            raise exception(txt)
 
         try:
             res_json = res.json()
-            return res_json
+            if res_json.get('code'):
+                txt = 'error in URL {} status code: {} reason: {}'.format(url,res.status_code,res.text)
+                demisto.error(txt)
+                raise exception(txt)
+            else:
+                return res_json
+
         except Exception as ex:
             demisto.debug(str(ex))
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex) } )
-
-    def merge_two_dicts(x, y):
-        """
-        used to merge two json objects
-        """
-        z = x.copy()   # start with x's keys and values
-        z.update(y)    # modifies z with y's keys and values & returns None
-        return z
+            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : res.text } )
 
     ''' Commands '''
 
-    def do_ip():
-        ip = demisto.args().get('ip')
+    def do_ip(ip):
+
         demisto.log(ip)
         path = "/{}?access_key={}".format(ip,API_KEY)
         return http_request('GET',path)
 
 
     def do_ip_command():
-        ans = do_ip()
-        t = {'Address': ans.get('ip'),'Country': ans.get('country_name'),'Latitude': ans.get('latitude'), 'Longitude': ans.get('longitude')}
+        ip = demisto.args().get('ip')
+        raw_response = do_ip(ip)
+        human_readable_data = {
+             "Address": raw_response.get('ip'),
+             "Country": raw_response.get('country_name'),
+             "Latitude": raw_response.get('latitude'),
+             "Longitude": raw_response.get('longitude')
+            }
 
-        global_context = {
-              'Address': ans.get('ip'),
-              'Geo': {
-              'Location': "{},{}".format(ans.get('latitude'),ans.get('longitude')),
-              'Country': ans.get('country_name')
+        outputs = {
+            'IP(val.Address == obj.Address)': {
+                'Address': raw_response.get('ip'),
+                'Geo': {
+                    'Location': "{},{}".format(raw_response.get('latitude'),raw_response.get('longitude')),
+                    'Country': raw_response.get('country_name')
+                }
+            },
+            'Ipstack.ip(val.ID==obj.ID)': {
+                'address': raw_response.get('ip'),
+                'type': raw_response.get('type'),
+                'continent_name':raw_response.get('continent_name') ,
+                'latitude': raw_response.get('latitude'),
+                'longitude': raw_response.get('longitude'),
+
             }
         }
 
-        context = {
-            'address': ans.get('ip'),
-            'type': ans.get('type'),
-            'continent_name':ans.get('continent_name') ,
-            'country_name': ans.get('country_name'),
-            'latitude': ans.get('latitude'),
-            'longitude': ans.get('longitude'),
+        return_outputs(tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=['Address','Country','Latitude','Longitude']), outputs, raw_response)
 
-        }
-
-        ### add the non global fields.. where do i see the context in the war room
-
-        ec =  merge_two_dicts(global_context,{'Ipstack.ip(val.ID==obj.ID)': context})
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': context,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Ipstack info on {}'.format(ans.get('ip')), t, headers=['Address','Country','Latitude','Longitude']),
-            'EntryContext': ec
-        })
 
     def test_module():
         path = "/1.2.3.4?access_key={}".format(API_KEY)
-        res = http_request('GET',path)
-        if res.get('ip') == '1.2.3.4':
+        res = requests.request('GET',BASE_URL + path)
+        if res.json().get('ip') == '1.2.3.4':
             demisto.results('ok')
         else:
-            demisto.log('failed to connect') # how to handle return error
+            demisto.results('an error occurred. reason: {}'.format(res.text))
 
     try:
         if demisto.command() == 'test-module':
@@ -128,6 +123,7 @@ script:
     arguments:
     - name: ip
       required: true
+      default: true
       description: ip to query
     outputs:
     - contextPath: IP.Address
