@@ -30,7 +30,7 @@ else:
     feed = content.get('data', [])
 
     if delete_false_positive:
-        false_positives = list(filter(lambda f: bool(strtobool(str(f.get('falsePositive')))) is True, feed))
+        false_positives = list(filter(lambda f: bool(strtobool(str(f.get('falsePositive', 'false')))) is True, feed))
         for false_positive in false_positives:
             delete_res = demisto.executeCommand('deleteIndicators',
                                                 {'query': 'source:"PhishLabs" and value:"{}"'
@@ -60,7 +60,7 @@ else:
             }
 
             if indicator_timestamp:
-                demisto_indicator['timestamp'] = datetime.strftime(indicator_timestamp, '%Y-%m-%dT%H:%M:%S')
+                demisto_indicator['sourceTimeStamp'] = datetime.strftime(indicator_timestamp, '%Y-%m-%dT%H:%M:%SZ')
 
             indicator_res = demisto.executeCommand('createNewIndicator', demisto_indicator)
 

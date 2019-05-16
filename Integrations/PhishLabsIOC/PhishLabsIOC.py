@@ -221,15 +221,24 @@ def get_email_properties(indicator: dict) -> tuple:
 
 
 @logger
-def create_domain_context(indicator: dict) -> dict:
+def create_domain_context(indicator: dict, classification: str) -> dict:
     """
     Create a domain context object
     :param indicator: The domain indicator
+    :param classification: The indicator classification
     :return: The domain context object
     """
-    return {
+    domain_object = {
         'Name': indicator.get('value')
     }
+
+    if classification == 'Malicious':
+        domain_object['Malicious'] = {
+            'Vendor': 'PhishLabs',
+            'Description': 'Domain in PhishLabs global feed'
+        }
+
+    return domain_object
 
 
 @logger
@@ -248,7 +257,7 @@ def create_url_context(indicator: dict, classification: str) -> dict:
     if classification == 'Malicious':
         url_object['Malicious'] = {
             'Vendor': 'PhishLabs',
-            'Description': 'URL in PhishLabs feed'
+            'Description': 'URL in PhishLabs global feed'
         }
 
     return url_object
@@ -330,24 +339,24 @@ def get_global_feed_command():
             results = [results]
         for result in results:
             contents.append(create_indicator_content(result))
-
+            indicator_false_positive = result.get('falsePositive', False)
             indicator_type: str = result.get('type')
             phishlabs_object: dict = create_phishlabs_object(result)
 
             dbot_score: dict = {
                 'Indicator': result.get('value'),
                 'Vendor': 'PhishLabs',
-                'Score': 3
+                'Score': 3 if not indicator_false_positive else 1
             }
 
             if indicator_type == 'URL':
-                context_object = create_url_context(result, 'Malicious')
+                context_object = create_url_context(result, 'Malicious' if not indicator_false_positive else 'Good')
                 phishlabs_object['Data'] = result.get('value')
                 dbot_score['type'] = 'url'
                 url_entries.append((context_object, phishlabs_object))
 
             elif indicator_type == 'Domain':
-                context_object = create_domain_context(result)
+                context_object = create_domain_context(result, 'Malicious' if not indicator_false_positive else 'Good')
                 phishlabs_object['Name'] = result.get('value')
                 dbot_score['type'] = 'domain'
                 domain_entries.append((context_object, phishlabs_object))
@@ -444,9 +453,10 @@ def get_incident_indicators_command():
             results = [results]
         results = list(filter(lambda f: f.get('referenceId', '') == incident_id, results))
         if results:
+            indicators = results[0].get('indicators', [])
             if limit:
-                results = results[:int(limit)]
-            for result in results[0].get('indicators', []):
+                indicators = indicators[:int(limit)]
+            for result in indicators:
                 human_readable += tableToMarkdown('Indicator', create_indicator_content(result),
                                                   headers=indicator_headers,
                                                   removeNull=True, headerTransform=pascalToSpace)
@@ -457,7 +467,7 @@ def get_incident_indicators_command():
                                                       headers=attribute_headers,
                                                       removeNull=True, headerTransform=pascalToSpace)
                 else:
-                    human_readable += 'No attributes for this indicator'
+                    human_readable += 'No attributes for this indicator\n'
 
                 indicator_type: str = result.get('type')
 
@@ -557,7 +567,7 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
         params['remove_protocol'] = remove_protocol
 
     if sort:
-        params['sort'] = 'createdAt'
+        params['sort'] = 'created_at'
         params['direction'] = 'asc'
 
     response = http_request('GET', path, params)
@@ -577,7 +587,7 @@ def fetch_incidents():
     incidents: list = []
     count: int = 1
     limit = int(FETCH_LIMIT)
-    feed: dict = get_feed_request(limit=FETCH_LIMIT, since=FETCH_TIME, offset=last_offset)
+    feed: dict = get_feed_request(limit=FETCH_LIMIT, since=FETCH_TIME, offset=last_offset, sort=True)
     last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
                                  else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
     max_time: datetime = last_fetch_time
