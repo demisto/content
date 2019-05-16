@@ -97,6 +97,13 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
     return query_job_config
 
 
+def convert_to_string_if_datetime(object_that_may_be_datetime):
+    if isinstance(object_that_may_be_datetime, datetime):
+        return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
+    else:
+        return object_that_may_be_datetime
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -144,16 +151,17 @@ def query_command():
                          'bytes'.format(query_results.total_bytes_processed)
 
     else:
+
         for row in query_results:
-            row_context = {underscoreToCamelCase(k): v for k, v in row.items()}
+            row_context = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
             rows_contexts.append(row_context)
 
         if rows_contexts:
+
             context['BigQuery(val.Query && val.Query == obj.Query)'] = {
                 'Query': args['query'],
                 'Row': rows_contexts
             }
-
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
 
@@ -176,9 +184,8 @@ def test_module():
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error("There was a problem creating a BigQuery client.\n"
-                     "Please make sure the credentials JSON you entered is valid.\n"
-                     "Error recieved from BigQuery: {}".format(str(ex)))
+        return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:"
+                     "{}".format(ex))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
