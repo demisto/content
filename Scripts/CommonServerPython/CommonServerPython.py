@@ -14,7 +14,14 @@ from collections import OrderedDict
 import xml.etree.cElementTree as ET
 
 IS_PY3 = sys.version_info[0] == 3
-STRING_TYPES = (str, bytes) if IS_PY3 else (str, unicode)
+# pylint: disable=undefined-variable
+if IS_PY3:
+    STRING_TYPES = (str, bytes)  # type: ignore
+    STRING_OBJ_TYPES = (str)
+else:
+    STRING_TYPES = (str, unicode)  # type: ignore
+    STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
+# pylint: enable=undefined-variable
 
 entryTypes = {
     'note': 1,
@@ -79,7 +86,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
         :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
     """
-    proxies = {}
+    proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
         proxies = {
             'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
@@ -527,7 +534,7 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
     def __init__(self, ):
-        self.messages = []
+        self.messages = []  # type: list
 
     def __call__(self, message):
         self.messages.append('%s' % (message, ))
@@ -819,7 +826,7 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
         :return: The converted context list
         :rtype: ``list``
     """
-    res = {}
+    res = {}  # type: dict
     if keyTransform is None:
         keyTransform = lambda s: s  # noqa
     keys = obj.keys()
@@ -1070,7 +1077,7 @@ def strip_tag(tag):
 def elem_to_internal(elem, strip_ns=1, strip=1):
     """Convert an Element into an internal dictionary (not JSON!)."""
 
-    d = OrderedDict()
+    d = OrderedDict()  # type: dict
     elem_tag = elem.tag
     if strip_ns:
         elem_tag = strip_tag(elem.tag)
@@ -1114,7 +1121,7 @@ def elem_to_internal(elem, strip_ns=1, strip=1):
             d["#text"] = text
     else:
         # text is the value if no attributes
-        d = text or None
+        d = text or None  # type: ignore
     return {elem_tag: d}
 
 
@@ -1126,7 +1133,7 @@ def internal_to_elem(pfsh, factory=ET.Element):
     Element class as the factory parameter.
     """
 
-    attribs = OrderedDict()
+    attribs = OrderedDict()  # type: dict
     text = None
     tail = None
     sublist = []
@@ -1376,7 +1383,7 @@ def underscoreToCamelCase(s):
        :return: The converted string (e.g. HelloWorld)
        :rtype: ``str``
     """
-    if not isinstance(s, STRING_TYPES):
+    if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
     components = s.split('_')
@@ -1422,7 +1429,7 @@ def pascalToSpace(s):
        :rtype: ``str``
     """
 
-    if not isinstance(s, STRING_TYPES):
+    if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
     tokens = pascalRegex.findall(s)
@@ -1446,7 +1453,7 @@ def string_to_table_header(string):
       :return: The converted string
       :rtype: ``str``
     """
-    if isinstance(string, STRING_TYPES):
+    if isinstance(string, STRING_OBJ_TYPES):
         return " ".join(word.capitalize() for word in string.replace("_", " ").split())
     else:
         raise Exception('The key is not a string: {}'.format(string))
@@ -1463,7 +1470,7 @@ def string_to_context_key(string):
      :return: The converted string
      :rtype: ``str``
     """
-    if isinstance(string, STRING_TYPES):
+    if isinstance(string, STRING_OBJ_TYPES):
         return "".join(word.capitalize() for word in string.split('_'))
     else:
         raise Exception('The key is not a string: {}'.format(string))
@@ -1556,7 +1563,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       :return: The parsed timestamp.
       :rtype: ``int``
     """
-    if isinstance(date_str_or_dt, STRING_TYPES):
+    if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
         return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
 
     # otherwise datetime.datetime
