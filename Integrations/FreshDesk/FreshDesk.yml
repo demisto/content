@@ -1308,6 +1308,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - Freshdesk-Test
