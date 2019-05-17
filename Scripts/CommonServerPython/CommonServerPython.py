@@ -17,7 +17,7 @@ IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
-    STRING_OBJ_TYPES = (str)
+    STRING_OBJ_TYPES = (str, )
 else:
     STRING_TYPES = (str, unicode)  # type: ignore
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
