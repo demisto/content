@@ -173,8 +173,6 @@ def test_populate_context_emails():
 
     context = populate_context([], [], [], [], [(global_entry, phishlabs_entry)])
 
-    # context['PhishLabs.Email(val.ID && val.ID === obj.ID)'][0].pop('Attribute')
-
     assert len(context.keys()) == 2
     assert context['Email'] == global_result
     assert context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] == phishlabs_result
