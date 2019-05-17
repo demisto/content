@@ -1,5 +1,22 @@
+import random
+import string
 import demistomock as demisto
 from datetime import datetime, timedelta
+
+""" Helper functions """
+
+
+def random_string(string_length=10) -> str:
+    """Generate a random string of fixed length
+
+    Args:
+        string_length (int): length of string to return
+
+    Returns:
+        str: random string
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(string_length))
 
 
 def test_get_start_time(mocker):
@@ -80,3 +97,10 @@ def test_prepare_fetch_query(mocker):
     assert firewall_query_with_severity_and_subtype == "SELECT * FROM panw.threat WHERE receive_time>1524383011 " \
                                                        "AND (subtype='url' OR subtype='antivirus') " \
                                                        "AND (severity='medium')"
+
+
+def test_get_encrypted():
+    from PaloAltoNetworksCortex import get_encrypted
+    auth_id = random_string(50)
+    auth_key = random_string(32)
+    get_encrypted(auth_id, auth_key)
