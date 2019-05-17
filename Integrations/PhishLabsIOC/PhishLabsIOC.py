@@ -278,8 +278,8 @@ def create_phishlabs_object(indicator: dict) -> dict:
     return {
         'ID': indicator.get('id'),
         'CreatedAt': indicator.get('createdAt'),
-        'UpdatedAt': indicator.get('updatedAt'),
-        'Type': indicator.get('type'),
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', '') != NONE_DATE else '',
+        # 'Type': indicator.get('type'),
         'Attribute': [{
             'Name': a.get('name'),
             'Type': a.get('type'),
@@ -489,7 +489,7 @@ def get_incident_indicators_command():
                     url_entries.append((context_object, phishlabs_object))
 
                 elif indicator_type == 'Domain':
-                    context_object = create_domain_context(result)
+                    context_object = create_domain_context(result, classification)
                     phishlabs_object['Name'] = result.get('value')
                     dbot_score['type'] = 'domain'
                     domain_entries.append((context_object, phishlabs_object))
