@@ -1,6 +1,6 @@
-id: FireEye AX - Detonate File
+id: Detonate File - FireEye AX
 version: -1
-name: FireEye AX - Detonate File
+name: Detonate File - FireEye AX
 fromversion: 4.0.0
 description: Detonate one or more files using the FireEye AX integration.
   This playbook returns relevant reports to the War Room and file reputations to the
