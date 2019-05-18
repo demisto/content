@@ -1,6 +1,7 @@
 id: FireEye AX - Detonate File
 version: -1
 name: FireEye AX - Detonate File
+fromversion: 4.0.0
 description: Detonate one or more files using the FireEye AX integration.
   This playbook returns relevant reports to the War Room and file reputations to the
   context data. The detonation supports the following file types - PE32, EXE, DLL,
@@ -17,6 +18,7 @@ tasks:
       id: 09a1d3ca-6465-42dc-8a28-4a1d382e76ff
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
