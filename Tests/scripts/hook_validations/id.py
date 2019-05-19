@@ -154,7 +154,7 @@ class IDSetValidator(object):
                 instance_to_version = instance[instance_id].get('toversion', '99.99.99')
                 instance_from_version = instance[instance_id].get('fromversion', '0.0.0')
                 if obj_id == instance_id:
-                    if section != obj_type:
+                    if section != obj_type and LooseVersion(obj_fromversion) >= LooseVersion(instance_to_version):
                         is_duplicated = True
                         break
 
