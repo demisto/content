@@ -1830,7 +1830,6 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
