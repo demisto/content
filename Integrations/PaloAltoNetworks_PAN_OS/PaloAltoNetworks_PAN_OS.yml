@@ -1827,6 +1827,7 @@ script:
     execution: false
     name: panorama-unregister-ip-tag
   isfetch: false
+  dockerimage: demisto/python3:3.7.3.221
   runonce: false
   script: '-'
   type: python
