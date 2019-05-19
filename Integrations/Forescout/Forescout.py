@@ -51,7 +51,7 @@ HOSTFIELDS_TO_INCLUDE = {
     'classification_source_os': 'ClassificationSourceOS',
     'onsite': 'Onsite',
     'access_ip': 'AccessIP',
-    'macs': 'MACAddress',
+    'macs': 'MAC',
     'openports': 'OpenPort',
     'mac_vendor_string': 'MacVendorString',
     'cl_type': 'ClType',
@@ -124,8 +124,8 @@ def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_H
     return root
 
 
-def create_update_hostproperties_request_body(host_ip: str, update_type: str,
-                                              properties: str, composite_property: str) -> ET_PHONE_HOME.Element:
+def create_update_hostfields_request_body(host_ip: str, update_type: str,
+                                              fields: str, composite_property: str) -> ET_PHONE_HOME.Element:
     """
     Create XML request body formatted to DEX expectations
 
@@ -135,7 +135,7 @@ def create_update_hostproperties_request_body(host_ip: str, update_type: str,
         IP address of the target host.
     update_type : str
         The type of update to execute.
-    properties : str
+    fields : str
         The property names and associated values to update the property with.
 
     Returns
@@ -149,7 +149,7 @@ def create_update_hostproperties_request_body(host_ip: str, update_type: str,
 
     ET_PHONE_HOME.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
     props_xml = ET_PHONE_HOME.SubElement(transaction, 'PROPERTIES')
-    prop_val_pairs = properties.split('&') if properties else []
+    prop_val_pairs = fields.split('&') if fields else []
     for pair in prop_val_pairs:
         prop, *value = pair.split('=')
         prop_xml = ET_PHONE_HOME.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
@@ -216,7 +216,7 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
     host_fields = data.get('hostFields', [])
     host_field_type = args.get('host_field_type', 'all_types')
     if not search_term:
-        # Still check to see if should filter host properties by their type
+        # Still check to see if should filter host fields by their type
         if host_field_type == 'all_types':
             return host_fields
         else:
@@ -417,7 +417,10 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             try:
                 # Try to parse json error response
                 res_json = res.json()
-                err_msg += '\n{}'.format(res_json.get('message'))
+                message = res_json.get('message')
+                if message.endswith(' See log for more details.'):
+                    message = message.replace(' See log for more details.', '')
+                err_msg += '\n{}'.format(message)
                 return_error(err_msg)
             except json.decoder.JSONDecodeError:
                 if res.status_code in {400, 401, 501}:
@@ -534,18 +537,16 @@ def get_host_command():
         included_fields_readable[key] = dict_to_formatted_string(val) if isinstance(val, (dict, list)) else val
 
     content = {
-        'ID': host.get('id'),
-        'IP': host.get('ip'),
-        'MAC': host.get('mac'),
-        'EndpointURL': data.get('_links', {}).get('self', {}).get('href'),
+        'ID': str(host.get('id')),
+        'IPAddress': host.get('ip', ''),
+        'MACAddress': host.get('mac', ''),
         **included_fields
     }
 
     # Construct endpoint object from API data according to Demisto conventions
     endpoint = {
-        'ID': host.get('id'),
-        'IPAddress': host.get('ip'),
-        'MACAddress': host.get('mac')
+        'IPAddress': host.get('ip', ''),
+        'MACAddress': host.get('mac', '')
     }
     dhcp_server = fields.get('dhcp_server', {}).get('value')
     if dhcp_server:
@@ -582,13 +583,13 @@ def get_hosts(args={}):
     url_suffix = '/api/hosts'
     headers = create_web_api_headers()
     rule_ids = args.get('rule_ids')
-    properties = args.get('properties')
-    if rule_ids and properties:
-        url_suffix += '?matchRuleId=' + rule_ids + '&' + properties
+    fields = args.get('fields')
+    if rule_ids and fields:
+        url_suffix += '?matchRuleId=' + rule_ids + '&' + fields
     elif rule_ids:
         url_suffix += '?matchRuleId=' + rule_ids
-    elif properties:
-        url_suffix += '?' + properties
+    elif fields:
+        url_suffix += '?' + fields
     response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
     return response_data
 
@@ -598,17 +599,15 @@ def get_hosts_command():
     response_data = get_hosts(args)
     content = [
         {
-            'ID': x.get('hostId'),
-            'IP': x.get('ip'),
-            'MAC': x.get('mac'),
-            'EndpointURL': x.get('_links', {}).get('self', {}).get('href')
+            'ID': str(x.get('hostId')),
+            'IPAddress': x.get('ip', ''),
+            'MACAddress': x.get('mac', '')
         } for x in response_data.get('hosts', [])
     ]
     endpoints = [
         {
-            'ID': x.get('hostId'),
-            'IPAddress': x.get('ip'),
-            'MACAddress': x.get('mac')
+            'IPAddress': x.get('ip', ''),
+            'MACAddress': x.get('mac', '')
         } for x in response_data.get('hosts', [])
     ]
     context = {
@@ -617,7 +616,10 @@ def get_hosts_command():
     }
     title = 'Active Endpoints'
     human_readable = tableToMarkdown(title, content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=context, raw_response=response_data)
+    if not content:
+        demisto.results('No hosts found for the specified filters.')
+    else:
+        return_outputs(readable_output=human_readable, outputs=context, raw_response=response_data)
 
 
 def get_hostfields():
@@ -636,8 +638,9 @@ def get_hostfields_command():
     else:
         content = [{key.title(): val for key, val in x.items()} for x in filtered_data]
         context = {'Forescout.HostField': content}
-        title = 'Index of Host Properties'
-        human_readable = tableToMarkdown(title, content, removeNull=True)
+        title = 'Index of Host Fields'
+        table_headers = ['Label', 'Name', 'Description', 'Type']
+        human_readable = tableToMarkdown(title, content, headers=table_headers, removeNull=True)
         return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
 
@@ -689,33 +692,33 @@ def update_lists_command():
     demisto.results(result_msg)
 
 
-def update_host_properties(args={}):
+def update_host_fields(args={}):
     host_ip = args.get('host_ip', '')
     update_type = args.get('update_type', '')
-    properties = args.get('properties', '')
+    fields = args.get('fields', '')
     composite_property = args.get('composite_property', '').replace('\'', '"')
-    req_body = create_update_hostproperties_request_body(host_ip, update_type, properties, composite_property)
+    req_body = create_update_hostfields_request_body(host_ip, update_type, fields, composite_property)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Hosts'
     resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
     return resp_content
 
 
-def update_host_properties_command():
+def update_host_fields_command():
     args = demisto.args()
     update_type = args.get('update_type', '')
-    properties = args.get('properties', '')
-    response_content = update_host_properties(args)
+    fields = args.get('fields', '')
+    response_content = update_host_fields(args)
 
     # Because the API has an error and says it deletes multiple things when it only deletes one
     # have to take care of it behind the curtains
     if update_type == 'delete':
-        args['properties'] = ''
-        update_host_properties(args)  # Takes care of composite_property
+        args['fields'] = ''
+        update_host_fields(args)  # Takes care of composite_property
         args['composite_property'] = ''
-        for prop in properties.split('&'):
-            args['properties'] = prop
-            update_host_properties(args)
+        for prop in fields.split('&'):
+            args['fields'] = prop
+            update_host_fields(args)
 
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
     try:
@@ -739,7 +742,7 @@ COMMANDS = {
     'forescout-get-hostfields': get_hostfields_command,
     'forescout-get-policies': get_policies_command,
     'forescout-update-lists': update_lists_command,
-    'forescout-update-host-properties': update_host_properties_command
+    'forescout-update-host-fields': update_host_fields_command
 }
 
 ''' EXECUTION '''
@@ -774,7 +777,7 @@ def main():
 
     except Exception as e:
         return_error(str(e))
-
+        # raise e
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':

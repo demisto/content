@@ -26,7 +26,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -48,26 +48,27 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter hosts based on host property values. Enter properties with
-        their associated values in the following format, '{prop_1}={val_1}&{prop_2}={val_2}
-        … &{prop_n}={val_n}' where '{prop_1}' through '{prop_n}' are replaced by actual
-        property names and '{val_1}' through '{val_n}' are replaced by the desired
-        matching values. Note that a list property may be specified with the values
-        separated by commas. Only hosts whose properties match all the specified values
-        will be returned. A composite property may also be specified. If entered in
-        the format where all the field-value pairs are in a single set of square brackets,
-        for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]' then
-        only hosts for which the specified composite property's fields all match the
-        values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
+      description: Filter hosts based on host field values. Enter fields with their
+        associated values in the following format, '{field_1}={val_1}&{field_2}={val_2}
+        … &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced by
+        actual field names and '{val_1}' through '{val_n}' are replaced by the desired
+        matching values. Note that a list field may be specified with the values separated
+        by commas. Only hosts whose properties match all the specified values will
+        be returned. For a list of potential host fields that may be specified, try
+        executing the 'forescout-get-hostfields' command. A composite property may
+        also be specified. If entered in the format where all the field-value pairs
+        are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]'
+        then only hosts for which the specified composite property's fields all match
+        the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
         where each field-value pair is enclosed in its own set of brackets, then hosts
-        for which the composite property's contains any of the field-values specified
+        for which the composite property contains any of the field-values specified
         will be returned. Note that for composite properties, sub-fields should be
         entered as their internal representation in Forescout. To find internal representation
         for a composite property's sub-fields try executing 'forescout-get-host' command
         with the host specified in the 'identifier' argument and the name of the composite
         property entered in the 'fields'  argument of the command.
       isArray: false
-      name: properties
+      name: fields
       required: false
       secret: false
     deprecated: false
@@ -78,15 +79,17 @@ script:
     - contextPath: Forescout.Host.ID
       description: Forescout ID for the host.
       type: Number
-    - contextPath: Forescout.Host.IP
+    - contextPath: Forescout.Host.IPAddress
       description: IP Address of the host.
       type: String
-    - contextPath: Forescout.Host.MAC
+    - contextPath: Forescout.Host.MACAddress
       description: MAC Address of the host.
       type: String
-    - contextPath: Forescout.Host.EndpointURL
-      description: Endpoint URL to make an API call to in order to retrieve details
-        about the host.
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the host.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the host.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -295,7 +298,7 @@ script:
     - contextPath: Forescout.Host.NmapNetfunc7
       description: Nmap-Network Function(Ver. 7.01)
       type: String
-    - contextPath: Forescout.Host.MACAddress
+    - contextPath: Forescout.Host.MAC
       description: ARP Spoofing (Obsolete)
       type: Unknown
     - contextPath: Forescout.Host.OpenPort
@@ -325,18 +328,36 @@ script:
     - contextPath: Forescout.Host.DhcpHostname
       description: The device Host Name as advertised by DHCP
       type: String
-    - contextPath: Forescout.Host.IP
+    - contextPath: Forescout.Host.IPAddress
       description: Host IP address
       type: String
-    - contextPath: Forescout.Host.MAC
+    - contextPath: Forescout.Host.MACAddress
       description: Host MAC address
-      type: String
-    - contextPath: Forescout.Host.EndpointURL
-      description: Forescout endpoint URL for the host
       type: String
     - contextPath: Forescout.Host.ID
       description: Forescout ID number for the host
       type: Number
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the host.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the host.
+      type: String
+    - contextPath: Endpoint.DHCPServer
+      description: Endpoint DHCP Server.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: Hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint Operating System.
+      type: String
+    - contextPath: Endpoint.Model
+      description: Vendor and Model of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: Domain of the endpoint.
+      type: String
   - deprecated: false
     description: |-
       Retrieves a list of all policies defined in the Forescout platform and
@@ -360,7 +381,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: update
-      description: The type of update to perform on a host property.
+      description: The type of update to perform on a host field.
       isArray: false
       name: update_type
       predefined:
@@ -369,15 +390,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Enter the property names and their associated values in the following
-        format, '{prop-1}={val-1}:{val-2}:{val-3}&{prop-2}={val-4}& ... &{prop-n}={val-n}'
-        where {prop-1} through {prop-n} would be replaced by actual property names
+      description: Enter the field names and their associated values in the following
+        format, '{field-1}={val-1}:{val-2}:{val-3}&{field-2}={val-4}& ... &{field_n}={val-n}'
+        where {field-1} through {field-n} would be replaced by actual field names
         and {val-1} through {val-n} would be replaced by the values you wished to
-        assign to the respective properties. Multiple property-value(s) pairs should
-        be separated by an ampersand ('&') and in the case that the value of a property
-        is a list, list values should be separated using a colon (':').
+        assign to the respective fields. Multiple field-value(s) pairs should be separated
+        by an ampersand ('&') and in the case that the value of a field is a list,
+        list values should be separated using a colon (':').
       isArray: false
-      name: properties
+      name: fields
       required: false
       secret: false
     - default: false
@@ -391,20 +412,20 @@ script:
       description: 'Composite properties entered in JSON format. For example, ''{"Example_Composite":
         [{"Shape": "Triangle", "Color": "Beige"}, {"Shape": "Square", "Color": "Violet"}]}''
         where "Example_Composite" is the name of the Composite property in Forescout
-        and "Shape" and "Color" are sub properties. If the composite property was
-        defined in Forescout as an aggregate property then additional records will
-        be appended, otherwise they will be overwritten. '
+        and "Shape" and "Color" are sub fields. If the composite property was defined
+        in Forescout as an aggregate property then additional records will be appended,
+        otherwise they will be overwritten. '
       isArray: false
       name: composite_property
       required: false
       secret: false
     deprecated: false
-    description: Update a host's properties. Note that if a List Property or Composite
-      Property has not been defined in Forescout to 'Aggregate new values from each
-      update' that performing an update operation on a property will overwrite previous
-      data written to that property.
+    description: Update a host's field. Note that if a List field or Composite field
+      has not been defined in Forescout to 'Aggregate new values from each update'
+      that performing an update operation on a field will overwrite previous data
+      written to that field.
     execution: false
-    name: forescout-update-host-properties
+    name: forescout-update-host-fields
   - arguments:
     - auto: PREDEFINED
       default: true
