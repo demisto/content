@@ -161,7 +161,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3570
+          "y": 3720
         }
       }
     note: false
@@ -779,7 +779,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -810,12 +810,54 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 2b5a1130-6ef3-49af-8b20-7380a7503f6a
+    type: regular
+    task:
+      id: 2b5a1130-6ef3-49af-8b20-7380a7503f6a
+      version: -1
+      name: Test date results handling
+      description: Performs a query on BigQuery.
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT status_change_date FROM `bigquery-public-data.austin_311.311_service_requests`
+          LIMIT 1000
+      use_legacy_sql: {}
+      use_query_cache: {}
+      write_disposition: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3585,
+        "height": 3735,
         "width": 380,
         "x": 450,
         "y": 50
