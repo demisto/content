@@ -416,7 +416,6 @@ script:
     arguments: []
     description: Fetch list of versions
 system: true
-releaseNotes: "Fix instance configuration test"
 tests:
   - No test - missing instace
 

@@ -428,4 +428,3 @@ timeout: 300ns
 runonce: false
 tests:
   - No test
-releaseNotes: "-"

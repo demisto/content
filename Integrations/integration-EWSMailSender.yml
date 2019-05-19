@@ -161,6 +161,7 @@ script:
         cc = cc.split(",") if cc else None
         to = to.split(",") if to else None
         manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+        subject = subject[:252] + '...' if len(subject) > 255 else subject
 
         file_entries_for_attachments = []
         attachments_names = []
@@ -315,7 +316,6 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
-releaseNotes: "-"
 tests:
   - "EWS Mail Sender Test"
   - "EWS Mail Sender Test 2"

@@ -386,11 +386,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
-      - "21"
-      - "20"
-      - "19"
-      - "18"
       - "17"
       - "16"
       - "15"
@@ -531,131 +526,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "18":
-    id: "18"
-    taskid: a35de4c5-fc3b-417f-856c-97ac0f87b001
-    type: regular
-    task:
-      id: a35de4c5-fc3b-417f-856c-97ac0f87b001
-      version: -1
-      name: Check IP with Zscaler
-      script: Zscaler|||ip
-      type: regular
-      iscommand: true
-      brand: Zscaler
-    scriptarguments:
-      ip:
-        simple: 1.1.1.2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2430,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: bd731ec0-6741-4a53-8329-06f28d86b407
-    type: regular
-    task:
-      id: bd731ec0-6741-4a53-8329-06f28d86b407
-      version: -1
-      name: Check IP with Zscaler
-      script: Zscaler|||ip
-      type: regular
-      iscommand: true
-      brand: Zscaler
-    scriptarguments:
-      ip:
-        simple: 1.1.1.2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1990,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-  "20":
-    id: "20"
-    taskid: f7d85818-6025-4cb8-86af-1ea38ed07297
-    type: regular
-    task:
-      id: f7d85818-6025-4cb8-86af-1ea38ed07297
-      version: -1
-      name: Check IP with Zscaler
-      script: Zscaler|||ip
-      type: regular
-      iscommand: true
-      brand: Zscaler
-    scriptarguments:
-      ip:
-        simple: 1.1.1.2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1570,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-  "21":
-    id: "21"
-    taskid: c2ca27c2-93bf-42b1-89bf-8c3206b85665
-    type: regular
-    task:
-      id: c2ca27c2-93bf-42b1-89bf-8c3206b85665
-      version: -1
-      name: Check IP with Zscaler
-      script: Zscaler|||ip
-      type: regular
-      iscommand: true
-      brand: Zscaler
-    scriptarguments:
-      ip:
-        simple: 1.1.1.2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1140,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-  "22":
-    id: "22"
-    taskid: 99703783-7cc1-4478-8ad5-82c4bc0cc32d
-    type: regular
-    task:
-      id: 99703783-7cc1-4478-8ad5-82c4bc0cc32d
-      version: -1
-      name: Check IP with Zscaler
-      script: Zscaler|||ip
-      type: regular
-      iscommand: true
-      brand: Zscaler
-    scriptarguments:
-      ip:
-        simple: 1.1.1.2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -710,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
   "23":
     id: "23"
     taskid: 166d3876-dc2d-480e-8fcb-ad33d4aa70d9
@@ -690,12 +560,45 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: e26d1c1e-4b20-4561-8778-5ec2adedc24c
+    type: regular
+    task:
+      id: e26d1c1e-4b20-4561-8778-5ec2adedc24c
+      version: -1
+      name: test SandBox Report
+      description: asasd
+      script: '|||zscaler-sandbox-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      details:
+        simple: full
+      md5:
+        simple: 3FD0EA0AE759D58274310C022FB0CBBA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2425,
+        "height": 2615,
         "width": 3290,
         "x": -2430,
         "y": -590

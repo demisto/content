@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+fromversion: 4.5.0
 script: |-
   # Common functions script
   # =======================
@@ -552,7 +553,7 @@ script: |-
       :rtype: ``any``
       """
       def func_wrapper(*args, **kwargs):
-          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
           return func(*args, **kwargs)
 
       return func_wrapper
@@ -662,7 +663,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if not data:
+      if data is None:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1235,7 +1236,7 @@ script: |-
       :type outputs: ``dict``
       :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
 
-      :type raw_response: ``dict``
+      :type raw_response: ``dict`` | ``list``
       :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
       raw response from the 3rd party service (originally Contents)
 
@@ -1537,6 +1538,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added proxy handling method."
 tests:
-  - TestPYCommonServer
+  - TestCommonPython

@@ -513,4 +513,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Add 'Extract Indicators From File - test' playbook for version 4.0"

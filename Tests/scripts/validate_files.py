@@ -70,8 +70,12 @@ class FilesValidator(object):
             file_status = file_data[0]
             file_path = file_data[1]
 
-            if file_path.endswith('.js') or file_path.endswith('.py'):
+            if checked_type(file_path, CODE_FILES_REGEX):
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+            elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
+
             if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
                 modified_files_list.add(file_path)
             elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
@@ -253,6 +257,8 @@ class FilesValidator(object):
             splitted_regex = regex.split(".*")
             directory = splitted_regex[0]
             for root, dirs, files in os.walk(directory):
+                if root not in DIR_LIST:  # Skipping in case we entered a package
+                    continue
                 print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
                 for file_name in files:
                     file_path = os.path.join(root, file_name)

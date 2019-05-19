@@ -353,4 +353,3 @@ script:
   runonce: false
 tests:
   - ArcSight ESM v2 Test
-releaseNotes: "enhancements: "

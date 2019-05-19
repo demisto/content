@@ -1740,4 +1740,3 @@ script:
   runonce: false
 tests:
 - MISP V2 Test
-releaseNotes: "-"

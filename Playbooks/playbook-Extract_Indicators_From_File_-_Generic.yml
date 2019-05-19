@@ -697,7 +697,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-releaseNotes: "Fixed a bug where the playbook would try to extract indicators from MSG and EML files."
 tests:
   - Extract Indicators From File - test
-releaseNotes: 'fix Is there a PDF file task - check if file.type and file.info contains pdf'

@@ -830,7 +830,6 @@
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
   "recipients": null,
-  "releaseNotes": "changed occurred time format in decoder",
   "type": "pdf",
   "tags": [],
   "createdBy": "DBot",

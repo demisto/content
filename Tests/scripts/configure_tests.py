@@ -67,10 +67,6 @@ def get_modified_files(files_string):
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
 
-            # docs does not influence tests
-            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
-                continue
-
             # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
@@ -82,6 +78,14 @@ def get_modified_files(files_string):
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+
+            # docs and test files does not influence integration tests filtering
+            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR):
+                if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
+                    continue
+
+            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
+                continue
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
@@ -160,7 +164,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
         if detected_usage and test_playbook_id not in test_ids:
             caught_missing_test = True
             print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
-                        "pleae update the conf.json file accordingly".format(test_playbook_name))
+                        "please update the conf.json file accordingly".format(test_playbook_name))
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
@@ -263,7 +267,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
             _id = get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))

@@ -424,4 +424,3 @@ runonce: false
 dockerimage: demisto/dateutil
 tests:
   - No test
-releaseNotes: "Add new script - use dateutil docker image"

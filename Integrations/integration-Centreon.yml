@@ -318,6 +318,5 @@ script:
       description: Service state
     description: All the monitoring information regarding services
   runonce: false
-releaseNotes: "Fixed proxy logic"
 tests:
     - Centreon-Test-Playbook

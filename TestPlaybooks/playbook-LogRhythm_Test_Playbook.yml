@@ -496,4 +496,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "improve logRhythm test playbook"

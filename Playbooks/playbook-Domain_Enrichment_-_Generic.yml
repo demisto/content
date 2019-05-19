@@ -328,3 +328,5 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
+tests:
+  - No test (test is old and uses virustotal which has quota problems. The v2 playbook has a better test)

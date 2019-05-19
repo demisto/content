@@ -815,6 +815,5 @@
   "fromVersion": "3.5.0",
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
   "name": "Daily incidents",
-  "releaseNotes": "changed occurred time format in decoder",
   "id": "docxDailyIncidentReport"
 }

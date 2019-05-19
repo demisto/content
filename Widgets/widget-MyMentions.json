@@ -12,6 +12,5 @@
   "version": -1,
   "category": "others",
   "widgetType": "list",
-  "description": "",
-  "releaseNotes": "Now show only unread messages"
+  "description": ""
 }
