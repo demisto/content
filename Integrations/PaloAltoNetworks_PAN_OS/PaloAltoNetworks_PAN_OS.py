@@ -166,7 +166,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files=None):
 
 
 def add_argument_list(arg, field_name, member):
-    member_stringify_list = ''
+    member_stringify_list: str = ''
     if arg:
         for item in arg:
             member_stringify_list += '<member>' + item + '</member>'
@@ -978,7 +978,7 @@ def panorama_edit_address_group_command():
             return_error('To edit a Static Address group,'
                          'Please specify exactly one of the following: element_to_add, element_to_remove')
         address_group_prev = panorama_get_address_group(address_group_name)
-        address_group_list = []
+        address_group_list: list = []
         if 'static' in address_group_prev:
             if address_group_prev['static']:
                 address_group_list = argToList(address_group_prev['static']['member'])
@@ -997,6 +997,8 @@ def panorama_edit_address_group_command():
         'action': 'edit',
         'type': 'config',
         'key': API_KEY,
+        'xpath': '',
+        'element': ''
     }
 
     address_group_output = {'Name': address_group_name}
@@ -1691,7 +1693,7 @@ def panorama_custom_url_category_add_sites_command():
 
     description = custom_url_category.get('description')
 
-    custom_url_category_sites = []
+    custom_url_category_sites: list = []
     if 'list' in custom_url_category:
         if custom_url_category['list']:
             custom_url_category_sites = argToList(custom_url_category['list']['member'])
@@ -1822,8 +1824,8 @@ def prettify_get_url_filter(url_filter):
         pretty_url_filter['Description'] = url_filter['description']
 
     pretty_url_filter['Category'] = []
-    url_category_list = []
-    action = ''
+    url_category_list: list = []
+    action: str = ''
     if 'alert' in url_filter:
         url_category_list = url_filter['alert']['member']
         action = 'alert'
@@ -2823,7 +2825,7 @@ def panorama_refresh_edl_command():
 
 @logger
 def panorama_register_ip_tag(tag, ips, persistent):
-    entry = ''
+    entry: str = ''
     for ip in ips:
         entry += '<entry ip=\"' + ip + '\" persistent=\"' + persistent + '\"><tag><member>' + tag
         + '</member></tag></entry>'
@@ -2854,9 +2856,9 @@ def panorama_register_ip_tag_command():
     persistent = demisto.args()['persistent'] if 'persistent' in demisto.args() else 'true'
     persistent = '1' if persistent == 'true' else '0'
 
-    result = panorama_register_ip_tag(tag, ips, persistent)
+    result = panorama_register_ip_tag(tag, ips, str(persistent))
 
-    registered_ip = {}
+    registered_ip: dict = {}
     # update context only if IPs are persistent
     if persistent == '1':
         # get existing IPs for this tag
@@ -2886,7 +2888,7 @@ def panorama_register_ip_tag_command():
 
 @logger
 def panorama_unregister_ip_tag(tag, ips):
-    entry = ''
+    entry: str = ''
     for ip in ips:
         entry += '<entry ip=\"' + ip + '\"><tag><member>' + tag + '</member></tag></entry>'
 
