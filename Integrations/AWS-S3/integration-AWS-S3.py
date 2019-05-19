@@ -8,6 +8,7 @@ import math
 import json
 from datetime import datetime, date
 from botocore.config import Config
+from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
@@ -321,14 +322,18 @@ def upload_file_command(args):
     )
     path = get_file_path(args.get('entryID'))
 
-    with open(path['path'], 'rb') as data:
-        client.upload_fileobj(data, args.get('bucket'), args.get('key'))
-        demisto.results('File {file} was uploaded successfully to {bucket}'.format(
-            file=args.get('key'), bucket=args.get('bucket')))
+    try:
+        with open(path['path'], 'rb') as data:
+            client.upload_fileobj(data, args.get('bucket'), args.get('key'))
+            demisto.results('File {file} was uploaded successfully to {bucket}'.format(
+                file=args.get('key'), bucket=args.get('bucket')))
+    except (OSError, IOError) as e:
+        return_error("Could not read file: {path}".format(path=path))
 
 
 """COMMAND BLOCK"""
 try:
+    handle_proxy()
     LOG('Command being called is {command}'.format(command=demisto.command()))
     if demisto.command() == 'test-module':
         client = aws_session()
@@ -362,6 +367,11 @@ try:
 
     elif demisto.command() == 'aws-s3-upload-file':
         upload_file_command(demisto.args())
+
+except ResponseParserError as e:
+    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
+        error=type(e)))
+    LOG(e.message)
 
 except Exception as e:
     return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
