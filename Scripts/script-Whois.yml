@@ -22,3 +22,4 @@ dependson:
   must:
   - whois
 timeout: 0s
+releaseNotes: "-"
