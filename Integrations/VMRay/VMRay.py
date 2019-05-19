@@ -641,7 +641,7 @@ def post_tags():
         analysis_status = post_tags_to_analysis(analysis_id, tag)
         if analysis_status.get("result") == "ok":
             return_outputs(
-                "Tags: {} has been added to analysis:".format(tag, analysis_id),
+                "Tags: {} has been added to analysis: {}".format(tag, analysis_id),
                 {},
                 raw_response=analysis_status,
             )
@@ -649,7 +649,7 @@ def post_tags():
         submission_status = post_tags_to_submission(submission_id, tag)
         if submission_status.get("result") == "ok":
             return_outputs(
-                "Tags: {} has been added to submission:".format(tag, submission_id),
+                "Tags: {} has been added to submission: {}".format(tag, submission_id),
                 {},
                 raw_response=submission_status,
             )
@@ -677,7 +677,7 @@ def delete_tags():
         submission_status = delete_tags_from_submission(submission_id, tag)
         if submission_status.get("result") == "ok":
             return_outputs(
-                "Tags: {} has been added to submission:".format(tag, submission_id),
+                "Tags: {} has been added to submission: {}".format(tag, submission_id),
                 {},
                 raw_response=submission_status,
             )
@@ -685,7 +685,7 @@ def delete_tags():
         analysis_status = delete_tags_from_analysis(analysis_id, tag)
         if analysis_status.get("result") == "ok":
             return_outputs(
-                "Tags: {} has been added to analysis:".format(tag, analysis_id),
+                "Tags: {} has been added to analysis: {}".format(tag, analysis_id),
                 {},
                 raw_response=analysis_status,
             )
