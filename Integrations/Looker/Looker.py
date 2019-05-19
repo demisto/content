@@ -27,7 +27,7 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/api/3.0'
 # Request headers (preparation)
-HEADERS = {}
+HEADERS = dict()
 
 
 ''' HELPER FUNCTIONS '''
@@ -209,7 +209,7 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
         })
 
         if contents:
-            entries.append(
+            entries.append(  # type: ignore
                 'This command has dynamic output keys.\n'
                 'To access them in the context, copy the key\'s path from the column header in the results table.'
             )
