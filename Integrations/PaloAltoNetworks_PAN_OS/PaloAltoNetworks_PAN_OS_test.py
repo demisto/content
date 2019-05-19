@@ -1,4 +1,4 @@
-from 'PaloAltoNetworks_PAN-OS' import add_argument_list, add_argument, add_argument_yes_no, \
+from PaloAltoNetworks_PAN_OS import add_argument_list, add_argument, add_argument_yes_no, \
     add_argument_target, prettify_addresses_arr
 
 
