@@ -204,10 +204,10 @@ def build_analysis_data(analyses):
         for analysis in analyses
     ]
 
-    scores = list()
+    scores = list()  # type: list
     for analysis in entry_context:
         scores.extend(score_by_hash(analysis))
-    entry_context[outputPaths.get("dbotscore")] = scores
+    entry_context[outputPaths["dbotscore"]] = scores
 
     return entry_context
 
@@ -805,4 +805,4 @@ try:
     elif COMMAND == "vmray-get-iocs":
         get_iocs_command()
 except Exception as exc:
-    return_error(exc.message)
+    return_error(str(exc))
