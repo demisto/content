@@ -181,6 +181,11 @@ def get_access_token():
                 dbot_response.status_code, dbot_response.reason, dbot_response.text))
             err_response = dbot_response.json()
             server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
             if server_msg:
                 msg += ' Server message: {}'.format(server_msg)
         except Exception as ex:
