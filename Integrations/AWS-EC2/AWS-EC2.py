@@ -188,8 +188,7 @@ def parse_date(dt):
         arr = dt.split("-")
         parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
     except ValueError as e:
-        error = type(e)
-        return_error(f"Date could not be parsed. Please check the date again.\n{error}")
+        return_error("Date could not be parsed. Please check the date again.\n{error}".format(error=type(e))
     return parsed_date
 
 
