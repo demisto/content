@@ -300,62 +300,10 @@ script:
     - contextPath: PhishLabs.Case.Status
       description: Case status
       type: String
-  - arguments:
-    - default: true
-      description: The case ID, run the phishlabs-list-cases to get it.
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
-      description: The case number.
-      isArray: false
-      name: number
-      required: false
-      secret: false
-    - default: false
-      description: The note to add.
-      isArray: false
-      name: note
-      required: false
-      secret: false
-    deprecated: false
-    description: Adds notes to a case in PhishLabs.
-    execution: false
-    name: phishlabs-add-case-note
-  - arguments:
-    - default: true
-      description: The case ID, run the phishlabs-list-cases to get it.
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
-      description: The case number.
-      isArray: false
-      name: number
-      required: false
-      secret: false
-    - default: false
-      description: The file entry ID in Demisto.
-      isArray: false
-      name: entry_id
-      required: true
-      secret: false
-    - default: false
-      description: The file name
-      isArray: false
-      name: file_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Adds an attachment to a case in PhishLabs.
-    execution: false
-    name: phishlabs-add-case-attachment
   isfetch: false
   runonce: false
   script: '-'
   type: python
-releaseNotes: "-"
+releaseNotes: '-'
 tests:
-  - No test - nope
+- No test - nope
