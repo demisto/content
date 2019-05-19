@@ -429,3 +429,4 @@ outputs:
 - contextPath: VMRay.Sample.Classifications
   description: Classifications of sample
   type: string
+fromversion: 4.0.0

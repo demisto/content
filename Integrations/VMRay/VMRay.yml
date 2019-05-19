@@ -470,4 +470,4 @@ script:
   script:
     script: ''
   type: python
-  fromversion: 4.0.0
+fromversion: 4.0.0
