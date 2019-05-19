@@ -12,13 +12,6 @@ args:
   required: false
   secret: false
 - default: false
-  description: Maximal file size to load, in bytes. Default is 1MB.
-  isArray: false
-  name: maxFileSize
-  required: false
-  secret: false
-  deprecated: false
-- default: false
   defaultValue: '20'
   description: Maximum amount of imags to be extracted from the pdf file.
   isArray: false
@@ -29,10 +22,10 @@ args:
   secret: false
 comment: Load the contents and metadata of a PDF file into context.
 commonfields:
-  id: ReadPDFFile
+  id: ReadPDFFileV2
   version: -1
 enabled: true
-name: ReadPDFFile
+name: ReadPDFFileV2
 outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
@@ -79,6 +72,7 @@ runas: DBotWeakRole
 runonce: false
 tests:
 - Extract Indicators From File - test
+- ReadPDFFile-Test
 fromversion: 4.1.0
 releaseNotes: "Reimplemented ReadPDFFile script. Deprecated maxFileSize (as it wasn't used) and added new functionality:
                - Expanded metadata: metadata displays more information than before.

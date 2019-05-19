@@ -13,6 +13,7 @@ ROOT_PATH = os.getcwd()
 MAX_IMAGES = int(demisto.args().get('maxImages', 20))
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 
+
 def mark_suspicious(suspicious_reason, entry_id):
     """Missing EOF, file may be corrupted or suspicious file"""
 
