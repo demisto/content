@@ -166,7 +166,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files=None):
 
 
 def add_argument_list(arg, field_name, member):
-    member_stringify_list: str = ''
+    member_stringify_list = ''
     if arg:
         for item in arg:
             member_stringify_list += '<member>' + item + '</member>'
