@@ -225,7 +225,7 @@ def add_argument_target(arg: str, field_name: str) -> str:
 
 
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: str = None,
-                                 destination: str = None, negate_source: str = None, negate_destination:str = None,
+                                 destination: str = None, negate_source: str = None, negate_destination: str = None,
                                  action: str = None, service: str = None, disable: str = None, application: str = None,
                                  source_user: str = None, category: str = None, from_: str = None, to: str = None,
                                  description: str = None, target: str = None, log_forwarding: str = None,
