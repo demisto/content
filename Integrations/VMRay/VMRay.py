@@ -640,7 +640,7 @@ def delete_tags_from_submission(submission_id, tag):
 def delete_tags():
     analysis_id = demisto.args().get("analysis_id")
     submission_id = demisto.args().get("submission_id")
-    tag = demisto.args().get("tags")
+    tag = demisto.args().get("tag")
     if not submission_id and not analysis_id:
         return_error("No submission ID or analysis ID has been provided")
     if submission_id:
