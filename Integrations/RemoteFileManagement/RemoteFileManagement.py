@@ -89,7 +89,7 @@ def scp_execute(file_name, file_path):
 
 
 def rfm_get_external_file(file_path):
-    command = 'cat ' + file_path
+    command = f'cat {file_path}'
     result = ssh_execute(command)
     return result
 
@@ -100,7 +100,7 @@ def rfm_get_external_file_command():
     """
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
-        file_path = DOCUMENT_ROOT + '/' + file_path
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
     result = rfm_get_external_file(file_path)
 
@@ -113,7 +113,7 @@ def rfm_get_external_file_command():
 
 
 def rfm_search_external_file(file_path, search_string):
-    return ssh_execute('grep "' + search_string + '" ' + file_path)
+    return ssh_execute(f'grep {search_string} {file_path}')
 
 
 def rfm_search_external_file_command():
@@ -122,7 +122,7 @@ def rfm_search_external_file_command():
     """
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
-        file_path = DOCUMENT_ROOT + '/' + file_path
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
     search_string = demisto.args().get('search_string')
 
     result = rfm_search_external_file(file_path, search_string)
@@ -148,8 +148,8 @@ def rfm_update_external_file(file_path, list_name, verbose):
 
     file_name = file_path.rsplit('/', 1)[-1] + '.txt'
     try:
-        with open(file_name, 'w') as f:
-            f.write("\n".join(list_data))
+        with open(file_name, 'w') as file:
+            file.write("\n".join(list_data))
         success = scp_execute(file_name, file_path)
     finally:
         shutil.rmtree(file_name, ignore_errors=True)
@@ -158,18 +158,19 @@ def rfm_update_external_file(file_path, list_name, verbose):
         return False
     else:
         if verbose:
-            return ssh_execute('cat ' + file_path)
+            return ssh_execute(f'cat {file_path}')
         else:
             return True
 
 
 def rfm_update():
     """
-    Updates the instance context with the list name and items given and then Override external file path with internal list
+    Updates the instance context with the list name and items given
+    Overrides external file path with internal list
     """
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
-        file_path = DOCUMENT_ROOT + '/' + file_path
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
     list_name = demisto.args().get('list_name')
     list_items = argToList(demisto.args().get('list_items'))
     add = demisto.args().get('add_or_remove') == 'add'
@@ -179,6 +180,10 @@ def rfm_update():
     dict_of_lists = demisto.getIntegrationContext()
     if not dict_of_lists:
         dict_of_lists = {list_name: list_items}
+        if verbose:
+            md = tableToMarkdown('List items:', list_items, headers=[list_name])
+        else:
+            md = 'Instance context updated successfully'
     else:
         if not dict_of_lists.get(list_name, None) and not add:
             return_error('Cannot remove items from an empty list')
@@ -232,7 +237,7 @@ def rfm_delete_external_file_command():
     """
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
-        file_path = DOCUMENT_ROOT + '/' + file_path
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
     result = rfm_delete_external_file(file_path)
 
     demisto.results({
@@ -355,7 +360,7 @@ def rfm_compare_command():
     list_name = demisto.args().get('list_name')
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
-        file_path = DOCUMENT_ROOT + '/' + file_path
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
