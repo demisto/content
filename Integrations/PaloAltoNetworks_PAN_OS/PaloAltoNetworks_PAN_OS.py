@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 import json
 import uuid
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -89,8 +89,8 @@ PAN_OS_ERROR_DICT = {
 ''' HELPERS '''
 
 
-def http_request(uri: str, method: str, headers: Dict = None,
-                 body: Dict = None, params: Dict = None, files=None) -> Any:
+def http_request(uri: str, method: str, headers: Dict = {},
+                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -108,7 +108,7 @@ def http_request(uri: str, method: str, headers: Dict = None,
         return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
-    if params['type'] == 'export':
+    if params.get('type') == 'export':
         return result
     json_result = json.loads(xml2json(result.text))
 
@@ -167,7 +167,7 @@ def http_request(uri: str, method: str, headers: Dict = None,
     return json_result
 
 
-def add_argument_list(arg: list, field_name: str, member: str) -> str:
+def add_argument_list(arg: Any, field_name: str, member: Optional[bool]) -> str:
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -182,7 +182,7 @@ def add_argument_list(arg: list, field_name: str, member: str) -> str:
         return ''
 
 
-def add_argument(arg: str, field_name: str, member: str) -> str:
+def add_argument(arg: Optional[str], field_name: str, member: bool) -> str:
     if arg:
         if member:
             return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
@@ -192,7 +192,7 @@ def add_argument(arg: str, field_name: str, member: str) -> str:
         return ''
 
 
-def add_argument_open(arg: str, field_name: str, member: str) -> str:
+def add_argument_open(arg: Optional[str], field_name: str, member: bool) -> str:
     if arg:
         if member:
             return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
@@ -205,7 +205,7 @@ def add_argument_open(arg: str, field_name: str, member: str) -> str:
             return '<' + field_name + '>any</' + field_name + '>'
 
 
-def add_argument_yes_no(arg: str, field_name: str, option: bool = False) -> str:
+def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = False) -> str:
     if arg and arg == 'No':
         result = '<' + field_name + '>' + 'no' + '</' + field_name + '>'
     else:
@@ -217,7 +217,7 @@ def add_argument_yes_no(arg: str, field_name: str, option: bool = False) -> str:
     return result
 
 
-def add_argument_target(arg: str, field_name: str) -> str:
+def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
         return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + field_name + '>'
     else:
@@ -975,7 +975,7 @@ def panorama_edit_address_group_command():
         if not match:
             return_error('To edit a Dynamic Address group, Please provide a match')
         match_param = add_argument_open(match, 'filter', False)
-        match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter",
+        match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter"
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -991,11 +991,11 @@ def panorama_edit_address_group_command():
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
         addresses_param = add_argument_list(addresses, 'member', False)
-        addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static",
+        addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static"
 
     description = demisto.args().get('description')
     description_param = add_argument_open(description, 'description', False)
-    description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description",
+    description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description"
 
     params = {
         'action': 'edit',
@@ -1117,7 +1117,7 @@ def panorama_list_services_command():
     })
 
 
-def prettify_service(service: str):
+def prettify_service(service: Dict):
     pretty_service = {
         'Name': service['@name'],
     }
@@ -2829,11 +2829,10 @@ def panorama_refresh_edl_command():
 
 
 @logger
-def panorama_register_ip_tag(tag, ips, persistent):
+def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
     entry: str = ''
     for ip in ips:
-        entry += '<entry ip=\"' + ip + '\" persistent=\"' + persistent + '\"><tag><member>' + tag
-        + '</member></tag></entry>'
+        entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
