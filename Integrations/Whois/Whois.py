@@ -13,8 +13,6 @@ from codecs import encode, decode
     the following - https://github.com/joepie91/python-whois
 """
 
-''' GLOBAL VARS '''
-DOMAIN = demisto.args().get('query')
 
 ''' HELPER FUNCTIONS '''
 # About the drop some mean regex right now disable-secrets-detection-start
@@ -6962,139 +6960,6 @@ tlds = {
     }
 }
 
-dble_ext_str = "chirurgiens-dentistes.fr,in-addr.arpa,uk.net,za.org,mod.uk,org.za,za.com,de.com,us.com,hk.org,co.ca," \
-               "avocat.fr,com.uy,gr.com,e164.arpa,hu.net,us.org,com.se,aeroport.fr,gov.uk,ru.com,alt.za,africa.com," \
-               "geometre-expert.fr,in.net,co.com,kr.com,bl.uk,uk.com,port.fr,police.uk,gov.za,eu.com,eu.org,br.com," \
-               "web.za,net.za,co.za,hk.com,ae.org,edu.ru,ar.com,jet.uk,icnet.uk,com.de,inc.hk,ltd.hk,parliament.uk," \
-               "jp.net,gb.com,veterinaire.fr,edu.cn,qc.com,pharmacien.fr,ac.za,sa.com,medecin.fr,uy.com,se.net,co.pl," \
-               "cn.com,hu.com,no.com,ac.uk,jpn.com,priv.at,za.net,nls.uk,nhs.uk,za.bz,experts-comptables.fr," \
-               "chambagri.fr,gb.net,in.ua,notaires.fr,se.com,british-library.uk "
-dble_ext = dble_ext_str.split(",")
-
-
-def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
-                  server_list=None):
-    previous = previous or []
-    server_list = server_list or []
-    # Sometimes IANA simply won't give us the right root WHOIS server
-    exceptions = {
-        ".ac.uk": "whois.ja.net",
-        ".ps": "whois.pnina.ps",
-        ".buzz": "whois.nic.buzz",
-        ".moe": "whois.nic.moe",
-        # The following is a bit hacky, but IANA won't return the right answer for example.com because it's a direct
-        # registration.
-        "example.com": "whois.verisign-grs.com"
-    }
-
-    if rfc3490:
-        if sys.version_info < (3, 0):
-            domain = encode(domain if type(domain) is unicode else decode(domain, "utf8"), "idna")
-        else:
-            domain = encode(domain, "idna").decode("ascii")
-
-    if len(previous) == 0 and server == "":
-        # Root query
-        is_exception = False
-        for exception, exc_serv in exceptions.items():
-            if domain.endswith(exception):
-                is_exception = True
-                target_server = exc_serv
-                break
-        if not is_exception:
-            target_server = get_root_server(domain)
-    else:
-        target_server = server
-    if target_server == "whois.jprs.jp":
-        request_domain = "%s/e" % domain  # Suppress Japanese output
-    elif domain.endswith(".de") and (target_server == "whois.denic.de" or target_server == "de.whois-servers.net"):
-        request_domain = "-T dn,ace %s" % domain  # regional specific stuff
-    elif target_server == "whois.verisign-grs.com":
-        request_domain = "=%s" % domain  # Avoid partial matches
-    else:
-        request_domain = domain
-    response = whois_request(request_domain, target_server)
-    if never_cut:
-        # If the caller has requested to 'never cut' responses, he will get the original response from the server (
-        # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
-        # verisign-grs, we will select the data relevant to the requested domain, and discard the rest, so that in a
-        # multiple-option response the parsing code will only touch the information relevant to the requested domain.
-        # The side-effect of this is that when `never_cut` is set to False, any verisign-grs responses in the raw data
-        # will be missing header, footer, and alternative domain options (this is handled a few lines below,
-        # after the verisign-grs processing).
-        new_list = [response] + previous
-    if target_server == "whois.verisign-grs.com":
-        # VeriSign is a little... special. As it may return multiple full records and there's no way to do an exact query,
-        # we need to actually find the correct record in the list.
-        for record in response.split("\n\n"):
-            if re.search("Domain Name: %s\n" % domain.upper(), record):
-                response = record
-                break
-    if never_cut == False:
-        new_list = [response] + previous
-    server_list.append(target_server)
-    for line in [x.strip() for x in response.splitlines()]:
-        match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
-                         re.IGNORECASE)
-        if match is not None:
-            referal_server = match.group(2)
-            if referal_server != server and "://" not in referal_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
-                # Referal to another WHOIS server...
-                return get_whois_raw(domain, referal_server, new_list, server_list=server_list,
-                                     with_server_list=with_server_list)
-    if with_server_list:
-        return new_list, server_list
-    else:
-        return new_list
-
-
-def get_root_server(domain):
-    ext = domain.split(".")[-1]
-    for dble in dble_ext:
-        if domain.endswith(dble):
-            ext = dble
-
-    if ext in tlds.keys():
-        entry = tlds[ext]
-        return entry["host"]
-    else:
-        raise WhoisException("No root WHOIS server found for domain.")
-
-
-def whois_request(domain, server, port=43):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((server, port))
-    sock.send(("%s\r\n" % domain).encode("utf-8"))
-    buff = b""
-    while True:
-        data = sock.recv(1024)
-        if len(data) == 0:
-            break
-        buff += data
-    sock.close()
-    try:
-        d = buff.decode("utf-8")
-    except UnicodeDecodeError:
-        d = buff.decode("latin-1")
-
-    return d
-
-
-airports = {} # type: dict
-countries = {} # type: dict
-states_au = {} # type: dict
-states_us = {} # type: dict
-states_ca = {} # type: dict
-
-
-class WhoisException(Exception):
-    pass
-
-
-def precompile_regexes(source, flags=0):
-    return [re.compile(regex, flags) for regex in source]
-
-
 grammar = {
     "_data": {
         'id': ['Domain ID:[ ]*(?P<val>.+)'],
@@ -7243,6 +7108,138 @@ grammar = {
         'december': 12
     }
 }
+
+dble_ext_str = "chirurgiens-dentistes.fr,in-addr.arpa,uk.net,za.org,mod.uk,org.za,za.com,de.com,us.com,hk.org,co.ca," \
+               "avocat.fr,com.uy,gr.com,e164.arpa,hu.net,us.org,com.se,aeroport.fr,gov.uk,ru.com,alt.za,africa.com," \
+               "geometre-expert.fr,in.net,co.com,kr.com,bl.uk,uk.com,port.fr,police.uk,gov.za,eu.com,eu.org,br.com," \
+               "web.za,net.za,co.za,hk.com,ae.org,edu.ru,ar.com,jet.uk,icnet.uk,com.de,inc.hk,ltd.hk,parliament.uk," \
+               "jp.net,gb.com,veterinaire.fr,edu.cn,qc.com,pharmacien.fr,ac.za,sa.com,medecin.fr,uy.com,se.net,co.pl," \
+               "cn.com,hu.com,no.com,ac.uk,jpn.com,priv.at,za.net,nls.uk,nhs.uk,za.bz,experts-comptables.fr," \
+               "chambagri.fr,gb.net,in.ua,notaires.fr,se.com,british-library.uk "
+dble_ext = dble_ext_str.split(",")
+
+
+def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
+                  server_list=None):
+    previous = previous or []
+    server_list = server_list or []
+    # Sometimes IANA simply won't give us the right root WHOIS server
+    exceptions = {
+        ".ac.uk": "whois.ja.net",
+        ".ps": "whois.pnina.ps",
+        ".buzz": "whois.nic.buzz",
+        ".moe": "whois.nic.moe",
+        # The following is a bit hacky, but IANA won't return the right answer for example.com because it's a direct
+        # registration.
+        "example.com": "whois.verisign-grs.com"
+    }
+
+    if rfc3490:
+        if sys.version_info < (3, 0):
+            domain = encode(domain if type(domain) is unicode else decode(domain, "utf8"), "idna")
+        else:
+            domain = encode(domain, "idna").decode("ascii")
+
+    if len(previous) == 0 and server == "":
+        # Root query
+        is_exception = False
+        for exception, exc_serv in exceptions.items():
+            if domain.endswith(exception):
+                is_exception = True
+                target_server = exc_serv
+                break
+        if not is_exception:
+            target_server = get_root_server(domain)
+    else:
+        target_server = server
+    if target_server == "whois.jprs.jp":
+        request_domain = "%s/e" % domain  # Suppress Japanese output
+    elif domain.endswith(".de") and (target_server == "whois.denic.de" or target_server == "de.whois-servers.net"):
+        request_domain = "-T dn,ace %s" % domain  # regional specific stuff
+    elif target_server == "whois.verisign-grs.com":
+        request_domain = "=%s" % domain  # Avoid partial matches
+    else:
+        request_domain = domain
+    response = whois_request(request_domain, target_server)
+    if never_cut:
+        # If the caller has requested to 'never cut' responses, he will get the original response from the server (
+        # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
+        # verisign-grs, we will select the data relevant to the requested domain, and discard the rest, so that in a
+        # multiple-option response the parsing code will only touch the information relevant to the requested domain.
+        # The side-effect of this is that when `never_cut` is set to False, any verisign-grs responses in the raw data
+        # will be missing header, footer, and alternative domain options (this is handled a few lines below,
+        # after the verisign-grs processing).
+        new_list = [response] + previous
+    if target_server == "whois.verisign-grs.com":
+        # VeriSign is a little... special. As it may return multiple full records and there's no way to do an exact query,
+        # we need to actually find the correct record in the list.
+        for record in response.split("\n\n"):
+            if re.search("Domain Name: %s\n" % domain.upper(), record):
+                response = record
+                break
+    if never_cut == False:
+        new_list = [response] + previous
+    server_list.append(target_server)
+    for line in [x.strip() for x in response.splitlines()]:
+        match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
+                         re.IGNORECASE)
+        if match is not None:
+            referal_server = match.group(2)
+            if referal_server != server and "://" not in referal_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                # Referal to another WHOIS server...
+                return get_whois_raw(domain, referal_server, new_list, server_list=server_list,
+                                     with_server_list=with_server_list)
+    if with_server_list:
+        return new_list, server_list
+    else:
+        return new_list
+
+
+def get_root_server(domain):
+    ext = domain.split(".")[-1]
+    for dble in dble_ext:
+        if domain.endswith(dble):
+            ext = dble
+
+    if ext in tlds.keys():
+        entry = tlds[ext]
+        return entry["host"]
+    else:
+        raise WhoisException("No root WHOIS server found for domain.")
+
+
+def whois_request(domain, server, port=43):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((server, port))
+    sock.send(("%s\r\n" % domain).encode("utf-8"))
+    buff = b""
+    while True:
+        data = sock.recv(1024)
+        if len(data) == 0:
+            break
+        buff += data
+    sock.close()
+    try:
+        d = buff.decode("utf-8")
+    except UnicodeDecodeError:
+        d = buff.decode("latin-1")
+
+    return d
+
+
+airports = {} # type: dict
+countries = {} # type: dict
+states_au = {} # type: dict
+states_us = {} # type: dict
+states_ca = {} # type: dict
+
+
+class WhoisException(Exception):
+    pass
+
+
+def precompile_regexes(source, flags=0):
+    return [re.compile(regex, flags) for regex in source]
 
 
 def preprocess_regex(regex):
@@ -8201,18 +8198,19 @@ def get_whois(domain, normalized=None):
 
 
 def whois_command():
+    domain = demisto.args().get('query')
+    whois_result = get_whois(domain)
+    md = {'Name': domain}
+    ec = {'Name': domain}
+    if 'status' in whois_result:
+        ec['DomainStatus'] = whois_result.get('status')
+        md['Domain Status'] = whois_result.get('status')
+    if 'raw' in whois_result:
+        ec['Raw'] = whois_result.get('raw')
+    if 'nameservers' in whois_result:
+        ec['NameServers'] = whois_result.get('nameservers')
+        md['NameServers'] = whois_result.get('nameservers')
     try:
-        whois_result = get_whois(DOMAIN)
-        md = {'Name': DOMAIN}
-        ec = {'Name': DOMAIN}
-        if 'status' in whois_result:
-            ec['DomainStatus'] = whois_result.get('status')
-            md['Domain Status'] = whois_result.get('status')
-        if 'raw' in whois_result:
-            ec['Raw'] = whois_result.get('raw')
-        if 'nameservers' in whois_result:
-            ec['NameServers'] = whois_result.get('nameservers')
-            md['NameServers'] = whois_result.get('nameservers')
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
             md['Creation Date'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
@@ -8222,58 +8220,55 @@ def whois_command():
         if 'expiration_date' in whois_result:
             ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
             md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
-        if 'registrar' in whois_result:
-            ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
-            md['Registrar'] = whois_result.get('registrar')
-        if 'id' in whois_result:
-            ec['ID'] = whois_result.get('id')
-            md['ID'] = whois_result.get('id')
-        if 'contacts' in whois_result:
-            contacts = whois_result['contacts']
-            if 'registrant' in contacts and contacts['registrant'] is not None:
-                md['Registrant'] = contacts['registrant']
-                ec['Registrant'] = contacts['registrant']
-            if 'admin' in contacts and contacts['admin'] is not None:
-                md['Administrator'] = contacts['admin']
-                ec['Administrator'] = contacts['admin']
-            if 'tech' in contacts and contacts['tech'] is not None:
-                md['Tech Admin'] = contacts['tech']
-                ec['TechAdmin'] = contacts['tech']
-            if 'billing' in contacts and contacts['billing'] is not None:
-                md['Billing Admin'] = contacts['billing']
-                ec['BillingAdmin'] = contacts['billing']
-        if 'emails' in whois_result:
-            ec['Emails'] = whois_result.get('emails')
-            md['Emails'] = whois_result.get('emails')
+    except ValueError as e:
+        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+    if 'registrar' in whois_result:
+        ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
+        md['Registrar'] = whois_result.get('registrar')
+    if 'id' in whois_result:
+        ec['ID'] = whois_result.get('id')
+        md['ID'] = whois_result.get('id')
+    if 'contacts' in whois_result:
+        contacts = whois_result['contacts']
+        if 'registrant' in contacts and contacts['registrant'] is not None:
+            md['Registrant'] = contacts['registrant']
+            ec['Registrant'] = contacts['registrant']
+        if 'admin' in contacts and contacts['admin'] is not None:
+            md['Administrator'] = contacts['admin']
+            ec['Administrator'] = contacts['admin']
+        if 'tech' in contacts and contacts['tech'] is not None:
+            md['Tech Admin'] = contacts['tech']
+            ec['TechAdmin'] = contacts['tech']
+        if 'billing' in contacts and contacts['billing'] is not None:
+            md['Billing Admin'] = contacts['billing']
+            ec['BillingAdmin'] = contacts['billing']
+    if 'emails' in whois_result:
+        ec['Emails'] = whois_result.get('emails')
+        md['Emails'] = whois_result.get('emails')
 
-        context = ({
-            'Domain': {
-                'Name': DOMAIN
-            },
-            'Domain.Whois(val.Name && val.Name == obj.Name)': ec
-        })
+    context = ({
+        'Domain': {
+            'Name': domain
+        },
+        'Domain.Whois(val.Name && val.Name == obj.Name)': ec
+    })
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': str(whois_result),
-            'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md),
-            'EntryContext': context
-        })
-    except OSError as msg:
-        return_error(str(msg))
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': str(whois_result),
+        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+        'EntryContext': context
+    })
 
 
 def test_command():
-    try:
-        whois_result = get_whois('google.com')
+    whois_result = get_whois('google.com')
 
-        domain_test = whois_result['id'][0]
+    domain_test = whois_result['id'][0]
 
-        if domain_test == '2138514_DOMAIN_COM-VRSN':
-            demisto.results('ok')
-    except:
-        demisto.results('error')
+    if domain_test == '2138514_DOMAIN_COM-VRSN':
+        demisto.results('ok')
 
 
 ''' EXECUTION CODE '''
@@ -8285,5 +8280,4 @@ try:
         whois_command()
 except Exception as e:
     LOG(e)
-    LOG.print_log(False)
     return_error(e.message)
