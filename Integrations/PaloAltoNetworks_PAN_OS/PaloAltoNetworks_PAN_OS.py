@@ -89,7 +89,8 @@ PAN_OS_ERROR_DICT = {
 ''' HELPERS '''
 
 
-def http_request(uri, method, headers={}, body={}, params={}, files=None):
+def http_request(uri: str, method: str, headers: Dict = None,
+                 body: Dict = None, params: Dict = None, files=None) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -166,8 +167,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files=None):
     return json_result
 
 
-def add_argument_list(arg, field_name, member):
-    member_stringify_list: str
+def add_argument_list(arg: List, field_name: str, member: str) -> str:
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -182,7 +182,7 @@ def add_argument_list(arg, field_name, member):
         return ''
 
 
-def add_argument(arg, field_name, member):
+def add_argument(arg: str, field_name: str, member: str) -> str:
     if arg:
         if member:
             return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
@@ -192,7 +192,7 @@ def add_argument(arg, field_name, member):
         return ''
 
 
-def add_argument_open(arg, field_name, member):
+def add_argument_open(arg: str, field_name: str, member: str) -> str:
     if arg:
         if member:
             return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
@@ -205,7 +205,7 @@ def add_argument_open(arg, field_name, member):
             return '<' + field_name + '>any</' + field_name + '>'
 
 
-def add_argument_yes_no(arg, field_name, option=False):
+def add_argument_yes_no(arg: str, field_name: str, option: bool = False) -> str:
     if arg and arg == 'No':
         result = '<' + field_name + '>' + 'no' + '</' + field_name + '>'
     else:
@@ -217,18 +217,19 @@ def add_argument_yes_no(arg, field_name, option=False):
     return result
 
 
-def add_argument_target(arg, field_name):
+def add_argument_target(arg: str, field_name: str) -> str:
     if arg:
         return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + field_name + '>'
     else:
         return ''
 
 
-def prepare_security_rule_params(api_action=None, rulename=None, source=None, destination=None,
-                                 negate_source=None, negate_destination=None, action=None, service=None,
-                                 disable=None, application=None, source_user=None, category=None,
-                                 fromm=None, to=None, description=None, target=None, log_forwarding=None,
-                                 disable_server_response_inspection=None):
+def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: str = None,
+                                 destination: str = None, negate_source: str = None, negate_destination:str = None,
+                                 action: str = None, service: str = None, disable: str = None, application: str = None,
+                                 source_user: str = None, category: str = None, from_: str = None, to: str = None,
+                                 description: str = None, target: str = None, log_forwarding: str = None,
+                                 disable_server_response_inspection: str = None) -> Dict:
     rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
         'type': 'config',
@@ -242,7 +243,7 @@ def prepare_security_rule_params(api_action=None, rulename=None, source=None, de
         + add_argument_open(application, 'application', True)
         + add_argument_open(category, 'category', True)
         + add_argument_open(source_user, 'source-user', True)
-        + add_argument_open(fromm, 'from', True)  # default from will always be any
+        + add_argument_open(from_, 'from', True)  # default from will always be any
         + add_argument_open(to, 'to', True)  # default to will always be any
         + add_argument_open(service, 'service', True)
         + add_argument_yes_no(negate_source, 'negate-source')
@@ -501,7 +502,7 @@ def panorama_push_status_command():
 ''' Addresses Commands '''
 
 
-def prettify_addresses_arr(addresses_arr):
+def prettify_addresses_arr(addresses_arr: List) -> List:
     pretty_addresses_arr = []
     for address in addresses_arr:
         pretty_address = {
@@ -561,7 +562,7 @@ def panorama_list_addresses_command():
     })
 
 
-def prettify_address(address):
+def prettify_address(address: Dict) -> Dict:
     pretty_address = {
         'Name': address['@name'],
     }
@@ -581,7 +582,7 @@ def prettify_address(address):
 
 
 @logger
-def panorama_get_address(address_name):
+def panorama_get_address(address_name: Dict) -> Dict:
     params = {
         'action': 'show',
         'type': 'config',
@@ -620,7 +621,7 @@ def panorama_get_address_command():
 
 
 @logger
-def panorama_create_address(address_name, fqdn=None, ip_netmask=None, ip_range=None, description=None):
+def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None, description: str = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -682,7 +683,7 @@ def panorama_create_address_command():
 
 
 @logger
-def panorama_delete_address(address_name):
+def panorama_delete_address(address_name: str):
     params = {
         'action': 'delete',
         'type': 'config',
@@ -723,7 +724,7 @@ def panorama_delete_address_command():
 ''' Address Group Commands '''
 
 
-def prettify_address_groups_arr(address_groups_arr):
+def prettify_address_groups_arr(address_groups_arr : List) -> List:
     pretty_address_groups_arr = []
     for address_group in address_groups_arr:
         pretty_address_group = {
@@ -782,7 +783,7 @@ def panorama_list_address_groups_command():
     })
 
 
-def prettify_address_group(address_group):
+def prettify_address_group(address_group: Dict) -> Dict:
     pretty_address_group = {
         'Name': address_group['@name'],
         'Type': 'static' if 'static' in address_group else 'dynamic',
@@ -800,7 +801,7 @@ def prettify_address_group(address_group):
 
 
 @logger
-def panorama_get_address_group(address_group_name):
+def panorama_get_address_group(address_group_name: str):
     params = {
         'action': 'show',
         'type': 'config',
@@ -1115,14 +1116,13 @@ def panorama_list_services_command():
     })
 
 
-def prettify_service(service):
+def prettify_service(service: str):
     pretty_service = {
         'Name': service['@name'],
     }
     if 'description' in service:
         pretty_service['Description'] = service['description']
 
-    protocol: str
     protocol = ''
     if 'protocol' in service:
         if 'tcp' in service['protocol']:
@@ -1142,7 +1142,7 @@ def prettify_service(service):
 
 
 @logger
-def panorama_get_service(service_name):
+def panorama_get_service(service_name: str):
     params = {
         'action': 'show',
         'type': 'config',
