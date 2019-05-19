@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 import json
 import uuid
-from typing import Dict, List, Tuple, Any, Union, cast
+from typing import Dict, List, Any
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -167,7 +167,7 @@ def http_request(uri: str, method: str, headers: Dict = None,
     return json_result
 
 
-def add_argument_list(arg: List, field_name: str, member: str) -> str:
+def add_argument_list(arg: list, field_name: str, member: str) -> str:
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -502,7 +502,7 @@ def panorama_push_status_command():
 ''' Addresses Commands '''
 
 
-def prettify_addresses_arr(addresses_arr: List) -> List:
+def prettify_addresses_arr(addresses_arr: list) -> List:
     pretty_addresses_arr = []
     for address in addresses_arr:
         pretty_address = {
@@ -621,7 +621,8 @@ def panorama_get_address_command():
 
 
 @logger
-def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None, description: str = None):
+def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None,
+                            description: str = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -724,7 +725,7 @@ def panorama_delete_address_command():
 ''' Address Group Commands '''
 
 
-def prettify_address_groups_arr(address_groups_arr : List) -> List:
+def prettify_address_groups_arr(address_groups_arr: list) -> List:
     pretty_address_groups_arr = []
     for address_group in address_groups_arr:
         pretty_address_group = {
@@ -839,7 +840,7 @@ def panorama_get_address_group_command():
 
 
 @logger
-def panorama_create_static_address_group(address_group_name, addresses, description=None):
+def panorama_create_static_address_group(address_group_name: str, addresses: list, description: str = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -857,7 +858,7 @@ def panorama_create_static_address_group(address_group_name, addresses, descript
     return result
 
 
-def panorama_create_dynamic_address_group(address_group_name, match, description=None):
+def panorama_create_dynamic_address_group(address_group_name: str, match: str, description: str = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -921,7 +922,7 @@ def panorama_create_address_group_command():
 
 
 @logger
-def panorama_delete_address_group(address_group_name):
+def panorama_delete_address_group(address_group_name: str):
     params = {
         'action': 'delete',
         'type': 'config',
@@ -1049,7 +1050,7 @@ def panorama_edit_address_group_command():
 ''' Services Commands '''
 
 
-def prettify_services_arr(services_arr):
+def prettify_services_arr(services_arr: Dict):
     pretty_services_arr = []
     for service in services_arr:
         pretty_service = {
@@ -1182,7 +1183,8 @@ def panorama_get_service_command():
 
 
 @logger
-def panorama_create_service(service_name, protocol, destination_port, source_port=None, description=None):
+def panorama_create_service(service_name: str, protocol: str, destination_port: str,
+                            source_port: str = None, description: str = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -1240,7 +1242,7 @@ def panorama_create_service_command():
 
 
 @logger
-def panorama_delete_service(service_name):
+def panorama_delete_service(service_name: str):
     params = {
         'action': 'delete',
         'type': 'config',
@@ -1281,7 +1283,7 @@ def panorama_delete_service_command():
 ''' Service Group Commands '''
 
 
-def prettify_service_groups_arr(service_groups_arr):
+def prettify_service_groups_arr(service_groups_arr: Dict):
     pretty_service_groups_arr = []
     for service_group in service_groups_arr:
         pretty_service_group = {
@@ -2890,8 +2892,7 @@ def panorama_register_ip_tag_command():
 
 
 @logger
-def panorama_unregister_ip_tag(tag, ips):
-    entry: str
+def panorama_unregister_ip_tag(tag: str, ips: list):
     entry = ''
     for ip in ips:
         entry += '<entry ip=\"' + ip + '\"><tag><member>' + tag + '</member></tag></entry>'
