@@ -8,13 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: '2.0'
-  display: API Version
-  name: api_version
-  options:
-  - '2.0'
-  required: false
-  type: 15
 - display: Client ID
   name: client_id
   required: true
@@ -23,11 +16,6 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- defaultvalue: '+0000'
-  display: Time Zone
-  name: time_zonee
-  required: false
-  type: 0
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
@@ -50,7 +38,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-description: Integration Template
+description: Search and monitor alarms and events from AlienVault USM Anywhere.
 display: AlienVault-USM
 name: AlienVault-USM
 script:
@@ -63,6 +51,18 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: Filter by alarm status.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alarm priority
+      isArray: false
+      name: priority
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: whether to include suprressed alarms in the search.
@@ -73,24 +73,237 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by time frame, e.g., Last 48 Hours
+      isArray: false
+      name: time_frame
+      predefined:
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
+      required: false
+      secret: false
     - default: false
-      description: 'If time_frame is Custom, specify the start time for the time range,
-        e.g., 2017-06-01T12:48:16.734'
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g., 2017-06-01T12:48:16Z
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'If time_frame is Custom, specify the end time for the time range,
-        e.g., 2017-06-01T12:48:16.734'
+      description: If time_frame is Custom, specify the end time for the time range,
+        e.g., 2017-06-01T12:48:16Z
       isArray: false
       name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: Filter alarms by rule intentions
+      isArray: false
+      name: rule_intent
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Filter alarms by rule method
+      isArray: false
+      name: rule_method
+      required: false
+      secret: false
+    - default: false
+      description: Filter alarms by rule strategy
+      isArray: false
+      name: rule_strategy
+      predefined:
+      - ''
       required: false
       secret: false
     deprecated: false
     description: Get alerts from service.
     execution: false
     name: alienvault-search-alerts
+    outputs:
+    - contextPath: AlienVault.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: AlienVault.Alarm.Priority
+      description: Alarm Priority.
+      type: String
+    - contextPath: AlienVault.Alarm.OccurredTime
+      description: Alarm Occurred Time.
+      type: Date
+    - contextPath: AlienVault.Alarm.ReceivedTime
+      description: Alarm Received Time.
+      type: Date
+    - contextPath: AlienVault.Alarm.Source
+      description: Alarm Source Object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Source.IPAddress
+      description: Alarm Source IP Address.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Organization
+      description: Source Organization.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Country
+      description: Source Country.
+      type: String
+    - contextPath: AlienVault.Alarm.Destination
+      description: Alarm Destination Object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Destination.IPAddress
+      description: Alarm Destination IP Address.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackID
+      description: Rule Attack ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleStrategy
+      description: Rule Strategy.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleIntent
+      description: Rule Intent.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleID
+      description: Rule ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleDictionary
+      description: Rule Dictionary.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleMethod
+      description: Rule Method.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackTactic
+      description: Rule Attack Tactic.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.RuleAttackTechnique
+      description: Rule Attack Technique.
+      type: String
+  - arguments:
+    - default: true
+      description: Alarm ID. can be retreive by running `alienvault-search-alerts`
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get an alarm's details using ID
+    execution: false
+    name: alienvault-get-alarm
+    outputs:
+    - contextPath: AlienVault.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: AlienVault.Alarm.Priority
+      description: Alarm Priority.
+      type: String
+    - contextPath: AlienVault.Alarm.OccurredTime
+      description: Alarm Occurred Time.
+      type: Date
+    - contextPath: AlienVault.Alarm.ReceivedTime
+      description: Alarm Received Time.
+      type: Date
+    - contextPath: AlienVault.Alarm.Source
+      description: Alarm Source Object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Source.IPAddress
+      description: Alarm Source IP Address.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Organization
+      description: Source Organization.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Country
+      description: Source Country.
+      type: String
+    - contextPath: AlienVault.Alarm.Destination
+      description: Alarm Destination Object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Destination.IPAddress
+      description: Alarm Destination IP Address.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackID
+      description: Rule Attack ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleStrategy
+      description: Rule Strategy.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleIntent
+      description: Rule Intent.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleID
+      description: Rule ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleDictionary
+      description: Rule Dictionary.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleMethod
+      description: Rule Method.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackTactic
+      description: Rule Attack Tactic.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.RuleAttackTechnique
+      description: Rule Attack Technique.
+      type: String
+  - arguments:
+    - default: false
+      description: The account name.
+      isArray: false
+      name: account_name
+      required: false
+      secret: false
+    - default: false
+      description: Event Name
+      isArray: false
+      name: event_name
+      required: false
+      secret: false
+    - default: false
+      description: Source Name
+      isArray: false
+      name: source_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by time frame, e.g., Last 48 Hours
+      isArray: false
+      name: time_frame
+      predefined:
+        - Today
+        - Yesterday
+        - Last 7 Days
+        - Last Hour
+        - Last 24 Hours
+        - Last 48 Hours
+        - Last 30 Days
+        - Custom
+      required: false
+      secret: false
+    - default: false
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g., 2017-06-01T12:48:16Z
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: If time_frame is Custom, specify the end time for the time range,
+        e.g., 2017-06-01T12:48:16Z
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Search events.
+    execution: false
+    name: alienvault-get-events
+  dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
   script: '-'

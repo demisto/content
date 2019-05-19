@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
+import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,15 +17,13 @@ CLIENT_SECRET = demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
-API_VERSION = demisto.params().get('api_version')
 
-TIME_ZONE = demisto.params().get('time_zone', '+0000')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
-BASE_URL = SERVER + '/api/{}'.format(API_VERSION)
+BASE_URL = SERVER + '/api/2.0'
 # Headers to be sent in requests
 HEADERS = {
     'Content-Type': 'application/json',
@@ -71,47 +69,108 @@ def get_token():
     return res['access_token']
 
 
+def get_time_range(time_frame=None, start_time=None, end_time=None):
+    if time_frame is None:
+        return None, None
+
+    if time_frame == 'Custom':
+        if start_time is None and end_time is None:
+            raise ValueError('invalid custom time frame: need to specify one of start_time, end_time')
+        if start_time is not None:
+            start_time = dateparser.parse(start_time)
+        if end_time is not None:
+            end_time = dateparser.parse(end_time)
+
+        return date_to_timestamp(start_time), date_to_timestamp(end_time)
+
+    end_time = datetime.now()
+    if time_frame == 'Today':
+        start_time = dateparser.parse(time_frame)
+
+    elif time_frame == 'Yesterday':
+        start_time = dateparser.parse(time_frame)
+
+    elif time_frame == 'Last Hour':
+        start_time = end_time - timedelta(hours=1)
+    elif time_frame == 'Last 24 Hours':
+        start_time = end_time - timedelta(hours=24)
+    elif time_frame == 'Last 48 Hours':
+        start_time = end_time - timedelta(hours=48)
+    elif time_frame == 'Last 7 Days':
+        start_time = end_time - timedelta(days=7)
+    elif time_frame == 'Last 30 Days':
+        start_time = end_time - timedelta(days=30)
+    else:
+        raise ValueError('Could not parse time frame: {}'.format(time_frame))
+
+    return date_to_timestamp(start_time), date_to_timestamp(end_time)
+
+
+@logger
 def parse_alarm(alarm_data):
     return {
         'ID': alarm_data['uuid'],
         'Priority': alarm_data['priority_label'],
-        'DestinationAsset': alarm_data['destinations'][0]['address'],
-        'RuleAttackId': alarm_data['rule_attack_id'],
-        'RuleAttackTactic': alarm_data['rule_attack_tactic'][0],
+        'OccurredTime': alarm_data['timestamp_occured_iso8601'],
+        'ReceivedTime': alarm_data['timestamp_received_iso8601'],
+
+        'RuleAttackID': alarm_data['rule_attack_id'],
+        'RuleAttackTactic': alarm_data['rule_attack_tactic'],
         'RuleAttackTechnique': alarm_data['rule_attack_technique'],
-        'Sensor': alarm_data['events'][0]['received_from'],
+        'RuleDictionary': alarm_data.get('rule_dictionary'),
+        'RuleID': alarm_data.get('rule_id'),
+        'RuleIntent': alarm_data.get('rule_intent'),
+        'RuleMethod': alarm_data.get('rule_method'),
+        'RuleStrategy': alarm_data.get('rule_strategy'),
+
         'Source': {
-            'IpAddress': alarm_data['destinations'][0]['address'],
-            'Organization': alarm_data['sources'][0]['organisation'],
-            'Country': alarm_data['sources'][0]['country'],
+            'IPAddress': alarm_data['alarm_source_names'],
+            'Organization': alarm_data['alarm_source_organisations'],
+            'Country': alarm_data['alarm_source_countries'],
         },
         'Destination': {
-            'IpAddress': alarm_data['destinations'][0]['address'],
-            'FQDN': alarm_data['destinations'][0]['fqdn']
-        }
+            'IPAddress': alarm_data['alarm_destination_names'],
+        },
+        'Event': [{
+            'ID': event['uuid'],
+            'OccurredTime': event['timestamp_occured_iso8601'],
+            'ReceivedTime': event['timestamp_received_iso8601'],
+        } for event in alarm_data.get('events', [])]
     }
 
 
+@logger
 def parse_alarms(alarms_data):
     alarms = []
     for alarm in alarms_data:
         alarms.append({
             'ID': alarm['uuid'],
             'Priority': alarm['priority_label'],
-            'DestinationAsset': alarm['events'][0]['message']['destination_address'],
-            'RuleAttackId': alarm['rule_attack_id'],
-            'RuleAttackTactic': alarm['rule_attack_tactic'][0],
-            'RuleAttackTechnique': alarm['rule_attack_technique'],
-            'Sensor': alarm['events'][0]['message']['received_from'],
+            'OccurredTime': alarm['timestamp_occured_iso8601'],
+            'ReceivedTime': alarm['timestamp_received_iso8601'],
+
+            'RuleAttackID': alarm.get('rule_attack_id'),
+            'RuleAttackTactic': alarm.get('rule_attack_tactic'),
+            'RuleAttackTechnique': alarm.get('rule_attack_technique'),
+            'RuleDictionary': alarm.get('rule_dictionary'),
+            'RuleID': alarm.get('rule_id'),
+            'RuleIntent': alarm.get('rule_intent'),
+            'RuleMethod': alarm.get('rule_method'),
+            'RuleStrategy': alarm.get('rule_strategy'),
+
             'Source': {
-                'IpAddress': alarm['events'][0]['message']['source_address'],
-                'Organization': alarm['events'][0]['message']['source_organisation'],
-                'Country': alarm['events'][0]['message']['source_country'],
+                'IPAddress': alarm['alarm_source_names'],
+                'Organization': alarm['alarm_source_organisations'],
+                'Country': alarm['alarm_source_countries'],
             },
             'Destination': {
-                'IpAddress': alarm['events'][0]['message']['destination_address'],
-                'FQDN': alarm['events'][0]['message']['destination_fqdn'],
-            }
+                'IPAddress': alarm['alarm_destination_names'],
+            },
+            'Event': [{
+                'ID': event['message']['uuid'],
+                'OccurredTime': event['message']['timestamp_occured_iso8601'],
+                'ReceivedTime': event['message']['timestamp_received_iso8601'],
+            } for event in alarm.get('events', [])]
         })
 
     return alarms
@@ -120,8 +179,8 @@ def parse_alarms(alarms_data):
 def item_to_incident(item):
     incident = {
         'Type': 'AlienVault USM',
-        'name': 'Example Incident: ' + item.get('name'),
-        'occurred': item.get('createdDate'),
+        'name': 'Alarm: ' + item.get('uuid'),
+        'occurred': item.get('timestamp_occured_iso8601'),
         'rawJSON': json.dumps(item),
     }
 
@@ -152,8 +211,9 @@ def get_alarm_command():
     # Parse response into context & content entries
     alarm_details = parse_alarm(response)
 
-    return_outputs(tableToMarkdown('Alarm {}'.format(alarm_id), alarm_details), alarm_details, response)
-
+    return_outputs(tableToMarkdown('Alarm {}'.format(alarm_id), alarm_details),
+                   {'AlienVault.Alarm(val.ID && val.ID == obj.ID)': alarm_details},
+                   response)
 
 
 def get_alarm(alarm_id):
@@ -164,40 +224,50 @@ def get_alarm(alarm_id):
 
 def search_alerts_command():
     args = demisto.args()
+    time_frame = args.get('time_frame')
     start_time = args.get('start_time', 'now-7d')
     end_time = args.get('end_time', 'now')
     show_suppressed = args.get('show_suppressed', 'false')
     limit = int(args.get('limit', 100))
 
-    result = search_alerts(start_time, end_time, show_suppressed, limit)
+    start_time, end_time = get_time_range(time_frame, start_time, end_time)
+
+    result = search_alerts(start_time=start_time, end_time=end_time, show_suppressed=show_suppressed, limit=limit)
     alarms = parse_alarms(result)
 
     return_outputs(tableToMarkdown('Alarms:', alarms),
-                   {'AlienVault.Alarm(val.ID && val.ID == obj.ID': alarms}, result)
+                   {'AlienVault.Alarm(val.ID && val.ID == obj.ID)': alarms}, result)
 
 
 @logger
-def search_alerts(start_time, end_time, show_suppressed, limit):
-    data = {
-        "page": 1,
-        "size": limit,
-        "find": {
-            "alarm.suppressed": [
-                show_suppressed
-            ]
-        },
-        "sort": {
-            "alarm.timestamp_occured": "desc"
-        },
-        "range": {
-            "alarm.timestamp_occured": {
-                "gte": start_time,
-                "lte": end_time,
-                "timeZone": TIME_ZONE
-            }
-        }
+def search_alerts(start_time=None, end_time=None, status=None, priority=None, show_suppressed=None,
+                  limit=100, rule_intent=None, rule_method=None, rule_strategy=None, direction='desc'):
+    params = {
+        'page': 1,
+        'size': limit,
+        'sort': 'timestamp_occured,{}'.format(direction),
+        'suppressed': show_suppressed
     }
-    res = http_request('GET', '/alarms/', data=data)
+
+    if status:
+        params['status'] = status
+    if priority:
+        params['priority_label'] = priority
+    if rule_intent:
+        params['rule_intent'] = rule_intent
+    if rule_method:
+        params['rule_method'] = rule_method
+    if rule_strategy:
+        params['rule_strategy'] = rule_strategy
+
+    if start_time:
+        params['timestamp_occured_gte'] = start_time
+    if end_time:
+        params['timestamp_occured_lte'] = end_time
+
+    res = http_request('GET', '/alarms/', params=params)
+    if res['page']['totalElements'] == 0:
+        return []
 
     return res['_embedded']['alarms']
 
@@ -209,17 +279,17 @@ def fetch_incidents():
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
 
     incidents = []
-    items = search_alerts()
+    items = search_alerts(last_fetch, 'now', 'false', 100, direction='asc')
     for item in items:
         incident = item_to_incident(item)
-        incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_date > last_fetch:
-            last_fetch = incident_date
-            incidents.append(incident)
+        incidents.append(incident)
+
+    if incidents:
+        #  updating according to latest incident
+        last_fetch = incidents[-1]['occurred']
 
     demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
