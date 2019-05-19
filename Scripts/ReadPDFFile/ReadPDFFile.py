@@ -11,7 +11,7 @@ from typing import List
 
 ROOT_PATH = os.getcwd()
 MAX_IMAGES = int(demisto.args().get('maxImages', 20))
-
+EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 
 def mark_suspicious(suspicious_reason, entry_id):
     """Missing EOF, file may be corrupted or suspicious file"""
@@ -206,16 +206,18 @@ def main():
                 # Get text:
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
-                # Get URLS + Images:
+                # Get URLS + emails:
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
                 urls_set = set(urls)
+                emails = re.findall(EMAIL_REGXEX, pdf_html_content)
+                urls_set = urls_set.union(set(emails))
                 # this url is always generated with the pdf html file, and that's why we remove it
                 urls_set.remove('http://www.w3.org/1999/xhtml')
                 for url in urls_set:
                     urls_ec.append({"Data": url})
+                # Get images:
                 images = get_images_paths_in_path(output_folder)
-
             except Exception as e:
                 demisto.results({
                     "Type": entryTypes["error"],
