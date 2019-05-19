@@ -1004,17 +1004,29 @@ def panorama_edit_address_group_command():
     if match:
         params['xpath'] = match_path
         params['element'] = match_param
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(
+            URL,
+            'POST',
+            params=params
+        )
         address_group_output['Match'] = match
     if addresses:
         params['xpath'] = addresses_path
         params['element'] = "<static>" + addresses_param + "</static>"
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(
+            URL,
+            'POST',
+            params=params
+        )
         address_group_output['Addresses'] = addresses
     if description:
         params['xpath'] = description_path
         params['element'] = description_param
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(
+            URL,
+            'POST',
+            params=params
+        )
         address_group_output['Description'] = description
 
     demisto.results({
