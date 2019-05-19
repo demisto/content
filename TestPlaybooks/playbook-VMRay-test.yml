@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6fd546dd-976e-4ffe-8e1d-3c210746efde
+    taskid: 826ad986-cb90-458f-8958-f327f6821e2c
     type: start
     task:
-      id: 6fd546dd-976e-4ffe-8e1d-3c210746efde
+      id: 826ad986-cb90-458f-8958-f327f6821e2c
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 3efb79a4-ddea-499b-8828-d01ca0788d00
+    taskid: 25cf9ba4-0c14-4a33-8ee4-1b5779c5c146
     type: regular
     task:
-      id: 3efb79a4-ddea-499b-8828-d01ca0788d00
+      id: 25cf9ba4-0c14-4a33-8ee4-1b5779c5c146
       version: -1
       name: Get file
       description: Sends http request. Returns the response as json.
@@ -63,7 +63,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -71,10 +71,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 763d67e6-5d0d-4d3b-8afa-e153a390398f
+    taskid: c700a3f9-f2dc-4cf1-8726-d3eb13cef76b
     type: playbook
     task:
-      id: 763d67e6-5d0d-4d3b-8afa-e153a390398f
+      id: c700a3f9-f2dc-4cf1-8726-d3eb13cef76b
       version: -1
       name: Detonate File - VMRay
       description: Detonating file with VMRay
@@ -90,8 +90,17 @@ tasks:
     scriptarguments:
       File:
         simple: ${File}
+      archive_password: {}
+      document_password: {}
       interval:
         simple: "1"
+      max_jobs:
+        simple: "1"
+      reanalyze:
+        simple: "1"
+      sample_type: {}
+      shareable: {}
+      tags: {}
       timeout:
         simple: "10"
     separatecontext: true
@@ -103,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -111,10 +120,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: d944b2d5-c972-4940-8780-657656150a87
+    taskid: ad6c2f37-174b-4c7a-8624-51ec1878f43c
     type: regular
     task:
-      id: d944b2d5-c972-4940-8780-657656150a87
+      id: ad6c2f37-174b-4c7a-8624-51ec1878f43c
       version: -1
       name: Get analysis by sample
       description: Get all analysis details about a specific sample.
@@ -129,13 +138,13 @@ tasks:
       limit:
         simple: "1"
       sample_id:
-        simple: ${VMRay.Job.SampleID}
+        simple: ${VMRay.Sample.SampleID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 910,
+          "y": 720
         }
       }
     note: false
@@ -143,10 +152,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: d706f9f4-0b55-43ca-84f4-5582e93533ce
+    taskid: ae6d46a0-f1c2-40d2-832b-1d18df284e88
     type: regular
     task:
-      id: d706f9f4-0b55-43ca-84f4-5582e93533ce
+      id: ae6d46a0-f1c2-40d2-832b-1d18df284e88
       version: -1
       name: get-threat-indicators
       description: Get threat indicators (VTI)
@@ -164,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 895
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -173,10 +182,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: ce231981-b7be-4a1b-8433-e0b0a66f4da5
+    taskid: 3b6a005d-852c-4004-809a-e0aab8fbd766
     type: regular
     task:
-      id: ce231981-b7be-4a1b-8433-e0b0a66f4da5
+      id: 3b6a005d-852c-4004-809a-e0aab8fbd766
       version: -1
       name: Get IOCs
       description: getting iocs of given sample
@@ -194,8 +203,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -228,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 910,
+          "y": 895
         }
       }
     note: false
@@ -251,7 +260,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -284,8 +293,42 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 4ee76f03-fa2f-4394-8e9e-e867c98c1708
+    type: regular
+    task:
+      id: 4ee76f03-fa2f-4394-8e9e-e867c98c1708
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 480,
-          "y": 895
+          "y": 195
         }
       }
     note: false
@@ -296,7 +339,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1260,
         "width": 1240,
         "x": 50,
         "y": 50

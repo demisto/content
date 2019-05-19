@@ -53,6 +53,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${VMRay.Submission.SubmissionID}
       Interval:
@@ -251,7 +253,7 @@ tasks:
       - "7"
     scriptarguments:
       sample_id:
-        simple: ${VMRay.Submissions.SampleID}
+        simple: ${VMRay.Submission.SampleID}
     separatecontext: false
     view: |-
       {
@@ -323,79 +325,107 @@ inputs:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results
+- key: document_password
+  value: {}
+  required: false
+  description: Fill if the file is password-protected document
+- key: archive_password
+  value: {}
+  required: false
+  description: Fill if the file is password-protected archive
+- key: sample_type
+  value: {}
+  required: false
+  description: Specify sample type
+- key: shareable
+  value: {}
+  required: false
+  description: Make the file shareable
+- key: reanalyze
+  value: {}
+  required: false
+  description: Should VMRay re-analyze the file
+- key: max_jobs
+  value: {}
+  required: false
+  description: Max jobs to create in VMRay
+- key: tags
+  value: {}
+  required: false
+  description: Tags of file, comma seperated
 outputs:
-- contextPath: VMRay.Jobs.JobID
+- contextPath: VMRay.Job.JobID
   description: ID of a new job
   type: number
-- contextPath: VMRay.Jobs.SampleID
+- contextPath: VMRay.Job.SampleID
   description: ID of sample
   type: number
-- contextPath: VMRay.Jobs.Created
+- contextPath: VMRay.Job.Created
   description: |
     Timestamp of created job
   type: date
-- contextPath: VMRay.Jobs.VMName
+- contextPath: VMRay.Job.VMName
   description: Name of virtual machine
   type: string
-- contextPath: VMRay.Jobs.VMID
+- contextPath: VMRay.Job.VMID
   description: ID of virtual machine
   type: number
-- contextPath: VMRay.Samples.SampleID
+- contextPath: VMRay.Sample.SampleID
   description: Sample ID of task
   type: number
-- contextPath: VMRay.Samples.Created
+- contextPath: VMRay.Sample.Created
   description: |
     Timestamp of created sample
   type: date
-- contextPath: VMRay.Submissions.SubmissionID
+- contextPath: VMRay.Submission.SubmissionID
   description: Submission ID
   type: number
-- contextPath: VMRay.Submissions.HadErrors
+- contextPath: VMRay.Submission.HadErrors
   description: If there are any errors in the submission
-- contextPath: VMRay.Submissions.IsFinished
+- contextPath: VMRay.Submission.IsFinished
   description: Status of submission (true or false)
   type: boolean
-- contextPath: VMRay.Submissions.MD5
+- contextPath: VMRay.Submission.MD5
   description: MD5 of of sample in submission
   type: string
-- contextPath: VMRay.Submissions.SHA1
+- contextPath: VMRay.Submission.SHA1
   description: SHA1 of of sample in submission
   type: string
-- contextPath: VMRay.Submissions.SHA256
+- contextPath: VMRay.Submission.SHA256
   description: SHA256 of of sample in submission
   type: string
-- contextPath: VMRay.Submissions.Severity
+- contextPath: VMRay.Submission.Severity
   description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted,
     Whitelested, Unknown)
   type: string
-- contextPath: VMRay.Submissions.SSDeep
+- contextPath: VMRay.Submission.SSDeep
   description: SSDeep of of sample in submission
   type: string
-- contextPath: VMRay.Submissions.SampleID
+- contextPath: VMRay.Submission.SampleID
   description: ID of sample in submission
   type: number
-- contextPath: VMRay.Samples.FileName
+- contextPath: VMRay.Sample.FileName
   description: File name of sample
   type: string
-- contextPath: VMRay.Samples.MD5
+- contextPath: VMRay.Sample.MD5
   description: MD5 of sample
   type: string
-- contextPath: VMRay.Samples.SHA1
+- contextPath: VMRay.Sample.SHA1
   description: SHA1 of sample
   type: string
-- contextPath: VMRay.Samples.SHA256
+- contextPath: VMRay.Sample.SHA256
   description: SHA256 of sample
   type: string
-- contextPath: VMRay.Samples.SSDeep
+- contextPath: VMRay.Sample.SSDeep
   description: SSDeep of sample
   type: string
-- contextPath: VMRay.Samples.Severity
+- contextPath: VMRay.Sample.Severity
   description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted,
     Whitelested, Unknown)
   type: string
-- contextPath: VMRay.Samples.Type
+- contextPath: VMRay.Sample.Type
   description: File type
   type: string
-- contextPath: VMRay.Samples.Classifications
+- contextPath: VMRay.Sample.Classifications
   description: Classifications of sample
   type: string
