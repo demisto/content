@@ -2,6 +2,7 @@ commonfields:
   id: Whois
   version: 1
 name: Whois
+toversion: 4.1.0
 script: return executeCommand('whois', {'query':args.query});
 type: javascript
 tags:
