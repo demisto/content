@@ -16,8 +16,6 @@ args:
   description: Maximum amount of imags to be extracted from the pdf file.
   isArray: false
   name: maxImages
-  predefined:
-  - ''
   required: false
   secret: false
 comment: Load the contents and metadata of a PDF file into context.
