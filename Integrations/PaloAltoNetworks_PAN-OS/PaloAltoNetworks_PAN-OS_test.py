@@ -1,4 +1,5 @@
-from PaloAltoNetworks_PAN-OS import add_argument_list, add_argument, add_argument_yes_no, add_argument_target, prettify_addresses_arr
+from 'PaloAltoNetworks_PAN-OS' import add_argument_list, add_argument, add_argument_yes_no, \
+    add_argument_target, prettify_addresses_arr
 
 
 def test_add_argument_list():
