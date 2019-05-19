@@ -26,7 +26,7 @@ def mark_suspicious(suspicious_reason, entry_id):
                 "Score": 2
             }
     }
-    human_readable = "{}, file marked as suspicious for entry id: {}".format(suspicious_reason, entry_id)
+    human_readable = "{}\nFile marked as suspicious for entry id: {}".format(suspicious_reason, entry_id)
     return_outputs(human_readable, dbot, {})
 
 

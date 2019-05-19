@@ -5,7 +5,7 @@ CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test
 
 
 def test_get_files_names_in_path():
-    from ReadPDFFile import get_files_names_in_path
+    from ReadPDFFileV2 import get_files_names_in_path
     pdf_file_names = get_files_names_in_path('test_data', '*.pdf')
     assert 'scanned.pdf' in pdf_file_names
 
@@ -14,7 +14,7 @@ def test_get_files_names_in_path():
 
 
 def test_get_images_paths_in_path():
-    from ReadPDFFile import get_images_paths_in_path
+    from ReadPDFFileV2 import get_images_paths_in_path
     img_file_paths = get_images_paths_in_path('test_data')
     assert 'test_data/test1.png' in img_file_paths
     assert 'test_data/test2.jpg' in img_file_paths
@@ -23,7 +23,7 @@ def test_get_images_paths_in_path():
 
 def test_get_pdf_metadata_with_encrypted(mocker):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
-    from ReadPDFFile import get_pdf_metadata
+    from ReadPDFFileV2 import get_pdf_metadata
     metadata = get_pdf_metadata(f'{CWD}/encrypted.pdf')
     expected = {
         'Title': 'sample1.pdf',
@@ -46,7 +46,7 @@ def test_get_pdf_metadata_with_encrypted(mocker):
 
 
 def test_get_metadata_without_encrypted(tmp_path):
-    from ReadPDFFile import get_pdf_metadata
+    from ReadPDFFileV2 import get_pdf_metadata
     try:
         get_pdf_metadata(f'{CWD}/encrypted.pdf')
         raise Exception("Incorrect password exception should've been thrown")
@@ -79,7 +79,7 @@ def test_get_metadata_without_encrypted(tmp_path):
 
 def test_get_pdf_text_with_encrypted(mocker, tmp_path):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
-    from ReadPDFFile import get_pdf_text
+    from ReadPDFFileV2 import get_pdf_text
     text = get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
     expected = "XSL FO Sample Copyright © 2002-2005 Antenna House, Inc. All rights reserved.\n\n" \
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
@@ -93,7 +93,7 @@ def test_get_pdf_text_with_encrypted(mocker, tmp_path):
 
 
 def test_get_pdf_text_without_encrypted(tmp_path):
-    from ReadPDFFile import get_pdf_text
+    from ReadPDFFileV2 import get_pdf_text
 
     try:
         get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
@@ -117,8 +117,8 @@ def test_get_pdf_text_without_encrypted(tmp_path):
 
 def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
-    from ReadPDFFile import get_pdf_htmls_content
-    from ReadPDFFile import get_images_paths_in_path
+    from ReadPDFFileV2 import get_pdf_htmls_content
+    from ReadPDFFileV2 import get_images_paths_in_path
     html_text = get_pdf_htmls_content(f'{CWD}/encrypted.pdf', tmp_path)
     expected = 'If you are end user who wishes to use XSL Formatter yourself, you may purchase ' \
                'from our Reseller or direct from Antenna<br/>House.<br/>'
@@ -127,8 +127,8 @@ def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
 
 
 def test_get_pdf_htmls_content_without_encrypted(tmp_path):
-    from ReadPDFFile import get_pdf_htmls_content
-    from ReadPDFFile import get_images_paths_in_path
+    from ReadPDFFileV2 import get_pdf_htmls_content
+    from ReadPDFFileV2 import get_images_paths_in_path
     try:
         get_pdf_htmls_content(f'{CWD}/encrypted.pdf', tmp_path)
         raise Exception("Incorrect password exception should've been thrown")

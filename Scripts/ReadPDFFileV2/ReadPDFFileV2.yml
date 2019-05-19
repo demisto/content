@@ -72,7 +72,7 @@ runas: DBotWeakRole
 runonce: false
 tests:
 - Extract Indicators From File - test
-- ReadPDFFile-Test
+- ReadPDFFileV2-Test
 fromversion: 4.1.0
 releaseNotes: "Reimplemented ReadPDFFile script. Deprecated maxFileSize (as it wasn't used) and added new functionality:
                - Expanded metadata: metadata displays more information than before.
