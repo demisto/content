@@ -233,21 +233,21 @@ def prepare_security_rule_params(api_action=None, rulename=None, source=None, de
         'action': api_action,
         'key': API_KEY,
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_open(source, 'source', True)
-                   + add_argument_open(destination, 'destination', True)
-                   + add_argument_open(application, 'application', True)
-                   + add_argument_open(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_open(fromm, 'from', True)  # default from will always be any
-                   + add_argument_open(to, 'to', True)  # default to will always be any
-                   + add_argument_open(service, 'service', True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_open(source, 'source', True)
+        + add_argument_open(destination, 'destination', True)
+        + add_argument_open(application, 'application', True)
+        + add_argument_open(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_open(fromm, 'from', True)  # default from will always be any
+        + add_argument_open(to, 'to', True)  # default to will always be any
+        + add_argument_open(service, 'service', True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
     }
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
@@ -626,10 +626,10 @@ def panorama_create_address(address_name, fqdn=None, ip_netmask=None, ip_range=N
         'key': API_KEY
     }
 
-    params['element'] = add_argument(fqdn, 'fqdn', False) \
-                        + add_argument(ip_netmask, 'ip-netmask', False) \
-                        + add_argument(ip_range, 'ip-range', False) \
-                        + add_argument(description, 'description', False)
+    params['element'] = add_argument(fqdn, 'fqdn', False)
+    + add_argument(ip_netmask, 'ip-netmask', False)
+    + add_argument(ip_range, 'ip-range', False)
+    + add_argument(description, 'description', False)
 
     http_request(
         URL,
@@ -2682,7 +2682,7 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
         'type': 'config',
         'key': API_KEY,
         'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/"
-                 + element_to_change
+        + element_to_change
     }
 
     if element_to_change == 'url':
