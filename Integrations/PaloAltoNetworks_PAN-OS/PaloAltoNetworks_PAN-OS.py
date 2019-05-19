@@ -122,9 +122,9 @@ def http_request(uri, method, headers={}, body={}, params={}, files=None):
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             # catch non valid jobID errors and display a meaningful message
-            elif isinstance(json_result['response']['msg']['line'], str) and json_result['response']['msg'][
-                'line'].find(
-                'job') != -1 and json_result['response']['msg']['line'].find('not found') != -1:
+            elif isinstance(json_result['response']['msg']['line'], str) and \
+                    json_result['response']['msg']['line'].find('job') != -1 and \
+                    json_result['response']['msg']['line'].find('not found') != -1:
                 return_error('Invalid Job ID error: ' + json_result['response']['msg']['line'])
 
             # catch already at the top/bottom error for rules and return this as an entry.note
@@ -1968,9 +1968,8 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
     }
 
     if element_to_change == 'description':
-        params[
-            'xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/" + \
-                       element_to_change
+        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/" \
+                          + element_to_change
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', params=params)
         url_filter_output['Description'] = element_value
@@ -2782,8 +2781,8 @@ def panorama_refresh_edl(edl_name):
 
     params = {
         'type': 'op',
-        'cmd': '<request><system><external-list><refresh><type><' + edl_type + '><name>' + edl_name + '</name></' +
-               edl_type + '></type></refresh></external-list></system></request>',
+        'cmd': '<request><system><external-list><refresh><type><' + edl_type + '><name>' + edl_name + '</name></'
+               + edl_type + '></type></refresh></external-list></system></request>',
         'key': API_KEY
     }
     result = http_request(
@@ -2816,13 +2815,13 @@ def panorama_refresh_edl_command():
 def panorama_register_ip_tag(tag, ips, persistent):
     entry = ''
     for ip in ips:
-        entry += '<entry ip=\"' + ip + '\" persistent=\"' + persistent + '\"><tag><member>' + tag + \
-                 '</member></tag></entry>'
+        entry += '<entry ip=\"' + ip + '\" persistent=\"' + persistent + '\"><tag><member>' + tag
+        + '</member></tag></entry>'
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry +
-               '</register></payload></uid-message>',
+        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry
+               + '</register></payload></uid-message>',
         'key': API_KEY
     }
 
@@ -2883,8 +2882,8 @@ def panorama_unregister_ip_tag(tag, ips):
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry +
-               '</unregister></payload></uid-message>',
+        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry
+               + '</unregister></payload></uid-message>',
         'key': API_KEY
     }
     result = http_request(
