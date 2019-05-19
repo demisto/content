@@ -29,14 +29,12 @@ if not DEVICE_GROUP and not VSYS:
     return_error('Set vsys for firewall or Device group for Panorama')
 
 # setting security xpath relevant to FW or panorama management
-XPATH_SECURITY_RULES = None
 if DEVICE_GROUP:
     XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
     XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
 
 # setting objects xpath relevant to FW or panorama management
-XPATH_OBJECTS = None
 if DEVICE_GROUP:
     XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
