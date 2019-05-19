@@ -9,6 +9,7 @@ from urlparse import urlparse
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# flake8: noqa
 
 ''' GLOBAL VARS '''
 if not demisto.params().get('proxy', False):
