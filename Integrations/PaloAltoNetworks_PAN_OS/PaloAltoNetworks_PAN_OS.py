@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 import json
 import uuid
+from typing import Dict, List, Tuple, Any, Union, cast
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -166,6 +167,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files=None):
 
 
 def add_argument_list(arg, field_name, member):
+    member_stringify_list: str
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -978,7 +980,7 @@ def panorama_edit_address_group_command():
             return_error('To edit a Static Address group,'
                          'Please specify exactly one of the following: element_to_add, element_to_remove')
         address_group_prev = panorama_get_address_group(address_group_name)
-        address_group_list: list = []
+        address_group_list: List[str] = []
         if 'static' in address_group_prev:
             if address_group_prev['static']:
                 address_group_list = argToList(address_group_prev['static']['member'])
@@ -1120,6 +1122,7 @@ def prettify_service(service):
     if 'description' in service:
         pretty_service['Description'] = service['description']
 
+    protocol: str
     protocol = ''
     if 'protocol' in service:
         if 'tcp' in service['protocol']:
@@ -1693,7 +1696,7 @@ def panorama_custom_url_category_add_sites_command():
 
     description = custom_url_category.get('description')
 
-    custom_url_category_sites: list = []
+    custom_url_category_sites: List[str] = []
     if 'list' in custom_url_category:
         if custom_url_category['list']:
             custom_url_category_sites = argToList(custom_url_category['list']['member'])
@@ -1824,8 +1827,8 @@ def prettify_get_url_filter(url_filter):
         pretty_url_filter['Description'] = url_filter['description']
 
     pretty_url_filter['Category'] = []
-    url_category_list: list = []
-    action: str = ''
+    url_category_list: List[str] = []
+    action: str
     if 'alert' in url_filter:
         url_category_list = url_filter['alert']['member']
         action = 'alert'
@@ -2858,7 +2861,7 @@ def panorama_register_ip_tag_command():
 
     result = panorama_register_ip_tag(tag, ips, str(persistent))
 
-    registered_ip: dict = {}
+    registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent
     if persistent == '1':
         # get existing IPs for this tag
@@ -2888,7 +2891,8 @@ def panorama_register_ip_tag_command():
 
 @logger
 def panorama_unregister_ip_tag(tag, ips):
-    entry: str = ''
+    entry: str
+    entry = ''
     for ip in ips:
         entry += '<entry ip=\"' + ip + '\"><tag><member>' + tag + '</member></tag></entry>'
 
