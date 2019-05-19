@@ -32,7 +32,7 @@ SEVERITY_DICT = {
     "blacklisted": "Blacklisted",
     "whitelisted": "Whitelisted",
     "unknown": "Unknown",
-    None: "Unknown"
+    None: "Unknown",
 }
 
 DBOTSCORE = {
@@ -48,6 +48,14 @@ DBOTSCORE = {
 
 
 def build_errors_string(errors):
+    """
+
+    Args:
+        errors (list or dict):
+
+    Returns:
+        str: error message
+    """
     if isinstance(errors, list):
         err_str = str()
         for error in errors:
@@ -58,6 +66,18 @@ def build_errors_string(errors):
 
 
 def http_request(method, url_suffix, params=None, files=None, ignore_errors=False):
+    """
+
+    Args:
+        method (str):
+        url_suffix (str):
+        params (dict):
+        files (dict):
+        ignore_errors (bool):
+
+    Returns:
+        dict: response
+    """
     def find_error(may_be_error_inside):
         """Function will search for dict with "errors" or "error_msg" key
 
@@ -99,12 +119,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
     error_format = "Error in API call to VMRay [{}] - {}"
     url = SERVER + url_suffix
     r = requests.request(
-        method,
-        url,
-        params=params,
-        headers=HEADERS,
-        files=files,
-        verify=USE_SSL,
+        method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL
     )
 
     status_code = r.status_code
@@ -120,9 +135,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         return response
     except ValueError:
         # If no JSON is present, must be an error that can't be ignored
-        return_error(
-            error_format.format(status_code, r.text)
-        )
+        return_error(error_format.format(status_code, r.text))
 
 
 def score_by_hash(analysis):
@@ -252,7 +265,9 @@ def test_module():
     """Simple get request to see if connected
     """
     response = http_request("GET", "analysis?_limit=1")
-    demisto.results("ok") if response.get("result") == 'ok' else return_error("Can't authenticate: {}".format(response))
+    demisto.results("ok") if response.get("result") == "ok" else return_error(
+        "Can't authenticate: {}".format(response)
+    )
 
 
 def upload_sample(path, params):
@@ -275,7 +290,11 @@ def upload_sample_command():
     """Uploads a file to vmray
     """
     # Preserve BC
-    file_id = demisto.args().get("entry_id") if demisto.args().get("entry_id") else demisto.args().get("file_id")
+    file_id = (
+        demisto.args().get("entry_id")
+        if demisto.args().get("entry_id")
+        else demisto.args().get("file_id")
+    )
     path = demisto.getFilePath(file_id).get("path")
 
     params = build_upload_params()
@@ -324,7 +343,9 @@ def upload_sample_command():
     entry_context = dict()
     entry_context["VMRay.Job(val.JobID === obj.JobID)"] = jobs_list
     entry_context["VMRay.Sample(val.SampleID === obj.SampleID)"] = samples_list
-    entry_context["VMRay.Submission(val.SubmissionID === obj.SubmissionID)"] = submissions_list
+    entry_context[
+        "VMRay.Submission(val.SubmissionID === obj.SubmissionID)"
+    ] = submissions_list
 
     table = {
         "Jobs ID": [job.get("JobID") for job in jobs_list],
@@ -339,7 +360,9 @@ def upload_sample_command():
         headers=["Jobs ID", "Samples ID", "Submissions ID"],
     )
 
-    return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+    return_outputs(
+        readable_output=human_readable, outputs=entry_context, raw_response=raw_response
+    )
 
 
 def get_analysis_command():
@@ -410,7 +433,10 @@ def get_submission_command():
 
         return_outputs(human_readable, entry_context, raw_response=raw_response)
     else:
-        return_outputs("No submission found in VMRay for submission id: {}".format(submission_id), {})
+        return_outputs(
+            "No submission found in VMRay for submission id: {}".format(submission_id),
+            {},
+        )
 
 
 def get_submission(submission_id):
@@ -486,7 +512,11 @@ def get_job(job_id, sample_id):
             "result": "error"
         }
     """
-    suffix = "job/{}".format(job_id) if isinstance(job_id, str) else "job/sample/{}".format(sample_id)
+    suffix = (
+        "job/{}".format(job_id)
+        if isinstance(job_id, str)
+        else "job/sample/{}".format(sample_id)
+    )
     response = http_request("GET", suffix, ignore_errors=True)
     return response
 
@@ -502,7 +532,9 @@ def get_job_command():
     data = raw_response.get("data")
     if raw_response.get("result") == "error" or not data:
         entry = build_finished_job(job_id=job_id, sample_id=sample_id)
-        human_readable = "#### Jobs for {} id {} is finished/not exists".format(title, vmray_id)
+        human_readable = "#### Jobs for {} id {} is finished/not exists".format(
+            title, vmray_id
+        )
     else:
         entry = build_job_data(data)
         sample = entry[0] if isinstance(entry, list) else entry
@@ -512,7 +544,9 @@ def get_job_command():
             headers=["JobID", "SampleID", "VMName", "VMID"],
         )
 
-    entry_context = {"VMRay.Job(val.JobID === obj.JobID && val.SampleID === obj.SampleID)": entry}
+    entry_context = {
+        "VMRay.Job(val.JobID === obj.JobID && val.SampleID === obj.SampleID)": entry
+    }
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -557,16 +591,12 @@ def get_threat_indicators_command():
 
         entry_context = {"VMRay.ThreatIndicator(obj.ID === val.ID)": entry_context_list}
         return_outputs(
-            human_readable,
-            entry_context,
-            raw_response={
-                "threat_indicators": data
-            }
+            human_readable, entry_context, raw_response={"threat_indicators": data}
         )
     return_outputs(
         "No threat indicators for sample ID: {}".format(sample_id),
         {},
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
 
@@ -766,17 +796,15 @@ def get_iocs_command():
         "Mutex": mutex_list,
         "Domain": domain_list,
         "Registry": registry_list,
-        "IP": ip_list
+        "IP": ip_list,
     }
 
-    entry_context = {
-        "VMRay.Sample(val.SampleID === {}).IOC".format(sample_id): iocs,
-    }
+    entry_context = {"VMRay.Sample(val.SampleID === {}).IOC".format(sample_id): iocs}
 
     human_readable = tableToMarkdown(
         "Total of {} IOCs found in VMRay by sample {}".format(iocs_size, sample_id),
         iocs_size_table,
-        headers=["URLs", "IPs", "Domains", "Mutexes", "Registry"]
+        headers=["URLs", "IPs", "Domains", "Mutexes", "Registry"],
     )
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
@@ -794,7 +822,11 @@ try:
         get_analysis_command()
     elif COMMAND == "vmray-get-sample":
         get_sample_command()
-    elif COMMAND in ("vmray-get-job-by-sample", "get_job_sample", "vmray-get-job-by-id"):
+    elif COMMAND in (
+        "vmray-get-job-by-sample",
+        "get_job_sample",
+        "vmray-get-job-by-id",
+    ):
         get_job_command()
     elif COMMAND == "vmray-get-threat-indicators":
         get_threat_indicators_command()
