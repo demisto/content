@@ -14,6 +14,9 @@ SERVER += "/rest/"
 USE_SSL = not demisto.params().get("insecure", False)
 HEADERS = {"Authorization": "api_key " + API_KEY}
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 # Remove proxy
 if not demisto.params().get("proxy"):
     del os.environ["HTTP_PROXY"]
@@ -209,27 +212,12 @@ def build_analysis_data(analyses):
     return entry_context
 
 
-def test_module():
-    """Simple get request to see if connected
+def build_upload_params():
+    """Builds params for upload_file
+
+    Returns:
+        dict: params
     """
-    response = http_request("GET", "analysis?_limit=1")
-    demisto.results("ok") if response.get("result") == 'ok' else return_error("Can't authenticate! {}".format(response))
-
-
-def upload_sample(path, params=None):
-    suffix = "sample/submit"
-    files = {"sample_file": open(path, "rb")}
-    results = http_request("POST", url_suffix=suffix, params=params, files=files)
-    return results
-
-
-def upload_sample_command():
-    """Uploads a file to vmray
-    """
-    # Preserve BC
-    file_id = demisto.args().get("entry_id") if demisto.args().get("entry_id") else demisto.args().get("file_id")
-    path = demisto.getFilePath(file_id).get("path")
-
     # additional params
     doc_pass = demisto.args().get("document_password")
     arch_pass = demisto.args().get("archive_password")
@@ -257,6 +245,40 @@ def upload_sample_command():
             return_error("max_jobs arguments isn't a number")
     if tags:
         params["tags"] = tags
+    return params
+
+
+def test_module():
+    """Simple get request to see if connected
+    """
+    response = http_request("GET", "analysis?_limit=1")
+    demisto.results("ok") if response.get("result") == 'ok' else return_error("Can't authenticate: {}".format(response))
+
+
+def upload_sample(path, params):
+    """Uploading sample to vmray
+
+    Args:
+        path (str): path to file
+        params (dict): dict of params
+
+    Returns:
+        dict: response
+    """
+    suffix = "sample/submit"
+    files = {"sample_file": open(path, "rb")}
+    results = http_request("POST", url_suffix=suffix, params=params, files=files)
+    return results
+
+
+def upload_sample_command():
+    """Uploads a file to vmray
+    """
+    # Preserve BC
+    file_id = demisto.args().get("entry_id") if demisto.args().get("entry_id") else demisto.args().get("file_id")
+    path = demisto.getFilePath(file_id).get("path")
+
+    params = build_upload_params()
 
     # Request call
     raw_response = upload_sample(path, params=params)
@@ -333,6 +355,15 @@ def get_analysis_command():
 
 
 def get_analysis(sample, params=None):
+    """Uploading sample to vmray
+
+    Args:
+        sample (str): sample id
+        params (dict): dict of params
+
+    Returns:
+        dict: response
+    """
     suffix = "analysis/sample/{}".format(sample)
     response = http_request("GET", suffix, params=params)
     return response
@@ -386,10 +417,10 @@ def get_submission(submission_id):
     """
 
     Args:
-        submission_id: (str)
+        submission_id (str): if of submission
 
     Returns:
-        dict: response.data
+        dict: response
     """
     suffix = "submission/{}".format(submission_id)
     response = http_request("GET", url_suffix=suffix)
@@ -433,7 +464,7 @@ def get_sample(sample_id):
     """building http request for get_sample_command
 
     Args:
-        sample_id: (str, int)
+        sample_id (str, int):
 
     Returns:
         dict: data from response
@@ -443,11 +474,11 @@ def get_sample(sample_id):
     return response
 
 
-def get_job(job_id=None, sample_id=None):
+def get_job(job_id, sample_id):
     """
     Args:
-        sample_id:
-        job_id:
+        sample_id (str):
+        job_id (str):
     Returns:
         dict of response, if not exists returns:
         {
@@ -486,6 +517,14 @@ def get_job_command():
 
 
 def get_threat_indicators(sample_id):
+    """
+
+    Args:
+        sample_id (str):
+
+    Returns:
+        dict: response
+    """
     suffix = "sample/{}/threat_indicators".format(sample_id)
     response = http_request("GET", suffix).get("data")
     return response
@@ -532,12 +571,31 @@ def get_threat_indicators_command():
 
 
 def post_tags_to_analysis(analysis_id, tag):
+    """
+
+    Args:
+        analysis_id (str):
+        tag (str):
+
+    Returns:
+        dict:
+    """
     suffix = "analysis/{}/tag/{}".format(analysis_id, tag)
     response = http_request("POST", suffix)
     return response
 
 
 def post_tags_to_submission(submission_id, tag):
+    """
+
+    Args:
+        submission_id (str):
+        tag (str):
+
+    Returns:
+        dict:
+
+    """
     suffix = "submission/{}/tag/{}".format(submission_id, tag)
     response = http_request("POST", suffix)
     return response
@@ -604,6 +662,14 @@ def delete_tags():
 
 
 def get_iocs(sample_id):
+    """
+
+    Args:
+        sample_id (str):
+
+    Returns:
+        dict: response
+    """
     suffix = "sample/{}/iocs".format(sample_id)
     response = http_request("GET", suffix)
     return response
@@ -719,7 +785,6 @@ try:
     COMMAND = demisto.command()
     if COMMAND == "test-module":
         # This is the call made when pressing the integration test button.
-        # demisto.results('ok')
         test_module()
     elif COMMAND in ("upload_sample", "vmray-upload-sample", "file"):
         upload_sample_command()
