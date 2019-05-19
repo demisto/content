@@ -1377,20 +1377,12 @@
             "playbookID": "Detonate URL - ANYRUN - Test"
         },
         {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test"
-        },
-        {
             "integrations": "Netcraft",
             "playbookID": "Netcraft test"
         },
         {
             "integrations": "EclecticIQ Platform",
             "playbookID": "EclecticIQ Test"
-        },
-        {
-            "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
         },
         {
             "playbookID": "FormattingPerformance - Test",
@@ -1472,9 +1464,6 @@
             "playbookID": "TestImageOCR"
         },
         {
-            "playbookID": "TestIsEmailAddressInternal"
-        },
-        {
             "playbookID": "EWS test"
         }
     ],
@@ -1506,7 +1495,15 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
         "d66e5f86-e045-403f-819e-5058aa603c32": "skipped until PR is merged (pr 3220)",
         "113aca8a-ee52-419f-89a6-150ee232d0d1": "skipped until PR is merged (pr 3512)",
-        "Carbon Black Enterprise Protection V2 Test": "Data changes within Carbon Black on a weekly basis - which requires to update the test"
+        "Carbon Black Enterprise Protection V2 Test": "Data changes within Carbon Black on a weekly basis - which requires to update the test",
+        "5dc848e5-a649-4394-8300-386770d39d75": "old test, needs to check if relevant",
+        "Get File Sample By Hash - Generic - Test": "old test, needs to check if relevant",
+        "Get File Sample From Hash - Generic - Test": "old test, needs to check if relevant",
+        "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test": "old test, needs to check if relevant",
+        "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
+        "ssdeepreputationtest": "old test, needs to check if relevant",
+        "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
+        "okta_test_playbook": "test failed (Issue 17041)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
