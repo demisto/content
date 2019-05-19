@@ -24,38 +24,6 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- display: Look name or ID to fetch incidents from
-  name: fetch_incidents_look
-  required: false
-  type: 0
-- defaultvalue: '500'
-  display: Fetch incidents result limit
-  name: fetch_incidents_limit
-  required: false
-  type: 0
-- defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
-  name: first_fetch_time
-  required: false
-  type: 0
-- display: 'Fetch Incidents: Ingested date field'
-  name: ingested_date_field
-  required: false
-  type: 0
-- defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
-  display: 'Fetch Incidents: Ingested date field format'
-  name: ingested_format
-  required: false
-  type: 0
-- display: 'Fetch Incidents: Incident name field'
-  name: incident_name_field
-  required: false
-  type: 0
-- display: 'Fetch Incidents: Occurred date field'
-  name: occurred_date_field
-  required: false
-  type: 0
 description: Query an Explore, save queries as looks, run looks, fetch look results
   as incidents.
 display: Looker
@@ -300,7 +268,7 @@ script:
       description: The time that the look was last updated
       type: Date
   dockerimage: demisto/python3:3.7.3.221
-  isfetch: true
+  isfetch: false
   runonce: false
   script: '-'
   type: python

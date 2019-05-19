@@ -33,13 +33,6 @@ HEADERS = {}
 ''' HELPER FUNCTIONS '''
 
 
-def verify_fetch_incidents_params():
-    for fetch_param in ('fetch_incidents_look', 'ingested_date_field', 'timestamp_format', 'incident_name_field',
-                        'occurred_date_field', 'occurred_format'):
-        if not demisto.params().get(fetch_param).strip():
-            raise ValueError(f'Parameter {fetch_param} is required for fetch-incidents.')
-
-
 def verify_url(url):
     # validate url parameter format, extract port
     try:
@@ -240,14 +233,6 @@ def get_query_args():
     return args_dict
 
 
-def event_to_incident(event, name_field, occured_field):
-    return {
-        'Name': event[name_field],
-        'Occurred': event[occured_field],
-        'rawJSON': event
-    }
-
-
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -256,33 +241,6 @@ def test_module():
     Performs basic get request to check connectivity and authentication
     """
     http_request('GET', '/user')
-
-
-def fetch_incidents_command():
-    look = demisto.params()['fetch_incidents_look']
-    limit = demisto.params().get('fetch_incidents_limit', '500')
-    timestamp_field = demisto.params()['ingested_date_field']
-    timestamp_format = demisto.params()['timestamp_format']
-    incident_name_field = demisto.params()['incident_name_field']
-    occurred_field = demisto.params()['occurred_date_field']
-
-    last_run = demisto.getLastRun()
-    if last_run:
-        last_run = datetime.strptime(last_run, LAST_RUN_TIME_FORMAT)
-    else:
-        last_run = parse_date_range(demisto.params().get('first_fetch_time', '10 minutes'))
-
-    incidents = []
-    new_last_run = datetime.strftime(datetime.now(), LAST_RUN_TIME_FORMAT)
-    raw_response = run_look_request(look, 'json', limit, '')  # TODO: Document look requirements
-
-    for event in raw_response:
-        if datetime.strptime(event[timestamp_field], timestamp_format) >= \
-                datetime.strptime(last_run, LAST_RUN_TIME_FORMAT):
-            incidents.append(event_to_incident(event, incident_name_field, occurred_field))
-
-    demisto.setLastRun(new_last_run)
-    demisto.incidents(incidents)
 
 
 def run_look_command():
@@ -437,9 +395,6 @@ try:
     if demisto.command() == 'test-module':
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        verify_fetch_incidents_params()
-        fetch_incidents_command()
     elif demisto.command() == 'looker-run-look':
         run_look_command()
     elif demisto.command() == 'looker-search-looks':
