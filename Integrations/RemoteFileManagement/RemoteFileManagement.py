@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 import tempfile
 import subprocess
 import shutil
+import os
 
 ''' GLOBALS '''
 
@@ -226,6 +227,50 @@ def rfm_update():
         })
 
 
+def rfm_update_from_external_file(list_name, file_path, type_):
+    dict_of_lists = demisto.getIntegrationContext()
+    list_data = dict_of_lists.get(list_name, None)
+    file_data = rfm_get_external_file(file_path)
+
+    set_internal = set(list_data)
+    set_external = set(file_data.split('\n'))
+    set_external.discard('')
+
+    if type_ == 'merge':
+        list_data_new = list(set_internal + set_external)
+    else:  # type_ == 'override'
+        list_data_new = list(set_external)
+
+    dict_of_lists.update({list_name: list_data_new})
+
+    return list_data_new
+
+
+def rfm_update_from_external_file_command():
+    """
+    Updates internal list data with external file contents
+    """
+    file_path = demisto.args().get('file_path')
+    if DOCUMENT_ROOT:
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
+    list_name = demisto.args().get('list_name')
+    type_ = demisto.args().get('type')
+    verbose = demisto.args().get('verbose') == 'true'
+
+    list_data_new = rfm_update_from_external_file(list_name, file_path, type_)
+
+    if verbose:
+        md = tableToMarkdown('List items:', list_data_new, headers=[list_name])
+    else:
+        md = 'Instance context updated successfully'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': md,
+        'ContentsFormat': formats['markdown']
+    })
+
+
 def rfm_delete_external_file(file_path):
     ssh_execute('rm -f ' + file_path)
     return 'File deleted successfully'
@@ -386,9 +431,6 @@ def rfm_compare_command():
     unique_internal = set_internal - set_external
     unique_external = set_external - set_internal
 
-    demisto.log(str(set_external))
-    demisto.log(str(unique_external))
-
     md = ''
     if unique_internal:
         md += tableToMarkdown('Unique internal items:', list(unique_internal), headers=[list_name])
@@ -422,6 +464,9 @@ def main():
 
         elif demisto.command() == 'rfm-update':
             rfm_update()
+
+        elif demisto.command() == 'rfm-update-from-external-file':
+            rfm_update_from_external_file_command()
 
         elif demisto.command() == 'rfm-delete-external-file':
             rfm_delete_external_file_command()

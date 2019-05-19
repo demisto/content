@@ -77,7 +77,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Print updated external file to the war-rrom. default is "false"
+      description: Print updated external file to the war-room. default is "false"
       isArray: false
       name: verbose
       predefined:
@@ -107,6 +107,33 @@ script:
       then Override external file path with internal list
     execution: true
     name: rfm-update
+  - arguments:
+    - name: file_path
+      required: true
+      description: Unique path to external file
+    - name: list_name
+      required: true
+      description: Name of list
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - merge
+      - override
+      description: Type of update. Merge will added non duplicate values, Override
+        will delete existing data in the internal list
+      defaultValue: merge
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print updated internal list to the war-room. default is "false"
+      defaultValue: "false"
+    deprecated: false
+    description: Updates internal list data with external file contents
+    execution: true
+    name: rfm-update-from-external-file
   - arguments:
     - default: false
       description: Unique path to file
