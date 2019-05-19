@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 import sys
 import yaml
 import enchant
@@ -38,22 +39,16 @@ def check_md_file(md_data, unknown_words):
                 unknown_words.add(word)
 
 
-def spell_checker():
-    description = """Run spell check on a given yml file. """
-    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-p", "--path", help="Specify path of yml/md file", required=True)
-    parser.add_argument("-i", "--isMD", help="Whether the path is to a yml file or an md.", action='store_true')
-
+def spell_checker(path, is_md=False):
     unknown_words = set([])
-    args = parser.parse_args()
 
-    if args.isMD:
-        with open(args.path, 'r') as md_file:
+    if is_md:
+        with open(path, 'r') as md_file:
             md_data = md_file.readlines()
 
         check_md_file(md_data, unknown_words)
     else:
-        with open(args.path, 'r') as yaml_file:
+        with open(path, 'r') as yaml_file:
             yml_info = yaml.safe_load(yaml_file)
 
         check_yaml(yml_info, unknown_words)
@@ -67,4 +62,10 @@ def spell_checker():
 
 
 if __name__ == "__main__":
-    sys.exit(spell_checker())
+    description = """Run spell check on a given yml file. """
+    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-p", "--path", help="Specify path of yml/md file", required=True)
+    parser.add_argument("-i", "--isMD", help="Whether the path is to a yml file or an md.", action='store_true')
+
+    args = parser.parse_args()
+    sys.exit(spell_checker(args.path, args.isMD))
