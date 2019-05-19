@@ -66,12 +66,14 @@ def test_prettify_address():
 
 def test_prettify_address_group():
     address_group_static = {'@name': 'foo', 'static': {'member': 'address object'}}
+    response_static = prettify_address_group(address_group_static)
     expected_address_group_static = {'Name': 'foo', 'Type': 'static', 'Addresses': 'address object'}
-    assert address_group_static == expected_address_group_static
+    assert response_static == expected_address_group_static
 
     address_group_dynamic = {'@name': 'foo', 'dynamic': {'filter': '1.1.1.1 and 2.2.2.2'}}
+    response_dynamic = prettify_address_group(address_group_dynamic)
     expected_address_group_dynamic = {'Name': 'foo', 'Type': 'Dynamic', 'Match': '1.1.1.1 and 2.2.2.2'}
-    assert address_group_dynamic == expected_address_group_dynamic
+    assert response_dynamic == expected_address_group_dynamic
 
 
 def test_prettify_service():

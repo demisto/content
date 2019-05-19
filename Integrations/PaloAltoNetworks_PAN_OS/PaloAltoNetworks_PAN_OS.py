@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 import json
 import uuid
+import typing
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -500,7 +501,7 @@ def panorama_push_status_command():
 
 
 def prettify_addresses_arr(addresses_arr):
-    pretty_addresses_arr = []
+    pretty_addresses_arr: List[str] = []
     for address in addresses_arr:
         pretty_address = {
             'Name': address['@name'],
