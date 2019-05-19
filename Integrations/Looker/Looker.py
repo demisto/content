@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
+from typing import Dict
 import requests
 import traceback
 import json
@@ -27,7 +28,7 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/api/3.0'
 # Request headers (preparation)
-HEADERS = dict()
+HEADERS: Dict[str, str] = {}
 
 
 ''' HELPER FUNCTIONS '''
