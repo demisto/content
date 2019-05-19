@@ -467,7 +467,6 @@ script:
   dockerimage: demisto/python
   isfetch: false
   runonce: false
-  script:
-    script: ''
+  script: ''
   type: python
 fromversion: 4.0.0
