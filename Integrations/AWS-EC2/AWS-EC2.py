@@ -186,7 +186,8 @@ def parse_date(dt):
         arr = dt.split("-")
         parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
     except ValueError as e:
-        return_error("Date could not be parsed. Please check the date again.\n{error}".format(error=type(e)))
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
     return parsed_date
 
 
@@ -236,6 +237,11 @@ def describe_instances_command(args):
     response = client.describe_instances(**kwargs)
     for i, reservation in enumerate(response['Reservations']):
         for instance in reservation['Instances']:
+            try:
+                launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
+            except ValueError as e:
+                error = type(e)
+                return_error(f'Date could not be parsed. Please check the date again.\n{error}')
             data.append({
                 'InstanceId': instance['InstanceId'],
                 'ImageId': instance['ImageId'],
@@ -243,7 +249,7 @@ def describe_instances_command(args):
                 'PublicIPAddress': instance.get('PublicIpAddress'),
                 'Region': obj['_user_provided_options']['region_name'],
                 'Type': instance['InstanceType'],
-                'LaunchDate': datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
+                'LaunchDate': launch_date,
                 'PublicDNSName': instance['PublicDnsName'],
                 'Monitoring': instance['Monitoring']['State'],
             })
@@ -258,7 +264,11 @@ def describe_instances_command(args):
         instance.update({'Region': obj['_user_provided_options']['region_name']})
         output.append(instance)
 
-    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)': raw}
     human_readable = tableToMarkdown('AWS Instances', data)
     return_outputs(human_readable, ec)
@@ -304,10 +314,13 @@ def describe_images_command(args):
                 data[i].update({
                     tag['Key']: tag['Value']
                 })
-
-    output = json.dumps(response['Images'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['Images'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Images(val.ImageId === obj.ImageId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Images', data)
     return_outputs(human_readable, ec)
@@ -386,13 +399,18 @@ def describe_snapshots_command(args):
     response = client.describe_snapshots(**kwargs)
 
     for i, snapshot in enumerate(response['Snapshots']):
+        try:
+            start_time = datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError as e:
+            error = type(e)
+            return_error(f'Date could not be parsed. Please check the date again.\n{error}')
         data.append({
             'Description': snapshot['Description'],
             'Encrypted': snapshot['Encrypted'],
             'OwnerId': snapshot['OwnerId'],
             'Progress': snapshot['Progress'],
             'SnapshotId': snapshot['SnapshotId'],
-            'StartTime': datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'StartTime': start_time,
             'State': snapshot['State'],
             'VolumeId': snapshot['VolumeId'],
             'VolumeSize': snapshot['VolumeSize'],
@@ -404,9 +422,13 @@ def describe_snapshots_command(args):
                     tag['Key']: tag['Value']
                 })
 
-    output = json.dumps(response['Snapshots'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['Snapshots'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Snapshots(val.SnapshotId === obj.SnapshotId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Snapshots', data)
     return_outputs(human_readable, ec)
@@ -432,23 +454,31 @@ def describe_volumes_command(args):
     response = client.describe_volumes(**kwargs)
 
     for i, volume in enumerate(response['Volumes']):
+        try:
+            create_date = datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError as e:
+            error = type(e)
+            return_error(f'Date could not be parsed. Please check the date again.\n{error}')
         data.append({
             'AvailabilityZone': volume['AvailabilityZone'],
             'Encrypted': volume['Encrypted'],
             'State': volume['State'],
             'VolumeId': volume['VolumeId'],
             'VolumeType': volume['VolumeType'],
-            'CreateTime': datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'CreateTime': create_date,
         })
         if 'Tags' in volume:
             for tag in volume['Tags']:
                 data[i].update({
                     tag['Key']: tag['Value']
                 })
-
-    output = json.dumps(response['Volumes'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['Volumes'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Volumes', data)
     return_outputs(human_readable, ec)
@@ -476,13 +506,18 @@ def describe_launch_templates_command(args):
     response = client.describe_launch_templates(**kwargs)
 
     for i, template in enumerate(response['LaunchTemplates']):
+        try:
+            create_time = datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError as e:
+            error = type(e)
+            return_error(f'Date could not be parsed. Please check the date again.\n{error}')
         data.append({
             'LaunchTemplateId': template['LaunchTemplateId'],
             'LaunchTemplateName': template['LaunchTemplateName'],
             'CreatedBy': template['CreatedBy'],
             'DefaultVersionNumber': template['DefaultVersionNumber'],
             'LatestVersionNumber': template['LatestVersionNumber'],
-            'CreateTime': datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'CreateTime': create_time,
             'Region': obj['_user_provided_options']['region_name'],
         })
 
@@ -492,9 +527,13 @@ def describe_launch_templates_command(args):
                     tag['Key']: tag['Value']
                 })
 
-    output = json.dumps(response['LaunchTemplates'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['LaunchTemplates'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.LaunchTemplates(val.LaunchTemplateId === obj.LaunchTemplateId)': raw}
     human_readable = tableToMarkdown('AWS EC2 LaunchTemplates', data)
     return_outputs(human_readable, ec)
@@ -567,9 +606,13 @@ def describe_vpcs_command(args):
                     tag['Key']: tag['Value']
                 })
 
-    output = json.dumps(response['Vpcs'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['Vpcs'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Vpcs(val.VpcId === obj.VpcId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Vpcs', data)
     return_outputs(human_readable, ec)
@@ -612,9 +655,13 @@ def describe_subnets_command(args):
                     tag['Key']: tag['Value']
                 })
 
-    output = json.dumps(response['Subnets'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['Subnets'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Subnets(val.SubnetId === obj.SubnetId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Subnets', data)
     return_outputs(human_readable, ec)
@@ -657,9 +704,13 @@ def describe_security_groups_command(args):
                     tag['Key']: tag['Value']
                 })
 
-    output = json.dumps(response['SecurityGroups'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['SecurityGroups'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)': raw}
     human_readable = tableToMarkdown('AWS EC2 SecurityGroups', data)
     return_outputs(human_readable, ec)
@@ -741,6 +792,12 @@ def create_snapshot_command(args):
 
     response = client.create_snapshot(**kwargs)
 
+    try:
+        start_time = datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
+
     data = ({
         'Description': response['Description'],
         'Encrypted': response['Encrypted'],
@@ -749,7 +806,7 @@ def create_snapshot_command(args):
         'State': response['State'],
         'VolumeId': response['VolumeId'],
         'VolumeSize': response['VolumeSize'],
-        'StartTime': datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'StartTime': start_time,
         'Region': obj['_user_provided_options']['region_name'],
     })
 
@@ -759,10 +816,14 @@ def create_snapshot_command(args):
                 tag['Key']: tag['Value']
             })
 
-    output = json.dumps(response, cls=DatetimeEncoder)
-    raw = json.loads(output)
-    del raw['ResponseMetadata']
-    raw.update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response, cls=DatetimeEncoder)
+        raw = json.loads(output)
+        del raw['ResponseMetadata']
+        raw.update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Snapshots': raw}
     human_readable = tableToMarkdown('AWS EC2 Snapshots', data)
     return_outputs(human_readable, ec)
@@ -777,7 +838,8 @@ def delete_snapshot_command(args):
     )
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Snapshot with ID: {0} was deleted".format(args.get('snapshotId')))
+        snapshot_id = args.get('snapshotId')
+        demisto.results(f"The Snapshot with ID: {snapshot_id} was deleted")
 
 
 def create_image_command(args):
@@ -822,7 +884,8 @@ def deregister_image_command(args):
 
     response = client.deregister_image(ImageId=args.get('imageId'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The AMI with ID: {0} was deregistered".format(args.get('imageId')))
+        image_id = args.get('imageId')
+        demisto.results(f"The AMI with ID: {image_id} was deregistered")
 
 
 def modify_volume_command(args):
@@ -846,6 +909,12 @@ def modify_volume_command(args):
     response = client.modify_volume(**kwargs)
     volumeModification = response['VolumeModification']
 
+    try:
+        start_time = datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
+
     data = ({
         'VolumeId': volumeModification['VolumeId'],
         'ModificationState': volumeModification['ModificationState'],
@@ -855,7 +924,7 @@ def modify_volume_command(args):
         'OriginalSize': volumeModification['OriginalSize'],
         'OriginalIops': volumeModification['OriginalIops'],
         'OriginalVolumeType': volumeModification['OriginalVolumeType'],
-        'StartTime': datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'StartTime': start_time,
         'Progress': volumeModification['Progress'],
         'Region': obj['_user_provided_options']['region_name'],
     })
@@ -983,9 +1052,15 @@ def create_volume_command(args):
 
     response = client.create_volume(**kwargs)
 
+    try:
+        create_time = datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
+
     data = ({
         'AvailabilityZone': response['AvailabilityZone'],
-        'CreateTime': datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'CreateTime': create_time,
         'Encrypted': response['Encrypted'],
         'Size': response['Size'],
         'State': response['State'],
@@ -1023,8 +1098,13 @@ def attach_volume_command(args):
         'VolumeId': args.get('volumeId'),
     }
     response = client.attach_volume(**kwargs)
+    try:
+        attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
     data = ({
-        'AttachTime': datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'AttachTime': attach_time,
         'Device': response['Device'],
         'InstanceId': response['InstanceId'],
         'State': response['State'],
@@ -1056,8 +1136,13 @@ def detach_volume_command(args):
         kwargs.update({'InstanceId': args.get('instanceId')})
 
     response = client.detach_volume(**kwargs)
+    try:
+        attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
     data = ({
-        'AttachTime': datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ'),
+        'AttachTime': attach_time,
         'Device': response['Device'],
         'InstanceId': response['InstanceId'],
         'State': response['State'],
@@ -1169,6 +1254,11 @@ def run_instances_command(args):
     response = client.run_instances(**kwargs)
     data = []
     for i, instance in enumerate(response['Instances']):
+        try:
+            launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError as e:
+            error = type(e)
+            return_error(f'Date could not be parsed. Please check the date again.\n{error}')
         data.append({
             'InstanceId': instance['InstanceId'],
             'ImageId': instance['ImageId'],
@@ -1176,7 +1266,7 @@ def run_instances_command(args):
             'PublicIPAddress': instance.get('PublicIpAddress'),
             'Region': obj['_user_provided_options']['region_name'],
             'Type': instance['InstanceType'],
-            'LaunchDate': datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ'),
+            'LaunchDate': launch_date,
             'PublicDNSName': instance['PublicDnsName'],
             'KeyName': instance['KeyName'],
             'Monitoring': instance['Monitoring']['State'],
@@ -1186,9 +1276,13 @@ def run_instances_command(args):
                 data[i].update({
                     tag['Key']: tag['Value']
                 })
-    output = json.dumps(response['Instances'], cls=DatetimeEncoder)
-    raw = json.loads(output)
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        output = json.dumps(response['Instances'], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Instances': raw}
     human_readable = tableToMarkdown('AWS Instances', data)
     return_outputs(human_readable, ec)
@@ -1331,7 +1425,7 @@ def waiter_snapshot_completed_command(args):
 
     waiter = client.get_waiter('snapshot_completed')
     waiter.wait(**kwargs)
-    demisto.results("success")
+    demisto.results("Success")
 
 
 def get_latest_ami_command(args):
@@ -1375,8 +1469,12 @@ def get_latest_ami_command(args):
                 tag['Key']: tag['Value']
             })
 
-    raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
-    raw.update({'Region': obj['_user_provided_options']['region_name']})
+    try:
+        raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+        raw.update({'Region': obj['_user_provided_options']['region_name']})
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Images': image}
     human_readable = tableToMarkdown('AWS EC2 Images', data)
     return_outputs(human_readable, ec)
@@ -1557,10 +1655,16 @@ def describe_reserved_instances_command(args):
 
     response = client.describe_reserved_instances(**kwargs)
     for i, reservation in enumerate(response['ReservedInstances']):
+        try:
+            start_time = datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ')
+            end_time = datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError as e:
+            error = type(e)
+            return_error(f'Date could not be parsed. Please check the date again.\n{error}')
         data.append({
             'ReservedInstancesId': reservation['ReservedInstancesId'],
-            'Start': datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ'),
-            'End': datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ'),
+            'Start': start_time,
+            'End': end_time,
             'Duration': reservation['Duration'],
             'InstanceType': reservation['InstanceType'],
             'InstanceCount': reservation['InstanceCount'],
@@ -1576,7 +1680,11 @@ def describe_reserved_instances_command(args):
         reservation.update({'Region': obj['_user_provided_options']['region_name']})
         output.append(reservation)
 
-    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.ReservedInstances(val.ReservedInstancesId === obj.ReservedInstancesId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Reserved Instances', data)
     return_outputs(human_readable, ec)
@@ -1646,10 +1754,15 @@ def get_password_data_command(args):
     )
 
     response = client.get_password_data(InstanceId=args.get('instanceId'))
+    try:
+        time_stamp = datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        error = type(e)
+        return_error(f'Date could not be parsed. Please check the date again.\n{error}')
     data = {
         'InstanceId': response['InstanceId'],
         'PasswordData': response['PasswordData'],
-        'Timestamp': datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+        'Timestamp': time_stamp
     }
 
     ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
@@ -1681,7 +1794,7 @@ def modify_network_interface_attribute_command(args):
 
     response = client.modify_network_interface_attribute(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Network Interface Aattribute was successfully modified")
+        demisto.results("The Network Interface Atttribute was successfully modified")
 
 
 def modify_instance_attribute_command(args):
@@ -1789,12 +1902,8 @@ def create_fleet_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    # obj = vars(client._client_config)
     kwargs = {}  # type: dict
 
-    # LaunchSpecification = {}
-
-    BlockDeviceMappings = None  # noqa:F841
     if args.get('DryRun') is not None:
         kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
 
@@ -2028,7 +2137,11 @@ def delete_fleet_command(args):
         }})
         output.append(item)
 
-    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.DeletedFleets': raw}
     human_readable = tableToMarkdown('AWS Deleted Fleets', data)
     return_outputs(human_readable, ec)
@@ -2081,7 +2194,11 @@ def describe_fleets_command(args):
                 })
         output.append(item)
 
-    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Fleets', data)
     return_outputs(human_readable, ec)
@@ -2121,7 +2238,11 @@ def describe_fleet_instances_command(args):
             data.append({'InstanceHealth': item['InstanceHealth']})
         output.append(item)
 
-    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw}
     human_readable = tableToMarkdown('AWS EC2 Fleets Instances', data)
     return_outputs(human_readable, ec)
@@ -2390,10 +2511,14 @@ def create_launch_template_command(args):
         'DefaultVersionNumber': response['LaunchTemplate']['DefaultVersionNumber'],
         'LatestVersionNumber': response['LaunchTemplate']['LatestVersionNumber'],
     })
-    output = json.dumps(template, cls=DatetimeEncoder)
-    data = json.dumps(data, cls=DatetimeEncoder)
-    data = json.loads(data)
-    raw = json.loads(output)
+    try:
+        output = json.dumps(template, cls=DatetimeEncoder)
+        data = json.dumps(data, cls=DatetimeEncoder)
+        data = json.loads(data)
+        raw = json.loads(output)
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.LaunchTemplates': raw}
     human_readable = tableToMarkdown('AWS LaunchTemplates', data)
     return_outputs(human_readable, ec)
@@ -2427,7 +2552,11 @@ def delete_launch_template_command(args):
     })
     output.append(item)
 
-    raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except json.JSONDecodeError as e:
+        err_msg = e.msg
+        return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.DeletedLaunchTemplates': raw}
     human_readable = tableToMarkdown('AWS Deleted Launch Templates', data)
     return_outputs(human_readable, ec)
@@ -2482,6 +2611,7 @@ def modify_image_attribute_command(args):
 
 """COMMAND BLOCK"""
 try:
+    handle_proxy()
     LOG('Command being called is {command}'.format(command=demisto.command()))
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -2675,5 +2805,6 @@ try:
 
 except Exception as e:
     LOG(e.message)
-    return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
-        code=type(e), message=e.message))
+    code = type(e)
+    message = e.message
+    return_error(f'Error has occurred in the AWS EC2 Integration: {code}\n {message}')
