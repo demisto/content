@@ -7,7 +7,6 @@ from datetime import datetime
 import requests
 import json
 import uuid
-import os
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,8 +16,8 @@ if not demisto.params().get('port'):
 
 ''' GLOBALS '''
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
-API_KEY = str(demisto.params()['key'])
-USE_SSL = not demisto.params()['insecure']
+API_KEY = str(demisto.params().get('key'))
+USE_SSL = not demisto.params().get('insecure')
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
@@ -56,7 +55,7 @@ SECURITY_RULE_ARGS = {
     'application': 'Application',
     'source_user': 'SourceUser',
     'disable_server_response_inspection': 'DisableServerResponseInspection',
-    'descripton': 'Description',
+    'description': 'Description',
     'target': 'Target',
     'log_forwarding': 'LogForwarding'
 }
@@ -67,14 +66,19 @@ PAN_OS_ERROR_DICT = {
     '3': 'Internal errors - Check with technical support when seeing these errors.',
     '4': 'Internal errors - Check with technical support when seeing these errors.',
     '5': 'Internal errors - Check with technical support when seeing these errors.',
-    '6': 'Bad Xpath -The xpath specified in one or more attributes of the command is invalid. Check the API browser for proper xpath values.',
-    '7': 'Object not present - Object specified by the xpath is not present. For example, entry[@name=value] where no object with name value is present.',
+    '6': 'Bad Xpath -The xpath specified in one or more attributes of the command is invalid.'
+         'Check the API browser for proper xpath values.',
+    '7': 'Object not present - Object specified by the xpath is not present. For example,'
+         'entry[@name=value] where no object with name value is present.',
     '8': 'Object not unique - For commands that operate on a single object, the specified object is not unique.',
-    '10': 'Reference count not zero - Object cannot be deleted as there are other objects that refer to it. For example, address object still in use in policy.',
+    '10': 'Reference count not zero - Object cannot be deleted as there are other objects that refer to it.'
+          'For example, address object still in use in policy.',
     '11': 'Internal error - Check with technical support when seeing these errors.',
     '12': 'Invalid object - Xpath or element values provided are not complete.',
-    '14': 'Operation not possible - Operation is allowed but not possible in this case. For example, moving a rule up one position when it is already at the top.',
-    '15': 'Operation denied - Operation is allowed. For example, Admin not allowed to delete own account, Running a command that is not allowed on a passive device.',
+    '14': 'Operation not possible - Operation is allowed but not possible in this case.'
+          'For example, moving a rule up one position when it is already at the top.',
+    '15': 'Operation denied - Operation is allowed. For example, Admin not allowed to delete own account,'
+          'Running a command that is not allowed on a passive device.',
     '16': 'Unauthorized -The API role does not have access rights to run this query.',
     '17': 'Invalid command -Invalid command or parameters.',
     '18': 'Malformed command - The XML is malformed.',
@@ -973,8 +977,8 @@ def panorama_edit_address_group_command():
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
-            return_error(
-                'To edit a Static Address group, Please specify exactly one of the following: element_to_add, element_to_remove')
+            return_error('To edit a Static Address group,'
+                         'Please specify exactly one of the following: element_to_add, element_to_remove')
         address_group_prev = panorama_get_address_group(address_group_name)
         address_group_list = []
         if 'static' in address_group_prev:
@@ -1860,7 +1864,9 @@ def panorama_get_url_filter(name):
 
 
 def panorama_get_url_filter_command():
-    ''' Get a URL Filter '''
+    """
+    Get a URL Filter
+    """
     name = demisto.args()['name']
 
     url_filter = panorama_get_url_filter(name)
@@ -2678,8 +2684,8 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
         'action': 'edit',
         'type': 'config',
         'key': API_KEY,
-        'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" +
-                 element_to_change
+        'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/"
+                 + element_to_change
     }
 
     if element_to_change == 'url':
