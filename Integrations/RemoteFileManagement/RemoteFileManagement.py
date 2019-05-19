@@ -237,7 +237,8 @@ def rfm_update_from_external_file(list_name, file_path, type_):
     set_external.discard('')
 
     if type_ == 'merge':
-        list_data_new = list(set_internal + set_external)
+        unified = set_internal.union(set_external)
+        list_data_new = list(unified)
     else:  # type_ == 'override'
         list_data_new = list(set_external)
 
