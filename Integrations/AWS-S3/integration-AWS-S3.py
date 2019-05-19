@@ -328,7 +328,7 @@ def upload_file_command(args):
             demisto.results('File {file} was uploaded successfully to {bucket}'.format(
                 file=args.get('key'), bucket=args.get('bucket')))
     except (OSError, IOError) as e:
-        return_error("Could not read file: {path}".format(path=path))
+        return_error("Could not read file: {path}\n {msg}".format(path=path, msg=e.message))
 
 
 """COMMAND BLOCK"""
