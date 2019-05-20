@@ -223,4 +223,4 @@ script:
   type: python
 tests:
 - No tests
-releaseNotes: Manage remote files hosted on a web-server using integration context
+releaseNotes: Manage remote files hosted on a web-server using integration context.
