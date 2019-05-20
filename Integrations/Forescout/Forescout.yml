@@ -166,27 +166,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve an index of Forescout host properties that match the specified
+    description: Retrieve an index of Forescout host fields that match the specified
       criteria.
     execution: false
-    name: forescout-get-hostfields
+    name: forescout-get-host-fields
     outputs:
     - contextPath: Forescout.HostField
       description: List index of host properties.
       type: Unknown
   - arguments:
-    - default: false
-      description: IP (ipv4), MAC address, or the object ID of the desired endpoint.
-        Endpoint identifiers - IPs, MAC addresses and object IDs - can be found in
-        the returned outputs when `forescout-get-hosts` is executed. To retrieve an
-        endpoint by its IP address enter 'ip={ip-address}' where {ip-address} is replaced
-        by the desired IP address. Similarly to search by MAC address or object ID
-        enter 'mac={mac-address}' and 'id={object-id}' respectively where the contents
-        between the curly braces is replaced by the actual identifier.
-      isArray: false
-      name: identifier
-      required: true
-      secret: false
     - default: false
       description: List of host properties to include in the output for the targeted
         endpoint. If a specified host property is not found, the property is omitted
@@ -195,6 +183,30 @@ script:
         be comma separated.
       isArray: true
       name: fields
+      required: false
+      secret: false
+    - default: false
+      description: IP (ipv4) of the desired endpoint. Endpoint identifiers - IPs,
+        MAC addresses and object IDs - can be found in the returned outputs when `forescout-get-hosts`
+        is executed.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: MAC address of the desired endpoint. Endpoint identifiers - IPs,
+        MAC addresses and object IDs - can be found in the returned outputs when `forescout-get-hosts`
+        is executed.
+      isArray: false
+      name: mac
+      required: false
+      secret: false
+    - default: false
+      description: Forescout ID of the desired endpoint. Endpoint identifiers - IPs,
+        MAC addresses and object IDs - can be found in the returned outputs when `forescout-get-hosts`
+        is executed.
+      isArray: false
+      name: id
       required: false
       secret: false
     deprecated: false
@@ -387,7 +399,7 @@ script:
       predefined:
       - update
       - delete
-      required: true
+      required: false
       secret: false
     - default: false
       description: Enter the field names and their associated values in the following
@@ -409,14 +421,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Composite properties entered in JSON format. For example, ''{"Example_Composite":
-        [{"Shape": "Triangle", "Color": "Beige"}, {"Shape": "Square", "Color": "Violet"}]}''
-        where "Example_Composite" is the name of the Composite property in Forescout
-        and "Shape" and "Color" are sub fields. If the composite property was defined
-        in Forescout as an aggregate property then additional records will be appended,
-        otherwise they will be overwritten. '
+      description: 'Composite fields entered in JSON format. For example, "{''Example_Composite'':
+        [{''Shape'': ''Triangle'', ''Color'': ''Beige''}, {''Shape'': ''Square'',
+        ''Color'': ''Violet''}]}" where ''Example_Composite'' is the name of the Composite
+        field in Forescout and ''Shape'' and ''Color'' are sub fields. If the composite
+        field was defined in Forescout as an aggregate property then additional records
+        will be appended, otherwise they will be overwritten. '
       isArray: false
-      name: composite_property
+      name: composite_field
       required: false
       secret: false
     deprecated: false
@@ -437,22 +449,25 @@ script:
       - add_list_values
       - delete_list_values
       - delete_all_list_values
-      required: true
+      required: false
       secret: false
     - default: false
-      description: ' If the ''update_type'' is set to either ''add_list_values'' or
-        ''delete_list_values'' then the lists along with their respective values (to
-        add or delete) should be specified in the following format, ''{list-1}={val-1}:{val-2}:{val-3}&{list-2}={val-4}&
-        ... &{list-n}={val-n}'' where {list-1} through {list-n} would be replaced
-        by actual names of lists that have been created in Forescout and {val-1} through
-        {val-n} would be replaced by the values you wished to add to or delete from
-        the respective lists. Multiple list-value(s) pairs should be separated by
-        an ampersand (''&'') and list values should be separated using a colon ('':'').
-        If the value of ''update_type'' is set to ''delete_all_list_values'' then
-        only list names should be entered with multiple list names separated by an
-        ampersand (''&'').'
+      description: Names of lists defined in the Forescout platform that you wish
+        to update. If the 'update_type' is set to 'delete_all_list_values' then it
+        is unnecessary to fill in the 'values' command argument. Multiple list names
+        should be separated by a comma. To find names of lists that may be updated,
+        navigate to *Tools* > *Options* > *Lists* in the Forescout platform.
       isArray: false
-      name: lists
+      name: list_names
+      required: false
+      secret: false
+    - default: false
+      description: The values to add or delete from the lists entered in the 'list_names'
+        command argument. Multiple values should separated by a comma. Note that the
+        values entered here will be updated for all of the lists entered in the 'list_names'
+        command argument.
+      isArray: false
+      name: values
       required: false
       secret: false
     deprecated: false

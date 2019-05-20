@@ -92,6 +92,26 @@ HOSTFIELDS_TO_INCLUDE = {
 ''' HELPER FUNCTIONS '''
 
 
+def check_web_api_credentials():
+    """
+    Verify that credentials were entered for Data Exchange (DEX)
+    """
+    if not (WEB_API_USERNAME and WEB_API_PASSWORD):
+        err_msg = 'Error in Forescout Integration - Web API credentials must' \
+                  ' be entered in the Forescout integration configuration in order to execute this command.'
+        return_error(err_msg)
+
+
+def check_dex_credentials():
+    """
+    Verify that credentials were entered for Data Exchange (DEX)
+    """
+    if not (DEX_USERNAME and DEX_PASSWORD and DEX_ACCOUNT):
+        err_msg = 'Error in Forescout Integration - Data Exchange (DEX) credentials must' \
+                  ' be entered in the Forescout integration configuration in order to execute this command.'
+        return_error(err_msg)
+
+
 def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_HOME.Element:
     """
     Create XML request body formatted to DEX expectations
@@ -125,7 +145,7 @@ def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_H
 
 
 def create_update_hostfields_request_body(host_ip: str, update_type: str,
-                                              fields: str, composite_property: str) -> ET_PHONE_HOME.Element:
+                                              fields: str, composite_field: str) -> ET_PHONE_HOME.Element:
     """
     Create XML request body formatted to DEX expectations
 
@@ -158,13 +178,13 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
             for val in list_of_vals:
                 val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
                 val_xml.text = val
-    if composite_property:
-        composite_property_dict = json.loads(composite_property)
-        table_property_name = list(composite_property_dict.keys())[0]
+    if composite_field:
+        composite_field_dict = json.loads(composite_field)
+        table_property_name = list(composite_field_dict.keys())[0]
         table_property_xml = ET_PHONE_HOME.SubElement(props_xml, 'TABLE_PROPERTY',
                                                       attrib={'NAME': table_property_name})
         if update_type == 'update':
-            values = composite_property_dict.get(table_property_name)
+            values = composite_field_dict.get(table_property_name)
             if isinstance(values, list):
 
                 for row in values:
@@ -198,12 +218,12 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
 
 def filter_hostfields_data(args: Dict, data: Dict) -> List:
     """
-    Filter hostfields data by get_hostfields_command arguments.
+    Filter host fields data by get_host_fields_command arguments.
 
     Parameters
     ----------
     args : dict
-        The get_hostfields_command arguments.
+        The get_host_fields_command arguments.
     data : dict
         The data to filter.
 
@@ -484,27 +504,26 @@ def test_module():
 
 
 def get_host(args):
-    identifier = args.get('identifier', '')
     fields = args.get('fields', '')
+    ip = args.get('ip', '')
+    mac = args.get('mac', '')
+    id = args.get('id', '')
     url_suffix = '/api/hosts/'
-    id_type, *ident = identifier.split('=')
-    id_type = id_type.casefold()
-    if len(ident) != 1 or id_type not in {'id', 'ip', 'mac'}:
-        err_msg = 'The entered endpoint identifier should be prefaced by the identifier type,' \
-            ' (\'ip\', \'mac\', or \'id\') followed by \'=\' and the actual ' \
-            'identifier, e.g. \'ip=123.123.123.123\'.'  # disable-secrets-detection
-        raise ValueError(err_msg)
+    if not (ip or mac or id):
+        err_msg = 'One of the command arguments, \'ip\', \'mac\' or \'id\' must be entered in order to identify the ' \
+                  'endpoint to retrieve. '
+        return_error(err_msg)
 
-    if id_type == 'ip':
+    if ip:
         # API endpoint format - https://{EM.IP}/api/hosts/ip/{ipv4}?fields={prop},..,{prop_n}
-        url_suffix += 'ip/'
-    elif id_type == 'mac':
+        url_suffix += 'ip/' + ip
+    elif mac:
         # API endpoint format - https://{EM.IP}/api/hosts/mac/{mac}?fields={prop},..,{prop_n}
-        url_suffix += 'mac/'
-    # if id_type == 'id' don't change url_suffix -it's already in desired format as shown below
-    # API endpoint format - https://{EM.IP}/api/hosts/{obj_ID}?fields={prop},..,{prop_n}
+        url_suffix += 'mac/' + mac
+    elif id:
+        # API endpoint format - https://{EM.IP}/api/hosts/{obj_ID}?fields={prop},..,{prop_n}
+        url_suffix += id
 
-    url_suffix += '='.join(ident)
     params = {'fields': fields} if fields != '' else None
     headers = create_web_api_headers()
     response_data = http_request('GET', url_suffix, headers=headers, params=params, resp_type='json')
@@ -512,8 +531,12 @@ def get_host(args):
 
 
 def get_host_command():
+    check_web_api_credentials()
     args = demisto.args()
-    identifier = args.get('identifier', '')
+    ip = args.get('ip', '')
+    mac = args.get('mac', '')
+    id = args.get('id', '')
+    identifier = 'IP=' + ip if ip else ('MAC=' + mac if mac else 'ID=' + id)
     requested_fields = argToList(args.get('fields', ''))
     data = get_host(args)
     host = data.get('host', {})
@@ -595,6 +618,7 @@ def get_hosts(args={}):
 
 
 def get_hosts_command():
+    check_web_api_credentials()
     args = demisto.args()
     response_data = get_hosts(args)
     content = [
@@ -622,19 +646,20 @@ def get_hosts_command():
         return_outputs(readable_output=human_readable, outputs=context, raw_response=response_data)
 
 
-def get_hostfields():
+def get_host_fields():
     url_suffix = '/api/hostfields'
     headers = create_web_api_headers()
     response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
     return response_data
 
 
-def get_hostfields_command():
+def get_host_fields_command():
+    check_web_api_credentials()
     args = demisto.args()
-    data = get_hostfields()
+    data = get_host_fields()
     filtered_data = filter_hostfields_data(args, data)
     if not filtered_data:
-        demisto.results('No hostfields matched the specified filters.')
+        demisto.results('No host fields matched the specified filters.')
     else:
         content = [{key.title(): val for key, val in x.items()} for x in filtered_data]
         context = {'Forescout.HostField': content}
@@ -652,6 +677,7 @@ def get_policies():
 
 
 def get_policies_command():
+    check_web_api_credentials()
     data = get_policies()
     content = format_policies_data(data)
     readable_content = deepcopy(content)
@@ -668,7 +694,20 @@ def get_policies_command():
 
 def update_lists(args={}):
     update_type = args.get('update_type', '')
-    lists = args.get('lists', '')
+    list_names = argToList(args.get('list_names', ''))
+    values = ':'.join(argToList(args.get('values', '')))
+    lists = ''
+    if list_names and values:
+        lists = '&'.join([list_name + '=' + values for list_name in list_names])
+    elif list_names:
+        lists = '&'.join(list_names)
+        if update_type in {'add_list_values', 'delete_list_values'}:
+            return_error('Invalid Input: no \'values\' specified.')
+    else:
+        if values:
+            return_error('Invalid Input: specified \'values\' without also entering \'list_names\'.')
+        else:
+            return_error('Invalid Input: no \'list_names\' specified.')
     req_body = create_update_lists_request_body(update_type, lists)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Lists'
@@ -677,27 +716,27 @@ def update_lists(args={}):
 
 
 def update_lists_command():
+    check_dex_credentials()
     args = demisto.args()
     response_content = update_lists(args)
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
-    try:
-        code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
-        msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
-    except IndexError:
-        err_msg = 'The API response did not conform to the expected format. It appears that Forescout changed their ' \
-                  'API breaking backwards compatibility. Contact your friendly neighborhood Demisto engineer for a ' \
-                  'possible fix.'
+    msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
+    if len(msg_list) >= 1:
+        msg = msg_list[0]
+        msg = msg.replace('[', '').replace(']', '')
+    else:
+        err_msg = 'The response from Forescout could not be parsed correctly. It is uncertain if the list updates ' \
+                  'were successfully executed.'
         return_error(err_msg)
-    result_msg = f'{code}: {msg}'
-    demisto.results(result_msg)
+    demisto.results(msg)
 
 
 def update_host_fields(args={}):
     host_ip = args.get('host_ip', '')
     update_type = args.get('update_type', '')
     fields = args.get('fields', '')
-    composite_property = args.get('composite_property', '').replace('\'', '"')
-    req_body = create_update_hostfields_request_body(host_ip, update_type, fields, composite_property)
+    composite_field = args.get('composite_field', '').replace('\'', '"')
+    req_body = create_update_hostfields_request_body(host_ip, update_type, fields, composite_field)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Hosts'
     resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
@@ -705,6 +744,7 @@ def update_host_fields(args={}):
 
 
 def update_host_fields_command():
+    check_dex_credentials()
     args = demisto.args()
     update_type = args.get('update_type', '')
     fields = args.get('fields', '')
@@ -714,23 +754,22 @@ def update_host_fields_command():
     # have to take care of it behind the curtains
     if update_type == 'delete':
         args['fields'] = ''
-        update_host_fields(args)  # Takes care of composite_property
-        args['composite_property'] = ''
+        update_host_fields(args)  # Takes care of composite_field
+        args['composite_field'] = ''
         for prop in fields.split('&'):
             args['fields'] = prop
             update_host_fields(args)
 
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
-    try:
-        code = [child.text for child in resp_xml.iter() if child.tag == 'CODE'][0]
-        msg = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE'][0]
-    except IndexError:
-        err_msg = 'The API response did not conform to the expected format. It appears that Forescout changed their ' \
-                  'API breaking backwards compatibility. Contact your friendly neighborhood Demisto engineer for a ' \
-                  'possible fix.'
+    msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
+    if len(msg_list) >= 1:
+        msg = msg_list[0]
+        msg = msg.replace('[', '').replace(']', '')
+    else:
+        err_msg = 'The response from Forescout could not be parsed correctly. It is uncertain if the host fields ' \
+                  'were successfully updated.'
         return_error(err_msg)
-    result_msg = f'{code}: {msg}'
-    demisto.results(result_msg)
+    demisto.results(msg)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -739,7 +778,7 @@ COMMANDS = {
     'test-module': test_module,
     'forescout-get-host': get_host_command,
     'forescout-get-hosts': get_hosts_command,
-    'forescout-get-hostfields': get_hostfields_command,
+    'forescout-get-host-fields': get_host_fields_command,
     'forescout-get-policies': get_policies_command,
     'forescout-update-lists': update_lists_command,
     'forescout-update-host-fields': update_host_fields_command
@@ -777,7 +816,6 @@ def main():
 
     except Exception as e:
         return_error(str(e))
-        # raise e
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
