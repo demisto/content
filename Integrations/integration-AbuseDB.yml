@@ -77,7 +77,7 @@ script:
     REPORT_SUCCESS = "IP address reported successfully."
 
     HEADERS = {
-        'Key': API_KEY,
+        'Key': '8dcede069952a207d19a273cab297b03b52389b257d507606f10721800712128ee438fe08c54870d',
         'Accept': 'application/json'
     }
 
