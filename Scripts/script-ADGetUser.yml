@@ -324,4 +324,3 @@ scripttarget: 0
 dependson:
   must:
   - activedir|||ad-search
-releaseNotes: 'enable script execution with "Active Directory Query" instances only'

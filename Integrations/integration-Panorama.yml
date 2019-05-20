@@ -128,7 +128,8 @@ script:
         'source_user': 'SourceUser',
         'disable_server_response_inspection': 'DisableServerResponseInspection',
         'descripton': 'Description',
-        'target': 'Target'
+        'target': 'Target',
+        'log_forwarding': 'LogForwarding'
     }
 
     PAN_OS_ERROR_DICT = {
@@ -275,7 +276,8 @@ script:
                     negate_source = None, negate_destination = None, action = None, service = None,
                     disable = None, application = None, source_user = None, category = None,
                     fromm = None, to = None, disable_server_response_inspection = None,
-                    description = None, target = None):
+                    description = None, target = None, log_forwarding = None):
+
         rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
         params = {
             'type': 'config',
@@ -296,6 +298,7 @@ script:
                     + add_argument_yes_no(negate_source, 'negate-source')
                     + add_argument_yes_no(negate_destination, 'negate-destination')
                     + add_argument_yes_no(disable, 'disabled')
+                    + add_argument(log_forwarding, 'log-setting', False)
         }
         if DEVICE_GROUP:
             if 'pre_post' not in demisto.args():
@@ -2027,14 +2030,20 @@ script:
         disable_server_response_inspection = demisto.args().get('disable_server_response_inspection')
         description = demisto.args().get('description')
         target = demisto.args().get('target')
-        if not DEVICE_GROUP and target:
-            return_error('The target argument is only relevant for a Palo Alto Panorama instance.')
+        log_forwarding = demisto.args().get('log_forwarding', None)
+
+        if not DEVICE_GROUP:
+            if target:
+                return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+            elif log_forwarding:
+                return_error('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
 
         params = prepare_security_rule_params(api_action= 'set', rulename = rulename, source = source, destination = destination,
                     negate_source = negate_source, negate_destination = negate_destination, action = action, service = service,
                     disable = disable, application = application, source_user = source_user,
                     disable_server_response_inspection = disable_server_response_inspection,
-                    description = description, target = target)
+                    description = description, target = target, log_forwarding = log_forwarding)
+
         result = http_request(
             URL,
             'POST',
@@ -2063,20 +2072,21 @@ script:
         element_to_change = demisto.args()['element_to_change']
         element_value = demisto.args()['element_value']
         target = demisto.args().get('target')
-        if not DEVICE_GROUP and target:
-            return_error('The target argument is only relevant for a Palo Alto Panorama instance.')
+
+        if target and not DEVICE_GROUP:
+            return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
 
         params = {
             'type': 'config',
             'action': 'edit',
             'key': API_KEY
         }
+
         if element_to_change in ['action', 'description']:
             params['element'] = add_argument_open(element_value, element_to_change, False)
         elif element_to_change in ['source', 'destination', 'application', 'categry', 'source-user', 'service']:
             params['element'] = add_argument_open(element_value, element_to_change, True)
-        else:
-            # element_to_change in ['negate_source', 'negate_destination', 'disable']
+        else: # element_to_change in ['negate_source', 'negate_destination', 'disable']
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
         if target:
@@ -2155,40 +2165,49 @@ script:
         block_destination = False if direction == 'from' else True
         block_source =  False if direction == 'to' else True
         target = demisto.args().get('target')
-        if target and not DEVICE_GROUP:
-            return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+        log_forwarding = demisto.args().get('log_forwarding', None)
+
+        if not DEVICE_GROUP:
+            if target:
+                return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+            elif log_forwarding:
+                return_error('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
 
         custom_block_output = {
             'Name': rulename,
             'Direction': direction,
             'Disabled': False
         }
+        if log_forwarding:
+            custom_block_output['LogForwarding'] = log_forwarding
+        if target:
+            custom_block_output['Traget'] = target
 
         if object_type == 'ip':
             if block_source:
-                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target)
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target, log_forwarding=log_forwarding)
                 result = http_request(URL, 'POST', params = params)
             if block_destination:
-                params = prepare_security_rule_params(api_action= 'set', action = 'drop', destination = object_value, source = 'any', rulename = rulename + '-to', target = target)
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', destination = object_value, source = 'any', rulename = rulename + '-to', target = target, log_forwarding=log_forwarding)
                 result = http_request(URL, 'POST', params = params)
             custom_block_output['IP'] = object_value
 
         elif object_type == 'address-group':
             if block_source:
-                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target)
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target, log_forwarding=log_forwarding)
                 result = http_request(URL, 'POST', params = params)
             if block_destination:
-                params = prepare_security_rule_params(api_action= 'set', action = 'drop', destination = object_value, source = 'any', rulename = rulename + '-to', target = target)
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', destination = object_value, source = 'any', rulename = rulename + '-to', target = target, log_forwarding=log_forwarding)
                 result = http_request(URL, 'POST', params = params)
             custom_block_output['AddressGroup'] = object_value
 
         elif object_type == 'url-category':
-            params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = 'any', destination = 'any', category = object_value, rulename = rulename, target = target)
+            params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = 'any', destination = 'any', category = object_value, rulename = rulename, target = target, log_forwarding=log_forwarding)
             result = http_request(URL, 'POST', params = params)
             custom_block_output['CustomURLCategory'] = object_value
 
         elif object_type == 'application':
-                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = 'any', destination = 'any', application = object_value, rulename = rulename, target = target)
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = 'any', destination = 'any', application = object_value, rulename = rulename, target = target, log_forwarding=log_forwarding)
                 result = http_request(URL, 'POST', params = params)
                 custom_block_output['Application'] = object_value
 
@@ -3769,6 +3788,8 @@ script:
       description: Pre rule or Post rule (Panorama instances)
     - name: target
       description: Specify a target firewall for the rule (Panorama instances)
+    - name: log_forwarding
+      description: Log forwarding profile
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
@@ -3802,6 +3823,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRule.Target
       description: Target firewall (Panorama instances)
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: Log forwarding profile (Panorama instances)
       type: string
     description: Creates a policy rule
     execution: true
@@ -3838,6 +3862,8 @@ script:
       description: Pre rule or Post rule (Panorama instances)
     - name: target
       description: Specify a target firewall for the rule (Panorama instances)
+    - name: log_forwarding
+      description: Log forwarding profile
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
@@ -3850,6 +3876,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRule.Target
       description: Target firewall (Panorama instances)
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: Log forwarding profile (Panorama instances)
       type: string
     description: Creates a custom block policy rule
     execution: true
@@ -4135,4 +4164,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: Add support for panorama-list/get/create/edit/delete/refresh-edl, panorama-register/unregister-ip-tag commands. Handle errors gracefully.
+releaseNotes: Add log_forwarding argument to panorama-create-rule, panorama-custom-block-rule commands. argument is only available for panorama instances.

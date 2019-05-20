@@ -19,12 +19,10 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-      - "17"
       - "18"
       - "19"
-      - "20"
-      - "21"
       - "22"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -112,56 +110,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 6af97bcc-cec1-41fb-8354-22ba6044cfcd
-    type: playbook
-    task:
-      id: 6af97bcc-cec1-41fb-8354-22ba6044cfcd
-      version: -1
-      name: Email Address Enrichment - Generic v2
-      description: |-
-        Enrich email addresses.  Email address enrichment currently involves:
-        - Getting information from Active Directory for internal addresses
-        - Getting domain-squatting reputation for external addresses
-      playbookName: Email Address Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domains:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-      Email:
-        complex:
-          root: inputs.Email
-          transformers:
-          - operator: uniq
-      InternalDomains:
-        complex:
-          root: inputs.InternalDomains
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 386
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "18":
     id: "18"
     taskid: 8189698a-475c-433b-8fbf-20275b3b2084
@@ -225,6 +173,7 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
+      - "25"
     scriptarguments:
       Rasterize:
         simple: "True"
@@ -245,80 +194,6 @@ tasks:
         "position": {
           "x": 490,
           "y": 386
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 43eeac83-a0e2-4881-8914-48542c784446
-    type: playbook
-    task:
-      id: 43eeac83-a0e2-4881-8914-48542c784446
-      version: -1
-      name: Account Enrichment - Generic v2
-      description: ""
-      playbookName: Account Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Username:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 7e6ec1f9-b1a7-4bb7-8f32-34de8ca80172
-    type: playbook
-    task:
-      id: 7e6ec1f9-b1a7-4bb7-8f32-34de8ca80172
-      version: -1
-      name: Endpoint Enrichment - Generic v2
-      description: ""
-      playbookName: Endpoint Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: inputs.Hostname
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 545
         }
       }
     note: false
@@ -359,6 +234,128 @@ tasks:
         "position": {
           "x": 490,
           "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
+    type: playbook
+    task:
+      id: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
+      version: -1
+      name: Email Address Enrichment - Generic v2.1
+      description: ""
+      playbookName: Email Address Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "24"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: inputs.Email
+          transformers:
+          - operator: uniq
+      InternalDomains:
+        complex:
+          root: inputs.InternalDomains
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 7f313517-52cb-4653-8c77-08819d4910f3
+    type: playbook
+    task:
+      id: 7f313517-52cb-4653-8c77-08819d4910f3
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: ""
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 473ab066-87e5-408d-8317-70e38ead40ca
+    type: playbook
+    task:
+      id: 473ab066-87e5-408d-8317-70e38ead40ca
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      description: ""
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 545
         }
       }
     note: false
@@ -476,117 +473,113 @@ inputs:
 - key: InternalDomains
   value: {}
   required: false
-  description: A list of internal domains, separated by commas. The list will be used
+  description: A CSV list of internal domains. The list will be used
     to determine whether an email address is internal or external.
 outputs:
-- contextPath: Account
-  description: The Account's object
-  type: unknown
-- contextPath: Account.ID
-  description: The unique Account DN (Distinguished Name)
-  type: string
-- contextPath: Domain
-  description: The domain objects
-  type: unknown
-- contextPath: URL
-  description: The URL's object
-  type: unknown
-- contextPath: URL.Malicious
-  description: whether url was detected as malicious
-  type: unknown
-- contextPath: URL.Vendor
-  description: name of vendor who labeled as malicious
-  type: string
-- contextPath: URL.Description
-  description: additional info on the url
-  type: string
-- contextPath: URL.Address
-  description: The enriched URL
-  type: string
-- contextPath: Account.Email.Address
-  description: The Email account full address
-  type: string
 - contextPath: IP
-  description: The IP objects
+  description: The IP object.
   type: unknown
-- contextPath: Account.Email.Domain
-  description: The Email account domain
-  type: string
-- contextPath: Account.Email.NetworkType
-  description: The Email account NetworkType (could be Internal/External)
-  type: string
-- contextPath: Account.Email.Username
-  description: The Email account username
-  type: string
-- contextPath: Account.Email.Distance.Domain
-  description: The compared domain
-  type: unknown
-- contextPath: Account.Email.Distance.Value
-  description: 'The distance between the email domain and the compared domain '
-  type: string
-- contextPath: Account.Type
-  description: Type of the Account entity
-  type: string
-- contextPath: Account.Username
-  description: The Account username
-  type: string
-- contextPath: Account.Email
-  description: The email address associated with the Account
-- contextPath: Account.Groups
-  description: The groups the Account is part of
-  type: unknown
-- contextPath: Account.DisplayName
-  description: The Account display name
-  type: string
-- contextPath: Account.Manager
-  description: The Account's manager
-  type: string
-- contextPath: File
-  description: The File's object
-  type: unknown
-- contextPath: File.MD5
-  description: MD5 hash of the file
-  type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file
-  type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
-  type: string
 - contextPath: Endpoint
-  description: The Endpoint's object
+  description: The endpoint object.
   type: unknown
 - contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+  description: The hostname that was enriched.
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: The endpoint's operating system.
   type: string
 - contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
+  description: A list of endpoint IP addresses.
 - contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
+  description: A list of endpoint MAC addresses.
 - contextPath: Endpoint.Domain
-  description: Endpoint domain name
+  description: The endpoint domain name.
   type: string
 - contextPath: DBotScore
-  description: The Indicator's object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The Indicator
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The Indicator Type
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The DBot score vendor
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The DBot score
+  description: The actual score.
   type: number
-releaseNotes: Various fixes and improvements to performance & stability to all enrichment playbooks.
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: string
+- contextPath: File.Malicious
+  description: Whether the file is malicious.
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: URL
+  description: The URL object.
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL.
+  type: string
+- contextPath: URL.Malicious
+  description: Whether the detected URL was malicious.
+  type: unknown
+- contextPath: URL.Vendor
+  description: Vendor that labeled the URL as malicious.
+  type: string
+- contextPath: URL.Description
+  description: Additional information for the URL.
+  type: string
+- contextPath: Domain
+  description: The domain object.
+  type: unknown
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: Account.Email
+  description: The email of the account.
+  type: unknown
+- contextPath: Account.Email.NetworkType
+  description: The email account NetworkType (Internal/External).
+  type: string
+- contextPath: Account.Email.Distance
+  description: 'The object that contains the distance between the email domain and
+    the compared domain. '
+  type: unknown
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain.
+  type: string
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain. '
+  type: number
+- contextPath: ActiveDirectory.Users
+  description: An object containing information about the user from Active Directory.
+  type: unknown
+- contextPath: ActiveDirectory.Users.sAMAccountName
+  description: The user's samAccountName.
+- contextPath: ActiveDirectory.Users.userAccountControl
+  description: The user's account control flag.
+- contextPath: ActiveDirectory.Users.mail
+  description: The user's email address.
+- contextPath: ActiveDirectory.Users.memberOf
+  description: Groups the user is a member of.
+- contextPath: CylanceProtectDevice
+  description: The device information about the hostname that was enriched using Cylance
+    Protect v2.
+  type: unknown
+releaseNotes: "The playbook now uses v2.1 enrichment playbooks that feature v2 integrations."
 tests:
   - no test - each enrichment sub-playbook has or will have its own test

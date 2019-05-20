@@ -616,6 +616,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
-releaseNotes: "Adjusted version."
 tests:
   - email_test
