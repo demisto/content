@@ -88,7 +88,7 @@ def account_entry(person_object, custome_attributes):
     account = {
         'Type': 'AD',
         'ID': person_object.get('dn'),
-        'Email': person_object.get('email'),
+        'Email': person_object.get('mail'),
         'Username': person_object.get('samAccountName'),
         'DisplayName': person_object.get('displayName'),
         'Managr': person_object.get('manager'),
@@ -304,7 +304,7 @@ def search_users(default_base_dn, page_size):
     args = demisto.args()
 
     attributes: List[str] = []
-    custome_attributes: List[str] = []
+    custom_attributes: List[str] = []
 
     # zero is actually no limitation
     limit = int(args.get('limit', '0'))
@@ -336,9 +336,9 @@ def search_users(default_base_dn, page_size):
             args['custom-field-type'], args['ustom-field-data'])
 
     if args.get('attributes'):
-        custome_attributes = args['attributes'].split(",")
+        custom_attributes = args['attributes'].split(",")
 
-    attributes = list(set(custome_attributes + DEFAULT_PERSON_ATTRIBUTES))
+    attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES))
 
     entries = search_with_paging(
         query,
@@ -348,7 +348,7 @@ def search_users(default_base_dn, page_size):
         page_size=page_size
     )
 
-    accounts = [account_entry(entry, custome_attributes) for entry in entries['flat']]
+    accounts = [account_entry(entry, custom_attributes) for entry in entries['flat']]
 
     if args.get('user-account-control-out', '') == 'true':
         # display a literal translation of the numeric account control flag
