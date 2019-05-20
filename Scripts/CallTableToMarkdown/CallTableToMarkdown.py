@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -42,7 +41,7 @@ def tbl_to_md_with_non_ascii_chars_nested_dict():
     """
     Call tableToMarkdown with sample data that has nested dict with non-ascii characters inside it
     namely, 'Right Single Quotation Mark' and 'Greek Small Letter Pi'
-    
+
     Returns
     -------
     unicode
