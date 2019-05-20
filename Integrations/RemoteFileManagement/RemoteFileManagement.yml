@@ -222,5 +222,5 @@ script:
   script: '-'
   type: python
 tests:
-- No tests
+- Remote File Management - Test
 releaseNotes: Manage remote files hosted on a web-server using integration context.
