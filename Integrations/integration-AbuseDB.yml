@@ -50,6 +50,10 @@ configuration:
   required: false
 script:
   script: |+
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
+
     ''' IMPORTS '''
     import requests
     import os
@@ -81,54 +85,52 @@ script:
     }
 
     CATEGORIES_NAME = {
-        3  : 'Frad_Orders',
-        4  : 'DDoS_Attack',
-        5  : 'FTP_Brute-Force',
-        6  : 'Ping of Death',
-        7  : 'Phishing',
-        8  : 'Fraud VoIP',
-        9  : 'Open_Proxy',
-        10 : 'Web_Spam',
-        11 : 'Email_Spam',
-        12 : 'Blog_Spam',
-        13 : 'VPN IP',
-        14 : 'Port_Scan',
-        15 : 'Hacking',
-        16 : 'SQL Injection',
-        17 : 'Spoofing',
-        18 : 'Brute_Force',
-        19 : 'Bad_Web_Bot',
-        20 : 'Exploited_Host',
-        21 : 'Web_App_Attack',
-        22 : 'SSH',
-        23 : 'IoT_Targeted'
+        3: 'Frad_Orders',
+        4: 'DDoS_Attack',
+        5: 'FTP_Brute-Force',
+        6: 'Ping of Death',
+        7: 'Phishing',
+        8: 'Fraud VoIP',
+        9: 'Open_Proxy',
+        10: 'Web_Spam',
+        11: 'Email_Spam',
+        12: 'Blog_Spam',
+        13: 'VPN IP',
+        14: 'Port_Scan',
+        15: 'Hacking',
+        16: 'SQL Injection',
+        17: 'Spoofing',
+        18: 'Brute_Force',
+        19: 'Bad_Web_Bot',
+        20: 'Exploited_Host',
+        21: 'Web_App_Attack',
+        22: 'SSH',
+        23: 'IoT_Targeted'
     }
 
     CATEGORIES_ID = {
-        "Frad_Orders"    : "3",
-        "DDoS_Attack"    : "4",
-        "FTP_Brute"      : "5",
-        "Ping of Death"  : "6",
-        "Phishing"       : "7",
-        "Fraud VoIP"     : "8",
-        "Open_Proxy"     : "9",
-        "Web_Spam"       : "10",
-        "Email_Spam"     : "11",
-        "Blog_Spam"      : "12",
-        "VPN IP"         : "13",
-        "Port_Scan"      : "14",
-        "Hacking"        : "15",
-        "SQL Injection"  : "16",
-        "Spoofing"       : "17",
-        "Brute_Force"    : "18",
-        "Bad_Web_Bot"    : "19",
-        "Exploited_Host" : "20",
-        "Web_App_Attack" : "21",
-        "SSH"            : "22",
-        "IoT_Targeted"   : "23"
+        "Frad_Orders": "3",
+        "DDoS_Attack": "4",
+        "FTP_Brute": "5",
+        "Ping of Death": "6",
+        "Phishing": "7",
+        "Fraud VoIP": "8",
+        "Open_Proxy": "9",
+        "Web_Spam": "10",
+        "Email_Spam": "11",
+        "Blog_Spam": "12",
+        "VPN IP": "13",
+        "Port_Scan": "14",
+        "Hacking": "15",
+        "SQL Injection": "16",
+        "Spoofing": "17",
+        "Brute_Force": "18",
+        "Bad_Web_Bot": "19",
+        "Exploited_Host": "20",
+        "Web_App_Attack": "21",
+        "SSH": "22",
+        "IoT_Targeted": "23"
     }
-
-    session = requests.session()
 
     ''' HELPER FUNCTIONS '''
 
@@ -139,7 +141,7 @@ script:
 
         LOG('running request with url=%s' % (SERVER + url_suffix))
         try:
-            analysis = session.request(method, SERVER + url_suffix, headers=headers, params=params, verify=not INSECURE)
+            analysis = requests.request(method, SERVER + url_suffix, headers=headers, params=params, verify=not INSECURE)
 
             if analysis.status_code not in {200, 204, 429}:
                 return_error('Bad connection attempet. Status code: ' + str(analysis.status_code))
@@ -246,6 +248,8 @@ script:
 
 
     ''' FUNCTIONS '''
+
+
     def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
         params = {
             "ipAddress": ip,
@@ -301,8 +305,7 @@ script:
             'Contents': categories,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("AbuseIPDB report categories", categories, removeNull=True),
-            'EntryContext': {'AbuseIPDB.Categories(val && val == obj)': createContext(categories, removeNull=True),
-                             }
+            'EntryContext': {'AbuseIPDB.Categories(val && val == obj)': createContext(categories, removeNull=True)}
         }
         return entry
 
@@ -310,7 +313,6 @@ script:
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
-
 
         if demisto.command() == 'test-module':
             # Tests connectivity and credentials on login
