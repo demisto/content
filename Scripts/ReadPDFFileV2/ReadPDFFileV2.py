@@ -9,8 +9,21 @@ import errno
 import shutil
 from typing import List
 
-ROOT_PATH = os.getcwd()
-MAX_IMAGES = int(demisto.args().get('maxImages', 20))
+
+# error class for shell errors
+class ShellException(Exception):
+    pass
+
+
+try:
+    ROOT_PATH = os.getcwd()
+    MAX_IMAGES = int(demisto.args().get('maxImages', 20))
+except OSError as e:
+    return_error("The script failed to access the current working directory. This might happen if your docker isn't "
+                 "set up correctly. Please contact customer support")
+except ValueError as e:
+    return_error("Value provided for maxImages is of the wrong type. Please provide an integer for maxImages")
+
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 
 
@@ -26,8 +39,19 @@ def mark_suspicious(suspicious_reason, entry_id):
                 "Score": 2
             }
     }
-    human_readable = "{}\nFile marked as suspicious for entry id: {}".format(suspicious_reason, entry_id)
+    human_readable = f"{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}"
+    LOG(suspicious_reason)
     return_outputs(human_readable, dbot, {})
+
+
+def return_error_without_exit(message):
+    LOG(message)
+    LOG.print_log()
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': str(message)
+    })
 
 
 def run_shell_command(command, *args):
@@ -55,12 +79,7 @@ def get_images_paths_in_path(path):
     :return: image path array
     :rtype: ``list``
     """
-    res: List[str] = []
-    res.extend(get_files_names_in_path(path, "*.ppm", True))
-    res.extend(get_files_names_in_path(path, "*.bpm", True))
-    res.extend(get_files_names_in_path(path, "*.jpg", True))
-    res.extend(get_files_names_in_path(path, "*.png", True))
-    return res
+    return get_files_names_in_path(path, "*.png", True)
 
 
 def get_pdf_metadata(file_path):
@@ -71,7 +90,7 @@ def get_pdf_metadata(file_path):
     else:
         metadata_txt, e = run_shell_command('pdfinfo', file_path)
     if e:
-        raise TypeError(e)
+        raise ShellException(e)
     metadata = {}
     for line in metadata_txt.split('\n'):
         # split to [key, value...]
@@ -96,7 +115,7 @@ def get_pdf_text(file_path, pdf_text_output_path):
     else:
         o, e = run_shell_command('pdftotext', file_path, pdf_text_output_path)
     if e:
-        raise TypeError(e)
+        raise ShellException(e)
     text = ''
     with open(pdf_text_output_path, 'rb') as f:
         for line in f:
@@ -113,7 +132,7 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     else:
         o, e = run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
     if e:
-        raise TypeError(e)
+        raise ShellException(e)
     html_file_names = get_files_names_in_path(output_folder, '*.html')
     html_content = ''
     for file_name in html_file_names:
@@ -133,14 +152,14 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
 
     md = "### Metadata\n"
     md += "* " if metadata else ""
-    md += "\n* ".join(["{0}: {1}".format(k, v) for k, v in metadata.items()])
+    md += "\n* ".join([f"{k}: {v}" for k, v in metadata.items()])
 
     md += "\n### URLs\n"
     md += "* " if urls else ""
-    md += "\n* ".join(["{0}".format(str(k["Data"])) for k in urls])
+    md += "\n* ".join([f'{str(k["Data"])}' for k in urls])
 
     md += "\n### Text"
-    md += "\n{0}".format(text)
+    md += f"\n{text}"
     results = [{"Type": entryTypes["note"],
                 "ContentsFormat": formats["markdown"],
                 "Contents": md,
@@ -223,7 +242,7 @@ def main():
                 demisto.results({
                     "Type": entryTypes["error"],
                     "ContentsFormat": formats["text"],
-                    "Contents": "Could not load pdf file in EntryID {0}\nError: {1}".format(entry_id, str(e))
+                    "Contents": f"Could not load pdf file in EntryID {entry_id}\nError: {str(e)}"
                 })
                 raise e
             readpdf_entry_object = build_readpdf_entry_object(pdf_file, metadata, text, urls_ec, images)
@@ -232,10 +251,12 @@ def main():
             demisto.results({
                 "Type": entryTypes["error"],
                 "ContentsFormat": formats["text"],
-                "Contents": "EntryID {0} path could not be found".format(entry_id)
+                "Contents": f"EntryID {entry_id} path could not be found"
             })
-    except Exception as e:
+    except ShellException as e:
         mark_suspicious(f'The script failed read PDF file due to an error: {str(e)}', entry_id)
+    except Exception as e:
+        return_error_without_exit(f'The script failed read PDF file due to an error: {str(e)}', entry_id)
     finally:
         os.chdir(ROOT_PATH)
         for folder in folders_to_remove:

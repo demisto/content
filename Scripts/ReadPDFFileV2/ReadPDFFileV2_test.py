@@ -17,7 +17,6 @@ def test_get_images_paths_in_path():
     from ReadPDFFileV2 import get_images_paths_in_path
     img_file_paths = get_images_paths_in_path('test_data')
     assert 'test_data/test1.png' in img_file_paths
-    assert 'test_data/test2.jpg' in img_file_paths
     assert 'test_data/scanned.pdf' not in img_file_paths
 
 
