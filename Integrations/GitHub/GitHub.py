@@ -23,7 +23,7 @@ REPO_ISSUES_SUFFIX = 'repos/teizenman/Demisto-start/issues'
 SEARCH_SUFFIX = 'search/issues?q=repo:teizenman/Demisto-start+'
 REPO_SEARCH_SUFFIX = 'search/issues?q=repo:teizenman/Demisto-start'
 GET_RELEASES_SUFFIX = 'repos/teizenman/Demisto-start/releases'
-FETCH_SUFFIX = SEARCH_SUFFIX + 'updated:>'
+FETCH_SUFFIX = SEARCH_SUFFIX + 'updated:'
 
 
 '''HELPER FUNCTIONS'''
