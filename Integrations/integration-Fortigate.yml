@@ -92,6 +92,8 @@ script:
         )
         if res.status_code not in {200}:
             return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
+        if method.upper() != 'GET':
+            return res.status_code
         return res.json()
 
 
