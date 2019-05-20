@@ -26,8 +26,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV of language codes of the language to use for OCR. Overrides default language.
-        langauges.
+      description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
       isArray: true
       name: langs
       required: false
@@ -45,3 +44,4 @@ script:
   runonce: false
   script: '-'
   type: python
+releaseNotes: "Updated arguments descriptions."
