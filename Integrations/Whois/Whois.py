@@ -26,7 +26,7 @@ if PROXY is True:
     if proxy_url:
         uri = urlparse(proxy_url)
         socks.set_default_proxy(socks.PROXY_TYPE_HTTP, uri.hostname, uri.port)
-        socket.socket = socks.socksocket
+        socket.socket = socks.socksocket  # type: ignore
 DOMAIN = demisto.args().get('query')
 
 
