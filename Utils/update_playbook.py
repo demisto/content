@@ -1,5 +1,4 @@
 import sys
-import json
 import ntpath
 import yaml
 import yamlordereddictloader
@@ -124,5 +123,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    # main(["/Users/aazadaliyev/Downloads/Phishing_Investigation_-_Generic.yml", "/Users/aazadaliyev/Downloads/Phishing_Investigation_-_Generic_3.yml"])
     main(sys.argv[1:])

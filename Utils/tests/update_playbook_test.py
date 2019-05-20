@@ -16,7 +16,3 @@ def test_hello():
 
     if not tested:
         assert False, "for some reason the test was not reached assert"
-
-
-
-
