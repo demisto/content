@@ -41,7 +41,7 @@ def options_handler():
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
-                                                      'tests on(Valid only when using AMI)')
+                                                      'tests on(Valid only when using AMI)', default="NonAMI")
     options = parser.parse_args()
 
     return options
@@ -591,10 +591,11 @@ def main():
                 sleep(8)
 
     else:  # Run tests in Server build configuration
-        with open('public_ip', 'rb') as f:
-            public_ip = f.read().strip()
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ip = [line.strip('\n').split(":") for line in instance_ips][0]
 
-        execute_testing(server, public_ip, server_version, server_numeric_version)
+        execute_testing(SERVER_URL.format(instance_ip), instance_ip, server_version, server_numeric_version)
 
 
 if __name__ == '__main__':
