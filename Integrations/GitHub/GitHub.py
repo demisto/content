@@ -2,70 +2,71 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import requests
 import json
-import collections
+import requests
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-API_KEY = ""
-INSECURE = demisto.params().get('insecure')
+'''Global vars'''
+
+
+API_KEY = demisto.params().get('api_key')
+INSECURE = not demisto.params().get('insecure', False)
 BASE_URL = 'https://api.github.com/'
+
+'''Suffixes'''
+
+
+GET_ISSUES_SUFFIX = 'issues'
+REPO_ISSUES_SUFFIX = 'repos/teizenman/Demisto-start/issues'
+SEARCH_SUFFIX = 'search/issues?q=repo:teizenman/Demisto-start+'
+REPO_SEARCH_SUFFIX = 'search/issues?q=repo:teizenman/Demisto-start'
+GET_RELEASES_SUFFIX = 'repos/teizenman/Demisto-start/releases'
+FETCH_SUFFIX = SEARCH_SUFFIX + 'updated:>'
+
 
 '''HELPER FUNCTIONS'''
 
 
-def http_request(method, URL_SUFFIX, json=None):
+def http_request(method, URL_SUFFIX, data=None):
     if method is 'GET':
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + API_KEY
         }
     elif method is 'POST':
-        if not API_KEY:
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        else:
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + API_KEY
-            }
-    r = requests.request(
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + API_KEY
+        }
+    res = requests.request(
         method,
         BASE_URL + URL_SUFFIX,
-        data=json,
+        data=data,
         headers=headers,
         verify=INSECURE
     )
-    if r.status_code not in [200, 201]:
-        return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
-    return r.json()
+    if res.status_code not in [200, 201]:
+        return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
+    return res.json()
+
+'''TEST FUNCTION'''
 
 
-def filter_issues_by(response):
-    issues = {}
-    for issue in response:
-        issues[issue['number']] = issue['title']
-    return issues
-
-
-# Allows nested keys to be accesible
-def makehash():
-    return collections.defaultdict(makehash)
+def test_module():
+    http_request('GET', GET_ISSUES_SUFFIX)
 
 
 '''MAIN FUNCTIONS'''
 
 
 def list_all_issues():
-    r = http_request('GET', 'issues')
+    res = http_request('GET', GET_ISSUES_SUFFIX)
     results = []
-    for issue in r:
-        issue_details = makehash()
+    for issue in res:
+        issue_details = dict()
 
         issue_details['number'] = issue['number']
         issue_details['ID'] = str(issue['id'])
@@ -74,204 +75,204 @@ def list_all_issues():
         issue_details['state'] = issue['state']
 
         results.append(issue_details)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': r,
-        'HumanReadable': tableToMarkdown('Issues list:', results, ['number', 'ID', 'title', 'state', 'link']),
-        'EntryContext': {
-            'GitHub.Issues(val.ID==obj.ID)': results
-        }
-    })
-    return r
+
+    return_outputs(tableToMarkdown('Issues list:', results, ['ID', 'number', 'title', 'state', 'link']),
+                   {'GitHub.Issues(val.ID==obj.ID)': results}, res)
 
 
-def create_issue(title, body, assignees, labels):
-    query = {'title': title, 'body': body, 'assignees': assignees, 'labels': labels}
-    search = json.dumps(query)
-    r = http_request('POST', 'repos/teizenman/Demisto-start/issues', search)
-    new_issue = {'number': r['number'], 'ID': str(r['id']), 'title': title, 'body': body, 'state': 'open'}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': r,
-        'HumanReadable': tableToMarkdown('Issue #' + str(r['number']) + ' has been created', query),
-        'EntryContext': {
-            'GitHub.Issues(val.ID==obj.ID)': new_issue
-        }
-    })
-    return r
+def create_issue(title='untitled issue', body=None, assignees=None, labels=None):
+    query = {'title': title,
+             'body': body,
+             'assignees': [assignee.strip() for assignee in str(assignees).split(',')],
+             'labels': [label.strip() for label in str(labels).split(',')]}
+    demisto.results(query)
+
+    res = http_request('POST', REPO_ISSUES_SUFFIX, json.dumps(query))
+
+    new_issue = {'number': res['number'],
+                 'ID': str(res['id']),
+                 'title': title,
+                 'body': body,
+                 'state': 'open'}
+
+    return_outputs(tableToMarkdown('Issue #' + str(res['number']) + ' has been created', query),
+                   {'GitHub.Issues(val.ID==obj.ID)': new_issue}, res)
 
 
-def edit_issue(issue_num, title, body, assignees, labels):
-    r = None
-    if str.isdigit(str(issue_num)):
-        print_results = {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown']
-        }
-        r = http_request('GET', 'search/issues?q=repo:teizenman/Demisto-start+' + str(issue_num))
-        if r['total_count'] > 0:
+def edit_issue(issue_num, title=None, body=None, assignees=None, labels=None):
+    if str(issue_num).isdigit():
+        res = http_request('GET', SEARCH_SUFFIX + str(issue_num))
+
+        if res['total_count'] > 0:
             query = {}
             if title:
                 query['title'] = title
             if body:
                 query['body'] = body
             if assignees:
-                query['assignees'] = assignees
+                query['assignees'] = [assignee.strip() for assignee in str(assignees).split(',')]
             if labels:
-                query['labels'] = labels
-            search = json.dumps(query)
-            r = http_request('POST', 'repos/teizenman/Demisto-start/issues/' + str(issue_num), search)
-            print_results['HumanReadable'] = tableToMarkdown(
+                query['labels'] = [label.strip() for label in str(labels).split(',')]
+
+            res = http_request('POST', REPO_ISSUES_SUFFIX + '/' + str(issue_num), json.dumps(query))
+
+            human_readable = tableToMarkdown(
                 'Issue #' + str(issue_num) + ' has been edited with the following details:', query)
-            print_results['EntryContext'] = {
-                'GitHub.Issues(val.ID==obj.ID)': {'number': r['number'], 'ID': str(r['id']), 'title': r['title'],
-                                                  'body': r['body'],
-                                                  'state': r['state']}}
-        else:
-            print_results['HumanReadable'] = 'No such issue'
-        print_results['Contents'] = r
-        demisto.results(print_results)
-    else:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': r,
-            'HumanReadable': 'Please enter a valid issue number',
-        })
-    return r
 
-
-def close_issue(issue_num, state):
-    r = None
-    if str.isdigit(str(issue_num)):
-        print_results = {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown']
-        }
-        r = http_request('GET', 'search/issues?q=repo:teizenman/Demisto-start+' + str(issue_num))
-        if r['total_count'] > 0:
-            query = {'state': state}
-            search = json.dumps(query)
-            r = http_request('POST', 'repos/teizenman/Demisto-start/issues/' + str(issue_num), search)
-            print_results['HumanReadable'] = 'Issue #' + str(issue_num) + ' has been closed'
-            print_results['EntryContext'] = {
-                'GitHub.Issues(val.ID==obj.ID)': {'ID': str(r['id']), 'state': 'close'}
+            context_output = {'number': res['number'],
+                              'ID': str(res['id']),
+                              'title': res['title'],
+                              'body': res['body'],
+                              'state': res['state']}
+            context = {
+                'GitHub.Issues(val.ID==obj.ID)': context_output
             }
+
+            return_outputs(human_readable, context, res)
+
         else:
-            print_results['HumanReadable'] = 'No such issue'
-        print_results['Contents'] = r
-        demisto.results(print_results)
+            return_error('No such issue')
     else:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': r,
-            'HumanReadable': 'Please enter a valid issue number',
-        })
-    return r
+        return_error('Please enter a valid issue number')
 
 
-def make_search(search_query, sort, order):
-    query = '?q=repo:teizenman/Demisto-start'
+def close_issue(issue_num):
+    if str(issue_num).isdigit():
+        res = http_request('GET', SEARCH_SUFFIX + str(issue_num))
+
+        if res['total_count'] > 0:
+            query = {'state': 'close'}
+            res = http_request('POST', REPO_ISSUES_SUFFIX + '/' + str(issue_num),
+                               json.dumps(query))
+            human_readable = 'Issue #' + str(issue_num) + ' has been closed'
+            context = {
+                'GitHub.Issues(val.ID==obj.ID)': {'ID': str(res['id']), 'state': 'close'}
+            }
+
+            return_outputs(human_readable, context, res)
+
+        else:
+            return_error('No such issue')
+    else:
+        return_error('Please enter a valid issue number')
+
+
+def assemble_query(search_query, sort, order):
+    query = ''
     if search_query:
         query += '+' + search_query
     if sort:
         query += '&sort=' + sort
         if order:
             query += '&order=' + order
-    r = http_request('GET', 'search/issues' + query)
-    print_results = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': r
-    }
-    if r['total_count'] != 0:
+    return query
+
+
+def make_search(search_query=None, sort_by=None, order_by=None):
+    query = assemble_query(search_query, sort_by, order_by)
+    res = http_request('GET', REPO_SEARCH_SUFFIX + query)
+
+    if res['total_count'] != 0:
+        context_output = {'query': query}
         results = []
-        for issue in r['items']:
-            issue_details = makehash()
+        for issue in res['items']:
+            issue_details = dict()
             issue_details['ID'] = str(issue['id'])
             issue_details['title'] = issue['title']
             issue_details['link'] = issue['url']
             issue_details['state'] = issue['state']
+
             results.append(issue_details)
-            print_results['HumanReadable'] = tableToMarkdown(
-                str(r['total_count']) + ' found issues.\nComplete list of issues: ' + str(not r['incomplete_results']),
+
+            human_readable = tableToMarkdown(
+                str(res['total_count']) + ' found issues.\nComplete list of issues: ' + str(
+                    not res['incomplete_results']),
                 results, ['ID', 'title', 'state', 'link'])
-        print_results['EntryContext'] = {
-            'GitHub.Searches(val.query==obj.query)': {'query': query, 'results': results}
+
+        context_output['results'] = results
+        context = {
+            'GitHub.Search(val.query==obj.query)': context_output
         }
+
+        return_outputs(human_readable, context, res)
+
     else:
-        print_results['HumanReadable'] = 'No issues found for this query!'
-    demisto.results(print_results)
-    return r
+        return_error('No issues found for this query!')
 
 
 def count_total_downloads():
-    r = http_request('GET', 'repos/teizenman/Demisto-start/releases')
+    res = http_request('GET', GET_RELEASES_SUFFIX)
     output = []
-    for asset in r[0]['assets']:
-        count = makehash()
-        count['asset_name'] = asset['name']
-        count['download_count'] = asset['download_count']
-        output.append(count)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': r,
-        'HumanReadable': tableToMarkdown('Download counts:', output, ['asset_name', 'download_count']),
-        'EntryContext': {
-            'GitHub.Download-counts(val.asset_name==obj.asset_name)': output
-        }
-    })
-    return r
+    if res:
+        for asset in res[0]['assets']:
+            count = dict()
+            count['asset_name'] = asset['name']
+            count['download_count'] = asset['download_count']
+
+            output.append(count)
+
+        return_outputs(tableToMarkdown('Download counts:', output, ['asset_name', 'download_count']),
+                       {'GitHub.DownloadCount(val.asset_name==obj.asset_name)': output}, res)
+    else:
+        return_error('No releases found')
+
+
+def fetch_incidents_command():
+    last_run = demisto.getLastRun()
+
+    if last_run and 'start_time' in last_run:
+        last_fetch_time = last_run.get('start_time')
+    else:
+        last_fetch_time = (datetime.now() - timedelta(minutes=60)).isoformat().split('.')[0]
+
+    res = http_request('GET', FETCH_SUFFIX + last_fetch_time)
+    if res['total_count'] != 0:
+        incs = []
+        for issue in res['items']:
+            inc = {
+                'name': 'Issue #' + str(issue['number']) + ' ID = ' + str(issue['id']) + ' updated',
+                'occurred': issue['updated_at'],
+                'rawJSON': json.dumps(issue)
+            }
+
+            if issue['updated_at'] > last_fetch_time:
+                last_fetch_time = issue['updated_at']
+            incs.append(inc)
+        demisto.incidents(incs)
+
+    demisto.setLastRun({'start_time': last_fetch_time})
 
 
 ''' EXECUTION '''
 LOG('command is %s' % (demisto.command(),))
 try:
-    if demisto.command() == 'list-all-issues':
+    if demisto.command() == 'test-module':
+        test_module()
+        demisto.results('ok')
+
+    elif demisto.command() == 'list-all-issues':
         list_all_issues()
 
     elif demisto.command() == 'create-issue':
-        title = demisto.args().get('title')
-        body = demisto.args().get('body')
-        assignees = argToList(demisto.args().get('assignees'))
-        labels = argToList(demisto.args().get('labels'))
-        create_issue(title, body, assignees, labels)
+        create_issue(**demisto.args())
 
     elif demisto.command() == 'edit-issue':
-        issue_num = demisto.args().get('issue_num')
-        title = demisto.args().get('title')
-        body = demisto.args().get('body')
-        assignees = argToList(demisto.args().get('assignees'))
-        labels = argToList(demisto.args().get('labels'))
-        edit_issue(issue_num, title, body, assignees, labels)
+        edit_issue(**demisto.args())
 
     elif demisto.command() == 'close-issue':
-        issue_num = demisto.args().get('issue_num')
-        close_issue(issue_num, 'close')
+        close_issue(**demisto.args())
 
     elif demisto.command() == 'make-search':
-        search_query = demisto.args().get('search_query')
-        sort_by = demisto.args().get('sort_by')
-        order_by = demisto.args().get('order_by')
-        make_search(search_query, sort_by, order_by)
+        make_search(**demisto.args())
 
     elif demisto.command() == 'count-downloads':
         count_total_downloads()
 
-    elif demisto.command() == 'test-module':
-        list_all_issues()  # result code 200
-        create_issue('From Demisto', 'Right from the integration window', ['teizenman'],
-                     ['good first issue'])  # result code 201
-        edit_issue(3, 'From Demisto', 'Right from the integration window', ['teizenman'],
-                   ['enhancment'])  # result code 200
-        close_issue(3, 'close')  # result code 200
-        demisto.results('ok')
-except Exception, e:
-    demisto.debug('The Senate? I am the Senate!')
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents_command()
+
+except Exception as e:
+    demisto.debug('We are the people')
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)

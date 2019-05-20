@@ -1,0 +1,442 @@
+id: GitHub-Test
+version: 8
+name: GitHub-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dbc08379-177d-4cf3-8a48-9f1958dc4830
+    type: start
+    task:
+      id: dbc08379-177d-4cf3-8a48-9f1958dc4830
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8ccb4e8e-3422-4c39-8c47-a3ebb3cf7b0a
+    type: title
+    task:
+      id: 8ccb4e8e-3422-4c39-8c47-a3ebb3cf7b0a
+      version: -1
+      name: Independent Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 87bb9a76-210b-4629-8d63-6f8fe34c41a9
+    type: regular
+    task:
+      id: 87bb9a76-210b-4629-8d63-6f8fe34c41a9
+      version: -1
+      name: count-downloads
+      script: GitHub|||count-downloads
+      type: regular
+      iscommand: true
+      brand: GitHub
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 7620a4b9-726e-4c61-8070-dd14a333e639
+    type: title
+    task:
+      id: 7620a4b9-726e-4c61-8070-dd14a333e639
+      version: -1
+      name: Bounded Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 16ebacdf-f27c-4bad-8dad-46c23251b10b
+    type: regular
+    task:
+      id: 16ebacdf-f27c-4bad-8dad-46c23251b10b
+      version: -1
+      name: create-issue
+      script: GitHub|||create-issue
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assignees:
+        simple: teizenman
+      body:
+        simple: Just testing..
+      labels:
+        simple: bug, test
+      title:
+        simple: New Issue From Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6fcefc5a-24f4-47f2-85e4-f925bdca0410
+    type: regular
+    task:
+      id: 6fcefc5a-24f4-47f2-85e4-f925bdca0410
+      version: -1
+      name: edit-issue
+      script: GitHub|||edit-issue
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      assignees:
+        simple: teizenman
+      body:
+        simple: Thats right
+      issue_num:
+        complex:
+          root: ${GitHub
+          accessor: Issues}
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Just testing..
+              field:
+                value:
+                  simple: body
+              getField:
+                value:
+                  simple: number
+      labels:
+        simple: new_test
+      title:
+        simple: Changed from playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 53f03d94-c4c4-423a-8e63-2720a592efe9
+    type: regular
+    task:
+      id: 53f03d94-c4c4-423a-8e63-2720a592efe9
+      version: -1
+      name: list-all-issues
+      script: GitHub|||list-all-issues
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 680cc726-1965-40ad-88b6-0e89f2aa9ebc
+    type: regular
+    task:
+      id: 680cc726-1965-40ad-88b6-0e89f2aa9ebc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 7a58322b-4c8c-461b-8901-bbc42a47c903
+    type: condition
+    task:
+      id: 7a58322b-4c8c-461b-8901-bbc42a47c903
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        complex:
+          root: GitHub
+          accessor: Issues
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Just testing..
+              field:
+                value:
+                  simple: body
+              getField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: b98e5a30-9e9b-4b2c-8000-51ed3a6631ad
+    type: regular
+    task:
+      id: b98e5a30-9e9b-4b2c-8000-51ed3a6631ad
+      version: -1
+      name: make-search
+      script: GitHub|||make-search
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      order_by: {}
+      search_query:
+        simple: From+state:open
+      sort_by: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 356dd706-a7e6-414f-8653-61470e7f8355
+    type: regular
+    task:
+      id: 356dd706-a7e6-414f-8653-61470e7f8355
+      version: -1
+      name: close-issue
+      script: GitHub|||close-issue
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      issue_num:
+        complex:
+          root: GitHub
+          accessor: Issues
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Thats right
+              field:
+                value:
+                  simple: body
+              getField:
+                value:
+                  simple: number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 1eb1cdf3-30b7-4a69-8fca-73b831a97151
+    type: regular
+    task:
+      id: 1eb1cdf3-30b7-4a69-8fca-73b831a97151
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: ${GitHub.Issues}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 53ccd5cb-591c-4f7e-840e-aeff29f0b73f
+    type: regular
+    task:
+      id: 53ccd5cb-591c-4f7e-840e-aeff29f0b73f
+      version: -1
+      name: fetch_test
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name:
+        simple: GitHub
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

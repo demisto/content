@@ -14,99 +14,82 @@ configuration:
   type: 8
 display: GitHub
 name: GitHub
-description: ""
 script:
   commands:
   - deprecated: false
     execution: false
     name: list-all-issues
-    description: ""
   - arguments:
     - default: false
       isArray: false
       name: title
-      description: ""
-      required: true
+      required: false
       secret: false
     - default: false
       isArray: false
       name: body
-      description: ""
       required: false
       secret: false
     - default: false
       isArray: true
       name: assignees
-      description: ""
       required: false
       secret: false
     - default: false
       isArray: true
       name: labels
-      description: ""
       required: false
       secret: false
     deprecated: false
     execution: false
     name: create-issue
-    description: ""
   - arguments:
     - default: false
       isArray: false
       name: issue_num
-      description: ""
       required: true
       secret: false
     - default: false
       isArray: false
       name: title
-      description: ""
       required: false
       secret: false
     - default: false
       isArray: false
       name: body
-      description: ""
       required: false
       secret: false
     - default: false
       isArray: true
       name: assignees
-      description: ""
       required: false
       secret: false
     - default: false
       isArray: true
       name: labels
-      description: ""
       required: false
       secret: false
     deprecated: false
     execution: false
     name: edit-issue
-    description: ""
   - arguments:
     - default: false
       isArray: false
       name: issue_num
-      description: ""
       required: true
       secret: false
     deprecated: false
     execution: false
     name: close-issue
-    description: ""
   - arguments:
     - default: false
       isArray: false
       name: search_query
-      description: ""
       required: false
       secret: false
     - default: false
       isArray: false
       name: sort_by
-      description: ""
       predefined:
       - ''
       required: false
@@ -115,7 +98,6 @@ script:
       default: false
       isArray: false
       name: order_by
-      description: ""
       predefined:
       - '''asc'''
       - ' ''desc'''
@@ -124,170 +106,10 @@ script:
     deprecated: false
     execution: false
     name: make-search
-    description: ""
   - deprecated: false
     execution: false
     name: count-downloads
-    description: ""
-  isfetch: false
+  isfetch: true
   runonce: false
-  script: |-
-    import requests
-    import json
-    import collections
-
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    API_KEY = '9a278be9afbedfa23ce6cba1e01cd578e51065d2'
-    INSECURE = demisto.params().get('insecure')
-    BASE_URL = 'https://api.github.com/'
-
-    '''HELPER FUNCTIONS'''
-
-
-    def http_request(method, URL_SUFFIX, json=None):
-        if method is 'GET':
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + API_KEY
-            }
-        elif method is 'POST':
-            if not API_KEY:
-                headers = {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            else:
-                headers = {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + API_KEY
-                }
-        r = requests.request(
-            method,
-            BASE_URL + URL_SUFFIX,
-            data=json,
-            headers=headers,
-            verify=INSECURE
-        )
-        if r.status_code not in [200, 201]:
-            return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
-        return r.json()
-
-
-    def filter_issues_by(response):
-        issues = {}
-        for issue in response:
-            issues[issue['number']] = issue['title']
-        return issues
-
-
-    # Allows nested keys to be accesible
-    def makehash():
-        return collections.defaultdict(makehash)
-
-
-    '''MAIN FUNCTIONS'''
-
-
-    def list_all_issues():
-        r = http_request('GET', 'issues')
-        return r
-
-
-    def create_issue(title, body, assignees, labels):
-        query = {'title': title, 'body': body, 'assignees': assignees, 'labels': labels}
-        search = json.dumps(query)
-        r = http_request('POST', 'repos/teizenman/Demisto-start/issues', search)
-        return r
-
-
-    def edit_issue(issue_num, title, body, assignees, labels):
-        query = {}
-        if title:
-            query['title'] = title
-        if body:
-            query['body'] = body
-        if assignees:
-            query['assignees'] = assignees
-        if labels:
-            query['labels'] = labels
-        search = json.dumps(query)
-        r = http_request('POST', 'repos/teizenman/Demisto-start/issues/' + str(issue_num), search)
-        return r
-
-
-    def close_issue(issue_num, state):
-        query = {'state': state}
-        search = json.dumps(query)
-        r = http_request('POST', 'repos/teizenman/Demisto-start/issues/' + str(issue_num), search)
-        return r
-
-
-    def make_search(search_query, sort, order):
-        query = '?q=repo:teizenman/Demisto-start'
-        if search_query:
-            query += '+' + search_query
-        if sort:
-            query += '&sort=' + sort
-            if order:
-                query += '&order=' + order
-        r = http_request('GET', 'search/issues' + query)
-        return r
-
-
-    def count_total_downloads():
-        r = http_request('GET', 'repos/teizenman/Demisto-start/releases')
-        count = 0
-        for asset in r['assets']:
-            count += int(asset['download_count'])
-        return count
-
-
-
-    ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(),))
-    try:
-        if demisto.command() == 'list-all-issues':
-            list_all_issues()
-
-        elif demisto.command() == 'create-issue':
-            title = demisto.args().get('title')
-            body = demisto.args().get('body')
-            assignees = argToList(demisto.args().get('assignees'))
-            labels = argToList(demisto.args().get('labels'))
-            create_issue(title, body, assignees, labels)
-
-        elif demisto.command() == 'edit-issue':
-            issue_num = demisto.args().get('issue_num')
-            title = demisto.args().get('title')
-            body = demisto.args().get('body')
-            assignees = argToList(demisto.args().get('assignees'))
-            labels = argToList(demisto.args().get('labels'))
-            edit_issue(issue_num, title, body, assignees, labels)
-
-        elif demisto.command() == 'close-issue':
-            issue_num = demisto.args().get('issue_num')
-            close_issue(issue_num, 'close')
-
-        elif demisto.command() == 'make-search':
-            search_query = demisto.args().get('search_query')
-            sort_by = demisto.args().get('sort_by')
-            order_by = demisto.args().get('order_by')
-            make_search(search_query, sort_by, order_by)
-
-        elif demisto.command() == 'test-module':
-            list_all_issues()  # result code 200
-            create_issue('From Demisto', 'Right from the integration window', ['teizenman'],
-                         ['good first issue'])  # result code 201
-            edit_issue(3, 'From Demisto', 'Right from the integration window', ['teizenman'],
-                       ['enhancment'])  # result code 200
-            close_issue(3, 'close')  # result code 200
-            demisto.results('ok')
-    except Exception, e:
-        demisto.debug('The Senate? I am the Senate!')
-        LOG(e.message)
-        LOG.print_log()
-        return_error(e.message)
+  script: ''
   type: python
