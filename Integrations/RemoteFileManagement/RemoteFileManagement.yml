@@ -23,12 +23,10 @@ configuration:
   name: scp_extra_params
   required: false
   type: 0
-- display: Document root (e.g files/www/html/files)
+- display: Document root (e.g var/www/html/files)
   name: document_root
   required: false
   type: 0
-description: This integration allows managing and editing files located on a remote
-  web-server via SSH using integration context as Single Source of Truth
 display: Remote File Management
 name: remote_file_management
 script:
