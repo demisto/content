@@ -54,12 +54,14 @@ def http_request(method, path, params=None, data=None):
             headers=HEADERS)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        return_error('Could not connect to Symantec MC: {}'.format(str(e)))
+        return return_error('Could not connect to Symantec MC: {}'.format(str(e)))
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
         message = res.reason
         details = ''
+        if res.status_code == 500:
+            details = details + '\nA possible cause is that multiple requests were made simultaneously.'
         try:
             error_json = res.json()
             message = error_json.get('statusMessage')
@@ -75,6 +77,34 @@ def http_request(method, path, params=None, data=None):
         if res.status_code == 204:
             return res
         return_error('Failed parsing the response from Symantec MC API: {}'.format(res.content))
+
+
+def verify_policy_content(content_type, ips, categories, urls):
+    if ((content_type == IP_LIST_TYPE and not ips)
+            or (content_type == URL_LIST_TYPE and not urls)
+            or (content_type == CATEGORY_LIST_TYPE and not categories)):
+        return_error('Incorrect content provided for the type {}'.format(content_type))
+    if ((content_type == IP_LIST_TYPE and (urls or categories))
+            or (content_type == URL_LIST_TYPE and (ips or categories))
+            or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+        return_error('More than one content type was provided for the type {}'.format(content_type))
+
+
+def get_policy_uuid(uuid, name):
+    if not uuid:
+        if not name:
+            return_error('Either a policy UUID or name must be provided')
+        name_query = 'EQ ' + name
+        policy = list_policies_request(name=name_query)
+        if not policy or len(policy) == 0:
+            return_error('Policy not found')
+        if len(policy) > 1:
+            return_error('Found more than one policy for the provided name')
+        uuid = policy[0].get('uuid')
+        if not uuid:
+            return_error('Policy not found')
+
+    return uuid
 
 
 ''' FUNCTIONS '''
@@ -169,8 +199,8 @@ def get_device_command():
     :return: An entry with the device data
     """
     uuid = demisto.args()['uuid']
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     device = get_device_request(uuid)
     if device:
@@ -338,8 +368,8 @@ def get_device_status_command():
     :return: An entry with the device status data
     """
     uuid = demisto.args()['uuid']
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     device = get_device_status_request(uuid)
     if device:
@@ -416,7 +446,7 @@ def list_policies_command():
     return_outputs(human_readable, context, policies)
 
 
-def list_policies_request(content_type, description, name, reference_id, shared, tenant):
+def list_policies_request(content_type=None, description=None, name=None, reference_id=None, shared=None, tenant=None):
     """
     Get policies in Symantec MC
     :param content_type: Policy content type query
@@ -452,15 +482,21 @@ def get_policy_command():
     Command to get information for a specified policy including it's contents
     :return: An entry with the policy data
     """
-    uuid = demisto.args()['uuid']
-    policy_content_data = {}
-    revision_content = {}
+    uuid = demisto.args().get('uuid')
+    name = demisto.args().get('name')
+    policy_content_data: dict = {}
+    revision_content: dict = {}
     policy_content_content = []
     content_title = ''
     human_readable = ''
-    content_headers = []
+    content_headers: list = []
     content_key = ''
-    context = {}
+    context: dict = {}
+
+    if not name and not uuid:
+        return_error('Either a UUID or a name must be provided')
+
+    uuid = get_policy_uuid(uuid, name)
 
     policy = get_policy_request(uuid)
     if policy:
@@ -574,8 +610,8 @@ def create_policy_command():
     shared = demisto.args().get('shared')
     replace_variables = demisto.args().get('replace_variables')
 
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     policy = create_policy_request(name, content_type, description, reference_id, tenant, shared, replace_variables)
     if policy:
@@ -639,8 +675,8 @@ def update_policy_command():
     reference_id = demisto.args().get('reference_id')
     replace_variables = demisto.args().get('replace_variables')
 
-    content = {}
-    context = {}
+    content: dict = {}
+    context: dict = {}
 
     policy = update_policy_request(uuid, name, description, reference_id, replace_variables)
     if policy:
@@ -716,7 +752,8 @@ def add_policy_content_command():
         Command to add content to an existing policy in Symantec MC
         :return: An entry indicating whether the addition was successful
     """
-    uuid = demisto.args()['uuid']
+    uuid = demisto.args().get('uuid')
+    name = demisto.args().get('name')
     content_type = demisto.args()['content_type']
     change_description = demisto.args()['change_description']
     schema_version = demisto.args().get('schema_version')
@@ -726,15 +763,9 @@ def add_policy_content_command():
     enabled = demisto.args().get('enabled')
     description = demisto.args().get('description')
 
-    if ((content_type == IP_LIST_TYPE and not ips)
-            or (content_type == URL_LIST_TYPE and not urls)
-            or (content_type == CATEGORY_LIST_TYPE and not categories)):
-        return_error('Incorrect content provided for the type {}'.format(content_type))
+    verify_policy_content(content_type, ips, categories, urls)
 
-    if ((content_type == IP_LIST_TYPE and (urls or categories))
-            or (content_type == URL_LIST_TYPE and (ips or categories))
-            or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
-        return_error('More than one content type was provided for the type {}'.format(content_type))
+    uuid = get_policy_uuid(uuid, name)
 
     if content_type == IP_LIST_TYPE:
         add_policy_content_request(uuid, content_type, change_description, schema_version,
@@ -812,7 +843,8 @@ def delete_policy_content_command():
         Command to delete content from an existing policy in Symantec MC
         :return: An entry indicating whether the deletion was successful
     """
-    uuid = demisto.args()['uuid']
+    uuid = demisto.args().get('uuid')
+    name = demisto.args().get('name')
     content_type = demisto.args()['content_type']
     change_description = demisto.args()['change_description']
     schema_version = demisto.args().get('schema_version')
@@ -820,15 +852,9 @@ def delete_policy_content_command():
     urls = argToList(demisto.args().get('url', []))
     categories = argToList(demisto.args().get('category', []))
 
-    if ((content_type == IP_LIST_TYPE and not ips)
-            or (content_type == URL_LIST_TYPE and not urls)
-            or (content_type == CATEGORY_LIST_TYPE and not categories)):
-        return_error('Incorrect content provided for the type {}'.format(content_type))
+    verify_policy_content(content_type, ips, categories, urls)
 
-    if ((content_type == IP_LIST_TYPE and (urls or categories))
-            or (content_type == URL_LIST_TYPE and (ips or categories))
-            or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
-        return_error('More than one content type was provided for the type {}'.format(content_type))
+    uuid = get_policy_uuid(uuid, name)
 
     if content_type == IP_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips)
@@ -927,7 +953,7 @@ def list_tenants_request():
     """
 
     path = 'tenants'
-    params = {}
+    params: dict = {}
 
     response = http_request('GET', path, params)
     return response

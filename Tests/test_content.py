@@ -446,12 +446,13 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
              build_number, server, build_name)
 
 
-def restart_demisto_service(ami):
+def restart_demisto_service(ami, c):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
         sleep(SERVICE_RESTART_POLLING_INTERVAL)
         exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        if exit_code == 0:
+        res = c.Login()
+        if exit_code == 0 and res.status_code == 200:
             return
 
     raise Exception('Timeout waiting for demisto service to restart')
@@ -515,20 +516,21 @@ def execute_testing(server, server_ip, server_version, server_numeric_version):
                                                 nightly_integrations)
 
     # first run the mock tests to avoid mockless side effects in container
-    proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
-    for t in mock_tests:
-        run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                          skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                          is_filter_configured,
-                          filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                          unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name, server_numeric_version)
+    if mock_tests:
+        proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+        for t in mock_tests:
+            run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+                              skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
+                              is_filter_configured,
+                              filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+                              unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
+                              build_name, server_numeric_version)
 
-    print("\nRunning mock-disabled tests")
-    proxy.configure_proxy_in_demisto('')
-    print("Restarting demisto service")
-    restart_demisto_service(ami)
-    print("Demisto service restarted\n")
+        print("\nRunning mock-disabled tests")
+        proxy.configure_proxy_in_demisto('')
+        print("Restarting demisto service")
+        restart_demisto_service(ami, c)
+        print("Demisto service restarted\n")
 
     for t in mockless_tests:
         run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
@@ -581,8 +583,7 @@ def main():
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
         for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == server_version and ami_instance_name != "Demisto two before GA":
-                # TODO: remove the and condition once version 4.5 is out
+            if ami_instance_name == server_version:
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
