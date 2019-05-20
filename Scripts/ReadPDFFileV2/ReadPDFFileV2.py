@@ -7,7 +7,6 @@ import os
 import re
 import errno
 import shutil
-from typing import List
 
 
 # error class for shell errors
@@ -18,10 +17,10 @@ class ShellException(Exception):
 try:
     ROOT_PATH = os.getcwd()
     MAX_IMAGES = int(demisto.args().get('maxImages', 20))
-except OSError as e:
+except OSError:
     return_error("The script failed to access the current working directory. This might happen if your docker isn't "
                  "set up correctly. Please contact customer support")
-except ValueError as e:
+except ValueError:
     return_error("Value provided for maxImages is of the wrong type. Please provide an integer for maxImages")
 
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
@@ -58,7 +57,9 @@ def run_shell_command(command, *args):
     cmd = [command] + list(args)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     o, e = proc.communicate()
-    return o.decode('utf8'), e.decode('utf8')
+    if e:
+        raise ShellException(e.decode('utf8'))
+    return o.decode('utf8')
 
 
 def get_files_names_in_path(path, name_of_file, full_path=False):
@@ -86,11 +87,9 @@ def get_pdf_metadata(file_path):
     """Gets the metadata from the pdf as a dictionary"""
     user_password = demisto.args().get('userPassword')
     if user_password:
-        metadata_txt, e = run_shell_command('pdfinfo', '-upw', user_password, file_path)
+        metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
     else:
-        metadata_txt, e = run_shell_command('pdfinfo', file_path)
-    if e:
-        raise ShellException(e)
+        metadata_txt = run_shell_command('pdfinfo', file_path)
     metadata = {}
     for line in metadata_txt.split('\n'):
         # split to [key, value...]
@@ -111,11 +110,9 @@ def get_pdf_text(file_path, pdf_text_output_path):
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
     user_password = demisto.args().get('userPassword')
     if user_password:
-        o, e = run_shell_command('pdftotext', '-upw', user_password, file_path, pdf_text_output_path)
+        run_shell_command('pdftotext', '-upw', user_password, file_path, pdf_text_output_path)
     else:
-        o, e = run_shell_command('pdftotext', file_path, pdf_text_output_path)
-    if e:
-        raise ShellException(e)
+        run_shell_command('pdftotext', file_path, pdf_text_output_path)
     text = ''
     with open(pdf_text_output_path, 'rb') as f:
         for line in f:
@@ -128,11 +125,9 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     pdf_html_output_path = f'{output_folder}/PDF.html'
     user_password = demisto.args().get('userPassword')
     if user_password:
-        o, e = run_shell_command('pdftohtml', '-upw', user_password, pdf_path, pdf_html_output_path)
+        run_shell_command('pdftohtml', '-upw', user_password, pdf_path, pdf_html_output_path)
     else:
-        o, e = run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
-    if e:
-        raise ShellException(e)
+        run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
     html_file_names = get_files_names_in_path(output_folder, '*.html')
     html_content = ''
     for file_name in html_file_names:
@@ -256,7 +251,7 @@ def main():
     except ShellException as e:
         mark_suspicious(f'The script failed read PDF file due to an error: {str(e)}', entry_id)
     except Exception as e:
-        return_error_without_exit(f'The script failed read PDF file due to an error: {str(e)}', entry_id)
+        return_error_without_exit(f'The script failed read PDF file due to an error: {str(e)}')
     finally:
         os.chdir(ROOT_PATH)
         for folder in folders_to_remove:
