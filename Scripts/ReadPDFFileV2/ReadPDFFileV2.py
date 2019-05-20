@@ -90,7 +90,6 @@ def get_images_paths_in_path(path):
     return res
 
 
-
 def get_pdf_metadata(file_path):
     """Gets the metadata from the pdf as a dictionary"""
     user_password = demisto.args().get('userPassword')
