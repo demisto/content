@@ -12,10 +12,10 @@ from typing import Dict, List, Any, Optional
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+''' GLOBALS '''
 if not demisto.params().get('port'):
     return_error('Set a port for the instance')
 
-''' GLOBALS '''
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
