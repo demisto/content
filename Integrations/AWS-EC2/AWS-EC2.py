@@ -22,11 +22,13 @@ AWS_ROLE_POLICY = None
 AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
 AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,
     retries=dict(
         max_attempts=5
-    )
+    ),
+    proxies=proxies
 )
 
 
@@ -2581,7 +2583,6 @@ def modify_image_attribute_command(args):
 
 """COMMAND BLOCK"""
 try:
-    handle_proxy()
     LOG('Command being called is {command}'.format(command=demisto.command()))
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
