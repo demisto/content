@@ -6,14 +6,14 @@ from CommonServerUserPython import *
 import requests
 import collections
 from urlparse import urlparse
-from requests.utils import quote
+from requests.utils import quote  # type: ignore
 import time
 
 """ POLLING FUNCTIONS"""
 try:
     from Queue import Queue
 except ImportError:
-    from queue import Queue
+    from queue import Queue  # type: ignore
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -38,7 +38,7 @@ if not demisto.params().get('proxy', False):
 
 def http_request(method, url_suffix, json=None, wait=0, retries=0):
     if method == 'GET':
-        headers = {}
+        headers = {}  # type: Dict[str, str]
     elif method == 'POST':
         headers = {
             'API-Key': APIKEY,
@@ -516,10 +516,10 @@ def format_http_transaction_list():
     uuid = demisto.args().get('uuid')
 
     # Scan Lists sometimes returns empty
-    scan_lists = []
+    scan_lists = {}  # type: dict
     while not scan_lists:
         response = urlscan_submit_request(uuid)
-        scan_lists = response.get('lists', [])
+        scan_lists = response.get('lists', {})
 
     limit = int(demisto.args().get('limit'))
     metadata = None

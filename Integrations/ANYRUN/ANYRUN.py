@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import Optional
 
 ''' IMPORTS '''
 
@@ -748,7 +749,7 @@ def get_history_command():
     formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
     if contents:
-        entry_context = {
+        entry_context: Optional[dict] = {
             'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
         }
         title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'

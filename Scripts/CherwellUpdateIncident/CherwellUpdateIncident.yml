@@ -56,7 +56,10 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellUpdateIncident
-tags: []
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-update-business-object
 outputs:
 - contextPath: Cherwell.BusinessObjects.PublicId
   description: Incident public ID
@@ -69,5 +72,6 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
+releaseNotes: Added tags and 'dependsOn' commands
 tests:
   - Cherwell Example Scripts - test
