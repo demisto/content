@@ -41,7 +41,7 @@ DOCUMENT_ROOT = demisto.params().get('document_root', None)
 ''' UTILS '''
 
 
-def ssh_execute(command):
+def ssh_execute(command: str):
     out = ''
     try:
         if PORT and SSH_EXTRA_PARAMS:
@@ -68,7 +68,7 @@ def ssh_execute(command):
     return out
 
 
-def scp_execute(file_name, file_path):
+def scp_execute(file_name: str, file_path: str) -> bool:
     try:
         if SCP_EXTRA_PARAMS:
             param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
@@ -89,7 +89,7 @@ def scp_execute(file_name, file_path):
 ''' COMMANDS '''
 
 
-def rfm_get_external_file(file_path):
+def rfm_get_external_file(file_path: str):
     command = f'cat {file_path}'
     result = ssh_execute(command)
     return result
@@ -113,7 +113,7 @@ def rfm_get_external_file_command():
     })
 
 
-def rfm_search_external_file(file_path, search_string):
+def rfm_search_external_file(file_path: str, search_string: str):
     return ssh_execute(f'grep {search_string} {file_path}')
 
 
@@ -143,7 +143,7 @@ def rfm_search_external_file_command():
         })
 
 
-def rfm_update_external_file(file_path, list_name, verbose):
+def rfm_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name)
 
@@ -227,7 +227,7 @@ def rfm_update():
         })
 
 
-def rfm_update_from_external_file(list_name, file_path, type_):
+def rfm_update_from_external_file(list_name: str, file_path: str, type_: str):
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
     file_data = rfm_get_external_file(file_path)
@@ -272,7 +272,7 @@ def rfm_update_from_external_file_command():
     })
 
 
-def rfm_delete_external_file(file_path):
+def rfm_delete_external_file(file_path: str):
     ssh_execute('rm -f ' + file_path)
     return 'File deleted successfully'
 
