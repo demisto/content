@@ -630,10 +630,10 @@ def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str
         'key': API_KEY
     }
 
-    params['element'] = add_argument(fqdn, 'fqdn', False)
-    + add_argument(ip_netmask, 'ip-netmask', False)
-    + add_argument(ip_range, 'ip-range', False)
-    + add_argument(description, 'description', False)
+    params['element'] = (add_argument(fqdn, 'fqdn', False)
+                         + add_argument(ip_netmask, 'ip-netmask', False)
+                         + add_argument(ip_range, 'ip-range', False)
+                         + add_argument(description, 'description', False))
 
     http_request(
         URL,
