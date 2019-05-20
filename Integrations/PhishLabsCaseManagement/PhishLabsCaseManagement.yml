@@ -20,6 +20,25 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 1 hour
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Fetch this number of incidents each time
+  name: fetch_limit
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Manage cases in PhishLabs
 display: PhishLabs Case Management
 name: PhishLabs Case Management
@@ -29,10 +48,11 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Open
-      description: CSV list of statuses, for example, "Open,Assigned"
+      description: CSV list of statuses, for example, "New,Assigned"
       isArray: true
       name: status
       predefined:
+      - New
       - Open
       - Closed
       - Assigned
@@ -44,7 +64,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Case type.
-      isArray: false
+      isArray: true
       name: type
       predefined:
       - 419 Scam
@@ -64,12 +84,6 @@ script:
       description: Limit the number of cases to return.
       isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Get cases starting from this position.
-      isArray: false
-      name: offset
       required: false
       secret: false
     - auto: PREDEFINED
@@ -300,6 +314,7 @@ script:
     - contextPath: PhishLabs.Case.Status
       description: Case status
       type: String
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: '-'
