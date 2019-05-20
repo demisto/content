@@ -16,117 +16,130 @@ if proxy:
     http_proxy = os.environ["http_proxy"]
     https_proxy = os.environ["https_proxy"]
 
-return_code = 0
-error_message = ''
+RETURN_CODE = 0
+ERROR_MESSAGE = ''
+
+ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', True) else 11  # 11 == entryTypes['warning']
 
 
 def rasterize_email_request(html, friendly_name):
-    global return_code, error_message
+    global RETURN_CODE, ERROR_MESSAGE
 
-    f = open('htmlBody.html', 'w')
-    f.write('<html style="background:white";>' + html + '</html>')
-    f.close()
+    with open('htmlBody.html', 'w') as f:
+        f.write('<html style="background:white";>' + html + '</html>')
 
-    proxy_flag = ""
-    if proxy:
-        proxy_flag = "--proxy=" + http_proxy
+    proxy_flag = "--proxy=" + http_proxy if proxy else ""
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendly_name]
-    if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-        command.append(demisto.get(demisto.args(), 'width') + '*' + demisto.get(demisto.args(), 'height'))
+    if demisto.getArg('width') and demisto.getArg('height'):
+        command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        error_message = subprocess.check_output(command)
+        ERROR_MESSAGE = subprocess.check_output(command)
     except Exception as e:
-        return_code = -1
-        error_message = e.message
+        RETURN_CODE = -1
+        ERROR_MESSAGE = str(e)
 
 
 def rasterize():
-    global return_code, error_message
-    return_code = 0
-    error_message = ''
-    url = demisto.args()['url']
+    global RETURN_CODE, ERROR_MESSAGE
+    RETURN_CODE = 0
+    ERROR_MESSAGE = ''
+    url = demisto.getArg('url')
     if not (url.startswith("http")):
         url = "http://" + url
     friendly_name = 'url.png'
-    if demisto.get(demisto.args(), 'type') == 'pdf':
+    if demisto.getArg('type') == 'pdf':
         friendly_name = 'url.pdf'
     proxy_flag = ""
     if proxy:
-        if url.startswith("https"):
-            proxy_flag = "--proxy=" + https_proxy
-        else:
-            proxy_flag = "--proxy=" + http_proxy
+        proxy_flag = "--proxy=" + (https_proxy if url.startswith("https") else http_proxy)
+
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', url, friendly_name]
-    if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-        command.append(demisto.get(demisto.args(), 'width') + '*' + demisto.get(demisto.args(), 'height'))
+    if demisto.getArg('width') and demisto.getArg('height'):
+        command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        error_message = subprocess.check_output(command)
+        ERROR_MESSAGE = subprocess.check_output(command)
     except subprocess.CalledProcessError:
-        return_code = -1
-        error_message = "Can't access the URL. It might be malicious, or unreachable for one of several reasons."
-    if return_code == 0:
+        RETURN_CODE = -1
+        ERROR_MESSAGE = "Can't access the URL. It might be malicious, or unreachable for one of several reasons."
+    if RETURN_CODE == 0:
         file = file_result_existing_file(friendly_name)
         file['Type'] = entryTypes['image']
         demisto.results(file)
     else:
-        demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'],
-                         'Contents': 'PhantomJS returned - ' + error_message})
+        demisto.results(
+            {
+                'ContentsFormat': 'text',
+                'Type': ENTRY_TYPE,
+                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+            }
+        )
 
 
 def rasterize_image():
-    global return_code, error_message
-    res = demisto.getFilePath(demisto.args()['EntryID'])
+    global RETURN_CODE, ERROR_MESSAGE
+    res = demisto.getFilePath(demisto.getArg('EntryID'))
     with open(res['path'], 'r') as f:
         data = f.read()
     b64 = base64.b64encode(data)
     html = '<img src="data:image/png;base64, ' + b64 + '">'
-    return_code = 0
+    RETURN_CODE = 0
     friendly_name = 'image.png'
     f = open('htmlImage.html', 'w')
     f.write('<html style="background:white;"><body>' + html + '</body></html>')
     f.close()
     command = ['phantomjs', '/usr/local/bin/rasterize.js', 'htmlImage.html', friendly_name]
-    if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-        command.append(demisto.get(demisto.args(), 'width') + '*' + demisto.get(demisto.args(), 'height'))
+    if demisto.getArg('width') and demisto.getArg('height'):
+        command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        error_message = subprocess.check_output(command)
+        ERROR_MESSAGE = subprocess.check_output(command)
     except Exception as e:
-        return_code = -1
-        error_message = e.message
-    if return_code == 0:
+        RETURN_CODE = -1
+        ERROR_MESSAGE = str(e)
+
+    if RETURN_CODE == 0:
         file = file_result_existing_file(friendly_name)
         file['Type'] = entryTypes['image']
         demisto.results(file)
 
     else:
-        demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'],
-                         'Contents': 'PhantomJS returned - ' + error_message})
+        demisto.results(
+            {
+                'ContentsFormat': 'text',
+                'Type': ENTRY_TYPE,
+                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+            }
+        )
 
 
 def rasterize_email_command():
-    html = demisto.args()['htmlBody']
+    html = demisto.getArg('htmlBody')
     friendly_name = 'email.png'
-    if demisto.get(demisto.args(), 'type') == 'pdf':
+    if demisto.getArg('type') == 'pdf':
         friendly_name = 'email.pdf'
     rasterize_email_request(html, friendly_name)
-    if return_code == 0:
+    if RETURN_CODE == 0:
         file = file_result_existing_file(friendly_name)
         file['Type'] = entryTypes['image']
         demisto.results(file)
     else:
-        demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'],
-                         'Contents': 'PhantomJS returned - ' + error_message})
+        demisto.results(
+            {
+                'ContentsFormat': 'text',
+                'Type': ENTRY_TYPE,
+                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+            }
+        )
 
 
 if demisto.command() == 'test-module':
     rasterize_email_request('test text', 'email.png')
-    if return_code == 0:
+    if RETURN_CODE == 0:
         demisto.results('ok')
     else:
-        demisto.results(error_message)
+        demisto.results(ERROR_MESSAGE)
 
 elif demisto.command() == 'rasterize-image':
     rasterize_image()
@@ -137,4 +150,10 @@ elif demisto.command() == 'rasterize-email':
 elif demisto.command() == 'rasterize':
     rasterize()
 else:
-    demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'Unrecognized command'})
+    demisto.results(
+        {
+            'ContentsFormat': 'text',
+            'Type': ENTRY_TYPE,
+            'Contents': 'Unrecognized command'
+        }
+    )

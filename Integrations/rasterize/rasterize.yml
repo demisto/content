@@ -8,6 +8,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: 'Throw Errors '
+  name: with_error
+  defaultvalue: "true"
+  type: 8
+  required: false
 description: Rasterize URLs or emails given to it
 display: Rasterize
 name: Rasterize
@@ -100,6 +105,6 @@ script:
   script: '-'
   type: python
 defaultEnabled: true
-releaseNotes: "Rasterize URL Error handeling"
+releaseNotes: "added Param to throw warning instead of error"
 tests:
   - no test
