@@ -105,6 +105,18 @@ script:
         return False
 
 
+    def create_addr_string(list_of_addr_data_dicts):
+            addr_string = ""
+            for addr_index in range(0, len(list_of_addr_data_dicts)):
+                cur_addr_data = list_of_addr_data_dicts[addr_index]
+                cur_addr_name = cur_addr_data.get("name")
+                if addr_index == len(list_of_addr_data_dicts) - 1:
+                    addr_string += "{}".format(cur_addr_name)
+                else:
+                    addr_string += "{}\n".format(cur_addr_name)
+            return addr_string
+
+
     def logout(session):
         """
         Due to limited amount of simultaneous connections we log out after each API request. Simple post request to /logout endpoint without params.
@@ -408,16 +420,6 @@ script:
         response = http_request('POST', uri_suffix, {}, json.dumps(payload))
         return response
 
-    def create_addr_string(list_of_addr_data_dicts):
-        addr_string = ""
-        for addr_index in range(0, len(list_of_addr_data_dicts)):
-            cur_addr_data = list_of_addr_data_dicts[addr_index]
-            cur_addr_name = cur_addr_data.get("name")
-            if addr_index == len(list_of_addr_data_dicts) - 1:
-                addr_string += "{}".format(cur_addr_name)
-            else:
-                addr_string += "{},\n".format(cur_addr_name)
-        return addr_string
 
     def get_policy_command():
         contents = []
