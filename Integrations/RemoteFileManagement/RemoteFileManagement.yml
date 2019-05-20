@@ -30,7 +30,7 @@ configuration:
 description: This integration allows managing and editing files located on a remote
   web-server via SSH using integration context as Single Source of Truth
 display: Remote File Management
-name: Remote File Management
+name: remote_file_management
 script:
   commands:
   - arguments:
