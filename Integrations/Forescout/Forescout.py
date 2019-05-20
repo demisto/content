@@ -696,18 +696,10 @@ def update_lists(args={}):
     update_type = args.get('update_type', '')
     list_names = argToList(args.get('list_names', ''))
     values = ':'.join(argToList(args.get('values', '')))
-    lists = ''
-    if list_names and values:
+    if values:
         lists = '&'.join([list_name + '=' + values for list_name in list_names])
-    elif list_names:
-        lists = '&'.join(list_names)
-        if update_type in {'add_list_values', 'delete_list_values'}:
-            return_error('Invalid Input: no \'values\' specified.')
     else:
-        if values:
-            return_error('Invalid Input: specified \'values\' without also entering \'list_names\'.')
-        else:
-            return_error('Invalid Input: no \'list_names\' specified.')
+        lists = '&'.join(list_names)
     req_body = create_update_lists_request_body(update_type, lists)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Lists'

@@ -122,8 +122,8 @@ script:
       default: true
       defaultValue: 'False'
       description: Determines whether the search term is matched against the entirety
-        of the potential hostfield instead of just seeing whether the hostfield contains
-        the search term.
+        of the potential host field instead of just seeing whether the host field
+        contains the search term.
       isArray: false
       name: match_exactly
       predefined:
@@ -132,10 +132,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The term to filter hostfields by. By default the the search will
-        be case insensive and checked to see if a hostfield contains the search term
-        unless otherwise specified in the 'case_sensitive' and 'match_exactly' arguments
-        respectively.
+      description: The term to filter host fields by. By default, the search will
+        be case insensitive and checked to see if a host field contains the search
+        term unless otherwise specified in the 'case_sensitive' and 'match_exactly'
+        arguments respectively.
       isArray: false
       name: search_term
       required: false
@@ -143,7 +143,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all_types
-      description: Limit the search to host fields whose values of are a certain type.
+      description: Limit the search to host fields whose values are of a certain type.
         For example, to limit the search to host properties whose values are either
         boolean, ip or a date enter 'boolean,ip,date'.
       isArray: true
@@ -210,7 +210,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve specified host property values for an endpoint.
+    description: Retrieve details of specified host.
     execution: false
     name: forescout-get-host
     outputs:
@@ -459,7 +459,7 @@ script:
         navigate to *Tools* > *Options* > *Lists* in the Forescout platform.
       isArray: false
       name: list_names
-      required: false
+      required: true
       secret: false
     - default: false
       description: The values to add or delete from the lists entered in the 'list_names'
