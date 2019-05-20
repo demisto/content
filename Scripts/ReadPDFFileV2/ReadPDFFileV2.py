@@ -7,6 +7,7 @@ import os
 import re
 import errno
 import shutil
+from typing import List
 
 
 # error class for shell errors
@@ -24,6 +25,8 @@ except ValueError:
     return_error("Value provided for maxImages is of the wrong type. Please provide an integer for maxImages")
 
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
+# Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
+IMG_FORMATS = ['jpg', 'jpeg', 'png', 'gif']
 
 
 def mark_suspicious(suspicious_reason, entry_id):
@@ -80,7 +83,12 @@ def get_images_paths_in_path(path):
     :return: image path array
     :rtype: ``list``
     """
-    return get_files_names_in_path(path, "*.png", True)
+    res: List[str] = []
+    for img_type in IMG_FORMATS:
+        img_format = f'*.{img_type}'
+        res.extend(get_files_names_in_path(path, img_format, True))
+    return res
+
 
 
 def get_pdf_metadata(file_path):

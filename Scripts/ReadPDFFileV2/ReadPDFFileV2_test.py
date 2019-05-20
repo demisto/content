@@ -1,5 +1,6 @@
 import demistomock as demisto
 import os
+from ReadPDFFileV2 import ShellException
 
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
@@ -49,7 +50,7 @@ def test_get_metadata_without_encrypted(tmp_path):
     try:
         get_pdf_metadata(f'{CWD}/encrypted.pdf')
         raise Exception("Incorrect password exception should've been thrown")
-    except TypeError as e:
+    except ShellException as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
 
     metadata = get_pdf_metadata(f'{CWD}/text-only.pdf')
@@ -97,7 +98,7 @@ def test_get_pdf_text_without_encrypted(tmp_path):
     try:
         get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
         raise Exception("Incorrect password exception should've been thrown")
-    except TypeError as e:
+    except ShellException as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
 
     text = get_pdf_text(f'{CWD}/text-only.pdf', f'{tmp_path}/text-only.txt')
@@ -131,7 +132,7 @@ def test_get_pdf_htmls_content_without_encrypted(tmp_path):
     try:
         get_pdf_htmls_content(f'{CWD}/encrypted.pdf', tmp_path)
         raise Exception("Incorrect password exception should've been thrown")
-    except TypeError as e:
+    except ShellException as e:
         assert 'Command Line Error: Incorrect password\n' == str(e)
 
     html_text = get_pdf_htmls_content(f'{CWD}/hyperlinks.pdf', tmp_path)
