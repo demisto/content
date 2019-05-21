@@ -72,6 +72,9 @@ jobs:
           destination: artifacts
       - setup_remote_docker
       - run:
+          name: Run Unit Testing and Lint
+          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+      - run:
           name: Download Artifacts
           command: |
             if ./Tests/scripts/is_ami.sh ;
