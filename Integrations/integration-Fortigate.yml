@@ -107,6 +107,18 @@ script:
         return False
 
 
+    def create_addr_string(list_of_addr_data_dicts):
+            addr_string = ""
+            for addr_index in range(0, len(list_of_addr_data_dicts)):
+                cur_addr_data = list_of_addr_data_dicts[addr_index]
+                cur_addr_name = cur_addr_data.get("name")
+                if addr_index == len(list_of_addr_data_dicts) - 1:
+                    addr_string += "{}".format(cur_addr_name)
+                else:
+                    addr_string += "{}\n".format(cur_addr_name)
+            return addr_string
+
+
     def logout(session):
         """
         Due to limited amount of simultaneous connections we log out after each API request. Simple post request to /logout endpoint without params.
@@ -433,10 +445,10 @@ script:
 
                 src_address = policy.get('srcaddr')
                 if src_address and isinstance(src_address, list) and isinstance(src_address[0], dict):
-                    src_address = src_address[0].get('name')
+                    src_address = create_addr_string(src_address)
                 dest_address = policy.get('dstaddr')
                 if dest_address and isinstance(dest_address, list) and isinstance(dest_address[0], dict):
-                    dest_address = dest_address[0].get('name')
+                    dest_address = create_addr_string(dest_address)
                 service = policy.get('service')
                 if service and isinstance(service, list) and isinstance(service[0], dict):
                     service = service[0].get('name')
@@ -1376,5 +1388,6 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
+releaseNotes: "Fixed bug with src and dst addresses in human readable"
 tests:
   - Fortigate Test
