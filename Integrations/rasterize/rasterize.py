@@ -10,11 +10,11 @@ import base64
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
-proxy = demisto.get(demisto.params(), "proxy")
+PROXY = demisto.getParam("proxy")
 
-if proxy:
-    http_proxy = os.environ["http_proxy"]
-    https_proxy = os.environ["https_proxy"]
+if PROXY:
+    HTTP_PROXY = os.environ.get("http_proxy")
+    HTTPS_PROXY = os.environ.get("https_proxy")
 
 RETURN_CODE = 0
 ERROR_MESSAGE = ''
@@ -28,14 +28,15 @@ def rasterize_email_request(html, friendly_name):
     with open('htmlBody.html', 'w') as f:
         f.write('<html style="background:white";>' + html + '</html>')
 
-    proxy_flag = "--proxy=" + http_proxy if proxy else ""
+    proxy_flag = "--proxy=" + HTTP_PROXY if PROXY else ""
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendly_name]
     if demisto.getArg('width') and demisto.getArg('height'):
         command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        ERROR_MESSAGE = subprocess.check_output(command)
+        demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))
+
     except Exception as e:
         RETURN_CODE = -1
         ERROR_MESSAGE = str(e)
@@ -52,15 +53,15 @@ def rasterize():
     if demisto.getArg('type') == 'pdf':
         friendly_name = 'url.pdf'
     proxy_flag = ""
-    if proxy:
-        proxy_flag = "--proxy=" + (https_proxy if url.startswith("https") else http_proxy)
+    if PROXY:
+        proxy_flag = "--proxy=" + (HTTPS_PROXY if url.startswith("https") else HTTP_PROXY)
 
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', url, friendly_name]
     if demisto.getArg('width') and demisto.getArg('height'):
         command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        ERROR_MESSAGE = subprocess.check_output(command)
+        demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))
     except subprocess.CalledProcessError:
         RETURN_CODE = -1
         ERROR_MESSAGE = "Can't access the URL. It might be malicious, or unreachable for one of several reasons."
@@ -94,7 +95,7 @@ def rasterize_image():
     if demisto.getArg('width') and demisto.getArg('height'):
         command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        ERROR_MESSAGE = subprocess.check_output(command)
+        demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))
     except Exception as e:
         RETURN_CODE = -1
         ERROR_MESSAGE = str(e)
@@ -115,6 +116,8 @@ def rasterize_image():
 
 
 def rasterize_email_command():
+    global RETURN_CODE, ERROR_MESSAGE
+
     html = demisto.getArg('htmlBody')
     friendly_name = 'email.png'
     if demisto.getArg('type') == 'pdf':
@@ -134,26 +137,24 @@ def rasterize_email_command():
         )
 
 
-if demisto.command() == 'test-module':
-    rasterize_email_request('test text', 'email.png')
-    if RETURN_CODE == 0:
-        demisto.results('ok')
+try:
+    if demisto.command() == 'test-module':
+        rasterize_email_request('test text', 'email.png')
+        if RETURN_CODE == 0:
+            demisto.results('ok')
+        else:
+            demisto.results(ERROR_MESSAGE)
+
+    elif demisto.command() == 'rasterize-image':
+        rasterize_image()
+
+    elif demisto.command() == 'rasterize-email':
+        rasterize_email_command()
+
+    elif demisto.command() == 'rasterize':
+        rasterize()
     else:
-        demisto.results(ERROR_MESSAGE)
+        return_error('Unrecognized command')
 
-elif demisto.command() == 'rasterize-image':
-    rasterize_image()
-
-elif demisto.command() == 'rasterize-email':
-    rasterize_email_command()
-
-elif demisto.command() == 'rasterize':
-    rasterize()
-else:
-    demisto.results(
-        {
-            'ContentsFormat': 'text',
-            'Type': ENTRY_TYPE,
-            'Contents': 'Unrecognized command'
-        }
-    )
+except Exception as ex:
+    return_error(str(ex))
