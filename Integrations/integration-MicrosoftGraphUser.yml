@@ -1,0 +1,571 @@
+detaileddescription: |
+    To allow us access to the security graph, an admin has to authorize Demisto app using an admin consent flow. For more informatoin, see the [Microsoft Graph documentation](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fms&client_id=d96bc816-4e4c-4d71-8aef-299d312db20d).
+    After Demisto app is authorized, you will get a tenant ID, which should be inserted in the integration instance settings.
+image: data:image/png;base64,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
+commonfields:
+  id: Microsoft Graph User
+  version: -1
+name: Microsoft Graph User
+display: Microsoft Graph User
+category: Analytics & SIEM
+description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
+configuration:
+  - display: Host URL (e.g., https://graph.microsoft.com)
+    name: host
+    defaultvalue: https://graph.microsoft.com
+    type: 0
+    required: true
+  - display: Tenant ID (as received from the admin consent - see detailed instructions (?))
+    name: tenant
+    defaultvalue: ""
+    type: 0
+    required: true
+  - display: Token ID (as received from the admin consent - see detailed instructions (?))
+    name: token
+    defaultvalue: ""
+    type: 0
+    required: true
+  - display: Trust any certificate (unsecure)
+    name: unsecure
+    defaultvalue: "false"
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    defaultvalue: "false"
+    type: 8
+    required: false
+script:
+  script: |-
+
+
+
+
+    '''IMPORTS'''
+    import requests
+    from datetime import datetime
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
+    TENANT = demisto.getParam('tenant')
+    TOKEN = demisto.getParam('token')
+    HEADERS = {"Authorization": TOKEN, "Accept": "application/json"}
+    USE_SSL = not demisto.params().get('unsecure', False)
+
+    ''' CONSTANTS '''
+    # DEMISTOBOT = "https://demistobot.demisto.com/msg-user" todo: update when ready
+    DEMISTOBOT = 'https://ec2-18-197-54-7.eu-central-1.compute.amazonaws.com/msg-user-token/'
+    PRODUCT = "MicrosoftGraphUser"
+    BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
+    UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
+    NO_OUTPUTS = {}
+
+
+    def camel_case_to_readable(text):
+        """
+        'camelCase' -> 'Camel Case'
+        """
+        if text == 'id':
+            return 'ID'
+        return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
+
+
+    def parse_outputs(users_data):
+        """
+        Parse user data as received from Microsoft Graph API into Demisto's conventions
+        """
+        if isinstance(users_data, list):
+            users_readable, users_outputs = [], []
+            for user_data in users_data:
+                user_readable = {camel_case_to_readable(k): v for k, v in user_data.items() if k != '@removed'}
+                if '@removed' in user_data:
+                    user_readable['Status'] = 'deleted'
+                users_readable.append(user_readable)
+                users_outputs.append({k.replace(' ', ''): v for k, v in user_readable.copy().items()})
+
+            return users_readable, users_outputs
+
+        else:
+            user_readable = {camel_case_to_readable(k): v for k, v in users_data.items() if k != '@removed'}
+            if '@removed' in users_data:
+                user_readable['Status'] = 'deleted'
+            user_outputs = {k.replace(' ', ''): v for k, v in user_readable.copy().items()}
+
+            return user_readable, user_outputs
+
+
+    def epoch_seconds():
+        """
+        Return the number of seconds for return current date.
+        """
+        return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+    def get_token(refresh_token=False):
+        """
+        Check if we have a valid token and if not get one
+        """
+        ctx = demisto.getIntegrationContext()
+        if {'token', 'stored', 'expires'} <= set(ctx) and not refresh_token:
+            if epoch_seconds() - ctx.get('stored') < ctx.get('expires'):
+                return ctx.get('token')
+        response = requests.get(
+            DEMISTOBOT,
+            headers=HEADERS,
+            params={"tenant": TENANT, "product": PRODUCT},
+            verify=USE_SSL,
+        )
+        data = response.json()
+        if not response.ok:
+            return_error(f'API call to MS Graph failed [{data.get("status")} {data.get("title")}] - {data.get("detail")}))')
+
+        demisto.setIntegrationContext({
+            'token': data.get('token'),
+            'stored': epoch_seconds(),
+            'expires': data.get('expires', 3600) - 30
+        })
+        return data.get('token')
+
+
+    def http_request(method, url_suffix, params=None, body=None, do_not_refresh_token=False):
+        """
+        Generic request to Microsoft Graph
+        """
+        token = get_token()
+        response = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            headers={
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            params=params,
+            data=body
+        )
+        try:
+            data = response.json() if response.text else {}
+            if not response.ok:
+                if demisto.get(data, "error.message") == 'InvalidAuthenticationToken' and not do_not_refresh_token:
+                    get_token(refresh_token=True)  # try refreshing the token only once (avoid endless loop)
+                    return http_request(method, url_suffix, params, body, do_not_refresh_token=True)
+                return_error(f'API call to MS Graph failed [{response.status_code}] - {demisto.get(data, "error.message")}')
+            elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
+                demisto.debug(str(response.headers))
+
+            return data
+
+        except TypeError as ex:
+            demisto.debug(str(ex))
+            return_error(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
+
+
+    def test_function():
+        token = get_token()
+        response = requests.get(
+            BASE_URL + 'users',
+            headers={
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            params={'$select': 'displayName'},
+        )
+        try:
+            data = response.json() if response.text else {}
+            if not response.ok:
+                return_error(f'API call to MS Graph failed. Please check authentication related parameters.'
+                             f' [{response.status_code}] - {demisto.get(data, "error.message")}')
+
+            demisto.results('ok')
+
+        except TypeError as ex:
+            demisto.debug(str(ex))
+            return_error(f'API call to MS Graph failed, could not parse result. '
+                         f'Please check authentication related parameters. [{response.status_code}]')
+
+
+    def terminate_user_session_command():
+        user = demisto.getArg('user')
+        terminate_user_session(user)
+
+        return_outputs(readable_output=f'user: "{user}" session has been terminated successfully', outputs=NO_OUTPUTS)
+
+
+    def terminate_user_session(user):
+        http_request('PATCH', f'users/{user}', body=BLOCK_ACCOUNT_JSON)
+
+
+    def unblock_user_command():
+        user = demisto.getArg('user')
+        unblock_user(user)
+
+        return_outputs(
+            readable_output=f'"{user}" unblocked. It might take several minutes for the changes to take affect across '
+            'all applications.',
+            outputs=NO_OUTPUTS
+        )
+
+
+    def unblock_user(user):
+        http_request('PATCH', f'users/{user}', body=UNBLOCK_ACCOUNT_JSON)
+
+
+    def delete_user_command():
+        user = demisto.getArg('user')
+        delete_user(user)
+
+        return_outputs(readable_output=f'user: "{user}" was deleted successfully', outputs=NO_OUTPUTS)
+
+
+    def delete_user(user):
+        http_request('DELETE ', f'users/{user}')
+
+
+    def create_user_command():
+        required_properties = {
+            'accountEnabled': demisto.getArg('account_enabled'),
+            'displayName': demisto.getArg('display_name'),
+            'onPremisesImmutableId': demisto.getArg('on_premises_immutable_id'),
+            'mailNickname': demisto.getArg('mail_nickname'),
+            'passwordProfile': {
+                "forceChangePasswordNextSignIn": 'true',
+                "password": demisto.getArg('password')
+            },
+            'userPrincipalName': demisto.getArg('user_principal_name')
+        }
+        other_properties = {}
+        for key_value in demisto.getArg('other_properties').split(','):
+            key, value = key_value.split('=', 2)
+            other_properties[key] = value
+
+        # create the user
+        required_properties.update(other_properties)
+        create_user(required_properties)
+
+        # display the new user and it's properties
+        user = required_properties.get('userPrincipalName')
+        user_data = get_user(user, '*')
+        user_readable, user_outputs = parse_outputs(user_data)
+        human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
+        outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=user_data)
+
+
+    def create_user(properties):
+        http_request('POST', 'users', body=json.dumps(properties))
+
+
+    def update_user_command():
+        user = demisto.getArg('user')
+        updated_fields = demisto.getArg('updated_fields')
+
+        update_user(user, updated_fields)
+        get_user_command()
+
+
+    def update_user(user, updated_fields):
+        body = {}
+        for key_value in updated_fields.split(','):
+            field, value = key_value.split('=', 2)
+            body[field] = value
+        http_request('PATCH', f'users/{user}', body=json.dumps(body))
+
+
+    def get_delta_command():
+        properties = demisto.getArg('properties') + ',userPrincipalName'
+        users_data = get_delta(properties)
+        headers = list(set([camel_case_to_readable(p) for p in argToList(properties)] + ['ID', 'User Principal Name']))
+
+        users_readable, users_outputs = parse_outputs(users_data)
+        hr = tableToMarkdown(name='All Graph Users', headers=headers, t=users_readable, removeNull=True)
+        outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
+        return_outputs(readable_output=hr, outputs=outputs, raw_response=users_data)
+
+
+    def get_delta(properties):
+        users = http_request('GET', 'users/delta', params={'$select': properties}).get('value')
+        return users
+
+
+    def get_user_command():
+        user = demisto.getArg('user')
+        properties = demisto.args().get('properties', '*')
+        user_data = get_user(user, properties)
+
+        user_readable, user_outputs = parse_outputs(user_data)
+        human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
+        outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=user_data)
+
+
+    def get_user(user, properties):
+        user_data = http_request('GET ', f'users/{user}', params={'$select': properties})
+        user_data.pop('@odata.context', None)
+
+        return user_data
+
+
+    def list_users_command():
+        properties = demisto.args().get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
+        users_data = list_users(properties)
+
+        users_readable, users_outputs = parse_outputs(users_data)
+        human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True)
+        outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=users_data)
+
+
+    def list_users(properties):
+        users = http_request('GET', 'users', params={'$select': properties}).get('value')
+        return users
+
+
+    try:
+        handle_proxy()
+
+        # COMMANDS
+        if demisto.command() == 'test-module':
+            test_function()
+
+        elif demisto.command() == 'msgraph-user-terminate-session':
+            terminate_user_session_command()
+
+        elif demisto.command() == 'msgraph-user-unblock':
+            unblock_user_command()
+
+        elif demisto.command() == 'msgraph-user-update':
+            update_user_command()
+
+        elif demisto.command() == 'msgraph-user-delete':
+            delete_user_command()
+
+        elif demisto.command() == 'msgraph-user-create':
+            create_user_command()
+
+        elif demisto.command() == 'msgraph-user-get-delta':
+            get_delta_command()
+
+        elif demisto.command() == 'msgraph-user-get':
+            get_user_command()
+
+        elif demisto.command() == 'msgraph-user-list':
+            list_users_command()
+
+
+    except Exception as ex:
+        return_error(str(ex))
+        raise
+    
+  type: python
+  commands:
+    - name: msgraph-user-terminate-session
+      arguments:
+      - name: user
+        required: true
+        description: User ID or userPrincipalName
+      description: Terminates a user's session from all Office 365 applications, and prevents sign in.
+
+    - name: msgraph-user-unblock
+      arguments:
+      - name: user
+        required: true
+        description: User ID or userPrincipalName
+      description: Unblock a user.
+
+    - name: msgraph-user-update
+      arguments:
+      - name: user
+        required: true
+        description: User ID or userPrincipalName to update properties for.
+      - name: updated_fields
+        required: true
+        description: User fields to update (in JSON format).
+      outputs:
+      - contextPath: MSGraphUser.ID
+        description: User's ID.
+      - contextPath: MSGraphUser.DisplayName
+        description: User's display name.
+      - contextPath: MSGraphUser.GivenName
+        description: User's given name.
+      - contextPath: MSGraphUser.BusinessPhones
+        description: User's business phone numbers.
+      - contextPath: MSGraphUser.JobTitle
+        description: User's job title.
+      - contextPath: MSGraphUser.Mail
+        description: User's mail address.
+      - contextPath: MSGraphUser.MobilePhone
+        description: User's mobile phone number.
+      - contextPath: MSGraphUser.OfficeLocation
+        description: User's office location.
+      - contextPath: MSGraphUser.PreferredLanguage
+        description: User's preferred language.
+      - contextPath: MSGraphUser.Surname
+        description: User's surname.
+      - contextPath: MSGraphUser.UserPrincipalName
+        description: User's principal name.
+      description: Updates the properties of a user object.
+
+    - name: msgraph-user-delete
+      arguments:
+      - name: user
+        required: true
+        description: User ID or userPrincipalName to delete.
+      outputs:
+      description: Deletes an exsiting user.
+      execution: true
+
+    - name: msgraph-user-create
+      arguments:
+      - name: account_enabled
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        required: false
+        description: true if the account is enabled; otherwise, false.
+      - name: display_name
+        required: true
+        description: The name to display in the address book.
+      - name: on_premises_immutable_id
+        required: false
+        description: Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property.
+      - name: mail_nickname
+        required: true
+        description: The mail alias for the user.
+      - name: password
+        required: true
+        description: The password profile for the user.
+      - name: user_principal_name
+        required: true
+        description: ' The user principal name, for example: someuser@contoso.com. '
+      - name: other_properties
+        required: false
+        description: ' Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num" '
+      outputs:
+      - contextPath: MSGraphUser.ID
+        description: User's ID.
+      - contextPath: MSGraphUser.DisplayName
+        description: User's display name.
+      - contextPath: MSGraphUser.GivenName
+        description: User's given name.
+      - contextPath: MSGraphUser.BusinessPhones
+        description: User's business phone numbers.
+      - contextPath: MSGraphUser.JobTitle
+        description: User's job title.
+      - contextPath: MSGraphUser.Mail
+        description: User's mail address.
+      - contextPath: MSGraphUser.MobilePhone
+        description: User's mobile phone number.
+      - contextPath: MSGraphUser.OfficeLocation
+        description: User's office location.
+      - contextPath: MSGraphUser.PreferredLanguage
+        description: User's preferred language.
+      - contextPath: MSGraphUser.Surname
+        description: User's surname.
+      - contextPath: MSGraphUser.UserPrincipalName
+        description: User's principal name.
+      description: Creates a new user.
+
+    - name: msgraph-user-get-delta
+      arguments:
+      - name: properties
+        required: false
+        description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
+      outputs:
+      - contextPath: MSGraphUser.ID
+        description: User's ID.
+      - contextPath: MSGraphUser.DisplayName
+        description: User's display name.
+      - contextPath: MSGraphUser.GivenName
+        description: User's given name.
+      - contextPath: MSGraphUser.BusinessPhones
+        description: User's business phone numbers.
+      - contextPath: MSGraphUser.JobTitle
+        description: User's job title.
+      - contextPath: MSGraphUser.Mail
+        description: User's mail address.
+      - contextPath: MSGraphUser.MobilePhone
+        description: User's mobile phone.
+      - contextPath: MSGraphUser.OfficeLocation
+        description: User's office location.
+      - contextPath: MSGraphUser.PreferredLanguage
+        description: User's preferred language.
+      - contextPath: MSGraphUser.Surname
+        description: User's surname.
+      - contextPath: MSGraphUser.UserPrincipalName
+        description: User's principal name.
+      description: Gets newly created, updated, or deleted users without performing a full read of the entire user collection.
+
+    - name: msgraph-user-get
+      arguments:
+      - name: user
+        required: true
+        description: User ID or userPrincipalName
+      - name: properties
+        required: false
+        description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
+      outputs:
+      - contextPath: MSGraphUser.ID
+        description: User's ID.
+      - contextPath: MSGraphUser.DisplayName
+        description: User's display name.
+      - contextPath: MSGraphUser.GivenName
+        description: User's given name.
+      - contextPath: MSGraphUser.BusinessPhones
+        description: User's business phone numbers.
+      - contextPath: MSGraphUser.JobTitle
+        description: User's job title.
+      - contextPath: MSGraphUser.Mail
+        description: User's mail address.
+      - contextPath: MSGraphUser.MobilePhone
+        description: User's mobile phone number.
+      - contextPath: MSGraphUser.OfficeLocation
+        description: User's office location.
+      - contextPath: MSGraphUser.PreferredLanguage
+        description: User's preferred language.
+      - contextPath: MSGraphUser.Surname
+        description: User's surname.
+      - contextPath: MSGraphUser.UserPrincipalName
+        description: User's principal name.
+      description: "Retrieves the properties and relationships of user object. for more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)"
+
+    - name: msgraph-user-list
+      arguments:
+        - name: properties
+          required: false
+          description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
+      outputs:
+      - contextPath: MSGraphUser.ID
+        description: User's ID.
+      - contextPath: MSGraphUser.DisplayName
+        description: User's display name.
+      - contextPath: MSGraphUser.GivenName
+        description: User's given name.
+      - contextPath: MSGraphUser.BusinessPhones
+        description: User's business phone numbers.
+      - contextPath: MSGraphUser.JobTitle
+        description: User's job title.
+      - contextPath: MSGraphUser.Mail
+        description: User's mail address.
+      - contextPath: MSGraphUser.MobilePhone
+        description: User's mobile phone number.
+      - contextPath: MSGraphUser.OfficeLocation
+        description: User's office location.
+      - contextPath: MSGraphUser.PreferredLanguage
+        description: User's preferred language.
+      - contextPath: MSGraphUser.Surname
+        description: User's surname.
+      - contextPath: MSGraphUser.UserPrincipalName
+        description: User's principal name.
+      description: Retrieves a list of user objects.
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: false
+  runonce: false
+releaseNotes: "new integration"
+tests:
+  - Microsoft Graph - Test
