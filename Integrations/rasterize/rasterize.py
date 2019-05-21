@@ -19,7 +19,7 @@ if PROXY:
 RETURN_CODE = 0
 ERROR_MESSAGE = ''
 
-ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', True) else 11  # 11 == entryTypes['warning']
+ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', True) else 11  # 11 := entryTypes['warning']
 
 
 def rasterize_email_request(html, friendly_name):

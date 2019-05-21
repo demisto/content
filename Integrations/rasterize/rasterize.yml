@@ -107,4 +107,4 @@ script:
 defaultEnabled: true
 releaseNotes: "added Param to throw warning instead of error"
 tests:
-  - no test
+  - name: Rasterize Test
