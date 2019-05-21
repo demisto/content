@@ -64,4 +64,5 @@ dependson:
   - send-mail
 timeout: 0s
 deprecated: true
-releaseNotes: "Deprecated this automation, please use the command send-mail instead."
+tests:
+  - No test
