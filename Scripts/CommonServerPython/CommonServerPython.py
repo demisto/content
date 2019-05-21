@@ -65,6 +65,23 @@ dbotscores = {
 }
 
 
+###### Fix fetching credentials from vault instances ######
+# ====================================================================================
+try:
+    for k, v in demisto.params().items():
+        if isinstance(v, dict):
+            if 'credentials' in v:
+                vault = v['credentials'].get('vaultInstanceId')
+                if vault:
+                    v['identifier'] = v['credentials'].get('user')
+                break
+
+except Exception:
+    pass
+
+# ====================================================================================
+
+
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
     """
         Handle logic for routing traffic through the system proxy.
