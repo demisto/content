@@ -47,6 +47,7 @@ def mark_suspicious(suspicious_reason, entry_id):
 
 
 def return_error_without_exit(message):
+    """Same as return_error, without the sys.exit"""
     LOG(message)
     LOG.print_log()
     demisto.results({
@@ -57,6 +58,7 @@ def return_error_without_exit(message):
 
 
 def run_shell_command(command, *args):
+    """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     o, e = proc.communicate()
@@ -66,6 +68,7 @@ def run_shell_command(command, *args):
 
 
 def get_files_names_in_path(path, name_of_file, full_path=False):
+    """Returns a list[str] of file names in path, will return full path if given full_path=True"""
     os.chdir(ROOT_PATH)
     os.chdir(path)
     res = []
@@ -77,12 +80,7 @@ def get_files_names_in_path(path, name_of_file, full_path=False):
 
 
 def get_images_paths_in_path(path):
-    """
-    Gets images paths from path
-    :param path: path to look files in
-    :return: image path array
-    :rtype: ``list``
-    """
+    """Gets images paths from path"""
     res: List[str] = []
     for img_type in IMG_FORMATS:
         img_format = f'*.{img_type}'
@@ -145,6 +143,7 @@ def get_pdf_htmls_content(pdf_path, output_folder):
 
 
 def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
+    """Builds an entry object for the main script flow"""
     # Add Text to file entity
     pdf_file["Text"] = text
 
