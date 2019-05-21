@@ -596,6 +596,7 @@ def fetch_incidents():
     last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
                                  else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
     max_time: datetime = last_fetch_time
+    offset = int(last_offset)
     results: list = feed.get('data', []) if feed else []
 
     if results:
@@ -619,9 +620,10 @@ def fetch_incidents():
                 max_time = incident_time
             count += 1
 
-        demisto.incidents(incidents)
-        offset = int(last_offset) + count
-        demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
+        offset += count
+
+    demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
+    demisto.incidents(incidents)
 
 
 ''' MAIN'''

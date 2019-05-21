@@ -131,32 +131,15 @@ script:
     - contextPath: PhishLabs.Case.Title
       description: Case title
       type: String
-    - contextPath: PhishLabs.Case.Severity
-      description: Case severity
-      type: String
+    - contextPath: PhishLabs.Case.CreatedAt
+      description: Case created at
+      type: Date
   - arguments:
     - default: true
       description: Case ID, run phishlabs-list-cases to get it.
       isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Case number
-      isArray: false
-      name: number
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Whether to get the case attachments
-      isArray: false
-      name: get_attachements
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Gets a PhishLabs case
@@ -181,17 +164,14 @@ script:
     - contextPath: PhishLabs.Case.Title
       description: Case title
       type: String
-    - contextPath: PhishLabs.Case.Severity
-      description: Case severity
-      type: String
     - contextPath: PhishLabs.Case.Description
       description: Case description
       type: String
-    - contextPath: PhishLabs.Case.DateCreated
-      description: Case creation date
+    - contextPath: PhishLabs.Case.CreatedAt
+      description: Case created by
       type: Date
-    - contextPath: PhishLabs.Case.DateClosed
-      description: Case close date
+    - contextPath: PhishLabs.Case.ClosedAt
+      description: Case closed at
       type: Date
     - contextPath: PhishLabs.Case.Brand
       description: Case brand
@@ -199,48 +179,9 @@ script:
     - contextPath: PhishLabs.Case.ResolutionStatus
       description: Case resolution status
       type: String
-    - contextPath: PhishLabs.Case.Resolution
-      description: Case resolution
-      type: String
-    - contextPath: PhishLabs.Case.Note.Data
-      description: Case note data
-      type: String
-    - contextPath: PhishLabs.Case.Note.DateCreated
-      description: Case note creation date
+    - contextPath: PhishLabs.Case.ModifiedAt
+      description: Case modified at
       type: Date
-    - contextPath: PhishLabs.Case.Note.DateModified
-      description: Case note modification date
-      type: Date
-    - contextPath: PhishLabs.Case.Note.Author
-      description: Case note author
-      type: String
-    - contextPath: File.Size
-      description: Case attachment Size
-      type: number
-    - contextPath: File.SHA1
-      description: SHA1 hash of the case attachment
-      type: string
-    - contextPath: File.SHA256
-      description: SHA256 hash of the case attachment
-      type: string
-    - contextPath: File.Name
-      description: The case attachment name
-      type: string
-    - contextPath: File.SSDeep
-      description: SSDeep hash of the case attachment
-      type: string
-    - contextPath: File.EntryID
-      description: War-Room Entry ID of the case attachment
-      type: string
-    - contextPath: File.Info
-      description: Basic information of the case attachment
-      type: string
-    - contextPath: File.Type
-      description: File type e.g. "PE"
-      type: string
-    - contextPath: File.MD5
-      description: MD5 hash of the case attachment
-      type: string
   - arguments:
     - default: false
       defaultValue: '10'
@@ -254,7 +195,7 @@ script:
     execution: false
     name: phishlabs-list-brands
     outputs:
-    - contextPath: PhishLabs.Case.Brand
+    - contextPath: PhishLabs.Brand
       description: Case brand name
       type: String
   - arguments:
@@ -270,7 +211,7 @@ script:
     execution: false
     name: phishlabs-list-case-types
     outputs:
-    - contextPath: PhishLabs.Case.Type
+    - contextPath: PhishLabs.CaseType
       description: Case type name
       type: String
   - arguments:
