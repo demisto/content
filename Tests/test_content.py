@@ -599,7 +599,8 @@ def main():
             instance_ips = instance_file.readlines()
             instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
 
-        execute_testing(SERVER_URL.format(instance_ip), instance_ip, server_version, server_numeric_version)
+        execute_testing(SERVER_URL.format(instance_ip), instance_ip, server_version, server_numeric_version,
+                        is_ami=False)
 
 
 if __name__ == '__main__':
