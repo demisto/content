@@ -28,14 +28,14 @@ def rasterize_email_request(html, friendly_name):
     with open('htmlBody.html', 'w') as f:
         f.write('<html style="background:white";>' + html + '</html>')
 
-    proxy_flag = "--proxy=" + HTTP_PROXY if PROXY else ""
-    demisto.debug('rasterize proxy settings: ' + proxy_flag)
+    proxy_flag = "--proxy={}".format(HTTP_PROXY) if PROXY else ""
+    demisto.debug('rasterize proxy settings: {}'.format(proxy_flag))
 
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendly_name]
     if demisto.getArg('width') and demisto.getArg('height'):
         command.append(demisto.getArg('width') + '*' + demisto.getArg('height'))
     try:
-        demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))
+        demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))  # type: ignore
 
     except Exception as e:
         RETURN_CODE = -1
@@ -54,7 +54,7 @@ def rasterize():
         friendly_name = 'url.pdf'
     proxy_flag = ""
     if PROXY:
-        proxy_flag = "--proxy=" + (HTTPS_PROXY if url.startswith("https") else HTTP_PROXY)
+        proxy_flag = "--proxy={}".format(HTTPS_PROXY if url.startswith("https") else HTTP_PROXY)  # type: ignore
 
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
     command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', url, friendly_name]
