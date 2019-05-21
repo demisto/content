@@ -60,11 +60,10 @@ def return_error_without_exit(message):
 def run_shell_command(command, *args):
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    o, e = proc.communicate()
-    if e:
-        raise ShellException(e.decode('utf8'))
-    return o.decode('utf8')
+    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if completed_process.stderr:
+        raise ShellException(completed_process.stderr)
+    return completed_process.stdout
 
 
 def get_files_names_in_path(path, name_of_file, full_path=False):
