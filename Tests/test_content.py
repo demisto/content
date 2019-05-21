@@ -446,12 +446,11 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
              build_number, server, build_name)
 
 
-def restart_demisto_service(ami, server_ip, username, password):
+def restart_demisto_service(ami, c):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
         sleep(SERVICE_RESTART_POLLING_INTERVAL)
         exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        c = demisto.DemistoClient(None, "https://{}".format(server_ip), username, password)
         res = c.Login()
         if exit_code == 0 and res.status_code == 200:
             return
@@ -530,7 +529,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version):
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto('')
         print("Restarting demisto service")
-        restart_demisto_service(ami, server_ip, username, password)
+        restart_demisto_service(ami, c)
         print("Demisto service restarted\n")
 
     for t in mockless_tests:
