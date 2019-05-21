@@ -1398,6 +1398,6 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
-releaseNotes: "Fixed bug with src and dst addresses in human readable"
+releaseNotes: "Fixed bug with src and dst addresses in human readable. Fixed policy creation - now supports multiple sources / destinations."
 tests:
   - Fortigate Test
