@@ -481,6 +481,7 @@ script:
       name: sample_id
       required: true
       secret: false
+      description: ID of sample
     deprecated: true
     description: similiar to vmray-get-sample
     execution: false
