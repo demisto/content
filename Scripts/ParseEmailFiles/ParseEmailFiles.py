@@ -3388,7 +3388,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
-                            attachment_file_name = part.get_payload()[0].get('Subject')
+                            attachment_file_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
                             attachment_file_name = convert_to_unicode(attachment_file_name)
 
                         file_content = part.get_payload()[0].as_string()
@@ -3412,15 +3412,13 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             os.remove(f.name)
 
                 else:
-                    # .msg and other files (png, jpeg)
-                    if part.is_multipart() and part.get_content_type() == 'message/delivery-status' and \
-                            max_depth - 1 > 0:
+                    if part.is_multipart() and part.get_content_type() == 'message/delivery-status' \
+                            and max_depth - 1 > 0:
                         # email is DSN
                         msg = part.get_payload(0).get_payload()  # human-readable section
                         msg_info = base64.b64decode(msg).decode('utf-8')
 
                         attached_emails.append(msg_info)
-                        demisto.results(msg_info)
                         demisto.results(fileResult(attachment_file_name, msg_info))
 
                     elif attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
@@ -3439,6 +3437,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                 outputs=None)
                         finally:
                             os.remove(f.name)
+                    else:
+                        file_content = part.get_payload(decode=True)
+                        demisto.results(fileResult(attachment_file_name, file_content))
 
                 attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
