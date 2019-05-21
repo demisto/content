@@ -3420,8 +3420,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                         attached_emails.append(msg_info)
                         demisto.results(fileResult(attachment_file_name, msg_info))
+                    else:
+                        file_content = part.get_payload(decode=True)
+                        demisto.results(fileResult(attachment_file_name, file_content))
 
-                    elif attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
+                    if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
                         try:
                             f.write(file_content)
@@ -3437,9 +3440,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                 outputs=None)
                         finally:
                             os.remove(f.name)
-                    else:
-                        file_content = part.get_payload(decode=True)
-                        demisto.results(fileResult(attachment_file_name, file_content))
 
                 attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
