@@ -45,3 +45,5 @@ dependson:
 timeout: 0s
 deprecated: true
 releaseNotes: Script deprecated
+tests:
+- No tests
