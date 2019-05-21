@@ -155,12 +155,14 @@ def run_flake8(project_dir, py_num):
     print("========= Running flake8 ===============")
     python_exe = 'python2' if py_num < 3 else 'python3'
     print_v('Using: {} to run flake8'.format(python_exe))
+    sys.stdout.flush()
     subprocess.check_call([python_exe, '-m', 'flake8', project_dir], cwd=CONTENT_DIR)
     print("flake8 completed")
 
 
 def run_mypy(project_dir, py_num):
     print("========= Running mypy ===============")
+    sys.stdout.flush()
     subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), get_lint_files(project_dir)], cwd=project_dir)
     print("mypy completed")
 
@@ -226,6 +228,9 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     except subprocess.CalledProcessError as ex:
         sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
         return 2
+    finally:
+        sys.stdout.flush()
+        sys.stderr.flush()
     return 0
 
 
