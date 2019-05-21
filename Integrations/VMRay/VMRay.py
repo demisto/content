@@ -73,7 +73,7 @@ def check_sample_id():
     """
     if isinstance(SAMPLE_ID, int):
         return True
-    if isinstance(SAMPLE_ID, (str, basestring, unicode)) and not SAMPLE_ID.isdigit():
+    if isinstance(SAMPLE_ID, (str, unicode)) and not SAMPLE_ID.isdigit():
         return_error(ERROR_FORMAT.format(404, 'No such element'))
     return True
 
@@ -276,7 +276,7 @@ def build_upload_params():
     params['reanalyze'] = reanalyze == 'true'
 
     if max_jobs:
-        if isinstance(max_jobs, (str, basestring, unicode)) and max_jobs.isdigit() or isinstance(max_jobs, int):
+        if isinstance(max_jobs, (str, unicode)) and max_jobs.isdigit() or isinstance(max_jobs, int):
             params['max_jobs'] = int(max_jobs)
         else:
             return_error('max_jobs arguments isn\'t a number')
