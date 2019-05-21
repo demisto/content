@@ -540,7 +540,7 @@ def get_job(job_id, sample_id):
     """
     suffix = (
         'job/{}'.format(job_id)
-        if isinstance(job_id, str)
+        if job_id
         else 'job/sample/{}'.format(sample_id)
     )
     response = http_request('GET', suffix, ignore_errors=True)
@@ -548,7 +548,8 @@ def get_job(job_id, sample_id):
 
 
 def get_job_command():
-    check_sample_id()
+    if SAMPLE_ID:
+        check_sample_id()
     job_id = demisto.args().get('job_id')
 
     vmray_id = job_id if job_id else SAMPLE_ID
@@ -869,5 +870,3 @@ except Exception as exc:
 
     # TODO get sample vs analysis
     # TODO Let alex pass through outputs get-job-by-sample not exists
-    # TODO submission files with no ascii
-    # TODO check non-ascii file
