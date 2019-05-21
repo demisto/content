@@ -39,7 +39,7 @@ configuration:
   required: false
   type: 0
 description: Search and monitor alarms and events from AlienVault USM Anywhere.
-display: AlienVault-USM
+display: AlienVault-USM Anywhere
 name: AlienVault-USM
 script:
   commands:
@@ -126,9 +126,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get alerts from service.
+    description: Get alarms from service.
     execution: false
-    name: alienvault-search-alerts
+    name: alienvault-search-alarms
     outputs:
     - contextPath: AlienVault.Alarm.ID
       description: Alarm ID.
@@ -186,13 +186,13 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Alarm ID. can be retreive by running `alienvault-search-alerts`
+      description: Alarm ID. Can be obtained by running `alienvault-search-alarms`
       isArray: false
-      name: id
+      name: alarm_id
       required: true
       secret: false
     deprecated: false
-    description: Get an alarm's details using ID
+    description: Get an alarm's details using ID.
     execution: false
     name: alienvault-get-alarm
     outputs:
@@ -252,6 +252,13 @@ script:
       type: String
   - arguments:
     - default: false
+      defaultValue: '100'
+      description: limit number of returned alarms
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: The account name.
       isArray: false
       name: account_name
@@ -275,14 +282,14 @@ script:
       isArray: false
       name: time_frame
       predefined:
-        - Today
-        - Yesterday
-        - Last 7 Days
-        - Last Hour
-        - Last 24 Hours
-        - Last 48 Hours
-        - Last 30 Days
-        - Custom
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
       required: false
       secret: false
     - default: false
@@ -302,7 +309,98 @@ script:
     deprecated: false
     description: Search events.
     execution: false
-    name: alienvault-get-events
+    name: alienvault-search-events
+    outputs:
+    - contextPath: AlienVault.Event.Category
+      description: Category.
+      type: String
+    - contextPath: AlienVault.Event.Source.IPAddress
+      description: Source IPAddress.
+      type: String
+    - contextPath: AlienVault.Event.Source.Port
+      description: Source Port.
+      type: Number
+    - contextPath: AlienVault.Event.Destination.IPAddress
+      description: Destination IPAddress.
+      type: String
+    - contextPath: AlienVault.Event.Destination.Port
+      description: Destination Port.
+      type: Number
+    - contextPath: AlienVault.Event.Severity
+      description: Severity.
+      type: String
+    - contextPath: AlienVault.Event.OccurredTime
+      description: Occurred Time.
+      type: String
+    - contextPath: AlienVault.Event.ReceivedTime
+      description: Received Time.
+      type: String
+    - contextPath: AlienVault.Event.AccessControlOutcome
+      description: Access Control Outcome.
+      type: String
+    - contextPath: AlienVault.Event.Suppressed
+      description: Is Event Suppressed.
+      type: Bool
+    - contextPath: AlienVault.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: AlienVault.Event.Name
+      description: Event Name.
+      type: String
+    - contextPath: AlienVault.Event.Subcategory
+      description: Subcategory.
+      type: String
+  - arguments:
+    - default: true
+      description: Alarm ID to get events for. Can be obtained using `alienvault-search-alarms`.
+      isArray: false
+      name: alarm_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get events associated with an alarm.
+    execution: false
+    name: alienvault-get-events-by-alarm
+    outputs:
+    - contextPath: AlienVault.Event.Category
+      description: Category.
+      type: String
+    - contextPath: AlienVault.Event.Source.IPAddress
+      description: Source IPAddress.
+      type: String
+    - contextPath: AlienVault.Event.Source.Port
+      description: Source Port.
+      type: Number
+    - contextPath: AlienVault.Event.Destination.IPAddress
+      description: Destination IPAddress.
+      type: String
+    - contextPath: AlienVault.Event.Destination.Port
+      description: Destination Port.
+      type: Number
+    - contextPath: AlienVault.Event.Severity
+      description: Severity.
+      type: String
+    - contextPath: AlienVault.Event.OccurredTime
+      description: Occurred Time.
+      type: String
+    - contextPath: AlienVault.Event.ReceivedTime
+      description: Received Time.
+      type: String
+    - contextPath: AlienVault.Event.AccessControlOutcome
+      description: Access Control Outcome.
+      type: String
+    - contextPath: AlienVault.Event.Suppressed
+      description: Is Event Suppressed.
+      type: Bool
+    - contextPath: AlienVault.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: AlienVault.Event.Name
+      description: Event Name.
+      type: String
+    - contextPath: AlienVault.Event.Subcategory
+      description: Subcategory.
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false

@@ -57,6 +57,7 @@ def http_request(method, url_suffix, params=None, headers=None, data=None, **kwa
 
     return res.json()
 
+
 @logger
 def get_token():
     basic_auth_credentials = (CLIENT_ID, CLIENT_SECRET)
@@ -69,6 +70,7 @@ def get_token():
     return res['access_token']
 
 
+@logger
 def get_time_range(time_frame=None, start_time=None, end_time=None):
     if time_frame is None:
         return None, None
@@ -85,10 +87,10 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
 
     end_time = datetime.now()
     if time_frame == 'Today':
-        start_time = dateparser.parse(time_frame)
+        start_time = datetime.now().date()
 
     elif time_frame == 'Yesterday':
-        start_time = dateparser.parse(time_frame)
+        start_time = (end_time - timedelta(days=1)).date()
 
     elif time_frame == 'Last Hour':
         start_time = end_time - timedelta(hours=1)
@@ -176,6 +178,41 @@ def parse_alarms(alarms_data):
     return alarms
 
 
+@logger
+def parse_events(events_data):
+    regex = re.compile(r'.*"signature": "([\w\s]*)"')
+    events = []
+    for event in events_data:
+        event_name = ''
+        match = regex.match(event.get('log', ''))
+        if match:
+            event_name = match.group(1)
+
+        events.append({
+            'ID': event.get('uuid'),
+            'Name': event_name,
+            'OccurredTime': event.get('timestamp_occured_iso8601'),
+            'ReceivedTime': event.get('timestamp_received_iso8601'),
+            'Suppressed': event.get('suppressed'),
+
+            'AccessControlOutcome': event.get('access_control_outcome'),
+            'Category': event.get('event_category'),
+            'Severity': event.get('event_severity'),
+            'Subcategory': event.get('event_subcategory'),
+
+            'Source': {
+                'IPAddress': event.get('source_name'),
+                'Port': event.get('source_port'),
+            },
+            'Destination': {
+                'IPAddress': event.get('destination_name'),
+                'Port': event.get('destination_port')
+            },
+        })
+
+    return events
+
+
 def item_to_incident(item):
     incident = {
         'Type': 'AlienVault USM',
@@ -194,7 +231,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    http_request('GET', '')
+    search_alarms(limit=2)
     demisto.results('ok')
 
 
@@ -203,7 +240,7 @@ def get_alarm_command():
     Gets alarm details by ID
     """
     args = demisto.args()
-    alarm_id = args['id']
+    alarm_id = args['alarm_id']
 
     # Make request and get raw response
     response = get_alarm(alarm_id)
@@ -222,7 +259,7 @@ def get_alarm(alarm_id):
     return res
 
 
-def search_alerts_command():
+def search_alarms_command():
     args = demisto.args()
     time_frame = args.get('time_frame')
     start_time = args.get('start_time', 'now-7d')
@@ -232,7 +269,7 @@ def search_alerts_command():
 
     start_time, end_time = get_time_range(time_frame, start_time, end_time)
 
-    result = search_alerts(start_time=start_time, end_time=end_time, show_suppressed=show_suppressed, limit=limit)
+    result = search_alarms(start_time=start_time, end_time=end_time, show_suppressed=show_suppressed, limit=limit)
     alarms = parse_alarms(result)
 
     return_outputs(tableToMarkdown('Alarms:', alarms),
@@ -240,7 +277,7 @@ def search_alerts_command():
 
 
 @logger
-def search_alerts(start_time=None, end_time=None, status=None, priority=None, show_suppressed=None,
+def search_alarms(start_time=None, end_time=None, status=None, priority=None, show_suppressed=None,
                   limit=100, rule_intent=None, rule_method=None, rule_strategy=None, direction='desc'):
     params = {
         'page': 1,
@@ -265,11 +302,73 @@ def search_alerts(start_time=None, end_time=None, status=None, priority=None, sh
     if end_time:
         params['timestamp_occured_lte'] = end_time
 
-    res = http_request('GET', '/alarms/', params=params)
+    res = http_request('GET', '/alarms', params=params)
     if res['page']['totalElements'] == 0:
         return []
 
     return res['_embedded']['alarms']
+
+
+def search_events_command():
+    args = demisto.args()
+    time_frame = args.get('time_frame')
+    start_time = args.get('start_time', 'now-7d')
+    end_time = args.get('end_time', 'now')
+    account_name = args.get('account_name')
+    event_name = args.get('event_name')
+    source_name = args.get('source_name')
+    limit = int(args.get('limit', 100))
+
+    start_time, end_time = get_time_range(time_frame, start_time, end_time)
+
+    result = search_events(start_time=start_time, end_time=end_time, account_name=account_name, event_name=event_name,
+                           source_name=source_name, limit=limit)
+    events = parse_events(result)
+
+    return_outputs(tableToMarkdown('Events:', events),
+                   {'AlienVault.Event(val.ID && val.ID == obj.ID)': events},
+                   result)
+
+
+@logger
+def search_events(start_time=None, end_time=None, account_name=None, event_name=None, source_name=None, limit=100,
+                  direction='desc'):
+    params = {
+        'page': 1,
+        'size': limit,
+        'sort': 'timestamp_occured,{}'.format(direction),
+    }
+
+    if account_name:
+        params['account_name'] = account_name
+    if event_name:
+        params['event_name'] = event_name
+    if source_name:
+        params['source_name'] = source_name
+
+    if start_time:
+        params['timestamp_occured_gte'] = start_time
+    if end_time:
+        params['timestamp_occured_lte'] = end_time
+
+    res = http_request('GET', '/events', params=params)
+    if res['page']['totalElements'] == 0:
+        return []
+
+    return res['_embedded']['eventResourceList']
+
+
+def get_events_by_alarm_command():
+    args = demisto.args()
+    alarm_id = args['alarm_id']
+
+    alarm = get_alarm(alarm_id)
+
+    events = parse_events(alarm['events'])
+
+    return_outputs(tableToMarkdown('Events of Alarm {}:'.format(alarm_id), events),
+                   {'AlienVault.Event(val.ID && val.ID == obj.ID)': events},
+                   alarm)
 
 
 def fetch_incidents():
@@ -282,7 +381,7 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
 
     incidents = []
-    items = search_alerts(last_fetch, 'now', 'false', 100, direction='asc')
+    items = search_alarms(last_fetch, 'now', 'false', direction='asc')
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
@@ -299,30 +398,35 @@ def fetch_incidents():
 COMMANDS = {
     'test-module': test_module,
     'fetch-incidents': fetch_incidents,
-    'alienvault-search-alerts': search_alerts_command,
+    'alienvault-search-alarms': search_alarms_command,
     'alienvault-get-alarm': get_alarm_command,
+    'alienvault-search-events': search_events_command,
+    'alienvault-get-events-by-alarm': get_events_by_alarm_command,
 }
 
 
 def main():
     global AUTH_TOKEN
     cmd = demisto.command()
-    LOG('Command being called is %s' % (cmd))
+    LOG('Command being called is {}'.format(cmd))
 
     try:
-        AUTH_TOKEN = get_token()
         handle_proxy()
+        AUTH_TOKEN = get_token()
 
         if cmd in COMMANDS:
             COMMANDS[cmd]()
 
     # Log exceptions
     except Exception as e:
+        import traceback
+        LOG(traceback.format_exc())
+
         if demisto.command() == 'fetch-incidents':
             LOG(e.message)
             LOG.print_log()
-            raise
         else:
+            raise
             return_error('An error occurred: {}'.format(str(e)))
 
 
