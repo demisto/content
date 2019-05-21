@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "PhishLabsTestPopulateIndicators"
+        },
+        {
             "integrations": "PhishLabs IOC",
             "playbookID": "PhishLabsIOC TestPlaybook"
         },
