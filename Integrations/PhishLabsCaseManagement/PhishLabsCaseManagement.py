@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -13,7 +14,6 @@ requests.packages.urllib3.disable_warnings()
 ''' TYPES '''
 
 Response = requests.models.Response
-
 
 ''' GLOBALS/PARAMS '''
 
@@ -32,7 +32,6 @@ NONE_DATE: str = '0001-01-01T00:00:00Z'
 FETCH_TIME: str = demisto.params().get('fetch_time', '').strip()
 FETCH_LIMIT: str = demisto.params().get('fetch_limit', '10')
 RAISE_EXCEPTION_ON_ERROR: bool = False
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -59,7 +58,6 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
             params=params,
             data=json.dumps(data) if data else {},
             headers=HEADERS)
-        demisto.log(str(res.url))
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
         return return_error('Could not connect to PhishLabs Case API: {}'.format(str(e)))
@@ -133,7 +131,7 @@ def list_cases_command():
         if not isinstance(cases, list):
             cases = [cases]
 
-        case_headers: list = ['Title', 'Number', 'Status', 'Type', 'CreatedBy', 'CreatedAt']
+        case_headers: list = ['ID', 'Title', 'Number', 'Status', 'Type', 'CreatedBy', 'CreatedAt']
 
         contents = [{
             'ID': c.get('caseId'),
@@ -182,9 +180,9 @@ def list_cases_request(status=None, case_type=None, limit=None, date_field=None,
     if date_field:
         params['dateField'] = date_field
         if begin_date:
-            params['beginDate'] = begin_date
+            params['dateBegin'] = begin_date
         if end_date:
-            params['endDate'] = end_date
+            params['dateEnd'] = end_date
 
     response = http_request('get', path, params)
 
@@ -226,7 +224,7 @@ def get_case_command():
             'Type': case.get('caseType')
         }
 
-        human_readable = tableToMarkdown('PhishLabs Case {}'.format(case.get('title')), contents, headers=case_headers,
+        human_readable = tableToMarkdown('PhishLabs Case {}'.format(case.get('caseNumber')), contents, headers=case_headers,
                                          headerTransform=pascalToSpace, removeNull=True)
         context = {
             'PhishLabs.Case(val.ID === obj.ID)': createContext(contents, removeNull=True)
@@ -260,8 +258,7 @@ def list_brands_command():
     context = {}
 
     response = list_brands_request()
-
-    brands = response['data'] if response and response.get('data') else []
+    brands = response['brands'] if response and response.get('brands') else []
 
     if brands:
         if not isinstance(brands, list):
@@ -307,9 +304,9 @@ def list_types_command():
     limit = demisto.args().get('limit')
     context = {}
 
-    response = list_brands_request()
+    response = list_types_request()
 
-    types = response['data'] if response and response.get('data') else []
+    types = response['caseType'] if response and response.get('caseType') else []
 
     if types:
         if not isinstance(types, list):
@@ -352,57 +349,64 @@ def create_case_command():
     Creates a case in PhishLabs according to provided arguments
     """
 
-    case_id = demisto.args()['id']
+    case_type = demisto.args()["type"]
+    case_brand = demisto.args()["brand"]
+    title = demisto.args()["title"]
+    description = demisto.args().get("description")
 
     context = {}
 
-    response = get_case_request(case_id)
+    response = create_case_request(case_type, case_brand, title, description)
 
-    case = response['data'] if response and response.get('data') else []
+    case = response['createdCase'] if response and response.get('createdCase') else {}
+
+    demisto.log(str(response))
 
     if case:
-        if isinstance(case, list):
-            case = case[0]
-
-        case_headers: list = ['Title', 'Number', 'Status', 'Description', 'Brand', 'Type', 'CreatedBy', 'CreatedAt',
-                              'ModifiedAt', 'ClosedAt', 'ResolutionStatus']
+        case_headers: list = ['ID', 'Title', 'Number', 'Status']
 
         contents = {
             'ID': case.get('caseId'),
             'Title': case.get('title'),
-            'Status': case.get('caseStatus'),
-            'Description': case.get('description'),
-            'Number': case.get('caseNumber'),
-            'CreatedBy': case.get('createdBy', {}).get('name'),
-            'CreatedAt': case.get('dateCreated'),
-            'ModifiedAt': case.get('dateModified') if case.get('dateModified', '') != NONE_DATE else '',
-            'ClosedAt': case.get('dateClosed') if case.get('dateClosed', '') != NONE_DATE else '',
-            'ResolutionStatus': case.get('resolutionStatus'),
-            'Brand': case.get('brand'),
-            'Type': case.get('caseType')
+            'Status': case.get('status'),
+            'Number': case.get('caseNumber')
         }
 
-        human_readable = tableToMarkdown('PhishLabs Case {}'.format(case.get('title')), contents, headers=case_headers,
-                                         headerTransform=pascalToSpace, removeNull=True)
+        human_readable = tableToMarkdown('PhishLabs Case {} created successfully'.format(case.get('caseNumber')),
+                                         contents, headers=case_headers, removeNull=True)
         context = {
             'PhishLabs.Case(val.ID === obj.ID)': createContext(contents, removeNull=True)
         }
 
     else:
-        human_readable = 'No cases found'
+        human_readable = 'Could not get the new case'
 
     return_outputs(human_readable, context, response)
 
 
 @logger
-def get_case_request(case_id=None):
+def create_case_request(case_type, case_brand, title, description):
     """
-    Sends a request to PhishLabs global feed with the provided arguments
-    :param case_id: Case UUID
-    :return: PhishLabs case
+    Sends a request to PhishLabs cases to create a new case
+    :param case_type: The case type
+    :param case_brand: The case brand
+    :param title:  The case title
+    :param description: The case description
+    :return: The created case
     """
-    path: str = 'data/cases/' + case_id
-    response = http_request('get', path)
+    path: str = 'create/newCase'
+    body = {
+        'newCase': {
+            'title': title,
+            'caseType': case_type,
+            'brand': case_brand
+        }
+    }
+
+    if description:
+        body['description'] = description
+
+    response = http_request('post', path, data=body)
 
     return response
 
@@ -465,7 +469,10 @@ def main():
         'test-module': test_module,
         'fetch-incidents': fetch_incidents,
         'phishlabs-list-cases': list_cases_command,
-        'phishlabs-get-case': get_case_command
+        'phishlabs-get-case': get_case_command,
+        'phishlabs-list-brands': list_brands_command,
+        'phishlabs-list-case-types': list_types_command,
+        'phishlabs-create-case': create_case_command,
     }
     try:
         command_func: Callable = command_dict[demisto.command()]

@@ -7,6 +7,8 @@ since = demisto.args().get('since')
 delete_false_positive = bool(strtobool(demisto.args().get('delete_false_positive', 'false')))
 limit = demisto.args().get('limit')
 indicator_type = demisto.args().get('indicator_type')
+remove_protocol = demisto.args().get('remove_protocol')
+remove_query = demisto.args().get('remove_query')
 command_args = {}
 
 if since:
@@ -15,6 +17,10 @@ if limit:
     command_args['limit'] = int(limit)
 if indicator_type:
     command_args['indicator_type'] = indicator_type
+if remove_protocol:
+    command_args['remove_protocol'] = remove_protocol
+if remove_query:
+    command_args['remove_query'] = remove_query
 if delete_false_positive:
     command_args['false_positive'] = 'true'
 
