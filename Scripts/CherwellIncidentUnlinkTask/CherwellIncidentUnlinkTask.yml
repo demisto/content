@@ -30,6 +30,5 @@ tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-unlink-business-objects
-releaseNotes: Added tags and 'dependsOn' commands
 tests:
   - Cherwell Example Scripts - test
