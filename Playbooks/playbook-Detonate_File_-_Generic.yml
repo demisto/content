@@ -28,11 +28,12 @@ tasks:
       - "16"
       - "17"
       - "18"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 2200,
           "y": 50
         }
       }
@@ -55,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 2200,
           "y": 370
         }
       }
@@ -477,13 +478,61 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 77b7e144-a6a2-4e93-8e69-1160f9921573
+    type: playbook
+    task:
+      id: 77b7e144-a6a2-4e93-8e69-1160f9921573
+      version: -1
+      name: Detonate File - VMRay
+      description: Detonates a file using VMRay
+      playbookName: Detonate File - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+      archive_password: {}
+      document_password: {}
+      interval:
+        simple: "1"
+      max_jobs: {}
+      reanalyze: {}
+      sample_type: {}
+      shareable: {}
+      tags: {}
+      timeout:
+        simple: "10"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 4250,
+        "width": 4680,
         "x": 50,
         "y": 50
       }
@@ -943,3 +992,4 @@ outputs:
   type: String
 tests:
 - Detonate File - Generic Test
+releaseNotes: added vmray

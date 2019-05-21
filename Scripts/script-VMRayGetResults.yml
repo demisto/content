@@ -31,7 +31,7 @@ script: |-
         demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
 type: python
 tags: []
-comment: Helper script to get the results of an analysed file
+comment: Deprecated, use "Detonate File - VMRay playbook instead"
 enabled: true
 args:
 - name: sample_id

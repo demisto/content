@@ -1,5 +1,6 @@
-import requests
 from CommonServerPython import *
+import requests
+import shutil
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params()['api_key']
@@ -12,6 +13,8 @@ SERVER = (
 SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
+ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
+SAMPLE_ID = demisto.args().get('sample_id', '')
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -46,6 +49,20 @@ DBOTSCORE = {
 ''' HELPER FUNCTIONS '''
 
 
+def is_json(response):
+    try:
+        response.json()
+    except ValueError:
+        return False
+    return True
+
+
+def check_sample_id():
+    if not SAMPLE_ID.isdigit():
+        return_error(ERROR_FORMAT.format(404, 'No such element'))
+    return True
+
+
 def build_errors_string(errors):
     """
 
@@ -76,6 +93,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
     Returns:
         dict: response json
     """
+
     def find_error(may_be_error_inside):
         """Function will search for dict with 'errors' or 'error_msg' key
 
@@ -98,31 +116,35 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
             if 'errors' in may_be_error_inside and len(may_be_error_inside['errors']):
                 return may_be_error_inside['errors']
             for v in may_be_error_inside.values():
-                err = find_error(v)
-                if err:
-                    return err
+                err_r = find_error(v)
+                if err_r:
+                    return err_r
         return None
-    error_format = 'Error in API call to VMRay [{}] - {}'
+
     url = SERVER + url_suffix
     r = requests.request(
         method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL
     )
-
     # Handle errors
     try:
         if r.status_code in {405, 401}:
-            return_error(error_format.format(r.status_code, 'Token may be invalid'))
-        if r.status_code not in {200, 201, 202, 204} and not ignore_errors:
+            return_error(ERROR_FORMAT.format(r.status_code, 'Token may be invalid'))
+        elif not is_json(r):
             raise ValueError
-
         response = r.json()
+        if r.status_code not in {200, 201, 202, 204} and not ignore_errors:
+            err = find_error(response)
+            if not err:
+                err = r.text
+            return_error(ERROR_FORMAT.format(r.status_code, err))
+
         err = find_error(response)
         if err:
-            return_error(error_format.format(r.status_code, err))
+            return_error(ERROR_FORMAT.format(r.status_code, err))
         return response
-    except ValueError:
+    except ValueError as e:
         # If no JSON is present, must be an error that can't be ignored
-        return_error(error_format.format(r.status_code, r.text))
+        return_error(ERROR_FORMAT.format(r.status_code, r.text))
 
 
 def score_by_hash(analysis):
@@ -234,10 +256,10 @@ def build_upload_params():
         params['archive_password'] = arch_pass
     if sample_type:
         params['sample_type'] = sample_type
-    if shareable == 'true':
-        params['shareable'] = shareable
-    if reanalyze == 'true':
-        params['reanalyze'] = reanalyze
+
+    params['shareable'] = shareable == 'true'
+    params['reanalyze'] = reanalyze == 'true'
+
     if max_jobs:
         if max_jobs.isdigit():
             params['max_jobs'] = int(max_jobs)
@@ -257,18 +279,23 @@ def test_module():
     )
 
 
-def upload_sample(path, params):
-    """Uploading sample to vmray
+def upload_sample(file_id, params):
+    """Uploading sample to VMRay
 
     Args:
-        path (str): path to file
+        file_id (str): entry_id
         params (dict): dict of params
 
     Returns:
         dict: response
     """
     suffix = 'sample/submit'
-    files = {'sample_file': open(path, 'rb')}
+    file_obj = demisto.getFilePath(file_id)
+    file_name = file_obj['name']
+    file_path = file_obj['path']
+    shutil.copy(file_path, file_name)
+    files = {'sample_file': open(file_name, 'rb')}
+
     results = http_request('POST', url_suffix=suffix, params=params, files=files)
     return results
 
@@ -282,12 +309,10 @@ def upload_sample_command():
         if demisto.args().get('entry_id')
         else demisto.args().get('file_id')
     )
-    path = demisto.getFilePath(file_id).get('path')
-
     params = build_upload_params()
 
     # Request call
-    raw_response = upload_sample(path, params=params)
+    raw_response = upload_sample(file_id, params=params)
     data = raw_response.get('data')
     jobs_list = list()
     jobs = data.get('jobs')
@@ -353,15 +378,14 @@ def upload_sample_command():
 
 
 def get_analysis_command():
-    sample_id = demisto.args().get('sample_id')
+    check_sample_id()
     limit = demisto.args().get('limit')
-
     params = {'_limit': limit}
-    raw_response = get_analysis(sample_id, params)
+    raw_response = get_analysis(SAMPLE_ID, params)
     data = raw_response.get('data')
     entry_context = build_analysis_data(data)
     # TODO this
-    humam_readable = json.dumps(entry_context, indent=4)
+    humam_readable = json.dumps(raw_response, indent=4)
     return_outputs(humam_readable, entry_context, raw_response=raw_response)
 
 
@@ -442,8 +466,7 @@ def get_submission(submission_id):
 
 
 def get_sample_command():
-    sample_id = demisto.args().get('sample_id')
-    raw_response = get_sample(sample_id)
+    raw_response = get_sample(SAMPLE_ID)
     data = raw_response.get('data')
 
     entry = dict()
@@ -510,16 +533,16 @@ def get_job(job_id, sample_id):
 
 
 def get_job_command():
+    check_sample_id()
     job_id = demisto.args().get('job_id')
-    sample_id = demisto.args().get('sample_id')
 
-    vmray_id = job_id if job_id else sample_id
+    vmray_id = job_id if job_id else SAMPLE_ID
     title = 'job' if job_id else 'sample'
 
-    raw_response = get_job(job_id=job_id, sample_id=sample_id)
+    raw_response = get_job(job_id=job_id, sample_id=SAMPLE_ID)
     data = raw_response.get('data')
     if raw_response.get('result') == 'error' or not data:
-        entry = build_finished_job(job_id=job_id, sample_id=sample_id)
+        entry = build_finished_job(job_id=job_id, sample_id=SAMPLE_ID)
         human_readable = '#### Jobs for {} id {} is finished/not exists'.format(
             title, vmray_id
         )
@@ -553,8 +576,8 @@ def get_threat_indicators(sample_id):
 
 
 def get_threat_indicators_command():
-    sample_id = demisto.args().get('sample_id')
-    raw_response = get_threat_indicators(sample_id)
+    check_sample_id()
+    raw_response = get_threat_indicators(SAMPLE_ID)
     data = raw_response.get('threat_indicators')
 
     # Build Entry Context
@@ -571,7 +594,7 @@ def get_threat_indicators_command():
 
         human_readable = tableToMarkdown(
             'Threat indicators for sample ID: {}. Showing first indicator:'.format(
-                sample_id
+                SAMPLE_ID
             ),
             entry_context_list[0],
             headers=['AnalysisID', 'Category', 'Classification', 'Operation'],
@@ -582,7 +605,7 @@ def get_threat_indicators_command():
             human_readable, entry_context, raw_response={'threat_indicators': data}
         )
     return_outputs(
-        'No threat indicators for sample ID: {}'.format(sample_id),
+        'No threat indicators for sample ID: {}'.format(SAMPLE_ID),
         {},
         raw_response=raw_response,
     )
@@ -694,8 +717,8 @@ def get_iocs(sample_id):
 
 
 def get_iocs_command():
-    sample_id = demisto.args().get('sample_id')
-    raw_response = get_iocs(sample_id)
+    check_sample_id()
+    raw_response = get_iocs(SAMPLE_ID)
     data = raw_response.get('data', {}).get('iocs', {})
 
     # Initialize counters
@@ -787,15 +810,15 @@ def get_iocs_command():
         'IP': ip_list,
     }
 
-    entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(sample_id): iocs}
+    entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(SAMPLE_ID): iocs}
     if iocs_size:
         human_readable = tableToMarkdown(
-            'Total of {} IOCs found in VMRay by sample {}'.format(iocs_size, sample_id),
+            'Total of {} IOCs found in VMRay by sample {}'.format(iocs_size, SAMPLE_ID),
             iocs_size_table,
             headers=['URLs', 'IPs', 'Domains', 'Mutexes', 'Registry'],
         )
     else:
-        human_readable = '### No IOCs found in sample {}'.format(sample_id)
+        human_readable = '### No IOCs found in sample {}'.format(SAMPLE_ID)
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -813,9 +836,9 @@ try:
     elif COMMAND == 'vmray-get-sample':
         get_sample_command()
     elif COMMAND in (
-        'vmray-get-job-by-sample',
-        'get_job_sample',
-        'vmray-get-job-by-id',
+            'vmray-get-job-by-sample',
+            'get_job_sample',
+            'vmray-get-job-by-id',
     ):
         get_job_command()
     elif COMMAND == 'vmray-get-threat-indicators':
@@ -829,15 +852,7 @@ try:
 except Exception as exc:
     return_error(str(exc))
 
-    # TODO how to get api key MD
-    # TODO change all ' to '
-    # TODO add defaults to sharable/reanalyze
-    # TODO add playbook to generic detonate
-    # TODO add deprecation description script
     # TODO get sample vs analysis
-    # TODO beautify error msg, 0 iocs entries
-    # TODO job api call
     # TODO Let alex pass through outputs get-job-by-sample not exists
     # TODO submission files with no ascii
     # TODO check non-ascii file
-    # TODO filename instead of file id

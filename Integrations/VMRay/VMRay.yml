@@ -51,7 +51,8 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
+      default: true
+      defaultValue: 'false'
       description: Make the file shareable
       isArray: false
       name: shareable
@@ -61,7 +62,8 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
+      default: true
+      defaultValue: 'false'
       description: Analyze no matter if analyses already exist
       isArray: false
       name: reanalyze
