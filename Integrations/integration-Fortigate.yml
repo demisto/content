@@ -127,14 +127,16 @@ script:
         params = {}
         session.post(SERVER+url_suffix, data=params, verify=USE_SSL)
 
-
-    def policy_addr_array_from_arg(policy_addr_str):
+    # When updating a policy we have to add another key to each addr, an q_origin key
+    def policy_addr_array_from_arg(policy_addr_str, should_add_origin_q = False):
         policy_adr_str_array = policy_addr_str.split(",")
         policy_addr_dict_array = []
         for src_addr_name in policy_adr_str_array:
             cur_addr_dict = {
                 "name": src_addr_name
             }
+            if should_add_origin_q:
+                cur_addr_dict["q_origin_key"] = src_addr_name
             policy_addr_dict_array.append(cur_addr_dict)
         return policy_addr_dict_array
 
@@ -597,7 +599,11 @@ script:
         if policy_field in field_to_api_key:
             policy_field = field_to_api_key[policy_field]
 
+        if policy_field in {'srcaddr', 'dstaddr'}:
+            policy_field_value = policy_addr_array_from_arg(policy_field_value)
         payload = {
+            'policyid': int(policy_id),
+            'q_origin_key': int(policy_id),
             policy_field: policy_field_value
         }
 
@@ -1398,6 +1404,6 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
-releaseNotes: "Fixed bug with src and dst addresses in human readable. Fixed policy creation - now supports multiple sources / destinations."
+releaseNotes: "Fixed bug with src and dst addresses in human readable. Fixed policy creation - now supports multiple sources / destinations. Fixed update policy bug, now the command works. "
 tests:
   - Fortigate Test
