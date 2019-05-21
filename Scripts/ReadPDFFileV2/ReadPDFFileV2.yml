@@ -1,24 +1,24 @@
 args:
 - default: true
-  description: War room entryID of the file to read.
+  description: War Room entryID of the file to read.
   isArray: false
   name: entryID
   required: true
   secret: false
 - default: false
-  description: Password for the file, if encrypted
+  description: Password for the file, if encrypted.
   isArray: false
   name: userPassword
   required: false
   secret: false
 - default: false
   defaultValue: '20'
-  description: Maximum amount of imags to be extracted from the pdf file.
+  description: Maximum number of images to extract from the PDF file.
   isArray: false
   name: maxImages
   required: false
   secret: false
-comment: Load the contents and metadata of a PDF file into context.
+comment: Load a PDF file's content and metadata into context.
 commonfields:
   id: ReadPDFFileV2
   version: -1
@@ -26,37 +26,37 @@ enabled: true
 name: ReadPDFFileV2
 outputs:
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the PDF file
+  description: A list of URLs that were extracted from the PDF file.
   type: Unknown
 - contextPath: File.Text
-  description: The PDF File extracted text
+  description: The text that was extracted from the PDF file.
   type: Unknown
 - contextPath: File.Producer
-  description: The PDF File producer
+  description: The producer of the PDF file.
   type: Unknown
 - contextPath: File.Title
-  description: The PDF File Title
+  description: The title of the PDF file.
   type: Unknown
 - contextPath: File.xap
-  description: The PDF File xap
+  description: The XAP of the PDF file.
   type: Unknown
 - contextPath: File.Author
-  description: The PDF File Author
+  description: The author of the PDF file.
   type: Unknown
 - contextPath: File.dc
-  description: The PDF File dc
+  description: The DC of the PDF file.
   type: Unknown
 - contextPath: File.xapmm
-  description: The PDF File xapmm
+  description: The XAPMM of the PDF file.
   type: Unknown
 - contextPath: File.ModDate
-  description: The PDF File ModDate
+  description: The ModDate of the PDF file.
   type: Unknown
 - contextPath: File.CreationDate
-  description: The PDF File CreationDate
+  description: The CreationDate of the PDF file.
   type: Unknown
 - contextPath: File.Pages
-  description: Number of pages in PDF file
+  description: Number of pages in the PDF file.
   type: Unknown
 script: '-'
 system: false
