@@ -145,7 +145,7 @@ def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_H
 
 
 def create_update_hostfields_request_body(host_ip: str, update_type: str,
-                                              fields: str, composite_field: str) -> ET_PHONE_HOME.Element:
+                                          fields: str, composite_field: str) -> ET_PHONE_HOME.Element:
     """
     Create XML request body formatted to DEX expectations
 
@@ -713,7 +713,7 @@ def update_lists_command():
     response_content = update_lists(args)
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
     msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
-    if len(msg_list) >= 1:
+    if len(msg_list) >= 1 and msg_list[0] is not None:
         msg = msg_list[0]
         msg = msg.replace('[', '').replace(']', '')
     else:
@@ -754,7 +754,7 @@ def update_host_fields_command():
 
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
     msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
-    if len(msg_list) >= 1:
+    if len(msg_list) >= 1 and msg_list[0] is not None:
         msg = msg_list[0]
         msg = msg.replace('[', '').replace(']', '')
     else:
@@ -808,6 +808,7 @@ def main():
 
     except Exception as e:
         return_error(str(e))
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
