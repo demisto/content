@@ -100,6 +100,5 @@ script:
   script: '-'
   type: python
 defaultEnabled: true
-releaseNotes: "Rasterize URL Error handeling"
 tests:
   - no test
