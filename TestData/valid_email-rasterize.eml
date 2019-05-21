@@ -2,39 +2,39 @@ Received: from BN7PR05MB5746.namprd05.prod.outlook.com (2603:10b6:400::37) by
  BN7PR05MB5745.namprd05.prod.outlook.com with HTTPS via
  BN3PR05CA0027.NAMPRD05.PROD.OUTLOOK.COM; Sun, 12 May 2019 21:43:19 +0000
 Received: from SN4PR0501CA0120.namprd05.prod.outlook.com
- (2603:10b6:803:42::37) by BN7PR05MB5746.namprd05.prod.outlook.com
- (2603:10b6:408:3b::17) with Microsoft SMTP Server (version=TLS1_2,
+ (*:*:*:*:*) by BN7PR05MB5746.namprd05.prod.outlook.com
+ (*:*:*:*:*) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1900.9; Sun, 12 May
  2019 21:43:18 +0000
 Received: from CY1NAM02FT040.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::209) by SN4PR0501CA0120.outlook.office365.com
- (2603:10b6:803:42::37) with Microsoft SMTP Server (version=TLS1_2,
+ (*:*:*:*:*) by SN4PR0501CA0120.outlook.office365.com
+ (*:*:*:*:*) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1900.8 via Frontend
  Transport; Sun, 12 May 2019 21:43:17 +0000
-Authentication-Results: spf=fail (sender IP is 67.231.148.124)
+Authentication-Results: spf=fail (sender IP is 1.1.1.1)
  smtp.mailfrom=amazonses.com; demisto.com; dkim=fail (body hash did not
  verify) header.d=amazon.com;demisto.com; dmarc=fail action=quarantine
  header.from=amazon.com;compauth=pass reason=108
 Received-SPF: Fail (protection.outlook.com: domain of amazonses.com does not
- designate 67.231.148.124 as permitted sender)
- receiver=protection.outlook.com; client-ip=67.231.148.124;
+ designate 1.1.1.1 as permitted sender)
+ receiver=protection.outlook.com; client-ip=1.1.1.1;
  helo=mx0b-00169c01.pphosted.com;
-Received: from mx0b-00169c01.pphosted.com (67.231.148.124) by
- CY1NAM02FT040.mail.protection.outlook.com (10.152.75.135) with Microsoft SMTP
+Received: from mx0b-00169c01.pphosted.com (1.1.1.1) by
+ CY1NAM02FT040.mail.protection.outlook.com (1.1.1.1) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
  15.20.1856.11 via Frontend Transport; Sun, 12 May 2019 21:43:17 +0000
 Received: from pps.filterd (m0045114.ppops.net [127.0.0.1])
-	by mx0a-00169c01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4CLYXwB030451
-	for <andrew@demisto.com>; Sun, 12 May 2019 14:43:16 -0700
+	by mx0a-00169c01.pphosted.com (1.1.1.1/1.1.1.1) with SMTP id x4CLYXwB030451
+	for <****@demisto.com>; Sun, 12 May 2019 14:43:16 -0700
 Authentication-Results-Original: paloaltonetworks.com;	spf=fail
- smtp.mailfrom=0100016aaab58edc-69a67f1d-59ac-4a58-8617-be591ebc9c5a-000000@amazonses.com;
+ smtp.mailfrom=http://demisto.com;
 	dkim=pass header.d=amazon.com header.s=pog7p5txl4ruqhixze35ey6av7ivmsea;
 	dkim=pass header.d=amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw;
 	dmarc=pass header.from=amazon.com
-Received: from inbound5c.ore.mailhop.org (inbound5c.ore.mailhop.org [54.186.22.84])
+Received: from inbound5c.ore.mailhop.org (inbound5c.ore.mailhop.org [1.1.1.1])
 	by mx0a-00169c01.pphosted.com with ESMTP id 2sdtdfcf11-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <andrew@demisto.com>; Sun, 12 May 2019 14:43:16 -0700
+	for <****@demisto.com>; Sun, 12 May 2019 14:43:16 -0700
 ARC-Seal: i=1; a=rsa-sha256; t=1557642189; cv=none;
 	d=mailhop.org; s=arc-20180721;
 	b=DHQD7RbhlV7sWJvjBUsnzsNOMIHsweHKP8SW0opVlyQPcSjyitPn9f4kzuubfiUEwQC+d+gNitMgG
@@ -53,15 +53,15 @@ ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
 	 9QipvQ0q4ZJ52RDgTK8en6nqdBgaEfuUIeUBHzYwfSHNoo0Bzxi3zd+0WLnbwY8ZCWpUpRynQogzKl
 	 cCJbJFW5E65+EXeC3vUN4Eth2xFjzwg==
 ARC-Authentication-Results: i=1; inbound7.ore.mailhop.org;
-	spf=pass smtp.mailfrom=amazonses.com smtp.remote-ip=54.240.10.127;
+	spf=pass smtp.mailfrom=amazonses.com smtp.remote-ip=1.1.1.1;
 	dkim=pass header.d=amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw header.a=rsa-sha256 header.b=ke8bOVYh;
 	dmarc=pass header.from=amazon.com;
 	arc=none header.oldest-pass=0;
 X-HalonDuo-Scores: {"rpd":"unknown", "sa":0,
  "sa_scores":{"HTML_IMAGE_RATIO_08":0.001, "HTML_MESSAGE":0.001}}
-Envelope-Sender: 0100016aaab58edc-69a67f1d-59ac-4a58-8617-be591ebc9c5a-000000@amazonses.com
+Envelope-Sender: http://demisto.com
 X-HalonDuo-ID: 67d4f6c8-747e-11e9-ab8d-ad124c9fd12f
-Received: from a10-127.smtp-out.amazonses.com (unknown [54.240.10.127])
+Received: from a10-127.smtp-out.amazonses.com (unknown [1.1.1.1])
 	by inbound7.ore.mailhop.org (Halon) with ESMTPS
 	id 67d4f6c8-747e-11e9-ab8d-ad124c9fd12f;
 	Sun, 12 May 2019 06:23:07 +0000 (UTC)
@@ -84,21 +84,21 @@ X-MSFBL: K8fKBZM2iKCqgIhnBWzXjzh9H6cf/QhqrmE+FHC9JCY=|eyJnIjoiYmctc2pyLTA
 	5MTU6MTU2OTI3Ojg2MzYzMzowOjI1OTUzMjo5Ojc4NTc4MToyNTE5MDYwMDIiLCJ
 	iIjoiZHZwLTE5OS0xNS0yMTUtNjQifQ==
 Date: Sun, 12 May 2019 06:23:06 +0000
-From: Amazon Web Services <aws-marketing-email-replies@amazon.com>
-Reply-To: aws-marketing-email-replies@amazon.com
-To: andrew@demisto.com
-Message-ID: <0100016aaab58edc-69a67f1d-59ac-4a58-8617-be591ebc9c5a-000000@email.amazonses.com>
+From: Amazon Web Services <****@amazon.com>
+Reply-To: ****@amazon.com
+To: ****@demisto.com
+Message-ID: <http://demisto.com>
 Subject: AWS Floor28 - May | AWSome Day, Serverless Workshop & More -
  Register Now!
 X-PVIQ: mkto-112TZM766-000001-000000-785781
 X-Binding: bg-sjr-03
 X-MarketoID: 112-TZM-766:352915:156927:863633:0:259532:9:785781:251906002
 X-MktArchive: false
-List-Unsubscribe: <mailto:NNKFG2CON5BXI2RZJRUEQSDVLBJHG42KPJDUYOK2OR3HCV2TI5AWO3BVGFBWY6LZKMYFCPI.785781.259532.9@unsub-sj.mktomail.com>
-X-Mailfrom: 112-TZM-766.0.785781.0.0.259532.9.251906002@em-sj-77.mktomail.com
+List-Unsubscribe: <mailto:http://demisto.com>
+X-Mailfrom: http://demisto.com
 X-MSYS-API: {"options":{"open_tracking":false,"click_tracking":false}}
 X-AMAZON-MAIL-RELAY-REDIR: bb9b4539191b44348ef966232b7968de
-X-SES-Outgoing: 2019.05.12-54.240.10.127
+X-SES-Outgoing: 2019.05.12-1.1.1.1
 Feedback-ID: 1.us-east-1.RV8Dsk7NvPH6aSFSPkfOynRPdT4LmMC2IC5pG2cIn10=:AmazonSES
 X-CLX-Shades: MLX
 X-CLX-Response: 1TFkXGxsaGREKTHoXHx0dEQpZRBdsb2RzckFhX1pjQBEKWFgXY09BYhJdbmJ 4WmkRCnhOF2ZTYVxJY3BrfxtnEQp4SxdjT0FiEl1uYnhaaREKeUwXa0N6cl0SUF5rYRIRCnlDF2 FhQlpwbQFwZEN9EQpZTRdnZnIRCl9ZFxwSHhEKX00XZ2ZyEQpZSRcacRoQGncGGxsecRkeHRodE
@@ -119,7 +119,7 @@ X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1905120161
 Return-Path:
- 0100016aaab58edc-69a67f1d-59ac-4a58-8617-be591ebc9c5a-000000@amazonses.com
+ http://demisto.com
 X-MS-Exchange-Organization-ExpirationStartTime: 12 May 2019 21:43:17.5479
  (UTC)
 X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
@@ -131,7 +131,7 @@ X-EOPAttributedMessage: 0
 X-EOPTenantAttributedMessage: 66b66353-3b76-4e41-9dc3-fee328bd400e:0
 X-MS-Exchange-Organization-MessageDirectionality: Incoming
 X-Forefront-Antispam-Report:
- CIP:67.231.148.124;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:SKN;SFS:;DIR:INB;SFP:;SCL:-1;SRVR:BN7PR05MB5746;H:mx0b-00169c01.pphosted.com;FPR:;SPF:None;LANG:en;
+ CIP:1.1.1.1;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:SKN;SFS:;DIR:INB;SFP:;SCL:-1;SRVR:BN7PR05MB5746;H:mx0b-00169c01.pphosted.com;FPR:;SPF:None;LANG:en;
 X-MS-Exchange-Organization-SCL: -1
 X-MS-Exchange-Organization-AuthSource:
  CY1NAM02FT040.eop-nam02.prod.protection.outlook.com
@@ -231,20 +231,20 @@ Content-type: text/html;
 	charset="UTF-8"
 Content-transfer-encoding: quoted-printable
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://demisto.com=
 w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns=3D"http://www.w3.org/1999/xhtml" xmlns:v=3D"urn:schemas-microsoft-c=
+<html xmlns=3D"http://demisto.comw3.org/1999/xhtml" xmlns:v=3D"urn:schemas-microsoft-c=
 om:vml" xmlns:o=3D"urn:schemas-microsoft-com:office:office">
 <head>
 <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8">
 <title>Amazon Web Services</title>
-<link href=3D"https://fonts.googleapis.com/css?family=3DOpen&#43;Sans:300,400,6=
+<link href=3D"http://demisto.com/css?family=3DOpen&#43;Sans:300,400,6=
 00,700,800" rel=3D"stylesheet"><!-- Other Meta Tags -->
 <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1, minimum=
 -scale=3D1, maximum-scale=3D1">
 <meta name=3D"robots" content=3D"noindex,nofollow">
 <meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
-<link href=3D"https://fonts.googleapis.com/css?family=3DOpen&#43;Sans:300,400,6=
+<link href=3D"http://demisto.com/css?family=3DOpen&#43;Sans:300,400,6=
 00,700" rel=3D"stylesheet"><!-- Marketo Variable Definitions --><!-- Header Va=
 riable Starts --><!-- Header Variable Ends --><!-- banner Variable Starts --=
 ><!-- banner Variable Ends --><!-- body_section2plain Variable Starts --><!-=
@@ -485,7 +485,7 @@ Arial, Helvetica, sans-serif !important;  }</style>
 <body style=3D"margin-bottom: 0; -webkit-text-size-adjust: 100%; padding-bott=
 om: 0;  margin-top: 0; margin-right: 0; -ms-text-size-adjust: 100%; margin-l=
 eft: 0; padding-top: 0; padding-right: 0; padding-left: 0; width: 100%;">
-<img src=3D"http://email.awscloud.com/trk?t=3D1&amp;mid=3DMTEyLVRaTS03NjY6MzUyOTE=
+<img src=3D"http://***.awscloud.com/trk?t=3D1&amp;mid=3DMTEyLVRaTS03NjY6MzUyOTE=
 1OjE1NjkyNzo4NjM2MzM6MDoyNTk1MzI6OTo3ODU3ODE6MjUxOTA2MDAyOmFuZHJld0BkZW1pc3R=
 vLmNvbQ%3D%3D" width=3D"1" height=3D"1" style=3D"display:none !important;" alt=3D"">=
 <!-- Outer table START -->
@@ -523,7 +523,7 @@ ttps://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_c02c0=
 Y2T0OkZhCtMB0gsx00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfk=
 rzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrw=
 FWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DxXJDnKgcR0CHVOT2G5_zNi0P0opiHhvgNanKIDLG=
-Kow&amp;e=3D" target=3D"_blank"><img src=3D"https://pages.awscloud.com/rs/112-TZM-=
+Kow&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/rs/112-TZM-=
 766/images/Floor28-register-now-events.jpg" width=3D"600" alt=3D"Floor28-newslet=
 ter-banner-topics2.jpg" class=3D"full-width" style=3D""></a>
 </div>
@@ -598,7 +598,7 @@ none; white-space:
 normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; backg=
 round-color: #ffffff; text-decoration-style: initial; text-decoration-color:=
  initial; float: none; font-size: 16px; display: inline !important;"><span s=
-tyle=3D"font-size: 16px;"><a href=3D"https://urldefense.proofpoint.com/v2/url?u=3D=
+tyle=3D"font-size: 16px;"><a href=3D"http://demisto.comnt.com/v2/url?u=3D=
 https-3A__email.awscloud.com_c02c0Y2T0OkZhCtMB0gsx00&amp;d=3DDwMFaQ&amp;c=3DV9Ig=
 WpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJ=
 LEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DxXJDnK=
@@ -609,7 +609,7 @@ Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-li=
 gatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing=
 : normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
 none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke=
--width: 0px; background-color: #ffffff;"><img src=3D"https://pages.awscloud.co=
+-width: 0px; background-color: #ffffff;"><img src=3D"http://demisto.comcloud.co=
 m/rs/112-TZM-766/images/Floor28%20-%20icons-02.jpg" width=3D"100" height=3D"100"=
  constrain=3D"true" imagepreview=3D"false"></a></span></span></strong></span></t=
 d>
@@ -633,11 +633,11 @@ g: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform:=
 ffff; text-decoration-style: initial; text-decoration-color: initial; float:=
  none; display: inline !important;">:30
  - 17:00</span><br>
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_R00O2gCZYt00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
 MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
 jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDd=
-Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"https://pages.awscloud.com/=
+Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/=
 rs/112-TZM-766/images/Floor28-Email-05.jpg" width=3D"180" height=3D"36" constrai=
 n=3D"true" imagepreview=3D"false"></a></span></span></p>
 </td>
@@ -658,7 +658,7 @@ none; white-space:
 normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; backg=
 round-color: #ffffff; text-decoration-style: initial; text-decoration-color:=
  initial; float: none; font-size: 16px; display: inline !important;"><span s=
-tyle=3D"font-size: 16px;"><img src=3D"https://pages.awscloud.com/rs/112-TZM-766/=
+tyle=3D"font-size: 16px;"><img src=3D"http://demisto.com/rs/112-TZM-766/=
 images/Floor28%20-%20icons-04.jpg" width=3D"100" constrain=3D"true" imagepreview=
 =3D"false"></span></span></strong></span></td>
 <td style=3D"width: 150px; text-align: center; vertical-align: middle;">
@@ -698,11 +698,11 @@ kit-text-stroke-width: 0px; background-color: #ffffff; text-decoration-style=
 : initial; text-decoration-color: initial; float: none; display: inline !imp=
 ortant;">:30
  - 13:00</span><br>
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_R00O2gCZYt00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
 MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
 jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDd=
-Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"https://pages.awscloud.com/=
+Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/=
 rs/112-TZM-766/images/Floor28-Email-05.jpg" width=3D"180" height=3D"36" constrai=
 n=3D"true" imagepreview=3D"false"></a></span></span></span></p>
 </td>
@@ -733,7 +733,7 @@ Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-li=
 gatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing=
 : normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
 none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke=
--width: 0px; background-color: #ffffff;"><img src=3D"https://pages.awscloud.co=
+-width: 0px; background-color: #ffffff;"><img src=3D"http://demisto.comcloud.co=
 m/rs/112-TZM-766/images/Floor28%20-%20icons-02.jpg" width=3D"100" height=3D"100"=
  constrain=3D"true" imagepreview=3D"false"></a></span></span></strong></td>
 <td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
@@ -756,11 +756,11 @@ widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-co=
 lor: #ffffff; text-decoration-style: initial; text-decoration-color: initial=
 ; float: none; display: inline !important;">:30
  - 14:30</span><br>
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_R00O2gCZYt00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
 MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
 jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDd=
-Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"https://pages.awscloud.com/=
+Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/=
 rs/112-TZM-766/images/Floor28-Email-05.jpg" width=3D"180" height=3D"36" constrai=
 n=3D"true" imagepreview=3D"false"></a><br>
 </span></p>
@@ -792,7 +792,7 @@ Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-li=
 gatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing=
 : normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
 none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke=
--width: 0px; background-color: #ffffff;"><img src=3D"https://pages.awscloud.co=
+-width: 0px; background-color: #ffffff;"><img src=3D"http://demisto.comcloud.co=
 m/rs/112-TZM-766/images/Floor28%20-%20icons-02.jpg" width=3D"100" height=3D"100"=
  constrain=3D"true" imagepreview=3D"false"></a></span></span></strong></td>
 <td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
@@ -818,7 +818,7 @@ text-align: center; text-indent: 0px; text-transform: none; white-space: no=
 rmal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; backgrou=
 nd-color: #ffffff; text-decoration-style: initial; text-decoration-color: in=
 itial;">
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_Ect0Th2DZug0k0YM0x02O0C&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
 MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
 jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D64zW11yaPL6RqzgzFP33ROoK19xCg=
@@ -828,7 +828,7 @@ font-style: normal; font-variant-ligatures: normal; font-variant-caps: norm=
 al; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center=
 ; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; wo=
 rd-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: #ffffff;"=
-><img src=3D"https://pages.awscloud.com/rs/112-TZM-766/images/Floor28-Email-05=
+><img src=3D"http://demisto.com/rs/112-TZM-766/images/Floor28-Email-05=
 .jpg" width=3D"180" height=3D"36" constrain=3D"true" imagepreview=3D"false"></a></sp=
 an></p>
 </td>
@@ -860,12 +860,12 @@ n style=3D"color: #ffffff; font-size: 20px;"></span></strong></span></td>
 </tr>
 <tr>
 <td style=3D"width: 200px; text-align: center; vertical-align: middle;"><span=
- style=3D"font-family: helvetica, arial, sans-serif;"><a href=3D"https://urldefe=
+ style=3D"font-family: helvetica, arial, sans-serif;"><a href=3D"http://demisto.com=
 nse.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_z0Yg0tO00h2ZkvxCT2E=
 cM00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUO=
 Z17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAV=
 rOMQtwuNcpuFP-4&amp;s=3D1MozKOqYdX_-ScQbCn1XC9a1xYNmhG4skdwIbw_L380&amp;e=3D" ta=
-rget=3D"_blank"><img src=3D"https://pages.awscloud.com/rs/112-TZM-766/images/Flo=
+rget=3D"_blank"><img src=3D"http://demisto.com/rs/112-TZM-766/images/Flo=
 or28%20Email-04.jpg" width=3D"100" height=3D"100" constrain=3D"true" imagepreview=3D=
 "false"></a></span></td>
 <td style=3D"width: 200px; text-align: center; vertical-align: middle;" colsp=
@@ -877,11 +877,11 @@ an=3D"2">
 <td style=3D"text-align: center; vertical-align: top;" colspan=3D"3">
 <p style=3D"margin-top: 18px; margin-bottom: 18px;"><span style=3D"font-family:=
  helvetica, arial, sans-serif;"><strong><span style=3D"font-size: 14px;"></spa=
-n></strong><a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__ema=
+n></strong><a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__ema=
 il.awscloud.com_z0Yg0tO00h2ZkvxCT2EcM00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83Uy=
 HGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE=
 &amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D1MozKOqYdX_-ScQbCn1=
-XC9a1xYNmhG4skdwIbw_L380&amp;e=3D" target=3D"_blank"><img src=3D"https://pages.aws=
+XC9a1xYNmhG4skdwIbw_L380&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com=
 cloud.com/rs/112-TZM-766/images/Azrieli Sarona Map.PNG" alt=3D"" width=3D"590" h=
 eight=3D"175" constrain=3D"true" imagepreview=3D"false" border=3D"" style=3D"display: =
 block; margin-left: auto; margin-right: auto;"></a></span></p>
@@ -948,7 +948,7 @@ er" style=3D"max-width: 600px;" class=3D"responsive-table">
 <td align=3D"center" style=3D"font-family: Helvetica, Arial, Sans-serif; font-s=
 ize: 10px; line-height: 14px; color: #333333; border-top-color: #d7d7d7; bor=
 der-top-style: solid; border-top-width: 1px; padding-top: 10px;">
-<a style=3D"color: #007eb9; text-decoration: none;" href=3D"https://urldefense.=
+<a style=3D"color: #007eb9; text-decoration: none;" href=3D"http://demisto.com=
 proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_s0wxhOC0gZkF0TcY2200t0M=
 &amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17Q=
 yTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQ=
@@ -960,13 +960,13 @@ rzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrw
 FWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DVm1sh8051hPtUm5dbjXbLWEPVzW8YgN6LnENpp0n=
 SvI&amp;e=3D">
 AWS on Facebook </a>| <a style=3D"color: #007eb9; text-decoration: none;" hre=
-f=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_j=
+f=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awscloud.com_j=
 YHZ0C0OTh02gc2kMty0x00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8=
 PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLlo=
 prrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DnCpq-dxBiO_y8yoNUguIKOKbm_K640TntwyU=
 aV_aIUY&amp;e=3D">
 AWS on Twitch </a>| <a style=3D"color: #007eb9; text-decoration: none;" href=3D=
-"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_s0z=
+"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awscloud.com_s0z=
 xhOC0gZkI0TcY2200t0M&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PT=
 fkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLlopr=
 rwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DUC7fmY2wBgFStZZNPgI7gSRwymbSzUrjhuY987=
@@ -1004,7 +1004,7 @@ ight: 14px; color: rgb(51, 51, 51);  padding-top:15px;" align=3D"center">
 <tr>
 <td align=3D"center" style=3D"font-family: Helvetica, Arial, Sans-serif; font-s=
 ize: 9px; color: #999999; line-height: 16px;">
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_dc_yuZkfPEXXFT65tdReNucEvTRm1nqq5Eg9ByfCCxPZLBhFWAGCfvufj6dhVwTzEtOIYQ=
 T6KZebtKsuFAXqr-5FkGfVPjdMwTtx5-5Fpmf-2DBolc-5F4aTz00KYqzh3T8FBZafNjAG-5FJ0-=
 5FHpoVJJp2zaXbvCD-2DKWntWMQrTl9DQplqIGh2IqVNqNVwgp9Lw5mmm4VcwSHamCM63Lz2dIz5=
@@ -1013,7 +1013,7 @@ DFw-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW
 3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=
 =3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DRY7p3IYgVS2n-IF6aYLRvrjrx=
 uviO5gjuRQz4-YsJ1A&amp;e=3D" style=3D"color: #007eb9; text-decoration: none;">My
- Account </a>| <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
+ Account </a>| <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
 __email.awscloud.com_dc_KwqiTCOQ16Q1JCi3MdelD3ZZGcncVANDEUTkhckMhmjKLpc5Celu=
 LOBeryeJSliZOd7HSaDnjFzd0Abmoc1XBrLSxuxnTt3JbegdQLT26UxJ0566PjFE7Y4mxyKl2kDG=
 mIQkaBy9xwIcCMowmpOremkgG2DKmgEbxjb91yrYwOYSrb-2DXi42HWSdcfzjep4X-5F2zQCf8sq=
@@ -1023,7 +1023,7 @@ IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRsz=
 lJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DI3PE=
 xCACjVa4Od_5a3ZCZkQ9TcQfPAWVQAf-Z5bnHvM&amp;e=3D" style=3D"color: #007eb9; text-=
 decoration: none;">
-Getting Started</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dh=
+Getting Started</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dh=
 ttps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p4cqVisGqB1O6HX4o5TDTFP=
 HjYjB0mnTCzeqU2ae-5FUKuhaEYSlYO3aXs8wM7-2DOfOdUgvW-5FJ1xF2g4Tp-2DVwyR8kjq0D2=
 b7ZWCTIjLKbOohlVn-2DR4V7niUUUzcokTr5gyAjSZfcBOm6cyyl6Z3CebaPbyNcJgtqmPUai0jB=
@@ -1033,7 +1033,7 @@ pI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJL=
 EZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DavkeTUp=
 e3Cd1tGVbskkCIFyE6_jMN0YUYQguzSErFyY&amp;e=3D" style=3D"color: #007eb9; text-dec=
 oration: none;">
-Products</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
+Products</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
 __email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p8U1m0pThWPS8HDkzJoucnUuXHXiDe=
 7Ph7gqGCnX3LZQ-2D-5FHE-2DR8sw32tvzo8nP3ug8h9q5lE-5FYelPQx1XtbshcYr17NZmLkVUu=
 PE6OnC7palacPArGU1-2D4gpSRV28wMO8fqPlbV7LC7-2DQg864NUVuugG8sNuORp6GRyp-2DEOR=
@@ -1043,7 +1043,7 @@ zTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAy=
 I3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D8aIXfclQqJES=
 v69bBTU42xyaSIyxOAWkLb0zNkW-w8c&amp;e=3D" style=3D"color: #007eb9; text-decorati=
 on: none;">
-Solutions</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3=
+Solutions</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3=
 A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p2cy1ELLlkvByqWei9bfR-2D-2Dho=
 jGlhPzUN78r-5FZch2HtbZ3Ei-5FbRLqmLthz8gHQN-2DFdcJWZw7dyTMpH57ov-5FhWQ5sDWMYo=
 BQPTFH0UScaqygLZg84gongn6m9oJR3v5x0O6S7sJ67UW2GVC4pcx-2DRUBmOTMzELOaIQ7Zj1uh=
@@ -1053,7 +1053,7 @@ tstRrMniCRGPEFIyuOEGieE1K-2Dw-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp=
 8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=
 =3DWSU0IN5n7h6RHLS-a_yeUGysa8CaXT8N3OoGY9cL2mc&amp;e=3D" style=3D"color: #007eb9; =
 text-decoration: none;">
-Pricing</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A_=
+Pricing</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A_=
 _email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7pwZEstDV9Ps9416YONcLSEF8r-2DAaB=
 oFaCUYu1ZF75He0WAfnisjtOjqeLe3XQHCUOO-2DgC7l7hI6iKJyXjJEkrFnP329NsxwqHHWBeUN=
 oAWdOsIz1CrswQRF8QuR0I-2DXNALkNO6SfZZHDuRB9vmclsD2qYlimzIq3X-5F4Aarnp3yodCXL=
@@ -1063,7 +1063,7 @@ Tw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI=
 3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3Dg1VbB-5CqqUGC=
 Lj29TwHRus5KczcL5K0o7-YVphC8zs&amp;e=3D" style=3D"color: 
 #007eb9; text-decoration: none;">
-Partners</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
+Partners</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
 __email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p-2DZQ749iALJ6Yd3d1oPtC01N1IC-=
 5Fo2OvptCjYrzUTP1po01fJ-5Ffh0V7xQxTUh1G9tp-5FEODSmS-2DeTxiy3h1czpfkeQY8afv-5=
 FtLPqjBHalPFiu7mIycWdUTY-5F77JGYoLGvLo4EgariPbzlF25E73Hg5CvPGDr3OsSv82VXPI-2=
@@ -1073,7 +1073,7 @@ nFSu34UbvLlZjCJoXKrKGj8P-5FqtEdJwKRrVDTKAL8-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=
 S-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcp=
 uFP-4&amp;s=3DaQTimBKwWfcptgP_fz67aBRF9CDRv5R7KmAExBmBJAE&amp;e=3D" style=3D"color=
 : #007eb9; text-decoration: none;">
-Documentation</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhtt=
+Documentation</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhtt=
 ps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p-5FqWKeonTop1TVJlHau9PEC=
 VqCWxK-5FyFPuI6uoEMmeaC55T-2DTKK2eG1zUq5IiMz-5F7xocCVWOWMikEF58UczY-5Fwgs3zB=
 RDU2HePLxiJy91AxeiAK0WaqQ1PLSRdVLtg7p6uTTTLTM3dms62bPXhSGyGrEpH7c4YCCTkXth1z=
@@ -1083,7 +1083,7 @@ gWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszl=
 JLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D_6zEe=
 -2lIVV3a43ZsKA9G59ggBSxt2l953qNBatRrQs&amp;e=3D" style=3D"color: #007eb9; text-d=
 ecoration: none;">
-Training</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
+Training</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
 __email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p9MwfMxNMOCe-5F0VHXzfN8dN-2DPg=
 8LCpQSQaN0TBrjXosT8IVHM7g9SjZ9JhEtgldhBSAen8j2eHgaifL2tQePg1thvoqbl9L0QgJwqC=
 P5hI5a-5F4Qf0UT94eqh188kW1nWRSforYbLIrwlwWDw63D6F-5Fd2XSaGOE7xWxmYztB47RTGFJ=
@@ -1093,7 +1093,7 @@ amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD
 37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&am=
 p;s=3DuPt0rYpvBpnnDR6HaLfZY3uCcmYzucdDLzGt9t8DBzA&amp;e=3D" style=3D"color: #007eb=
 9; text-decoration: none;">
-Events &amp; Webinars</a> | <a href=3D"https://urldefense.proofpoint.com/v2/u=
+Events &amp; Webinars</a> | <a href=3D"http://demisto.comnt.com/v2/u=
 rl?u=3Dhttps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p-2D2g1ZV1YttvPmp=
 Z-5F2arul57mxDH2hDP7-2DPmcfGWWgd-2DZx2YFBeQpRqmwrRCmPE-5F1d8j8qJJn8a0aBOEwju=
 IHWuoaAW0vaxJcMo6CS2ASY23SS2E7nVMThCXwBQZn3UsHCmXVxghTbjbm0eZ4e-2DMFL7FvkzUm=
@@ -1103,7 +1103,7 @@ erZEV8zHk9M637yM2byXpHbj4yGRMx8oJ2sukIsJvSG3U9gX-2Ds4ap9Hcfea4MZ7Mz-5FM9Mp9P=
 8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=
 =3DjDAE8hgSF-YgOZeD7M_bSfb822HtpPKdTRSXsjNkQB8&amp;e=3D" style=3D"color: #007eb9; =
 text-decoration: none;" target=3D"_blank">
-AWS Activate</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttp=
+AWS Activate</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttp=
 s-3A__email.awscloud.com_dc_KwqiTCOQ16Q1JCi3MdelD78in-5F-5FVMI-5FzdbVDMzZ3kS=
 vR93Srg3KACAeaH-2DfeV6n8fFZFwLCyL52zEa-5Fl-2DHxV0HgsarlWT1jePuqBHNBNoSZgWMK-=
 5FL4tqHsXeDAhrWU7z-5F8gsYlcKsFH-5FiSt0AP13d0VUNk4qKsf0ildupDk-2DBPBIgcEYFpx8=
@@ -1113,7 +1113,7 @@ ciVAWUPS82Fu-5FxRrFAHMI18iq4xhaiFtD6a7M-5FFd-5Fh6w8dFDY-2D0NbzjD2i1wnaRLJIDw=
 Z17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAV=
 rOMQtwuNcpuFP-4&amp;s=3DwtNA8caFXHjVFom0giU3QkeyrIZeoj9HUwiUutGarfc&amp;e=3D" st=
 yle=3D"color: #007eb9; text-decoration: none;">
-Marketplace</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps=
+Marketplace</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps=
 -3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p7og2A-5FqEWVUdkv18t9fey9FR=
 pCN-5F3oiMil77N9r0aFdyNs08ZSUGPK8NNLg-5FbyDp5hCYOVrqEvDdE3RAG9CiMUvT-2DETiJM=
 VG5v47cOFUjDDhr16yUhgrcK1343rBGTcKa1BAk9-2Dtmv6kz7zqd8AqBs8IB8jdKhvIFX-2DjMS=
@@ -1123,7 +1123,7 @@ pI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJL=
 EZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DBitMDRF=
 mmDYSZCCoBCG1Pp9TdvGi2Qob2NzqBbzL24s&amp;e=3D" style=3D"color: 
 #007eb9; text-decoration: none;">
-What's&nbsp;New</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dh=
+What's&nbsp;New</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dh=
 ttps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p0486BTljVMiJxb-2DdUE36=
 Fa71K9s92Yg6Y5tTGnJhLaJTOVRTKSfm-5F-5FBr08WkySuwMzsgKxC-2DbGtB3mRFo-5FckvRt3=
 vVswXLeGHCvsA6xlRIwQgX8x9LuU1mfcczyEW5XFrAOGhpvAf1RMTtvdGn9OrbKTEuFpCTIQHJ-5=
@@ -1140,7 +1140,7 @@ font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400=
 t: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: =
 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-de=
 coration-color: initial; display: inline !important; float: none;">|<span>&n=
-bsp;<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsc=
+bsp;<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsc=
 loud.com_dc_KwqiTCOQ16Q1JCi3MdelD5aQqce63OVL6baXF6dCre2fFfS1oodd2-5F7Kq1Lg-5=
 FWJRi8IOWMc6LUBIdAnqXU3Q57DzPoIXPrvykEcSl8H3zlBnPNYgHVrzSSQ6jaOBn0ijN38W-2DA=
 Eat1aQHMeZJIdV-5FyXrPPDNyiJOjlUqwBsBSx-2DfkaRICoGbRbqWRmLIRMgkWoTsvvKwoKQ4x8=
@@ -1159,7 +1159,7 @@ t: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: =
 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-de=
 coration-color: initial;">
 <br>
-<span style=3D"font-size: 11px;"><strong><a href=3D"https://urldefense.proofpoi=
+<span style=3D"font-size: 11px;"><strong><a href=3D"http://demisto.com=
 nt.com/v2/url?u=3Dhttps-3A__pages.awscloud.com_index.php_email_emailWebview-3F=
 mkt-5Ftok-3DeyJpIjoiT0RBeVpUazJNemMyTkROaSIsInQiOiJzVzkydktjY25EcWxpWjZETnQ1=
 RzVsREI3TTlmOFFXb0pwS1hzcGtJSDBLTGZyVFdmcGpSTG1mLzdyaXgzQmswUTlubVdSQXpybklN=
@@ -1169,7 +1169,7 @@ FWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIj
 j0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DfL0axVTMifMI_cd_bn9Eu6001lE893=
 WikW3njQTI6eY&amp;e=3D" style=3D"color: #007eb9; text-decoration: none; font-siz=
 e: 11px;">View
- Online</a> | <a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A_=
+ Online</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A_=
 _email.awscloud.com_v_s0GxhOC0gZkP0TcY2200t0M&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5Pvz=
 Tw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI=
 3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DacriFG6IPk6d0=
@@ -1207,7 +1207,7 @@ Helvetica, Arial, sans-serif; color: #666666;">
 <dl><dt style=3D"color: #888888; font-size: 10px; text-align: center;">We hop=
 e you enjoyed this email. If you'd rather not receive future emails from Ama=
 zon Web Services,
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_dc_sRhgdM26bquWWERQj-5FH99lCavgYp1xy4-5F-2D5c9n1WxRAg-2DIit3iVTUYZUZlQ=
 mzz1BTdI04NvsSqvrTM6rSnQGNE7u0izR2mDymghKXNuyYsucnJtwtBaa95VSRX-2DbxtC1fSBIJ=
 hBSASzQTWX-2DoL2kJeX2eT5Y01QUY-2D26nuZMUXAbWVOH1cKjHbP7fgVueU3I3vvaMNjPfEnHq=
@@ -1227,7 +1227,7 @@ filiates, 410 Terry Ave. North, Seattle, WA 98109.
 </dt><dt style=3D"color: #888888; font-size: 10px; text-align: center;">=C2=A9 20=
 18, Amazon Web Services, Inc. or its affiliates. All rights reserved. Read o=
 ur
-<a href=3D"https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awsclou=
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
 d.com_x0T00c0x0CChOkZ0Lt22gMY&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
 MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
 jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DI4Ar-k_zgzCPDerC3NLM2o_Z1pIm2=
@@ -1259,7 +1259,7 @@ Privacy Policy</a>. </dt></dl>
 </tr>
 </tbody>
 </table>
-<!-- Outer table End --><a href=3D"https://urldefense.proofpoint.com/v2/url?u=
+<!-- Outer table End --><a href=3D"http://demisto.comnt.com/v2/url?u=
 =3Dhttps-3A__email.awscloud.com_iMxT0kZC2DO00t0hcgY0M02&amp;d=3DDwMFaQ&amp;c=3DV9I=
 gWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszl=
 JLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3Dict4V=
