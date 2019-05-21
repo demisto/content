@@ -459,6 +459,8 @@ def restart_demisto_service(ami, c):
 
 
 def execute_testing(server, server_ip, server_version, server_numeric_version):
+    print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
+
     options = options_handler()
     username = options.user
     password = options.password
@@ -593,7 +595,7 @@ def main():
     else:  # Run tests in Server build configuration
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
-            instance_ip = [line.strip('\n').split(":") for line in instance_ips][0]
+            instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
 
         execute_testing(SERVER_URL.format(instance_ip), instance_ip, server_version, server_numeric_version)
 
