@@ -1674,6 +1674,7 @@
         "AWS - CloudWatchLogs": "Integration requires SSL",
         "AWS - CloudTrail": "Integration requires SSL",
         "AWS - EC2": "Integration requires SSL",
-        "AWS - S3": "Integration requires SSL"
+        "AWS - S3": "Integration requires SSL",
+        "Image OCR": "Doesn't perform network communication"
     }
 }
