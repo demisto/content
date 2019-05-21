@@ -464,9 +464,31 @@ script:
     - contextPath: VMRay.Job.Status
       description: Status of job
       type: String
+  - arguments:
+    - default: false
+      description: sample id
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: true
+    description: similiar to vmray-get-job-by-sample
+    execution: false
+    name: get_job_sample
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: true
+    description: similiar to vmray-get-sample
+    execution: false
+    name: get_results
   dockerimage: demisto/python
   isfetch: false
   runonce: false
   script: ''
   type: python
+releaseNotes: Integration rework - new commands and detonate playbook
 fromversion: 4.0.0

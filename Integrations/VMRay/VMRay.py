@@ -1,5 +1,4 @@
 import requests
-
 from CommonServerPython import *
 
 """ GLOBAL PARAMS """

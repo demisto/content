@@ -431,3 +431,4 @@ outputs:
   description: Classifications of sample
   type: string
 fromversion: 4.0.0
+releaseNotes: New detonate playbook
