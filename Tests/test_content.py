@@ -187,10 +187,10 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name):
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, is_ami=True):
     start_message = '------ Test %s start ------' % (test_message,)
 
-    if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
+    if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         print(start_message + ' (Mock: Disabled)')
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
                        slack, circle_ci, build_number, server_url, build_name)
@@ -376,7 +376,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version):
+                      server_numeric_version, is_ami=True):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -443,7 +443,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
     run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name)
+             build_number, server, build_name, is_ami)
 
 
 def restart_demisto_service(ami, c):
@@ -458,7 +458,7 @@ def restart_demisto_service(ami, c):
     raise Exception('Timeout waiting for demisto service to restart')
 
 
-def execute_testing(server, server_ip, server_version, server_numeric_version):
+def execute_testing(server, server_ip, server_version, server_numeric_version, is_ami=True):
     print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
 
     options = options_handler()
@@ -504,9 +504,11 @@ def execute_testing(server, server_ip, server_version, server_numeric_version):
         print('no integrations are configured for test')
         return
 
-    ami = AMIConnection(server_ip)
-    ami.clone_mock_data()
-    proxy = MITMProxy(c, server_ip)
+    proxy = None
+    if is_ami:
+        ami = AMIConnection(server_ip)
+        ami.clone_mock_data()
+        proxy = MITMProxy(c, server_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -518,7 +520,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version):
                                                 nightly_integrations)
 
     # first run the mock tests to avoid mockless side effects in container
-    if mock_tests:
+    if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mock_tests:
             run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
@@ -540,14 +542,14 @@ def execute_testing(server, server_ip, server_version, server_numeric_version):
                           is_filter_configured,
                           filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name, server_numeric_version)
+                          build_name, server_numeric_version, is_ami)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    if build_name == 'master':
+    if is_ami and build_name == 'master':
         print("Pushing new/updated mock files to mock git repo.")
         ami.upload_mock_files(build_name, build_number)
 
