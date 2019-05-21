@@ -311,6 +311,5 @@ outputs:
 - contextPath: CylanceProtectDevice
   description: The device information about the hostname that was enriched.
   type: unknown
-releaseNotes: "Enrich endpoints using the Cylance Protect v2 integration."
 tests:
   - no test (tested as part of Endpoint Enrichment v2.1)

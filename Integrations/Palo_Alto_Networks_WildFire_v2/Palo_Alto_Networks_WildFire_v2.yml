@@ -353,4 +353,3 @@ script:
   type: python
 tests:
 - Wildfire Test
-releaseNotes: Rewrote the integration in Python.
