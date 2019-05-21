@@ -81,4 +81,3 @@ runas: DBotWeakRole
 dockerimage: demisto/python3:3.7.3.260
 tests:
   - GDPRContactAuthorities Test
-releaseNotes: "New script - GDPR Data Breach Notification process - find the relevant authority"
