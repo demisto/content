@@ -423,7 +423,7 @@ def main():
         LOG(traceback.format_exc())
 
         if demisto.command() == 'fetch-incidents':
-            LOG(e.message)
+            LOG(str(e))
             LOG.print_log()
         else:
             raise
