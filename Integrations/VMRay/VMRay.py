@@ -50,6 +50,14 @@ DBOTSCORE = {
 
 
 def is_json(response):
+    """Checks if response is jsonable
+
+    Args:
+        response (requests.Response):
+
+    Returns:
+        bool: true if object is jsonable
+    """
     try:
         response.json()
     except ValueError:
@@ -58,7 +66,14 @@ def is_json(response):
 
 
 def check_sample_id():
-    if not SAMPLE_ID.isdigit():
+    """Checks if global parameter SAMPLE_ID is a number
+
+    Returns:
+        bool: True if is a number, else returns error
+    """
+    if isinstance(SAMPLE_ID, int):
+        return True
+    if isinstance(SAMPLE_ID, (str, basestring, unicode)) and not SAMPLE_ID.isdigit():
         return_error(ERROR_FORMAT.format(404, 'No such element'))
     return True
 
