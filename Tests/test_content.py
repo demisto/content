@@ -48,12 +48,12 @@ def options_handler():
 
 
 def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
-                       unmocklable_integrations, proxy):
+                       unmocklable_integrations, proxy, is_ami=True):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
-    rerecorded_count = len(proxy.rerecorded_tests)
-    empty_mocks_count = len(proxy.empty_files)
+    rerecorded_count = len(proxy.rerecorded_tests) if is_ami else 0
+    empty_mocks_count = len(proxy.empty_files) if is_ami else 0
     unmocklable_integrations_count = len(unmocklable_integrations)
 
     print('\nTEST RESULTS:')
@@ -515,9 +515,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     skipped_tests = set([])
     skipped_integration = set([])
 
-    # move all mock tests to the top of the list
-    mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations, skipped_integrations_conf,
-                                                nightly_integrations)
+    if is_ami:
+        # move all mock tests to the top of the list
+        mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations, skipped_integrations_conf,
+                                                    nightly_integrations)
+    else:  # In case of a non AMI run we don't want to use the mocking mechanism
+        mockless_tests = tests
 
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
@@ -545,7 +548,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                           build_name, server_numeric_version, is_ami)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
-                       proxy)
+                       proxy, is_ami)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
