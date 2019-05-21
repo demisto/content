@@ -128,6 +128,17 @@ script:
         session.post(SERVER+url_suffix, data=params, verify=USE_SSL)
 
 
+    def policy_addr_array_from_arg(policy_addr_str):
+        policy_adr_str_array = policy_addr_str.split(",")
+        policy_addr_dict_array = []
+        for src_addr_name in policy_adr_str_array:
+            cur_addr_dict = {
+                "name": src_addr_name
+            }
+            policy_addr_dict_array.append(cur_addr_dict)
+        return policy_addr_dict_array
+
+
     ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -603,16 +614,15 @@ script:
         policy_description = demisto.args().get('description', '')
         policy_srcintf = demisto.args().get('sourceIntf')
         policy_dstintf = demisto.args().get('dstIntf')
-        policy_source_address = demisto.args().get('source')
-        policy_destination_address = demisto.args().get('destination')
+        policy_source_address = policy_addr_array_from_arg(demisto.args().get('source'))
+        policy_destination_address = policy_addr_array_from_arg(demisto.args().get('destination'))
         policy_service = demisto.args().get('service')
         policy_action = demisto.args().get('action')
         policy_status = demisto.args().get('status')
         policy_log = demisto.args().get('log')
         policy_nat = demisto.args().get('nat')
 
-        create_policy = create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf, policy_source_address,                                                                          policy_destination_address, policy_service, policy_action, policy_status, policy_log, policy_nat)
-
+        create_policy = create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf, policy_source_address, policy_destination_address, policy_service, policy_action, policy_status, policy_log, policy_nat)
         contents.append({
             'Name': policy_name,
             'Description': policy_description,
@@ -670,8 +680,8 @@ script:
                 'name': policy_name,
                 'srcintf': [{'name': policy_srcintf }],
                 'dstintf': [{'name': policy_dstintf }],
-                'srcaddr': [{'name': policy_source_address }],
-                'dstaddr': [{'name': policy_destination_address }],
+                'srcaddr': policy_source_address,
+                'dstaddr': policy_destination_address,
                 'action': policy_action,
                 'status': policy_status,
                 'schedule': 'always',
@@ -1388,6 +1398,6 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
-releaseNotes: "Fixed bug with src and dst addresses in human readable"
+releaseNotes: "Fixed bug with src and dst addresses in human readable. Fixed policy creation - now supports multiple sources / destinations."
 tests:
   - Fortigate Test
