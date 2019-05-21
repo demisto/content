@@ -582,5 +582,4 @@ script:
   type: python
 tests:
 - Palo Alto Networks Cortex Test
-releaseNotes: new integration
 fromversion: 4.1.0

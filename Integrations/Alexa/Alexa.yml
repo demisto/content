@@ -61,4 +61,3 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 tests:
 - Alexa Test Playbook
 fromversion: 3.5.0
-releaseNotes: Fixed logo, improved DBot reporting, added support for proxied environments.
