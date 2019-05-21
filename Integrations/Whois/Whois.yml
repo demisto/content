@@ -69,5 +69,6 @@ script:
   dockerimage: demisto/ippysocks
   runonce: false
 fromversion: 4.1.0
+releaseNotes: '-'
 tests:
   - whois_test
