@@ -675,6 +675,7 @@ script:
     - name: vaccine_id
       required: true
       description: The vaccine the specified vaccines.
+    description: Deletes a vaccine by the vaccine ID.
   - name: minerva-get-exclusions
     arguments: []
     outputs:
