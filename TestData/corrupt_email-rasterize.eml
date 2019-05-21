@@ -1,8 +1,8 @@
-Delivered-To: ashamah@paloaltonetworks.com
-Received: by 2002:a25:118a:0:0:0:0:0 with SMTP id 132csp4523987ybr;
+Delivered-To: *******@paloaltonetworks.com
+Received: by *:*:*:*:* with SMTP id 132csp4523987ybr;
         Sun, 19 May 2019 22:58:19 -0700 (PDT)
 X-Google-Smtp-Source: APXvYqwikcyMN4TY4USZf6QfLlJpHi8xKrzC5MrycS4uktDYdp7zouJQBK5dd+gzdS5p/2swsXTZ
-X-Received: by 2002:a9d:5f11:: with SMTP id f17mr4258369oti.111.1558331898995;
+X-Received: by 1.1.1.*:*:*:*:* with SMTP id f17mr4258369oti.111.1558331898995;
         Sun, 19 May 2019 22:58:18 -0700 (PDT)
 ARC-Seal: i=2; a=rsa-sha256; t=1558331898; cv=pass;
         d=google.com; s=arc-20160816;
@@ -25,21 +25,21 @@ ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc
          uXgg==
 ARC-Authentication-Results: i=2; mx.google.com;
        arc=pass (i=1 spf=pass spfdomain=paloaltonetworks.com dmarc=pass fromdomain=paloaltonetworks.com);
-       spf=pass (google.com: domain of demisto-all+bncbdcizeew7qhbb5udrhtqkgqe3zbe2vq@paloaltonetworks.com designates 209.85.210.72 as permitted sender) smtp.mailfrom=demisto-all+bncBDCIZEEW7QHBB5UDRHTQKGQE3ZBE2VQ@paloaltonetworks.com;
+       spf=pass (google.com: domain of *****@paloaltonetworks.com designates 1.1.1.1 as permitted sender) smtp.mailfrom=*****@paloaltonetworks.com;
        dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com
-Return-Path: <demisto-all+bncBDCIZEEW7QHBB5UDRHTQKGQE3ZBE2VQ@paloaltonetworks.com>
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com. [209.85.210.72])
-        by mx.google.com with ESMTPS id j2si8201471oia.272.2019.05.19.22.58.18
-        for <ashamah@paloaltonetworks.com>
+Return-Path: <*****@paloaltonetworks.com>
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com. [1.1.1.1])
+        by mx.google.com with ESMTPS id j2si8201471oia.272.2019.1.1.1.1.18
+        for <*******@paloaltonetworks.com>
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Sun, 19 May 2019 22:58:18 -0700 (PDT)
-Received-SPF: pass (google.com: domain of demisto-all+bncbdcizeew7qhbb5udrhtqkgqe3zbe2vq@paloaltonetworks.com designates 209.85.210.72 as permitted sender) client-ip=209.85.210.72;
+Received-SPF: pass (google.com: domain of *****@paloaltonetworks.com designates 1.1.1.1 as permitted sender) client-ip=1.1.1.1;
 Authentication-Results: mx.google.com;
        arc=pass (i=1 spf=pass spfdomain=paloaltonetworks.com dmarc=pass fromdomain=paloaltonetworks.com);
-       spf=pass (google.com: domain of demisto-all+bncbdcizeew7qhbb5udrhtqkgqe3zbe2vq@paloaltonetworks.com designates 209.85.210.72 as permitted sender) smtp.mailfrom=demisto-all+bncBDCIZEEW7QHBB5UDRHTQKGQE3ZBE2VQ@paloaltonetworks.com;
+       spf=pass (google.com: domain of *****@paloaltonetworks.com designates 1.1.1.1 as permitted sender) smtp.mailfrom=*****@paloaltonetworks.com;
        dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com
 Received: by mail-ot1-f72.google.com with SMTP id 72sf7477225otv.23
-        for <ashamah@paloaltonetworks.com>; Sun, 19 May 2019 22:58:18 -0700 (PDT)
+        for <*******@paloaltonetworks.com>; Sun, 19 May 2019 22:58:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
@@ -57,14 +57,14 @@ X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 X-Gm-Message-State: APjAAAUx/7uwZseoxMIF8KVqrh+v3YAAbM8l95BDmeoIuND9g8ldXpxM
 	+pKMb4P8pI7OOqB8UU8V11xDZ+j0vkrY6Z8R/BnG3MDi6zZ6Kp/Gfq5gT5qwEd2TsDT4dVtrwbx
 	Yvot3OWij4yByrqZT5bTbSpaxymPiF7Xq7onXiQ==
-X-Received: by 2002:a9d:6f8a:: with SMTP id h10mr29919050otq.2.1558331895932;
+X-Received: by 1.1.1.*:*:*:*:* with SMTP id h10mr29919050otq.2.1558331895932;
         Sun, 19 May 2019 22:58:15 -0700 (PDT)
-X-Received: by 2002:a9d:6f8a:: with SMTP id h10mr29918963otq.2.1558331894923;
+X-Received: by 1.1.1.*:*:*:*:* with SMTP id h10mr29918963otq.2.1558331894923;
         Sun, 19 May 2019 22:58:14 -0700 (PDT)
-X-BeenThere: demisto-all@paloaltonetworks.com
-Received: by 2002:a9d:63da:: with SMTP id e26ls1328063otl.14.gmail; Sun, 19
+X-BeenThere: *****@paloaltonetworks.com
+Received: by 1.1.1.*:*:*:*:* with SMTP id e26ls1328063otl.14.gmail; Sun, 19
  May 2019 22:58:14 -0700 (PDT)
-X-Received: by 2002:a9d:6246:: with SMTP id i6mr6197074otk.270.1558331893420;
+X-Received: by 1.1.1.*:*:*:*:* with SMTP id i6mr6197074otk.270.1558331893420;
         Sun, 19 May 2019 22:58:13 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; t=1558331893; cv=none;
         d=google.com; s=arc-20160816;
@@ -84,47 +84,47 @@ ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc
          Djmlrmemzo800y8RIND/ObBWh8783eCohFDuwnbr77vWDhOfp7xl1PfrCbDmf5UkunvR
          BFrQ==
 ARC-Authentication-Results: i=1; mx.google.com;
-       spf=pass (google.com: domain of nmetrani@paloaltonetworks.com designates 209.85.167.198 as permitted sender) smtp.mailfrom=nmetrani@paloaltonetworks.com;
+       spf=pass (google.com: domain of *****@paloaltonetworks.com designates 1.1.1.1 as permitted sender) smtp.mailfrom=*****@paloaltonetworks.com;
        dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com. [209.85.167.198])
-        by mx.google.com with ESMTPS id k22si8938359otl.18.2019.05.19.22.58.13
-        for <demisto-all@paloaltonetworks.com>
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com. [1.1.1.1])
+        by mx.google.com with ESMTPS id k22si8938359otl.18.2019.1.1.1.1.13
+        for <*****@paloaltonetworks.com>
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Sun, 19 May 2019 22:58:13 -0700 (PDT)
-Received-SPF: pass (google.com: domain of nmetrani@paloaltonetworks.com designates 209.85.167.198 as permitted sender) client-ip=209.85.167.198;
+Received-SPF: pass (google.com: domain of *****@paloaltonetworks.com designates 1.1.1.1 as permitted sender) client-ip=1.1.1.1;
 Received: by mail-oi1-f198.google.com with SMTP id s64so4339046oia.15
-        for <demisto-all@paloaltonetworks.com>; Sun, 19 May 2019 22:58:13 -0700 (PDT)
-X-Received: by 2002:aca:3387:: with SMTP id z129mr9626747oiz.166.1558331892614;
+        for <*****@paloaltonetworks.com>; Sun, 19 May 2019 22:58:13 -0700 (PDT)
+X-Received: by *:*:*:*:* with SMTP id z129mr9626747oiz.166.1558331892614;
         Sun, 19 May 2019 22:58:12 -0700 (PDT)
-X-Received: by 2002:aca:3387:: with SMTP id z129mr9626712oiz.166.1558331891675;
+X-Received: by *:*:*:*:* with SMTP id z129mr9626712oiz.166.1558331891675;
  Sun, 19 May 2019 22:58:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <CA+yOvsCeQnAQFz=1=sAqB9OAoUJ+du2MALDSRDPAWnT_fc5qog@mail.gmail.com>
- <CAFVhvhXs8=Gh-A66_3cZChzfJwT7fE-gnaJtSA9oN9skZzW0Dg@mail.gmail.com>
-In-Reply-To: <CAFVhvhXs8=Gh-A66_3cZChzfJwT7fE-gnaJtSA9oN9skZzW0Dg@mail.gmail.com>
-From: Nina Metrani <nmetrani@paloaltonetworks.com>
+References: <CA+yOvsCeQnAQFz=1=*****@paloaltonetworks.com>
+ <CAFVhvhXs8=*****@paloaltonetworks.com>
+In-Reply-To: <CAFVhvhXs8=*****@paloaltonetworks.com>
+From: Nina Metrani <*****@paloaltonetworks.com>
 Date: Mon, 20 May 2019 08:58:03 +0300
-Message-ID: <CAAOJCFD-Q_EyC_23M9nt3hTg8qi2u=g2dkE2x4o+aZZE1JGraA@mail.gmail.com>
+Message-ID: <CAAOJCFD-Q_EyC_23M9nt3hTg8qi2u=*****@paloaltonetworks.com>
 Subject: Fwd: Powerpoint to print
-To: Demisto - All <demisto-all@paloaltonetworks.com>
+To: Demisto - All <*****@paloaltonetworks.com>
 Content-Type: multipart/mixed; boundary="000000000000d9a78005894b6a2a"
-X-Original-Sender: nmetrani@paloaltonetworks.com
+X-Original-Sender: *****@paloaltonetworks.com
 X-Original-Authentication-Results: mx.google.com;       spf=pass (google.com:
- domain of nmetrani@paloaltonetworks.com designates 209.85.167.198 as
- permitted sender) smtp.mailfrom=nmetrani@paloaltonetworks.com;
+ domain of *****@paloaltonetworks.com designates 1.1.1.1 as
+ permitted sender) smtp.mailfrom=*****@paloaltonetworks.com;
        dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com
 Precedence: list
-Mailing-list: list demisto-all@paloaltonetworks.com; contact demisto-all+owners@paloaltonetworks.com
+Mailing-list: list *****@paloaltonetworks.com; contact *****@paloaltonetworks.com
 List-ID: <demisto-all.paloaltonetworks.com>
-X-Spam-Checked-In-Group: demisto-all@paloaltonetworks.com
+X-Spam-Checked-In-Group: *****@paloaltonetworks.com
 X-Google-Group-Id: 794541439037
-List-Post: <https://groups.google.com/a/paloaltonetworks.com/group/demisto-all/post>,
- <mailto:demisto-all@paloaltonetworks.com>
+List-Post: <*****@paloaltonetworks.com/a/paloaltonetworks.com/group/demisto-all/post>,
+ <mailto:*****@paloaltonetworks.com>
 List-Help: <https://support.google.com/a/paloaltonetworks.com/bin/topic.py?topic=25838>,
- <mailto:demisto-all+help@paloaltonetworks.com>
-List-Archive: <https://groups.google.com/a/paloaltonetworks.com/group/demisto-all/>
-List-Unsubscribe: <mailto:googlegroups-manage+794541439037+unsubscribe@googlegroups.com>,
- <https://groups.google.com/a/paloaltonetworks.com/group/demisto-all/subscribe>
+ <mailto:*******@paloaltonetworks.com>
+List-Archive: <*****@paloaltonetworks.com/a/paloaltonetworks.com/group/demisto-all/>
+List-Unsubscribe: <mailto:*****@paloaltonetworks.com>,
+ <*****@paloaltonetworks.com/a/paloaltonetworks.com/group/demisto-all/subscribe>
 
 --000000000000d9a78005894b6a2a
 Content-Type: multipart/alternative; boundary="000000000000d9a77c05894b6a28"
