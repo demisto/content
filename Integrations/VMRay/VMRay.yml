@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://cloud.vmray.com
-  display: Server URL (e.g. https://192.168.0.1)
+  display: Server URL (e.g. https://cloud.vmray.com)
   name: server
   required: true
   type: 0
@@ -12,11 +12,11 @@ configuration:
   name: api_key
   required: true
   type: 4
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -324,7 +324,7 @@ script:
       description: Tag to add
       isArray: false
       name: tag
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Adds a tag to analysis and/or submission
@@ -347,7 +347,7 @@ script:
       description: Tag to delete
       isArray: false
       name: tag
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Delete tags from analysis and/or submission
@@ -477,11 +477,11 @@ script:
     name: get_job_sample
   - arguments:
     - default: false
+      description: ID of sample
       isArray: false
       name: sample_id
       required: true
       secret: false
-      description: ID of sample
     deprecated: true
     description: similiar to vmray-get-sample
     execution: false
