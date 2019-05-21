@@ -160,8 +160,9 @@ def run_flake8(project_dir, py_num):
 
 
 def run_mypy(project_dir, py_num):
-    print("========= Running mypy ===============")
-    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), get_lint_files(project_dir)], cwd=project_dir)
+    lint_files = get_lint_files(project_dir)
+    print("========= Running mypy on: {} ===============".format(lint_files))
+    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), lint_files], cwd=project_dir)
     print("mypy completed")
 
 
