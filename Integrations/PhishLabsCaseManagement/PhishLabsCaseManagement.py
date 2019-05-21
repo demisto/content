@@ -133,21 +133,16 @@ def list_cases_command():
         if not isinstance(cases, list):
             cases = [cases]
 
-        case_headers: list = ['Title', 'Number', 'Status', 'Description', 'Brand', 'Type', 'CreatedBy', 'CreatedAt',
-                              'ModifiedAt', 'ClosedAt', 'ResolutionStatus']
+        case_headers: list = ['Title', 'Number', 'Status', 'Type', 'CreatedBy', 'CreatedAt']
 
         contents = [{
             'ID': c.get('caseId'),
             'Title': c.get('title'),
             'Status': c.get('caseStatus'),
-            'Description': c.get('description'),
             'Number': c.get('caseNumber'),
             'CreatedBy': c.get('createdBy', {}).get('name'),
             'CreatedAt': c.get('dateCreated'),
             'ModifiedAt': c.get('dateModified') if c.get('dateModified', '') != NONE_DATE else '',
-            'ClosedAt': c.get('dateClosed') if c.get('dateClosed', '') != NONE_DATE else '',
-            'ResolutionStatus': c.get('resolutionStatus'),
-            'Brand': c.get('brand'),
             'Type': c.get('caseType')
         } for c in cases]
 
@@ -166,7 +161,7 @@ def list_cases_command():
 @logger
 def list_cases_request(status=None, case_type=None, limit=None, date_field=None, begin_date=None, end_date=None):
     """
-    Sends a request to PhishLabs global feed with the provided arguments
+    Sends a request to PhishLabs cases to get the cases list
     :param status: Filter by case status
     :param limit: Limit the number of rows to return
     :param case_type: Filter cases by case type
@@ -196,42 +191,218 @@ def list_cases_request(status=None, case_type=None, limit=None, date_field=None,
     return response
 
 
+def get_case_command():
+    """
+    Gets a case from PhishLabs according to provided arguments
+    """
+
+    case_id = demisto.args()['id']
+
+    context = {}
+
+    response = get_case_request(case_id)
+
+    case = response['data'] if response and response.get('data') else []
+
+    if case:
+        if isinstance(case, list):
+            case = case[0]
+
+        case_headers: list = ['Title', 'Number', 'Status', 'Description', 'Brand', 'Type', 'CreatedBy', 'CreatedAt',
+                              'ModifiedAt', 'ClosedAt', 'ResolutionStatus']
+
+        contents = {
+            'ID': case.get('caseId'),
+            'Title': case.get('title'),
+            'Status': case.get('caseStatus'),
+            'Description': case.get('description'),
+            'Number': case.get('caseNumber'),
+            'CreatedBy': case.get('createdBy', {}).get('name'),
+            'CreatedAt': case.get('dateCreated'),
+            'ModifiedAt': case.get('dateModified') if case.get('dateModified', '') != NONE_DATE else '',
+            'ClosedAt': case.get('dateClosed') if case.get('dateClosed', '') != NONE_DATE else '',
+            'ResolutionStatus': case.get('resolutionStatus'),
+            'Brand': case.get('brand'),
+            'Type': case.get('caseType')
+        }
+
+        human_readable = tableToMarkdown('PhishLabs Case {}'.format(case.get('title')), contents, headers=case_headers,
+                                         headerTransform=pascalToSpace, removeNull=True)
+        context = {
+            'PhishLabs.Case(val.ID === obj.ID)': createContext(contents, removeNull=True)
+        }
+
+    else:
+        human_readable = 'No cases found'
+
+    return_outputs(human_readable, context, response)
+
+
 @logger
-def get_feed_request(since: str = None, limit: str = None, indicator: list = None,
-                     remove_protocol: str = None, remove_query: str = None,
-                     offset: str = None, sort: bool = False) -> dict:
+def get_case_request(case_id=None):
     """
-    Sends a request to PhishLabs user feed with the provided arguments
-    :param since: Data updated within this duration of time from now
-    :param limit: Limit the number of rows to return
-    :param indicator: Indicator type filter
-    :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
-    :param remove_query: Removes the query string part from indicators when the rules can be applied.
-    :param offset: Number of incidents to skip
-    :param sort: If true, the incidents will be sorted by their creation time in ascending order.
-    :return: User feed
+    Sends a request to PhishLabs cases to get a case with a given ID
+    :param case_id: Case UUID
+    :return: PhishLabs case
     """
-    path: str = 'feed'
+    path: str = 'data/cases/' + case_id
+    response = http_request('get', path)
+
+    return response
+
+
+def list_brands_command():
+    """
+    Lists the brands in PhishLabs
+    """
+
+    limit = demisto.args().get('limit')
+    context = {}
+
+    response = list_brands_request()
+
+    brands = response['data'] if response and response.get('data') else []
+
+    if brands:
+        if not isinstance(brands, list):
+            brands = [brands]
+
+        if limit:
+            brands = brands[:int(limit)]
+
+        contents = [{
+            'Name': b,
+        } for b in brands]
+
+        human_readable = tableToMarkdown('PhishLabs Brands', contents, removeNull=True)
+        context = {
+            'PhishLabs.Brand(val.Name === obj.Name)': createContext(contents, removeNull=True)
+        }
+
+    else:
+        human_readable = 'No brands found'
+
+    return_outputs(human_readable, context, response)
+
+
+@logger
+def list_brands_request():
+    """
+    Sends a request to PhishLabs to retrieve case brands
+    :return: PhishLabs brands
+    """
+    path: str = 'create/brands'
     params: dict = {}
 
-    if since:
-        params['since'] = since
-    if limit:
-        params['limit'] = int(limit)
-    if offset:
-        params['offset'] = int(offset)
-    if indicator:
-        params['indicator'] = indicator
-    if remove_query:
-        params['remove_query'] = remove_query
-    if remove_protocol:
-        params['remove_protocol'] = remove_protocol
+    response = http_request('get', path, params)
 
-    if sort:
-        params['sort'] = 'created_at'
-        params['direction'] = 'asc'
+    return response
 
-    response = http_request('GET', path, params)
+
+def list_types_command():
+    """
+    Lists the case types in PhishLabs
+    """
+
+    limit = demisto.args().get('limit')
+    context = {}
+
+    response = list_brands_request()
+
+    types = response['data'] if response and response.get('data') else []
+
+    if types:
+        if not isinstance(types, list):
+            types = [types]
+
+        if limit:
+            types = types[:int(limit)]
+
+        contents = [{
+            'Name': t,
+        } for t in types]
+
+        human_readable = tableToMarkdown('PhishLabs Case Types', contents, removeNull=True)
+        context = {
+            'PhishLabs.CaseType(val.Name=== obj.Name)': createContext(contents, removeNull=True)
+        }
+
+    else:
+        human_readable = 'No types found'
+
+    return_outputs(human_readable, context, response)
+
+
+@logger
+def list_types_request():
+    """
+    Sends a request to PhishLabs to retrieve case types
+    :return: PhishLabs types
+    """
+    path: str = 'create/caseTypes'
+    params: dict = {}
+
+    response = http_request('get', path, params)
+
+    return response
+
+
+def create_case_command():
+    """
+    Creates a case in PhishLabs according to provided arguments
+    """
+
+    case_id = demisto.args()['id']
+
+    context = {}
+
+    response = get_case_request(case_id)
+
+    case = response['data'] if response and response.get('data') else []
+
+    if case:
+        if isinstance(case, list):
+            case = case[0]
+
+        case_headers: list = ['Title', 'Number', 'Status', 'Description', 'Brand', 'Type', 'CreatedBy', 'CreatedAt',
+                              'ModifiedAt', 'ClosedAt', 'ResolutionStatus']
+
+        contents = {
+            'ID': case.get('caseId'),
+            'Title': case.get('title'),
+            'Status': case.get('caseStatus'),
+            'Description': case.get('description'),
+            'Number': case.get('caseNumber'),
+            'CreatedBy': case.get('createdBy', {}).get('name'),
+            'CreatedAt': case.get('dateCreated'),
+            'ModifiedAt': case.get('dateModified') if case.get('dateModified', '') != NONE_DATE else '',
+            'ClosedAt': case.get('dateClosed') if case.get('dateClosed', '') != NONE_DATE else '',
+            'ResolutionStatus': case.get('resolutionStatus'),
+            'Brand': case.get('brand'),
+            'Type': case.get('caseType')
+        }
+
+        human_readable = tableToMarkdown('PhishLabs Case {}'.format(case.get('title')), contents, headers=case_headers,
+                                         headerTransform=pascalToSpace, removeNull=True)
+        context = {
+            'PhishLabs.Case(val.ID === obj.ID)': createContext(contents, removeNull=True)
+        }
+
+    else:
+        human_readable = 'No cases found'
+
+    return_outputs(human_readable, context, response)
+
+
+@logger
+def get_case_request(case_id=None):
+    """
+    Sends a request to PhishLabs global feed with the provided arguments
+    :param case_id: Case UUID
+    :return: PhishLabs case
+    """
+    path: str = 'data/cases/' + case_id
+    response = http_request('get', path)
 
     return response
 
@@ -248,7 +419,7 @@ def fetch_incidents():
     incidents: list = []
     count: int = 1
     limit = int(FETCH_LIMIT)
-    feed: dict = get_feed_request(limit=FETCH_LIMIT, since=FETCH_TIME, offset=last_offset, sort=True)
+    feed: dict = {}
     last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
                                  else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
     max_time: datetime = last_fetch_time
@@ -293,7 +464,8 @@ def main():
     command_dict = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents,
-        'phishlabs-list-cases': list_cases_command
+        'phishlabs-list-cases': list_cases_command,
+        'phishlabs-get-case': get_case_command
     }
     try:
         command_func: Callable = command_dict[demisto.command()]
