@@ -142,7 +142,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         if err:
             return_error(ERROR_FORMAT.format(r.status_code, err))
         return response
-    except ValueError as e:
+    except ValueError:
         # If no JSON is present, must be an error that can't be ignored
         return_error(ERROR_FORMAT.format(r.status_code, r.text))
 
