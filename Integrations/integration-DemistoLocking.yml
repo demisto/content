@@ -151,4 +151,3 @@ script:
     arguments: []
     description: Release all locks
   runonce: false
-releaseNotes: "-"
