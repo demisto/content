@@ -353,7 +353,7 @@ def test_email_raw_headers(mocker):
 
 
 def test_eml_contains_eml_with_status(mocker):
-    subject = '=?iso-8859-7?B?Rlc6IEZPT0RMSU5LINDLx9HZzMc=?=' # disable-secrets-detection
+    subject = '=?iso-8859-7?B?Rlc6IEZPT0RMSU5LINDLx9HZzMc=?='  # disable-secrets-detection
     decoded = convert_to_unicode(subject)
     subject_attach = decoded.decode('utf-8')
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
