@@ -276,7 +276,7 @@ def build_upload_params():
     params['reanalyze'] = reanalyze == 'true'
 
     if max_jobs:
-        if max_jobs.isdigit():
+        if isinstance(max_jobs, (str, basestring, unicode)) and max_jobs.isdigit() or isinstance(max_jobs, int):
             params['max_jobs'] = int(max_jobs)
         else:
             return_error('max_jobs arguments isn\'t a number')
