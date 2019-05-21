@@ -35,7 +35,6 @@ AUTH_TOKEN = ''
 ''' HELPER FUNCTIONS '''
 
 
-@logger
 def http_request(method, url_suffix, params=None, headers=None, data=None, **kwargs):
     data = data if data else {}
     if not headers:
@@ -306,7 +305,7 @@ def search_alarms(start_time=None, end_time=None, status=None, priority=None, sh
     if res['page']['totalElements'] == 0:
         return []
 
-    return res['_embedded']['alarms']
+    return res.get('_embedded', {}).get('alarms', [])
 
 
 def search_events_command():
@@ -355,7 +354,7 @@ def search_events(start_time=None, end_time=None, account_name=None, event_name=
     if res['page']['totalElements'] == 0:
         return []
 
-    return res['_embedded']['eventResourceList']
+    return res.get('_embedded', {}).get('eventResourceList', [])
 
 
 def get_events_by_alarm_command():
@@ -378,10 +377,10 @@ def fetch_incidents():
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
 
     incidents = []
-    items = search_alarms(last_fetch, 'now', 'false', direction='asc')
+    items = search_alarms(start_time=date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ'), direction='asc')
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
@@ -425,8 +424,8 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(e))
             LOG.print_log()
-        else:
             raise
+        else:
             return_error('An error occurred: {}'.format(str(e)))
 
 
