@@ -306,6 +306,7 @@ script:
   type: javascript
   commands:
   - name: aws-run-instance
+    deprecated: true
     arguments:
     - name: imageId
       required: true
@@ -333,6 +334,7 @@ script:
       description: Headers to display in Human readable format
     description: create ec2 aws instances from image
   - name: aws-stop-instance
+    deprecated: true
     arguments:
     - name: instanceId
       required: true
@@ -347,6 +349,7 @@ script:
       description: Headers to display in Human readable format
     description: stop ec2 aws instances
   - name: aws-create-image
+    deprecated: true
     arguments:
     - name: instanceId
       required: true
@@ -370,6 +373,7 @@ script:
     description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
       that is either running or stopped.
   - name: aws-start-instance
+    deprecated: true
     arguments:
     - name: instanceId
       required: true
@@ -379,6 +383,7 @@ script:
       description: Headers to display in Human readable format
     description: Starts an Amazon EBS-backed AMI that you've previously stopped.
   - name: aws-create-volume-snapshot
+    deprecated: true
     arguments:
     - name: volumeId
       required: true
@@ -392,6 +397,7 @@ script:
       can use snapshots for backups, to make copies of EBS volumes, and to save data
       before shutting down an instance.
   - name: aws-get-instance-info
+    deprecated: true
     arguments:
     - name: instanceId
       default: true
@@ -406,6 +412,7 @@ script:
       description: Additional terms for filtering instances (key=value,key=value...)
     description: Describe Instances - Describes one of your instances.
   - name: aws-get-sg-info
+    deprecated: true
     arguments:
     - name: sgId
       default: true
@@ -416,6 +423,7 @@ script:
       description: Headers to display in Human readable format
     description: Get EC2 Security Group Information
   - name: aws-get-ebs-volume-info
+    deprecated: true
     arguments:
     - name: volumeId
       required: true
