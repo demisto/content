@@ -694,6 +694,5 @@ outputs:
   description: The device information about the hostname that was enriched using Cylance
     Protect v2.
   type: unknown
-releaseNotes: "Endpoint enrichment using available v2 integrations."
 tests:
   - Endpoint Enrichment - Generic v2.1 - Test
