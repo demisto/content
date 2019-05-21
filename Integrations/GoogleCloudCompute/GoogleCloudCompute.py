@@ -641,7 +641,7 @@ def create_instance(args):
         meta_data.update({'items': parse_metadata_items(args.get('metadataItems'))})
         config.update({'metadata': meta_data})
 
-    service_accounts = {}
+    service_accounts = {}  # type: dict
     if (
         args.get('serviceAccountEmail') is not None
         and args.get('serviceAccountscopes') is not None
@@ -4587,7 +4587,7 @@ try:
 except Exception as e:
     LOG(e)
     try:
-        response = json.loads(e.content)
+        response = json.loads(e.content)  # type: ignore
         response = response['error']
         status_code = response.get('code')
         err_message = response.get('message')

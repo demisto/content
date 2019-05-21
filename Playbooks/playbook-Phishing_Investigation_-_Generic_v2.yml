@@ -683,7 +683,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "44"
+      - "46"
     separatecontext: true
     view: |-
       {
@@ -959,33 +959,6 @@ tasks:
     - fieldname: remediationsla
       action: stop
     ignoreworker: false
-  "44":
-    id: "44"
-    taskid: d44e387b-ce57-4156-81ce-05133928e91a
-    type: playbook
-    task:
-      id: d44e387b-ce57-4156-81ce-05133928e91a
-      version: -1
-      name: Entity Enrichment - Generic v2
-      description: ""
-      playbookName: Entity Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "45":
     id: "45"
     taskid: c8a03d03-5ffc-43db-88c0-c4d0e562e2c2
@@ -1007,6 +980,96 @@ tasks:
       {
         "position": {
           "x": 1022.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 4ca9db3c-7a8c-46fc-8a7f-9a73e61fa542
+    type: playbook
+    task:
+      id: 4ca9db3c-7a8c-46fc-8a7f-9a73e61fa542
+      version: -1
+      name: Entity Enrichment - Phishing v2
+      description: ""
+      playbookName: Entity Enrichment - Phishing v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InternalDomains: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 690
         }
       }
@@ -1046,7 +1109,7 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
-releaseNotes: "A new Phishing Investigation playbook that now utilizes a customized Entity Enrichment playbook to avoid enrichment of irrelevant entities."
+releaseNotes: "The playbook now uses Entity Enrichment - Phishing v2.0 as intended."
 tests:
 - Phishing v2 Test - Attachment
 - Phishing v2 Test - Inline
