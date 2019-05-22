@@ -3,6 +3,7 @@
 	"version": -1,
 	"modified": "2019-04-14T12:05:03.812194029Z",
 	"name": "DPO E-mail Address",
+	"releaseNotes": "Changed the field to non-mandatory",
 	"ownerOnly": false,
 	"placeholder": "",
 	"description": "",

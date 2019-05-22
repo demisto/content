@@ -3,6 +3,7 @@
 	"version": -1,
 	"modified": "2019-04-14T11:17:29.254822349Z",
 	"name": "Contact Name",
+	"releaseNotes": "Changed the field to non-mandatory",
 	"ownerOnly": false,
 	"placeholder": "",
 	"description": "",

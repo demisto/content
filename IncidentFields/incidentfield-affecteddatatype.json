@@ -3,6 +3,7 @@
 	"version": -1,
 	"modified": "2019-04-14T11:32:24.494022702Z",
 	"name": "Affected Data Type",
+    "releaseNotes": "Changed the field to non-mandatory",
 	"ownerOnly": false,
 	"placeholder": "",
 	"description": "",
@@ -21,7 +22,7 @@
 	"system": false,
 	"content": false,
 	"group": 0,
-	"hidden": false,
+	"hidden": false,d
 	"associatedTypes": [
 		"GDPR Data Breach"
 	],
