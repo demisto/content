@@ -45,15 +45,15 @@ def ssh_execute(command: str):
     if PORT and SSH_EXTRA_PARAMS:
         param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p',
                       PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]
-        result = subprocess.run(param_list, tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif PORT:
         result = subprocess.run(
             ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
-             USERNAME + '@' + HOSTNAME, command], tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+             USERNAME + '@' + HOSTNAME, command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif SSH_EXTRA_PARAMS:
         param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
             USERNAME + '@' + HOSTNAME, command]
-        result = subprocess.run(param_list, tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         result = subprocess.run(
             ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, USERNAME + '@' + HOSTNAME, command],
@@ -69,7 +69,7 @@ def scp_execute(file_name: str, file_path: str) -> bool:
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
             file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
-        result = subprocess.run(param_list, tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
                       USERNAME + '@' + HOSTNAME + ':' + file_path]
