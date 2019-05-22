@@ -1547,6 +1547,7 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "RSA Archer": "No instance",
         "Cisco Spark": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1684,7 +1685,6 @@
         "AWS - CloudTrail": "Integration requires SSL",
         "AWS - EC2": "Integration requires SSL",
         "AWS - S3": "Integration requires SSL",
-        "Image OCR": "Doesn't perform network communication",
-        "Minerva Labs Anti-Evasion Platform": "Mock recording fails"
+        "Image OCR": "Doesn't perform network communication"
     }
 }
