@@ -17,7 +17,7 @@ echo ${PUBLIC_IP} > public_ip
 #copy installer files to instance
 INSTALLER=$(ls demistoserver*.sh)
 
-USER="centos"
+USER="ec2-user"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
 sleep 90s
@@ -43,7 +43,8 @@ INSTALL_COMMAND_Y="cd ~/installer_files \
     && sudo mkdir /usr/local/demisto \
     && sudo cp demisto.lic /usr/local/demisto/ \
     && sudo ./installer.sh -- -y -do-not-start-server \
-    && sudo cp demisto.conf /etc/demisto.conf"
+    && sudo cp demisto.conf /etc/demisto.conf \
+    && sudo setcap 'cap_net_bind_service=+ep' /usr/local/demisto/server" # setcap is need for listening on low port (443)
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
@@ -61,7 +62,7 @@ scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current
 COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
-    && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res && sudo cp ~/Beta_Integrations/* /usr/local/demisto/res"
+    && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
@@ -77,3 +78,5 @@ wget --retry-connrefused --no-check-certificate -T 60 "https://${PUBLIC_IP}:443"
 ssh -t ${USER}@${PUBLIC_IP} "sudo docker pull demisto/threatconnect-sdk"
 
 echo "server started!"
+
+echo Demisto:${PUBLIC_IP} > ./Tests/instance_ips.txt
