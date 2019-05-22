@@ -1465,13 +1465,16 @@
         },
         {
             "playbookID": "EWS test"
+        },
+        {
+            "integrations": "fireeye",
+            "playbookID": "Detonate File - FireEye AX - Test"
         }
     ],
     "skipped_tests": {
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "url_enrichment_-_generic_test": "Deprecated playbook - the playbook seems to be deleted",
         "EWS test": "Old test",
-        "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1503,7 +1506,8 @@
         "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
-        "okta_test_playbook": "test failed (Issue 17041)"
+        "okta_test_playbook": "test failed (Issue 17041)",
+        "Detonate File - FireEye AX - Test": "No instance"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
