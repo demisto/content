@@ -44,8 +44,8 @@ def main():
     pkg_dirs = find_out.splitlines()
     pkgs_to_run = []
     for dir in pkg_dirs:
-            if should_run_pkg(dir):
-                pkgs_to_run.append(dir)
+        if should_run_pkg(dir):
+            pkgs_to_run.append(dir)
     print("Starting parallel run for [{}] packages with [{}] max workers".format(len(pkgs_to_run), max_workers))
     params = sys.argv[1::]
     fail_pkgs = []
