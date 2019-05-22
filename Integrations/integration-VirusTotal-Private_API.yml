@@ -1,0 +1,1646 @@
+commonfields:
+  id: VirusTotal - Private API
+  version: -1
+name: VirusTotal - Private API
+display: VirusTotal - Private API
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Analyze suspicious hashes, URLs, domains and IP addresses
+detaileddescription: |-
+  Indicators thresholds:
+  Configure the default threshold for each indicator type in the instance settings.
+  Note that it is also possible to specify the threshold when runing the command.
+  Indicators with positive results equal or bigger than the threshold will be considered malicious.
+  Indicators with positive results equal or bigger than half of the threshold value, and lower than the threshold, will be considered suspicious.
+configuration:
+- display: Virus Total private API key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useProxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: File Threshold. Minimum number of positive results from VT scanners to
+    consider the file malicious.
+  name: fileThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: IP Threshold. Minimum number of positive results from VT scanners to consider
+    the IP malicious.
+  name: ipThreshold
+  defaultvalue: "20"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum number of positive results from VT scanners to consider
+    the URL malicious.
+  name: urlThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Domain Threshold. Minimum number of positive results from VT scanners to
+    consider the domain malicious.
+  name: domainThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
+    comma separated.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file as malicious.
+  name: preferredVendorsThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Determines whether to return all results, which can number in the thousands.
+    If "true", returns all results and overrides the _fullResponse_ argument (if set
+    to "false") in a command. If "false", the fullResponse argument in the command
+    determines how results are returned.
+  name: fullResponseGlobal
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import requests
+    import json
+    import os
+    import time
+    import sys
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('useProxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    ''' GLOBAL VARS '''
+    SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
+    API_KEY = demisto.params()['APIKey']
+
+    USE_SSL = False if demisto.params().get('insecure') else True
+    PREFERRED_VENDORS = demisto.params().get("preferredVendors", None)
+    PREFERRED_VENDORS_THRESHOLD = demisto.params().get("preferredVendorsThreshold", None)
+
+    FULL_RESPONSE = demisto.params().get("fullResponseGlobal", False)
+
+    DEFAULT_HEADERS = {
+        "Accept-Encoding": "gzip, deflate",
+        "User-Agent": "gzip,  My Python requests library example client or username"
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+    def is_enough_preferred_vendors(scan_results):
+        if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
+            return False
+        if PREFERRED_VENDORS and not PREFERRED_VENDORS_THRESHOLD:
+            return_error("Error: If you entered Preferred Vendors you must also enter Preferred Vendors Threshold")
+        if "scans" not in scan_results:
+            return False
+
+        counter_of_malicious_detections = 0
+
+        vendors_scans_dict = scan_results["scans"]
+        list_of_preferred_vendors = PREFERRED_VENDORS.split(',')
+
+        for i in range(len(list_of_preferred_vendors)):
+            list_of_preferred_vendors[i] = list_of_preferred_vendors[i].lower().strip()
+
+        for vendor_name in vendors_scans_dict:
+            cur_vendor_scan = vendors_scans_dict[vendor_name]
+            vendor_name_in_lowercase = vendor_name.lower()
+
+            if vendor_name_in_lowercase in list_of_preferred_vendors:
+                if cur_vendor_scan.get("detected"):
+                    counter_of_malicious_detections += 1
+
+        return int(PREFERRED_VENDORS_THRESHOLD) <= counter_of_malicious_detections
+
+
+    def http_request(method, url_suffix, params_dict, headers):
+        req_params = {
+            'apikey': API_KEY
+        }
+        if params_dict is not None:
+            req_params.update(params_dict)
+
+        url = SERVER_URL + url_suffix
+
+        LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
+
+        try:
+            res = requests.request(method,
+                                   url,
+                                   verify=USE_SSL,
+                                   params=req_params,
+                                   headers=headers
+                                   )
+            res.raise_for_status()
+
+            if res.status_code == 200:
+                return res.json()
+            # 204 HTTP status code is returned when api rate limit has been exceeded
+            elif res.status_code == 204:
+                return_error("You've reached your API call quota. Contact your VirusTotal representative.")
+
+
+        except Exception as e:
+            error_message = str(e)
+            error_message = re.sub('apikey=[a-zA-Z0-9]+', 'apikey=*apikey*', error_message)
+            LOG(error_message)
+            raise type(e)(error_message)
+
+
+    def create_scans_table(scans):
+        """
+        Returns a table with the scan result for each vendor
+        """
+
+        scans_table = []
+        positives_scans_table = []
+        negative_scans_table = []
+        for scan in scans:
+            dict_for_table = {
+                "Source": scan,
+                "Detected": scans.get(scan).get('detected', None),
+                "Result": scans.get(scan).get('result', None),
+                "Update": scans.get(scan).get('update', None),
+                "Details": scans.get(scan).get('detail', None)
+            }
+            if (dict_for_table['Detected'] is not None and dict_for_table['Detected'] == True):
+                positives_scans_table.append(dict_for_table)
+            else:
+                negative_scans_table.append(dict_for_table)
+
+        positives_scans_table = sorted(positives_scans_table, key=lambda scan: scan['Source'])
+        negative_scans_table = sorted(negative_scans_table, key=lambda scan: scan['Source'])
+
+        scans_table = positives_scans_table + negative_scans_table
+        return scans_table
+
+
+    def create_file_output(file_hash, threshold, vt_response, short_format):
+        ec = {}
+        md = ''
+
+        positives = demisto.get(vt_response, 'positives')
+        ec['DBotScore'] = []
+
+        md += '## VirusTotal Hash Reputation for: ' + str(vt_response.get('resource')) + '\n'
+        md += 'Scan ID: **' + str(vt_response.get('scan_id')) + '**\n'
+        md += 'Scan date: **' + str(vt_response.get('scan_date')) + '**\n'
+        md += 'Detections / Total: **' + str(positives) + '/' + str(vt_response.get('total')) + '**\n'
+        md += 'VT Link: [' + str(vt_response.get('resource')) + '](' + str(vt_response.get('permalink')) + ')\n'
+        dbotScore = 0;
+
+        if (positives >= threshold or is_enough_preferred_vendors(vt_response)):
+            ec.update({
+                outputPaths['file']: {
+                    'MD5': vt_response.get('md5'),
+                    'SHA1': vt_response.get('sha1'),
+                    'SHA256': vt_response.get('sha256'),
+                    'Malicious': {
+                        'Vendor': 'VirusTotal - Private API',
+                        'Detections': positives,
+                        'TotalEngines': demisto.get(vt_response, 'total')
+                    },
+                }
+            })
+            if vt_response.get('ssdeep', False):
+                ec[outputPaths['file']].update({'SSDeep': vt_response.get('ssdeep')})
+            if vt_response.get('type', False):
+                ec[outputPaths['file']].update({'Type': vt_response.get('type')})
+            if vt_response.get('size', False):
+                ec[outputPaths['file']].update({'Size': vt_response.get('size')})
+            dbotScore = 3
+        elif (positives >= threshold / 2):
+            dbotScore = 2
+        else:
+            dbotScore = 1
+
+        ec['DBotScore'].append(
+            {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+        md += 'MD5: **' + vt_response.get('md5') + '**\n'
+        md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
+        md += 'SHA256: **' + vt_response.get('sha256') + '**\n'
+
+        if (vt_response.get('scans', False) and not short_format):
+            scans = vt_response.pop('scans')
+            scans_table = create_scans_table(scans)
+            scans_table_md = tableToMarkdown('Scans', scans_table)
+            md += scans_table_md
+            md += '\n'
+            if (ec.get(outputPaths['file'], False)):
+                ec[outputPaths['file']]['VirusTotal'] = {
+                    'Scans': scans_table
+                }
+            else:
+                ec.update({
+                    outputPaths['file']: {
+                        'MD5': vt_response.get('md5'),
+                        'VirusTotal': {
+                            'Scans': scans_table
+                        },
+                    }
+                })
+
+        if vt_response.get('tags', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'Tags': vt_response.get('tags')})
+        if vt_response.get('magic', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'MagicLiteral': vt_response.get('magic')})
+        if vt_response.get('first_seen', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'FirstSeen': vt_response.get('first_seen')})
+        if vt_response.get('community_reputation', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'CommunityReputation': vt_response.get('community_reputation')})
+        if vt_response.get('community_comments', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'CommunityComments': vt_response.get('community_comments')})
+        if vt_response.get('authentihash', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'AuthentiHash': vt_response.get('authentihash')})
+        if vt_response.get('imphash', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'ImpHash': vt_response.get('imphash')})
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': vt_response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+        return entry
+
+
+    ''' COMMANDS FUNCTIONS '''
+
+
+    def check_file_behaviour(file_hash):
+        """
+        Returns the file execution report.
+        """
+
+        params = {
+            'hash': file_hash
+        }
+
+        api_endpoint = 'file/behaviour'
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+
+    def check_file_behaviour_command():
+        """
+        corresponds to 'vt-private-check-file-behaviour' command. Retrieves a report about the execution of a file
+        """
+        # variables
+        args = demisto.args()
+        file_hash = args.get('resource')
+        threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+        md = 'We found the following data about hash ' + file_hash + ':\n'
+        # VT response
+        response = check_file_behaviour(file_hash)
+
+        if (response.get('response_code', None) == 0):
+            return {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'EntryContext': {
+                    "DBotScore": {
+                        'Indicator': file_hash,
+                        'Type': 'hash',
+                        'Vendor': 'VirusTotal - Private API',
+                        'Score': 0
+                    }
+                },
+                'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following response: " + json.dumps(
+                    response.get('verbose_msg'))
+            }
+
+        # data processing
+
+        # network data contains all the communication data
+        network_data = response.get('network', None)
+
+        hosts = network_data.get('hosts', None)
+        if (hosts is not None):
+            hosts = list(set(hosts))[:max_len]
+            md += tableToMarkdown('Hosts that the hash communicates with are:', [{'Host': host} for host in hosts])
+
+        ips_list = []
+        domains_list = []
+        urls_list = []
+
+        udp_communication = network_data.get('udp', None)
+        if (udp_communication is not None):
+            for entry in udp_communication:
+                ips_list.append(entry.get('dst', None))
+
+        http_communication = network_data.get('http', None)
+        if (http_communication is not None):
+            for entry in http_communication:
+                urls_list.append(entry.get('uri', None))
+                domains_list.append(entry.get('host', None))
+
+        tcp_communication = network_data.get('tcp', None)
+        if (tcp_communication is not None):
+            for entry in tcp_communication:
+                ips_list.append(entry.get('dst', None))
+
+        dns_communication = network_data.get('dns', None)
+        if (dns_communication is not None):
+            for entry in dns_communication:
+                ips_list.append(entry.get('ip', None))
+                domains_list.append(entry.get('hostname', None))
+
+        if (len(ips_list) > 0):
+            ips_list = list(set(ips_list))[:max_len]
+            md += tableToMarkdown('IPs that the hash communicates with are:', [{'IP': ip} for ip in ips_list])
+
+        if (len(domains_list) > 0):
+            domains_list = list(set(domains_list))[:max_len]
+            md += tableToMarkdown('Domains that the hash communicates with are:',
+                                  [{'Domain': domain} for domain in domains_list])
+
+        if (len(urls_list) > 0):
+            urls_list = list(set(urls_list))[:max_len]
+            md += tableToMarkdown('URLs that the hash communicates with are:', [{'URL': url} for url in urls_list])
+
+        files_data, keys_data, mutex_data = None, None, None
+
+        behavior_data = response.get('behavior', None)
+        if behavior_data is not None:
+            summary_data = behavior_data.get('summary', None)
+            if summary_data is not None:
+                files_data = summary_data.get('files', None)
+                keys_data = summary_data.get('keys', None)
+                mutex_data = summary_data.get('mutexes', None)
+
+        if (files_data is not None):
+            files_data = list(set(files_data))[:max_len]
+            md += tableToMarkdown('Files that are related the hash', [{'File': file} for file in files_data])
+
+        if (keys_data is not None):
+            keys_data = list(set(keys_data))[:max_len]
+            md += tableToMarkdown('Registry Keys that are related to the hash', [{'Key': k} for k in keys_data])
+
+        if (mutex_data is not None):
+            mutex_data = list(set(mutex_data))[:max_len]
+            md += tableToMarkdown('Opened mutexes that are related to the hash', [{'Mutex': m} for m in mutex_data])
+
+        hash_length = len(file_hash)
+        hashtype_dic = None
+        if (hash_length == 32):
+            hashtype_dic = {
+                "MD5": file_hash
+            }
+        elif (hash_length == 40):
+            hashtype_dic = {
+                "SHA1": file_hash
+            }
+        else:
+            hashtype_dic = {
+                "SHA256": file_hash
+            }
+
+        hash_ec = {
+            "VirusTotal": {
+                'RelatedDomains': domains_list,
+                'RelatedURLs': urls_list,
+                'RelatedIPs': ips_list,
+                'RelatedHosts': hosts,
+                'RelatedFiles': files_data,
+                'RelatedRegistryKeys': keys_data,
+                'RelatedMutexes': mutex_data
+            }
+        }
+
+        hash_ec.update(hashtype_dic)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                outputPaths['file']: hash_ec,
+            }
+        }
+
+
+    def get_domain_report(domain):
+        """
+        Returns the domain report.
+        """
+
+        params = {
+            'domain': domain
+        }
+
+        api_endpoint = 'domain/report'
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+
+    def get_domain_report_command():
+        """
+        corresponds to 'vt-get-domain-report' command. Retrieves a report about a domain
+        """
+
+        # variables
+        args = demisto.args()
+        domain = args['domain']
+        threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10);
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+        md = ''
+
+        # VT Response
+        response = get_domain_report(domain)
+        if (response.get('response_code') == -1):
+            return "Invalid domain"
+        elif (response.get('response_code') == 0):
+            return {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'EntryContext': {
+                    "DBotScore": {
+                        'Indicator': domain,
+                        'Type': 'domain',
+                        'Vendor': 'VirusTotal - Private API',
+                        'Score': 0
+                    }
+                },
+                'HumanReadable': "Domain " + domain + " not in Virus Total's dataset. Virus Total returned the following response: " + json.dumps(
+                    response.get('verbose_msg'))
+            }
+
+        communicating_hashes = response.get('detected_communicating_samples', None)
+        communicating_malware_hashes = []
+        if communicating_hashes:
+            for d_hash in communicating_hashes:
+                positives = d_hash.get('positives')
+                if (positives >= threshold):
+                    communicating_malware_hashes.append(d_hash)
+
+            communicating_malware_hashes = communicating_malware_hashes[:max_len]
+            md += tableToMarkdown("Latest detected files that communicated with " + domain, communicating_malware_hashes)
+
+        downloaded_hashes = response.get('detected_downloaded_samples', None)
+        downloaded_malware_hashes = []
+        if downloaded_hashes:
+            for d_hash in downloaded_hashes:
+                positives = d_hash.get('positives')
+                if (positives >= threshold):
+                    downloaded_malware_hashes.append(d_hash)
+            downloaded_malware_hashes = downloaded_malware_hashes[:max_len]
+            md += tableToMarkdown("Latest detected files that were downloaded from " + domain, downloaded_malware_hashes)
+
+        resolutions = response.get('resolutions', None)
+        resolutions_list = []
+        if resolutions:
+            for res in resolutions:
+                resolutions_list.append(res)
+            resolutions_list = resolutions_list[:max_len]
+            md += tableToMarkdown(domain + " has been resolved to the following IP addresses:", resolutions_list)
+
+        whois = response.get('whois', None)
+        if whois is not None:
+            md += "## Whois analysis: \n"
+            md += whois + '\n'
+
+        subdomains = response.get('subdomains', None)
+        if subdomains is not None:
+            subdomains = list(set(subdomains))[:max_len]
+            md += tableToMarkdown("Observed subdomains", [{'Domain': d} for d in subdomains])
+
+        categories = response.get('categories', None)
+        if categories is not None:
+            categories = list(set(categories))[:max_len]
+
+        domain_ec = {
+            'DownloadedHashes': downloaded_malware_hashes,
+            'CommunicatingHashes': communicating_malware_hashes,
+            'Resolutions': resolutions_list,
+            'Whois': whois,
+            'Subdomains': subdomains,
+            'Categories': categories
+        }
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                outputPaths['domain']: {
+                    "Name": domain,
+                    "VirusTotal": domain_ec
+                }
+            }
+        }
+
+
+    def get_file_report(file_hash, all_info):
+        """
+        Returns the file execution report.
+        """
+
+        params = {
+            'resource': file_hash,
+            'allinfo': all_info
+        }
+
+        api_endpoint = 'file/report'
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+
+    def get_file_report_command():
+        """
+        corresponds to 'vt-get-file-report' command. Retrieves a report about the execution of a file
+        """
+
+        args = demisto.args()
+        file_hash = args.get('resource')
+        short_format = args.get('shortFormat', None) == 'true'
+        all_info = args.get('allInfo', None)
+        all_info = 1 if all_info == 'true' else 0
+        threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
+
+        response = get_file_report(file_hash, all_info)
+
+        if (response.get('response_code', None) == 0):
+            return "A report wasn't found. Virus Total returned the following response: " + json.dumps(
+                response.get('verbose_msg'))
+
+        del response['response_code']
+
+        output = create_file_output(file_hash, threshold, response, short_format)
+
+        return output
+
+
+    def get_url_report(url, all_info):
+        """
+        Returns a report about an url.
+        """
+
+        params = {
+            'resource': url,
+            'allinfo': all_info,
+            'scan': 1
+        }
+
+        api_endpoint = 'url/report'
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+
+    def get_url_report_command():
+        """
+        corresponds to 'vt-get-url-report' command. Retrieves a report about a url
+        """
+        args = demisto.args()
+        urls = argToList(args.get('resource'))
+        all_info = 1 if args.get('allInfo', None) == 'true' else 0
+        short_format = args.get('shortFormat', None) == 'true'
+        retries = int(args.get('retries', 2))
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
+        threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
+        scan_finish_time_in_seconds = int(args.get('retry_time', 6))
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+
+        responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
+        md = ''
+        ec = {
+                'DBotScore': [],
+                outputPaths['url']: [],
+            }
+        for url, res in responses_dict.iteritems():
+            url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
+            md += url_md
+            ec['DBotScore'].append(dbot_score)
+            ec[outputPaths['url']].append(url_ec)
+        if not md:
+            md = "No scans were completed in the elapsed time. Please run the command again in a few seconds."
+
+        completed_responses = responses_dict.values()
+        if len(completed_responses) == 1:
+            # This is done for backward compatibility
+            completed_responses = completed_responses[0]
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': completed_responses,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+
+
+    def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_in_seconds):
+        """
+        Returns dict of responses, where its keys are the URL related to the response.
+        """
+        requests_responses_dict = {}
+
+        for url in urls:
+            response = get_url_report(url, all_info)
+            if (response.get('response_code', None) == -1):
+                return_error("Invalid url provided: {}.".format(url))
+
+            if is_url_response_complete(response):
+                requests_responses_dict[url] = response
+
+        urls_scanned_count = len(requests_responses_dict)
+        urls_count = len(urls)
+        while urls_count > urls_scanned_count and retries_left > 0:
+            retries_left -= 1
+            # In case there were url scans that have not finished: try again after giving them enough time to finish
+            time.sleep(scan_finish_time_in_seconds)
+            for url in urls:
+                if url not in requests_responses_dict:
+                    response = get_url_report(url, all_info)
+                    if is_url_response_complete(response):
+                        requests_responses_dict[url] = response
+                        urls_scanned_count = len(requests_responses_dict)
+
+        return requests_responses_dict
+
+
+    def is_url_response_complete(res):
+        return bool(res.get('total'))
+
+
+    def create_url_report_output(url, response, threshold, max_len, short_format):
+        """
+        Returns 3 results:
+        1. human readable string.
+        2. url entry context.
+        3. dbot entry context.
+        """
+        positives = demisto.get(response, 'positives')
+        md = ''
+        md += '## VirusTotal URL report for: ' + url + '\n'
+        md += 'Scan ID: **' + str(response.get('scan_id', '')) + '**\n'
+        md += 'Scan date: **' + str(response.get('scan_date', '')) + '**\n'
+        md += 'Detections / Total: **' + str(positives) + '/' + str(response.get('total', '')) + '**\n'
+        md += 'VT Link: [' + str(response.get('resource', '')) + '](' + str(response.get('permalink', '')) + ')\n'
+
+        dbotScore = 0
+        ec_url = {}
+        if (positives >= threshold or is_enough_preferred_vendors(response)):
+            ec_url.update({
+                'Data': url,
+                'Malicious': {
+                    'Description': 'Detections / Total: ' + str(positives) + ' / ' + str(response.get('total', '')),
+                    'Vendor': 'VirusTotal - Private API'
+                },
+            })
+            dbotScore = 3
+        elif (positives >= threshold / 2):
+            dbotScore = 2
+        else:
+            dbotScore = 1
+
+        ec_dbot = {
+            'Indicator': url,
+            'Type': 'url',
+            'Vendor': 'VirusTotal - Private API',
+            'Score': dbotScore
+        }
+        if (dbotScore < 3):
+            ec_url.update({'Data': url})
+
+        additional_info = response.get('additional_info', None)
+        if additional_info is not None:
+            resolution = additional_info.get('resolution', None)
+            if resolution is not None:
+                md += 'IP address resolution for this domain is: ' + resolution + '\n'
+            if (ec_url):
+                ec_url['VirusTotal'] = {
+                    'Resolutions': resolution[:max_len]
+                }
+            else:
+                ec_url.update({
+                    'VirusTotal':{'Resolutions': resolution[:max_len]},
+                    'Data': url
+                })
+
+        scans = response.get('scans', None)
+
+        if scans is not None and not short_format:
+            scans_table = create_scans_table(scans)
+            scans_table_md = tableToMarkdown('Scans', scans_table)
+        if (ec_url.get('VirusTotal',False)):
+            ec_url['VirusTotal']['Scans'] = scans_table
+        else:
+            ec_url['VirusTotal'] = {
+                'Scans': scans_table
+            }
+        md += scans_table_md
+
+        dropped_files = response.get('filescan_id', None)
+
+        if dropped_files is not None:
+            if (ec_url.get('VirusTotal', False)):
+                    ec_url['VirusTotal']['DroppedFiles'] = dropped_files
+            else:
+                ec_url['VirusTotal'] = {
+                'DroppedFiles': dropped_files
+            }
+
+        return md, ec_url, ec_dbot
+
+
+    def get_ip_report(ip):
+        """
+        Returns an ip report.
+        """
+
+        params = {
+            'ip': ip
+        }
+
+        api_endpoint = 'ip-address/report'
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+
+    def check_detected_urls_threshold(detected_urls, threshold):
+        for url in detected_urls:
+            if url.get("positives") >= threshold:
+                return True
+        return False
+
+
+    def get_ip_report_command():
+        """
+        corresponds to 'vt-get-ip-report' command. Retrieves a report about an ip
+        """
+
+        args = demisto.args()
+        ip = args['ip']
+        threshold = int(args.get('threshold', None) or demisto.params().get('ipThreshold', None) or 10)
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+
+        response = get_ip_report(ip)
+
+        if (response.get('response_code') == -1):
+            return "Invalid IP address "
+        elif (response.get('response_code') == 0):
+            return {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'EntryContext': {
+                    "DBotScore": {
+                        'Indicator': ip,
+                        'Type': 'ip',
+                        'Vendor': 'VirusTotal - Private API',
+                        'Score': 0
+                    }
+                },
+                'HumanReadable': "IP " + ip + "not in Virus Total's dataset. Virus Total returned the following response: " + json.dumps(
+                    response.get('verbose_msg'))
+            }
+
+        ec = {}
+        md = '## VirusTotal IP report for: ' + ip + '\n'
+        asn = str(response.get('asn', None)) if response.get('asn', None) else None
+        if asn is not None:
+            md += 'ASN: **' + asn + ' (' + str(response.get('as_owner', '')) + ')**\n'
+        md += 'Country: **' + response.get('country', '') + '**\n'
+
+        resolutions = response.get('resolutions', None)
+
+        if resolutions:
+            resolutions = resolutions[:max_len]
+            md += tableToMarkdown("The following domains resolved to the given IP address:", resolutions)
+
+        detected_urls = response.get('detected_urls', None)
+
+        if detected_urls:
+            detected_urls = detected_urls[:max_len]
+            md += tableToMarkdown(
+                "Latest URLs hosted in this IP address detected by at least one URL scanner or malicious URL dataset:",
+                detected_urls)
+
+        detected_downloaded_samples = response.get('detected_downloaded_samples', None)
+
+        if detected_downloaded_samples:
+            detected_downloaded_samples = detected_downloaded_samples[:max_len]
+            md += tableToMarkdown(
+                "Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address provided",
+                detected_downloaded_samples)
+
+        undetected_downloaded_samples = response.get('undetected_downloaded_samples', None)
+
+        if undetected_downloaded_samples:
+            undetected_downloaded_samples = undetected_downloaded_samples[:max_len]
+            md += tableToMarkdown(
+                "Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided",
+                undetected_downloaded_samples)
+
+        detected_communicating_samples = response.get('detected_communicating_samples', None)
+
+        if detected_communicating_samples:
+            detected_communicating_samples = detected_communicating_samples[:max_len]
+            md += tableToMarkdown("Latest detected files that communicate with this IP address",
+                                  detected_communicating_samples)
+
+        undetected_communicating_samples = response.get('undetected_communicating_samples', None)
+
+        if undetected_communicating_samples:
+            undetected_communicating_samples = undetected_communicating_samples[:max_len]
+            md += tableToMarkdown("Latest undetected files that communicate with this IP address",
+                                  undetected_communicating_samples)
+
+        detected_referrer_samples = response.get('detected_referrer_samples', None)
+
+        if detected_referrer_samples:
+            detected_referrer_samples = detected_referrer_samples[:max_len]
+            md += tableToMarkdown("Latest detected files that embed this IP address in their strings",
+                                  detected_referrer_samples)
+
+        undetected_referrer_samples = response.get('undetected_referrer_samples', None)
+
+        if undetected_referrer_samples:
+            undetected_referrer_samples = undetected_referrer_samples[:max_len]
+            md += tableToMarkdown("Latest undetected files that embed this IP address in their strings",
+                                  undetected_referrer_samples)
+
+        ec['DBotScore'] = []
+        dbotScore = 0
+        bad_downloads_amount = len(detected_communicating_samples) if detected_communicating_samples else 0
+        detected_url_is_above_threshold = check_detected_urls_threshold(detected_urls, demisto.params().get('urlThreshold', None) or 10)
+        if (bad_downloads_amount >= threshold or detected_url_is_above_threshold):
+            ec.update({
+                outputPaths['ip']: {
+                    'Address': ip,
+                    'ASN': asn,
+                    'Geo': {
+                        'Country': response.get('country', '')
+                    },
+                    'Malicious': {
+                        'Description': 'Recent malicious downloads: ' + str(bad_downloads_amount),
+                        'Vendor': 'VirusTotal - Private API'
+                    }
+                }
+            })
+            dbotScore = 3
+        elif (bad_downloads_amount >= threshold/2 or len(detected_urls) >= threshold/2):
+            dbotScore = 2
+        else:
+            dbotScore = 1
+
+        ec['DBotScore'] = {'Indicator': ip, 'Type': 'ip', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore}
+        if (dbotScore < 3):
+            ec.update({
+                outputPaths['ip']: {
+                    'Address': ip,
+                    'ASN': asn,
+                    'Geo': {
+                        'Country': response.get('country', '')
+                    }
+                }
+            })
+
+        ip_ec = {
+            'Address': ip,
+            'VirusTotal': {
+                'DownloadedHashes': detected_downloaded_samples,
+                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                "DetectedURLs": detected_urls,
+                'CommunicatingHashes': detected_communicating_samples,
+                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                'Resolutions': resolutions,
+                'ReferrerHashes': detected_referrer_samples,
+                'UnAVDetectedReferrerHashes': undetected_referrer_samples
+            }
+        }
+
+        if (ec.get(outputPaths['ip'], False)):
+            ec[outputPaths['ip']]['VirusTotal'] = {
+                'DownloadedHashes': detected_downloaded_samples,
+                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                "DetectedURLs": detected_urls,
+                'CommunicatingHashes': detected_communicating_samples,
+                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                'Resolutions': resolutions,
+                'ReferrerHashes': detected_referrer_samples,
+                'UnAVDetectedReferrerHashes': undetected_referrer_samples
+            }
+        else:
+            ec[outputPaths['ip']].update(ip_ec)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+
+
+    def search_file(query):
+        """
+        Returns the hashes of files that fits the query.
+        """
+
+        params = {
+            'query': query
+        }
+
+        api_endpoint = 'file/search'
+        return http_request('POST', api_endpoint, params, DEFAULT_HEADERS)
+
+
+    def search_file_command():
+        """
+        corresponds to 'vt-search-file' command. Returns the hashes of files that fits the query
+        """
+
+        args = demisto.args()
+        query = args['query']
+
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+        response = search_file(query)
+
+        if (response.get('response_code') == -1):
+            return "There was some sort of error with your query. Virus Total returned the following response: " + json.dumps(
+                response.get('verbose_msg'))
+        elif (response.get('response_code') == 0):
+            return "No files matched your query"
+
+        del response['response_code']
+        hashes = response.get('hashes', None)[:max_len]
+
+        md = '## Found the following hashes for the query :' + query + '\n'
+        md += tableToMarkdown('Hashes are: ', [{'Hash': h} for h in hashes])
+
+        ec = {
+            "Query": query,
+            "SearchResult": hashes[:max_len]
+        }
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': ec,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'VirusTotal.SearchFile(val.Query==obj.Query)': ec
+            }
+        }
+
+
+    def hash_communication_command():
+        # variables
+        args = demisto.args()
+        file_hash = args.get('hash')
+        full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+        md = 'Communication result for hash ' + file_hash + '\n'
+        # VT response
+        response = check_file_behaviour(file_hash)
+
+        if (response.get('response_code') == 0):
+            return {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'EntryContext': {
+                    "DBotScore": {
+                        'Indicator': file_hash,
+                        'Type': 'hash',
+                        'Vendor': 'VirusTotal - Private API',
+                        'Score': 0
+                    }
+                },
+                'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following response: " + json.dumps(
+                    response.get('verbose_msg'))
+            }
+
+        # network data contains all the communication data
+        network_data = response.get('network', None)
+
+        hosts = network_data.get('hosts', None)
+        if (hosts is not None):
+            hosts = list(set(hosts))[:max_len]
+            md += tableToMarkdown('Hosts that the hash communicates with are:', [{'Host': host} for host in hosts])
+
+        ips_list = []
+        domains_list = []
+        urls_list = []
+
+        udp_communication = network_data.get('udp', None)
+        if (udp_communication is not None):
+            for entry in udp_communication:
+                ips_list.append(entry.get('dst', None))
+
+        http_communication = network_data.get('http', None)
+        if (http_communication is not None):
+            for entry in http_communication:
+                urls_list.append(entry.get('uri', None))
+                domains_list.append(entry.get('host', None))
+
+        tcp_communication = network_data.get('tcp', None)
+        if (tcp_communication is not None):
+            for entry in tcp_communication:
+                ips_list.append(entry.get('dst', None))
+
+        dns_communication = network_data.get('dns', None)
+        if (dns_communication is not None):
+            for entry in dns_communication:
+                ips_list.append(entry.get('ip', None))
+                domains_list.append(entry.get('hostname', None))
+
+        if (len(ips_list) > 0):
+            ips_list = list(set(ips_list))[:max_len]
+            md += tableToMarkdown('IPs that the hash communicates with are:', [{'IP': ip} for ip in ips_list])
+
+        if (len(domains_list) > 0):
+            domains_list = list(set(domains_list))[:max_len]
+            md += tableToMarkdown('Domains that the hash communicates with are:',
+                                  [{'Domain': domain} for domain in domains_list])
+
+        if (len(urls_list) > 0):
+            urls_list = list(set(urls_list))[:max_len]
+            md += tableToMarkdown('URLs that the hash communicates with are:', [{'URL': url} for url in urls_list])
+
+        hash_length = len(file_hash)
+        hashtype_dic = None
+        if (hash_length == 32):
+            hashtype_dic = {
+                "MD5": file_hash
+            }
+        elif (hash_length == 40):
+            hashtype_dic = {
+                "SHA1": file_hash
+            }
+        else:
+            hashtype_dic = {
+                "SHA256": file_hash
+            }
+
+        hash_ec = {
+            "VirusTotal": {
+                "CommunicatedDomains": domains_list,
+                "CommunicatedURLs": urls_list,
+                "CommunicatedIPs": ips_list,
+                "CommunicatedHosts": hosts
+            }
+        }
+
+        hash_ec.update(hashtype_dic)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': network_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                outputPaths['file']: hash_ec
+            }
+        }
+
+
+    def download_file(file_hash):
+        params = {
+            'hash': file_hash,
+            'apikey': API_KEY
+        }
+
+        response = requests.get('https://www.virustotal.com/vtapi/v2/file/download', params=params)
+
+        return response
+
+
+    def download_file_command():
+        args = demisto.args()
+        file_hash = args['hash']
+
+        response = download_file(file_hash)
+
+        if (response.status_code == 404):
+            return "File was not found in Virus Total's store"
+
+        file_name = file_hash + "-vt-file"
+        file_json = fileResult(file_name, response.content)
+
+        return {
+            'Contents': 'File downloaded successfully',
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['file'],
+            'File': file_name,
+            'FileID': file_json['FileID']
+        }
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            if check_file_behaviour('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+            pass
+        elif demisto.command() == 'vt-private-check-file-behaviour':
+            demisto.results(check_file_behaviour_command())
+        elif demisto.command() == 'vt-private-get-domain-report':
+            demisto.results(get_domain_report_command())
+        elif demisto.command() == 'vt-private-get-file-report':
+            demisto.results(get_file_report_command())
+        elif demisto.command() == 'vt-private-get-url-report':
+            demisto.results(get_url_report_command())
+        elif demisto.command() == 'vt-private-get-ip-report':
+            demisto.results(get_ip_report_command())
+        elif demisto.command() == 'vt-private-search-file':
+            demisto.results(search_file_command())
+        elif demisto.command() == 'vt-private-ip-to-domain':
+            demisto.results(ip_to_domain_command())
+        elif demisto.command() == 'vt-private-hash-communication':
+            demisto.results(hash_communication_command())
+        elif demisto.command() == 'vt-private-download-file':
+            demisto.results(download_file_command())
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: vt-private-check-file-behaviour
+    arguments:
+    - name: resource
+      required: true
+      description: The md5/sha1/sha256 hash of the file whose dynamic behavioural
+        report you want to retrieve.
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.MD5
+      description: File's MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: string
+    - contextPath: File.VirusTotal.RelatedDomains
+      description: Domains that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedURLs
+      description: URLs that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedIPs
+      description: IPs that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedHosts
+      description: Hosts that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedFiles
+      description: Files that are related to this hash
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedRegistryKeys
+      description: Keys which are related to this hash
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedMutexes
+      description: Mutexes which are related to this hash
+      type: Unknown
+    description: VirusTotal runs a distributed setup of Cuckoo sandbox machines that
+      execute the files we receive. This API allows you to retrieve the full JSON
+      report of the file's execution as returned by the Cuckoo JSON report encoder.
+  - name: vt-private-get-domain-report
+    arguments:
+    - name: domain
+      required: true
+      description: A domain name.
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the domain
+        will be considered malicious. If threshold is not specified, the default domain
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.VirusTotal.DownloadedHashes
+      description: Hashes of files who were downloaded from this domain
+      type: string
+    - contextPath: Domain.VirusTotal.CommunicatingHashes
+      description: Hashes of files who communicated with this domain in a sandbox
+      type: string
+    - contextPath: Domain.VirusTotal.Resolutions.ip_address
+      description: IPs who resolved to this domain
+      type: string
+    - contextPath: Domain.VirusTotal.Whois
+      description: Whois report
+      type: string
+    - contextPath: Domain.VirusTotal.Subdomains
+      description: Subdomains
+      type: string
+    - contextPath: Domain.VirusTotal.Resolutions.last_resolved
+      description: Resolution date of IPs who resolved to this domain
+      type: string
+    - contextPath: Domain.VirusTotal.Categories
+      description: Categories
+      type: string
+    description: Retrieves a report on a given domain (including the information recorded
+      by VirusTotal's passive DNS infrastructure). If the domain doesn't exist in
+      VT's dataset you would need to use Virus Total's (Public API integration) url-scan
+      command
+  - name: vt-private-get-file-report
+    arguments:
+    - name: resource
+      required: true
+      description: An md5/sha1/sha256 hash of a file for which you want to retrieve
+        the most recent antivirus report. You may also specify a scan_id (sha256-timestamp
+        as returned by the scan API) to access a specific report.
+    - name: allInfo
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'VirusTotal metadata, signature information, structural information,
+        etc. Can be viewed with raw-response=true. '
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: shortFormat
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Choose true if you don't wish to see VT scans tables
+    outputs:
+    - contextPath: File.MD5
+      description: File's MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+      type: number
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files. Total engines
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.VirusTotal.Scans.Source
+      description: Scan vendor for this hash
+      type: string
+    - contextPath: File.VirusTotal.Scans.Detected
+      description: Scan detection for this hash (True,False)
+      type: boolean
+    - contextPath: File.VirusTotal.Scans.Result
+      description: Scan result for this hash - signature, etc.
+      type: string
+    - contextPath: File.SSDeep
+      description: The ssdeep value for the file
+      type: string
+    - contextPath: File.Type
+      description: File type as determined by Virus Total
+      type: string
+    - contextPath: File.Size
+      description: Size of File in bytes
+      type: number
+    - contextPath: File.VirusTotal.Tags
+      description: File tags
+      type: string
+    - contextPath: File.VirusTotal.MagicLiteral
+      description: File magic literals
+      type: string
+    - contextPath: File.VirusTotal.FirstSeen
+      description: Time where the File was first seen
+      type: string
+    - contextPath: File.VirusTotal.CommunityReputation
+      description: Community Reputation of the File
+      type: number
+    - contextPath: File.VirusTotal.CommunityComments
+      description: Community Comments about the File
+      type: string
+    - contextPath: File.VirusTotal.AuthentiHash
+      description: AuthentiHash of the File
+      type: string
+    - contextPath: File.VirusTotal.ImpHash
+      description: ImpHash of the File
+      type: string
+    description: Retrieves a concluded file scan report for a given file.
+  - name: vt-private-get-url-report
+    arguments:
+    - name: resource
+      required: true
+      description: A CSV list of one or more URLs to retrieve the most recent report
+        for. You can also specify a scan_id (sha-256 timestamp returned by the URL
+        submission API) to access a specific report.
+      isArray: true
+    - name: retries
+      description: The number of times the command will try to get the URL report,
+        if the report was not ready on the first attempt.
+      defaultValue: "2"
+    - name: allInfo
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: This additional info includes VirusTotal related metadata (first
+        seen date, last seen date, files downloaded from the given URL, etc.) and
+        the output of other tools and datasets when fed with the URL.
+    - name: shortFormat
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Choose true if you don't wish to see VT scans tables
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    - name: retry_time
+      description: The amount of time (in seconds) that the integration will wait
+        before trying to get a URL report for URLS whose scans have not completed.
+    outputs:
+    - contextPath: URL.Data
+      description: Url address
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: URL.VirusTotal.Resolutions.ip_address
+      description: IPs who resolved to this URL
+      type: string
+    - contextPath: URL.VirusTotal.Resolutions.last_resolved
+      description: Resolve date of IPs who resolved to this URL
+      type: string
+    - contextPath: URL.VirusTotal.Scans.Source
+      description: Scan vendor for this URL
+      type: string
+    - contextPath: URL.VirusTotal.Scans.Detected
+      description: Scan detection for this URL (True/False)
+      type: boolean
+    - contextPath: URL.VirusTotal.Scans.Result
+      description: Scan result for this URL - signature, etc.
+      type: string
+    - contextPath: URL.VirusTotal.DroppedFiles
+      description: Downloaded file hashes from this URL
+      type: string
+    description: Retrieves a concluded url scan report for a given url.
+  - name: vt-private-get-ip-report
+    arguments:
+    - name: ip
+      required: true
+      description: A valid IPv4 address in dotted quad notation, for the time being
+        only IPv4 addresses are supported.
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+      type: string
+    - contextPath: IP.ASN
+      description: Bad IP ASN
+      type: string
+    - contextPath: IP.Geo.Country
+      description: Bad IP Country
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.VirusTotal.DownloadedHashes
+      description: Latest files that are detected by at least one antivirus solution
+        and were downloaded by VirusTotal from the IP address
+      type: string
+    - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
+      description: Latest files that are not detected by any antivirus solution and
+        were downloaded by VirusTotal from the IP address provided
+      type: string
+    - contextPath: IP.VirusTotal.DetectedURLs
+      description: Latest URLs hosted in this IP address detected by at least one
+        URL scanner
+      type: string
+    - contextPath: IP.VirusTotal.CommunicatingHashes
+      description: Latest detected files that communicate with this IP address
+      type: string
+    - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
+      description: Latest undetected files that communicate with this IP address
+      type: Unknown
+    - contextPath: IP.VirusTotal.Resolutions.hostname
+      description: The following domains resolved to the given IP
+      type: string
+    - contextPath: IP.VirusTotal.ReferrerHashes
+      description: Latest detected files that embed this IP address in their strings
+      type: string
+    - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
+      description: Latest undetected files that embed this IP address in their strings
+      type: string
+    - contextPath: IP.VirusTotal.Resolutions.last_resolved
+      description: The last time the following domains resolved to the given IP
+      type: string
+    description: Retrieves a report on a given IP address (including the information
+      recorded by VirusTotal's Passive DNS infrastructure).
+  - name: vt-private-search-file
+    arguments:
+    - name: query
+      required: true
+      description: File search query. For example, query="type:peexe size:90kb+ positives:5+
+        behaviour:'taskkill'"
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: VirusTotal.SearchResult
+      description: The hashes of files that fit the query
+      type: string
+    - contextPath: VirusTotal.Query
+      description: Original search query
+      type: string
+    description: 'This command is equivalent to VirusTotal Intelligence advanced searches.
+      A very wide variety of search modifiers are available, including: file size,
+      file type, first submission date to VirusTotal, last submission date to VirusTotal,
+      number of positives, dynamic behavioural properties, binary content, submission
+      file name, and a very long etcetera. The full list of search modifiers allowed
+      for file search queries is documented at:  https://www.virustotal.com/intelligence/help/file-search/#search-modifiers'
+  - name: vt-private-hash-communication
+    arguments:
+    - name: hash
+      required: true
+      description: File Hash
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.VirusTotal.CommunicatedDomains
+      description: Domains that the hash communicates with
+      type: string
+    - contextPath: File.VirusTotal.CommunicatedURLs
+      description: URLs that the hash communicates with
+      type: string
+    - contextPath: File.VirusTotal.CommunicatedIPs
+      description: IPs that the hash communicates with
+      type: string
+    - contextPath: File.VirusTotal.CommunicatedHosts
+      description: Hosts that the hash communicates with
+      type: string
+    - contextPath: File.MD5
+      description: File's MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: string
+    description: Return all Domains, IPs, URLs  that a given hash of malware communicates
+      with
+  - name: vt-private-download-file
+    arguments:
+    - name: hash
+      required: true
+      description: "\tThe md5/sha1/sha256 hash of the file you want to download."
+    description: Downloads a file from VirusTotal's store given one of its hashes.
+      This call can be used in conjuction with the file searching call in order to
+      download samples that match a given set of criteria.
+  runonce: false
+tests:
+- virusTotalPrivateAPI-test-playbook
+- File Enrichment - Virus Total Private API Test
