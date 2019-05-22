@@ -65,7 +65,7 @@ def ssh_execute(command: str):
     return result.stdout
 
 
-def scp_execute(file_name: str, file_path: str) -> bool:
+def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
             file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
