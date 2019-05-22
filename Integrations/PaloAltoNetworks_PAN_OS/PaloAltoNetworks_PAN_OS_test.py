@@ -1,61 +1,67 @@
 import demistomock as demisto
 
 integration_params = {
-    'port': int(22),
-    'vsys': 'vsys1'
+    'port': '22',
+    'vsys': 'vsys1',
+    'server': '1.1.1.1'
 }
-demisto.params().set(return_value=integration_params)
 
-def test_add_argument_list():
+
+def test_add_argument_list(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import add_argument_list
     list_argument = ["foo", "bar"]
 
     response_with_member = add_argument_list(list_argument, "test", True)
-    expected_with_member = '<test><member><foo></member><member><bar></member></test>'
+    expected_with_member = '<test><member>foo</member><member>bar</member></test>'
     assert response_with_member == expected_with_member
 
     response_with_member_field_name = add_argument_list(list_argument, "member", True)
-    expected_with_member_field_name = '<member><foo></member><member><bar></member>'
+    expected_with_member_field_name = '<member>foo</member><member>bar</member>'
     assert response_with_member_field_name == expected_with_member_field_name
 
 
-def test_add_argument():
+def test_add_argument(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import add_argument
     argument = "foo"
 
     response_with_member = add_argument(argument, "test", True)
-    expected_with_member = '<test><member><foo></member></test>'
+    expected_with_member = '<test><member>foo</member></test>'
     assert response_with_member == expected_with_member
 
-    response_without_member = add_argument_list(argument, "test", False)
-    expected_without_member = '<test><foo></test>'
+    response_without_member = add_argument(argument, "test", False)
+    expected_without_member = '<test>foo</test>'
     assert response_without_member == expected_without_member
 
 
-def test_add_argument_yes_no():
+def test_add_argument_yes_no(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import add_argument_yes_no
     arg = 'No'
     field = 'test'
     option = True
 
     response_option_true = add_argument_yes_no(arg, field, option)
-    expected_option_true = '<option><test><No></test></option>'
+    expected_option_true = '<option><test>no</test></option>'
     assert response_option_true == expected_option_true
 
     option = False
     response_option_false = add_argument_yes_no(arg, field, option)
-    expected_option_false = '<test><No></test>'
+    expected_option_false = '<test>no</test>'
     assert response_option_false == expected_option_false
 
 
-def test_add_argument_target():
+def test_add_argument_target(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import add_argument_target
     response = add_argument_target('foo', 'bar')
     expected = '<bar><devices><entry name=\"foo\"/></devices></bar>'
     assert response == expected
 
 
-def test_prettify_addresses_arr():
+def test_prettify_addresses_arr(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
                      {'@name': 'my_name2', 'fqdn': 'b.com'}]
@@ -65,7 +71,8 @@ def test_prettify_addresses_arr():
     assert response == expected
 
 
-def test_prettify_address():
+def test_prettify_address(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import prettify_address
     address = {'@name': 'my_name', 'ip-netmask': '1.1.1.1', 'description': 'lala'}
     response = prettify_address(address)
@@ -73,7 +80,8 @@ def test_prettify_address():
     assert response == expected
 
 
-def test_prettify_address_group():
+def test_prettify_address_group(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import prettify_address_group
     address_group_static = {'@name': 'foo', 'static': {'member': 'address object'}}
     response_static = prettify_address_group(address_group_static)
@@ -82,11 +90,12 @@ def test_prettify_address_group():
 
     address_group_dynamic = {'@name': 'foo', 'dynamic': {'filter': '1.1.1.1 and 2.2.2.2'}}
     response_dynamic = prettify_address_group(address_group_dynamic)
-    expected_address_group_dynamic = {'Name': 'foo', 'Type': 'Dynamic', 'Match': '1.1.1.1 and 2.2.2.2'}
+    expected_address_group_dynamic = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 and 2.2.2.2'}
     assert response_dynamic == expected_address_group_dynamic
 
 
-def test_prettify_service():
+def test_prettify_service(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import prettify_service
     service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}}
     response = prettify_service(service)
@@ -94,7 +103,8 @@ def test_prettify_service():
     assert response == expected
 
 
-def test_prettify_service_group():
+def test_prettify_service_group(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import prettify_service_group
     service_group = {'@name': 'sg', 'members': {'member': ['service1', 'service2']}}
     response = prettify_service_group(service_group)
@@ -102,7 +112,8 @@ def test_prettify_service_group():
     assert response == expected
 
 
-def test_prettify_custom_url_category():
+def test_prettify_custom_url_category(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     from PaloAltoNetworks_PAN_OS import prettify_custom_url_category
     custom_url_category = {'@name': 'foo', 'list': {'member': ['a', 'b', 'c']}}
     response = prettify_custom_url_category(custom_url_category)
