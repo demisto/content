@@ -54,7 +54,7 @@ def main():
         get_dev_requirements(2.7)
         get_dev_requirements(3.7)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures_submit = [executor.submit(run_dev_task, dir, params) for dir in pkgs_to_run]        
+        futures_submit = [executor.submit(run_dev_task, dir, params) for dir in pkgs_to_run]
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
             if res[0].returncode != 0:
