@@ -1,1 +1,1 @@
-Provides data enrichment for Domains, URLs, and IP addresses.
+Provides data enrichment for domains, URLs, and IP addresses.
