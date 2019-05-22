@@ -1,6 +1,6 @@
-import re
 from datetime import datetime, timedelta
 import dateparser
+
 
 def approximate_compare(time1, time2):
     if isinstance(time1, int):
@@ -34,6 +34,5 @@ def test_get_time_range():
                           dateparser.parse('2019-12-30T04:05:06Z').timestamp())
 
     start, end = get_time_range('Custom', '2019-12-30T01:02:03Z', None)
-    assert (start == dateparser.parse('2019-12-30T01:02:03Z').timestamp() and
-            approximate_compare(end, dateparser.parse('2019-12-30T04:05:06Z').timestamp()))
-
+    assert (start == dateparser.parse('2019-12-30T01:02:03Z').timestamp()
+            and approximate_compare(end, dateparser.parse('2019-12-30T04:05:06Z').timestamp()))
