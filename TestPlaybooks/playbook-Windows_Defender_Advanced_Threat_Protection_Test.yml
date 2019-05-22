@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 583280a6-547a-4c77-898b-2bb5e747047b
+    taskid: 13de2b72-ed07-4102-8bf0-3c6b3a045390
     type: start
     task:
-      id: 583280a6-547a-4c77-898b-2bb5e747047b
+      id: 13de2b72-ed07-4102-8bf0-3c6b3a045390
       version: -1
       name: ""
       iscommand: false
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 98c79c62-43db-468b-8309-b2de4420ba63
+    taskid: 65e1adb0-a54a-4534-8cd6-11d168937f49
     type: regular
     task:
-      id: 98c79c62-43db-468b-8309-b2de4420ba63
+      id: 65e1adb0-a54a-4534-8cd6-11d168937f49
       version: -1
       name: Get multiple lists by informational severity
       script: '|||microsoft-atp-list-alerts'
@@ -50,17 +51,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 7777bf73-e67e-40c7-8011-e0de27340cc0
+    taskid: a76ee8ff-5504-48ad-8d68-6dcbdda92d1b
     type: condition
     task:
-      id: 7777bf73-e67e-40c7-8011-e0de27340cc0
+      id: a76ee8ff-5504-48ad-8d68-6dcbdda92d1b
       version: -1
       name: Assert 2 alerts were fetched
       type: condition
@@ -89,17 +91,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 76bcefb7-90ed-4784-803a-03c9f1c0ec6f
+    taskid: 6192fed1-5022-4fc0-8e43-f2aef03fbe2d
     type: regular
     task:
-      id: 76bcefb7-90ed-4784-803a-03c9f1c0ec6f
+      id: 6192fed1-5022-4fc0-8e43-f2aef03fbe2d
       version: -1
       name: Get machine related to file
       script: '|||microsoft-atp-get-file-related-machines'
@@ -111,7 +114,7 @@ tasks:
       - "5"
     scriptarguments:
       file:
-        simple: 408fe28868b5ac008b5df98b9928a2fa6543d0d7
+        simple: a6c80ce949469cc86f6c22355f4d3bb8773fc634
     separatecontext: false
     view: |-
       {
@@ -122,12 +125,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: dfcac420-c73e-4775-8a57-d454a5418623
+    taskid: 3ed1c731-c442-4468-839d-5e1df3f1530d
     type: condition
     task:
-      id: dfcac420-c73e-4775-8a57-d454a5418623
+      id: 3ed1c731-c442-4468-839d-5e1df3f1530d
       version: -1
       name: Assert right machine was fetched
       type: condition
@@ -135,7 +139,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -159,79 +163,13 @@ tasks:
       }
     note: false
     timertriggers: []
-  "6":
-    id: "6"
-    taskid: 71ec8996-6e50-4b04-84b3-154d0eec05f1
-    type: regular
-    task:
-      id: 71ec8996-6e50-4b04-84b3-154d0eec05f1
-      version: -1
-      name: Get multiple devices
-      script: '|||microsoft-atp-get-machine-details'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      machine_id:
-        complex:
-          root: MicrosoftATP
-          accessor: Machine.ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 75575f77-0c82-4161-839d-f27dde5b04c2
-    type: condition
-    task:
-      id: 75575f77-0c82-4161-839d-f27dde5b04c2
-      version: -1
-      name: Assert 2 last seen was updated
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: MicrosoftATP
-                accessor: Machine.LastSeen
-            iscontext: true
-          right:
-            value:
-              simple: 2019-03-27T07:35:53.7365729Z
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: e6df1c51-5558-4307-8edf-420b8aa60103
+    taskid: 0e0a10d2-80e5-45a5-80bf-f94d02cb4fcc
     type: title
     task:
-      id: e6df1c51-5558-4307-8edf-420b8aa60103
+      id: 0e0a10d2-80e5-45a5-80bf-f94d02cb4fcc
       version: -1
       name: Done
       type: title
@@ -242,17 +180,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2820
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 1baf7ad2-1ed4-4599-8faf-e4c4fae0a808
+    taskid: 423ba263-07f8-4119-89f2-22c259922987
     type: condition
     task:
-      id: 1baf7ad2-1ed4-4599-8faf-e4c4fae0a808
+      id: 423ba263-07f8-4119-89f2-22c259922987
       version: -1
       name: Assert machine was fetched and isolated
       type: condition
@@ -296,17 +235,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 1d7edffb-0b1f-47c0-83d3-f3db65445c6a
+    taskid: 29ab4fcf-a381-44da-84ab-e38400413b8a
     type: regular
     task:
-      id: 1d7edffb-0b1f-47c0-83d3-f3db65445c6a
+      id: 29ab4fcf-a381-44da-84ab-e38400413b8a
       version: -1
       name: Isolate machine
       script: '|||microsoft-atp-isolate-machine'
@@ -327,17 +267,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: c3e35b21-4ab3-40b0-89c2-c206bc8539a8
+    taskid: 0ad757a6-5a42-4dcb-81d2-36b1ccb3c84b
     type: regular
     task:
-      id: c3e35b21-4ab3-40b0-89c2-c206bc8539a8
+      id: 0ad757a6-5a42-4dcb-81d2-36b1ccb3c84b
       version: -1
       name: Unisolate machine
       script: '|||microsoft-atp-unisolate-machine'
@@ -359,17 +300,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: b8eb07da-d279-4d1d-8e9c-61cf66a1d598
+    taskid: 847ad6a9-de00-4020-80e3-e24cf9e81704
     type: regular
     task:
-      id: b8eb07da-d279-4d1d-8e9c-61cf66a1d598
+      id: 847ad6a9-de00-4020-80e3-e24cf9e81704
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -391,17 +333,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: eae60c9c-94ad-4c26-87c5-71257f0436d7
+    taskid: 3b4675cc-ec97-4bf4-820f-4240a95a3909
     type: regular
     task:
-      id: eae60c9c-94ad-4c26-87c5-71257f0436d7
+      id: 3b4675cc-ec97-4bf4-820f-4240a95a3909
       version: -1
       name: Get machines by health status
       script: '|||microsoft-atp-get-machines'
@@ -422,17 +365,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 7049d70b-c6af-4356-85f5-512a699221c6
+    taskid: fe9c6610-2c23-4896-868a-6990ad3647a4
     type: condition
     task:
-      id: 7049d70b-c6af-4356-85f5-512a699221c6
+      id: fe9c6610-2c23-4896-868a-6990ad3647a4
       version: -1
       name: Assert isolation doesn't exist
       type: condition
@@ -456,17 +400,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 436b98f1-fdb9-405f-8005-e1d099b8278d
+    taskid: 9f8ad551-ebfc-41ae-8062-107c32241349
     type: regular
     task:
-      id: 436b98f1-fdb9-405f-8005-e1d099b8278d
+      id: 9f8ad551-ebfc-41ae-8062-107c32241349
       version: -1
       name: Get time
       scriptName: GetTime
@@ -488,17 +433,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: c2e561c2-ca04-4226-8c69-b081e19ac08e
+    taskid: bd59fb76-869a-409e-8c49-bc160b6a9954
     type: regular
     task:
-      id: c2e561c2-ca04-4226-8c69-b081e19ac08e
+      id: bd59fb76-869a-409e-8c49-bc160b6a9954
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -513,13 +459,13 @@ tasks:
       description:
         simple: Created for test
       event_time:
-        simple: 2019-03-18T13:51:12.4870340Z
+        simple: 2019-05-22T13:19:30.1610718Z
       machine_id:
         simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
       recommended_action:
         simple: None
       report_id:
-        simple: "13663"
+        simple: "18710"
       severity:
         simple: Medium
       title:
@@ -537,17 +483,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 62def4fc-77fb-43a2-8e9b-968c78253302
+    taskid: 94081fe1-3dfc-471d-88e6-d7045c0f0843
     type: condition
     task:
-      id: 62def4fc-77fb-43a2-8e9b-968c78253302
+      id: 94081fe1-3dfc-471d-88e6-d7045c0f0843
       version: -1
       name: Assert alert created
       type: condition
@@ -571,17 +518,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 0e6938de-6f1f-4a40-84ce-282355532ee9
+    taskid: ef8e96ca-18af-4634-8c47-295b93129caf
     type: regular
     task:
-      id: 0e6938de-6f1f-4a40-84ce-282355532ee9
+      id: ef8e96ca-18af-4634-8c47-295b93129caf
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -599,17 +547,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: 2fcad126-26ab-49dd-8b8a-32bce7b38eef
+    taskid: f53026d4-b70f-4ae6-8de5-3fc996643acb
     type: condition
     task:
-      id: 2fcad126-26ab-49dd-8b8a-32bce7b38eef
+      id: f53026d4-b70f-4ae6-8de5-3fc996643acb
       version: -1
       name: Assert query results
       type: condition
@@ -636,17 +585,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 2835,
         "width": 380,
         "x": 50,
         "y": 50
