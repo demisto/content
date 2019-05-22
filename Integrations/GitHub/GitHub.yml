@@ -1,4 +1,5 @@
 category: Utilities
+description: GitHub API and repository managment.
 commonfields:
   id: GitHub
   version: -1
@@ -19,74 +20,89 @@ script:
   - deprecated: false
     execution: false
     name: list-all-issues
+    description: List all issues.
   - arguments:
     - default: false
       isArray: false
       name: title
       required: false
       secret: false
+      description: title
     - default: false
       isArray: false
       name: body
       required: false
       secret: false
+      description: body
     - default: false
       isArray: true
       name: assignees
       required: false
       secret: false
+      description: assignees
     - default: false
       isArray: true
       name: labels
       required: false
       secret: false
+      description: labels
     deprecated: false
     execution: false
     name: create-issue
+    description: Creates a new issue.
   - arguments:
     - default: false
       isArray: false
       name: issue_num
       required: true
       secret: false
+      description: Issue number (not ID)
     - default: false
       isArray: false
       name: title
       required: false
       secret: false
+      description: title
     - default: false
       isArray: false
       name: body
       required: false
       secret: false
+      description: body
     - default: false
       isArray: true
       name: assignees
       required: false
       secret: false
+      description: assignees seperated by comma (,)
     - default: false
       isArray: true
       name: labels
       required: false
       secret: false
+      description: labels seperated by comma (,)
     deprecated: false
     execution: false
     name: edit-issue
+    description: Edit an existing issue
   - arguments:
     - default: false
       isArray: false
       name: issue_num
       required: true
       secret: false
+      description: Issue number (not ID)
     deprecated: false
     execution: false
     name: close-issue
+    description: Close specific issue
   - arguments:
     - default: false
       isArray: false
       name: search_query
       required: false
       secret: false
+      description: Query to be serached for.
     - default: false
       isArray: false
       name: sort_by
@@ -94,6 +110,7 @@ script:
       - ''
       required: false
       secret: false
+      description: Key to be sorted by
     - auto: PREDEFINED
       default: false
       isArray: false
@@ -103,12 +120,14 @@ script:
       - ' ''desc'''
       required: false
       secret: false
+      description: How to sort
     deprecated: false
     execution: false
     name: make-search
   - deprecated: false
     execution: false
     name: count-downloads
+    description: Count the amount of downloads per asset in release.
   isfetch: true
   runonce: false
   script: ''
