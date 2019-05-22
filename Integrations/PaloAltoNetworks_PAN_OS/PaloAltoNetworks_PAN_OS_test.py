@@ -1,3 +1,11 @@
+import demistomock as demisto
+
+integration_params = {
+    'port': int(22),
+    'vsys': 'vsys1'
+}
+mocker.patch.object(demisto, 'params', return_value=integration_params)
+
 from PaloAltoNetworks_PAN_OS import add_argument_list, add_argument, add_argument_yes_no, add_argument_target, \
     prettify_addresses_arr, prettify_address, prettify_address_group, prettify_service, prettify_service_group, \
     prettify_custom_url_category
