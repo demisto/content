@@ -63,7 +63,10 @@ def ssh_execute(command: str):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.stderr:
-        return_error(result.stderr)
+        if result.stderr.find("Warning") != -1:
+            return_error('fdsavfdsvds')
+        else:
+            return_error(result.stderr)
 
     return result.stdout
 
@@ -79,7 +82,10 @@ def scp_execute(file_name: str, file_path: str):
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.stderr:
-        return_error(result.stderr)
+        if result.stderr.find("Warning") != -1:
+            return_error('fdsavfdsvds')
+        else:
+            return_error(result.stderr)
     else:
         return True
 
