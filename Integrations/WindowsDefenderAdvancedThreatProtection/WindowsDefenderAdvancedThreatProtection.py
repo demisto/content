@@ -241,7 +241,7 @@ def get_machines_command():
             'EntryContext': ec
         }
     else:
-        entry = 'No results found'
+        entry = 'No results found'  # type: ignore
     demisto.results(entry)
 
 
@@ -310,7 +310,7 @@ def get_file_related_machines_command():
             'EntryContext': ec
         }
     else:
-        entry = 'No results found'
+        entry = 'No results found'  # type: ignore
     demisto.results(entry)
 
 
@@ -377,7 +377,7 @@ def get_machine_details_command():
             'EntryContext': ec
         }
     else:
-        entry = 'No results found'
+        entry = 'No results found'  # type: ignore
     demisto.results(entry)
 
 
@@ -501,7 +501,7 @@ def list_alerts_command():
             'EntryContext': ec
         }
     else:
-        entry = 'No results found'
+        entry = 'No results found'  # type: ignore
     demisto.results(entry)
 
 
