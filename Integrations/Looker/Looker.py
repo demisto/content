@@ -409,5 +409,5 @@ try:
 except Exception as e:
     LOG(e)
     LOG(traceback.format_exc())
-    LOG.print_log(verbose=True)  # TODO: Remove verbosity
+    LOG.print_log()
     demisto.results(e)
