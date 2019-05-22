@@ -9,36 +9,51 @@ import subprocess
 import shutil
 import os
 
+''' AUX '''
+
+
+def create_certificate_file():
+    cert_file = tempfile.NamedTemporaryFile()
+    if CERTIFICATE:
+        with open(cert_file.name, "w") as f:
+            f.write(CERTIFICATE)
+        os.chmod(cert_file.name, 0o400)
+    elif PASSWORD:
+        # check that password field holds a certificate and not a password
+        if PASSWORD.find('-----') == -1:
+            return_error('Password field must contain a certificate.')
+        # split certificate by dashes
+        password_list = PASSWORD.split('-----')
+        # replace spaces with newline characters
+        password = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
+        with open(cert_file.name, "w") as f:
+            f.write(password)
+        os.chmod(cert_file.name, 0o400)
+    else:
+        return_error('Provide a certificate in order to connect to the remote server.')
+
+    return cert_file
+
+
 ''' GLOBALS '''
 
-HOSTNAME = demisto.params().get('hostname')
-
-PORT = demisto.params().get('port', None)
-if PORT:
-    PORT = str(PORT)
-
 authentication = demisto.params().get('Authentication')
-USERNAME = authentication.get('identifier')
-password = ''
-if 'password' in authentication:
-    password_list = authentication.get('password').split('-----')
-    password = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
 
+HOSTNAME = demisto.params().get('hostname')
+USERNAME = authentication.get('identifier')
+PORT = str(demisto.params().get('port')) if 'port' in demisto.params() else None
+
+PASSWORD = authentication.get('password', None)
 CERTIFICATE = authentication.get('credentials').get(
     'sshkey') if 'credentials' in authentication and 'sshkey' in authentication.get('credentials') and len(
-    authentication.get('credentials').get('sshkey')) > 0 else password
-if not CERTIFICATE:
-    return_error('Provide a certificate in order to connect to the remote server.')
-CERTIFICATE_FILE = tempfile.NamedTemporaryFile()
-with open(CERTIFICATE_FILE.name, "w") as f:
-    f.write(CERTIFICATE)
-os.chmod(CERTIFICATE_FILE.name, 0o400)
+    authentication.get('credentials').get('sshkey')) > 0 else None
+
+CERTIFICATE_FILE = create_certificate_file()
 
 SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.params().get('ssh_extra_params',
                                                                                             None) else None
 SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
                                                                                             None) else None
-
 DOCUMENT_ROOT = demisto.params().get('document_root', None)
 
 ''' UTILS '''
