@@ -130,7 +130,7 @@ def get_look_id_from_name(name):
     if len(looks) < 1:
         raise Exception(f'No Look found with the name {name}.')
     if len(looks) > 1:
-        raise Exception(f'There is more than one Look with the name {name}.'
+        raise Exception(f'There is more than one Look with the name "{name}".'
                         f"\nUse look ID instead - It can be found in the Look's URL or by running looker-search-looks")
 
     return looks[0]['ID']
