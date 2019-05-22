@@ -62,7 +62,7 @@ def run_shell_command(command, *args):
     cmd = [command] + list(args)
     completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if completed_process.stderr:
-        raise ShellException(completed_process.stderr)
+        raise ShellException(f'{completed_process.stderr}Shell error code: {completed_process.returncode}')
     elif completed_process.returncode != 0:
         raise ShellException(f'Shell script failed with the following error code: {completed_process.returncode}')
     return completed_process.stdout
