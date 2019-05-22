@@ -42,48 +42,43 @@ DOCUMENT_ROOT = demisto.params().get('document_root', None)
 
 
 def ssh_execute(command: str):
-    out = ''
-    try:
-        if PORT and SSH_EXTRA_PARAMS:
-            param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p',
-                          PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]
-            out = subprocess.check_output(param_list, text=True)
-        elif PORT:
-            out = subprocess.check_output(
-                ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
-                 USERNAME + '@' + HOSTNAME, command], text=True)
-        elif SSH_EXTRA_PARAMS:
-            param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
-                USERNAME + '@' + HOSTNAME, command]
-            out = subprocess.check_output(param_list, text=True)
-        else:
-            out = subprocess.check_output(
-                ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, USERNAME + '@' + HOSTNAME,
-                 command], text=True)
+    if PORT and SSH_EXTRA_PARAMS:
+        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p',
+                      PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]
+        result = subprocess.run(param_list, tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    elif PORT:
+        result = subprocess.run(
+            ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
+             USERNAME + '@' + HOSTNAME, command], tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    elif SSH_EXTRA_PARAMS:
+        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
+            USERNAME + '@' + HOSTNAME, command]
+        result = subprocess.run(param_list, tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    else:
+        result = subprocess.run(
+            ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, USERNAME + '@' + HOSTNAME, command],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-    except Exception as ex:
-        if str(ex).find('warning') != -1:
-            LOG(str(ex))
+    if result.stderr:
+        return_error(result.stderr)
 
-    return out
+    return result.stdout
 
 
 def scp_execute(file_name: str, file_path: str) -> bool:
-    try:
-        if SCP_EXTRA_PARAMS:
-            param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
-                file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
-            subprocess.check_output(param_list)
-        else:
-            subprocess.check_output(['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
-                                     USERNAME + '@' + HOSTNAME + ':' + file_path])
+    if SCP_EXTRA_PARAMS:
+        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
+            file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
+        result = subprocess.run(param_list, tdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    else:
+        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
+                      USERNAME + '@' + HOSTNAME + ':' + file_path]
+        result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+    if result.stderr:
+        return_error(result.stderr)
+    else:
         return True
-    except Exception as ex:
-        if str(ex).find('warning') != -1:
-            LOG(str(ex))
-            return True
-        else:
-            return False
 
 
 ''' COMMANDS '''
@@ -128,7 +123,7 @@ def rfm_search_external_file_command():
 
     result = rfm_search_external_file(file_path, search_string)
     if len(result) > 0:
-        md = tableToMarkdown('Search Results', result, headers=['Results'])
+        md = tableToMarkdown('Search Results', result, headers=['Result'])
 
         demisto.results({
             'ContentsFormat': formats['markdown'],
@@ -205,7 +200,6 @@ def rfm_update():
                 md = 'Instance context updated successfully'
 
     demisto.setIntegrationContext(dict_of_lists)
-
     demisto.results({
         'ContentsFormat': formats['markdown'],
         'Type': entryTypes['note'],
