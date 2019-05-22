@@ -1684,6 +1684,7 @@
         "AWS - CloudTrail": "Integration requires SSL",
         "AWS - EC2": "Integration requires SSL",
         "AWS - S3": "Integration requires SSL",
-        "Image OCR": "Doesn't perform network communication"
+        "Image OCR": "Doesn't perform network communication",
+        "Minerva Labs Anti-Evasion Platform": "Mock recording fails"
     }
 }
