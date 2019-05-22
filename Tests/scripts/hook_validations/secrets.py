@@ -14,7 +14,7 @@ except ImportError:
 
 from Tests.test_utils import run_command, print_error
 
-# secrets main settings
+# secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
 ENTROPY_THRESHOLD = 4.2
 
