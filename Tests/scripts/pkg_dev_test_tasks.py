@@ -7,6 +7,8 @@ import os
 import hashlib
 import sys
 import shutil
+import time
+from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
@@ -101,13 +103,34 @@ def docker_image_create(docker_base_image, requirements):
     if ':' not in docker_base_image:
         docker_base_image += ':latest'
     target_image = 'devtest' + docker_base_image + '-' + hashlib.md5(requirements.encode('utf-8')).hexdigest()
-    images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
-                                         '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
-    if images_ls == target_image:
-        print('Using already existing docker image: {}'.format(target_image))
-        return target_image
-    print("Creating docker image: {} (this may take a minute or two...)".format(target_image))
+    lock_file = ".lock-" + target_image.replace("/", "-")
     try:
+        if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
+            print("{}: Deleting old lock file: {}".format(datetime.now(). lock_file))
+            os.remove(lock_file)
+    except Exception as ex:
+        print_v("Failed check and delete for lock file: {}. Error: {}".format(lock_file, ex))
+    wait_print = True
+    for x in range(60):
+        images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
+                                            '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
+        if images_ls == target_image:
+            print('{}: Using already existing docker image: {}'.format(datetime.now(), target_image))
+            return target_image
+        if wait_print:
+            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(), target_image))
+            wait_print = False
+        print_v("Trying to obtain lock file: " + lock_file)
+        try:
+            f = open(lock_file, "x")
+            f.close()
+            print("{}: Obtained lock file: {}".format(datetime.now(), lock_file))
+            break
+        except Exception as ex:
+            print_v("Failed getting lock. Will wait {}".format(str(ex)))
+            time.sleep(5)
+    try:
+        print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
             universal_newlines=True).strip()
@@ -123,7 +146,12 @@ def docker_image_create(docker_base_image, requirements):
     except subprocess.CalledProcessError as err:
         print("Failed executing command with  error: {} Output: \n{}".format(err, err.output))
         raise err
-    print('Done creating docker image: {}'.format(target_image))
+    finally:
+        try:
+            os.remove(lock_file)
+        except Exception as ex:
+            print("{}: Error removing file: {}".format(datetime.now(), ex))
+    print('{}: Done creating docker image: {}'.format(datetime.now(), target_image))
     return target_image
 
 

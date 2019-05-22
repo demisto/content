@@ -18,10 +18,8 @@ def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.
         args.extend(params)
     cmd_line = " ".join(args)
     # color stderr in red and remove the warning about no config file from pylint
-    cmd_line += r" 2> >(sed '/No config file found, using default configuration/d' | sed $'s,.*,\x1B[31m&\x1B[0m,'>&1)"
+    cmd_line += r" 2> >(sed '/No config file found, using default configuration/d' | sed $'s,.*,\x1B[31m&\x1B[0m,'>&1)"
     res = subprocess.run(cmd_line, text=True, capture_output=True, shell=True, executable='/bin/bash')
-    # if res.stdout:
-    #     res.stdout = res.stdout.replace('No config file found, using default configuration', 'test', 1)
     return (res, pkg_dir)
 
 
