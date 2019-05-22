@@ -10,9 +10,9 @@ jobs:
       - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.4.2"
+      CONTENT_VERSION: "19.5.0"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "28fc5480343d1b7bb759f3742670eac2afaa3e38" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "a267c8adf281e8261d4080e554f41b02196ec2a7" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -29,6 +29,7 @@ jobs:
               pyenv versions
               python --version
               python3 --version
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -114,7 +115,7 @@ jobs:
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
             fi
       - run:
           name: Run Tests - Latest GA

@@ -13,6 +13,7 @@ def approximate_compare(time1, time2):
 
 def test_get_time_range():
     from AlienVault_USM_Anywhere import get_time_range
+    from CommonServerPython import date_to_timestamp
 
     assert get_time_range(None, None, None) == (None, None)
 
@@ -30,9 +31,9 @@ def test_get_time_range():
     assert datetime.fromtimestamp(start / 1000).date() == (dt.date() - timedelta(days=1)) and approximate_compare(dt, end)
 
     start, end = get_time_range('Custom', '2019-12-30T01:02:03Z', '2019-12-30T04:05:06Z')
-    assert start, end >= (dateparser.parse('2019-12-30T01:02:03Z').timestamp(),
-                          dateparser.parse('2019-12-30T04:05:06Z').timestamp())
+    assert ((start, end) == (date_to_timestamp(dateparser.parse('2019-12-30T01:02:03Z')),
+                             date_to_timestamp(dateparser.parse('2019-12-30T04:05:06Z'))))
 
     start, end = get_time_range('Custom', '2019-12-30T01:02:03Z', None)
-    assert (start == dateparser.parse('2019-12-30T01:02:03Z').timestamp()
-            and approximate_compare(end, dateparser.parse('2019-12-30T04:05:06Z').timestamp()))
+    assert (start == date_to_timestamp(dateparser.parse('2019-12-30T01:02:03Z'))
+            and approximate_compare(end, datetime.now()))
