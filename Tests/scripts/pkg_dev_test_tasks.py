@@ -61,10 +61,10 @@ def get_python_version(project_dir, docker_image):
 
 def get_dev_requirements(py_version):
     """
-    Get the requirements for the specified py version. 
+    Get the requirements for the specified py version.
 
     Arguments:
-        py_version {float} -- python version as float (2.7, 3.7)        
+        py_version {float} -- python version as float (2.7, 3.7) 
 
     Raises:
         ValueError -- If can't detect python version
