@@ -124,6 +124,7 @@ script:
     deprecated: false
     execution: false
     name: make-search
+    description: Search through your repository issues.
   - deprecated: false
     execution: false
     name: count-downloads
