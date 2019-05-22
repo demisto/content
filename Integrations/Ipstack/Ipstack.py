@@ -50,7 +50,6 @@ def http_request(method, path):
 
 
 def do_ip(ip):
-    demisto.log(ip)
     path = "/{}?access_key={}".format(ip, API_KEY)
     return http_request('GET', path)
 
