@@ -64,7 +64,11 @@ def ssh_execute(command: str):
 
     if result.stderr:
         if result.stderr.find("Warning") != -1:
-            return_error('fdsavfdsvds')
+            demisto.results({
+                'Type': 11,
+                'Contents': result.stderr,
+                'ContentsFormat': formats['text']
+            })
         else:
             return_error(result.stderr)
 
@@ -83,7 +87,11 @@ def scp_execute(file_name: str, file_path: str):
 
     if result.stderr:
         if result.stderr.find("Warning") != -1:
-            return_error('fdsavfdsvds')
+            demisto.results({
+                'Type': 11,
+                'Contents': result.stderr,
+                'ContentsFormat': formats['text']
+            })
         else:
             return_error(result.stderr)
     else:
