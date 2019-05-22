@@ -21,8 +21,8 @@ authentication = demisto.params().get('Authentication')
 USERNAME = authentication.get('identifier')
 password = ''
 if 'password' in authentication:
-    password = authentication.get('password').split('-----')
-    password = '-----'.join(password[:2] + [password[2].replace(' ', '\n')] + password[3:])
+    password_list = authentication.get('password').split('-----')
+    password = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
 
 CERTIFICATE = authentication.get('credentials').get(
     'sshkey') if 'credentials' in authentication and 'sshkey' in authentication.get('credentials') and len(
