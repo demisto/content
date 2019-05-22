@@ -1003,7 +1003,8 @@
         },
         {
             "integrations": "Whois",
-            "playbookID": "whois_test"
+            "playbookID": "whois_test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -1339,6 +1340,9 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
+            "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
             "playbookID": "Palo Alto Networks Cortex Test",
             "fromversion": "4.1.0"
         },
@@ -1552,7 +1556,6 @@
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
 
