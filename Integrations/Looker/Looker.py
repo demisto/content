@@ -178,7 +178,7 @@ def parse_filters_arg(filters_arg_value):
     return filters
 
 
-def get_entries_for_search_results(contents, look_id=None, result_format='json'):
+def get_entries_for_search_results(contents, look_id=None, result_format='json', look_name=''):
     entries = []
     if result_format == 'json':
         camelized = camelize(contents, delim='_')
@@ -193,7 +193,7 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json')
                     'Results': formatted_contents
                 }
             }
-            hr_title = f'Results for look #{look_id}'
+            hr_title = f'Results for look "{look_name}"' if look_name else f'Results for look #{look_id}'
             full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
         else:
             context = {'LookerResults.InlineQuery': formatted_contents}
@@ -258,7 +258,7 @@ def run_look_command():
 
     contents = run_look_request(look_id, result_format, limit, fields)
 
-    demisto.results(get_entries_for_search_results(contents, look_id, result_format))
+    demisto.results(get_entries_for_search_results(contents, look_id, result_format, look_name))
 
 
 def run_look_request(look_id, result_format, limit, fields):
