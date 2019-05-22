@@ -22,9 +22,8 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_N
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-             "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython_4_1.yml",
-             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml",
-             "scripts/CommonServerPython/CommonServerPython.yml"]
+             "scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
+             "scripts/script-CommonUserServer.yml", "scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
