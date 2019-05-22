@@ -1,3 +1,5 @@
+import pytest
+
 import demistomock as demisto
 
 integration_params = {
@@ -7,8 +9,12 @@ integration_params = {
 }
 
 
-def test_add_argument_list(mocker):
+@pytest.fixture(autouse=True)
+def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
+
+
+def test_add_argument_list():
     from PaloAltoNetworks_PAN_OS import add_argument_list
     list_argument = ["foo", "bar"]
 
@@ -21,8 +27,7 @@ def test_add_argument_list(mocker):
     assert response_with_member_field_name == expected_with_member_field_name
 
 
-def test_add_argument(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_add_argument():
     from PaloAltoNetworks_PAN_OS import add_argument
     argument = "foo"
 
@@ -35,8 +40,7 @@ def test_add_argument(mocker):
     assert response_without_member == expected_without_member
 
 
-def test_add_argument_yes_no(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_add_argument_yes_no():
     from PaloAltoNetworks_PAN_OS import add_argument_yes_no
     arg = 'No'
     field = 'test'
@@ -52,16 +56,14 @@ def test_add_argument_yes_no(mocker):
     assert response_option_false == expected_option_false
 
 
-def test_add_argument_target(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_add_argument_target():
     from PaloAltoNetworks_PAN_OS import add_argument_target
     response = add_argument_target('foo', 'bar')
     expected = '<bar><devices><entry name=\"foo\"/></devices></bar>'
     assert response == expected
 
 
-def test_prettify_addresses_arr(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_prettify_addresses_arr():
     from PaloAltoNetworks_PAN_OS import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
                      {'@name': 'my_name2', 'fqdn': 'b.com'}]
@@ -71,8 +73,7 @@ def test_prettify_addresses_arr(mocker):
     assert response == expected
 
 
-def test_prettify_address(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_prettify_address():
     from PaloAltoNetworks_PAN_OS import prettify_address
     address = {'@name': 'my_name', 'ip-netmask': '1.1.1.1', 'description': 'lala'}
     response = prettify_address(address)
@@ -80,8 +81,7 @@ def test_prettify_address(mocker):
     assert response == expected
 
 
-def test_prettify_address_group(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_prettify_address_group():
     from PaloAltoNetworks_PAN_OS import prettify_address_group
     address_group_static = {'@name': 'foo', 'static': {'member': 'address object'}}
     response_static = prettify_address_group(address_group_static)
@@ -94,8 +94,7 @@ def test_prettify_address_group(mocker):
     assert response_dynamic == expected_address_group_dynamic
 
 
-def test_prettify_service(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_prettify_service():
     from PaloAltoNetworks_PAN_OS import prettify_service
     service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}}
     response = prettify_service(service)
@@ -103,8 +102,7 @@ def test_prettify_service(mocker):
     assert response == expected
 
 
-def test_prettify_service_group(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_prettify_service_group():
     from PaloAltoNetworks_PAN_OS import prettify_service_group
     service_group = {'@name': 'sg', 'members': {'member': ['service1', 'service2']}}
     response = prettify_service_group(service_group)
@@ -112,8 +110,7 @@ def test_prettify_service_group(mocker):
     assert response == expected
 
 
-def test_prettify_custom_url_category(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+def test_prettify_custom_url_category():
     from PaloAltoNetworks_PAN_OS import prettify_custom_url_category
     custom_url_category = {'@name': 'foo', 'list': {'member': ['a', 'b', 'c']}}
     response = prettify_custom_url_category(custom_url_category)
