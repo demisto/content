@@ -126,4 +126,4 @@ args:
 scripttarget: 0
 runonce: false
 sensitive: true
-releaseNotes: "fix bug in DeleteContext - the scrip refer index param as undefined when it equals to zero"
+releaseNotes: "-"
