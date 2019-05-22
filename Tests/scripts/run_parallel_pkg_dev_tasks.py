@@ -4,11 +4,13 @@ import sys
 import subprocess
 import concurrent.futures
 from typing import List, Optional, Tuple
+from pkg_dev_test_tasks import get_dev_requirements
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 from Tests.test_utils import print_color, LOG_COLORS  # noqa: E402
+
 
 
 def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.CompletedProcess, str]:
@@ -41,15 +43,19 @@ def main():
     find_out = subprocess.check_output(["find", "Integrations", "Scripts", "Beta_Integrations",
                                         "-maxdepth", "1", "-mindepth", "1", "-type", "d", "-print"], text=True)
     pkg_dirs = find_out.splitlines()
-    print("Starting parallel run with {} workers".format(max_workers))
+    pkgs_to_run = []
+    for dir in pkg_dirs:
+            if should_run_pkg(dir):
+                pkgs_to_run.append(dir)
+    print("Starting parallel run for [{}] packages with [{}] max workers".format(len(pkgs_to_run), max_workers))
     params = sys.argv[1::]
     fail_pkgs = []
     good_pkgs = []
+    if(len(pkgs_to_run) > 1):  # setup pipenv before hand to avoid conflics
+        get_dev_requirements(2.7)
+        get_dev_requirements(3.7)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures_submit = []
-        for dir in pkg_dirs:
-            if should_run_pkg(dir):
-                futures_submit.append(executor.submit(run_dev_task, dir, params))
+        futures_submit = [executor.submit(run_dev_task, dir, params) for dir in pkgs_to_run]        
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
             if res[0].returncode != 0:

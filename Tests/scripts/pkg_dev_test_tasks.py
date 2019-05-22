@@ -59,14 +59,12 @@ def get_python_version(project_dir, docker_image):
     return py_num
 
 
-def get_dev_requirements(project_dir, py_version):
+def get_dev_requirements(py_version):
     """
-    Get the requirements for the specified project. Will detect if python 2 or 3 is used and
-    generate requirements file based on default required dev libs.
+    Get the requirements for the specified py version. 
 
     Arguments:
-        py_version {float} -- python version as float (2.7, 3.7)
-        docker_image {stiring} -- Docker image being used by the project
+        py_version {float} -- python version as float (2.7, 3.7)        
 
     Raises:
         ValueError -- If can't detect python version
@@ -222,7 +220,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         if not args.no_mypy:
             run_mypy(project_dir, py_num)
         if not args.no_test or not args.no_pylint:
-            requirements = get_dev_requirements(project_dir, py_num)
+            requirements = get_dev_requirements(py_num)
             docker_image_created = docker_image_create(docker, requirements)
             docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
     except subprocess.CalledProcessError as ex:
