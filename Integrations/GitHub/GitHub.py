@@ -10,13 +10,11 @@ requests.packages.urllib3.disable_warnings()
 
 '''Global vars'''
 
-
 API_KEY = demisto.params().get('api_key')
 INSECURE = not demisto.params().get('insecure', False)
 BASE_URL = 'https://api.github.com/'
 
 '''Suffixes'''
-
 
 GET_ISSUES_SUFFIX = 'issues'
 REPO_ISSUES_SUFFIX = 'repos/teizenman/Demisto-start/issues'
@@ -25,17 +23,16 @@ REPO_SEARCH_SUFFIX = 'search/issues?q=repo:teizenman/Demisto-start'
 GET_RELEASES_SUFFIX = 'repos/teizenman/Demisto-start/releases'
 FETCH_SUFFIX = SEARCH_SUFFIX + 'updated:>'
 
-
 '''HELPER FUNCTIONS'''
 
 
 def http_request(method, URL_SUFFIX, data=None):
-    if method is 'GET':
+    if method == 'GET':
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + API_KEY
         }
-    elif method is 'POST':
+    elif method == 'POST':
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -51,6 +48,7 @@ def http_request(method, URL_SUFFIX, data=None):
     if res.status_code not in [200, 201]:
         return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
     return res.json()
+
 
 '''TEST FUNCTION'''
 
