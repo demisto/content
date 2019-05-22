@@ -1,7 +1,6 @@
 {
 	"id": "incident_measurestomitigate",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-17T13:55:44.5688721Z",
 	"name": "Measures to Mitigate",
 	"ownerOnly": false,
