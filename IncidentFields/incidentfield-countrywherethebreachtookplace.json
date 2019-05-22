@@ -3,7 +3,6 @@
 	"version": -1,
 	"modified": "2019-04-14T11:28:33.557006122Z",
 	"name": "Country where the breach took place",
-	"releaseNotes": "Changed the field to non-mandatory",
 	"ownerOnly": false,
 	"placeholder": "",
 	"description": "",
@@ -33,5 +32,6 @@
 	"caseInsensitive": true,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": ""
+	"breachScript": "",
+	"releaseNotes": "Changed the field to non-mandatory"
 }
