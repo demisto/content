@@ -16,8 +16,13 @@ def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.
     args = [SCRIPT_DIR + '/pkg_dev_test_tasks.py', '-d', pkg_dir]
     if params:
         args.extend(params)
-    args.append("2>&1")  # redirect stderr to stdout so we get it in order
-    return (subprocess.run(" ".join(args), text=True, capture_output=True, shell=True), pkg_dir)
+    cmd_line = " ".join(args)
+    # color stderr in red and remove the warning about no config file from pylint
+    cmd_line += r" 2> >(sed '/No config file found, using default configuration/d' | sed $'s,.*,\x1B[31m&\x1B[0m,'>&1)"
+    res = subprocess.run(cmd_line, text=True, capture_output=True, shell=True, executable='/bin/bash')
+    # if res.stdout:
+    #     res.stdout = res.stdout.replace('No config file found, using default configuration', 'test', 1)
+    return (res, pkg_dir)
 
 
 def should_run_pkg(pkg_dir: str) -> bool:
@@ -59,10 +64,12 @@ def main():
             res = future.result()
             if res[0].returncode != 0:
                 fail_pkgs.append(res[1])
+                print_color("============= {} =============".format(res[1]), LOG_COLORS.RED)
             else:
                 good_pkgs.append(res[1])
-            print("============= {} =============".format(res[1]))
+                print("============= {} =============".format(res[1]))
             print(res[0].stdout)
+            print(res[0].stderr)
     if good_pkgs:
         print_color("\n******* SUCCESS PKGS: *******", LOG_COLORS.GREEN)
         print_color("\n\t{}\n".format("\n\t".join(good_pkgs)), LOG_COLORS.GREEN)
