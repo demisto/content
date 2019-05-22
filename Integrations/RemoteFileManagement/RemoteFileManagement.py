@@ -18,12 +18,15 @@ if PORT:
     PORT = str(PORT)
 
 authentication = demisto.params().get('Authentication')
-
 USERNAME = authentication.get('identifier')
+password = ''
+if 'password' in authentication:
+    password = authentication.get('password').split('-----')
+    password = '-----'.join(password[:2] + [password[2].replace(' ', '\n')] + password[3:])
 
 CERTIFICATE = authentication.get('credentials').get(
     'sshkey') if 'credentials' in authentication and 'sshkey' in authentication.get('credentials') and len(
-    authentication.get('credentials').get('sshkey')) > 0 else authentication.get('password')
+    authentication.get('credentials').get('sshkey')) > 0 else password
 if not CERTIFICATE:
     return_error('Provide a certificate in order to connect to the remote server.')
 CERTIFICATE_FILE = tempfile.NamedTemporaryFile()
