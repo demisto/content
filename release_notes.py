@@ -558,9 +558,10 @@ def get_release_notes_draft(github_token):
                        headers={'Authorization': 'token {}'.format(github_token)})
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
-        if len(drafts) > 1:
+        if len(drafts) == 1:
+            return drafts[0]['body']
+        else:
             print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
-        return drafts['body']
 
     return ''
 
