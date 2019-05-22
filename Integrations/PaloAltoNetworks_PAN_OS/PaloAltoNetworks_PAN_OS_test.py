@@ -6,7 +6,6 @@ integration_params = {
 }
 demisto.params().set(return_value=integration_params)
 
-
 def test_add_argument_list():
     from PaloAltoNetworks_PAN_OS import add_argument_list
     list_argument = ["foo", "bar"]
