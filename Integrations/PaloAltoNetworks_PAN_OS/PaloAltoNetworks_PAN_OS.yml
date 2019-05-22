@@ -2,6 +2,7 @@ category: Network Security
 commonfields:
   id: Panorama
   version: -1
+fromversion: 3.0.0
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -1836,4 +1837,3 @@ tests:
 - palo_alto_panorama_test_pb
 releaseNotes: Add log_forwarding argument to panorama-create-rule, panorama-custom-block-rule
   commands. argument is only available for panorama instances. added type checking.
-fromversion: 3.0.0
