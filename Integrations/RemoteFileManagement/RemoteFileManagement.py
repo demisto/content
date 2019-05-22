@@ -62,15 +62,8 @@ def ssh_execute(command: str):
             ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, USERNAME + '@' + HOSTNAME, command],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-    if result.stderr:
-        if result.stderr.find("Warning") != -1:
-            demisto.results({
-                'Type': 11,
-                'Contents': result.stderr,
-                'ContentsFormat': formats['text']
-            })
-        else:
-            return_error(result.stderr)
+    if result.stderr and result.stderr.find("Warning: Permanently added") == -1:
+        return_error(result.stderr)
 
     return result.stdout
 
@@ -85,15 +78,8 @@ def scp_execute(file_name: str, file_path: str):
                       USERNAME + '@' + HOSTNAME + ':' + file_path]
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-    if result.stderr:
-        if result.stderr.find("Warning") != -1:
-            demisto.results({
-                'Type': 11,
-                'Contents': result.stderr,
-                'ContentsFormat': formats['text']
-            })
-        else:
-            return_error(result.stderr)
+    if result.stderr and result.stderr.find("Warning: Permanently added") == -1:
+        return_error(result.stderr)
     else:
         return True
 
