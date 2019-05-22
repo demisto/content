@@ -15,12 +15,12 @@ requests.packages.urllib3.disable_warnings()
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+SERVER = demisto.params().get('url', '').strip('/')
 
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
-# How many time before the first fetch to retrieve incidents
+IS_FETCH = demisto.params().get('isFetch')
+# How much time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/api/2.0'
@@ -50,9 +50,12 @@ def http_request(method, url_suffix, params=None, headers=None, data=None, **kwa
         headers=headers,
         **kwargs
     )
+
     # Handle error responses gracefully
+    if res.status_code == 401:
+        raise Exception('UnauthorizedError: please validate your credentials.')
     if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+        raise Exception('Error in API call to Example Integration [{}] - {}'.format(res.status_code, res.reason))
 
     return res.json()
 
@@ -77,9 +80,15 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     if time_frame == 'Custom':
         if start_time is None and end_time is None:
             raise ValueError('invalid custom time frame: need to specify one of start_time, end_time')
-        if start_time is not None:
+
+        if start_time is None:
+            start_time = datetime.now()
+        else:
             start_time = dateparser.parse(start_time)
-        if end_time is not None:
+
+        if end_time is None:
+            end_time = datetime.now()
+        else:
             end_time = dateparser.parse(end_time)
 
         return date_to_timestamp(start_time), date_to_timestamp(end_time)
@@ -108,42 +117,24 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
 
 
 @logger
-def parse_alarm(alarm_data):
-    return {
-        'ID': alarm_data['uuid'],
-        'Priority': alarm_data['priority_label'],
-        'OccurredTime': alarm_data['timestamp_occured_iso8601'],
-        'ReceivedTime': alarm_data['timestamp_received_iso8601'],
-
-        'RuleAttackID': alarm_data['rule_attack_id'],
-        'RuleAttackTactic': alarm_data['rule_attack_tactic'],
-        'RuleAttackTechnique': alarm_data['rule_attack_technique'],
-        'RuleDictionary': alarm_data.get('rule_dictionary'),
-        'RuleID': alarm_data.get('rule_id'),
-        'RuleIntent': alarm_data.get('rule_intent'),
-        'RuleMethod': alarm_data.get('rule_method'),
-        'RuleStrategy': alarm_data.get('rule_strategy'),
-
-        'Source': {
-            'IPAddress': alarm_data['alarm_source_names'],
-            'Organization': alarm_data['alarm_source_organisations'],
-            'Country': alarm_data['alarm_source_countries'],
-        },
-        'Destination': {
-            'IPAddress': alarm_data['alarm_destination_names'],
-        },
-        'Event': [{
-            'ID': event['uuid'],
-            'OccurredTime': event['timestamp_occured_iso8601'],
-            'ReceivedTime': event['timestamp_received_iso8601'],
-        } for event in alarm_data.get('events', [])]
-    }
-
-
-@logger
 def parse_alarms(alarms_data):
+    if not isinstance(alarms_data, list):
+        alarms_data = [alarms_data]
+
     alarms = []
     for alarm in alarms_data:
+        events = []
+        for event in alarm.get('events', []):
+            # search command return the event object under sub-key message
+            if 'message' in event:
+                event = event['message']
+
+            events.append({
+                'ID': event['uuid'],
+                'OccurredTime': event['timestamp_occured_iso8601'],
+                'ReceivedTime': event['timestamp_received_iso8601'],
+            })
+
         alarms.append({
             'ID': alarm['uuid'],
             'Priority': alarm['priority_label'],
@@ -167,11 +158,7 @@ def parse_alarms(alarms_data):
             'Destination': {
                 'IPAddress': alarm['alarm_destination_names'],
             },
-            'Event': [{
-                'ID': event['message']['uuid'],
-                'OccurredTime': event['message']['timestamp_occured_iso8601'],
-                'ReceivedTime': event['message']['timestamp_received_iso8601'],
-            } for event in alarm.get('events', [])]
+            'Event': events
         })
 
     return alarms
@@ -228,8 +215,12 @@ def item_to_incident(item):
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Performs basic get request to get alarm samples
     """
+    # the login is executed in the switch panel code
+    if IS_FETCH:
+        # just check the correctness of the parameter
+        parse_date_range(FETCH_TIME)
     search_alarms(limit=2)
     demisto.results('ok')
 
@@ -245,7 +236,7 @@ def get_alarm_command():
     response = get_alarm(alarm_id)
 
     # Parse response into context & content entries
-    alarm_details = parse_alarm(response)
+    alarm_details = parse_alarms(response)
 
     return_outputs(tableToMarkdown('Alarm {}'.format(alarm_id), alarm_details),
                    {'AlienVault.Alarm(val.ID && val.ID == obj.ID)': alarm_details},
