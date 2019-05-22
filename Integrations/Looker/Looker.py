@@ -11,10 +11,14 @@ import json
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
+
+''' CONSTANTS '''
 LAST_RUN_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_RESULTS_LIMIT = 50
 MAX_TIMEOUT_MINUTES = 5
+
+
+''' GLOBALS/PARAMS '''
 SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
@@ -90,30 +94,37 @@ def http_request(method, url_suffix, params=None, data=None, response_type='json
     return res_obj
 
 
-def get_new_token():
+def get_new_token(client_id, client_secret):
     data = {
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET
-    }
-    response_json = http_request('POST', '/login', data=data)
-
-    return {
-        'token': response_json['access_token'],
-        'expires': datetime.utcnow().timestamp() + response_json['expires_in']
+        'client_id': client_id,
+        'client_secret': client_secret
     }
 
+    try:
+        response_json = http_request('POST', '/login', data=data)
 
-def get_session_token():
-    global HEADERS
+        return {
+            'token': response_json['access_token'],
+            'expires': datetime.utcnow().timestamp() + response_json['expires_in']
+        }
+
+    except requests.exceptions.HTTPError as ex:
+        if '[404]' in ex:
+            raise Exception("Got 404 from server - check 'API3 Client ID' and 'API3 Client Secret' fields "
+                            "in the instance configuration.")
+        raise
+
+
+def get_session_token(client_id, client_secret):
     ic = demisto.getIntegrationContext()
 
-    if CLIENT_ID not in ic or 'expires' not in ic[CLIENT_ID] \
-            or datetime.fromtimestamp(ic[CLIENT_ID]['expires']) < datetime.utcnow() + SESSION_VALIDITY_THRESHOLD:
-        ic[CLIENT_ID] = get_new_token()
+    if client_id not in ic or 'expires' not in ic[client_id] \
+            or datetime.fromtimestamp(ic[client_id]['expires']) < datetime.utcnow() + SESSION_VALIDITY_THRESHOLD:
+        ic[client_id] = get_new_token(client_id, client_secret)
         if demisto.command() != 'test-module':
             demisto.setIntegrationContext(ic)
 
-    HEADERS['Authorization'] = 'token {}'.format(ic[CLIENT_ID]['token'])
+    return 'token {}'.format(ic[client_id]['token'])
 
 
 def get_limit():
@@ -122,11 +133,11 @@ def get_limit():
         return None if limit == 0 else limit
 
     except ValueError:
-        return_error("limit must be a number")
+        raise ValueError("limit must be a number")
 
 
 def get_look_id_from_name(name):
-    looks = search_looks_request({'title': name})
+    looks = search_looks({'title': name})
     if len(looks) < 1:
         raise Exception(f'No Look found with the name {name}.')
     if len(looks) > 1:
@@ -222,12 +233,12 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json',
     return entries
 
 
-def get_query_args():
+def get_query_args(demisto_args):
     str_args = ('model', 'view')
     list_args = ('fields', 'pivots', 'sorts')
-    args_dict = {k: argToList(demisto.args()[k]) for k in list_args if k in demisto.args()}  # Parse list-type arguments
-    args_dict.update({k: demisto.args()[k] for k in str_args})  # Add string-type arguments
-    filters = parse_filters_arg(demisto.args().get('filters'))  # Handle special argument
+    args_dict = {k: argToList(demisto_args[k]) for k in list_args if k in demisto_args}  # Parse list-type arguments
+    args_dict.update({k: demisto_args[k] for k in str_args})  # Add string-type arguments
+    filters = parse_filters_arg(demisto_args.get('filters'))  # Handle special argument
     if filters:
         args_dict['filters'] = filters
 
@@ -256,12 +267,12 @@ def run_look_command():
     limit = get_limit()
     fields = argToList(demisto.args().get('result_format'))
 
-    contents = run_look_request(look_id, result_format, limit, fields)
+    contents = run_look(look_id, result_format, limit, fields)
 
     demisto.results(get_entries_for_search_results(contents, look_id, result_format, look_name))
 
 
-def run_look_request(look_id, result_format, limit, fields):
+def run_look(look_id, result_format, limit, fields):
     endpoint_url = f'/looks/{look_id}/run/{result_format}'
     params = {}
     if limit:
@@ -280,7 +291,7 @@ def search_looks_command():
     if 'name' in demisto.args():
         args_dict['title'] = demisto.args()['name']
 
-    contents = search_looks_request(args_dict)
+    contents = search_looks(args_dict)
     context = {f'Looker.Look(val.ID && val.ID === {look["ID"]})': look for look in contents}
 
     demisto.results({
@@ -293,7 +304,7 @@ def search_looks_command():
     })
 
 
-def search_looks_request(args):
+def search_looks(args):
     endpoint_url = '/looks/search'
     params = {k: v for k, v in args.items() if v}
     params['fields'] = 'id, title, space, updated_at'
@@ -315,16 +326,16 @@ def search_looks_request(args):
 
 def run_inline_query_command():
     result_format = demisto.args()['result_format']
-    args_dict = get_query_args()
+    args_dict = get_query_args(demisto.args())
 
     args_dict['limit'] = get_limit()
 
-    contents = run_inline_query_request(result_format, args_dict)
+    contents = run_inline_query(result_format, args_dict)
 
     demisto.results(get_entries_for_search_results(contents, result_format=result_format))
 
 
-def run_inline_query_request(result_format, args_dict):
+def run_inline_query(result_format, args_dict):
     return http_request(
         method='POST',
         url_suffix=f'/queries/run/{result_format}',
@@ -342,12 +353,12 @@ def create_look_command():
 
     look_title = demisto.args()['look_title']
     look_description = demisto.args().get('look_description')
-    args_dict = get_query_args()
+    args_dict = get_query_args(demisto.args())
 
-    create_query_response = create_query_request(args_dict)
+    create_query_response = create_query(args_dict)
     query_id = create_query_response['id']
 
-    contents = create_look_request(query_id, space_id, look_title, look_description)
+    contents = create_look(query_id, space_id, look_title, look_description)
 
     context = {f'Looker.Look(val.ID && val.ID === {contents["ID"]})': contents}
 
@@ -361,11 +372,11 @@ def create_look_command():
     })
 
 
-def create_query_request(args_dict):
+def create_query(args_dict):
     return http_request(method='POST', url_suffix='/queries', data=json.dumps(args_dict))
 
 
-def create_look_request(query_id, space_id, look_title, look_description=""):
+def create_look(query_id, space_id, look_title, look_description=""):
     data = {
         'title': look_title,
         'query_id': query_id,
@@ -391,7 +402,7 @@ LOG('Command being called is %s' % (demisto.command()))
 try:
     handle_proxy()
     verify_url(SERVER)
-    get_session_token()
+    HEADERS['Authorization'] = get_session_token(CLIENT_ID, CLIENT_SECRET)
 
     if demisto.command() == 'test-module':
         test_module()
@@ -410,7 +421,7 @@ except Exception as e:
     LOG(e)
     LOG(traceback.format_exc())
     LOG.print_log()
-    if demisto.command() != 'test-module':
+    if demisto.command() == 'test-module':
+        demisto.results(e)
+    else:
         return_error(str(e))
-    demisto.results(e)
-
