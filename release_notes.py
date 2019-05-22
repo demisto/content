@@ -620,7 +620,7 @@ def main(argv):
 
     version = argv[0]
     asset_id = argv[3]
-    github_token = argv[6]
+    github_token = argv[5]
 
     release_notes = "\n---\n".join(res)
     create_content_descriptor(version, asset_id, release_notes, github_token)
