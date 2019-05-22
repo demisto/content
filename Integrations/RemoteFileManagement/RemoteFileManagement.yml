@@ -216,7 +216,7 @@ script:
     description: Compares internal list and external file contets
     execution: false
     name: rfm-compare
-  dockerimage: demisto/openssh
+  dockerimage: demisto/openssh:1.0.0.305
   isfetch: false
   runonce: false
   script: '-'
