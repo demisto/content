@@ -20,8 +20,7 @@ configuration:
   name: cluster-id
   required: false
   type: 0
-detaileddescription: Use these detailed instructions in order to retrieve the API
-  key
+description: LogRhythm security intelligence
 display: LogRhythmRest
 name: LogRhythmRest
 script:
