@@ -18,4 +18,3 @@ def test_parse_filters_arg(mocker):
             raise AssertionError(f'Negative test failed on input: {test_input}')
         except ValueError:
             continue
-
