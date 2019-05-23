@@ -26,7 +26,7 @@ SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.p
                                                                                             None) else None
 SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
                                                                                             None) else None
-DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if 'document_root' in demisto.params() else None
+DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if demisto.params('document_root', None) else None
 
 ''' UTILS '''
 
