@@ -3388,8 +3388,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
-                            attachment_file_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
-                            attachment_file_name = convert_to_unicode(attachment_file_name)
+                            attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
+                            attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
                         file_content = part.get_payload()[0].as_string()
                         demisto.results(fileResult(attachment_file_name, file_content))
@@ -3412,6 +3412,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             os.remove(f.name)
 
                 else:
+                    # .msg and other files (png, jpeg)
                     if part.is_multipart() and part.get_content_type() == 'message/delivery-status' \
                             and max_depth - 1 > 0:
                         # email is DSN
