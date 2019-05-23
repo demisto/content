@@ -557,7 +557,6 @@ def get_release_notes_draft(github_token):
     requests.packages.urllib3.disable_warnings()
 
     res = requests.get('https://api.github.com/repos/demisto/content/releases',
-                       verify=False,
                        headers={'Authorization': 'token {}'.format(github_token)})
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
