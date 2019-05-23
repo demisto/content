@@ -127,7 +127,6 @@ script:
         params = {}
         session.post(SERVER+url_suffix, data=params, verify=USE_SSL)
 
-    # When updating a policy we have to add another key to each addr, an q_origin key
     def policy_addr_array_from_arg(policy_addr_str):
         policy_adr_str_array = policy_addr_str.split(",")
         policy_addr_dict_array = []
