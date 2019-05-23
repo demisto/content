@@ -211,10 +211,7 @@ def get_access_token():
     return access_token
 
 
-def query_loggings(query_data):
-    """
-    This function handles all the querying of Cortex Logging service
-    """
+def initial_logging_service():
     api_url = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
     credentials = Credentials(
         access_token=get_access_token(),
@@ -224,6 +221,30 @@ def query_loggings(query_data):
         url=api_url,
         credentials=credentials
     )
+
+    return logging_service
+
+
+def poll_query_result(query_id):
+
+    logging_service = initial_logging_service()
+
+    poll_params = {  # Prepare 'poll' params
+        "maxWaitTime": 30000  # waiting for response up to 3000ms
+    }
+
+    # we poll the logging service until we have a complete response
+    response = logging_service.poll(query_id, 0, poll_params)
+
+    return response
+
+
+def query_loggings(query_data):
+    """
+    This function handles all the querying of Cortex Logging service
+    """
+
+    logging_service = initial_logging_service()
 
     response = logging_service.query(query_data)
     query_result = response.json()
@@ -238,17 +259,9 @@ def query_loggings(query_data):
         query_id = query_result['queryId']  # access 'queryId' from 'query' response
     except Exception as e:
         raise Exception('Received error %s when querying logs.' % e)
-    poll_params = {  # Prepare 'poll' params
-        "maxWaitTime": 3000  # waiting for response up to 3000ms
-    }
 
-    # we poll the logging service until we have a complete response
-    full_response = logging_service.poll(query_id, 0, poll_params)
-
-    # delete the query from the service
-    logging_service.delete(query_id)
-
-    return full_response
+    poll_response = poll_query_result(query_id)
+    return poll_response
 
 
 def transform_row_keys(row):
@@ -363,7 +376,11 @@ def query_logs_command():
     response = query_loggings(query_data)
 
     try:
-        result = response.json()['result']
+        response_json = response.json()
+        query_status = response_json.get('queryStatus', '')
+        if query_status in {'RUNNING', 'JOB_FAILED'}:
+            raise Exception(f'Logging query job failed with status: {query_status}')
+        result = response_json.get('result', {})
         pages = result['esResult']['hits']['hits']
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
@@ -608,32 +625,55 @@ def process_incident_pairs(incident_pairs, max_incidents):
 
 
 def fetch_incidents():
-    last_fetched_event_timestamp = demisto.getLastRun().get('last_fetched_event_timestamp')
-    if last_fetched_event_timestamp is not None:
-        last_fetched_event_timestamp = datetime.strptime(last_fetched_event_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+
+    last_run = demisto.getLastRun()
+    last_fetched_event_timestamp = last_run.get('last_fetched_event_timestamp')
+    last_query_id = last_run.get('last_query_id')
+
+    if last_query_id:
+        # Need to poll query results fron last run
+        response = poll_query_result(last_query_id)
     else:
-        last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
+        if last_fetched_event_timestamp is not None:
+            last_fetched_event_timestamp = datetime.strptime(last_fetched_event_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
 
-    # Need sometime in the future, so the timestamp will be taken from the query
-    service_end_date_epoch = int(datetime.now().strftime('%s')) + 1000
+        # Need sometime in the future, so the timestamp will be taken from the query
+        service_end_date_epoch = int(datetime.now().strftime('%s')) + 1000
 
-    if 'Firewall' in FETCH_QUERY:  # type: ignore
-        fetch_timestamp = int(last_fetched_event_timestamp.strftime('%s'))
-    elif 'Traps' in FETCH_QUERY:  # type: ignore
-        fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        if 'Firewall' in FETCH_QUERY:  # type: ignore
+            fetch_timestamp = int(last_fetched_event_timestamp.strftime('%s'))
+        elif 'Traps' in FETCH_QUERY:  # type: ignore
+            fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-    query = prepare_fetch_query(fetch_timestamp)
+        query = prepare_fetch_query(fetch_timestamp)
 
-    query_data = {
-        'query': query,
-        'startTime': 0,
-        'endTime': service_end_date_epoch,
-    }
+        query_data = {
+            'query': query,
+            'startTime': 0,
+            'endTime': service_end_date_epoch,
+        }
 
-    response = query_loggings(query_data)
+        response = query_loggings(query_data)
 
     try:
-        result = response.json()['result']
+        response_json = response.json()
+        query_status = response_json.get('queryStatus', '')
+        if query_status == 'JOB_FAILED':
+            raise Exception(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
+        elif query_status == 'RUNNING':
+            if isinstance(last_fetched_event_timestamp, datetime):
+                # In case we don't have query ID from previous run
+                last_fetched_event_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f')
+            # If query job is still running after 30 seconds (max timeout), pass it to next run
+            demisto.setLastRun({
+                'last_fetched_event_timestamp': last_fetched_event_timestamp,
+                'last_query_id': response_json.get('queryId', '')
+            })
+            demisto.incidents([])
+            return
+        result = response_json.get('result', {})
         pages = result['esResult']['hits']['hits']
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
