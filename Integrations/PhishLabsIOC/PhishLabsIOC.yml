@@ -289,7 +289,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets indicators from a speicifed PhishLabs incident.
+    description: Gets indicators from a speicifed PhishLabs incident. Incidents can
+      be fetched to Demisto by enabling fetching incidents.
     execution: false
     name: phishlabs-get-incident-indicators
     outputs:
