@@ -139,7 +139,7 @@ def get_file_properties(indicator: dict) -> tuple:
                     "createdAt": "2019-05-14T13:03:45Z",
                     "id": "xyz",
                     "name": "md5",
-                    "value": "c8092abd8d581750c0530fa1fc8d8318"
+                    "value": "c8092abd8d581750c0530fa1fc8d8318" # guardrails-disable-line
                 },
                 {
                     "createdAt": "2019-05-14T13:03:45Z",
@@ -159,7 +159,7 @@ def get_file_properties(indicator: dict) -> tuple:
             "id": "def",
             "type": "Attachment",
             "updatedAt": "0001-01-01T00:00:00Z",
-            "value": "c8092abd8d581750c0530fa1fc8d8318"
+            "value": "c8092abd8d581750c0530fa1fc8d8318" # guardrails-disable-line
         }
     Return values: c8092abd8d581750c0530fa1fc8d8318, Baycc.zip, application/zip
     :param indicator: The file indicator
