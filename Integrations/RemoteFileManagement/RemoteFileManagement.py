@@ -9,54 +9,49 @@ import subprocess
 import shutil
 import os
 
-''' AUX '''
-
-
-def create_certificate_file():
-    cert_file = tempfile.NamedTemporaryFile()
-    if CERTIFICATE:
-        with open(cert_file.name, "w") as f:
-            f.write(CERTIFICATE)
-        os.chmod(cert_file.name, 0o400)
-    elif PASSWORD:
-        # check that password field holds a certificate and not a password
-        if PASSWORD.find('-----') == -1:
-            return_error('Password field must contain a certificate.')
-        # split certificate by dashes
-        password_list = PASSWORD.split('-----')
-        # replace spaces with newline characters
-        password = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
-        with open(cert_file.name, "w") as f:
-            f.write(password)
-        os.chmod(cert_file.name, 0o400)
-    else:
-        return_error('Provide a certificate in order to connect to the remote server.')
-
-    return cert_file
-
-
 ''' GLOBALS '''
 
-authentication = demisto.params().get('Authentication')
+AUTHENTICATION = demisto.params().get('Authentication')
 
 HOSTNAME = demisto.params().get('hostname')
-USERNAME = authentication.get('identifier')
-PORT = str(demisto.params().get('port')) if 'port' in demisto.params() else None
-
-PASSWORD = authentication.get('password', None)
-CERTIFICATE = authentication.get('credentials').get(
-    'sshkey') if 'credentials' in authentication and 'sshkey' in authentication.get('credentials') and len(
-    authentication.get('credentials').get('sshkey')) > 0 else None
-
-CERTIFICATE_FILE = create_certificate_file()
+USERNAME = AUTHENTICATION.get('identifier')
+PORT = str(demisto.params().get('port')) if demisto.params().get('port', None) and len(
+    demisto.params().get('port')) > 0 else None
+PASSWORD = AUTHENTICATION.get('password', None)
+CERTIFICATE = AUTHENTICATION.get('credentials').get(
+    'sshkey') if 'credentials' in AUTHENTICATION and 'sshkey' in AUTHENTICATION.get('credentials') and len(
+    AUTHENTICATION.get('credentials').get('sshkey')) > 0 else None
 
 SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.params().get('ssh_extra_params',
                                                                                             None) else None
 SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
                                                                                             None) else None
-DOCUMENT_ROOT = demisto.params().get('document_root', None)
+DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if 'document_root' in demisto.params() else None
 
 ''' UTILS '''
+
+
+def create_certificate_file(password: str, certificate: str):
+    cert_file = tempfile.NamedTemporaryFile()
+    if certificate:
+        with open(cert_file.name, "w") as f:
+            f.write(certificate)
+        os.chmod(cert_file.name, 0o400)
+    elif password:
+        # check that password field holds a certificate and not a password
+        if password.find('-----') == -1:
+            return_error('Password parameter must contain a certificate.')
+        # split certificate by dashes
+        password_list = password.split('-----')
+        # replace spaces with newline characters
+        password_fixed = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
+        with open(cert_file.name, "w") as f:
+            f.write(password_fixed)
+        os.chmod(cert_file.name, 0o400)
+    else:
+        return_error('Provide a certificate in order to connect to the remote server.')
+
+    return cert_file
 
 
 def ssh_execute(command: str):
@@ -78,7 +73,10 @@ def ssh_execute(command: str):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.stderr and result.stderr.find("Warning: Permanently added") == -1:
-        return_error(result.stderr)
+        if result.stderr.find("Permission denied") != -1:
+            return_error('Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
+        else:
+            return_error(result.stderr)
 
     return result.stdout
 
@@ -100,6 +98,8 @@ def scp_execute(file_name: str, file_path: str):
 
 
 ''' COMMANDS '''
+
+CERTIFICATE_FILE = create_certificate_file(PASSWORD, CERTIFICATE)
 
 
 def rfm_get_external_file(file_path: str):
@@ -445,15 +445,20 @@ def rfm_compare_command():
     unique_external = set_external - set_internal
 
     md = ''
-    if unique_internal:
-        md += tableToMarkdown('Unique internal items:', list(unique_internal), headers=[list_name])
     if unique_external:
-        md += tableToMarkdown('Unique external items:', list(unique_external), headers=[file_path.rsplit('/')[-1]])
+        md += '### Warning: External file contain values which are not in the internal demisto list.\n'
+        md += '#### Please check who has writing permissions to the external file.\n'
+        md += tableToMarkdown('', list(unique_external),
+                              headers=[file_path.rsplit('/')[-1]])
+    if unique_internal:
+        md += '### Warning: Internal list has values which are not in the external file.\n'
+        md += '#### Please check who has writing permissions to the external file.\n'
+        md += tableToMarkdown('', list(unique_internal), headers=[list_name])
     if len(md) == 0:
         md = 'Internal list and External file have the same values'
 
     demisto.results({
-        'Type': 11 if unique_external else entryTypes['note'],
+        'Type': 11 if unique_external or unique_internal else entryTypes['note'],
         'Contents': md,
         'ContentsFormat': formats['markdown'],
     })
