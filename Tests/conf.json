@@ -1670,6 +1670,8 @@
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MicrosoftGraphMail": "Inactive integration",
+        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
+        "Test - Windows Defender Advanced Threat Protection": "OAuth 2 integration. can't be tested until dbot server is functional.",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
