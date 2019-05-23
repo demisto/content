@@ -109,7 +109,7 @@ def get_new_token(client_id, client_secret):
         }
 
     except requests.exceptions.HTTPError as ex:
-        if '[404]' in ex:
+        if '[404]' in str(ex):
             raise Exception("Got 404 from server - check 'API3 Client ID' and 'API3 Client Secret' fields "
                             "in the instance configuration.")
         raise
