@@ -1,6 +1,8 @@
-from CommonServerPython import *
-import requests
 import shutil
+
+import requests
+
+from CommonServerPython import *
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params()['api_key']
@@ -9,7 +11,6 @@ SERVER = (
     if (demisto.params()['server'] and demisto.params()['server'].endswith('/'))
     else demisto.params()['server']
 )
-
 SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
@@ -135,7 +136,6 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
                 if err_r:
                     return err_r
         return None
-
     url = SERVER + url_suffix
     r = requests.request(
         method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL
@@ -306,13 +306,16 @@ def upload_sample(file_id, params):
     """
     suffix = 'sample/submit'
     file_obj = demisto.getFilePath(file_id)
-    file_name = file_obj['name']
-    file_path = file_obj['path']
+    file_name = file_obj['name'].encode('utf-8')
+    file_path = file_obj['path'].encode('utf-8')
     shutil.copy(file_path, file_name)
-    files = {'sample_file': open(file_name, 'rb')}
-
-    results = http_request('POST', url_suffix=suffix, params=params, files=files)
-    return results
+    try:
+        with open(file_name, 'rb') as f:
+            files = {'sample_file': f}
+            results = http_request('POST', url_suffix=suffix, params=params, files=files)
+            return results
+    finally:
+        os.remove(file_name)
 
 
 def upload_sample_command():
