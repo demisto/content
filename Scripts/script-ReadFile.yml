@@ -46,3 +46,4 @@ outputs:
 - contextPath: FileData
   description: Data read from war room file
 scripttarget: 0
+deprecated: true
