@@ -4,7 +4,7 @@ import demistomock as demisto
 def test_parse_filters_arg(mocker):
     mocker.patch.object(demisto, 'params', return_value={'url': ''})
 
-    from Integrations.Looker.Looker import parse_filters_arg
+    from Looker import parse_filters_arg
 
     assert parse_filters_arg('') is None
     assert parse_filters_arg('e=f') == {'e': 'f'}
