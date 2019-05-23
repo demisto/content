@@ -200,6 +200,9 @@
           "playbookID": "ReadPDFFile-Test"
         },
         {
+            "playbookID": "ReadPDFFileV2-Test"
+        },
+        {
           "playbookID": "JSONtoCSV-Test"
         },
         {
