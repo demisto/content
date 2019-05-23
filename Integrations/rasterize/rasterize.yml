@@ -3,7 +3,7 @@ commonfields:
   id: Rasterize
   version: -1
 configuration:
-- display: 'Throw Errors '
+- display: 'Return Errors '
   name: with_error
   defaultvalue: "true"
   type: 8
@@ -105,6 +105,6 @@ script:
   script: '-'
   type: python
 defaultEnabled: true
-releaseNotes: "added Param to throw warning instead of error"
+releaseNotes: "Added a parameter that permits to return warnings instead of errors"
 tests:
   - Rasterize Test
