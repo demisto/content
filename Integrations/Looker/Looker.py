@@ -45,8 +45,8 @@ def verify_url(url):
         assert 0 < int(port) < 65536
 
     except (ValueError, AssertionError):
-        return_error("Incorrect URL format. Use the following format: https://example.looker.com:19999\n"
-                     "The default port for Looker API is 19999.")
+        raise ValueError("Incorrect URL format. Use the following format: https://example.looker.com:19999\n"
+                         "The default port for Looker API is 19999.")
 
 
 def http_request(method, url_suffix, params=None, data=None, response_type='json'):
@@ -178,13 +178,13 @@ def parse_filters_arg(filters_arg_value):
             k, v = elem.split('=', 1)
             k = k.strip()
             if not k:
-                return_error(f"{error_message}Filter in position {i+1}: field is empty.")
+                raise ValueError(f"{error_message}Filter in position {i+1}: field is empty.")
             v = v.strip()
             if not v:
-                return_error(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
+                raise ValueError(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
             filters[k] = v
         except ValueError:
-            return_error(f"{error_message}Filter in position {i+1} is missing '=' separator")
+            raise ValueError(f"{error_message}Filter in position {i+1} is missing '=' separator")
 
     return filters
 
@@ -349,7 +349,7 @@ def create_look_command():
     try:
         space_id = int(space_id)
     except ValueError:
-        return_error(f'space_id: invalid number: {space_id}')
+        raise ValueError(f'space_id: invalid number: {space_id}')
 
     look_title = demisto.args()['look_title']
     look_description = demisto.args().get('look_description')
@@ -398,30 +398,37 @@ def create_look(query_id, space_id, look_title, look_description=""):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
-try:
-    handle_proxy()
-    verify_url(SERVER)
-    HEADERS['Authorization'] = get_session_token(CLIENT_ID, CLIENT_SECRET)
 
-    if demisto.command() == 'test-module':
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'looker-run-look':
-        run_look_command()
-    elif demisto.command() == 'looker-search-looks':
-        search_looks_command()
-    elif demisto.command() == 'looker-run-inline-query':
-        run_inline_query_command()
-    elif demisto.command() == 'looker-create-look':
-        create_look_command()
+def main():
+    LOG('Command being called is %s' % (demisto.command()))
+    try:
+        handle_proxy()
+        verify_url(SERVER)
+        HEADERS['Authorization'] = get_session_token(CLIENT_ID, CLIENT_SECRET)
 
-# Log exceptions
-except Exception as e:
-    LOG(e)
-    LOG(traceback.format_exc())
-    LOG.print_log()
-    if demisto.command() == 'test-module':
-        demisto.results(e)
-    else:
-        return_error(str(e))
+        if demisto.command() == 'test-module':
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'looker-run-look':
+            run_look_command()
+        elif demisto.command() == 'looker-search-looks':
+            search_looks_command()
+        elif demisto.command() == 'looker-run-inline-query':
+            run_inline_query_command()
+        elif demisto.command() == 'looker-create-look':
+            create_look_command()
+
+    # Log exceptions
+    except Exception as e:
+        LOG(e)
+        LOG(traceback.format_exc())
+        LOG.print_log()
+        if demisto.command() == 'test-module':
+            demisto.results(e)
+        else:
+            return_error(str(e))
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
