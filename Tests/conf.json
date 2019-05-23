@@ -1036,10 +1036,6 @@
             "playbookID": "RSA NetWitness Test"
         },
         {
-            "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
-        },
-        {
             "playbookID": "ExifReadTest"
         },
         {
@@ -1479,7 +1475,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "Rasterize Test"
+            "playbookID": ["Rasterize Test", "RasterizeImageTest"]
         }
     ],
     "skipped_tests": {
