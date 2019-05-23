@@ -240,7 +240,7 @@ def create_domain_context(indicator: dict, classification: str) -> dict:
     if classification == 'Malicious':
         domain_object['Malicious'] = {
             'Vendor': 'PhishLabs',
-            'Description': 'Domain in PhishLabs global feed'
+            'Description': 'Domain in PhishLabs feed'
         }
 
     return domain_object
@@ -262,7 +262,7 @@ def create_url_context(indicator: dict, classification: str) -> dict:
     if classification == 'Malicious':
         url_object['Malicious'] = {
             'Vendor': 'PhishLabs',
-            'Description': 'URL in PhishLabs global feed'
+            'Description': 'URL in PhishLabs feed'
         }
 
     return url_object
