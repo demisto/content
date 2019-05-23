@@ -1,0 +1,70 @@
+args:
+- default: true
+  description: War Room entryID of the file to read.
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Password for the file, if encrypted.
+  isArray: false
+  name: userPassword
+  required: false
+  secret: false
+- default: false
+  defaultValue: '20'
+  description: Maximum number of images to extract from the PDF file.
+  isArray: false
+  name: maxImages
+  required: false
+  secret: false
+comment: Load a PDF file's content and metadata into context.
+commonfields:
+  id: ReadPDFFileV2
+  version: -1
+enabled: true
+name: ReadPDFFileV2
+outputs:
+- contextPath: URL.Data
+  description: A list of URLs that were extracted from the PDF file.
+  type: Unknown
+- contextPath: File.Text
+  description: The text that was extracted from the PDF file.
+  type: string
+- contextPath: File.Producer
+  description: The producer of the PDF file.
+  type: string
+- contextPath: File.Title
+  description: The title of the PDF file.
+  type: string
+- contextPath: File.Author
+  description: The author of the PDF file.
+  type: string
+- contextPath: File.ModDate
+  description: The ModDate of the PDF file.
+  type: date
+- contextPath: File.CreationDate
+  description: The CreationDate of the PDF file.
+  type: date
+- contextPath: File.Pages
+  description: Number of pages in the PDF file.
+  type: number
+script: '-'
+system: false
+tags:
+- Utility
+- ingestion
+timeout: '0'
+type: python
+dockerimage: demisto/readpdf:1.0.0.299
+runas: DBotWeakRole
+runonce: false
+tests:
+- Extract Indicators From File - test
+- ReadPDFFileV2-Test
+fromversion: 4.1.0
+releaseNotes: "Reimplemented ReadPDFFile script. Deprecated maxFileSize (as it wasn't used) and added new functionality:
+               - Expanded metadata: metadata displays more information than before.
+               - Shows pdf images: The script extracts the images in the pdf, and displays them (as a fileEntry) in the war room.
+               - Added argument 'maxImages': max amount of images to extract from the pdf (default is 20).
+               - Added support for encrypted file - added new argument for encrypted files (userPassword)."
