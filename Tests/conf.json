@@ -194,10 +194,14 @@
             "playbookID": "Mimecast test"
         },
         {
-            "playbookID": "CreateEmailHtmlBody_test_pb"
+            "playbookID": "CreateEmailHtmlBody_test_pb",
+            "fromversion": "4.1.0"
         },
         {
           "playbookID": "ReadPDFFile-Test"
+        },
+        {
+            "playbookID": "ReadPDFFileV2-Test"
         },
         {
           "playbookID": "JSONtoCSV-Test"
