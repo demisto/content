@@ -4,8 +4,9 @@ import json
 import sys
 import yaml
 import os
+import requests
 
-from Tests.test_utils import print_error
+from Tests.test_utils import print_error, print_warning
 from Tests.test_utils import server_version_compare
 
 contentLibPath = "./"
@@ -551,7 +552,23 @@ def create_file_release_notes(file_name, delete_file_path):
             file_type_mapping.add(change_type, contentLibPath + full_file_name)
 
 
-def create_content_descriptor(version, asset_id, res):
+def get_release_notes_draft(github_token):
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    res = requests.get('https://api.github.com/repos/demisto/content/releases',
+                       headers={'Authorization': 'token {}'.format(github_token)})
+    drafts = [release for release in res.json() if release.get('draft', False)]
+    if drafts:
+        if len(drafts) == 1:
+            return drafts[0]['body']
+        else:
+            print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
+
+    return ''
+
+
+def create_content_descriptor(version, asset_id, res, github_token):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
     release_notes = "## Demisto Content Release Notes for version " + version + " (" + asset_id + ")\n"
@@ -567,6 +584,11 @@ def create_content_descriptor(version, asset_id, res):
         "release": version,
         "id": ""
     }
+
+    draft = get_release_notes_draft(github_token)
+    if draft:
+        content_descriptor['releaseNotes'] = draft
+
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(content_descriptor, outfile)
 
@@ -575,9 +597,9 @@ def create_content_descriptor(version, asset_id, res):
 
 
 def main(argv):
-    if len(argv) < 5:
+    if len(argv) < 6:
         print_error("<Release version>, <File with the full list of changes>,"
-                    "<Complete diff file for deleted files>, <assetID>, <Server version>")
+                    "<Complete diff file for deleted files>, <assetID>, <Server version>, <Github Token>")
         sys.exit(1)
     files = parse_change_list(argv[1])
 
@@ -601,9 +623,10 @@ def main(argv):
 
     version = argv[0]
     asset_id = argv[3]
+    github_token = argv[5]
 
     release_notes = "\n---\n".join(res)
-    create_content_descriptor(version, asset_id, release_notes)
+    create_content_descriptor(version, asset_id, release_notes, github_token)
 
 
 if __name__ == "__main__":
