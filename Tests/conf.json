@@ -1475,7 +1475,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": ["Rasterize Test", "RasterizeImageTest"]
+            "playbookID": "Rasterize Test"
         }
     ],
     "skipped_tests": {
