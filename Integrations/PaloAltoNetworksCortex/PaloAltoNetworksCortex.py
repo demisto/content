@@ -661,8 +661,11 @@ def fetch_incidents():
         response_json = response.json()
         query_status = response_json.get('queryStatus', '')
         if query_status == 'JOB_FAILED':
-            raise Exception('Logging query job failed with status: JOB_FAILED')
+            raise Exception(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
         elif query_status == 'RUNNING':
+            if isinstance(last_fetched_event_timestamp, datetime):
+                # In case we don't have query ID from previous run
+                last_fetched_event_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f')
             # If query job is still running after 30 seconds (max timeout), pass it to next run
             demisto.setLastRun({
                 'last_fetched_event_timestamp': last_fetched_event_timestamp,
