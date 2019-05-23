@@ -1,4 +1,3 @@
-# pylint: disable=E1101
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -6,7 +5,7 @@ from CommonServerUserPython import *
 import re
 import json
 import base64
-import datetime
+from datetime import datetime, timedelta
 from distutils.util import strtobool
 import sys
 from HTMLParser import HTMLParser, HTMLParseError
@@ -29,7 +28,7 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 class TextExtractHtmlParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        self._texts = []
+        self._texts = []  # type: list
         self._ignore = False
 
     def handle_starttag(self, tag, attrs):
@@ -95,7 +94,7 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     if additional_scopes is not None:
         scopes += additional_scopes
 
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
+    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),  # type: ignore
                                                                             scopes=scopes)
 
     return cred.create_delegated(delegated_user)
@@ -104,7 +103,7 @@ def get_credentials(additional_scopes=None, delegated_user=None):
 def parse_mail_parts(parts):
     body = u''
     html = u''
-    attachments = []
+    attachments = []  # type: list
     for part in parts:
         if 'multipart' in part['mimeType']:
             part_body, part_html, part_attachments = parse_mail_parts(
@@ -163,15 +162,15 @@ def get_email_context(email_data, mailbox):
         'Html': None,
     }
 
-    if 'text/html' in context['Format']:
+    if 'text/html' in context['Format']:  # type: ignore
         context['Html'] = context['Body']
         context['Body'] = html_to_text(context['Body'])
 
-    if 'multipart' in context['Format']:
+    if 'multipart' in context['Format']:  # type: ignore
         context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(
             email_data.get('payload', {}).get('parts', []))
         context['Attachment Names'] = ', '.join(
-            [attachment['Name'] for attachment in context['Attachments']])
+            [attachment['Name'] for attachment in context['Attachments']])  # type: ignore
 
     return context, headers
 
@@ -185,11 +184,11 @@ def parse_time(t):
 
     if all([sign, hours, minutes]):
         seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
-        parsed_time = datetime.datetime.strptime(
-            base_time, '%a, %d %b %Y %H:%M:%S') + datetime.timedelta(seconds=seconds)
+        parsed_time = datetime.strptime(
+            base_time, '%a, %d %b %Y %H:%M:%S') + timedelta(seconds=seconds)
         return parsed_time.isoformat() + 'Z'
     else:
-        return datetime.datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
+        return datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
 
 def create_incident_labels(parsed_msg, headers):
@@ -375,7 +374,7 @@ def filters_to_entry(title, mailbox, response):
 
 def list_users_command():
     args = demisto.args()
-    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])
+    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
     customer = args.get('customer')
     event = args.get('event')
     view_type = args.get('view-type-public-domain', 'admin_view')
@@ -575,7 +574,7 @@ def get_user_tokens(user_id):
 def search_all_mailboxes():
     command_args = {
         'maxResults': 100,
-        'domain': ADMIN_EMAIL.split('@')[1],
+        'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
     }
 
     credentials = get_credentials()
@@ -992,9 +991,9 @@ def fetch_incidents():
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch = datetime.datetime.now() - datetime.timedelta(days=1)
+        last_fetch = datetime.now() - timedelta(days=1)
     else:
-        last_fetch = datetime.datetime.strptime(
+        last_fetch = datetime.strptime(
             last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch
 
@@ -1016,12 +1015,12 @@ def fetch_incidents():
         msg_result = service.users().messages().get(
             id=msg['id'], userId=user_key).execute()
         incident = mail_to_incident(msg_result, service, user_key)
-        temp_date = datetime.datetime.strptime(
+        temp_date = datetime.strptime(
             incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
         # update last run
         if temp_date > last_fetch:
-            last_fetch = temp_date + datetime.timedelta(seconds=1)
+            last_fetch = temp_date + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
         if temp_date > current_fetch:
@@ -1075,15 +1074,15 @@ def main():
             raise NotImplementedError(
                 'Command "{}" is not implemented.'.format(command))
         else:
-            demisto.results(cmd_func())
+            demisto.results(cmd_func())  # type: ignore
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
-            LOG(traceback.format_exc(e))
+            LOG(traceback.format_exc())
             LOG.print_log()
             raise
         else:
-            return_error('GMAIL: {}'.format(str(e)), traceback.format_exc(e))
+            return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins

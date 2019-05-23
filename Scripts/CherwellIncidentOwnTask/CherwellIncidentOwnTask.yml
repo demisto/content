@@ -25,6 +25,9 @@ script: '-'
 system: false
 timeout: '0'
 type: python
-tags: []
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-link-business-objects
 tests:
   - Cherwell Example Scripts - test

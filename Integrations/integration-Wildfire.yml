@@ -1184,4 +1184,4 @@ script:
     description: Deprecated, use detonate playbook instead
   runonce: false
 tests:
-- Wildfire Test
+- No test
