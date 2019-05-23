@@ -55,9 +55,12 @@ outputs:
   type: String
 script: '-'
 system: false
+tags: [Cherwell]
 timeout: '0'
-tags: []
 type: python
+dependson:
+  must:
+  - Cherwell|||cherwell-create-business-object
 dockerimage: demisto/python3:3.7.2.214
 tests:
 - Cherwell Example Scripts - test

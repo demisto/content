@@ -70,8 +70,12 @@ class FilesValidator(object):
             file_status = file_data[0]
             file_path = file_data[1]
 
-            if file_path.endswith('.js') or file_path.endswith('.py'):
+            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+            elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
+
             if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
                 modified_files_list.add(file_path)
             elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):

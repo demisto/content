@@ -251,7 +251,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
     if comments != '':
         data['comments'] = comments
     if systems != '':
-        data['systems[]'] = [s.strip() for s in systems.split(',')]
+        data['systems[]'] = [s.strip() for s in systems.split(',')]  # type: ignore
 
     shutil.copy(demisto.getFilePath(file_entry)['path'], demisto.getFilePath(file_entry)['name'])
 

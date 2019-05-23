@@ -1,13 +1,18 @@
 version: 2
+experimental:
+  notify:
+    branches:
+      only:
+        - master
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:1.0.0.197 # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.4.2"
+      CONTENT_VERSION: "19.5.0"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "28fc5480343d1b7bb759f3742670eac2afaa3e38" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "a267c8adf281e8261d4080e554f41b02196ec2a7" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -24,6 +29,7 @@ jobs:
               pyenv versions
               python --version
               python3 --version
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -41,7 +47,9 @@ jobs:
       - run:
           name: Validate Files and Yaml
           command: |
-              ./Tests/scripts/pyflake.sh
+              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+              ./Tests/scripts/pyflake.sh *.py
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
@@ -107,7 +115,7 @@ jobs:
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
             fi
       - run:
           name: Run Tests - Latest GA
@@ -161,6 +169,11 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Validate Docker Images
+          shell: /bin/bash
+          command: ./Tests/scripts/validate_docker_images.sh
           when: always
       - run:
           name: Instance Test
