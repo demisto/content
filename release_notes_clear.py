@@ -126,6 +126,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    # yml_remove_releaseNote_record('/Users/syaakovi/temp/test_rn.yml', '4.5')
-    json_remove_releaseNote_record('/Users/syaakovi/temp/test_rn.json', '4.5')
-    # main([os.path.dirname(__file__)] + sys.argv[1:])
+    main([os.path.dirname(__file__)] + sys.argv[1:])
