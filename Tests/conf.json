@@ -1037,10 +1037,6 @@
             "playbookID": "RSA NetWitness Test"
         },
         {
-            "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
-        },
-        {
             "playbookID": "ExifReadTest"
         },
         {
@@ -1477,6 +1473,14 @@
         {
             "integrations": "fireeye",
             "playbookID": "Detonate File - FireEye AX - Test"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "Rasterize Test"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
         }
     ],
     "skipped_tests": {
