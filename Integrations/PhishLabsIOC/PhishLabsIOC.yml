@@ -145,6 +145,12 @@ script:
     - contextPath: Domain.Name
       description: Domain name
       type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor reporting the malicious status
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain
+      type: String
     - contextPath: PhishLabs.Domain.Name
       description: Domain name
       type: String
@@ -326,6 +332,12 @@ script:
       type: Boolean
     - contextPath: Domain.Name
       description: Domain name
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor reporting the malicious status
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain
       type: String
     - contextPath: PhishLabs.Domain.Name
       description: Domain name
