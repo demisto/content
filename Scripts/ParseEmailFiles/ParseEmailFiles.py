@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 from email import message_from_string
 from email.header import decode_header
+import base64
 from base64 import b64decode
 
 import email.utils
@@ -405,11 +406,11 @@ class EmailFormatter(object):
             if maintype == 'text' or "message" in maintype:
                 attach = MIMEText(data, _subtype=subtype)
             elif maintype == 'image':
-                attach = MIMEImage(data, _subtype=subtype)
+                attach = MIMEImage(data, _subtype=subtype)  # type: ignore
             elif maintype == 'audio':
-                attach = MIMEAudio(data, _subtype=subtype)
+                attach = MIMEAudio(data, _subtype=subtype)  # type: ignore
             else:
-                attach = MIMEBase(maintype, subtype)
+                attach = MIMEBase(maintype, subtype)  # type: ignore
                 attach.set_payload(data)
 
                 # Encode the payload using Base64
@@ -2642,7 +2643,7 @@ class Message(object):
             parent_directory_path = []
 
         self._streams = self._process_directory_entries(directory_entries)
-        self.embedded_messages = []
+        self.embedded_messages = []  # type: list
         self._data_model = DataModel()
         self._parent_directory_path = parent_directory_path
         self._nested_attachments_depth = 0
@@ -2758,7 +2759,7 @@ class Message(object):
             "properties": {},
             "recipients": {},
             "attachments": {}
-        }
+        }  # type: dict
         for name, stream in directory_entries.iteritems():
             # collect properties
             if "__substg1.0_" in name:
@@ -2792,7 +2793,7 @@ class Message(object):
                 continue
 
             if isinstance(directory_entry, list):
-                directory_values = {}
+                directory_values = {}  # type: dict
                 for property_entry in directory_entry:
                     property_data = self._get_property_data(directory_name, property_entry, is_list=True)
                     if property_data:
@@ -2819,7 +2820,7 @@ class Message(object):
                 continue
 
             if isinstance(directory_entry, list):
-                directory_values = {}
+                directory_values = {}  # type: dict
                 for property_entry in directory_entry:
                     property_data = self._get_property_data(directory_name, property_entry, is_list=True)
                     if property_data:
@@ -2904,7 +2905,7 @@ class Message(object):
         if property_value:
             property_detail = {property_name: property_value}
         else:
-            property_detail = None
+            property_detail = None  # type: ignore
 
         return property_detail
 
@@ -3130,7 +3131,7 @@ def parse_email_headers(header, raw=False):
     if raw:
         return headers
 
-    email_address_headers = {
+    email_address_headers = {  # type: ignore
         "To": [],
         "From": [],
         "CC": [],
@@ -3325,7 +3326,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         headers = parser.parsestr(file_data)
 
         header_list = []
-        headers_map = {}
+        headers_map = {}  # type: dict
         for item in headers.items():
             value = unfold(convert_to_unicode(item[1]))
             item_dict = {
@@ -3387,16 +3388,15 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
-                            attachment_file_name = part.get_payload()[0]\
-                                                       .get('Subject', "no_name_mail_attachment") + ".eml"
+                            attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
+                            attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
                         file_content = part.get_payload()[0].as_string()
+                        demisto.results(fileResult(attachment_file_name, file_content))
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
 
-                    demisto.results(fileResult(attachment_file_name, file_content))
-
-                    if max_depth - 1 > 0:
+                    if file_content and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
                         try:
                             f.write(file_content)
@@ -3413,25 +3413,34 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                 else:
                     # .msg and other files (png, jpeg)
-                    file_content = part.get_payload(decode=True)
-                    demisto.results(fileResult(attachment_file_name, file_content))
+                    if part.is_multipart() and part.get_content_type() == 'message/delivery-status' \
+                            and max_depth - 1 > 0:
+                        # email is DSN
+                        msg = part.get_payload(0).get_payload()  # human-readable section
+                        msg_info = base64.b64decode(msg).decode('utf-8')
 
-                    if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
-                        f = tempfile.NamedTemporaryFile(delete=False)
-                        try:
-                            f.write(file_content)
-                            f.close()
-                            inner_msg, inner_attached_emails = handle_msg(f.name, attachment_file_name, False,
-                                                                          max_depth - 1)
-                            attached_emails.append(inner_msg)
-                            attached_emails.extend(inner_attached_emails)
+                        attached_emails.append(msg_info)
+                        demisto.results(fileResult(attachment_file_name, msg_info))
+                    else:
+                        file_content = part.get_payload(decode=True)
+                        demisto.results(fileResult(attachment_file_name, file_content))
 
-                            # will output the inner email to the UI
-                            return_outputs(
-                                readable_output=data_to_md(inner_msg, attachment_file_name, file_name),
-                                outputs=None)
-                        finally:
-                            os.remove(f.name)
+                        if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
+                            f = tempfile.NamedTemporaryFile(delete=False)
+                            try:
+                                f.write(file_content)
+                                f.close()
+                                inner_msg, inner_attached_emails = handle_msg(f.name, attachment_file_name, False,
+                                                                              max_depth - 1)
+                                attached_emails.append(inner_msg)
+                                attached_emails.extend(inner_attached_emails)
+
+                                # will output the inner email to the UI
+                                return_outputs(
+                                    readable_output=data_to_md(inner_msg, attachment_file_name, file_name),
+                                    outputs=None)
+                            finally:
+                                os.remove(f.name)
 
                 attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
@@ -3489,9 +3498,9 @@ def main():
 
         file_type = result[0]['FileMetadata']['info']
 
-    except Exception, ex:
+    except Exception as ex:
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id,
-                     str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex)))
+                     str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
     try:
         file_type_lower = file_type.lower()
@@ -3574,12 +3583,12 @@ def main():
 
             except Exception as e:
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
-                             .format(str(e), traceback.format_exc(e)))
+                             .format(str(e), traceback.format_exc()))
         else:
             return_error("Unknown file format: " + file_type)
 
-    except Exception, ex:
-        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
+    except Exception as ex:
+        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
         return_error(ex.message)
 
 
