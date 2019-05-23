@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Minerva Labs Anti-Evasion Platform",
+            "playbookID": "Minerva Test playbook"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test"
         },
@@ -194,6 +198,9 @@
         },
         {
           "playbookID": "ReadPDFFile-Test"
+        },
+        {
+            "playbookID": "ReadPDFFileV2-Test"
         },
         {
           "playbookID": "JSONtoCSV-Test"
@@ -999,7 +1006,8 @@
         },
         {
             "integrations": "Whois",
-            "playbookID": "whois_test"
+            "playbookID": "whois_test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -1335,6 +1343,9 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
+            "playbookID": "Palo Alto Networks Cortex Test"
+        },
+        {
             "playbookID": "Palo Alto Networks Cortex Test",
             "fromversion": "4.1.0"
         },
@@ -1463,6 +1474,10 @@
             "playbookID": "EWS test"
         },
         {
+            "integrations": "fireeye",
+            "playbookID": "Detonate File - FireEye AX - Test"
+        },
+        {
             "integrations": "Rasterize",
             "playbookID": "Rasterize Test"
         }
@@ -1471,7 +1486,6 @@
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "url_enrichment_-_generic_test": "Deprecated playbook - the playbook seems to be deleted",
         "EWS test": "Old test",
-        "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1503,7 +1517,8 @@
         "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
-        "okta_test_playbook": "test failed (Issue 17041)"
+        "okta_test_playbook": "test failed (Issue 17041)",
+        "Detonate File - FireEye AX - Test": "No instance"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1543,11 +1558,11 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "RSA Archer": "No instance",
         "Cisco Spark": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
 
@@ -1560,7 +1575,8 @@
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota."
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "VirusTotal - Private API": "reached api alloted quota."
     },
     "nigthly_integrations": [
         "Lastline",
