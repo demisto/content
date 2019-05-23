@@ -9,7 +9,7 @@ import requests
 import datetime
 import random
 import string
-from lxml import objectify
+import xml.etree.ElementTree as ET
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -187,22 +187,23 @@ def execute_query(dataArgs):
     logs = res['hits']['hits']
     logs_response = []
 
+    xml_ns = './/{http://schemas.microsoft.com/win/2004/08/events/event}'
+
     for log in logs:
         message = str(log['fields']['logMessage'])
         message = message[:-2][3:]
-
-        root = objectify.fromstring(message)
+        root = ET.fromstring(message)
 
         try:
             log_item = {
-                "EventID": str(root.System.EventID),
-                "Level": str(root.System.Level),
-                "Task": str(root.System.Task),
-                "Opcode": str(root.System.Opcode),
-                "Keywords": str(root.System.Keywords),
-                "Channel": str(root.System.Channel),
-                "Computer": str(root.System.Computer),
-                "EventData": str(root.EventData).replace('\\r\\n', '\n').replace('\\t', '\t')
+                "EventID": str(root.find(xml_ns + 'Computer').text),
+                "Level": str(root.find(xml_ns + 'Computer').text),
+                "Task": str(root.find(xml_ns + 'Computer').text),
+                "Opcode": str(root.find(xml_ns + 'Computer').text),
+                "Keywords": str(root.find(xml_ns + 'Computer').text),
+                "Channel": str(root.find(xml_ns + 'Computer').text),
+                "Computer": str(root.find(xml_ns + 'Computer').text),
+                "EventData": str(root.find(xml_ns + 'EventData').text).replace('\\r\\n', '\n').replace('\\t', '\t')
             }
             logs_response.append(log_item)
         except:
