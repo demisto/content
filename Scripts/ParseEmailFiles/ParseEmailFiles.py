@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 from email import message_from_string
 from email.header import decode_header
+import base64
 from base64 import b64decode
 
 import email.utils
@@ -3387,8 +3388,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
-                            attachment_file_name = part.get_payload()[0]\
-                                                       .get('Subject', "no_name_mail_attachment") + ".eml"
+                            attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
+                            attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
                         file_content = part.get_payload()[0].as_string()
                         demisto.results(fileResult(attachment_file_name, file_content))
@@ -3412,25 +3413,34 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                 else:
                     # .msg and other files (png, jpeg)
-                    file_content = part.get_payload(decode=True)
-                    demisto.results(fileResult(attachment_file_name, file_content))
+                    if part.is_multipart() and part.get_content_type() == 'message/delivery-status' \
+                            and max_depth - 1 > 0:
+                        # email is DSN
+                        msg = part.get_payload(0).get_payload()  # human-readable section
+                        msg_info = base64.b64decode(msg).decode('utf-8')
 
-                    if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
-                        f = tempfile.NamedTemporaryFile(delete=False)
-                        try:
-                            f.write(file_content)
-                            f.close()
-                            inner_msg, inner_attached_emails = handle_msg(f.name, attachment_file_name, False,
-                                                                          max_depth - 1)
-                            attached_emails.append(inner_msg)
-                            attached_emails.extend(inner_attached_emails)
+                        attached_emails.append(msg_info)
+                        demisto.results(fileResult(attachment_file_name, msg_info))
+                    else:
+                        file_content = part.get_payload(decode=True)
+                        demisto.results(fileResult(attachment_file_name, file_content))
 
-                            # will output the inner email to the UI
-                            return_outputs(
-                                readable_output=data_to_md(inner_msg, attachment_file_name, file_name),
-                                outputs=None)
-                        finally:
-                            os.remove(f.name)
+                        if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
+                            f = tempfile.NamedTemporaryFile(delete=False)
+                            try:
+                                f.write(file_content)
+                                f.close()
+                                inner_msg, inner_attached_emails = handle_msg(f.name, attachment_file_name, False,
+                                                                              max_depth - 1)
+                                attached_emails.append(inner_msg)
+                                attached_emails.extend(inner_attached_emails)
+
+                                # will output the inner email to the UI
+                                return_outputs(
+                                    readable_output=data_to_md(inner_msg, attachment_file_name, file_name),
+                                    outputs=None)
+                            finally:
+                                os.remove(f.name)
 
                 attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
