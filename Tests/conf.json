@@ -1340,9 +1340,6 @@
         },
         {
             "integrations": "Palo Alto Networks Cortex",
-            "playbookID": "Palo Alto Networks Cortex Test"
-        },
-        {
             "playbookID": "Palo Alto Networks Cortex Test",
             "fromversion": "4.1.0"
         },
