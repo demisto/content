@@ -1,0 +1,265 @@
+category: Analytics & SIEM
+commonfields:
+  id: LogRhythmRest
+  version: -1
+configuration:
+- display: Hostname, IP address or Server URL
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: search api cluster ID
+  name: cluster-id
+  required: false
+  type: 0
+description: LogRhythm security intelligence
+detaileddescription: Use these detailed instructions in order to retrieve the API
+  key
+display: LogRhythmRest
+name: LogRhythmRest
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Filter log message by this argument.
+      isArray: false
+      name: keyword
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Number of logs to return
+      isArray: false
+      name: page-size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Custom
+      description: If time_frame is Custom, specify the start time for the time range.
+      isArray: false
+      name: time-frame
+      predefined:
+      - Today
+      - Last2Days
+      - LastWeek
+      - LastMonth
+      - Custom
+      required: false
+      secret: false
+    - default: false
+      description: 'Start date for the data query, for example: "2018-04-20". Only
+        use this argument if the time_frame argument is "Custom".'
+      isArray: false
+      name: start-date
+      required: false
+      secret: false
+    - default: false
+      description: 'End date for the data query, for example: "2018-04-20". Only use
+        this argument if the time_frame argument is "Custom".'
+      isArray: false
+      name: end-date
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a query for logs that match query parameters.
+    execution: false
+    name: lr-execute-query
+  - arguments:
+    - default: false
+      description: The entity name.
+      isArray: false
+      name: entity-name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Number of hosts to return.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a list of hosts for a given entity, or an empty list if
+      none is found.
+    execution: false
+    name: lr-get-hosts-by-entity
+  - arguments:
+    - default: false
+      description: The entity ID.
+      isArray: false
+      name: entity-id
+      required: true
+      secret: false
+    - default: false
+      description: The entity name.
+      isArray: false
+      name: entity-name
+      required: true
+      secret: false
+    - default: false
+      description: The LogRhythm host name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: The short description.
+      isArray: false
+      name: short-description
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: The long description
+      isArray: false
+      name: long-description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: The host risk level.
+      description: The short description
+      isArray: false
+      name: risk-level
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: None
+      description: The host threat level.
+      isArray: false
+      name: threat-level
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: The host threat level comments level.
+      isArray: false
+      name: threat-level-comments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The host status.
+      isArray: false
+      name: host-status
+      predefined:
+      - New
+      - Retired
+      - Active
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The host zone.
+      isArray: false
+      name: host-zone
+      predefined:
+      - Unknown
+      - Internal
+      - DMZ
+      - External
+      required: true
+      secret: false
+    - default: false
+      description: The host OS.
+      isArray: false
+      name: os
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: use eventlog credentials
+      isArray: false
+      name: use-eventlog-credentials
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Unknown
+      description: The type of the host OS.
+      isArray: false
+      name: os-type
+      predefined:
+      - Unknown
+      - Other
+      - WindowsNT4
+      - Windows2000Professional
+      - Windows2000Server
+      - Windows2003Standard
+      - Windows2003Enterprise
+      - Windows95
+      - WindowsXP
+      - WindowsVista
+      - Linux
+      - Solaris
+      - AIX
+      - HPUX
+      - Windows
+      required: false
+      secret: false
+    deprecated: false
+    description: Add new host to entity
+    execution: false
+    name: lr-add-host
+  - arguments:
+    - default: false
+      description: The unique ID of the host.
+      isArray: false
+      name: host-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The enumeration status of the host
+      isArray: false
+      name: status
+      predefined:
+      - Retired
+      - Active
+      required: true
+      secret: false
+    deprecated: false
+    description: Update alarm status
+    execution: false
+    name: lr-update-alarm-status
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+releaseNotes: "add rest api commands"
