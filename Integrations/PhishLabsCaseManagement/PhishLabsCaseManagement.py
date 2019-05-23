@@ -73,6 +73,9 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
         except Exception:
             pass
         error_message: str = ('Error in API call to PhishLabs Case API, status code: {}'.format(status))
+        if status == 400:
+            # TODO: ...
+            return {'data': []}
         if status == 401:
             error_message = 'Could not connect to PhishLabs Case API: Wrong credentials'
         if message:
@@ -172,11 +175,11 @@ def list_cases_request(status=None, case_type=None, limit=None, date_field=None,
     params: dict = {}
 
     if status:
-        params['caseStatus'] = ','.join(status)
+        params['caseStatus'] = status
     if limit:
         params['maxRecords'] = limit
     if case_type:
-        params['caseType'] = ','.join(case_type)
+        params['caseType'] = case_type
     if date_field:
         params['dateField'] = date_field
         if begin_date:
@@ -413,21 +416,25 @@ def create_case_request(case_type, case_brand, title, description):
 
 def fetch_incidents():
     """
-    Fetches incidents from the PhishLabs user feed.
+    Fetches cases from the PhishLabs.
     :return: Demisto incidents
     """
     last_run: dict = demisto.getLastRun()
     last_fetch: str = last_run.get('time', '') if last_run else ''
-    last_offset: str = last_run.get('offset', '0') if last_run else '0'
 
     incidents: list = []
     count: int = 1
     limit = int(FETCH_LIMIT)
-    feed: dict = {}
-    last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
-                                 else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
+
+    if not last_fetch:
+        fetch_time = FETCH_TIME if FETCH_TIME else '1 day'
+        last_fetch, _ = parse_date_range(fetch_time, '%Y-%m-%dT%H:%M:%SZ')
+
+    cases: dict = list_cases_request(status='New', limit=FETCH_LIMIT, date_field='caseOpen', begin_date=last_fetch)
+
+    last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ'))
     max_time: datetime = last_fetch_time
-    results: list = feed.get('data', []) if feed else []
+    results: list = cases.get('data', []) if cases else []
 
     if results:
         if not isinstance(results, list):
@@ -436,23 +443,22 @@ def fetch_incidents():
         for result in results:
             if count > limit:
                 break
-            incident_time: datetime = datetime.strptime(result.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ')
-            if last_fetch_time and incident_time <= last_fetch_time:
+            case_time: datetime = datetime.strptime(result.get('dateCreated', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ')
+            if last_fetch_time and case_time <= last_fetch_time:
                 continue
 
             incident: dict = {
-                'name': 'PhishLabs IOC Incident ' + result.get('referenceId'),
-                'occurred': datetime.strftime(incident_time, '%Y-%m-%dT%H:%M:%SZ'),
+                'name': 'PhishLabs Case {}'.format(result.get('caseNumber')),
+                'occurred': datetime.strftime(case_time, '%Y-%m-%dT%H:%M:%SZ'),
                 'rawJSON': json.dumps(result)
             }
             incidents.append(incident)
-            if max_time < incident_time:
-                max_time = incident_time
+            if max_time < case_time:
+                max_time = case_time
             count += 1
 
         demisto.incidents(incidents)
-        offset = int(last_offset) + count
-        demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
+        demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ')})
 
 
 ''' MAIN'''
