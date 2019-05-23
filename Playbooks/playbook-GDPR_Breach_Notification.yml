@@ -1565,6 +1565,5 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "New playbook - GDPR Data Breach Notification process"
 tests:
   - No Test
