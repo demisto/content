@@ -35,7 +35,7 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
 
     rn = yml_data.get('releaseNotes')
     if rn:
-        yml_text = re.sub('\n?releaseNotes: "?{}"?'.format(re.escape(rn).replace(r'\ ', r'\s+')), '', yml_text)
+        yml_text = re.sub(r'\n?releaseNotes: [\'"]?{}[\'"]?'.format(re.escape(rn).replace(r'\ ', r'\s+')), '', yml_text)
         with open(file_path, 'w') as f:
             f.write(yml_text)
 
