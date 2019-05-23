@@ -69,7 +69,7 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
         try:
             error_json: dict = res.json()
             message = error_json.get('error', '')
-            details = error_json.get('message')
+            details = error_json.get('message', '')
         except Exception:
             pass
         error_message: str = ('Error in API call to PhishLabs Case API, status code: {}'.format(status))
@@ -116,7 +116,7 @@ def list_cases_command():
     begin_date = demisto.args().get('begin_date')
     end_date = demisto.args().get('end_date')
 
-    context = {}
+    context: dict = {}
 
     if not date_field and (begin_date or end_date):
         return_error('In order to use the begin_date or end_date filters, a date field must be provided.')
@@ -199,7 +199,7 @@ def get_case_command():
 
     case_id = demisto.args()['id']
 
-    context = {}
+    context: dict = {}
 
     response = get_case_request(case_id)
 
@@ -258,7 +258,7 @@ def list_brands_command():
     """
 
     limit = demisto.args().get('limit')
-    context = {}
+    context: dict = {}
 
     response = list_brands_request()
     brands = response['brands'] if response and response.get('brands') else []
@@ -305,7 +305,7 @@ def list_types_command():
     """
 
     limit = demisto.args().get('limit')
-    context = {}
+    context: dict = {}
 
     response = list_types_request()
 
@@ -357,7 +357,7 @@ def create_case_command():
     title = demisto.args()["title"]
     description = demisto.args().get("description")
 
-    context = {}
+    context: dict = {}
 
     response = create_case_request(case_type, case_brand, title, description)
 
