@@ -2,16 +2,18 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from cStringIO import StringIO
-import logging, warnings, traceback
+import logging
+import warnings
+import traceback
 
 warnings.filterwarnings("ignore")
 log_stream = StringIO()
 logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
+from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
-    BASIC, DIGEST, Version, DELEGATE
+    BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 
 IS_TEST_MODULE = False
 
@@ -109,8 +111,8 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
-    file_entries_for_attachments = []
-    attachments_names = []
+    file_entries_for_attachments = []  # type: list
+    attachments_names = []  # type: list
     if attachIDs:
         file_entries_for_attachments = attachIDs.split(",")
         if attachNames:
@@ -130,8 +132,8 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         attachment_name = attachments_names[i]
         try:
             res = demisto.getFilePath(entry_id)
-        except:
-            raise Exception("entry %s does not contain a file" % entry_id)
+        except Exception as ex:
+            raise Exception("entry {} does not contain a file: {}".format(entry_id, str(ex)))
         file_path = res["path"]
         with open(file_path, 'rb') as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
@@ -194,8 +196,9 @@ def test_module():
     global IS_TEST_MODULE
     IS_TEST_MODULE = True
     BaseProtocol.TIMEOUT = 20
-    account = get_account(ACCOUNT_EMAIL)
+    get_account(ACCOUNT_EMAIL)
     demisto.results('ok')
+
 
 config = prepare()
 args = prepare_args(demisto.args())
@@ -206,17 +209,19 @@ try:
     elif demisto.command() == 'send-mail':
         demisto.results(send_email(**args))
 
-except Exception, e:
+except Exception as e:
     import time
 
     time.sleep(2)
     debug_log = log_stream.getvalue()
     error_message = ""
     if "Status code: 401" in debug_log:
-        error_message = "Got unauthorized from the server. " \
-                        "Check credentials are correct and authentication method are supported. "
+        error_message = ("Got unauthorized from the server. "
+                         "Check credentials are correct and authentication"
+                         " method are supported. ")
 
-        error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+        error_message += ("You can try using 'domain\\username' as username for authentication. "
+                          if AUTH_METHOD_STR.lower() == 'ntlm' else '')
     if "Status code: 503" in debug_log:
         error_message = "Got timeout from the server. " \
                         "Probably the server is not reachable with the current settings. " \
@@ -226,8 +231,8 @@ except Exception, e:
     if stacktrace:
         debug_log += "\nFull stacktrace:\n" + stacktrace
 
-    demisto.error("EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))        
-    if IS_TEST_MODULE:                
-        demisto.results(error_message)                
+    demisto.error("EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
+    if IS_TEST_MODULE:
+        demisto.results(error_message)
     else:
         return_error(error_message + '\n' + debug_log)
