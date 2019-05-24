@@ -1,0 +1,711 @@
+commonfields:
+  id: ThreatX
+  version: -1
+name: ThreatX
+display: ThreatX
+category: Network Security
+image: data:image/png;base64,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
+description: The ThreatX integration allows automated enforcement actions.
+detaileddescription: Please enter your Customer Name and API Key provided by the ThreatX
+  SOC.
+configuration:
+- display: Customer Name
+  name: customer_name
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: |
+    ''' IMPORTS '''
+    import time
+    import random
+    import os
+    from operator import itemgetter
+    import requests
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    CUSTOMER_NAME = demisto.params().get('customer_name', None)
+    API_KEY = demisto.params().get('api_key', None)
+    BASE_URL = 'https://provision.threatx.io/tx_api/v1'
+    USE_SSL = not demisto.params().get('insecure', False)
+    PROXY = demisto.params().get('proxy', True)
+    EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
+    MAX_SECONDS_TO_WAIT = 30
+    ERROR_CODES_DICT = {
+        400: 'Invalid or bad request',
+        401: 'Session is not authenticated or timed out',
+        403: 'Authorization error',
+        404: 'Resource does not exist',
+        409: 'Request could not be processed because of possible edit conflict occurred. Another admin might be saving a configuration change at the same time. In this scenario, the client is expected to retry after a short time period.',
+        415: 'Unsupported media type',
+        429: 'Exceeded the rate limit or quota',
+        500: 'Unexpected error',
+        503: 'Service is temporarily unavailable'
+    }
+
+    ''' HANDLE PROXY '''
+    if not PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' HELPER FUNCTIONS '''
+    def http_request(url_suffix, commands=None, num_of_seconds_to_wait=9):
+        state = demisto.getIntegrationContext()
+
+        if not state.get('session_token'):
+            session_token = None
+            token_expires = None
+        else:
+            session_token = state.get('session_token')
+            token_expires = state.get('token_expires')
+
+        if url_suffix != "/login":
+            data = {
+                    'token': session_token,
+                    'customer_name': CUSTOMER_NAME
+                }
+        else:
+            data = {}
+
+        if commands is not None:
+            data.update(commands)
+
+        LOG('running request with url=%s' % (BASE_URL + url_suffix))
+        LOG.print_log()
+        try:
+            res = requests.request('POST',
+                                   BASE_URL + url_suffix,
+                                   verify=USE_SSL,
+                                   json=data
+                                   )
+
+            if res.status_code not in (200, 204):
+                if url_suffix == "/login":
+                    demisto.setIntegrationContext({'session_token': None,
+                                                   'token_expires': None
+                                                   })
+                    LOG(str(res.status_code) + ' from server during login. Clearing session token cache.')
+                    LOG.print_log()
+
+                if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
+                    random_num_of_seconds = random.randint(num_of_seconds_to_wait, num_of_seconds_to_wait + 3)
+                    time.sleep(random_num_of_seconds)
+                    return http_request(url_suffix, commands,
+                                        num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
+                elif res.status_code != 500:
+                    return_error('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
+
+        except Exception as e:
+            return_error(e.message)
+
+        # Parse JSON
+        try:
+            resp_json = res.json()
+        except Exception as e:
+            return_error(e.message)
+
+        if 'Ok' not in resp_json:
+            if url_suffix == "/login":
+                demisto.setIntegrationContext({'session_token': None,
+                                               'token_expires': None
+                                               })
+                return_error('Cannot parse login response. Clearing session token cache.')
+
+            # if no 'Ok' key in response then return all the keys and values as an error string
+            resp_err = ''
+            for key, value in resp_json.items():
+                resp_err += str(key) + ": " + str(value) + '\n'
+
+            return_error(resp_err)
+
+        if url_suffix == "/login":
+            if resp_json['Ok']['status'] is not True:
+                demisto.setIntegrationContext({'session_token': None,
+                                               'token_expires': None
+                                               })
+                return_error('Invalid credentials. Clearing session token cache.')
+
+        return resp_json['Ok']
+
+    @logger
+    def initialize():
+        endpoint = '/login'
+        commands = {
+                'command': 'login',
+                'api_token': API_KEY
+            }
+
+        state = demisto.getIntegrationContext()
+
+        if not state.get('session_token'):
+            session_token = None
+            token_expires = None
+        else:
+            session_token = state.get('session_token')
+            token_expires = state.get('token_expires')
+
+        LOG('Initializing request...')
+        LOG.print_log()
+
+        if session_token is None:
+            LOG('Session token missing - getting new session token...')
+            LOG.print_log()
+            r = http_request(endpoint, commands)
+            demisto.setIntegrationContext({'session_token': r['token'],
+                                           'token_expires': int(time.time() + (10 * 60))
+                                           })
+            return
+
+        if token_expires < int(time.time()):
+            LOG('Session token expired - getting new session token...')
+            LOG.print_log()
+            r = http_request(endpoint, commands)
+            demisto.setIntegrationContext({'session_token': r['token'],
+                                           'token_expires': int(time.time() + (10 * 60))
+                                           })
+            return
+
+        LOG('Cached session token not expired.')
+        LOG.print_log()
+        return
+
+    ''' FUNCTIONS '''
+    @logger
+    def block_ip(ip):
+        commands = {
+                'command': 'new_blocklist',
+                'entry': {
+                    'ip': ip,
+                    'description': 'Added by ThreatX Demisto Integration',
+                    'created': int(time.time())
+                }
+            }
+
+        return http_request('/lists', commands)
+
+    @logger
+    def block_ip_command():
+        ip = demisto.args().get('ip', None)
+        results = block_ip(ip)
+
+        md = tableToMarkdown('Block IP',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        ec = ({
+                'IP.Address(val.Id === obj.Id)': ip
+            })
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md,
+                'EntryContext': ec
+            })
+
+    @logger
+    def unblock_ip(ip):
+        commands = {
+                'command': 'delete_blocklist',
+                'ip': ip
+            }
+
+        return http_request('/lists', commands)
+
+    @logger
+    def unblock_ip_command():
+        ip = demisto.args().get('ip', None)
+        results = unblock_ip(ip)
+
+        md = tableToMarkdown('Unblock IP',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        ec = ({
+                'IP.Address(val.Id === obj.Id)': ip
+            })
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md,
+                'EntryContext': ec
+            })
+
+    @logger
+    def blacklist_ip(ip):
+        commands = {
+                'command': 'new_blacklist',
+                'entry': {
+                    'ip': ip,
+                    'description': 'Added by ThreatX Demisto Integration',
+                    'created': int(time.time())
+                }
+            }
+
+        return http_request('/lists', commands)
+
+    @logger
+    def blacklist_ip_command():
+        ip = demisto.args().get('ip', None)
+        results = blacklist_ip(ip)
+
+        md = tableToMarkdown('Blacklist IP',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        ec = ({
+                'IP.Address(val.Id === obj.Id)': ip
+            })
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md,
+                'EntryContext': ec
+            })
+
+    @logger
+    def unblacklist_ip(ip):
+        commands = {
+                'command': 'delete_blacklist',
+                'ip': ip
+            }
+
+        return http_request('/lists', commands)
+
+    @logger
+    def unblacklist_ip_command():
+        ip = demisto.args().get('ip', None)
+        results = unblacklist_ip(ip)
+
+        md = tableToMarkdown('Unblacklist IP',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        ec = ({
+                'IP.Address(val.Id === obj.Id)': ip
+            })
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md,
+                'EntryContext': ec
+            })
+
+    @logger
+    def whitelist_ip(ip):
+        commands = {
+                'command': 'new_whitelist',
+                'entry': {
+                    'ip': ip,
+                    'description': 'Added by ThreatX Demisto Integration',
+                    'created': int(time.time())
+                }
+            }
+
+        return http_request('/lists', commands)
+
+    @logger
+    def whitelist_ip_command():
+        ip = demisto.args().get('ip', None)
+        results = whitelist_ip(ip)
+
+        md = tableToMarkdown('Whitelist IP',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        ec = ({
+                'IP.Address(val.Id === obj.Id)': ip
+            })
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md,
+                'EntryContext': ec
+            })
+
+    @logger
+    def unwhitelist_ip(ip):
+        commands = {
+                'command': 'delete_whitelist',
+                'ip': ip
+            }
+
+        return http_request('/lists', commands)
+
+    @logger
+    def unwhitelist_ip_command():
+        ip = demisto.args().get('ip', None)
+        results = unwhitelist_ip(ip)
+
+        md = tableToMarkdown('Unwhitelist IP',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        ec = ({
+                'IP.Address(val.Id === obj.Id)': ip
+            })
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md,
+                'EntryContext': ec
+            })
+
+    @logger
+    def get_entities(entity_name, entity_id, entity_ip):
+        commands = {
+                'command': 'list',
+                'query': {}
+            }
+
+        if entity_name is not None:
+            entity_names = entity_name.split(',')
+            my_entity_name = {'codenames': entity_names}
+            commands['query'].update(my_entity_name)
+
+        if entity_id is not None:
+            entity_ids = entity_id.split(',')
+            my_entity_id = {'entity_ids': entity_ids}
+            commands['query'].update(my_entity_id)
+
+        if entity_ip is not None:
+            entity_ips = entity_ip.split(',')
+            my_entity_ip = {'ip_addresses': entity_ips}
+            commands['query'].update(my_entity_ip)
+
+        return http_request('/entities', commands)
+
+    @logger
+    def get_entity_risk(entity_id):
+        commands = {
+                'command': 'risk_changes',
+                'id': entity_id
+            }
+
+        return http_request('/entities', commands)
+
+    @logger
+    def get_entities_command():
+        entity_name = demisto.args().get('entity_name', None)
+        entity_id = demisto.args().get('entity_id', None)
+        entity_ip = demisto.args().get('entity_ip', None)
+        results = get_entities(entity_name, entity_id, entity_ip)
+        dbot_scores = []
+        output = []
+
+        for entity in results:
+            # Grab the entity risk so we can set the Dbot score for the Actor IPs
+            e_id = entity['id']
+            e_risk = get_entity_risk(e_id)[-1]['risk']
+            entity['risk'] = e_risk
+
+            iplist = []
+            for actor in entity['actors']:
+                # Convert decimal IP to dotted quad
+                ipint = actor['ip_address']
+                ipdot = '.'.join([str(ipint >> (i << 3) & 0xFF) for i in range(4)[::-1]])
+                iplist.append(ipdot)
+                actor['ip_address'] = ipdot
+                # Convert interval_time_start, interval_time_stop, fingerprint.last_seen to pretty time format
+                actor['interval_time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(actor['interval_time_start']))
+                actor['interval_time_stop'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(actor['interval_time_stop']))
+                actor['fingerprint']['last_seen'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(actor['fingerprint']['last_seen']))
+                # Set Dbot scores
+                if e_risk >= 70:
+                    dbot_scores.append({
+                            'Vendor' : 'ThreatX',
+                            'Indicator' : ipdot,
+                            'Type' : 'ip',
+                            'Score' : 3,
+                            'isTypedIndicator': True,
+                            'Malicious' : {
+                                'Vendor' : 'ThreatX',
+                                'Description' : 'ThreatX risk score is ' + str(e_risk),
+                                'IP' : ipdot
+                            }
+                        })
+                elif e_risk > 10:
+                    dbot_scores.append({
+                            'Vendor' : 'ThreatX',
+                            'Indicator' : ipdot,
+                            'Type' : 'ip',
+                            'Score' : 2,
+                            'isTypedIndicator': True
+                        })
+                else:
+                    dbot_scores.append({
+                            'Vendor' : 'ThreatX',
+                            'Indicator' : ipdot,
+                            'Type' : 'ip',
+                            'Score' : 0,
+                            'isTypedIndicator': True
+                        })
+
+            ec = {
+                    'Threatx.Entity(val.ID && val.ID === obj.ID)': {
+                        'ID': entity['id'],
+                        'Name': entity['codename'],
+                        'IP': iplist,
+                        'Risk': e_risk
+                    },
+                    'DBotScore': dbot_scores
+                }
+
+            output.append({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': entity,
+                    'EntryContext': ec})
+
+        demisto.results(output)
+
+    @logger
+    def get_entity_notes(entity_id):
+        commands = {
+                'command': 'notes',
+                'id': entity_id
+            }
+
+        return http_request('/entities', commands)
+
+    @logger
+    def get_entity_notes_command():
+        entity_id = demisto.args().get('entity_id', None)
+        results = get_entity_notes(entity_id)
+
+        # Reverse sort the list by timestamp
+        sorted_results = sorted(results, key=itemgetter('timestamp'), reverse=True)
+
+        # Replace dates with pretty format
+        for note in sorted_results:
+            note['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(note['timestamp']))
+
+        md = tableToMarkdown('Entity Notes',
+                            sorted_results)
+
+        ec = {
+                'Threatx.Entity(val.ID && val.ID === obj.ID)': {
+                    'ID': entity_id,
+                    'Notes': sorted_results
+                }
+            }
+
+        demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': sorted_results,
+                    'HumanReadable': md,
+                    'EntryContext': ec})
+
+    @logger
+    def add_entity_note(entity_id, message):
+        commands = {
+                    'command': 'new_note',
+                    'note': {
+                        'entity_id': entity_id,
+                        'content': message
+                    }
+                }
+
+        return http_request('/entities', commands)
+
+    @logger
+    def add_entity_note_command():
+        entity_id = demisto.args().get('entity_id', None)
+        message = demisto.args().get('message', None)
+        results = add_entity_note(entity_id, message)
+
+        md = tableToMarkdown('New Entity Note',
+                            results,
+                            ['Result'],
+                            removeNull=True)
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': results,
+                'HumanReadable': md
+            })
+
+    @logger
+    def test_module():
+        commands = {
+                'command': 'list'
+            }
+
+        return http_request('/users', commands)
+
+    @logger
+    def test_module_command():
+        results = test_module()
+
+        if 'username' in results[0]:
+            demisto.results('ok')
+        else:
+            return_error('An error occurred')
+
+    ''' EXECUTION CODE '''
+    initialize()
+    LOG('command is %s' % (demisto.command(),))
+    LOG.print_log()
+    try:
+        if demisto.command() == 'test-module':
+            test_module_command()
+        elif demisto.command() == 'threatx-block-ip':
+            block_ip_command()
+        elif demisto.command() == 'threatx-unblock-ip':
+            unblock_ip_command()
+        elif demisto.command() == 'threatx-blacklist-ip':
+            blacklist_ip_command()
+        elif demisto.command() == 'threatx-unblacklist-ip':
+            unblacklist_ip_command()
+        elif demisto.command() == 'threatx-whitelist-ip':
+            whitelist_ip_command()
+        elif demisto.command() == 'threatx-unwhitelist-ip':
+            unwhitelist_ip_command()
+        elif demisto.command() == 'threatx-get-entities':
+            get_entities_command()
+        elif demisto.command() == 'threatx-get-entity-notes':
+            get_entity_notes_command()
+        elif demisto.command() == 'threatx-add-entity-note':
+            add_entity_note_command()
+
+    except Exception as e:
+        return_error(e.message)
+  type: python
+  commands:
+  - name: threatx-block-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR blocked
+      type: string
+    description: Temporarily block an IP or CIDR
+    execution: true
+  - name: threatx-unblock-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR unblocked
+    description: Unblock a blocked IP or CIDR
+    execution: true
+  - name: threatx-blacklist-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR blacklisted
+      type: string
+    description: Add an IP or CIDR to the Blacklist
+    execution: true
+  - name: threatx-unblacklist-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR unblacklisted
+      type: string
+    description: Remove an IP or CIDR from the Blacklist
+    execution: true
+  - name: threatx-whitelist-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR whitelisted
+      type: string
+    description: Add an IP or CIDR to the Whitelist
+    execution: true
+  - name: threatx-unwhitelist-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR unwhitelisted
+      type: string
+    description: Remove an IP or CIDR from the Whitelist
+    execution: true
+  - name: threatx-get-entities
+    arguments:
+    - name: entity_name
+      description: Name of the Entity
+    - name: entity_id
+      description: ID hash of the Entity
+    - name: entity_ip
+      description: IP address of the Entity
+    outputs:
+    - contextPath: Threatx.Entity.ID
+      description: ID hash of the Entity
+      type: string
+    - contextPath: Threatx.Entity.Name
+      description: Name of the Entity
+      type: string
+    - contextPath: Threatx.Entity.IP
+      description: IP address of the Entity
+      type: string
+    description: 'Get high-level Entity information via the Entity ID, Entity Name,
+      or Entity IP. Example: !threatx-get-entities entity_name=CynicalGraaf entity_id=
+      566056709675514809 entity_ip=12.12.12.12'
+  - name: threatx-get-entity-notes
+    arguments:
+    - name: entity_id
+      required: true
+      description: ID hash of the Entity
+    outputs:
+    - contextPath: Threatx.Entity.Notes
+      description: Notes attached to the Entity
+      type: number
+    description: Get the notes attached to an Entity by Entity ID
+  - name: threatx-add-entity-note
+    arguments:
+    - name: entity_id
+      required: true
+      description: ID hash of the Entity
+    - name: message
+      required: true
+      description: Contents of the note
+    description: 'Add a new note to the Entity. Example: !threatx-new-entity-note
+      entity_id=566056709695514809 message="test note"'
+    execution: true
+  runonce: false
