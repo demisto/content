@@ -705,7 +705,7 @@ script:
     - name: message
       required: true
       description: Contents of the note
-    description: 'Add a new note to the Entity. Example: !threatx-new-entity-note
+    description: 'Add a new note to the Entity. Example: !threatx-add-entity-note
       entity_id=566056709695514809 message="test note"'
     execution: true
   runonce: false
