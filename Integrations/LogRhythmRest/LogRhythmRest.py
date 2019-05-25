@@ -9,7 +9,6 @@ import requests
 import datetime
 import random
 import string
-import xml.etree.ElementTree as ET
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -27,9 +26,9 @@ HEADERS = {
     'Authorization': 'Bearer ' + TOKEN
 }
 
-HOSTS_HEADERS = ['id', 'name', 'entity', 'os', 'hostStatus', 'location', 'riskLevel', 'threatLevel', 'dateUpdated',
-                 'hostZone']
-LOGS_HEASERS = ['Level', 'Computer', 'Channel', 'Keywords', 'EventData']
+HOSTS_HEADERS = ["id", "name", "entity", "os", "hostStatus", "location", "riskLevel", "threatLevel", "dateUpdated",
+                 "hostZone"]
+LOGS_HEASERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
 
 ''' HELPER FUNCTIONS '''
 
@@ -213,7 +212,7 @@ def execute_query(dataArgs):
                 "EventData": str(root.find(xml_ns + 'EventData').text).replace('\\r\\n', '\n').replace('\\t', '\t')
             }
             logs_response.append(log_item)
-        except Exception:
+        except:
             continue
 
     context = createContext(logs_response, removeNull=True)
