@@ -260,5 +260,4 @@ script:
   runonce: false
   script: '-'
   type: python
-dockerimage: demisto/python
 releaseNotes: "add rest api commands"
