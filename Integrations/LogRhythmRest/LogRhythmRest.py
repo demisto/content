@@ -212,7 +212,7 @@ def execute_query(dataArgs):
                 "EventData": str(root.find(xml_ns + 'EventData').text).replace('\\r\\n', '\n').replace('\\t', '\t')
             }
             logs_response.append(log_item)
-        except:
+        except Exception:
             continue
 
     context = createContext(logs_response, removeNull=True)
