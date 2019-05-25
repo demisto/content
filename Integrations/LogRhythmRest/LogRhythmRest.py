@@ -9,6 +9,7 @@ import requests
 import datetime
 import random
 import string
+from datetime import datetime, timedelta
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -44,11 +45,11 @@ def fix_hosts_response(hosts):
 
 
 def get_time_frame(time_frame, start_arg, end_arg):
-    start = datetime.datetime.now()
-    end = datetime.datetime.now()
+    start = datetime.now()
+    end = datetime.now()
 
     if time_frame == 'Today':
-        start = datetime.datetime(end.year, end.month, end.day)
+        start = datetime(end.year, end.month, end.day)
     elif time_frame == 'Last2Days':
         start = end - timedelta(days=2)
     elif time_frame == 'LastWeek':
@@ -60,8 +61,8 @@ def get_time_frame(time_frame, start_arg, end_arg):
             return_error('start-date argument is missing')
         if not end_arg:
             return_error('end-date argument is missing')
-        start = datetime.datetime.strptime(start_arg, '%Y-%m-%d')
-        end = datetime.datetime.strptime(end_arg, '%Y-%m-%d')
+        start = datetime.strptime(start_arg, '%Y-%m-%d')
+        end = datetime.strptime(end_arg, '%Y-%m-%d')
 
     return start, end
 
@@ -158,7 +159,7 @@ def execute_query(dataArgs):
     dates = []
 
     for i in range(delta.days + 1):
-        dates.append((start + datetime.timedelta(days=i)).strftime("logs-%Y-%m-%d"))
+        dates.append((start + timedelta(days=i)).strftime("logs-%Y-%m-%d"))
 
     data = {
         "indices": dates,
@@ -185,7 +186,7 @@ def execute_query(dataArgs):
     headers = HEADERS
     headers['Content-Type'] = 'application/json'
     headers['Request-Id'] = req_id
-    headers['Request-Origin-Date'] = str(datetime.datetime.now())
+    headers['Request-Origin-Date'] = str(datetime.now())
     headers['x-gateway-route-to-tag'] = CLUSTER_ID
 
     res = http_request('POST', 'lr-legacy-search-api/esquery', json.dumps(data), headers)
