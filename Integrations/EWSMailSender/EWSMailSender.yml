@@ -37,7 +37,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Has impersonation rights.
+- display: Has impersonation rights
   name: impersonation
   defaultvalue: "false"
   type: 8
