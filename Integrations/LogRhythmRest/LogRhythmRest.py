@@ -192,16 +192,20 @@ def execute_query(dataArgs):
     for log in logs:
         message = str(log['fields']['logMessage'])
         message = message[:-2][3:]
-        root = ET.fromstring(message)
 
         try:
+            root = ET.fromstring(message)
+
+            demisto.info('#################\n\n')
+            demisto.info(str(root.find(xml_ns + 'EventID').text))
+
             log_item = {
-                "EventID": str(root.find(xml_ns + 'Computer').text),
-                "Level": str(root.find(xml_ns + 'Computer').text),
-                "Task": str(root.find(xml_ns + 'Computer').text),
-                "Opcode": str(root.find(xml_ns + 'Computer').text),
-                "Keywords": str(root.find(xml_ns + 'Computer').text),
-                "Channel": str(root.find(xml_ns + 'Computer').text),
+                "EventID": str(root.find(xml_ns + 'EventID').text),
+                "Level": str(root.find(xml_ns + 'Level').text),
+                "Task": str(root.find(xml_ns + 'Task').text),
+                "Opcode": str(root.find(xml_ns + 'Opcode').text),
+                "Keywords": str(root.find(xml_ns + 'Keywords').text),
+                "Channel": str(root.find(xml_ns + 'Channel').text),
                 "Computer": str(root.find(xml_ns + 'Computer').text),
                 "EventData": str(root.find(xml_ns + 'EventData').text).replace('\\r\\n', '\n').replace('\\t', '\t')
             }
