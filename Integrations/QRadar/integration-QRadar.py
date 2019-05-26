@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 import sys
 import os
 import requests
-import datetime
 import json
 from requests.exceptions import HTTPError
 from copy import deepcopy
@@ -248,7 +247,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
 # Converts epoch (miliseconds) to ISO string
 def epoch_to_ISO(ms_passed_since_epoch):
     if ms_passed_since_epoch >= 0:
-        return datetime.datetime.utcfromtimestamp(ms_passed_since_epoch / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return datetime.utcfromtimestamp(ms_passed_since_epoch / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     return ms_passed_since_epoch
 
 
@@ -585,8 +584,8 @@ def enrich_offense_res_with_source_and_destination_address(response):
 
 # Helper method: Extracts all source and destination addresses ids from an offense result
 def extract_source_and_destination_addresses_ids(response):
-    src_ids = {}
-    dst_ids = {}
+    src_ids = {}  # type: dict
+    dst_ids = {}  # type: dict
     if isinstance(response, list):
         for offense in response:
             populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids)
@@ -810,7 +809,7 @@ def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_va
 
 # Creates an empty endpoint dictionary (for use in other methods)
 def create_empty_endpoint_dict(full_values):
-    endpoint_dict = {'IPAddress': [], 'OS': []}
+    endpoint_dict = {'IPAddress': [], 'OS': []}  # type: dict
     if full_values:
         endpoint_dict['MACAddress'] = []
         endpoint_dict['Domain'] = []
