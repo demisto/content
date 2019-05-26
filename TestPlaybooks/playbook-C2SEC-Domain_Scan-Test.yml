@@ -1,6 +1,6 @@
-id: C2SEC-Domain Scan-Test
+id: C2SEC-Domain_Scan-Test
 version: -1
-name: C2SEC-Domain Scan-Test
+name: C2SEC-Domain_Scan-Test
 description: |
   Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals.
 starttaskid: "0"
