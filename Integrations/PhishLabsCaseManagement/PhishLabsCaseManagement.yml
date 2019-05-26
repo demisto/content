@@ -230,4 +230,4 @@ script:
   type: python
 releaseNotes: '-'
 tests:
-- null
+- PhishLabs Case Management Test
