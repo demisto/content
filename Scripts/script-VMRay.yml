@@ -26,7 +26,7 @@ script: |-
 type: python
 tags:
 - file
-comment: Upload file and get it retults with VMRay
+comment: Deprecated, use "Detonate File - VMRay playbook instead"
 enabled: true
 args:
 - name: entry_id
