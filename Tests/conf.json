@@ -967,6 +967,11 @@
 
         },
         {
+            "playbookID": "C2sec-Test",
+            "integrations": "C2sec"
+
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
