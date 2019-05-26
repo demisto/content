@@ -32,10 +32,10 @@ DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if demisto.params().
 
 
 def create_certificate_file(password: str, certificate: str):
-    cert_file = tempfile.NamedTemporaryFile()
+    cert_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
     if certificate:
-        with open(cert_file.name, "w") as f:
-            f.write(certificate)
+        cert_file.write(certificate)
+        cert_file.flush()
         os.chmod(cert_file.name, 0o400)
     elif password:
         # check that password field holds a certificate and not a password
@@ -45,8 +45,8 @@ def create_certificate_file(password: str, certificate: str):
         password_list = password.split('-----')
         # replace spaces with newline characters
         password_fixed = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
-        with open(cert_file.name, "w") as f:
-            f.write(password_fixed)
+        cert_file.write(password_fixed)
+        cert_file.flush()
         os.chmod(cert_file.name, 0o400)
     else:
         return_error('Provide a certificate in order to connect to the remote server.')
@@ -76,7 +76,7 @@ def ssh_execute(command: str):
         if result.stderr.find("Permission denied") != -1:
             return_error('Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
         else:
-            return_error(result.stderr)
+            return_error('Command failed with exit status: ' + result.returncode + result.stderr)
 
     return result.stdout
 
@@ -92,7 +92,7 @@ def scp_execute(file_name: str, file_path: str):
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.stderr and result.stderr.find("Warning: Permanently added") == -1:
-        return_error(result.stderr)
+        return_error('Command failed with exit status: ' + result.returncode + result.stderr)
     else:
         return True
 
