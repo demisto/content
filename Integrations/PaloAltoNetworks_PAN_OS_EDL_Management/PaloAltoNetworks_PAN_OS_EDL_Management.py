@@ -11,27 +11,14 @@ import os
 
 ''' GLOBALS '''
 
-AUTHENTICATION = demisto.params().get('Authentication')
 
-HOSTNAME = demisto.params().get('hostname')
-USERNAME = AUTHENTICATION.get('identifier')
-PORT = str(demisto.params().get('port')) if demisto.params().get('port', None) and len(
-    demisto.params().get('port')) > 0 else None
-PASSWORD = AUTHENTICATION.get('password', None)
-CERTIFICATE = AUTHENTICATION.get('credentials').get(
-    'sshkey') if 'credentials' in AUTHENTICATION and 'sshkey' in AUTHENTICATION.get('credentials') and len(
-    AUTHENTICATION.get('credentials').get('sshkey')) > 0 else None
+def create_certificate_file(authentication: dict):
+    password = authentication.get('password', None)
+    certificate = None
+    if 'credentials' in authentication and 'sshkey' in authentication['credentials'] and len(
+            authentication['credentials']['sshkey']) > 0:
+        certificate = authentication.get('credentials', None).get('sshkey')
 
-SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.params().get('ssh_extra_params',
-                                                                                            None) else None
-SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
-                                                                                            None) else None
-DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if demisto.params().get('document_root', None) else None
-
-''' UTILS '''
-
-
-def create_certificate_file(password: str, certificate: str):
     cert_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
     if certificate:
         cert_file.write(certificate)
@@ -52,6 +39,24 @@ def create_certificate_file(password: str, certificate: str):
         return_error('Provide a certificate in order to connect to the remote server.')
 
     return cert_file
+
+
+AUTHENTICATION = demisto.params().get('Authentication')
+
+HOSTNAME = demisto.params().get('hostname')
+USERNAME = AUTHENTICATION.get('identifier')
+PORT = str(demisto.params().get('port')) if demisto.params().get('port', None) and len(
+    demisto.params().get('port')) > 0 else None
+
+SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.params().get('ssh_extra_params',
+                                                                                            None) else None
+SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
+                                                                                            None) else None
+DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if demisto.params().get('document_root', None) else None
+
+CERTIFICATE_FILE = create_certificate_file(AUTHENTICATION)
+
+''' UTILS '''
 
 
 def ssh_execute(command: str):
@@ -110,8 +115,6 @@ def scp_execute(file_name: str, file_path: str):
 
 
 ''' COMMANDS '''
-
-CERTIFICATE_FILE = create_certificate_file(PASSWORD, CERTIFICATE)
 
 
 def rfm_get_external_file(file_path: str):
