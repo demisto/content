@@ -145,7 +145,7 @@ def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_H
 
 
 def create_update_hostfields_request_body(host_ip: str, update_type: str,
-                                          fields: str, composite_field: str) -> ET_PHONE_HOME.Element:
+                                          field: str, value: str, fields_json: str) -> ET_PHONE_HOME.Element:
     """
     Create XML request body formatted to DEX expectations
 
@@ -155,8 +155,12 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
         IP address of the target host.
     update_type : str
         The type of update to execute.
-    fields : str
-        The property names and associated values to update the property with.
+    field : str
+        The host field to update.
+    value : str
+        The value to assign to the specified host field.
+    fields_json: str
+        Field-value pairs in valid JSON format. Useful for Forescout composite fields.
 
     Returns
     -------
@@ -169,49 +173,70 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
 
     ET_PHONE_HOME.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
     props_xml = ET_PHONE_HOME.SubElement(transaction, 'PROPERTIES')
-    prop_val_pairs = fields.split('&') if fields else []
-    for pair in prop_val_pairs:
-        prop, *value = pair.split('=')
-        prop_xml = ET_PHONE_HOME.SubElement(props_xml, 'PROPERTY', attrib={'NAME': prop})
-        if update_type != 'delete' and value:
-            list_of_vals = '='.join(value).split(':')
-            for val in list_of_vals:
+
+    # parse fields_json
+    non_composite_fields = {}
+    composite_fields = {}
+    if fields_json:
+        fields_json_dict = json.loads(fields_json)
+        for key, val in fields_json_dict.items():
+            if isinstance(val, dict):
+                composite_fields[key] = val
+            elif isinstance(val, list):
+                if len(val) >= 1 and isinstance(val[0], dict):
+                    composite_fields[key] = val
+                else:
+                    non_composite_fields[key] = val
+            else:
+                non_composite_fields[key] = val
+
+    # put non-composite fields all together
+    if field:
+        non_composite_fields[field] = argToList(value)
+
+    for key, val in non_composite_fields.items():
+        prop_xml = ET_PHONE_HOME.SubElement(props_xml, 'PROPERTY', attrib={'NAME': key})
+        if update_type != 'delete':
+            if isinstance(val, list):
+                for sub_val in val:
+                    val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
+                    val_xml.text = sub_val
+            else:
                 val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
                 val_xml.text = val
-    if composite_field:
-        composite_field_dict = json.loads(composite_field)
-        table_property_name = list(composite_field_dict.keys())[0]
-        table_property_xml = ET_PHONE_HOME.SubElement(props_xml, 'TABLE_PROPERTY',
-                                                      attrib={'NAME': table_property_name})
-        if update_type == 'update':
-            values = composite_field_dict.get(table_property_name)
-            if isinstance(values, list):
 
-                for row in values:
-                    row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
+    if composite_fields:
+        for table_prop_name, values in composite_fields.items():
+            table_property_xml = ET_PHONE_HOME.SubElement(props_xml, 'TABLE_PROPERTY',
+                                                          attrib={'NAME': table_prop_name})
+            if update_type == 'update':
+                if isinstance(values, list):
 
-                    for key, val in row.items():
-                        key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+                    for row in values:
+                        row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
 
-                        if isinstance(val, list):
-                            for value in val:
+                        for key, val in row.items():
+                            key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+
+                            if isinstance(val, list):
+                                for sub_val in val:
+                                    value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                                    value_xml.text = sub_val
+
+                            else:
                                 value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
-                                value_xml.text = value
-
+                                value_xml.text = val
+                else:
+                    row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
+                    for key, val in values.items():
+                        key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+                        if isinstance(val, list):
+                            for sub_val in val:
+                                value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                                value_xml.text = sub_val
                         else:
                             value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
                             value_xml.text = val
-            else:
-                row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
-                for key, val in values.items():
-                    key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
-                    if isinstance(val, list):
-                        for value in val:
-                            value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
-                            value_xml.text = value
-                    else:
-                        value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
-                        value_xml.text = val
 
     return root
 
@@ -726,9 +751,10 @@ def update_lists_command():
 def update_host_fields(args={}):
     host_ip = args.get('host_ip', '')
     update_type = args.get('update_type', '')
-    fields = args.get('fields', '')
-    composite_field = args.get('composite_field', '').replace('\'', '"')
-    req_body = create_update_hostfields_request_body(host_ip, update_type, fields, composite_field)
+    field = args.get('field', '')
+    value = args.get('value', '')
+    fields_json = args.get('fields_json', '')
+    req_body = create_update_hostfields_request_body(host_ip, update_type, field, value, fields_json)
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
     url_suffix = '/fsapi/niCore/Hosts'
     resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
@@ -739,18 +765,27 @@ def update_host_fields_command():
     check_dex_credentials()
     args = demisto.args()
     update_type = args.get('update_type', '')
-    fields = args.get('fields', '')
-    response_content = update_host_fields(args)
+    field = args.get('field', '')
+    host_ip = args.get('host_ip', '')
+    try:
+        fields_json_dict = json.loads(args.get('fields_json', ''))
+    except json.decoder.JSONDecodeError:
+        return_error(f'Failed to parse \'fields_json\' command argument - invalid JSON format.')
 
     # Because the API has an error and says it deletes multiple things when it only deletes one
     # have to take care of it behind the curtains
     if update_type == 'delete':
-        args['fields'] = ''
+        temp_args = {'update_type': update_type, 'host_ip': host_ip}
+        for key, val in fields_json_dict.items():
+            temp_args['fields_json'] = json.dumps({key: val})
+            update_host_fields(temp_args)
+        if field:
+            temp_args['fields_json'] = json.dumps({field: ''})
+            update_host_fields(temp_args)
+        temp_args['field'] = ''
         update_host_fields(args)  # Takes care of composite_field
-        args['composite_field'] = ''
-        for prop in fields.split('&'):
-            args['fields'] = prop
-            update_host_fields(args)
+
+    response_content = update_host_fields(args)
 
     resp_xml = ET_PHONE_HOME.fromstring(response_content)
     msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
