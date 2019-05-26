@@ -2525,7 +2525,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: Made argument descriptions clearer, and added arguments that should
-  help streamline search commands
 tests:
 - Carbon Black Enterprise Protection V2 Test
