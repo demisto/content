@@ -15,7 +15,7 @@ def set_params(mocker):
 
 
 def test_add_argument_list():
-    from PPaloAltoNetworks_PAN_OS import add_argument_list
+    from Panorama import add_argument_list
     list_argument = ["foo", "bar"]
 
     response_with_member = add_argument_list(list_argument, "test", True)
@@ -28,7 +28,7 @@ def test_add_argument_list():
 
 
 def test_add_argument():
-    from PPaloAltoNetworks_PAN_OS import add_argument
+    from Panorama import add_argument
     argument = "foo"
 
     response_with_member = add_argument(argument, "test", True)
@@ -41,7 +41,7 @@ def test_add_argument():
 
 
 def test_add_argument_yes_no():
-    from PPaloAltoNetworks_PAN_OS import add_argument_yes_no
+    from Panorama import add_argument_yes_no
     arg = 'No'
     field = 'test'
     option = True
@@ -57,14 +57,14 @@ def test_add_argument_yes_no():
 
 
 def test_add_argument_target():
-    from PPaloAltoNetworks_PAN_OS import add_argument_target
+    from Panorama import add_argument_target
     response = add_argument_target('foo', 'bar')
     expected = '<bar><devices><entry name=\"foo\"/></devices></bar>'
     assert response == expected
 
 
 def test_prettify_addresses_arr():
-    from PPaloAltoNetworks_PAN_OS import prettify_addresses_arr
+    from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
                      {'@name': 'my_name2', 'fqdn': 'b.com'}]
     response = prettify_addresses_arr(addresses_arr)
@@ -74,7 +74,7 @@ def test_prettify_addresses_arr():
 
 
 def test_prettify_address():
-    from PPaloAltoNetworks_PAN_OS import prettify_address
+    from Panorama import prettify_address
     address = {'@name': 'my_name', 'ip-netmask': '1.1.1.1', 'description': 'lala'}
     response = prettify_address(address)
     expected = {'Name': 'my_name', 'IP_Netmask': '1.1.1.1', 'Description': 'lala'}
@@ -82,7 +82,7 @@ def test_prettify_address():
 
 
 def test_prettify_address_group():
-    from PPaloAltoNetworks_PAN_OS import prettify_address_group
+    from Panorama import prettify_address_group
     address_group_static = {'@name': 'foo', 'static': {'member': 'address object'}}
     response_static = prettify_address_group(address_group_static)
     expected_address_group_static = {'Name': 'foo', 'Type': 'static', 'Addresses': 'address object'}
@@ -95,7 +95,7 @@ def test_prettify_address_group():
 
 
 def test_prettify_service():
-    from PPaloAltoNetworks_PAN_OS import prettify_service
+    from Panorama import prettify_service
     service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}}
     response = prettify_service(service)
     expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
@@ -103,7 +103,7 @@ def test_prettify_service():
 
 
 def test_prettify_service_group():
-    from PPaloAltoNetworks_PAN_OS import prettify_service_group
+    from Panorama import prettify_service_group
     service_group = {'@name': 'sg', 'members': {'member': ['service1', 'service2']}}
     response = prettify_service_group(service_group)
     expected = {'Name': 'sg', 'Services': ['service1', 'service2']}
@@ -111,7 +111,7 @@ def test_prettify_service_group():
 
 
 def test_prettify_custom_url_category():
-    from PPaloAltoNetworks_PAN_OS import prettify_custom_url_category
+    from Panorama import prettify_custom_url_category
     custom_url_category = {'@name': 'foo', 'list': {'member': ['a', 'b', 'c']}}
     response = prettify_custom_url_category(custom_url_category)
     expected = {'Name': 'foo', 'Sites': ['a', 'b', 'c']}
