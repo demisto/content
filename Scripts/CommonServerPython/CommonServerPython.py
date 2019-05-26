@@ -623,7 +623,7 @@ def formatCell(data, is_pretty=True):
     if isinstance(data, STRING_TYPES):
         return data
     elif isinstance(data, dict):
-        return '\n'.join(['{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
+        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
     else:
         return flattenCell(data, is_pretty)
 
