@@ -71,6 +71,15 @@ script:
     description: Executes a query for logs that match query parameters.
     execution: false
     name: lr-execute-query
+    outputs:
+      - contextPath: Logrhythm.Logs.Channel
+      - contextPath: Logrhythm.Logs.Computer
+      - contextPath: Logrhythm.Logs.EventData
+      - contextPath: Logrhythm.Logs.EventID
+      - contextPath: Logrhythm.Logs.Keywords
+      - contextPath: Logrhythm.Logs.Level
+      - contextPath: Logrhythm.Logs.Opcode
+      - contextPath: Logrhythm.Logs.Task
   - arguments:
     - default: false
       description: The entity name.
@@ -90,6 +99,20 @@ script:
       none is found.
     execution: false
     name: lr-get-hosts-by-entity
+    outputs:
+      - contextPath: Logrhythm.Host.entity.id
+      - contextPath: Logrhythm.Host.entity.name
+      - contextPath: Logrhythm.Host.os
+      - contextPath: Logrhythm.Host.threatLevel
+      - contextPath: Logrhythm.Host.useEventlogCredentials
+      - contextPath: Logrhythm.Host.name
+      - contextPath: Logrhythm.Host.dateUpdated
+      - contextPath: Logrhythm.Host.hostZone
+      - contextPath: Logrhythm.Host.riskLevel
+      - contextPath: Logrhythm.Host.location
+      - contextPath: Logrhythm.Host.hostStatus
+      - contextPath: Logrhythm.Host.id
+      - contextPath: Logrhythm.Host.osType
   - arguments:
     - default: false
       description: The entity ID.
@@ -235,6 +258,20 @@ script:
     description: Add a new host to an entity.
     execution: false
     name: lr-add-host
+    outputs:
+      - contextPath: Logrhythm.Host.entity.id
+      - contextPath: Logrhythm.Host.entity.name
+      - contextPath: Logrhythm.Host.os
+      - contextPath: Logrhythm.Host.threatLevel
+      - contextPath: Logrhythm.Host.useEventlogCredentials
+      - contextPath: Logrhythm.Host.name
+      - contextPath: Logrhythm.Host.dateUpdated
+      - contextPath: Logrhythm.Host.hostZone
+      - contextPath: Logrhythm.Host.riskLevel
+      - contextPath: Logrhythm.Host.location
+      - contextPath: Logrhythm.Host.hostStatus
+      - contextPath: Logrhythm.Host.id
+      - contextPath: Logrhythm.Host.osType
   - arguments:
     - default: false
       description: The unique ID of the host.
@@ -253,9 +290,23 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates an alarm status.
+    description: Updates an host status.
     execution: false
-    name: lr-update-alarm-status
+    name: lr-update-host-status
+    outputs:
+      - contextPath: Logrhythm.Host.entity.id
+      - contextPath: Logrhythm.Host.entity.name
+      - contextPath: Logrhythm.Host.os
+      - contextPath: Logrhythm.Host.threatLevel
+      - contextPath: Logrhythm.Host.useEventlogCredentials
+      - contextPath: Logrhythm.Host.name
+      - contextPath: Logrhythm.Host.dateUpdated
+      - contextPath: Logrhythm.Host.hostZone
+      - contextPath: Logrhythm.Host.riskLevel
+      - contextPath: Logrhythm.Host.location
+      - contextPath: Logrhythm.Host.hostStatus
+      - contextPath: Logrhythm.Host.id
+      - contextPath: Logrhythm.Host.osType
   isfetch: false
   runonce: false
   script: '-'
