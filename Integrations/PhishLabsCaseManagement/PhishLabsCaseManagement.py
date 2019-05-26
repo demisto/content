@@ -58,6 +58,8 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
             params=params,
             data=json.dumps(data) if data else {},
             headers=HEADERS)
+    except requests.exceptions.SSLError:
+        return return_error('Could not connect to PhishLabs IOC Feed: Could not verify certificate.')
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
         return return_error('Could not connect to PhishLabs Case API: {}'.format(str(e)))
@@ -65,22 +67,16 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
     if res.status_code < 200 or res.status_code > 300:
         status: int = res.status_code
         message: str = res.reason
-        details = ''
         try:
             error_json: dict = res.json()
             message = error_json.get('error', '')
-            details = error_json.get('message', '')
         except Exception:
             pass
         error_message: str = ('Error in API call to PhishLabs Case API, status code: {}'.format(status))
-        if status == 400:
-            return {'data': []}
         if status == 401:
             error_message = 'Could not connect to PhishLabs Case API: Wrong credentials'
         if message:
             error_message += ', reason: ' + message
-        if details:
-            error_message += ', message: ' + details
         if RAISE_EXCEPTION_ON_ERROR:
             raise Exception(error_message)
         else:
