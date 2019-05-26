@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://ioc.phishlabs.com
-  display: Server URL (e.g. https://ioc.phishlabs.com)
+  display: Server URL (e.g., https://ioc.phishlabs.com)
   name: url
   required: true
   type: 0
@@ -30,7 +30,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '10'
-  display: Fetch this number of incidents each time
+  display: Number of incidents to fetch each time
   name: fetch_limit
   required: false
   type: 0
@@ -38,7 +38,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Get live feeds of IOC data from PhishLabs
+description: Get live feeds of IOC data from PhishLabs.
 display: PhishLabs IOC
 name: PhishLabs IOC
 script:
@@ -46,14 +46,14 @@ script:
   - arguments:
     - default: false
       defaultValue: 1h
-      description: Pull the data updated within this duration of time from now, for
+      description: Duration (from now) for which to pull updated data, for
         example, "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: Limit the number of results.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -72,7 +72,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators when the rule can be
+      description: Removes the protocol part from indicators, when the rule can be
         applied.
       isArray: false
       name: remove_protocol
@@ -84,7 +84,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators when the rules can
+      description: Removes the query string part from indicators, when the rules can
         be applied.
       isArray: false
       name: remove_query
@@ -96,7 +96,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether the indiciator is a false postive
+      description: Whether the indiciator is a false postive.
       isArray: false
       name: false_positive
       predefined:
@@ -105,144 +105,144 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the global IOC feed from PhishLabs
+    description: Retrieves the global IOC feed from PhishLabs.
     execution: false
     name: phishlabs-global-feed
     outputs:
     - contextPath: URL.Data
-      description: URL address
+      description: URL address.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: Vendor reporting the malicious status
+      description: Vendor reporting the malicious status.
       type: String
     - contextPath: URL.Malicious.Description
-      description: Description of the malicious URL
+      description: Description of the malicious URL.
       type: String
     - contextPath: PhishLabs.URL.Data
-      description: URL address
+      description: URL address.
       type: String
     - contextPath: PhishLabs.URL.ID
-      description: URL PhishLabs ID
+      description: URL PhishLabs ID.
       type: String
     - contextPath: PhishLabs.URL.CreatedAt
-      description: URL creation time in PhishLabs
+      description: URL creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.URL.UpdatedAt
-      description: URL update time in PhishLabs
+      description: URL update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.URL.Attribute.Name
-      description: URL attribute name
+      description: URL attribute name.
       type: String
     - contextPath: PhishLabs.URL.Attribute.Value
-      description: URL attribute value
+      description: URL attribute value.
       type: String
     - contextPath: PhishLabs.URL.Attribute.CreatedAt
-      description: URL attribute creation time
+      description: URL attribute creation time.
       type: Date
     - contextPath: PhishLabs.URL.FalsePositive
-      description: Whether this URL is a false positive
+      description: Whether this URL is a false positive.
       type: Boolean
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: Vendor reporting the malicious status
+      description: Vendor reporting the malicious status.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: Description of the malicious domain
+      description: Description of the malicious domain.
       type: String
     - contextPath: PhishLabs.Domain.Name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: PhishLabs.Domain.ID
-      description: Domain PhishLabs ID
+      description: Domain PhishLabs ID.
       type: String
     - contextPath: PhishLabs.Domain.CreatedAt
-      description: Domain creation time in PhishLabs
+      description: Domain creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.Domain.UpdatedAt
-      description: Domain update time in PhishLabs
+      description: Domain update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.Domain.Attribute.Name
-      description: Domain attribute name
+      description: Domain attribute name.
       type: String
     - contextPath: PhishLabs.Domain.Attribute.Value
-      description: Domain attribute value
+      description: Domain attribute value.
       type: String
     - contextPath: PhishLabs.Domain.Attribute.CreatedAt
-      description: Domain attribute creation time
+      description: Domain attribute creation time.
       type: Date
     - contextPath: PhishLabs.Domain.FalsePositive
-      description: Whether this domain is a false positive
+      description: Whether this domain is a false positive.
       type: Boolean
     - contextPath: File.Name
-      description: Full Filename
+      description: Full filename.
       type: String
     - contextPath: File.MD5
-      description: MD5 Hash of the file
+      description: MD5 hash of the file.
       type: String
     - contextPath: File.Type
-      description: File type
+      description: File type.
       type: String
     - contextPath: PhishLabs.File.ID
-      description: File PhishLabs ID
+      description: File PhishLabs ID.
       type: String
     - contextPath: PhishLabs.File.Name
-      description: Full Filename
+      description: Full filename.
       type: String
     - contextPath: PhishLabs.File.MD5
-      description: MD5 Hash of the file
+      description: MD5 hash of the file.
       type: String
     - contextPath: PhishLabs.File.Type
-      description: File type
+      description: File type.
       type: String
     - contextPath: PhishLabs.File.CreatedAt
-      description: File creation time in PhishLabs
+      description: File creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.File.UpdatedAt
-      description: File update time in PhishLabs
+      description: File update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.File.Attribute.Name
-      description: File attribute name
+      description: File attribute name.
       type: String
     - contextPath: PhishLabs.File.Attribute.Value
-      description: File attribute value
+      description: File attribute value.
       type: String
     - contextPath: PhishLabs.File.Attribute.CreatedAt
-      description: File attribute creation time
+      description: File attribute creation time.
       type: Date
     - contextPath: PhishLabs.File.FalsePositive
-      description: Whether this file is a false positive
+      description: Whether this file is a false positive.
       type: Boolean
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
   - arguments:
     - default: true
-      description: PhishLabs incident reference ID, for example, "INC123456"
+      description: PhishLabs incident reference ID, for example, "INC123456".
       isArray: false
       name: incident_id
       required: true
       secret: false
     - default: false
       defaultValue: 1h
-      description: Pull the data updated within this duration of time from now, for
+      description: Duration (from now) for which to pull updated data, for
         example, "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: Limit the number of results.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -273,7 +273,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators when the rule can be
+      description: Removes the protocol part from indicators, when the rule can be
         applied.
       isArray: false
       name: remove_protocol
@@ -285,7 +285,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators when the rules can
+      description: Removes the query string part from indicators, when the rules can
         be applied.
       isArray: false
       name: remove_query
@@ -295,157 +295,156 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets indicators from a speicifed PhishLabs incident. Incidents can
-      be fetched to Demisto by enabling fetching incidents.
+    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch incidents to Demisto, enable fetching incidents.
     execution: false
     name: phishlabs-get-incident-indicators
     outputs:
     - contextPath: URL.Data
-      description: URL address
+      description: URL address.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: Vendor reporting the malicious status
+      description: Vendor reporting the malicious status.
       type: String
     - contextPath: URL.Malicious.Description
-      description: Description of the malicious URL
+      description: Description of the malicious URL.
       type: String
     - contextPath: PhishLabs.URL.Data
-      description: URL address
+      description: URL address.
       type: String
     - contextPath: PhishLabs.URL.CreatedAt
-      description: URL creation time in PhishLabs
+      description: URL creation time, in PhishLabs
       type: Date
     - contextPath: PhishLabs.URL.UpdatedAt
-      description: URL update time in PhishLabs
+      description: URL update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.URL.Attribute.Name
-      description: URL attribute name
+      description: URL attribute name.
       type: String
     - contextPath: PhishLabs.URL.Attribute.Value
-      description: URL attribute value
+      description: URL attribute value.
       type: String
     - contextPath: PhishLabs.URL.Attribute.CreatedAt
-      description: URL attribute creation time
+      description: URL attribute creation time.
       type: Date
     - contextPath: PhishLabs.URL.FalsePositive
-      description: Whether this URL is a false positive
+      description: Whether this URL is a false positive.
       type: Boolean
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: Vendor reporting the malicious status
+      description: Vendor reporting the malicious status.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: Description of the malicious domain
+      description: Description of the malicious domain.
       type: String
     - contextPath: PhishLabs.Domain.Name
       description: Domain name
       type: String
     - contextPath: PhishLabs.Domain.CreatedAt
-      description: Domain creation time in PhishLabs
+      description: Domain creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.Domain.UpdatedAt
-      description: Domain update time in PhishLabs
+      description: Domain update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.Domain.Attribute.Name
-      description: Domain attribute name
+      description: Domain attribute name.
       type: String
     - contextPath: PhishLabs.Domain.Attribute.Value
-      description: Domain attribute value
+      description: Domain attribute value.
       type: String
     - contextPath: PhishLabs.Domain.Attribute.CreatedAt
-      description: Domain attribute creation time
+      description: Domain attribute creation time.
       type: Date
     - contextPath: PhishLabs.Domain.FalsePositive
-      description: Whether this domain is a false positive
+      description: Whether this domain is a false positive.
       type: Boolean
     - contextPath: Email.To
-      description: Recipient of the email
+      description: Recipient of the email.
       type: String
     - contextPath: Email.From
-      description: Sender of the email
+      description: Sender of the email.
       type: String
     - contextPath: Email.Body
-      description: Body of the email
+      description: Body of the email.
       type: String
     - contextPath: Email.Subject
-      description: Subject of the email
+      description: Subject of the email.
       type: String
     - contextPath: PhishLabs.Email.To
-      description: Recipient of the email
+      description: Recipient of the email.
       type: String
     - contextPath: PhishLabs.Email.From
-      description: Sender of the email
+      description: Sender of the email.
       type: String
     - contextPath: PhishLabs.Email.Body
-      description: Body of the email
+      description: Body of the email.
       type: String
     - contextPath: PhishLabs.Email.Subject
-      description: Subject of the email
+      description: Subject of the email.
       type: String
     - contextPath: PhishLabs.Email.CreatedAt
-      description: Email creation time in PhishLabs
+      description: Email creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.Email.UpdatedAt
-      description: Email update time in PhishLabs
+      description: Email update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.Email.Attribute.Name
-      description: Email attribute name
+      description: Email attribute name.
       type: String
     - contextPath: PhishLabs.Email.Attribute.Value
-      description: Email attribute value
+      description: Email attribute value.
       type: String
     - contextPath: PhishLabs.Email.Attribute.CreatedAt
-      description: Email attribute creation time
+      description: Email attribute creation time.
       type: Date
     - contextPath: File.Name
-      description: Full Filename
+      description: Full filename.
       type: String
     - contextPath: File.MD5
-      description: MD5 Hash of the file
+      description: MD5 hash of the file.
       type: String
     - contextPath: File.Type
-      description: File type
+      description: File type.
       type: String
     - contextPath: PhishLabs.File.Name
-      description: Full Filename
+      description: Full filename.
       type: String
     - contextPath: PhishLabs.File.MD5
-      description: MD5 Hash of the file
+      description: MD5 hash of the file.
       type: String
     - contextPath: PhishLabs.File.Type
-      description: File type
+      description: File type.
       type: String
     - contextPath: PhishLabs.File.CreatedAt
-      description: File creation time in PhishLabs
+      description: File creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.File.UpdatedAt
-      description: File update time in PhishLabs
+      description: File update time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.File.Attribute.Name
-      description: File attribute name
+      description: File attribute name.
       type: String
     - contextPath: PhishLabs.File.Attribute.Value
-      description: File attribute value
+      description: File attribute value.
       type: String
     - contextPath: PhishLabs.File.Attribute.CreatedAt
-      description: File attribute creation time
+      description: File attribute creation time.
       type: Date
     - contextPath: PhishLabs.File.FalsePositive
-      description: Whether this file is a false positive
+      description: Whether this file is a false positive.
       type: Boolean
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
