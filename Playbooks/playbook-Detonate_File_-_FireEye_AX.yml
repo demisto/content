@@ -1,0 +1,471 @@
+id: Detonate File - FireEye AX
+version: -1
+name: Detonate File - FireEye AX
+fromversion: 4.0.0
+description: Detonate one or more files using the FireEye AX integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data. The detonation supports the following file types - PE32, EXE, DLL,
+  JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR,
+  MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1,
+  VBS, WSF, JSE, VBE, CHM
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 09a1d3ca-6465-42dc-8a28-4a1d382e76ff
+    type: start
+    task:
+      id: 09a1d3ca-6465-42dc-8a28-4a1d382e76ff
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 6bee82b2-c6ef-4bc4-8b43-dfa80bacd1cd
+    type: condition
+    task:
+      id: 6bee82b2-c6ef-4bc4-8b43-dfa80bacd1cd
+      version: -1
+      name: Is FireEye AX enabled
+      description: Verify that there is a valid instance of FireEye AX enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Fireeye
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: c7debc9a-f9dd-427b-898a-be6814407698
+    type: title
+    task:
+      id: c7debc9a-f9dd-427b-898a-be6814407698
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 2dbe8904-3a0e-421d-8dd6-28d64963f65d
+    type: regular
+    task:
+      id: 2dbe8904-3a0e-421d-8dd6-28d64963f65d
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: b08d6749-94f5-4d7d-8be8-f1a1ec7874aa
+    type: regular
+    task:
+      id: b08d6749-94f5-4d7d-8be8-f1a1ec7874aa
+      version: -1
+      name: FireEye AX Upload Sample
+      description: Submits a sample to FireEye AX
+      script: fireeye|||fe-submit
+      type: regular
+      iscommand: true
+      brand: fireeye
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      analysistype:
+        simple: "2"
+      application:
+        simple: "0"
+      force:
+        simple: "false"
+      prefetch:
+        simple: "1"
+      priority:
+        simple: "0"
+      profiles:
+        simple: ' win7-sp1m'
+      timeout:
+        simple: "300"
+      uploadFile:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 4f8fafd7-ca9f-47fd-8909-5e5f8a475eb9
+    type: condition
+    task:
+      id: 4f8fafd7-ca9f-47fd-8909-5e5f8a475eb9
+      version: -1
+      name: Is there a file to detonate?
+      description: Asserts there's a file to detonate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: e870c12f-520e-4a84-8e4c-6eb304a0feeb
+    type: condition
+    task:
+      id: e870c12f-520e-4a84-8e4c-6eb304a0feeb
+      version: -1
+      name: Is the file type supported?
+      description: Asserts the file type is supported
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+            iscontext: true
+      - - operator: notEndWith
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: eml
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 75d77278-0907-4f26-87dc-ad51c40cb28c
+    type: playbook
+    task:
+      id: 75d77278-0907-4f26-87dc-ad51c40cb28c
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: FireEyeAX
+          accessor: Submissions.Key
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: submission_Key
+      PollingCommandName:
+        simple: fe-submit-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: FireEyeAX.Submissions(val.Status != 'Done').Key
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 803f374f-daac-43d6-8483-85b6fbd56f77
+    type: regular
+    task:
+      id: 803f374f-daac-43d6-8483-85b6fbd56f77
+      version: -1
+      name: AX-result
+      description: Retrieve result data upon a file. NOTE - This command returns a
+        file
+      script: fireeye|||fe-submit-result
+      type: regular
+      iscommand: true
+      brand: fireeye
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      info_level: {}
+      submission_Key:
+        simple: ${FireEyeAX.Submissions.Key}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_6_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 740,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate.
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "30"
+  required: true
+  description: How much time to wait before a timeout occurs  (minutes)
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+tests:
+  - Detonate File - FireEye AX - Test
