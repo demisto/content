@@ -68,6 +68,7 @@ script:
     import random
     import string
     FQDN = demisto.params().get('fqdn')
+    SERVER = None
 
     # Following methods raise exceptions so no need to check for return codes
     # But we do need to catch them
