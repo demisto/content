@@ -13,12 +13,14 @@ from datetime import datetime, timedelta
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 ''' GLOBALS/PARAMS '''
 
 TOKEN = demisto.params().get('token')
 BASE_URL = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
     else demisto.params()['url']
 
+INSECURE = demisto.params().get('insecure')
 CLUSTER_ID = demisto.params().get('cluster-id')
 
 # Headers to be sent in requests
@@ -26,8 +28,8 @@ HEADERS = {
     'Authorization': 'Bearer ' + TOKEN
 }
 
-HOSTS_HEADERS = ["id", "name", "entity", "os", "hostStatus", "location", "riskLevel", "threatLevel", "dateUpdated",
-                 "hostZone"]
+HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
+                 "ThreatLevelComments", "DateUpdated", "HostZone"]
 LOGS_HEASERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
 
 ''' HELPER FUNCTIONS '''
@@ -72,7 +74,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
             method,
             BASE_URL + '/' + url_suffix,
             headers=headers,
-            verify=False,
+            verify=INSECURE,
             data=data
         )
     except Exception as e:
@@ -101,8 +103,8 @@ def update_hosts_keys(hosts):
         tmp_host = {
             'EntityId': host.get('entity').get('id'),
             'EntityName': host.get('entity').get('name'),
-            'OS': host.get('entity').get('os'),
-            'ThreatLevel': host.get('ThreatLevel'),
+            'OS': host.get('os'),
+            'ThreatLevel': host.get('threatLevel'),
             'UseEventlogCredentials': host.get('useEventlogCredentials'),
             'Name': host.get('name'),
             'DateUpdated': host.get('dateUpdated'),
@@ -110,6 +112,7 @@ def update_hosts_keys(hosts):
             'RiskLevel': host.get('riskLevel'),
             'Location': host.get('location'),
             'Status': host.get('hostStatus'),
+            'ThreatLevelComments': host.get('threatLevelComments'),
             'ID': host.get('id'),
             'OSType': host.get('osType')
         }
@@ -146,7 +149,8 @@ def add_host(data_args):
     }
 
     res = http_request('POST', 'lr-admin-api/hosts/', json.dumps(data))
-    context = createContext(update_hosts_keys([res]), removeNull=True)
+    res = fix_hosts_response([res])
+    context = createContext(update_hosts_keys(res), removeNull=True)
     outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
     return_outputs(readable_output=data_args.get('name') + " added successfully to " + data_args.get('entity-name'),
                    outputs=outputs, raw_response=res)
@@ -155,7 +159,8 @@ def add_host(data_args):
 def get_hosts(data_args):
     res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
     res = fix_hosts_response(res)
-    context = createContext(update_hosts_keys(res), removeNull=True)
+    res = update_hosts_keys(res)
+    context = createContext(res, removeNull=True)
     human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
     outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
@@ -248,19 +253,27 @@ def execute_query(data_args):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-    elif demisto.command() == 'lr-add-host':
-        add_host(demisto.args())
-    elif demisto.command() == 'lr-get-hosts-by-entity':
-        get_hosts(demisto.args())
-    elif demisto.command() == 'lr-execute-query':
-        execute_query(demisto.args())
-    elif demisto.command() == 'lr-update-host-status':
-        change_status(demisto.args())
-except Exception as e:
-    raise
+def main():
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+        elif demisto.command() == 'lr-add-host':
+            add_host(demisto.args())
+        elif demisto.command() == 'lr-get-hosts-by-entity':
+            get_hosts(demisto.args())
+        elif demisto.command() == 'lr-execute-query':
+            execute_query(demisto.args())
+        elif demisto.command() == 'lr-update-host-status':
+            change_status(demisto.args())
+    except Exception as e:
+        raise
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
