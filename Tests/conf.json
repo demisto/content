@@ -972,9 +972,7 @@
 
         },
         {
-            "playbookID": "C2SEC-Domain Scan",
-            "integrations": "C2sec"
-
+            "playbookID": "C2SEC-Domain Scan"
         },
         {
             "playbookID": "Phishing test - attachment",
