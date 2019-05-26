@@ -202,14 +202,14 @@ def execute_query(dataArgs):
             root = ET.fromstring(message)
 
             log_item = {
-                "EventID": str(root.find(xml_ns + 'EventID').text),
-                "Level": str(root.find(xml_ns + 'Level').text),
-                "Task": str(root.find(xml_ns + 'Task').text),
-                "Opcode": str(root.find(xml_ns + 'Opcode').text),
-                "Keywords": str(root.find(xml_ns + 'Keywords').text),
-                "Channel": str(root.find(xml_ns + 'Channel').text),
-                "Computer": str(root.find(xml_ns + 'Computer').text),
-                "EventData": str(root.find(xml_ns + 'EventData').text).replace('\\r\\n', '\n').replace('\\t', '\t')
+                "EventID": str(root.find(xml_ns + 'EventID').text),  # type: ignore
+                "Level": str(root.find(xml_ns + 'Level').text),  # type: ignore
+                "Task": str(root.find(xml_ns + 'Task').text),  # type: ignore
+                "Opcode": str(root.find(xml_ns + 'Opcode').text),  # type: ignore
+                "Keywords": str(root.find(xml_ns + 'Keywords').text),  # type: ignore
+                "Channel": str(root.find(xml_ns + 'Channel').text),  # type: ignore
+                "Computer": str(root.find(xml_ns + 'Computer').text),  # type: ignore
+                "EventData": str(root.find(xml_ns + 'EventData').text).replace('\\r\\n', '\n').replace('\\t', '\t')  # type: ignore
             }
             logs_response.append(log_item)
         except Exception:
