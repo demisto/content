@@ -176,7 +176,7 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
 
     # parse fields_json
     non_composite_fields = {}
-    composite_fields = {}
+    composite_fields: Dict[Any, Any] = {}
     if fields_json:
         fields_json_dict = json.loads(fields_json)
         for key, val in fields_json_dict.items():
