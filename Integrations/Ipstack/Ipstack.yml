@@ -26,31 +26,31 @@ script:
     - name: ip
       required: true
       default: true
-      description: ip to query
+      description: IP address to query.
     outputs:
     - contextPath: IP.Address
-      description: ip address
+      description: IP address.
       type: string
     - contextPath: IP.Geo.Location
-      description: lat/lon of the ip
+      description: Latitude and longitude of the IP address.
       type: string
     - contextPath: IP.Geo.Country
-      description: country of origin
+      description: Country of origin of the IP address.
       type: string
     - contextPath: Ipstack.IP.address
-      description: ip address
+      description: IP address.
       type: string
     - contextPath: Ipstack.IP.type
-      description: ipv4\ipv6
+      description: IP type (ipv4 or ipv6).
       type: string
     - contextPath: Ipstack.IP.continent_name
-      description: Continent of the IP
+      description: Continent of the IP address.
       type: string
     - contextPath: Ipstack.IP.latitude
-      description: Latitude
+      description: Latitude of the IP address.
       type: string
     - contextPath: Ipstack.IP.longitude
-      description: Longitude
+      description: Longitude of the IP address.
       type: string
     description: query ip in ipstack
   runonce: false
