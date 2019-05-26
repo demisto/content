@@ -39,7 +39,7 @@ script:
     - default: false
       description: Filter hosts by those selected by policies or policy sub-rules.
         Policies and/or rules should be specified by their IDs. To find policy and
-        rule IDs by which you may filter, try executing the 'forescout-get-policies'
+        rule IDs by which you can filter, run the 'forescout-get-policies'
         command. If multiple policy and/or rule IDs are entered, only hosts that are
         selected by all of the policies and/or rules specifed will be returned. Multiple
         policy or rule IDs should be separated by a comma.
@@ -95,10 +95,9 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: name
-      description: Each host field has three searchable parts, the 'name', 'label'
+      description: Each host field has three searchable parts, the 'name', 'label',
         and 'description'. By default only the 'name' will be searched. If you want
-        to expand the search to include the description as well, for example, you
-        would enter 'name,description' for this argument.
+        to expand the search to include the description, you would enter 'name,description' for this argument.
       isArray: true
       name: search_in
       predefined:
