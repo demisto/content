@@ -210,7 +210,7 @@ def execute_query(dataArgs):
                 "Channel": str(root.find(xml_ns + 'Channel').text),  # type: ignore
                 "Computer": str(root.find(xml_ns + 'Computer').text),  # type: ignore
                 "EventData": str(root.find(xml_ns + 'EventData').text)  # type: ignore
-                    .replace('\\r\\n', '\n').replace('\\t', '\t')
+                             .replace('\\r\\n', '\n').replace('\\t', '\t')
             }
             logs_response.append(log_item)
         except Exception:
