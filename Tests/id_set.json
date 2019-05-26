@@ -7076,6 +7076,21 @@
                     "Detonate File - HybridAnalysis - Test"
                 ]
             }
+        }, 
+        {
+            "C2SEC-Domain Scan": {
+                "name": "C2SEC-Domain Scan", 
+                "fromversion": "-1", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "command_to_integration": {
+                    "irisk-query-workitem": "", 
+                    "irisk-rescan-company": "", 
+                    "irisk-query-component": "", 
+                    "irisk-query-issues": "C2sec"
+                }
+            }
         }
     ], 
     "integrations": [
@@ -11466,6 +11481,18 @@
                     "MISP V2 Test"
                 ]
             }
+        }, 
+        {
+            "C2sec": {
+                "name": "C2sec", 
+                "commands": [
+                    "irisk-add-company", 
+                    "irisk-query-workitem", 
+                    "irisk-rescan-company", 
+                    "irisk-query-issues", 
+                    "irisk-query-component"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15304,6 +15331,21 @@
                 ], 
                 "command_to_integration": {
                     "intsights-mssp-get-sub-accounts": ""
+                }
+            }
+        }, 
+        {
+            "C2sec-Test": {
+                "name": "C2sec-Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "irisk-add-company": "", 
+                    "irisk-query-workitem": "", 
+                    "irisk-rescan-company": "", 
+                    "irisk-query-component": "", 
+                    "irisk-query-issues": ""
                 }
             }
         }

@@ -1,7 +1,10 @@
 id: C2SEC-Domain Scan
 version: -1
 name: C2SEC-Domain Scan
+description: |
+  Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals.
 starttaskid: "0"
+fromversion: "-1"
 tasks:
   "0":
     id: "0"
@@ -71,7 +74,6 @@ tasks:
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
       playbookName: GenericPolling
-      islocked: true
       type: playbook
       iscommand: false
       brand: ""
@@ -114,7 +116,6 @@ tasks:
       version: -1
       name: Query Issues
       script: C2sec|||irisk-query-issues
-      islocked: true
       type: regular
       iscommand: true
       brand: C2sec
@@ -144,6 +145,7 @@ tasks:
       id: 8bf5f5d7-6b60-45a5-8b4a-7261c0e801db
       version: -1
       name: Leaked Credentials Reported?
+      description: Leaked Credentials Reported?
       type: condition
       iscommand: false
       brand: ""
@@ -181,6 +183,7 @@ tasks:
       id: d34744c3-0045-4012-8590-d9d942858522
       version: -1
       name: Get Leaked Credentials Report
+      description: Get Leaked Credentials Report
       script: '|||irisk-query-component'
       type: regular
       iscommand: true
@@ -211,6 +214,7 @@ tasks:
       id: be0b16c8-08b0-40a2-8214-afde40c46430
       version: -1
       name: Application Vulnerabilities Reported?
+      description: Application Vulnerabilities Reported?
       type: condition
       iscommand: false
       brand: ""
@@ -248,6 +252,7 @@ tasks:
       id: 3d43a51e-b63d-4c42-8522-94b3c1147913
       version: -1
       name: Get Application Vulnerabilities Report
+      description: Get Application Vulnerabilities Report
       script: '|||irisk-query-component'
       type: regular
       iscommand: true
@@ -278,6 +283,7 @@ tasks:
       id: 292b4091-037a-4679-85a4-e939ee175af8
       version: -1
       name: Get Network Services Exposed Report
+      description: Get Network Services Exposed Report
       script: '|||irisk-query-component'
       type: regular
       iscommand: true
@@ -308,6 +314,7 @@ tasks:
       id: f5576732-6f4a-49ee-80ec-33bc31372c8b
       version: -1
       name: Done
+      description: playbook end
       type: title
       iscommand: false
       brand: ""
@@ -329,6 +336,7 @@ tasks:
       id: d4e50d62-c6d9-4825-8551-068ac8741c26
       version: -1
       name: Is C2sec enabled?
+      description: checking if the integration is enabled
       type: condition
       iscommand: false
       brand: ""
@@ -382,6 +390,7 @@ tasks:
       id: 266f91a7-b73f-4ffd-8718-039fd2e8d20f
       version: -1
       name: Query Scan Result
+      description: Pulling latest Scan Results from C2sec
       script: '|||irisk-query-workitem'
       type: regular
       iscommand: true
