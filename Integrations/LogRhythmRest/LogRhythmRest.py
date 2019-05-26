@@ -95,6 +95,28 @@ def get_host_by_id(host_id):
     return fix_hosts_response([res])
 
 
+def update_hosts_keys(hosts):
+    new_hosts = []
+    for host in hosts:
+        tmp_host = {
+            'EntityId': host.get('entity').get('id'),
+            'EntityName': host.get('entity').get('name'),
+            'OS': host.get('entity').get('os'),
+            'ThreatLevel': host.get('ThreatLevel'),
+            'UseEventlogCredentials': host.get('useEventlogCredentials'),
+            'Name': host.get('name'),
+            'DateUpdated': host.get('dateUpdated'),
+            'HostZone': host.get('hostZone'),
+            'RiskLevel': host.get('riskLevel'),
+            'Location': host.get('location'),
+            'Status': host.get('hostStatus'),
+            'ID': host.get('id'),
+            'OSType': host.get('osType')
+        }
+        new_hosts.append(tmp_host)
+    return new_hosts
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -103,59 +125,59 @@ def test_module():
     demisto.results('ok')
 
 
-def add_host(dataArgs):
+def add_host(data_args):
     data = {
         "id": -1,
         "entity": {
-            "id": int(dataArgs.get('entity-id')),
-            "name": dataArgs.get('entity-name')
+            "id": int(data_args.get('entity-id')),
+            "name": data_args.get('entity-name')
         },
-        "name": dataArgs.get('name'),
-        "shortDesc": dataArgs.get('short-description'),
-        "longDesc": dataArgs.get('long-description'),
-        "riskLevel": dataArgs.get('risk-level'),
-        "threatLevel": dataArgs.get('threat-level'),
-        "threatLevelComments": dataArgs.get('threat-level-comments'),
-        "recordStatusName": dataArgs.get('host-status'),
-        "hostZone": dataArgs.get('host-zone'),
-        "os": dataArgs.get('os'),
-        "useEventlogCredentials": bool(dataArgs.get('use-eventlog-credentials')),
-        "osType": dataArgs.get('os-type')
+        "name": data_args.get('name'),
+        "shortDesc": data_args.get('short-description'),
+        "longDesc": data_args.get('long-description'),
+        "riskLevel": data_args.get('risk-level'),
+        "threatLevel": data_args.get('threat-level'),
+        "threatLevelComments": data_args.get('threat-level-comments'),
+        "recordStatusName": data_args.get('host-status'),
+        "hostZone": data_args.get('host-zone'),
+        "os": data_args.get('os'),
+        "useEventlogCredentials": bool(data_args.get('use-eventlog-credentials')),
+        "osType": data_args.get('os-type')
     }
 
     res = http_request('POST', 'lr-admin-api/hosts/', json.dumps(data))
-    context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.Host(val.id === obj.id)': context}
-    return_outputs(readable_output=dataArgs.get('name') + " added successfully to " + dataArgs.get('entity-name'),
+    context = createContext(update_hosts_keys([res]), removeNull=True)
+    outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
+    return_outputs(readable_output=data_args.get('name') + " added successfully to " + data_args.get('entity-name'),
                    outputs=outputs, raw_response=res)
 
 
-def get_hosts(dataArgs):
-    res = http_request('GET', 'lr-admin-api/hosts?entity=' + dataArgs['entity-name'] + '&count=' + dataArgs['count'])
+def get_hosts(data_args):
+    res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
     res = fix_hosts_response(res)
-    context = createContext(res, removeNull=True)
-    human_readable = tableToMarkdown('Hosts for ' + dataArgs.get('entity-name'), res, HOSTS_HEADERS)
-    outputs = {'Logrhythm.Host(val.Name && val.id === obj.id)': context}
+    context = createContext(update_hosts_keys(res), removeNull=True)
+    human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
+    outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
-def change_status(dataArgs):
+def change_status(data_args):
     data = [{
-        "hostId": int(dataArgs.get('host-id')),
-        "status": dataArgs.get('status')
+        "hostId": int(data_args.get('host-id')),
+        "status": data_args.get('status')
     }]
 
     res = http_request('PUT', 'lr-admin-api/hosts/status', json.dumps(data))
 
-    host_info = get_host_by_id(dataArgs.get('host-id'))
-    context = createContext(host_info, removeNull=True)
-    outputs = {'Logrhythm.Host(val.id === obj.id)': context}
-    return_outputs(readable_output='Status updated to ' + dataArgs.get('status'), outputs=outputs, raw_response=res)
+    host_info = get_host_by_id(data_args.get('host-id'))
+    context = createContext(update_hosts_keys(host_info), removeNull=True)
+    outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
+    return_outputs(readable_output='Status updated to ' + data_args.get('status'), outputs=outputs, raw_response=res)
 
 
-def execute_query(dataArgs):
+def execute_query(data_args):
     req_id = ''.join(random.choice(string.ascii_letters) for x in range(8))
-    start, end = get_time_frame(dataArgs.get('time-frame'), dataArgs.get('start-date'), dataArgs.get('end-date'))
+    start, end = get_time_frame(data_args.get('time-frame'), data_args.get('start-date'), data_args.get('end-date'))
     delta = end - start
     dates = []
 
@@ -166,11 +188,11 @@ def execute_query(dataArgs):
         "indices": dates,
         "searchType": "DFS_QUERY_THEN_FETCH",
         "source": {
-            "size": dataArgs.get('page-size'),
+            "size": data_args.get('page-size'),
             "query": {
                 "query_string": {
                     "default_field": "logMessage",
-                    "query": dataArgs.get('keyword')
+                    "query": data_args.get('keyword')
                 }
             },
             "stored_fields": "logMessage",
