@@ -13,7 +13,7 @@ tasks:
       name: ""
       description: ""
       iscommand: false
-      brand: ""PhishLabs Case Management Test
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
