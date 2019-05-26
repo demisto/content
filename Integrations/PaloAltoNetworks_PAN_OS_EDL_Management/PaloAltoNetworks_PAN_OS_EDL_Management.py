@@ -486,34 +486,34 @@ def main():
             ssh_execute('echo 1')
             demisto.results('ok')
 
-        elif demisto.command() == 'rfm-get-external-file':
+        elif demisto.command() == 'pan-os-edl-get-external-file':
             rfm_get_external_file_command()
 
-        elif demisto.command() == 'rfm-search-external-file':
+        elif demisto.command() == 'pan-os-edl-search-external-file':
             rfm_search_external_file_command()
 
-        elif demisto.command() == 'rfm-update':
+        elif demisto.command() == 'pan-os-edl-update':
             rfm_update()
 
-        elif demisto.command() == 'rfm-update-from-external-file':
+        elif demisto.command() == 'pan-os-edl-update-from-external-file':
             rfm_update_from_external_file_command()
 
-        elif demisto.command() == 'rfm-delete-external-file':
+        elif demisto.command() == 'pan-os-edl-delete-external-file':
             rfm_delete_external_file_command()
 
-        elif demisto.command() == 'rfm-list-internal-lists':
+        elif demisto.command() == 'pan-os-edl-list-internal-lists':
             rfm_list_internal_lists_command()
 
-        elif demisto.command() == 'rfm-search-internal-list':
+        elif demisto.command() == 'pan-os-edl-search-internal-list':
             rfm_search_internal_list_command()
 
-        elif demisto.command() == 'rfm-print-internal-list':
+        elif demisto.command() == 'pan-os-edl-print-internal-list':
             rfm_print_internal_list_command()
 
-        elif demisto.command() == 'rfm-dump-internal-list':
+        elif demisto.command() == 'pan-os-edl-dump-internal-list':
             rfm_dump_internal_list_command()
 
-        elif demisto.command() == 'rfm-compare':
+        elif demisto.command() == 'pan-os-edl-compare':
             rfm_compare_command()
 
         else:
