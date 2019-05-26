@@ -11,6 +11,11 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "PhishLabs Case Management",
+            "playbookID": "PhishLabs Case Management Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
         },
