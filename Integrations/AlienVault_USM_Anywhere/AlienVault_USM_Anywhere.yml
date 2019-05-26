@@ -164,7 +164,7 @@ script:
       description: Rule attack ID.
       type: String
     - contextPath: AlienVault.Alarm.RuleStrategy
-      description: Rule Strategy.
+      description: Rule strategy.
       type: String
     - contextPath: AlienVault.Alarm.RuleIntent
       description: Rule intent.
@@ -218,10 +218,10 @@ script:
       description: Source organization.
       type: String
     - contextPath: AlienVault.Alarm.Source.Country
-      description: Source Country.
+      description: Source country.
       type: String
     - contextPath: AlienVault.Alarm.Destination
-      description: Alarm Destination Object.
+      description: Alarm destination object.
       type: Unknown
     - contextPath: AlienVault.Alarm.Destination.IPAddress
       description: Alarm destination IP address.
@@ -336,7 +336,7 @@ script:
       description: Time the even was received.
       type: String
     - contextPath: AlienVault.Event.AccessControlOutcome
-      description: Access Control Outcome.
+      description: Access control outcome.
       type: String
     - contextPath: AlienVault.Event.Suppressed
       description: Whether the even is suppressed.
