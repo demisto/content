@@ -1,0 +1,685 @@
+commonfields:
+  id: Symantec Endpoint Protection
+  version: -1
+name: Symantec Endpoint Protection
+display: Symantec Endpoint Protection 14 (Deprecated)
+category: Endpoint
+image: data:image/png;base64,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
+description: Query the Symantec Endpoint Protection Manager using the official REST API- DEPRECATED. Please use Symantec Endpoint Protection V2 integration instead.
+detaileddescription: Integration with Symantec Endpoint Protection Manager using the
+  sepm REST API - DEPRECATED. Please use Symantec Endpoint Protection V2 integration instead.
+configuration:
+- display: Server (e.g. https://1.2.3.4:8446)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Authentication
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: SEPM domain for the user
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use proxy system settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |-
+    // Default timeout and interval parameters for polling the response
+    CLIENT_COMMAND_PARAMETERS = {
+        'sep-update-content'    : {'timeout': 120, 'interval': 10},
+        'sep-quarantine'        : {'timeout': 120, 'interval': 10},
+        // Don't poll for scan response because it takes too long. The automation will do that
+        'sep-scan'              : {'timeout': 1, 'interval': 1}
+    }
+
+    ENDPOINTS_INFO_DEFAULT_COLUMNS = [
+        'computerName',
+        'ipAddresses',
+        'operatingSystem',
+        'osBitness',
+        'cidsDefsetVersion',
+        'lastScanTime',
+        'description',
+        'quarantineDesc',
+        'domainOrWorkgroup',
+        'macAddresses',
+        'group',
+        'dhcpServer',
+        'biosVersion',
+        'virtualizationPlatform',
+        'computerTimeStamp',
+        'creationTime',
+        'agentTimestamp'
+    ]
+
+    GROUPS_INFO_DEFAULT_COLUMNS = [
+        'fullPathName',
+        'numberOfPhysicalComputers',
+        'numberOfRegisteredUsers',
+        'policySerialNumber',
+        'policyDate',
+        'description',
+        'created'
+    ]
+
+    var fixUrl = function(base) {
+        return ((base[base.length - 1] != '/') ? (base + '/') : base);
+    }
+
+    var buildArgs = function(args) {
+        sArgs = Object.keys(args).map(function(key) {
+            return [key, args[key]].map(encodeURIComponent).join("=");
+        }).join("&");
+        if (sArgs) {
+            return '?' + sArgs;
+        } else {
+            return '';
+        }
+    }
+
+    var buildClientXml = function(data) {
+        return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cli="http://client.webservice.sepm.symantec.com/"> \
+                <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data);
+    }
+
+    var buildCommandXml = function(data) {
+        return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://command.client.webservice.sepm.symantec.com/"> \
+                <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data);
+    }
+
+    var parseResponse = function(resp) {
+        if (resp.StatusCode === 200) {
+            try {
+                return JSON.parse(resp.Body);
+            } catch (e) {
+                return resp.Body;
+            }
+        } else {
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
+        }
+    }
+
+    var doAuth = function() {
+        url = fixUrl(params.server) + 'sepm/api/v1/identity/authenticate';
+        body = {
+            username: (params.authentication ? params.authentication.identifier : ''),
+            password: (params.authentication ? params.authentication.password : ''),
+            domain: (params.domain ? params.domain : '')
+        };
+        res = http(
+            url,
+            {
+                Method: 'POST',
+                Headers: {"Content-Type": ["application/json"]},
+                Body: JSON.stringify(body),
+
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        return res;
+    };
+
+    var doGet = function(token, raw, suffix) {
+        url = fixUrl(params.server) + suffix + buildArgs(args);
+        res = http(
+            url,
+            {
+                Method: 'GET',
+                Headers: {'Authorization': ['Bearer ' + token]}
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (raw) {
+            return res;
+        } else {
+            return parseResponse(res);
+        }
+    }
+
+    var doPost = function(token, is_xml, suffix, body) {
+        url = fixUrl(params.server) + suffix;
+        res = http(
+            url,
+            {
+                Method: 'POST',
+                Headers: {'Authorization': ['Bearer ' + token]},
+                Body: body
+
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        res = parseResponse(res);
+        if (is_xml) {
+            res = JSON.parse(x2j(res));
+        }
+
+        return res;
+    }
+
+    var systemInfo = function(token) {
+        versionJson = doGet(token, false, 'sepm/api/v1/version');
+        avdefJson = doGet(token, false, 'sepm/api/v1/content/avdef/latest');
+
+        var systemInfoJson = {
+            'version': versionJson,
+            'avdef': avdefJson
+        };
+
+        var md = '## System Information\n';
+        md += '### Version\n';
+        md += objToMd(versionJson);
+        md += '### AV Definitions\n';
+        md += objToMd(avdefJson);
+
+        return {
+            Type: entryTypes.note, Contents: systemInfoJson, ContentsFormat: formats.json, HumanReadable: md,
+            EntryContext: {'SEPM.ServerAVDefVersion': systemInfoJson.avdef.publishedBySymantec}
+        };
+    }
+
+    var clientContent = function(token) {
+        clientContentJson = doGet(token, false, 'sepm/api/v1/stats/client/content');
+
+        var lastUpdatedDate = (new Date(parseInt(clientContentJson.lastUpdated))).toString();
+        var md = '## Client Content, last updated on {0}\n'.format(lastUpdatedDate);
+        md += tblToMd('Client Content Versions', clientContentJson.clientDefStatusList);
+
+        return {
+            Type: entryTypes.note, Contents: clientContentJson, ContentsFormat: formats.json, HumanReadable: md,
+            EntryContext: {'SEPM.ClientContentVersions': clientContentJson.clientDefStatusList, 'SEPM.LastUpdated': lastUpdatedDate}
+        };
+    }
+
+    var endpointsInfo = function(token) {
+        var jsonRes = doGet(token, false, 'sepm/api/v1/computers');
+
+        // Set the war room result
+        var md = '## Endpoints Information';
+
+        if (args.computerName) {
+            md += ', filtered for hostname: ' + args.computerName;
+        }
+        if(args.lastUpdate) {
+            md += ', filtered for last updated status: ' + args.lastUpdate;
+        }
+        if(args.os){
+            md += ', filtered for os: ' + args.os;
+        }
+        if(args.pageSize){
+            md += ', page size: ' + args.pageSize;
+        }
+
+        md += '\n';
+
+        var entryContext = [];
+
+        var filteredJsonRes = [];
+        jsonRes.content.forEach(function(content) {
+            filteredJsonRes.push(content);
+            // Set the entry context
+
+            entryContext.push({
+                Hostname: content.computerName,
+                Domain: content.domainOrWorkgroup,
+                IPAddresses: content.ipAddresses,
+                OS: content.operatingSystem + ' | ' + content.osBitness,
+                Description: content.description,
+                MACAddresses: content.macAddresses,
+                BIOSVersion: content.biosVersion,
+                DHCPServer: content.dhcpServer
+            });
+        });
+
+        if (args.columns) {
+            if (args.columns == 'all' || args.columns == '*') {
+                var columnsList = [];
+            } else {
+                columnsList = argToList(args.columns);
+            }
+        } else {
+            columnsList = ENDPOINTS_INFO_DEFAULT_COLUMNS;
+            columnsList.sort();
+        }
+
+        md += tblToMd('Endpoints', filteredJsonRes, columnsList);
+        return {
+            Type: entryTypes.note,
+            Contents: filteredJsonRes,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                'SEPM.Endpoint(val.computerName == obj.computerName)': entryContext
+            }
+        };
+    }
+
+    var groupsInfo = function(token) {
+        jsonRes = doGet(token, false, 'sepm/api/v1/groups');
+
+        // Set the entry context
+        entryContext = {}
+        entryContext['SEPM.Groups'] = [];
+        jsonRes.content.forEach(function(entry) {
+            var group = {}
+            GROUPS_INFO_DEFAULT_COLUMNS.forEach(function(h) {
+                group[h] = entry[h];
+            });
+            entryContext['SEPM.Groups'].push(group);
+        });
+
+        // Set the war room result
+        if (args.columns) {
+            if (args.columns == 'all' || args.columns == '*') {
+                columnsList = [];
+            } else {
+                columnsList = argToList(args.columns);
+            }
+        } else {
+            columnsList = GROUPS_INFO_DEFAULT_COLUMNS;
+            columnsList.sort();
+        }
+
+        md = tblToMd('Groups Information', jsonRes.content, columnsList);
+        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
+    }
+
+    var getComputerIdByIp = function(token, ip) {
+        xml = buildClientXml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip));
+        resJson = doPost(token, true, 'sepm/ws/v1/ClientService', xml);
+
+        return resJson.Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId;
+    }
+
+    var getComputerIdByHostname = function(token, hostname) {
+        xml = buildClientXml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname));
+        resJson = doPost(token, true, 'sepm/ws/v1/ClientService', xml);
+
+        return resJson.Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId;
+    }
+
+    var getComputerId = function(token) {
+        if (args.ip) {
+            try {
+                computerId = getComputerIdByIp(token, args.ip);
+            } catch (err) {
+                throw 'Failed to locate the endpoint by its IP address.';
+            }
+        } else if (args.hostname) {
+            try {
+                computerId = getComputerIdByHostname(token, args.hostname);
+            } catch (err) {
+                throw 'Failed to locat the endpoint by its hostname.';
+            }
+        } else {
+            throw 'Please provide the IP address or the hostname of endpoint.';
+        }
+
+        return computerId;
+    }
+
+    var getCommandStatusDetails = function(token, commandId) {
+        xml = buildCommandXml('<com:getCommandStatusDetails><commandID>{0}</commandID></com:getCommandStatusDetails>'.format(commandId));
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
+
+        return resJson;
+    }
+
+    var pollResponse = function(token, commandId, timeout, interval) {
+        retries = timeout / interval;
+        isDone = false;
+        for (var i = 0; i < retries; i++) {
+            commandStatusJson = getCommandStatusDetails(token, commandId);
+            cmdStatusDetail = commandStatusJson.Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail;
+            stateId = cmdStatusDetail.stateId;
+            if (stateId == '2' || stateId == '3') {
+                isDone = true;
+                break;
+            }
+
+            wait(interval);
+        }
+
+        return {
+            'cmdStatusDetail': cmdStatusDetail,
+            'isDone': isDone
+        }
+    }
+
+    var buildCommandResponseOutput = function(title, commandId, message) {
+        cmdStatusDetail = response.cmdStatusDetail;
+        delete cmdStatusDetail.hardwareKey;
+
+        md = '### ' + title + '\n';
+        md += objToMd(cmdStatusDetail) + '\n';
+        md += '### Command ID: {0}\n'.format(commandId);
+        md += '### ' + message;
+
+        return {Type: entryTypes.note, Contents: {'cmdStatusDetail': cmdStatusDetail, 'commandId': commandId}, ContentsFormat: formats.json, HumanReadable: md,
+                EntryContext: {'SEPM.LastCommand': {'CommandDetails': cmdStatusDetail, 'CommandId': commandId}}};
+    }
+
+    var runClientCommand = function(token, command) {
+        try {
+            computerId = getComputerId(token);
+        }
+        catch (err) {
+            return {Type: entryTypes.error, Contents: err, ContentsFormat: formats.json, HumanReadable: err, EntryContext: {}};
+        }
+
+        timeout = args.timeout ? parseInt(args.timeout) : CLIENT_COMMAND_PARAMETERS[command]['timeout'];
+        interval = args.interval ? parseInt(args.interval) : CLIENT_COMMAND_PARAMETERS[command]['interval'];
+
+        switch (command) {
+            case 'sep-update-content':
+                commandId = updateContent(token, computerId);
+                break;
+            case 'sep-scan':
+                commandId = scan(token, computerId);
+                break;
+            case 'sep-quarantine':
+                commandId = quarantine(token, computerId);
+                break;
+            default:
+                throw 'Invalid command.';
+        }
+
+        response = pollResponse(token, commandId, timeout, interval);
+        endpoint = args.hostname ? args.hostname : args.ip;
+        title = 'Launched {0} command for endpoint {1}, here is the output.\n'.format(command, endpoint);
+
+        if (response.isDone) {
+            message = 'Command is done.';
+        } else if (command == 'sep-scan') {
+            message = 'Command is in progress.';
+        } else {
+            message = 'Command timed out after {0} second(s). Run !sep-command-status to check again.'.format(timeout);
+        }
+
+        return buildCommandResponseOutput(title, commandId, message);
+    }
+
+    var commandStatus = function(token) {
+        // Poll once for a response (timeout=1, interval=1)
+        response = pollResponse(token, args.commandId, 1, 1);
+        message = response.isDone ? 'Command is done.' : 'Command is in progress. Run !sep-command-status to check again.';
+
+        return buildCommandResponseOutput('Command status:', args.commandId, message);
+    }
+
+    var updateContent = function(token, computerId) {
+        xml = buildCommandXml('<com:runClientCommandUpdateContent><computerGUIDList>{0}</computerGUIDList></com:runClientCommandUpdateContent>'.format(computerId));
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
+        commandId = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId;
+
+        if(!commandId) {
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
+            if(errorCode || errorMessage){
+              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
+            } else {
+              throw 'Could not retrieve command ID, no error was returned from server';
+            }
+        }
+
+        return commandId;
+    }
+
+    var scan = function(token, computerId) {
+        xml = buildCommandXml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computerId, args.scanType));
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
+        commandId = resJson.Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId;
+
+        if(!commandId) {
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
+            if(errorCode || errorMessage){
+              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
+            } else {
+              throw 'Could not retrieve command ID, no error was returned from server';
+            }
+        }
+
+        return commandId;
+    }
+
+    var quarantine = function(token, computerId) {
+        xml = buildCommandXml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(args.actionType, computerId));
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
+        commandId = resJson.Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId;
+
+        if(!commandId) {
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
+            if(errorCode || errorMessage){
+              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
+            } else {
+              throw 'Could not retrieve command ID, no error was returned from server';
+            }
+        }
+
+        return commandId;
+    }
+
+    var resp = doAuth(params);
+    var token;
+    if (resp.StatusCode === 200) {
+        token = JSON.parse(resp.Body).token;
+    } else {
+        return resp;
+    }
+
+    switch (command) {
+        case 'test-module':
+            if (resp.StatusCode === 200) {
+                return 'ok';
+            } else if (resp.Status) {
+                return resp.Status;
+            } else {
+                return resp;
+            }
+            break;
+        case 'sep-system-info':
+            return systemInfo(token);
+        case 'sep-client-content':
+            return clientContent(token);
+        case 'sep-endpoints-info':
+            return endpointsInfo(token);
+        case 'sep-groups-info':
+            return groupsInfo(token);
+        case 'sep-command-status':
+            return commandStatus(token);
+        case 'sep-update-content':
+        case 'sep-scan':
+        case 'sep-quarantine':
+            return runClientCommand(token, command);
+        default:
+    }
+  type: javascript
+  commands:
+  - name: sep-endpoints-info
+    deprecated: true
+    arguments:
+    - name: columns
+      description: The columns to show.
+    - name: computerName
+      description: The host name of computer. Wild card is supported as '*'.
+    - name: lastUpdate
+      description: Indicates when a computer last updated its status. The default
+        value of 0 gets all the results.
+    - name: os
+      auto: PREDEFINED
+      predefined:
+      - CentOs
+      - Debian
+      - Fedora
+      - MacOSX
+      - Oracle
+      - OSX
+      - RedHat
+      - SUSE
+      - Ubuntu
+      - Win10
+      - Win2K
+      - Win7
+      - Win8
+      - WinEmb7
+      - WinEmb8
+      - WinEmb81
+      - WinFundamental
+      - WinNT
+      - Win2K3
+      - Win2K8
+      - Win2K8R2
+      - WinVista
+      - WinXP
+      - WinXPEmb
+      - WinXPProf64
+      description: The list of OS to filter.
+    - name: pageSize
+      description: The number of results to include on each page. The default is 20.
+    outputs:
+    - contextPath: SEPM.Endpoint.Hostname
+      description: The endpoint's hostname.
+    - contextPath: SEPM.Endpoint.Domain
+      description: The endpoint's domain.
+    - contextPath: SEPM.Endpoint.IPAddresses
+      description: The endpoint's IP addresses.
+    - contextPath: SEPM.Endpoint.OS
+      description: The endpoint's OS information.
+    - contextPath: SEPM.Endpoint.Description
+      description: The endpoint's description.
+    - contextPath: SEPM.Endpoint.MACAddresses
+      description: The endpoint's MAC address.
+    - contextPath: SEPM.Endpoint.BIOSVersion
+      description: The endpoint's BIOS version.
+    - contextPath: SEPM.Endpoint.DHCPServer
+      description: The endpoint's DHCP server address.
+    description: Get information about endpoints.
+  - name: sep-update-content
+    deprecated: true
+    arguments:
+    - name: ip
+      description: The IP of the endpoint.
+    - name: hostname
+      description: The hostname of the endpoint.
+    - name: timeout
+      description: The timeout of the command.
+    - name: interval
+      description: The polling interval of the command.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
+    description: Updates the content of the given client.
+  - name: sep-scan
+    deprecated: true
+    arguments:
+    - name: ip
+      description: The IP of the endpoint.
+    - name: scanType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ScanNow_Quick
+      - ScanNow_Full
+      - ScanNow_Custom
+      description: Type of scan.
+    - name: hostname
+      description: The hostname of the endpoint.
+    - name: timeout
+      description: The timeout of the command.
+    - name: interval
+      description: The polling interval of the command.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
+    description: Scans an endpoint.
+  - name: sep-groups-info
+    deprecated: true
+    arguments:
+    - name: columns
+      description: The columns to show.
+    outputs:
+    - contextPath: SEPM.Groups
+      description: The list of groups.
+    description: Get information about groups.
+  - name: sep-system-info
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: SEPM.ServerAVDefVersion
+      description: The serverAV definition version.
+    description: Get the system information (version, AV definition).
+  - name: sep-command-status
+    deprecated: true
+    arguments:
+    - name: commandId
+      required: true
+      description: The command ID.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
+    description: Retrieves the status of a command.
+  - name: sep-quarantine
+    deprecated: true
+    arguments:
+    - name: ip
+      description: The IP address of the endpoint.
+    - name: hostname
+      description: The hostname of the endpoint.
+    - name: timeout
+      description: The timeout of the command.
+    - name: interval
+      description: The polling interval of the command.
+    - name: actionType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Quarantine
+      - Undo
+      description: The action type.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
+    description: Quarantines the endpoint according to its policy.
+  - name: sep-client-content
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: SEPM.ClientContentVersions
+      description: The versions of the clients.
+    - contextPath: SEPM.LastUpdated
+      description: The last-updated date.
+    description: Retrieves the client content.
+hidden: false
+tests:
+- No test - deprecated integration

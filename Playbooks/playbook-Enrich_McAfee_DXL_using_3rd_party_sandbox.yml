@@ -142,3 +142,5 @@ view: |-
     }
   }
 inputs: []
+tests:
+- Wildfire Test

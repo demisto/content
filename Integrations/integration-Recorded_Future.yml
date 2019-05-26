@@ -131,7 +131,7 @@ script:
             )
             if res.status_code not in {200, 404}:
                 if res.status_code == 401:
-                    error_str('Request failed with status 401 - Authentication error')
+                    error_str = 'Request failed with status 401 - Authentication error'
                 else:
                     error_str = 'Request failed, status: ' + str(res.status_code) + ', details: ' + res.text
                 return_error(error_str)
@@ -2863,4 +2863,3 @@ script:
   runonce: false
 tests:
   - Recorded Future Test
-releaseNotes: "-"

@@ -1,6 +1,7 @@
 id: Recorded Future Test
 version: -1
 name: Recorded Future Test
+fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":
@@ -1396,21 +1397,10 @@ tasks:
       - "30"
     scriptarguments:
       add_to_context: {}
-      brand_name: {}
+      brand_name:
+        simple: Recorded Future
       expect_data: {}
-      instance_name:
-        complex:
-          root: modules
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: Recorded
-          accessor: name
+      instance_name: {}
     separatecontext: false
     view: |-
       {

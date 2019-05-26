@@ -27,9 +27,9 @@ configuration:
 - display: Fetch notable events ES query
   name: fetchQuery
   defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name)
-    | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
-    | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
-    | eval security_domain=if(isnull(security_domain),source,security_domain)
+                  | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
+                  | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
+                  | eval security_domain=if(isnull(security_domain),source,security_domain)
   type: 0
   required: false
 - display: Fetch incidents
@@ -88,6 +88,10 @@ script:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
     VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 
@@ -132,6 +136,12 @@ script:
                 result[key] = val
 
         return result
+
+    # Converts to an str
+    def convert_to_str(obj):
+        if isinstance(obj, unicode):
+            return obj.encode('utf-8')
+        return str(obj)
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
         """
@@ -308,7 +318,7 @@ script:
             if isinstance(item, results.Message):
                 if "Error in" in item.message:
                     raise ValueError(item.message)
-                res.append(item.message)
+                res.append(convert_to_str(item.message))
 
             elif isinstance(item, dict):
                 if demisto.get(item, 'host'):
@@ -471,7 +481,7 @@ script:
       required: true
       default: true
       description: The splunk search language string to execute, example :"index=*
-        | head 3"
+                     | head 3"
     - name: earliest_time
       description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
@@ -494,7 +504,7 @@ script:
     arguments:
     - name: index
       required: true
-      description: Splunk index to push data to, run splunk-print-indexes to get all
+      description: Splunk index to push data to, run splunk-get-indexes to get all
         indexes
     - name: data
       required: true
@@ -539,7 +549,7 @@ script:
     - name: query
       required: true
       description: The splunk search language string to execute, example :"index=*
-        | head 3"
+                     | head 3"
     outputs:
     - contextPath: Splunk.Job
       description: The created job SID

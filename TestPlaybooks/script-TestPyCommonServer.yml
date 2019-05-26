@@ -377,7 +377,21 @@ script: |-
 
       demisto.results('ok')
 
+  def test_return_outputs():
+      return_outputs(readable_output="foo", outputs={"foo":"foo1"})
 
+      return_outputs(readable_output=None, outputs={"foo":"foo1"})
+
+      return_outputs(readable_output="foo", outputs=None)
+
+      return_outputs("foo", {"foo":"foo1"}, raw_response={"raw":"response"})
+
+  def test_append_context():
+      appendContext('empty_string_key', '')
+      appendContext('empty_list_key', [])
+      appendContext('zero_key', 0)
+      appendContext('none_key', None)
+      demisto.results("placeholder so the run would finish")
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
@@ -391,6 +405,8 @@ script: |-
       'DATE_TO_TIMESTAMP': test_date_to_timestamp,
       'PASCAL_TO_SPACE' : test_pascalToSpace,
       'ARG_TO_LIST': test_argToList,
+      'RETURN_OUTPUTS': test_return_outputs,
+      'APPEND_CONTEXT': test_append_context
   }
 
 
@@ -486,6 +502,7 @@ args:
 - name: test_type
   required: true
   default: true
+  auto: PREDEFINED
   predefined:
   - DQ
   - ENTRY
@@ -496,6 +513,8 @@ args:
   - CAMELIZE
   - DATE_TO_TIMESTAMP
   - PASCAL_TO_SPACE
+  - RETURN_OUTPUTS
+  - APPEND_CONTEXT
   description: one of python common server testing features
   defaultValue: DQ
 scripttarget: 0

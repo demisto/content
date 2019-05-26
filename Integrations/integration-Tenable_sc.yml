@@ -68,7 +68,9 @@ script:
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_TIME_DEFAULT = '3 days'
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+    FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
     SESSION = None
 
     def get_server_url():

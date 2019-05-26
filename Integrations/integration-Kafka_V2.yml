@@ -519,6 +519,5 @@ script:
   isfetch: true
   dockerimage: demisto/pykafka:1.0.0.128
   runonce: false
-releaseNotes: '-'
 tests:
   - No Test - Can not connect to instance from remote

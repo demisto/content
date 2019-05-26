@@ -1,0 +1,193 @@
+id: MAR - Endpoint data collection test
+version: 11
+name: MAR - Endpoint data collection test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1f9c2e2-5835-485b-8c25-a565c2d4a43d
+    type: start
+    task:
+      id: c1f9c2e2-5835-485b-8c25-a565c2d4a43d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1100d94a-0be4-420d-8761-4149978bdd92
+    type: regular
+    task:
+      id: 1100d94a-0be4-420d-8761-4149978bdd92
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 41ecdb52-8959-465c-82a7-4251cd869bb4
+    type: regular
+    task:
+      id: 41ecdb52-8959-465c-82a7-4251cd869bb4
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: MAR
+          accessor: SearchMultiple
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 5989d5e2-5dee-4f89-8df7-a4b3be5d3f22
+    type: title
+    task:
+      id: 5989d5e2-5dee-4f89-8df7-a4b3be5d3f22
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 23aa9857-5572-42ad-8ff2-c6e9b204dd14
+    type: regular
+    task:
+      id: 23aa9857-5572-42ad-8ff2-c6e9b204dd14
+      version: -1
+      name: Get hostname
+      script: '|||mar-search-host-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      filter-by: {}
+      filter-operator: {}
+      filter-value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 8225b546-55fb-4c99-85a0-ee5309666dce
+    type: playbook
+    task:
+      id: 8225b546-55fb-4c99-85a0-ee5309666dce
+      version: -1
+      name: MAR - Endpoint data collection
+      description: |-
+        Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
+
+        Input:
+        * Hostname (Default: ${Endpoint.Hostname})
+      playbookName: MAR - Endpoint data collection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hostname:
+        simple: ${MAR.HostInfo.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 380,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs: []
+outputs: []

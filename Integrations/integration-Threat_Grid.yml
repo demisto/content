@@ -320,7 +320,7 @@ script:
         """
         Encodes sample file name
         """
-        return filename.encode('ascii', 'ignore').replace('"', '').replace('\\n', '')
+        return filename.encode('ascii', 'ignore').replace('"', '').replace('\n', '')
 
 
     def get_html_report_by_id():

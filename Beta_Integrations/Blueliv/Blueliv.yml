@@ -1,0 +1,50 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Blueliv
+  version: -1
+configuration:
+- defaultvalue: https://api.blueliv.com
+  display: Server URL (e.g., https://api.blueliv.com)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Blueliv reduces risk through actionable, dynamic and targeted threat intelligence, trusted by your organization.
+display: Blueliv
+name: Blueliv
+script:
+  commands:
+  - description: Data set collection that gives the latest STIX Indicators about bot
+      ips gathered by Blueliv.
+    execution: false
+    name: blueliv-get-botips-feed
+  - description: Data set collection that gives the latest STIX Indicators about known
+      malicious servers gathered by Blueliv.
+    execution: false
+    name: blueliv-get-crimeservers-feed
+  - description: Data set collection that gives the latest STIX Indicators about malware
+      hashes gathered and analyzed by Blueliv.
+    execution: false
+    name: blueliv-get-malware-feed
+  - description: Data set collection that gives the latest STIX Indicators about attacking
+      IPs gathered and analyzed by Blueliv.
+    execution: false
+    name: blueliv-get-attackingips-feed
+  - description: 'Data related to the number of hacktivism tweets recently created.
+      Blueliv provides two types of feeds: the first one contains the most popular
+      hacktivism hashtags and the second one contains the countries where more number
+      of hacktivism tweets are coming from.'
+    execution: false
+    name: blueliv-get-hacktivism-feed
+  dockerimage: demisto/blueliv:1.0.0.165
+  isfetch: false
+  runonce: false
+  script: ''
+  type: python

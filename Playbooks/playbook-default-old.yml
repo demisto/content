@@ -2,7 +2,8 @@ id: playbook0
 version: -1
 name: Default
 toversion: 3.1.0
-description: Default playbook to help classify incoming incidents
+description: Deprecated - We recommend using the new and improoved Default playbook instead (from Demisto 3.5).
+  Default playbook to help classify incoming incidents
 system: true
 fromversion: 2.5.0
 starttaskid: "0"
@@ -465,3 +466,5 @@ inputs:
   value: ""
   description: If you have SentinelOne, what is the incident type for SentinelOne
     incidents
+tests:
+  - No tests - Deprecated playbook

@@ -107,8 +107,10 @@ script:
                 'Accept': 'application/json'
             }
         )
-        if r.status_code not in {200, 204}:
+        if r.status_code not in {200, 204, 206}:
             return_error('Error in API call to Microsoft Graph [%d] - %s' % (r.status_code, r.reason))
+        elif r.status_code == 206: # 206 indicates Partial Content, and the reason for that will be in the Warning header
+            demisto.debug(str(r.headers))
         if not r.text:
             return {}
         return r.json()

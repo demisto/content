@@ -35,7 +35,8 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Extract IPs from the given text and place them both as output and in the
+comment: Deprecated - We recommend using extractIndicators command instead.
+  Extract IPs from the given text and place them both as output and in the
   context of a playbook.
 system: true
 enabled: true
@@ -48,3 +49,4 @@ outputs:
 - contextPath: IP.Address
   description: Extracted IPs
 scripttarget: 0
+deprecated: true

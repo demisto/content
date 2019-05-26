@@ -123,3 +123,6 @@ outputs:
   description: The groups the Account is part of
 - contextPath: Account.DisplayName
   description: The Account display name
+deprecated: true
+tests:
+  - No test

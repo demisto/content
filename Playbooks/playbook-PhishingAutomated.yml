@@ -4,6 +4,7 @@ system: true
 fromversion: 3.5.0
 name: Phishing Playbook - Automated
 description: |-
+  Deprecated: We recommend using Phishing investigation - Generic playbook instead.
   This is an automated playbook to investigate suspected Phishing attempts.
   It picks up the required information from the incident metadata as created by the mail listener.
   Labels:

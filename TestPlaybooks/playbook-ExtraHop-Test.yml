@@ -1,0 +1,290 @@
+id: ExtraHop-Test
+version: -1
+name: ExtraHop-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2a774637-8d52-4c88-8417-340fc29c2748
+    type: start
+    task:
+      id: 2a774637-8d52-4c88-8417-340fc29c2748
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: cd474bbb-cea3-4957-818a-f47980ab915a
+    type: regular
+    task:
+      id: cd474bbb-cea3-4957-818a-f47980ab915a
+      version: -1
+      name: extrahop-devices
+      script: ExtraHop|||extrahop-devices
+      type: regular
+      iscommand: true
+      brand: ExtraHop
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      active_from: {}
+      active_until: {}
+      limit: {}
+      search_type:
+        simple: any
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: f871dc65-4fde-4f1e-8029-f78ae7c9076d
+    type: regular
+    task:
+      id: f871dc65-4fde-4f1e-8029-f78ae7c9076d
+      version: -1
+      name: extrahop-get-alert-rules
+      description: Get alerts from ExtraHop
+      script: ExtraHop|||extrahop-get-alert-rules
+      type: regular
+      iscommand: true
+      brand: ExtraHop
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: c5350b5b-cbd2-45c5-81da-1c9de324242d
+    type: condition
+    task:
+      id: c5350b5b-cbd2-45c5-81da-1c9de324242d
+      version: -1
+      name: Check rule exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ExtraHop.Alert.[0].Id
+            iscontext: true
+          right:
+            value:
+              simple: "13"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
+    type: condition
+    task:
+      id: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
+      version: -1
+      name: Check device
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.[1].Device.[0].Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
+    type: regular
+    task:
+      id: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
+      version: -1
+      name: extrahop-whitelist-retrieve
+      description: Retrieve whitelist from ExtraHop
+      script: ExtraHop|||extrahop-whitelist-retrieve
+      type: regular
+      iscommand: true
+      brand: ExtraHop
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 917cd0cb-926b-4ecd-8604-6eda883196e0
+    type: condition
+    task:
+      id: 917cd0cb-926b-4ecd-8604-6eda883196e0
+      version: -1
+      name: Verify device on whitelist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.[2].Device.[0].OnWatchlist
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: bcd391dd-96e2-4b83-82b2-60ad30a990dd
+    type: regular
+    task:
+      id: bcd391dd-96e2-4b83-82b2-60ad30a990dd
+      version: -1
+      name: extrahop-whitelist-modify
+      description: Modify whitelist from ExtraHop
+      script: ExtraHop|||extrahop-whitelist-modify
+      type: regular
+      iscommand: true
+      brand: ExtraHop
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      add:
+        simple: "106"
+      remove: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: e3e45302-979d-464f-89e3-a88e1848f3df
+    type: regular
+    task:
+      id: e3e45302-979d-464f-89e3-a88e1848f3df
+      version: -1
+      name: extrahop-whitelist-modify
+      description: Modify whitelist from ExtraHop
+      script: ExtraHop|||extrahop-whitelist-modify
+      type: regular
+      iscommand: true
+      brand: ExtraHop
+    scriptarguments:
+      add: {}
+      remove:
+        simple: "106"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 380,
+        "x": 450,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []

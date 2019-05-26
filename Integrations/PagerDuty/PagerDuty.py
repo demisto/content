@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 # PagerDuty API works only with secured communication.
 USE_SSL = True
 
+USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
@@ -22,6 +23,13 @@ DEFAULT_HEADERS = {
     'Accept': 'application/vnd.pagerduty+json;version=2'
 }
 
+'''HANDLE PROXY'''
+if not USE_PROXY:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
+
 '''PARAMS'''
 UTC_PARAM = '&time_zone=UTC'
 STATUSES = 'statuses%5B%5D'
@@ -30,6 +38,8 @@ INCLUDED_FIELDS = '&include%5B%5D=first_trigger_log_entries&include%5B%5D=assign
 '''SUFFIX ENDPOINTS'''
 GET_SCHEDULES_SUFFIX = 'schedules'
 CREATE_INCIDENT_SUFFIX = 'incidents'
+GET_INCIDENT_SUFFIX = 'incidents/'
+GET_SERVICES_SUFFIX = 'services'
 ON_CALL_BY_SCHEDULE_SUFFIX = 'schedules/{0}/users'
 ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
 USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
@@ -51,18 +61,21 @@ CONTACT_METHODS_TO_HUMAN_READABLE = {
 }
 
 '''TABLE NAMES'''
+SERVICES = 'Service List'
 SCHEDULES = 'All Schedules'
 TRIGGER_EVENT = 'Trigger Event'
 RESOLVE_EVENT = 'Resolve Event'
 ACKNOLWEDGE_EVENT = 'Acknowledge Event'
 USERS_ON_CALL = 'Users On Call'
-INCIDETS = 'PagerDuty Incidents'
+INCIDETS_LIST = 'PagerDuty Incidents'
+INCIDENT = 'PagerDuty Incident'
 CONTACT_METHODS = 'Contact Methods'
 USERS_ON_CALL_NOW = 'Users On Call Now'
 NOTIFICATION_RULES = 'User notification rules'
 
 '''TABLE HEADERS'''
 CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Details']
+SERVICES_HEADERS = ['ID', 'Name', 'Status', 'Created At', 'Integration']
 NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
 SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
 USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
@@ -149,8 +162,8 @@ def extract_on_call_user_data(users):
 
 def extract_on_call_now_user_data(users_on_call_now):
     """Extract the user data from the oncalls json."""
-    outputs = []
-    contexts = []
+    outputs = []  # type: List[Dict]
+    contexts = []  # type: List[Dict]
     oncalls = users_on_call_now.get('oncalls', {})
 
     for i in xrange(len(oncalls)):
@@ -272,7 +285,7 @@ def parse_incident_data(incidents):
     return outputs, contexts, raw_response
 
 
-def extract_incidents_data(incidents):
+def extract_incidents_data(incidents, table_name):
     """Extact data about incidents."""
     outputs, contexts, _ = parse_incident_data(incidents)
 
@@ -281,7 +294,7 @@ def extract_incidents_data(incidents):
         'Contents': incidents,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(INCIDETS, outputs, INCIDENTS_HEADERS),
+        'HumanReadable': tableToMarkdown(table_name, outputs, INCIDENTS_HEADERS, removeNull=True),
         'EntryContext': {
             'PagerDuty.Incidents(val.ID==obj.ID)': contexts
         }
@@ -294,7 +307,7 @@ def extract_all_schedules_data(schedules):
     contexts = []
     for i in range(len(schedules)):
         output = {}
-        context = {}
+        context = {}  # type: Dict
         data = schedules[i]
 
         output['ID'] = data.get('id')
@@ -513,7 +526,7 @@ def get_incidents_command(since=None, until=None, status='triggered,acknowledged
 
     url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
     res = http_request('GET', url, param_dict)
-    return extract_incidents_data(res.get('incidents', []))
+    return extract_incidents_data(res.get('incidents', []), INCIDETS_LIST)
 
 
 def submit_event_command(source, summary, severity, action, description='No description', group='',
@@ -610,6 +623,76 @@ def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
     return extract_new_event_data(ACKNOLWEDGE_EVENT, action_response)
 
 
+def get_incident_data():
+    incident_id = demisto.args().get('incident_id')
+
+    url = SERVER_URL + GET_INCIDENT_SUFFIX + incident_id
+    res = http_request('GET', url, {})
+    return extract_incidents_data([res.get('incident', {})], INCIDENT)
+
+
+def get_service_keys():
+    offset = 0
+    raw_response = []
+
+    url = SERVER_URL + GET_SERVICES_SUFFIX
+    res = http_request('GET', url, {"offset": offset})
+    raw_response.append(res)
+
+    outputs = []
+    contexts = []
+    while res.get('services', []):
+        services = res.get('services', [])
+        for service in services:
+            output = {}
+            context = {}
+            context['ID'] = output['ID'] = service.get('id')
+            context['Name'] = output['Name'] = service.get('name')
+            context['Status'] = output['Status'] = service.get('status')
+            context['CreatedAt'] = output['Created At'] = service.get('created_at')
+
+            integration_list = []
+            integration_string = ""
+            for integration in service.get('integrations', []):
+                integration_url = integration.get('self', '')
+                if integration_url:
+                    integration_data = {}
+                    integration_res = http_request('GET', integration_url, {}).get('integration', {})
+                    integration_data['Name'] = integration_res.get('service', {}).get('summary', '')
+                    integration_data['Key'] = integration_res.get('integration_key', '')
+                    vendor_value = integration_res.get('vendor', {})
+                    if not vendor_value:
+                        integration_data['Vendor'] = 'Missing Vendor information'
+                    else:
+                        integration_data['Vendor'] = vendor_value.get('summary', 'Missing Vendor information')
+
+                    integration_list.append(integration_data)
+                    integration_string += "Name: {}, Vendor: {}, Key: {}\n".format(integration_data['Name'],
+                                                                                   integration_data['Vendor'],
+                                                                                   integration_data['Key'])
+
+            output['Integration'] = integration_string
+            context['Integration'] = integration_list
+
+            outputs.append(output)
+            contexts.append(context)
+
+        offset += 25
+        res = http_request('GET', url, {"offset": offset})
+        raw_response.append(res)
+
+    return {
+        'Type': entryTypes['note'],
+        'Contents': raw_response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(SERVICES, outputs, SERVICES_HEADERS),
+        'EntryContext': {
+            'PagerDuty.Service(val.ID==obj.ID)': contexts,
+        }
+    }
+
+
 ''' EXECUTION CODE '''
 
 LOG('command is %s' % (demisto.command(), ))
@@ -637,6 +720,10 @@ try:
         demisto.results(resolve_event(**demisto.args()))
     elif demisto.command() == 'PagerDuty-acknowledge-event':
         demisto.results(acknowledge_event(**demisto.args()))
+    elif demisto.command() == 'PagerDuty-get-incident-data':
+        demisto.results(get_incident_data())
+    elif demisto.command() == 'PagerDuty-get-service-keys':
+        demisto.results(get_service_keys())
 
 
 except Exception as e:

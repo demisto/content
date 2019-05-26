@@ -188,65 +188,66 @@ tasks:
       }
     note: false
     timertriggers: []
-  "7":
-    id: "7"
-    taskid: 6296b79e-b6a5-4b62-80a3-719cc8348caa
-    type: regular
-    task:
-      id: 6296b79e-b6a5-4b62-80a3-719cc8348caa
-      version: -1
-      name: File acquisition - get blob.txt
-      script: FireEye HX|||fireeye-hx-file-acquisition
-      type: regular
-      iscommand: true
-      brand: FireEye HX
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      acquireUsing: {}
-      agentId: {}
-      fileName:
-        simple: blob.txt
-      filePath:
-        simple: C:\Users\demistodev\Documents
-      hostName:
-        simple: DESKTOP-TF35B9B
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: fb4b85e8-83b7-4cf0-89ba-e01ff0eb03ab
-    type: regular
-    task:
-      id: fb4b85e8-83b7-4cf0-89ba-e01ff0eb03ab
-      version: -1
-      name: Delete the acquisition
-      script: FireEye HX|||fireeye-hx-delete-file-acquisition
-      type: regular
-      iscommand: true
-      brand: FireEye HX
-    scriptarguments:
-      acquisitionId:
-        simple: ${FireEyeHX.Acquisitions.Files._id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+
+#  "7":
+#    id: "7"
+#    taskid: 6296b79e-b6a5-4b62-80a3-719cc8348caa
+#    type: regular
+#    task:
+#      id: 6296b79e-b6a5-4b62-80a3-719cc8348caa
+#      version: -1
+#      name: File acquisition - get blob.txt
+#      script: FireEye HX|||fireeye-hx-file-acquisition
+#      type: regular
+#      iscommand: true
+#      brand: FireEye HX
+#    nexttasks:
+#      '#none#':
+#      - "8"
+#    scriptarguments:
+#      acquireUsing: {}
+#      agentId: {}
+#      fileName:
+#        simple: blob.txt
+#      filePath:
+#        simple: C:\Users\demistodev\Documents
+#      hostName:
+#        simple: DESKTOP-TF35B9B
+#    separatecontext: false
+#    view: |-
+#      {
+#        "position": {
+#          "x": 480,
+#          "y": 370
+#        }
+#      }
+#    note: false
+#    timertriggers: []
+#  "8":
+#    id: "8"
+#    taskid: fb4b85e8-83b7-4cf0-89ba-e01ff0eb03ab
+#    type: regular
+#    task:
+#      id: fb4b85e8-83b7-4cf0-89ba-e01ff0eb03ab
+#      version: -1
+#      name: Delete the acquisition
+#      script: FireEye HX|||fireeye-hx-delete-file-acquisition
+#      type: regular
+#      iscommand: true
+#      brand: FireEye HX
+#    scriptarguments:
+#      acquisitionId:
+#        simple: ${FireEyeHX.Acquisitions.Files._id}
+#    separatecontext: false
+#    view: |-
+#      {
+#        "position": {
+#          "x": 480,
+#          "y": 545
+#        }
+#      }
+#    note: false
+#    timertriggers: []
   "9":
     id: "9"
     taskid: eb0581cb-71b3-4680-88db-b9788cdfe122
@@ -261,7 +262,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      #- "7"
       - "4"
       - "1"
       - "13"

@@ -1,14 +1,14 @@
 id: RSA NetWitness Test
-version: 6
+version: -1
 name: RSA NetWitness Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ec608982-5234-4259-8d17-4fee6d7e9870
+    taskid: 5e9fffeb-83fd-41a5-806a-fc47bb746db1
     type: start
     task:
-      id: ec608982-5234-4259-8d17-4fee6d7e9870
+      id: 5e9fffeb-83fd-41a5-806a-fc47bb746db1
       version: -1
       name: ""
       iscommand: false
@@ -20,16 +20,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 9fb87047-7c61-41ee-8d9d-2abdcc018afa
+    taskid: 5446d1b4-8eb0-478e-866d-2f73f6a94dd8
     type: regular
     task:
-      id: 9fb87047-7c61-41ee-8d9d-2abdcc018afa
+      id: 5446d1b4-8eb0-478e-866d-2f73f6a94dd8
       version: -1
       name: Get incidents created on 15/03/18
       script: RSA NetWitness v11.1|||netwitness-get-incidents
@@ -51,16 +53,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 184
+          "x": 50,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 13f5c729-b2a3-421c-8a3c-fb5ac286ac60
+    taskid: 6b231c0a-c3eb-444f-865b-b991ce0105ee
     type: condition
     task:
-      id: 13f5c729-b2a3-421c-8a3c-fb5ac286ac60
+      id: 6b231c0a-c3eb-444f-865b-b991ce0105ee
       version: -1
       name: Validate results are returned
       type: condition
@@ -73,7 +77,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isNotEmpty
+      - - operator: isNotEmpty
           left:
             value:
               simple: NetWitness.Incidents
@@ -81,16 +85,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 334
+          "x": 50,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: ac5c9be3-abe0-4aa2-824b-17a73d6d79af
+    taskid: c9d2b178-19fd-42e7-8dc1-b836f5937423
     type: regular
     task:
-      id: ac5c9be3-abe0-4aa2-824b-17a73d6d79af
+      id: c9d2b178-19fd-42e7-8dc1-b836f5937423
       version: -1
       name: Get incident
       script: RSA NetWitness v11.1|||netwitness-get-incident
@@ -107,18 +113,244 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 502
+          "x": 50,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: ae1316d4-3069-4b7b-8757-8f9f8f8a3703
+    taskid: 8010d076-052e-4606-8088-2c4a7d8feb4a
     type: condition
     task:
-      id: ae1316d4-3069-4b7b-8757-8f9f8f8a3703
+      id: 8010d076-052e-4606-8088-2c4a7d8feb4a
       version: -1
       name: Validate results are returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NetWitness.Alerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: d2c5413c-780e-460c-837e-c82f035a07f9
+    type: title
+    task:
+      id: d2c5413c-780e-460c-837e-c82f035a07f9
+      version: -1
+      name: Test passed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: dd2dfdbf-0aba-49f7-8f02-bad257b4a1e5
+    type: regular
+    task:
+      id: dd2dfdbf-0aba-49f7-8f02-bad257b4a1e5
+      version: -1
+      name: Update incident
+      script: RSA NetWitness v11.1|||netwitness-update-incident
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness v11.1
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assignee:
+        simple: admin
+      incidentId:
+        simple: INC-12
+      status:
+        simple: InProgress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: f7c26229-a0a8-4f82-857c-04fa0532e5d7
+    type: regular
+    task:
+      id: f7c26229-a0a8-4f82-857c-04fa0532e5d7
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 8c23b7e4-11d8-41be-8ec9-9fa71b4205a5
+    type: condition
+    task:
+      id: 8c23b7e4-11d8-41be-8ec9-9fa71b4205a5
+      version: -1
+      name: Validate incident was updated correctly
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NetWitness.Incidents.status
+            iscontext: true
+          right:
+            value:
+              simple: InProgress
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NetWitness.Incidents.assignee
+            iscontext: true
+          right:
+            value:
+              simple: admin
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 43ea382f-f3fc-4249-8a3d-149e36390c17
+    type: regular
+    task:
+      id: 43ea382f-f3fc-4249-8a3d-149e36390c17
+      version: -1
+      name: Update incident
+      script: RSA NetWitness v11.1|||netwitness-update-incident
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness v11.1
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      assignee:
+        simple: deploy_admin
+      incidentId:
+        simple: INC-12
+      status:
+        simple: Assigned
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: a02fc603-07e3-4d29-81a5-300a57f868aa
+    type: regular
+    task:
+      id: a02fc603-07e3-4d29-81a5-300a57f868aa
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 7c9a36aa-ef8f-4e72-8dbf-73a94c5d1f74
+    type: condition
+    task:
+      id: 7c9a36aa-ef8f-4e72-8dbf-73a94c5d1f74
+      version: -1
+      name: Validate incident was updated correctly
       type: condition
       iscommand: false
       brand: ""
@@ -129,45 +361,39 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: NetWitness.Alerts
+              simple: NetWitness.Incidents.status
             iscontext: true
+          right:
+            value:
+              simple: Assigned
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NetWitness.Incidents.assignee
+            iscontext: true
+          right:
+            value:
+              simple: deploy_admin
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 655
+          "x": 50,
+          "y": 1770
         }
       }
-  "6":
-    id: "6"
-    taskid: 45ef5062-50d1-4f43-8865-6f6f035f2680
-    type: title
-    task:
-      id: 45ef5062-50d1-4f43-8865-6f6f035f2680
-      version: -1
-      name: Test passed
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 825
-        }
-      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 840,
+        "height": 1960,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }

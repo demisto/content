@@ -308,7 +308,7 @@ tasks:
       - "10"
     scriptarguments:
       malopGuids:
-        simple: ${Cybereason.Malops.[0].GUID}
+        simple: ${Cybereason.Malops.GUID}
     separatecontext: false
     view: |-
       {

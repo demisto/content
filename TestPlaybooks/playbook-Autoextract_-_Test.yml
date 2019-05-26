@@ -1,0 +1,732 @@
+id: Autoextract - Test
+version: -1
+name: Autoextract - Test
+description: |-
+  This is a test playbook for the sole function of auto-extract. It tests if auto-extract finds indicators and puts them in context, by printing them to the war room.
+  The test currently tests auto-extract on:
+  - IPs
+  - Escaped IPs
+  - URLs (includes domains from URLs)
+  - Escaped URLs
+  - MD5 hash
+  - SHA1 hash
+  - SHA256 hash
+  - Email addresses (includes domains from email addresses)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2fe21461-bf20-4252-87d9-9cc8936634c4
+    type: start
+    task:
+      id: 2fe21461-bf20-4252-87d9-9cc8936634c4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: ea8daebe-5b96-4418-8ed6-5063f0d45f55
+    type: regular
+    task:
+      id: ea8daebe-5b96-4418-8ed6-5063f0d45f55
+      version: -1
+      name: Delete context
+      description: Deletes the context to start the test with a clean context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 6b41e663-db7a-4bad-8666-995e93a83da3
+    type: regular
+    task:
+      id: 6b41e663-db7a-4bad-8666-995e93a83da3
+      version: -1
+      name: Print indicators
+      description: Prints indicators to the war room and lets auto-extract put them
+        in context.
+      scriptName: autoextract_test
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "3"
+      - "8"
+      - "11"
+      - "15"
+      - "25"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: e6d0c59e-21d1-4cca-8bff-d9ad1c87f54f
+    type: condition
+    task:
+      id: e6d0c59e-21d1-4cca-8bff-d9ad1c87f54f
+      version: -1
+      name: Were the IP addresses extracted?
+      description: Checks whether the internal, external and escaped IP addresses
+        that were printed are found in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 98.222.222.9
+                accessor: Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 23.223.223.233
+                accessor: Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 172.16.0.10
+                accessor: Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 111.11.11.111
+                accessor: Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 549fc882-fd38-432e-8059-1a1fd8f644e3
+    type: condition
+    task:
+      id: 549fc882-fd38-432e-8059-1a1fd8f644e3
+      version: -1
+      name: Were the URLs extracted?
+      description: Checks whether the URLs and escaped URLs that were printed are
+        found in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://www.thisurlwillneverexist4444.co.il
+                    ignorecase: true
+                accessor: Data
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://www.thisoneshouldnotexisteither4444.com
+                    ignorecase: true
+                accessor: Data
+            iscontext: true
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://www.letsseeifyoucanfindthisone4444.co.il
+                accessor: Data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: b4c3ac46-08cc-407e-87f1-b0a1dd5d46b4
+    type: condition
+    task:
+      id: b4c3ac46-08cc-407e-87f1-b0a1dd5d46b4
+      version: -1
+      name: Were the hashes extracted?
+      description: Checks whether the MD5, SHA1 and SHA256 hashes that were printed
+        are found in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 999d8c71dd6dddd77777777b85734318
+                    ignorecase: true
+                accessor: MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 44f03f1a5280bbb7f4c2550b222bb88c
+                    ignorecase: true
+                accessor: MD5
+            iscontext: true
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 0a92f2312a95f807fd192c9c25cb6ae502b564c9a8ae013ff88888888ff77ddd
+                    ignorecase: true
+                accessor: SHA256
+            iscontext: true
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1ebf92fc2cb3cf75da3131ef3b13abf36a90fa7aaff3a2451f99999a122aaabb
+                    ignorecase: true
+                accessor: SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA1
+                      iscontext: true
+                    right:
+                      value:
+                        simple: bc44444dd6f5c1111ffbbb139e2af09db9f0000d
+                accessor: SHA1
+            iscontext: true
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA1
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 444444c6cccc250e98be5c2ed5346f79dc333dd4
+                accessor: SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: bf681094-49c7-4ccf-8719-721be65759fb
+    type: condition
+    task:
+      id: bf681094-49c7-4ccf-8719-721be65759fb
+      version: -1
+      name: Were the email addresses extracted?
+      description: Checks whether the email addresses that were printed are found
+        in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Account.Email.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: iamtheeggman@demisto.com
+                    ignorecase: true
+                accessor: Email.Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Account.Email.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: iamthewalrus@demisto.com
+                    ignorecase: true
+                accessor: Email.Address
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 4a63db05-d3ae-49e1-81e2-a44c0ad68eea
+    type: condition
+    task:
+      id: 4a63db05-d3ae-49e1-81e2-a44c0ad68eea
+      version: -1
+      name: Were the domains extracted?
+      description: Checks whether domains were extracted from URLs and email addresses
+        that were printed to context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: thisurlwillneverexist4444.co.il
+                    ignorecase: true
+                accessor: Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: thisoneshouldnotexisteither4444.com
+                    ignorecase: true
+                accessor: Name
+            iscontext: true
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: letsseeifyoucanfindthisone4444.co.il
+                accessor: Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto.com
+                    ignorecase: true
+                accessor: Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 7e852556-2c01-4abd-84e0-37102eee07ef
+    type: regular
+    task:
+      id: 7e852556-2c01-4abd-84e0-37102eee07ef
+      version: -1
+      name: Make test fail
+      description: Fail the test if not all indicators were extracted.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      message:
+        simple: Extraction of an indicator has failed. Check which indicators were
+          not found in the previous conditions of the playbook.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1655
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 41880aab-f713-4c35-828e-7cc62077b61e
+    type: title
+    task:
+      id: 41880aab-f713-4c35-828e-7cc62077b61e
+      version: -1
+      name: All Indicators Extracted
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 18f01873-bf58-4fe0-8bed-3c649c3dbfff
+    type: title
+    task:
+      id: 18f01873-bf58-4fe0-8bed-3c649c3dbfff
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 6570f3ad-c973-4afd-8cdf-e697291a6b21
+    type: condition
+    task:
+      id: 6570f3ad-c973-4afd-8cdf-e697291a6b21
+      version: -1
+      name: Was the CVE ID extracted?
+      description: Checks whether the ID of the CVE that was printed is found in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CVE
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVE.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CVE-2019-7312
+                    ignorecase: true
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_22_#default#": 0.34,
+      "11_23_yes": 0.4,
+      "15_22_#default#": 0.3,
+      "15_23_yes": 0.35,
+      "17_22_#default#": 0.4,
+      "17_23_yes": 0.7,
+      "25_22_#default#": 0.7,
+      "3_22_#default#": 0.56,
+      "3_23_yes": 0.72,
+      "8_22_#default#": 0.46,
+      "8_23_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 1650,
+        "x": -190,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
