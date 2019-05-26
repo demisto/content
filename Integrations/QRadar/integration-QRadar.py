@@ -1,7 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import sys, os, requests, datetime, json
+import sys
+import os
+import requests
+import datetime
+import json
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -162,7 +166,7 @@ def convert_to_str(obj):
         return obj.encode('utf-8')
     try:
         return str(obj)
-    except:
+    except ValueError:
         return obj
 
 
@@ -821,7 +825,7 @@ def get_domain_name(domain_id):
                 domain_id)}
         search_id = search(query_param)['search_id']
         return get_search_results(search_id)['events'][0]['Domain name']
-    except:
+    except ValueError:
         return domain_id
 
 
@@ -893,7 +897,7 @@ def enrich_reference_set_result(ref, convert_date_elements=False):
             if convert_date_elements:
                 try:
                     item['Value'] = epoch_to_ISO(int(item['Value']))
-                except:
+                except ValueError:
                     pass
     if 'CreationTime' in ref:
         ref['CreationTime'] = epoch_to_ISO(ref['CreationTime'])
