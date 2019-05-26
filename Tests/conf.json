@@ -1315,8 +1315,8 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "playbookID": "Remote File Management - Test",
-            "integrations": "remote_file_management"
+            "playbookID": "PAN OS EDL Management - Test",
+            "integrations": "pan_os_edl_management"
         },
         {
             "integrations": "Snowflake",

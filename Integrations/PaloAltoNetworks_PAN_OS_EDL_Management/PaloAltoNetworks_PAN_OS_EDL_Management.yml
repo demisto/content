@@ -242,5 +242,5 @@ script:
   script: '-'
   type: python
 tests:
-- Remote File Management - Test
+- PAN OS EDL Management - Test
 releaseNotes: Manage remote files hosted on a web-server using integration context.
