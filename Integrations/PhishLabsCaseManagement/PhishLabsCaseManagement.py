@@ -74,7 +74,6 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
             pass
         error_message: str = ('Error in API call to PhishLabs Case API, status code: {}'.format(status))
         if status == 400:
-            # TODO: ...
             return {'data': []}
         if status == 401:
             error_message = 'Could not connect to PhishLabs Case API: Wrong credentials'
@@ -121,11 +120,6 @@ def list_cases_command():
     if not date_field and (begin_date or end_date):
         return_error('In order to use the begin_date or end_date filters, a date field must be provided.')
 
-    if status and status[0] == 'Open':
-        # Instead of the "open" path
-        # TODO: WTF?
-        status = ['New', 'Pending Input', 'Assigned']
-
     response = list_cases_request(status, case_type, limit, date_field, begin_date, end_date)
 
     cases = response['data'] if response and response.get('data') else []
@@ -134,7 +128,7 @@ def list_cases_command():
         if not isinstance(cases, list):
             cases = [cases]
 
-        case_headers: list = ['ID', 'Title', 'Number', 'Status', 'Type', 'CreatedBy', 'CreatedAt']
+        case_headers: list = ['Title', 'Number', 'Status', 'Type', 'CreatedBy', 'CreatedAt', 'ID']
 
         contents = [{
             'ID': c.get('caseId'),
@@ -175,7 +169,10 @@ def list_cases_request(status=None, case_type=None, limit=None, date_field=None,
     params: dict = {}
 
     if status:
-        params['caseStatus'] = status
+        if len(status) == 1 and status[0] == 'Open':
+            path += '/open'
+        else:
+            params['caseStatus'] = status
     if limit:
         params['maxRecords'] = limit
     if case_type:
@@ -210,11 +207,12 @@ def get_case_command():
             case = case[0]
 
         case_headers: list = ['Title', 'Number', 'Status', 'Description', 'Brand', 'Type', 'CreatedBy', 'CreatedAt',
-                              'ModifiedAt', 'ClosedAt', 'ResolutionStatus']
+                              'ModifiedAt', 'ClosedAt', 'ResolutionStatus', 'Customer', 'ID']
 
         contents = {
             'ID': case.get('caseId'),
             'Title': case.get('title'),
+            'Customer': case.get('customer'),
             'Status': case.get('caseStatus'),
             'Description': case.get('description'),
             'Number': case.get('caseNumber'),
@@ -362,8 +360,6 @@ def create_case_command():
     response = create_case_request(case_type, case_brand, title, description)
 
     case = response['createdCase'] if response and response.get('createdCase') else {}
-
-    demisto.log(str(response))
 
     if case:
         case_headers: list = ['ID', 'Title', 'Number', 'Status']

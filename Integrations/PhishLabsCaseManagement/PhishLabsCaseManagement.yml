@@ -45,40 +45,6 @@ name: PhishLabs Case Management
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Open
-      description: CSV list of statuses, for example, "New,Assigned"
-      isArray: true
-      name: status
-      predefined:
-      - New
-      - Open
-      - Closed
-      - Assigned
-      - Rejected
-      - Duplicate
-      - Pending Input
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Case type.
-      isArray: true
-      name: type
-      predefined:
-      - 419 Scam
-      - Credential Recovery
-      - Crimeware
-      - Mobile Abuse
-      - Job Scam
-      - Pharming
-      - Phishing
-      - Phishing Redirect
-      - Vishing
-      - Other
-      required: false
-      secret: false
     - default: false
       defaultValue: '20'
       description: Limit the number of cases to return.
@@ -88,6 +54,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: caseOpen
       description: The field to filter the begin_date and end_date by.
       isArray: false
       name: date_field
