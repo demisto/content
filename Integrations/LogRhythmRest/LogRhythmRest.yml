@@ -199,7 +199,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Use eventlog credentialsץ
+      description: Use eventlog credentials.
       isArray: false
       name: use-eventlog-credentials
       predefined:
@@ -232,7 +232,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add ש new host to שמ entityץ
+    description: Add a new host to an entity.
     execution: false
     name: lr-add-host
   - arguments:
@@ -244,7 +244,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The enumeration status of the hostץ
+      description: The enumeration status of the host.
       isArray: false
       name: status
       predefined:
