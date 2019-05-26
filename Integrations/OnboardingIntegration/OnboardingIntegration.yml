@@ -207,4 +207,3 @@ script:
   runonce: false
 tests:
   - No Tests
-releaseNotes: "-"
