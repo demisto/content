@@ -613,7 +613,7 @@ def fetch_incidents():
                 continue
 
             incident: dict = {
-                'name': 'PhishLabs IOC Incident ' + result.get('referenceId'),
+                'name': 'PhishLabs IOC Incident ' + result.get('referenceId', ''),
                 'occurred': datetime.strftime(incident_time, '%Y-%m-%dT%H:%M:%SZ'),
                 'rawJSON': json.dumps(result)
             }
