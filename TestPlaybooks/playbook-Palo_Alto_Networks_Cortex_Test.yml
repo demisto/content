@@ -76,7 +76,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "3"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -187,8 +187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -214,6 +214,39 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 84ecc014-b640-4717-8007-432a04ed5438
+    type: regular
+    task:
+      id: 84ecc014-b640-4717-8007-432a04ed5438
+      version: -1
+      name: Fetch events
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Palo Alto Networks Cortex
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 480,
           "y": 545
         }
@@ -226,7 +259,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 735,
         "width": 810,
         "x": 50,
         "y": 50
