@@ -1,7 +1,7 @@
 import shutil
 
 import requests
-
+from requests.utils import guess_filename
 from CommonServerPython import *
 
 ''' GLOBAL PARAMS '''
@@ -136,6 +136,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
                 if err_r:
                     return err_r
         return None
+
     url = SERVER + url_suffix
     r = requests.request(
         method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL
@@ -306,16 +307,14 @@ def upload_sample(file_id, params):
     """
     suffix = 'sample/submit'
     file_obj = demisto.getFilePath(file_id)
-    file_name = file_obj['name'].encode('utf-8')
-    file_path = file_obj['path'].encode('utf-8')
-    shutil.copy(file_path, file_name)
-    try:
-        with open(file_name, 'rb') as f:
-            files = {'sample_file': f}
-            results = http_request('POST', url_suffix=suffix, params=params, files=files)
-            return results
-    finally:
-        os.remove(file_name)
+    # Ignoring non ASCII
+    file_name = file_obj['name'].encode('ascii', 'ignore')
+    file_path = file_obj['path']
+    print
+    with open(file_path, 'rb') as f:
+        files = {'sample_file': (file_name, f)}
+        results = http_request('POST', url_suffix=suffix, params=params, files=files)
+        return results
 
 
 def upload_sample_command():
