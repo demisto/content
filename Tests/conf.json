@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
+        },
+        {
             "integrations": "AlienVault USM Anywhere",
             "playbookID": "AlienVaultUSMAnywhereTest"
         },
@@ -359,6 +363,11 @@
               "VirusTotal - Private API"
           ],
             "instance_names": "virus_total_private_api_general",
+            "timeout": 500
+        },
+        {
+            "integrations": "urlscan.io",
+            "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
         {
@@ -1407,6 +1416,10 @@
         {
             "integrations": "ANYRUN",
             "playbookID": "Detonate File From URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "AWS - S3v2",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
         },
         {
             "integrations": "AWS - CloudWatchLogs",
