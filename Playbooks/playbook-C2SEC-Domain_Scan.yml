@@ -14,6 +14,7 @@ tasks:
       id: dd24da52-41e0-4d4f-8277-54ee703c4edb
       version: -1
       name: ""
+      description: start
       iscommand: false
       brand: ""
     nexttasks:
@@ -37,6 +38,7 @@ tasks:
       id: 5d737dff-3e3a-49be-8bb6-5492d43dedde
       version: -1
       name: Scan Request
+      description: Scan Request
       script: '|||irisk-rescan-company'
       type: regular
       iscommand: true
@@ -115,6 +117,7 @@ tasks:
       id: 873f2ed8-75cb-41ce-87e3-f32c2584723c
       version: -1
       name: Query Issues
+      description: Query Issues
       script: C2sec|||irisk-query-issues
       type: regular
       iscommand: true
