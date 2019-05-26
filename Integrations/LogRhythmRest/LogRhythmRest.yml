@@ -405,4 +405,6 @@ script:
   runonce: false
   script: '-'
   type: python
+tests:
+  - No test
 releaseNotes: "Added REST API commands."
