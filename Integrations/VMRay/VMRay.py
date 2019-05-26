@@ -1,7 +1,4 @@
-import shutil
-
 import requests
-from requests.utils import guess_filename
 from CommonServerPython import *
 
 ''' GLOBAL PARAMS '''
@@ -15,7 +12,6 @@ SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
-SAMPLE_ID = demisto.args().get('sample_id', '')
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -66,15 +62,15 @@ def is_json(response):
     return True
 
 
-def check_sample_id():
-    """Checks if global parameter SAMPLE_ID is a number
+def check_id(id_to_check):
+    """Checks if global parameter id_to_check is a number
 
     Returns:
         bool: True if is a number, else returns error
     """
-    if isinstance(SAMPLE_ID, int):
+    if isinstance(id_to_check, int):
         return True
-    if isinstance(SAMPLE_ID, (str, unicode)) and not SAMPLE_ID.isdigit():
+    if isinstance(id_to_check, (str, unicode)) and not id_to_check.isdigit():
         return_error(ERROR_FORMAT.format(404, 'No such element'))
     return True
 
@@ -163,7 +159,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         return_error(ERROR_FORMAT.format(r.status_code, r.text))
 
 
-def score_by_hash(analysis):
+def dbot_score_by_hash(analysis):
     """Gets a dict containing MD5/SHA1/SHA256/SSDeep and return dbotscore
 
     Args:
@@ -244,7 +240,7 @@ def build_analysis_data(analyses):
 
     scores = list()  # type: list
     for analysis in entry_context:
-        scores.extend(score_by_hash(analysis))
+        scores.extend(dbot_score_by_hash(analysis))
     entry_context[outputPaths['dbotscore']] = scores
 
     return entry_context
@@ -310,7 +306,6 @@ def upload_sample(file_id, params):
     # Ignoring non ASCII
     file_name = file_obj['name'].encode('ascii', 'ignore')
     file_path = file_obj['path']
-    print
     with open(file_path, 'rb') as f:
         files = {'sample_file': (file_name, f)}
         results = http_request('POST', url_suffix=suffix, params=params, files=files)
@@ -395,15 +390,22 @@ def upload_sample_command():
 
 
 def get_analysis_command():
-    check_sample_id()
+    sample_id = demisto.args().get('sample_id')
+    check_id(sample_id)
     limit = demisto.args().get('limit')
     params = {'_limit': limit}
-    raw_response = get_analysis(SAMPLE_ID, params)
+    raw_response = get_analysis(sample_id, params)
     data = raw_response.get('data')
-    entry_context = build_analysis_data(data)
-    # TODO this
-    humam_readable = json.dumps(raw_response, indent=4)
-    return_outputs(humam_readable, entry_context, raw_response=raw_response)
+    if data:
+        entry_context = build_analysis_data(data)
+        human_readable = tableToMarkdown(
+            'Submission results from VMRay for ID {}:'.format(sample_id),
+            entry_context.get('VMRay.Analysis(val.AnalysisID === obj.AnalysisID)'),
+            headers=['AnalysisID', 'SampleID', 'Severity']
+        )
+        return_outputs(human_readable, entry_context, raw_response=raw_response)
+    else:
+        return_outputs('#### No analysis found for sample id {}'.format(sample_id), None)
 
 
 def get_analysis(sample, params=None):
@@ -423,6 +425,7 @@ def get_analysis(sample, params=None):
 
 def get_submission_command():
     submission_id = demisto.args().get('submission_id')
+    check_id(submission_id)
     raw_response = get_submission(submission_id)
     data = raw_response.get('data')
     if data:
@@ -437,7 +440,7 @@ def get_submission_command():
         entry['SSDeep'] = data.get('submission_sample_ssdeep')
         entry['Severity'] = SEVERITY_DICT.get(data.get('submission_severity'))
         entry['SampleID'] = data.get('submission_sample_id')
-        scores = score_by_hash(entry)
+        scores = dbot_score_by_hash(entry)
 
         entry_context = {
             'VMRay.Submission(val.SubmissionID === obj.SubmissionID)': entry,
@@ -483,7 +486,9 @@ def get_submission(submission_id):
 
 
 def get_sample_command():
-    raw_response = get_sample(SAMPLE_ID)
+    sample_id = demisto.args().get('sample_id')
+    check_id(sample_id)
+    raw_response = get_sample(sample_id)
     data = raw_response.get('data')
 
     entry = dict()
@@ -497,7 +502,7 @@ def get_sample_command():
     entry['Type'] = data.get('sample_type')
     entry['Created'] = data.get('sample_created')
     entry['Classification'] = data.get('sample_classifications')
-    scores = score_by_hash(entry)
+    scores = dbot_score_by_hash(entry)
 
     entry_context = {
         'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
@@ -550,17 +555,20 @@ def get_job(job_id, sample_id):
 
 
 def get_job_command():
-    if SAMPLE_ID:
-        check_sample_id()
     job_id = demisto.args().get('job_id')
+    sample_id = demisto.args().get('sample_id')
+    if sample_id:
+        check_id(sample_id)
+    else:
+        check_id(job_id)
 
-    vmray_id = job_id if job_id else SAMPLE_ID
+    vmray_id = job_id if job_id else sample_id
     title = 'job' if job_id else 'sample'
 
-    raw_response = get_job(job_id=job_id, sample_id=SAMPLE_ID)
+    raw_response = get_job(job_id=job_id, sample_id=sample_id)
     data = raw_response.get('data')
     if raw_response.get('result') == 'error' or not data:
-        entry = build_finished_job(job_id=job_id, sample_id=SAMPLE_ID)
+        entry = build_finished_job(job_id=job_id, sample_id=sample_id)
         human_readable = '#### Jobs for {} id {} is finished/not exists'.format(
             title, vmray_id
         )
@@ -594,8 +602,9 @@ def get_threat_indicators(sample_id):
 
 
 def get_threat_indicators_command():
-    check_sample_id()
-    raw_response = get_threat_indicators(SAMPLE_ID)
+    sample_id = demisto.args().get('sample_id')
+    check_id(sample_id)
+    raw_response = get_threat_indicators(sample_id)
     data = raw_response.get('threat_indicators')
 
     # Build Entry Context
@@ -612,7 +621,7 @@ def get_threat_indicators_command():
 
         human_readable = tableToMarkdown(
             'Threat indicators for sample ID: {}. Showing first indicator:'.format(
-                SAMPLE_ID
+                sample_id
             ),
             entry_context_list[0],
             headers=['AnalysisID', 'Category', 'Classification', 'Operation'],
@@ -623,7 +632,7 @@ def get_threat_indicators_command():
             human_readable, entry_context, raw_response={'threat_indicators': data}
         )
     return_outputs(
-        'No threat indicators for sample ID: {}'.format(SAMPLE_ID),
+        'No threat indicators for sample ID: {}'.format(sample_id),
         {},
         raw_response=raw_response,
     )
@@ -735,8 +744,9 @@ def get_iocs(sample_id):
 
 
 def get_iocs_command():
-    check_sample_id()
-    raw_response = get_iocs(SAMPLE_ID)
+    sample_id = demisto.args().get('sample_id')
+    check_id(sample_id)
+    raw_response = get_iocs(sample_id)
     data = raw_response.get('data', {}).get('iocs', {})
 
     # Initialize counters
@@ -828,15 +838,15 @@ def get_iocs_command():
         'IP': ip_list,
     }
 
-    entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(SAMPLE_ID): iocs}
+    entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(sample_id): iocs}
     if iocs_size:
         human_readable = tableToMarkdown(
-            'Total of {} IOCs found in VMRay by sample {}'.format(iocs_size, SAMPLE_ID),
+            'Total of {} IOCs found in VMRay by sample {}'.format(iocs_size, sample_id),
             iocs_size_table,
             headers=['URLs', 'IPs', 'Domains', 'Mutexes', 'Registry'],
         )
     else:
-        human_readable = '### No IOCs found in sample {}'.format(SAMPLE_ID)
+        human_readable = '### No IOCs found in sample {}'.format(sample_id)
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
@@ -870,5 +880,4 @@ try:
 except Exception as exc:
     return_error(str(exc))
 
-    # TODO get sample vs analysis
     # TODO Let alex pass through outputs get-job-by-sample not exists
