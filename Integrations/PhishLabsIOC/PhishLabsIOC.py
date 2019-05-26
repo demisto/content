@@ -61,10 +61,16 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
             data=json.dumps(data),
             headers=HEADERS)
     except requests.exceptions.SSLError:
-        return return_error('Could not connect to PhishLabs IOC Feed: Could not verify certificate.')
+        ssl_error = 'Could not connect to PhishLabs IOC Feed: Could not verify certificate.'
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(ssl_error)
+        return return_error(ssl_error)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        return return_error('Could not connect to PhishLabs IOC Feed: {}'.format(str(e)))
+        connection_error = 'Could not connect to PhishLabs IOC Feed: {}'.format(str(e))
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(connection_error)
+        return return_error(connection_error)
 
     if res.status_code < 200 or res.status_code > 300:
         status: int = res.status_code
