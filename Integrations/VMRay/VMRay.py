@@ -570,9 +570,9 @@ def get_job_command():
     data = raw_response.get('data')
     if raw_response.get('result') == 'error' or not data:
         entry = build_finished_job(job_id=job_id, sample_id=sample_id)
-        human_readable = '#### Jobs for {} id {} is finished/not exists'.format(
-            title, vmray_id
-        )
+        human_readable = '#### Couldn\'t find a job for the {}: {}. Either the job completed, or does not exist.' \
+            .format(title, vmray_id
+                    )
     else:
         entry = build_job_data(data)
         sample = entry[0] if isinstance(entry, list) else entry
@@ -880,5 +880,3 @@ try:
         get_iocs_command()
 except Exception as exc:
     return_error(str(exc))
-
-    # TODO Let alex pass through outputs get-job-by-sample not exists
