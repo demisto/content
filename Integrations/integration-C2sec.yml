@@ -22,6 +22,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     import requests
@@ -39,7 +44,7 @@ script:
       ENDPOINTURL = demisto.params()['endpointURL']+ "/"
     else:
         ENDPOINTURL = demisto.params()['endpointURL']
-
+    USE_SSL = not demisto.params().get('unsecure', False)
 
     def addcompany(domain, newscan):
        if newscan == 'true':
@@ -47,7 +52,7 @@ script:
        else:
            newscan = 0
        params = {'apikey': API_KEY, 'domain': domain, 'newscan': newscan}
-       call = requests.get(ENDPOINTURL + 'iriskaddcompany', headers=HEADERS, params=params)
+       call = requests.get(ENDPOINTURL + 'iriskaddcompany', headers=HEADERS, verify=USE_SSL, params=params)
        if call.status_code == requests.codes.ok:
           md = tableToMarkdown('Add Company Result', call.json())
           return  {
@@ -65,7 +70,7 @@ script:
     def queryWorkitem(workitemid):
        params = {'apikey': API_KEY, 'workitemid': workitemid}
        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-       call = requests.get(ENDPOINTURL + '/iriskqueryapistatus', headers=HEADERS, params=params)
+       call = requests.get(ENDPOINTURL + '/iriskqueryapistatus', headers=HEADERS, verify=USE_SSL, params=params)
        if call.status_code == requests.codes.ok:
          resp = call.json()
          resp['apistatus']['workitemid'] = workitemid
@@ -83,7 +88,7 @@ script:
     def queryIssues(domain):
        params = {'apikey': API_KEY, 'domain': domain }
        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-       call = requests.get(ENDPOINTURL + 'iRiskQueryIssues', headers=headers, params=params)
+       call = requests.get(ENDPOINTURL + 'iRiskQueryIssues', headers=headers, verify=USE_SSL, params=params)
        if call.status_code == requests.codes.ok:
          md = tableToMarkdown('Query Issues Result', call.json()['issueList'])
          return  {
@@ -100,7 +105,7 @@ script:
     def rescan(domain):
        params = {'apikey': API_KEY, 'domain': domain}
        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-       call = requests.get(ENDPOINTURL + 'iRiskRescanCompany', headers=HEADERS, params=params)
+       call = requests.get(ENDPOINTURL + 'iRiskRescanCompany', headers=HEADERS, verify=USE_SSL, params=params)
        if call.status_code == requests.codes.ok:
          md = tableToMarkdown('Rescan Results', call.json())
          return  {
@@ -117,7 +122,7 @@ script:
     def queryComponent(domain, component):
        params = {'apikey': API_KEY, 'domain': domain, 'component': component }
        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-       call = requests.get(ENDPOINTURL + 'iRiskQueryComponentData', headers=HEADERS, params=params)
+       call = requests.get(ENDPOINTURL + 'iRiskQueryComponentData', headers=HEADERS, verify=USE_SSL, params=params)
        if call.status_code == requests.codes.ok:
          resp = call.json()
          if 'data' in resp:

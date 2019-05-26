@@ -51,12 +51,14 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: d2233a31-72dd-4a51-8dc0-f6e997098b91
+    taskid: e1af921f-809d-49d8-8cbd-f5b8f29cdb80
     type: playbook
     task:
-      id: d2233a31-72dd-4a51-8dc0-f6e997098b91
+      id: e1af921f-809d-49d8-8cbd-f5b8f29cdb80
       version: -1
       name: C2SEC-Domain Scan
+      description: |
+        Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals.
       playbookName: C2SEC-Domain Scan
       type: playbook
       iscommand: false
@@ -64,7 +66,18 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+    scriptarguments:
+      DomainName:
+        simple: demisto.com
+      interval:
+        simple: "1"
+      timeout:
+        simple: "600"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
