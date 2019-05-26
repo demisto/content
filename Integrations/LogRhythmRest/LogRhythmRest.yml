@@ -3,7 +3,7 @@ commonfields:
   id: LogRhythmRest
   version: -1
 configuration:
-- display: Hostname, IP address or Server URL
+- display: Hostname, IP address, or server URL.
   name: url
   required: true
   type: 0
@@ -16,25 +16,25 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: search api cluster ID
+- display: Search API cluster ID.
   name: cluster-id
   required: false
   type: 0
-description: LogRhythm security intelligence
+description: LogRhythm security intelligence.
 display: LogRhythmRest
 name: LogRhythmRest
 script:
   commands:
   - arguments:
     - default: false
-      description: Filter log message by this argument.
+      description: Filter log messages by this argument.
       isArray: false
       name: keyword
       required: true
       secret: false
     - default: false
       defaultValue: '100'
-      description: Number of logs to return
+      description: Number of logs to return.
       isArray: false
       name: page-size
       required: false
@@ -42,7 +42,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Custom
-      description: If time_frame is Custom, specify the start time for the time range.
+      description: If time_frame is "Custom", specify the start time for the time range.
       isArray: false
       name: time-frame
       predefined:
@@ -86,7 +86,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve a list of hosts for a given entity, or an empty list if
+    description: Retrieves a list of hosts for a given entity, or an empty list if
       none is found.
     execution: false
     name: lr-get-hosts-by-entity
@@ -118,7 +118,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: The long description
+      description: The long description.
       isArray: false
       name: long-description
       required: false
@@ -126,7 +126,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: The host risk level.
-      description: The short description
+      description: The short description.
       isArray: false
       name: risk-level
       predefined:
@@ -163,7 +163,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: The host threat level comments level.
+      description: Comments for the host threat level.
       isArray: false
       name: threat-level-comments
       required: false
@@ -199,7 +199,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: use eventlog credentials
+      description: Use eventlog credentialsץ
       isArray: false
       name: use-eventlog-credentials
       predefined:
@@ -210,7 +210,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Unknown
-      description: The type of the host OS.
+      description: The host OS.
       isArray: false
       name: os-type
       predefined:
@@ -232,7 +232,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add new host to entity
+    description: Add ש new host to שמ entityץ
     execution: false
     name: lr-add-host
   - arguments:
@@ -244,7 +244,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The enumeration status of the host
+      description: The enumeration status of the hostץ
       isArray: false
       name: status
       predefined:
@@ -253,11 +253,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update alarm status
+    description: Updates an alarm status.
     execution: false
     name: lr-update-alarm-status
   isfetch: false
   runonce: false
   script: '-'
   type: python
-releaseNotes: "add rest api commands"
+releaseNotes: "Added REST API commands."
