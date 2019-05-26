@@ -1,0 +1,187 @@
+category: Authentication
+commonfields:
+  id: git
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: roysagi
+  display: Username of the repository owner
+  name: user
+  required: false
+  type: 0
+- defaultvalue: Git-Integration
+  display: The name of the requested repository
+  name: repository
+  required: false
+  type: 0
+- defaultvalue: https://api.github.com
+  display: Base url for GitHub
+  name: url
+  required: true
+  type: 0
+description: Integration Template
+display: git
+name: git
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Required. The title of the issue.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The contents of the issue.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: The number of the milestone to associate this issue with.
+      isArray: false
+      name: milestone
+      required: false
+      secret: false
+    - default: false
+      description: Labels to associate with this issue.
+      isArray: true
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue.
+      isArray: true
+      name: assignees
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an issue in git
+    execution: false
+    name: create-issue
+    outputs:
+    - contextPath: confirmation
+      description: ""
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The number of the issue to be closed
+      isArray: false
+      name: issue_number
+      required: false
+      secret: false
+    deprecated: false
+    description: closes an existing issue
+    execution: false
+    name: close-issue
+  - arguments:
+    - default: false
+      description: number of the issue to be updated
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    - default: false
+      description: The title of the issue.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: The contents of the issue.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: State of the issue. Either open or closed.
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: 'The number of the milestone to associate this issue with or null
+        to remove current. '
+      isArray: false
+      name: milestone
+      required: false
+      secret: false
+    - default: false
+      description: 'Labels to associate with this issue. Pass one or more Labels to
+        replace the set of Labels on this Issue. Send an empty array ([]) to clear
+        all Labels from the Issue. '
+      isArray: true
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue. Pass one or more user
+        logins to replace the set of assignees on this Issue. Send an empty array
+        ([]) to clear all assignees from the Issue.
+      isArray: true
+      name: assignees
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the parameters of a given issue
+    execution: false
+    name: update-issue
+  - arguments:
+    - default: false
+      defaultValue: '1'
+      description: Boolean- gets 1 to show only open issues and 0 to show all issues.
+        Default set to 1
+      isArray: false
+      name: open_or_all
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all issues that the user can see
+    execution: false
+    name: list-all-issues
+  - arguments:
+    - default: false
+      description: The query line for the search
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Searches issues matching a given query
+    execution: false
+    name: search-issues
+  - deprecated: false
+    description: Returns the total amount of downloads over all the releases of the
+      repository
+    execution: false
+    name: get-download-count
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
