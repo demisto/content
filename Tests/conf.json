@@ -1316,7 +1316,7 @@
         },
         {
             "playbookID": "PAN OS EDL Management - Test",
-            "integrations": "pan_os_edl_management"
+            "integrations": "palo_alto_networks_pan_os_edl_management"
         },
         {
             "integrations": "Snowflake",
