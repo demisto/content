@@ -576,7 +576,7 @@ script: |-
       if isinstance(data, STRING_TYPES):
           return data
       elif isinstance(data, dict):
-          return '\n'.join(['{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
+          return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
 
@@ -1540,6 +1540,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Small fix to formatCell function
 tests:
   - TestCommonPython
 releaseNotes: "Added new regex param 'urlRegex' for url regex"
