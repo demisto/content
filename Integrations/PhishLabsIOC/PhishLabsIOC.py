@@ -60,6 +60,8 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
             params=params,
             data=json.dumps(data),
             headers=HEADERS)
+    except requests.exceptions.SSLError:
+        return return_error('Could not connect to PhishLabs IOC Feed: Could not verify certificate.')
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
         return return_error('Could not connect to PhishLabs IOC Feed: {}'.format(str(e)))

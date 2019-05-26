@@ -2,8 +2,8 @@ id: PhishLabs - Whitelist false positives
 version: -1
 name: PhishLabs - Whitelist false positives
 fromversion: 4.0.0
-description: This playbook can be used in a job to whitelist indicators from phishlabs
-  that were classified as false positives by a defined period of time.
+description: This playbook can be used in a job to whitelist indicators from PhishLabs
+  that were classified as false positives, according to a defined period of time.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
       id: 5bf410a0-bb6f-4278-80a9-aaf0e6122344
       version: -1
       name: Whitelist false positives
-      description: Populate indicators by the PhishLabs IOC  global feed.
+      description: Populate indicators by the PhishLabs IOC global feed.
       scriptName: PhishLabsPopulateIndicators
       type: regular
       iscommand: false
@@ -76,7 +76,7 @@ tasks:
       id: 58403bf5-5825-4058-8c42-6cbfdb6caac2
       version: -1
       name: Close investigation
-      description: Close the current incident
+      description: Close the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -195,7 +195,7 @@ inputs:
   value:
     simple: 1h
   required: false
-  description: Whitelist indicators within this duration of time from now.
+  description: Whitelist indicators within this duration (from now).
 outputs: []
 releaseNotes: "-"
 tests:
