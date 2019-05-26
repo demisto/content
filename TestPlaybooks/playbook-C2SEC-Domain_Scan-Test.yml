@@ -1,0 +1,104 @@
+id: C2SEC-Domain Scan-Test
+version: -1
+name: C2SEC-Domain Scan-Test
+description: |
+  Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5a40ba4c-1384-4162-847a-4f7a02fa09c8
+    type: start
+    task:
+      id: 5a40ba4c-1384-4162-847a-4f7a02fa09c8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 80214125-ef23-4e14-8cc0-30f6510c73fc
+    type: title
+    task:
+      id: 80214125-ef23-4e14-8cc0-30f6510c73fc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: d2233a31-72dd-4a51-8dc0-f6e997098b91
+    type: playbook
+    task:
+      id: d2233a31-72dd-4a51-8dc0-f6e997098b91
+      version: -1
+      name: C2SEC-Domain Scan
+      playbookName: C2SEC-Domain Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 827.5,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: DomainName
+  value: {}
+  required: true
+  description: Domain Name
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: timeout
+  value:
+    simple: "600"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs: []
