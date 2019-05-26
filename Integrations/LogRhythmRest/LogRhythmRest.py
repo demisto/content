@@ -271,7 +271,7 @@ def main():
         elif demisto.command() == 'lr-update-host-status':
             change_status(demisto.args())
     except Exception as e:
-        raise
+        return_error('error has occurred: {}'.format(str(e)))
 
 
 # python2 uses __builtin__ python3 uses builtins
