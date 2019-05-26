@@ -25,6 +25,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: 'Minimum Alert severity level to fetch incidents incidents from, allowed
+    values are: ''All'', ''Low'', ''High''(Setting to All will fetch all incidents)'
+  name: severity_level
+  defaultvalue: All
+  type: 0
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
@@ -48,12 +54,6 @@ configuration:
 - display: '(MSSP accounts only) Sub account ID:'
   name: mssp_sub_account_id
   defaultvalue: ""
-  type: 0
-  required: false
-- display: 'Minimum Alert severity level to fetch incidents incidents from, allowed
-    values are: ''All'', ''Medium'', ''High''(Setting to All will fetch all incidents)'
-  name: severity_level
-  defaultvalue: All
   type: 0
   required: false
 script:
@@ -761,8 +761,8 @@ script:
 
         demisto.args()['alert-type'] = demisto.getParam('type')
         min_severity_level = demisto.params().get('severity_level', 'All')
-        if min_severity_level not in ['All', 'Medium', 'High']:
-            raise Exception("The Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Medium', 'High'(Setting to All will fetch all incidents)")
+        if min_severity_level not in ['All', 'Low', 'High']:
+            raise Exception("The Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Low', 'High'(Setting to All will fetch all incidents)")
 
         numerical_min_severity_level = translate_severity(min_severity_level)
 
@@ -940,9 +940,16 @@ script:
         HEADERS['Account-Id'] = mssp_account_id
 
 
-    if demisto.command() == 'test-module':
+    def test_module():
         req('GET', 'public/v1/api/version')
+        min_severity_level = demisto.params().get('severity_level', 'All')
+        if min_severity_level not in ['All', 'Low', 'High']:
+            return_error("The Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Low', 'High'(Setting to All will fetch all incidents)")
+
         demisto.results('ok')
+
+    if demisto.command() == 'test-module':
+        test_module()
     elif demisto.command() == 'intsights-mssp-get-sub-accounts':
         get_mssp_sub_accounts()
     elif demisto.command() == 'intsights-get-alerts':
