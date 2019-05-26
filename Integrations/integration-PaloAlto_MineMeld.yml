@@ -701,7 +701,7 @@ script:
         miner = demisto.args()['miner']
         indicators = argToList(demisto.args()['indicator'])
         if len(indicators) < 1:
-          return_error('Insert at least 1 indicator')
+            return_error('Insert at least 1 indicator')
         type_ = demisto.args().get('type',get_indicator_type(indicators[0]))
         comment = demisto.args().get('comment','')
 
