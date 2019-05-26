@@ -319,11 +319,10 @@ def extract_text_from_pdf(file_path):
     try:
         pdf_file_obj = open('./' + file_path, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+        num_pages = pdf_reader.numPages
     except PyPDF2.utils.PdfReadError:
         print('ERROR: Could not parse PDF file in path: {} - ***Review Manually***'.format(file_path))
         return file_contents
-    num_pages = pdf_reader.numPages
-
     while page_num < num_pages:
         pdf_page = pdf_reader.getPage(page_num)
         page_num += 1
