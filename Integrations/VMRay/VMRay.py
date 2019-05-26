@@ -63,16 +63,17 @@ def is_json(response):
 
 
 def check_id(id_to_check):
-    """Checks if global parameter id_to_check is a number
+    """Checks if parameter id_to_check is a number
+
+    Args:
+        id_to_check (int or str or unicode):
 
     Returns:
         bool: True if is a number, else returns error
     """
-    if isinstance(id_to_check, int):
+    if isinstance(id_to_check, int) or isinstance(id_to_check, (str, unicode)) and id_to_check.isdigit():
         return True
-    if isinstance(id_to_check, (str, unicode)) and not id_to_check.isdigit():
-        return_error(ERROR_FORMAT.format(404, 'No such element'))
-    return True
+    return_error(ERROR_FORMAT.format(404, 'No such element'))
 
 
 def build_errors_string(errors):
