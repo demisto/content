@@ -7091,7 +7091,7 @@
                     "irisk-query-issues": "C2sec"
                 },
                 "tests": [
-                    "C2SEC-Domain Scan-Test"
+                    "C2SEC-Domain_Scan-Test"
                 ]
             }
         }
@@ -15353,7 +15353,7 @@
             }
         },
         {
-            "C2SEC-Domain Scan-Test": {
+            "C2SEC-Domain_Scan-Test": {
                 "name": "C2SEC-Domain_Scan-Test",
                 "implementing_playbooks": [
                     "C2SEC-Domain Scan"
