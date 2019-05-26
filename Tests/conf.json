@@ -1490,6 +1490,10 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Forescout",
+            "playbookID": "Forescout-Test"
         }
     ],
     "skipped_tests": {
@@ -1566,6 +1570,7 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
+        "Forescout": "When accessing through the lab firewall , meaning with port forwarding , there is an error that says invalid request (issue 17016)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
