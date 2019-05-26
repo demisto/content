@@ -942,9 +942,10 @@ script:
 
     def test_module():
         req('GET', 'public/v1/api/version')
-        min_severity_level = demisto.params().get('severity_level', 'All')
-        if min_severity_level not in ['All', 'Low', 'High']:
-            return_error("The Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Low', 'High'(Setting to All will fetch all incidents)")
+        if demisto.params().get('isFetch'):
+            min_severity_level = demisto.params().get('severity_level', 'All')
+            if min_severity_level not in ['All', 'Low', 'High']:
+                return_error("The Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Low', 'High'(Setting to All will fetch all incidents)")
 
         demisto.results('ok')
 
@@ -1723,4 +1724,4 @@ script:
     description: Get all mssp sub accounts
   isfetch: true
   runonce: false
-releaseNotes: "Adding the option to fetch incidents based on their criticality level"
+releaseNotes: "Added the severity_level parameter, which fetches incidents based on the incident severity level."
