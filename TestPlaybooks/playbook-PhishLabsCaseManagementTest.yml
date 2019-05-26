@@ -1,0 +1,353 @@
+id: PhishLabs Case Management Test
+version: -1
+name:
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1f79556d-b524-4206-8357-f4bab7065f7d
+    type: start
+    task:
+      id: 1f79556d-b524-4206-8357-f4bab7065f7d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""PhishLabs Case Management Test
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: ddf97ce7-fb2e-415c-8292-3123e09a15c5
+    type: regular
+    task:
+      id: ddf97ce7-fb2e-415c-8292-3123e09a15c5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a516eecd-6729-4d08-8070-b7493f2303ce
+    type: regular
+    task:
+      id: a516eecd-6729-4d08-8070-b7493f2303ce
+      version: -1
+      name: Get brands
+      description: Lists the configured case brands in PhishLabs.
+      script: PhishLabs Case Management|||phishlabs-list-brands
+      type: regular
+      iscommand: true
+      brand: PhishLabs Case Management
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d25b1ed9-72a3-4533-8d93-31eba9f36a91
+    type: regular
+    task:
+      id: d25b1ed9-72a3-4533-8d93-31eba9f36a91
+      version: -1
+      name: Get types
+      description: Lists the available case types in PhishLabs.
+      script: PhishLabs Case Management|||phishlabs-list-case-types
+      type: regular
+      iscommand: true
+      brand: PhishLabs Case Management
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: cc23227d-5c71-4f07-834e-92dd832492d1
+    type: regular
+    task:
+      id: cc23227d-5c71-4f07-834e-92dd832492d1
+      version: -1
+      name: Create a case
+      description: Creates a new case in PhishLabs.
+      script: PhishLabs Case Management|||phishlabs-create-case
+      type: regular
+      iscommand: true
+      brand: PhishLabs Case Management
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      brand:
+        simple: Demisto
+      description:
+        simple: This is a test case
+      title:
+        simple: Test Case
+      type:
+        simple: Unsure
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1202037f-483b-4294-8a8c-5a4268f769a4
+    type: regular
+    task:
+      id: 1202037f-483b-4294-8a8c-5a4268f769a4
+      version: -1
+      name: List the cases
+      description: Lists cases in PhishLabs
+      script: PhishLabs Case Management|||phishlabs-list-cases
+      type: regular
+      iscommand: true
+      brand: PhishLabs Case Management
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      begin_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+      date_field:
+        simple: caseOpen
+      end_date: {}
+      limit: {}
+      status:
+        simple: New
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e4da95d9-3d1a-4f44-8ecb-a3bd713e413c
+    type: regular
+    task:
+      id: e4da95d9-3d1a-4f44-8ecb-a3bd713e413c
+      version: -1
+      name: Get time 1 hour ago
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo:
+        simple: "1"
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 45a4c6ca-85a3-4f83-8613-b5cae21043d0
+    type: condition
+    task:
+      id: 45a4c6ca-85a3-4f83-8613-b5cae21043d0
+      version: -1
+      name: Look for our ticket
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PhishLabs
+                accessor: Case
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: PhishLabs.Case.Number
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Number
+                    getField:
+                      value:
+                        simple: Title
+            iscontext: true
+          right:
+            value:
+              simple: Test Case
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 63cc065c-8608-4639-848e-aed23ce44fa0
+    type: regular
+    task:
+      id: 63cc065c-8608-4639-848e-aed23ce44fa0
+      version: -1
+      name: Get the case
+      description: Gets a PhishLabs case
+      script: PhishLabs Case Management|||phishlabs-get-case
+      type: regular
+      iscommand: true
+      brand: PhishLabs Case Management
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        simple: ${PhishLabs.Case.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: b2824792-df19-4ced-8e21-09b72f8051cb
+    type: title
+    task:
+      id: b2824792-df19-4ced-8e21-09b72f8051cb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1665,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
