@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://caseapi.phishlabs.com
-  display: Server URL (e.g. https://caseapi.phishlabs.com)
+  display: Server URL (e.g., https://caseapi.phishlabs.com)
   name: url
   required: true
   type: 0
@@ -31,7 +31,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '10'
-  display: Fetch this number of incidents each time
+  display: Number of incidents to fetch each time
   name: fetch_limit
   required: false
   type: 0
@@ -39,7 +39,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Manage cases in PhishLabs
+description: Manage cases in PhishLabs.
 display: PhishLabs Case Management
 name: PhishLabs Case Management
 script:
@@ -48,7 +48,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Open
-      description: CSV list of statuses, for example, "New,Assigned"
+      description: CSV list of statuses, for example, "New,Assigned".
       isArray: true
       name: status
       predefined:
@@ -81,14 +81,14 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Limit the number of cases to return.
+      description: Maximum number of cases to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The field to filter the begin_date and end_date by.
+      description: The field by which to filter the 'begin_date' and 'end_date'.
       isArray: false
       name: date_field
       predefined:
@@ -97,95 +97,95 @@ script:
       required: false
       secret: false
     - default: false
-      description: Begin date
+      description: Begin date.
       isArray: false
       name: begin_date
       required: false
       secret: false
     - default: false
-      description: End date
+      description: End date.
       isArray: false
       name: end_date
       required: false
       secret: false
     deprecated: false
-    description: Lists cases in PhishLabs
+    description: Lists cases in PhishLabs.
     execution: false
     name: phishlabs-list-cases
     outputs:
     - contextPath: PhishLabs.Case.ID
-      description: Case ID
+      description: Case ID.
       type: String
     - contextPath: PhishLabs.Case.Number
-      description: Case number
+      description: Case number.
       type: Number
     - contextPath: PhishLabs.Case.Status
-      description: Case status
+      description: Case status.
       type: String
     - contextPath: PhishLabs.Case.Type
-      description: Case type
+      description: Case type.
       type: String
     - contextPath: PhishLabs.Case.CreatedBy
-      description: Case created by
+      description: Case creator.
       type: String
     - contextPath: PhishLabs.Case.Title
-      description: Case title
+      description: Case title.
       type: String
     - contextPath: PhishLabs.Case.CreatedAt
-      description: Case created at
+      description: Date the case was created.
       type: Date
   - arguments:
     - default: true
-      description: Case ID, run phishlabs-list-cases to get it.
+      description: Case ID. Can be obtained by running the 'phishlabs-list-cases' command.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Gets a PhishLabs case
+    description: Retrieves a care from PhishLabs.
     execution: false
     name: phishlabs-get-case
     outputs:
     - contextPath: PhishLabs.Case.ID
-      description: Case ID
+      description: Case ID.
       type: String
     - contextPath: PhishLabs.Case.Number
-      description: Case number
+      description: Case number.
       type: Number
     - contextPath: PhishLabs.Case.Status
-      description: Case status
+      description: Case status.
       type: String
     - contextPath: PhishLabs.Case.Type
-      description: Case type
+      description: Case type.
       type: String
     - contextPath: PhishLabs.Case.CreatedBy
-      description: Case created by
+      description: Case creator.
       type: String
     - contextPath: PhishLabs.Case.Title
-      description: Case title
+      description: Case title.
       type: String
     - contextPath: PhishLabs.Case.Description
-      description: Case description
+      description: Case description.
       type: String
     - contextPath: PhishLabs.Case.CreatedAt
-      description: Case created by
+      description: Date the case was created.
       type: Date
     - contextPath: PhishLabs.Case.ClosedAt
-      description: Case closed at
+      description: Date the case was closed.
       type: Date
     - contextPath: PhishLabs.Case.Brand
-      description: Case brand
+      description: Case brand.
       type: String
     - contextPath: PhishLabs.Case.ResolutionStatus
-      description: Case resolution status
+      description: Case resolution status.
       type: String
     - contextPath: PhishLabs.Case.ModifiedAt
-      description: Case modified at
+      description: Date the case was modified.
       type: Date
   - arguments:
     - default: false
       defaultValue: '10'
-      description: Limit the number of results to return
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -196,12 +196,12 @@ script:
     name: phishlabs-list-brands
     outputs:
     - contextPath: PhishLabs.Brand
-      description: Case brand name
+      description: Case brand name.
       type: String
   - arguments:
     - default: false
       defaultValue: '10'
-      description: Limit the number of results to return
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -212,18 +212,18 @@ script:
     name: phishlabs-list-case-types
     outputs:
     - contextPath: PhishLabs.CaseType
-      description: Case type name
+      description: Case type name.
       type: String
   - arguments:
     - default: false
-      description: The case type, get the available types from the phishlads-list-case-types
+      description: The case type. To get available types, run the 'phishlads-list-case-types' command.
         command.
       isArray: false
       name: type
       required: true
       secret: false
     - default: false
-      description: The case brand, get the available brands from the phishlabs-list-case-brands
+      description: The case brand. To get the available brands, run the 'phishlabs-list-case-brands' command.
         command.
       isArray: false
       name: brand
@@ -247,13 +247,13 @@ script:
     name: phishlabs-create-case
     outputs:
     - contextPath: PhishLabs.Case.ID
-      description: Case ID
+      description: Case ID.
       type: String
     - contextPath: PhishLabs.Case.Number
-      description: Case number
+      description: Case number.
       type: Number
     - contextPath: PhishLabs.Case.Status
-      description: Case status
+      description: Case status.
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
