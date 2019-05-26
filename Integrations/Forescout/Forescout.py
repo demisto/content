@@ -767,8 +767,9 @@ def update_host_fields_command():
     update_type = args.get('update_type', '')
     field = args.get('field', '')
     host_ip = args.get('host_ip', '')
+    fields_json = args.get('fields_json', '{}')
     try:
-        fields_json_dict = json.loads(args.get('fields_json', ''))
+        fields_json_dict = json.loads(fields_json)
     except json.decoder.JSONDecodeError:
         return_error(f'Failed to parse \'fields_json\' command argument - invalid JSON format.')
 
