@@ -78,6 +78,3 @@ dependson:
     ]
   should:
   - PhishLabs IOC|||phishlabs-global-feed
-tests:
-  - PhishLabsTestPopulateIndicators
-releaseNotes: "-"
