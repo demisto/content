@@ -350,11 +350,6 @@
             "timeout": 500
         },
         {
-            "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
             "playbookID": "CutTransformerTest"
         },
         {
@@ -1390,6 +1385,14 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AWS - EC2",
+            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
+        },
+        {
+            "integrations": "AWS - EC2",
+            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
+        },
+        {
             "integrations": "ANYRUN",
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
@@ -1407,13 +1410,6 @@
         {
             "integrations": "carbonblackprotection",
             "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
-        },
-        {
-            "integrations": [
-                "AWS - EC2",
-                "AWS - EC2_copy"
-            ],
-            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
         },
         {
             "integrations": "DomainTools",
@@ -1486,7 +1482,6 @@
     ],
     "skipped_tests": {
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
-        "url_enrichment_-_generic_test": "Deprecated playbook - the playbook seems to be deleted",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
@@ -1585,6 +1580,7 @@
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
+        "AWS - EC2": "SSL Validation fails for STS",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
@@ -1692,7 +1688,6 @@
         "DUO Admin": "Missing proxy and trust any cert option #16893",
         "AWS - CloudWatchLogs": "Integration requires SSL",
         "AWS - CloudTrail": "Integration requires SSL",
-        "AWS - EC2": "Integration requires SSL",
         "AWS - S3": "Integration requires SSL",
         "Image OCR": "Doesn't perform network communication"
     }
