@@ -107,7 +107,7 @@ def add_host(dataArgs):
     data = {
         "id": -1,
         "entity": {
-            "id": dataArgs.get('entity-id'),
+            "id": int(dataArgs.get('entity-id')),
             "name": dataArgs.get('entity-name')
         },
         "name": dataArgs.get('name'),
@@ -119,13 +119,15 @@ def add_host(dataArgs):
         "recordStatusName": dataArgs.get('host-status'),
         "hostZone": dataArgs.get('host-zone'),
         "os": dataArgs.get('os'),
-        "useEventlogCredentials": dataArgs.get('use-eventlog-credentials'),
+        "useEventlogCredentials": bool(dataArgs.get('use-eventlog-credentials')),
         "osType": dataArgs.get('os-type')
     }
 
     res = http_request('POST', 'lr-admin-api/hosts/', json.dumps(data))
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.Host(val.id === obj.id)': context}
     return_outputs(readable_output=dataArgs.get('name') + " added successfully to " + dataArgs.get('entity-name'),
-                   outputs=None, raw_response=res)
+                   outputs=outputs, raw_response=res)
 
 
 def get_hosts(dataArgs):
@@ -133,7 +135,7 @@ def get_hosts(dataArgs):
     res = fix_hosts_response(res)
     context = createContext(res, removeNull=True)
     human_readable = tableToMarkdown('Hosts for ' + dataArgs.get('entity-name'), res, HOSTS_HEADERS)
-    outputs = {'Logrhythm.Hosts(val.Name && val.id === obj.id)': context}
+    outputs = {'Logrhythm.Host(val.Name && val.id === obj.id)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
@@ -147,7 +149,7 @@ def change_status(dataArgs):
 
     host_info = get_host_by_id(dataArgs.get('host-id'))
     context = createContext(host_info, removeNull=True)
-    outputs = {'Logrhythm.Hosts(val.id === obj.id)': context}
+    outputs = {'Logrhythm.Host(val.id === obj.id)': context}
     return_outputs(readable_output='Status updated to ' + dataArgs.get('status'), outputs=outputs, raw_response=res)
 
 
@@ -218,7 +220,7 @@ def execute_query(dataArgs):
 
     context = createContext(logs_response, removeNull=True)
     human_readable = tableToMarkdown('logs results', logs_response, LOGS_HEASERS)
-    outputs = {'Logrhythm.logs': context}
+    outputs = {'Logrhythm.Logs': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=logs_response)
 
 
@@ -236,7 +238,7 @@ try:
         get_hosts(demisto.args())
     elif demisto.command() == 'lr-execute-query':
         execute_query(demisto.args())
-    elif demisto.command() == 'lr-update-alarm-status':
+    elif demisto.command() == 'lr-update-host-status':
         change_status(demisto.args())
 except Exception as e:
     raise
