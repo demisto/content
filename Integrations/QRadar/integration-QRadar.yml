@@ -41,7 +41,6 @@ configuration:
   required: false
   type: 13
 description: Fetch offenses as incidents and search QRadar
-detaileddescription: Fetch offenses as incidents and search QRadar
 display: IBM QRadar
 name: QRadar
 script:
