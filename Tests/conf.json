@@ -6,6 +6,9 @@
             "integrations": "vmray",
             "playbookID": "VMRay-Test"
         },
+            "integrations": "AlienVault USM Anywhere",
+            "playbookID": "AlienVaultUSMAnywhereTest"
+        },
         {
             "playbookID": "PhishLabsTestPopulateIndicators"
         },
