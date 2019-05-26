@@ -1,6 +1,6 @@
 id: PhishLabs Case Management Test
 version: -1
-name:
+name: PhishLabs Case Management Test
 starttaskid: "0"
 tasks:
   "0":
