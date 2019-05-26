@@ -1,0 +1,22 @@
+category: Messaging
+commonfields:
+  id: Slack
+  version: -1
+configuration:
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+display: Slack
+name: Slack
+description: Add poop emojies to messages in Slack.
+script:
+  dockerimage: devtesting/slack:1.0.0.1558884736
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
