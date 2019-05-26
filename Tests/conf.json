@@ -1453,6 +1453,14 @@
             "playbookID": "GoogleCloudCompute-Test"
         },
         {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AWS - S3",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+        },
+        {
             "integrations": "Image OCR",
             "playbookID": "TestImageOCR"
         },
@@ -1493,7 +1501,6 @@
         "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
         "DomainTools-Test": "No instance",
         "Remedy-On-Demand-Test": "No instance",
-        "97393cfc-2fc4-4dfe-8b6e-af64067fc436": "No instance",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
         "d66e5f86-e045-403f-819e-5058aa603c32": "skipped until PR is merged (pr 3220)",
