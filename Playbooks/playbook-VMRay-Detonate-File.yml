@@ -332,6 +332,7 @@ tasks:
     id: "12"
     taskid: d9177a3a-b705-45af-8b42-7ee487c17eda
     type: condition
+    description: check term
     task:
       id: d9177a3a-b705-45af-8b42-7ee487c17eda
       version: -1
