@@ -150,7 +150,7 @@ def convert_to_str(obj):
         return obj.encode('utf-8')
     try:
         return str(obj)
-    except:
+    except ValueError:
         return obj
 
 
@@ -588,7 +588,6 @@ def enrich_source_addresses_dict(src_adrs):
 def enrich_destination_addresses_dict(dst_adrs):
     dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
     destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
-    headers = {'Content-Type': 'application/json', "SEC": convert_to_str(TOKEN)}
     dst_res = send_request('GET', destination_url, AUTH_HEADERS)
     for dst_adr in dst_res:
         dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
@@ -795,7 +794,7 @@ def get_domain_name(domain_id):
                 domain_id)}
         search_id = search(query_param)['search_id']
         return get_search_results(search_id)['events'][0]['Domain name']
-    except:
+    except ValueError:
         return domain_id
 
 
@@ -867,7 +866,7 @@ def enrich_reference_set_result(ref, convert_date_elements=False):
             if convert_date_elements:
                 try:
                     item['Value'] = epoch_to_ISO(int(item['Value']))
-                except:
+                except ValueError:
                     pass
     if 'CreationTime' in ref:
         ref['CreationTime'] = epoch_to_ISO(ref['CreationTime'])
