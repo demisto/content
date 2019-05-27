@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
+        },
+        {
             "integrations": "AlienVault USM Anywhere",
             "playbookID": "AlienVaultUSMAnywhereTest"
         },
@@ -363,6 +367,11 @@
               "VirusTotal - Private API"
           ],
             "instance_names": "virus_total_private_api_general",
+            "timeout": 500
+        },
+        {
+            "integrations": "urlscan.io",
+            "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
         {
@@ -1413,6 +1422,10 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
+            "integrations": "AWS - S3v2",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+        },
+        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
         },
@@ -1494,6 +1507,10 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Forescout",
+            "playbookID": "Forescout-Test"
         }
     ],
     "skipped_tests": {
@@ -1570,6 +1587,7 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
+        "Forescout": "When accessing through the lab firewall , meaning with port forwarding , there is an error that says invalid request (issue 17016)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
