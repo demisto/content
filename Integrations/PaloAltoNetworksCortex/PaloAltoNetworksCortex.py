@@ -6,15 +6,25 @@ import os
 import requests
 import json
 from pancloud import LoggingService, Credentials
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
+AUTH_ID = demisto.params().get('auth_id')
+# If there's a stored token in integration context, it's newer than current
+TOKEN = demisto.getIntegrationContext().get('token')
+if not TOKEN:
+    TOKEN = demisto.params().get('token')
 
-DEMISTO_APP_TOKEN = demisto.params().get('token')
+ENC_KEY = demisto.params().get('auth_key')
+
 USE_SSL = not demisto.params().get('insecure', False)
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
 FETCH_QUERY = None
+
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 if not FIRST_FETCH_TIMESTAMP:
     FIRST_FETCH_TIMESTAMP = '24 hours'
@@ -50,6 +60,43 @@ COMMON_HEADERS = [
 ]
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_encrypted(auth_id: str, key: str) -> str:
+    """
+
+    Args:
+        auth_id (str): auth_id from Demistobot
+        key (str): key from Demistobot
+
+    Returns:
+
+    """
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = enc_key.encode()
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
 
 
 def prepare_fetch_query(fetch_timestamp):
@@ -110,7 +157,6 @@ def epoch_seconds(d=None):
 
 
 def get_access_token():
-
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get('access_token')
     stored = integration_context.get('stored')
@@ -118,13 +164,14 @@ def get_access_token():
         if epoch_seconds() - stored < 60 * 60 - 30:
             return access_token
     headers = {
-        'Authorization': DEMISTO_APP_TOKEN,
+        'Authorization': AUTH_ID,
         'Accept': 'application/json'
     }
+
     dbot_response = requests.get(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={'token': DEMISTO_APP_TOKEN},
+        params={'token': get_encrypted(TOKEN, ENC_KEY)},
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
@@ -134,6 +181,11 @@ def get_access_token():
                 dbot_response.status_code, dbot_response.reason, dbot_response.text))
             err_response = dbot_response.json()
             server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
             if server_msg:
                 msg += ' Server message: {}'.format(server_msg)
         except Exception as ex:
@@ -148,18 +200,18 @@ def get_access_token():
         )
     access_token = parsed_response.get('access_token')
     api_url = parsed_response.get('url')
+    token = parsed_response.get('token')
+
     demisto.setIntegrationContext({
         'access_token': access_token,
         'stored': epoch_seconds(),
-        'api_url': api_url
+        'api_url': api_url,
+        'token': token
     })
     return access_token
 
 
-def query_loggings(query_data):
-    '''
-    This function handles all the querying of Cortex Logging service
-    '''
+def initial_logging_service():
     api_url = demisto.getIntegrationContext().get('api_url', 'https://api.us.paloaltonetworks.com')
     credentials = Credentials(
         access_token=get_access_token(),
@@ -169,6 +221,30 @@ def query_loggings(query_data):
         url=api_url,
         credentials=credentials
     )
+
+    return logging_service
+
+
+def poll_query_result(query_id):
+
+    logging_service = initial_logging_service()
+
+    poll_params = {  # Prepare 'poll' params
+        "maxWaitTime": 30000  # waiting for response up to 3000ms
+    }
+
+    # we poll the logging service until we have a complete response
+    response = logging_service.poll(query_id, 0, poll_params)
+
+    return response
+
+
+def query_loggings(query_data):
+    """
+    This function handles all the querying of Cortex Logging service
+    """
+
+    logging_service = initial_logging_service()
 
     response = logging_service.query(query_data)
     query_result = response.json()
@@ -183,25 +259,17 @@ def query_loggings(query_data):
         query_id = query_result['queryId']  # access 'queryId' from 'query' response
     except Exception as e:
         raise Exception('Received error %s when querying logs.' % e)
-    poll_params = {  # Prepare 'poll' params
-        "maxWaitTime": 3000  # waiting for response up to 3000ms
-    }
 
-    # we poll the logging service until we have a complete response
-    full_response = logging_service.poll(query_id, 0, poll_params)
-
-    # delete the query from the service
-    logging_service.delete(query_id)
-
-    return full_response
+    poll_response = poll_query_result(query_id)
+    return poll_response
 
 
 def transform_row_keys(row):
     transformed_row = {}
     for metric, value in row.items():
-        if (metric == 'filedigest'):
+        if metric == 'filedigest':
             transformed_row['SHA256'] = value
-        elif (metric == 'misc'):
+        elif metric == 'misc':
             transformed_row['filename'] = value
         elif metric == 'category' and str(value) == '1':
             transformed_row['category'] = 'malicious'
@@ -211,9 +279,9 @@ def transform_row_keys(row):
 
 
 def results_screener(table_name, full_results):
-    '''
+    """
     This function is used to make sure we include only pre-defined metrics in the human readable
-    '''
+    """
     screened_results = []
 
     if table_name == "traffic":
@@ -236,11 +304,11 @@ def results_screener(table_name, full_results):
 
 def get_start_time(date_type, time_value):
     current_date = datetime.now()
-    if (date_type == 'minutes'):
+    if date_type == 'minutes':
         return current_date - timedelta(minutes=time_value)
-    elif (date_type == 'days'):
+    elif date_type == 'days':
         return current_date - timedelta(days=time_value)
-    elif (date_type == 'weeks'):
+    elif date_type == 'weeks':
         return current_date - timedelta(weeks=time_value)
 
 
@@ -248,10 +316,10 @@ def convert_log_to_incident(log):
     log_contents = log.get('_source')
     log_contents['id'] = log.get('_id')
     log_contents['score'] = log.get('_score')
-    if 'Traps' in FETCH_QUERY:
+    if 'Traps' in FETCH_QUERY:  # type: ignore
         occurred = log_contents.get('generatedTime')
         time_received = log_contents.get('serverTime')
-    elif 'Firewall' in FETCH_QUERY:
+    elif 'Firewall' in FETCH_QUERY:  # type: ignore
         time_generated = log_contents.get('time_generated')
         occurred = datetime.utcfromtimestamp(time_generated).isoformat() + 'Z'
         time_received = log_contents.get('receive_time')
@@ -269,25 +337,26 @@ def convert_log_to_incident(log):
 
 
 def query_logs_command():
-    '''
+    """
     Return the result of querying the Logging service
-    '''
+    """
     args = demisto.args()
     start_time = args.get('startTime')
     end_time = args.get('endTime')
     time_range = args.get('timeRange')
     time_value = args.get('rangeValue')
 
-    if (time_range):
-        if (time_value):
+    if time_range:
+        if time_value:
             service_end_date = datetime.now()
             service_start_date = get_start_time(time_range, int(time_value))
         else:
             raise Exception('Enter timeRange and timeValue, or startTime and endTime')
     else:
-        # parses user input to datetime object
-        service_start_date = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        service_end_date = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+        time_format = '%Y-%m-%d %H:%M:%S'
+        # Thu Jan 01 02:00:00 IST 1970' does not match format '%Y-%m-%d %H:%M:%S'
+        service_start_date = datetime.strptime(start_time, time_format)
+        service_end_date = datetime.strptime(end_time, time_format)
 
     # transforms datetime object to epoch time
     service_start_date_epoch = int(service_start_date.strftime('%s'))
@@ -295,7 +364,7 @@ def query_logs_command():
 
     query = args.get('query')
 
-    if ('limit' not in query.lower()):
+    if 'limit' not in query.lower():
         query += ' LIMIT 100'
 
     query_data = {
@@ -307,7 +376,11 @@ def query_logs_command():
     response = query_loggings(query_data)
 
     try:
-        result = response.json()['result']
+        response_json = response.json()
+        query_status = response_json.get('queryStatus', '')
+        if query_status in {'RUNNING', 'JOB_FAILED'}:
+            raise Exception(f'Logging query job failed with status: {query_status}')
+        result = response_json.get('result', {})
         pages = result['esResult']['hits']['hits']
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
@@ -339,9 +412,9 @@ def query_logs_command():
 
 
 def get_critical_logs_command():
-    '''
+    """
     Queries Cortex Logging according to a pre-set query
-    '''
+    """
 
     args = demisto.args()
 
@@ -351,8 +424,8 @@ def get_critical_logs_command():
     time_range = args.get('timeRange')
     time_value = args.get('rangeValue')
 
-    if (time_range):
-        if (time_value):
+    if time_range:
+        if time_value:
             service_end_date = datetime.now()
             service_start_date = get_start_time(time_range, int(time_value))
         else:
@@ -408,7 +481,7 @@ def get_critical_logs_command():
 
 
 def get_social_applications_command():
-    ''' Queries Cortex Logging according to a pre-set query '''
+    """ Queries Cortex Logging according to a pre-set query """
 
     args = demisto.args()
 
@@ -418,8 +491,8 @@ def get_social_applications_command():
     time_range = args.get('timeRange')
     time_value = args.get('rangeValue')
 
-    if (time_range):
-        if (time_value):
+    if time_range:
+        if time_value:
             service_end_date = datetime.now()
             service_start_date = get_start_time(time_range, int(time_value))
         else:
@@ -475,9 +548,9 @@ def get_social_applications_command():
 
 
 def search_by_file_hash_command():
-    '''
+    """
     Queries Cortex Logging according to a pre-set query
-    '''
+    """
 
     args = demisto.args()
 
@@ -553,32 +626,54 @@ def process_incident_pairs(incident_pairs, max_incidents):
 
 def fetch_incidents():
 
-    last_fetched_event_timestamp = demisto.getLastRun().get('last_fetched_event_timestamp')
-    if last_fetched_event_timestamp is not None:
-        last_fetched_event_timestamp = datetime.strptime(last_fetched_event_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+    last_run = demisto.getLastRun()
+    last_fetched_event_timestamp = last_run.get('last_fetched_event_timestamp')
+    last_query_id = last_run.get('last_query_id')
+
+    if last_query_id:
+        # Need to poll query results fron last run
+        response = poll_query_result(last_query_id)
     else:
-        last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
+        if last_fetched_event_timestamp is not None:
+            last_fetched_event_timestamp = datetime.strptime(last_fetched_event_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
 
-    # Need sometime in the future, so the timestamp will be taken from the query
-    service_end_date_epoch = int(datetime.now().strftime('%s')) + 1000
+        # Need sometime in the future, so the timestamp will be taken from the query
+        service_end_date_epoch = int(datetime.now().strftime('%s')) + 1000
 
-    if 'Firewall' in FETCH_QUERY:
-        fetch_timestamp = int(last_fetched_event_timestamp.strftime('%s'))
-    elif 'Traps' in FETCH_QUERY:
-        fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        if 'Firewall' in FETCH_QUERY:  # type: ignore
+            fetch_timestamp = int(last_fetched_event_timestamp.strftime('%s'))
+        elif 'Traps' in FETCH_QUERY:  # type: ignore
+            fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-    query = prepare_fetch_query(fetch_timestamp)
+        query = prepare_fetch_query(fetch_timestamp)
 
-    query_data = {
-        'query': query,
-        'startTime': 0,
-        'endTime': service_end_date_epoch,
-    }
+        query_data = {
+            'query': query,
+            'startTime': 0,
+            'endTime': service_end_date_epoch,
+        }
 
-    response = query_loggings(query_data)
+        response = query_loggings(query_data)
 
     try:
-        result = response.json()['result']
+        response_json = response.json()
+        query_status = response_json.get('queryStatus', '')
+        if query_status == 'JOB_FAILED':
+            raise Exception(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
+        elif query_status == 'RUNNING':
+            if isinstance(last_fetched_event_timestamp, datetime):
+                # In case we don't have query ID from previous run
+                last_fetched_event_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f')
+            # If query job is still running after 30 seconds (max timeout), pass it to next run
+            demisto.setLastRun({
+                'last_fetched_event_timestamp': last_fetched_event_timestamp,
+                'last_query_id': response_json.get('queryId', '')
+            })
+            demisto.incidents([])
+            return
+        result = response_json.get('result', {})
         pages = result['esResult']['hits']['hits']
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
@@ -588,9 +683,9 @@ def fetch_incidents():
     max_fetched_event_timestamp = last_fetched_event_timestamp
     for page in pages:
         incident, time_received = convert_log_to_incident(page)
-        if 'Firewall' in FETCH_QUERY:
+        if 'Firewall' in FETCH_QUERY:  # type: ignore
             time_received_dt = datetime.fromtimestamp(time_received)
-        elif 'Traps' in FETCH_QUERY:
+        elif 'Traps' in FETCH_QUERY:  # type: ignore
             time_received_dt = datetime.strptime(time_received, '%Y-%m-%dT%H:%M:%S.%fZ')
         incident_pairs.append((incident, time_received_dt))
     if incident_pairs:
@@ -610,7 +705,7 @@ def main():
     global FETCH_QUERY
     FETCH_QUERY = demisto.params().get('fetch_query', 'Traps Threats')
 
-    LOG('command is %s' % (demisto.command(), ))
+    LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':
             if demisto.params().get('isFetch'):

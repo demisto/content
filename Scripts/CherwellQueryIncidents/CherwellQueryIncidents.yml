@@ -20,7 +20,10 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellQueryIncidents
-tags: []
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-query-business-object
 outputs:
 - contextPath: Cherwell.QueryResults.RecordId
   description: Recoed ID
