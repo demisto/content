@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 TOKEN = demisto.params().get('token', '')
 BASE_URL = demisto.params().get('url', '').strip('/')
-INSECURE = demisto.params().get('insecure')
+INSECURE = not demisto.params().get('insecure')
 CLUSTER_ID = demisto.params().get('cluster-id')
 
 # Headers to be sent in requests
