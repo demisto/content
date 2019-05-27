@@ -1371,15 +1371,71 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Fields you wish returned
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Number of results in return
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    - default: false
+      description: Query to filter offenses
+      isArray: false
+      name: filter
       required: false
       secret: false
     deprecated: false
     description: Retrieve all Domains
     execution: false
     name: qradar-get-domains
+    outputs:
+    - contextPath: QRadar.Domains.AssetScannerIDs
+      description: Array of Asset Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.CustomProperties
+      description: Custom properties of the domain.
+      type: String
+    - contextPath: QRadar.Domains.Deleted
+      description: Indicates if the domain is deleted.
+      type: Boolean
+    - contextPath: QRadar.Domains.Description
+      description: Description of the domain.
+      type: String
+    - contextPath: QRadar.Domains.EventCollectorIDs
+      description: Array of Event Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowCollectorIDs
+      description: Array of Flow Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowSourceIDs
+      description: Array of Flow Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.ID
+      description: ID of the domain.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceGroupIDs
+      description: Array of Log Source Group IDs.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceIDs
+      description: Array of Log Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.Name
+      description: Name of the Domain.
+      type: String
+    - contextPath: QRadar.Domains.QVMScannerIDs
+      description: Array of QVM Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.TenantID
+      description: ID of the Domain tenant.
+      type: Number
   - arguments:
     - default: false
       description: ID of the domain
@@ -1387,10 +1443,62 @@ script:
       name: id
       required: true
       secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves Domain information By ID
     execution: false
     name: qradar-get-domain-by-id
+    outputs:
+      - contextPath: QRadar.Domains.AssetScannerIDs
+        description: Array of Asset Scanner IDs.
+        type: Number
+      - contextPath: QRadar.Domains.CustomProperties
+        description: Custom properties of the domain.
+        type: String
+      - contextPath: QRadar.Domains.Deleted
+        description: Indicates if the domain is deleted.
+        type: Boolean
+      - contextPath: QRadar.Domains.Description
+        description: Description of the domain.
+        type: String
+      - contextPath: QRadar.Domains.EventCollectorIDs
+        description: Array of Event Collector IDs.
+        type: Number
+      - contextPath: QRadar.Domains.FlowCollectorIDs
+        description: Array of Flow Collector IDs.
+        type: Number
+      - contextPath: QRadar.Domains.FlowSourceIDs
+        description: Array of Flow Source IDs.
+        type: Number
+      - contextPath: QRadar.Domains.ID
+        description: ID of the domain.
+        type: Number
+      - contextPath: QRadar.Domains.LogSourceGroupIDs
+        description: Array of Log Source Group IDs.
+        type: Number
+      - contextPath: QRadar.Domains.LogSourceIDs
+        description: Array of Log Source IDs.
+        type: Number
+      - contextPath: QRadar.Domains.Name
+        description: Name of the Domain.
+        type: String
+      - contextPath: QRadar.Domains.QVMScannerIDs
+        description: Array of QVM Scanner IDs.
+        type: Number
+      - contextPath: QRadar.Domains.TenantID
+        description: ID of the Domain tenant.
+        type: Number
+  - deprecated: false
+    execution: false
   isfetch: true
   runonce: false
   script: ''
