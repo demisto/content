@@ -16,7 +16,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'True'
+- defaultvalue: 'False'
   display: Use system proxy settings
   name: proxy
   required: false
