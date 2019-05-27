@@ -412,5 +412,5 @@ script:
   script: '-'
   type: python
 tests:
-- No test
+- LogRhythm REST test
 releaseNotes: Added REST API commands.
