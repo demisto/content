@@ -229,7 +229,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, basestring):
+        if isinstance(headers, str):
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
@@ -733,7 +733,7 @@ def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None)
     obj = filter_dict_null(obj)
     human_readable_obj = filter_dict_null(human_readable_obj)
     if headers:
-        if isinstance(headers, basestring):
+        if isinstance(headers, str):
             headers = headers.split(',')
         headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
     human_readable_md = ''
