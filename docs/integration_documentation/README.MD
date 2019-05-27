@@ -25,6 +25,10 @@ Where there is missing information, be sure to fill out the document completely.
 **The documentation must conform to [this format](https://github.com/demisto/etc/wiki/Document-structure:-Integrations)**
 
 
+### Using commands parameter
+In order to generate output (human readble and context) examples automatically, one should create a text file containing commands examples, one per line.
+commands will be run one after the other and for each command only the first appearance will be shown in the documentation output.
+
 ### Good documentation examples:
 
 https://support.demisto.com/hc/en-us/articles/360004197454-Preempt - Shows how the commands and examples should be presented
