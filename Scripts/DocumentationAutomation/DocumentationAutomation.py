@@ -51,8 +51,8 @@ def build_example_dict(command_examples):
         {base command -> (example command, markdown, outputs)}
     Note: if a command appears more then once, run all occurrences but stores only the first.
     """
-    examples = {}
-    errors = []
+    examples = {}  # type: dict
+    errors = []  # type: list
     for example in command_examples:
         if example.startswith('!'):
             cmd, md_example, context_example, cmd_errors = run_command(example[1:])
