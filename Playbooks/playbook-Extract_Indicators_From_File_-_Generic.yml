@@ -519,6 +519,22 @@ tasks:
                       value:
                         simple: eml
                     ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xls
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsx
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -697,5 +713,6 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
+releaseNotes: "Fixed mistaken identification of excel files as word documents."
 tests:
   - Extract Indicators From File - test
