@@ -7089,10 +7089,7 @@
                     "irisk-rescan-company": "",
                     "irisk-query-component": "",
                     "irisk-query-issues": "C2sec"
-                },
-                "tests": [
-                    "C2SEC-Domain_Scan-Test"
-                ]
+                }
             }
         }
     ],
@@ -15350,14 +15347,6 @@
                     "irisk-query-component": "",
                     "irisk-query-issues": ""
                 }
-            }
-        },
-        {
-            "C2SEC-Domain_Scan-Test": {
-                "name": "C2SEC-Domain_Scan-Test",
-                "implementing_playbooks": [
-                    "C2SEC-Domain Scan"
-                ]
             }
         }
     ]

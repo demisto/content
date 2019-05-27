@@ -445,5 +445,3 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs: []
-tests:
-- C2SEC-Domain_Scan-Test
