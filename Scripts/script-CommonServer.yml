@@ -2,12 +2,28 @@ commonfields:
   id: CommonServer
   version: -1
 name: CommonServer
-fromversion: 4.5.0
 script: |-
   // Common functions script
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
+
+
+  // ============= Fix vault credentials =============
+  // =================================================
+  try {
+      if(params && typeof params === 'object'){
+          for(var key in params){
+              param = params[key];
+              if(typeof param === 'object' && 'credentials' in param  && param.credentials.vaultInstanceId){
+                  param.identifier = param.credentials.user;
+              }
+          }
+      }
+  }
+  catch (e) {}
+  // =================================================
+
   /**
    * Returns true if string starts with search string
    * @param {String} search - The string to be searched
@@ -1959,5 +1975,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
 tests:
   - 'Test CommonServer'
