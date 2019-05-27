@@ -78,28 +78,28 @@ script:
     execution: false
     name: lr-execute-query
     outputs:
-    - contextPath: Logrhythm.Logs.Channel
+    - contextPath: Logrhythm.Log.Channel
       description: Channel
       type: string
-    - contextPath: Logrhythm.Logs.Computer
+    - contextPath: Logrhythm.Log.Computer
       description: Computer
       type: string
-    - contextPath: Logrhythm.Logs.EventData
+    - contextPath: Logrhythm.Log.EventData
       description: Event data
       type: string
-    - contextPath: Logrhythm.Logs.EventID
+    - contextPath: Logrhythm.Log.EventID
       description: Event ID
       type: string
-    - contextPath: Logrhythm.Logs.Keywords
+    - contextPath: Logrhythm.Log.Keywords
       description: Keywords
       type: string
-    - contextPath: Logrhythm.Logs.Level
+    - contextPath: Logrhythm.Log.Level
       description: Level
       type: string
-    - contextPath: Logrhythm.Logs.Opcode
+    - contextPath: Logrhythm.Log.Opcode
       description: Opcode
       type: string
-    - contextPath: Logrhythm.Logs.Task
+    - contextPath: Logrhythm.Log.Task
       description: Task
       type: string
   - arguments:
