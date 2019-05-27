@@ -246,7 +246,7 @@ def execute_query(data_args):
 
     context = createContext(logs_response, removeNull=True)
     human_readable = tableToMarkdown('logs results', logs_response, LOGS_HEADERS)
-    outputs = {'Logrhythm.Logs': context}
+    outputs = {'Logrhythm.Log': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=logs_response)
 
 
