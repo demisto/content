@@ -11,9 +11,6 @@ from copy import deepcopy
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
