@@ -22,8 +22,8 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_N
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-             "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
-             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
+             "scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
+             "scripts/script-CommonUserServer.yml", "scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
@@ -36,6 +36,10 @@ def checked_type(file_path, regex_list):
             return True
 
     return False
+
+
+def validate_not_a_package_test_script(file_path):
+    return '_test' not in file_path and 'test_' not in file_path
 
 
 def get_modified_files(files_string):
@@ -59,13 +63,14 @@ def get_modified_files(files_string):
         # ignoring renamed and deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
-            if checked_type(file_path, CODE_FILES_REGEX):
+            if checked_type(file_path, CODE_FILES_REGEX) and validate_not_a_package_test_script(file_path):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
             # Common scripts (globally used so must run all tests)
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
+                modified_files_list.append(file_path)
 
             # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
@@ -258,7 +263,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
+        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -511,7 +517,8 @@ def get_test_list(files_string, branch_name):
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Running sample tests due to: {}'.format(','.join(sample_tests)))
         test_ids = get_test_ids(check_nightly_status=True)
-        for _ in range(3):
+        initial_tests_len = len(tests)
+        while len(tests) != initial_tests_len + 3:
             tests.add(random.choice(test_ids))
 
     if not tests:
