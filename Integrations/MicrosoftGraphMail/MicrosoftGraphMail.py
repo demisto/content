@@ -9,33 +9,142 @@ import requests
 import base64
 import os
 import binascii
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-""" GLOBALS/PARAMS """
-# Global annotation
+''' GLOBAL VARS '''
+PARAMS = demisto.params()
 CONTEXT = demisto.getIntegrationContext()
-DEMISTOBOT = 'https://demistobot.demisto.com/msg-mail-token'
-# Credentials
-TOKEN = demisto.params().get('token')
-TENANT_ID = demisto.params().get('tenant_id')
+AUTH_ID = PARAMS.get('auth_id')
+# If there's a stored token in integration context, it's newer than current
+TOKEN = CONTEXT.get('token')
+if not TOKEN:
+    TOKEN = PARAMS.get('token')
+
+ENC_KEY = PARAMS.get('auth_key')
+TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-mail-token'
+TENANT_ID = PARAMS.get('tenant_id')
 # Remove trailing slash to prevent wrong URL path to service
-URL = demisto.params().get('url')
+URL = PARAMS.get('url')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
-# Should we use SSL
-USE_SSL = not demisto.params().get('unsecure', False)
 # Service base URL
 BASE_URL = str(SERVER) + '/v1.0'
 
+USE_SSL = not PARAMS.get('insecure', False)
 # Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
+if not PARAMS.get('proxy'):
     os.environ.pop('HTTP_PROXY', '')
     os.environ.pop('HTTPS_PROXY', '')
     os.environ.pop('http_proxy', '')
     os.environ.pop('https_proxy', '')
 
 ''' HELPER FUNCTIONS '''
+
+
+def epoch_seconds(d: datetime = None) -> int:
+    """
+    Return the number of seconds for given date. If no date, return current.
+
+    Args:
+        d (datetime): timestamp
+    Returns:
+         int: timestamp in epoch
+    """
+    if not d:
+        d = datetime.utcnow()
+    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    stored = integration_context.get('stored')
+    if access_token and stored:
+        if epoch_seconds() - stored < 60 * 60 - 30:
+            return access_token
+    headers = {
+        'Authorization': AUTH_ID,
+        'Accept': 'application/json'
+    }
+
+    dbot_response = requests.get(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        params={'token': get_encrypted(TENANT_ID, ENC_KEY)},
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response: [{}]. Exception: {}'.format(err_response.content, ex))
+        raise Exception(msg)
+    try:
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    token = parsed_response.get('token')
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'stored': epoch_seconds(),
+        'token': token
+    })
+    return access_token
+
+
+def get_encrypted(auth_id: str, key: str) -> str:
+    """
+
+    Args:
+        auth_id (str): auth_id from Demistobot
+        key (str): key from Demistobot
+
+    Returns:
+
+    """
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = enc_key.encode()
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
 
 
 def error_parser(resp_err: requests.Response) -> str:
@@ -77,7 +186,7 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
     Returns:
         dict: requests.json()
     """
-    token = get_token()
+    token = get_access_token()
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
@@ -103,62 +212,6 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
     except ValueError:
         return_error('Could not decode response from API')
         return {}  # return_error will exit
-
-
-def epoch_seconds(d: datetime = None) -> int:
-    """
-    Return the number of seconds for given date. If no date, return current.
-
-    Args:
-        d (datetime): timestamp
-    Returns:
-         int: timestamp in epoch
-    """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_token() -> str:
-    """
-    Check if we have a valid token and if not get one from demistobot
-
-    Returns:
-        str: token from demistobot
-
-    """
-    product = 'MicrosoftGraphMail'
-    token = CONTEXT.get('token')
-    stored = CONTEXT.get('stored')
-    if token and stored:
-        if epoch_seconds() - stored < 60 * 60 - 30:
-            return token
-    headers = {
-        'Authorization': TOKEN,
-        'Accept': 'application/json'
-    }
-
-    r = requests.get(
-        DEMISTOBOT,
-        headers=headers,
-        params={
-            'tenant': TENANT_ID,
-            'product': product
-        },
-        verify=USE_SSL
-    )
-    if r.status_code != requests.codes.ok:
-        return_error(
-            f'Error when trying to get token from Demisto Bot: [{r.status_code}] - {r.text}')
-    data = r.json()
-
-    demisto.setIntegrationContext(
-        {
-            'token': data.get('token'),
-            'stored': epoch_seconds()
-        }
-    )
-    return data.get('token')
 
 
 def assert_pages(pages: Union[str, int]) -> int:
@@ -347,7 +400,7 @@ def test_module():
     Performs basic get request to get item samples
     """
     url = BASE_URL + '/me'
-    token = get_token()
+    token = get_access_token()
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
@@ -586,9 +639,7 @@ def main():
             get_attachment_command()
     # Log exceptions
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
-        raise
+        return_error(str(e))
 
 
 if __name__ == "builtins":
