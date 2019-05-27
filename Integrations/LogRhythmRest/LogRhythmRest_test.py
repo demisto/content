@@ -1,4 +1,4 @@
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 
 def test_get_time_frame():
@@ -26,4 +26,3 @@ def test_get_time_frame():
     start, end = get_time_frame('Custom', '2019-04-01', '2019-04-20')
     assert end.strftime(date_format) == '2019-04-20'
     assert start.strftime(date_format) == '2019-04-01'
-
