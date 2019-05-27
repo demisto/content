@@ -11,7 +11,7 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: 'True'
+- defaultvalue: 'False'
   display: Trust any certificate (unsecure)
   name: insecure
   required: false
