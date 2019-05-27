@@ -1,5 +1,5 @@
 commonfields:
-  id: ComnpareIncidentsLabels
+  id: CompareIncidentsLabels
   version: -1
 name: CompareIncidentsLabels
 script: "-"
