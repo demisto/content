@@ -2,7 +2,6 @@ commonfields:
   id: CompareIncidentsLabels
   version: -1
 name: CompareIncidentsLabels
-script: "-"
 type: python
 tags:
 - incidents
