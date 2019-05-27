@@ -841,27 +841,29 @@ def get_iocs_command():
 
     files = data.get('files')
     files_list = list()
-    for file_entry in files:
-        size = len(files)
-        iocs_size_table['File'] = size
-        iocs_size += size
-        entry = dict()
-        entry['AnalysisID'] = file_entry.get('analysis_ids')
-        entry['Filename'] = file_entry.get('filename')
-        entry['Operation'] = file_entry.get('operations')
-        entry['ID'] = file_entry.get('id')
-        hashes_list = list()
-        for hash_entry in file_entry.get('hashes'):
-            hashes_dict = dict()
-            hashes_dict['MD5'] = hash_entry.get('md5_hash')
-            hashes_dict['SHA1'] = hash_entry.get('sha1_hash')
-            hashes_dict['SSDeep'] = hash_entry.get('ssdeep_hash')
-            hashes_dict['SHA256'] = hash_entry.get('sha256_hash')
-            hashes_list.append(hashes_dict)
+    if files:
+        for file_entry in files:
+            size = len(files)
+            iocs_size_table['File'] = size
+            iocs_size += size
+            entry = dict()
+            entry['AnalysisID'] = file_entry.get('analysis_ids')
+            entry['Filename'] = file_entry.get('filename')
+            entry['Operation'] = file_entry.get('operations')
+            entry['ID'] = file_entry.get('id')
+            hashes_list = list()
+            hashes = file_entry.get('hashes')
+            for hash_entry in hashes:
+                hashes_dict = dict()
+                hashes_dict['MD5'] = hash_entry.get('md5_hash')
+                hashes_dict['SHA1'] = hash_entry.get('sha1_hash')
+                hashes_dict['SSDeep'] = hash_entry.get('ssdeep_hash')
+                hashes_dict['SHA256'] = hash_entry.get('sha256_hash')
+                hashes_list.append(hashes_dict)
 
-        entry['Hashes'] = hashes_list
-        entry['Type'] = file_entry.get('type')
-        files_list.append(entry)
+            entry['Hashes'] = hashes_list
+            entry['Type'] = file_entry.get('type')
+            files_list.append(entry)
 
     iocs = {
         'URL': urls_list,
