@@ -519,7 +519,12 @@ tasks:
                       value:
                         simple: eml
                     ignorecase: true
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: File.Extension
@@ -527,7 +532,12 @@ tasks:
                     right:
                       value:
                         simple: xls
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: File.Extension
