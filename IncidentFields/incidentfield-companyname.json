@@ -10,7 +10,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": true,
+	"required": false,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,
@@ -32,5 +32,6 @@
 	"caseInsensitive": true,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": ""
+	"breachScript": "",
+	"releaseNotes": "Changed the field to non-mandatory"
 }
