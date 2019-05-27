@@ -1497,8 +1497,6 @@ script:
       - contextPath: QRadar.Domains.TenantID
         description: ID of the Domain tenant.
         type: Number
-  - deprecated: false
-    execution: false
   isfetch: true
   runonce: false
   script: ''
