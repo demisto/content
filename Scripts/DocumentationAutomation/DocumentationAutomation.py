@@ -107,8 +107,8 @@ def run_command(command_example):
 
     except Exception as e:
         errors.append(
-            'Error encountered in the processing of command {}, error was: {}'.format(cmd, str(e)) +
-            '. Please check your command inputs and outputs')
+            'Error encountered in the processing of command {}, error was: {}. '.format(cmd, str(e))
+            + '. Please check your command inputs and outputs')
 
     return cmd, md_example, context_example, errors
 
