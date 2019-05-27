@@ -17,9 +17,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 TOKEN = demisto.params().get('token')
-BASE_URL = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
-    else demisto.params()['url']
-
+BASE_URL = demisto.params()['url'].strip('/')
 INSECURE = demisto.params().get('insecure')
 CLUSTER_ID = demisto.params().get('cluster-id')
 
@@ -30,7 +28,7 @@ HEADERS = {
 
 HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
                  "ThreatLevelComments", "DateUpdated", "HostZone"]
-LOGS_HEASERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
+LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
 
 ''' HELPER FUNCTIONS '''
 
@@ -181,6 +179,7 @@ def change_status(data_args):
 
 
 def execute_query(data_args):
+    #generate random string for request id
     req_id = ''.join(random.choice(string.ascii_letters) for x in range(8))
     start, end = get_time_frame(data_args.get('time-frame'), data_args.get('start-date'), data_args.get('end-date'))
     delta = end - start
@@ -211,7 +210,7 @@ def execute_query(data_args):
         }
     }
 
-    headers = HEADERS
+    headers = dict(HEADERS)
     headers['Content-Type'] = 'application/json'
     headers['Request-Id'] = req_id
     headers['Request-Origin-Date'] = str(datetime.now())
@@ -225,7 +224,7 @@ def execute_query(data_args):
 
     for log in logs:
         message = str(log['fields']['logMessage'])
-        message = message[:-2][3:]
+        message = message[3:-2]
 
         try:
             root = ET.fromstring(message)
@@ -246,7 +245,7 @@ def execute_query(data_args):
             continue
 
     context = createContext(logs_response, removeNull=True)
-    human_readable = tableToMarkdown('logs results', logs_response, LOGS_HEASERS)
+    human_readable = tableToMarkdown('logs results', logs_response, LOGS_HEADERS)
     outputs = {'Logrhythm.Logs': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=logs_response)
 
