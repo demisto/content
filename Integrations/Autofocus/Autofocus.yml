@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: Autofocus V2
+  id: AutoFocus V2
   version: -1
 configuration:
 - display: API Key
@@ -17,51 +17,205 @@ configuration:
   required: false
   type: 8
 description: Integration Template
-display: Palo Alto Autofocus V2
-name: Autofocus V2
+display: Palo Alto AutoFocus V2
+name: AutoFocus V2
 script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
+      description: The query to retrieve samples
+      isArray: false
+      name: query
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Number of results to provide.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Field to sort by
+      isArray: false
+      name: sort
+      predefined:
+      - App Name
+      - App Packagename
+      - File type
+      - Size
+      - Finish Date
+      - First Seen (Create Date)
+      - Last Updated (Update Date)
+      - MD5
+      - SHA1
+      - SHA256
+      - Ssdeep Fuzzy Hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Order of sort
+      isArray: false
+      name: order
+      predefined:
+      - Ascending
+      - Descending
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ' Scope of search'
+      isArray: false
+      name: scope
+      predefined:
+      - Private
+      - Public
+      - Global
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Search for samples. To view results run autofocus-samples-search-results
+      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
+      search completes.'
+    execution: false
+    name: autofocus-search-samples
+    outputs:
+    - contextPath: AutoFocus.SamplesSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.SamplesSearch.SearchStatus
+      description: in progress / complete
+      type: String
+  - arguments:
+    - default: false
+      description: The query to retrieve samples
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Number of results to provide.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Field to sort by
+      isArray: false
+      name: sort
+      predefined:
+      - Application
+      - Device Country
+      - Device Country Code
+      - Device Hostname
+      - Device Serial
+      - Device vsys
+      - Destination Country
+      - Destination Country Code
+      - Destination IP
+      - Destination Port
+      - Email Charset
+      - Industry
+      - Source Country
+      - Source Country Code
+      - Source IP
+      - Source Port
+      - SHA256
+      - Time
+      - Upload source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Order of sort
+      isArray: false
+      name: order
+      predefined:
+      - Ascending
+      - Descending
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search for sessions. To view results run autofocus-sessions-search-results
+      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
+      search completes.'
+    execution: false
+    name: autofocus-search-sessions
+    outputs:
+    - contextPath: AutoFocus.SessionsSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.SearchStatus
+      description: in progress / complete
+      type: String
+  - arguments:
+    - default: false
+      description: 'The AF Cookie for retrieving results of previous search. Note:
+        The AF Cookie expires 120 seconds after the search completes.'
+      isArray: false
+      name: af_cookie
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
+      defaultValue: 'False'
+      description: When set to true partial results will be displayed even when the
+        search is not complete
       isArray: false
-      name: is_active
+      name: intermediate_results
       predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
-      isArray: false
-      name: limit
+      - 'False'
+      - 'True'
       required: false
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Get results of a previous samples search
     execution: false
-    name: example-get-items
-    outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+    name: autofocus-samples-search-results
+  - arguments:
+    - default: false
+      description: 'The AF Cookie for retrieving results of previous search. Note:
+        The AF Cookie expires 120 seconds after the search completes.'
+      isArray: false
+      name: af_cookie
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: When set to true partial results will be displayed even when the
+        search is not complete
+      isArray: false
+      name: intermediate_results
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get results of a previous sessions search
+    execution: false
+    name: autofocus-sessions-search-results
+  - arguments:
+    - default: false
+      description: The session ID
+      isArray: false
+      name: session_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get session details by session ID
+    execution: false
+    name: autofocus-get-session-details
+  dockerimage: demisto/python3:3.7.2.214
   isfetch: false
   runonce: false
   script: '-'

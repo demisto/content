@@ -477,12 +477,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Scope name or ID for the saved search
-      isArray: false
-      name: scope
-      required: true
-      secret: false
-    - default: false
       description: Scope owner ID for the saved search. Use "(None)" when no scope
         owner exists.
       isArray: false
