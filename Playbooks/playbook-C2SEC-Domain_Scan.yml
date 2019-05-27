@@ -84,7 +84,7 @@ tasks:
       - "16"
     scriptarguments:
       Ids:
-        simple: ${C2sec.ScanRequest.workitemid}
+        simple: ${C2sec.Scan.workitemid}
       Interval:
         simple: ${inputs.interval}
       PollingCommandArgName:
@@ -403,7 +403,7 @@ tasks:
       - "6"
     scriptarguments:
       id:
-        simple: ${C2sec.ScanRequest.workitemid}
+        simple: ${C2sec.Scan.workitemid}
     separatecontext: false
     view: |-
       {

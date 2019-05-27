@@ -1151,9 +1151,6 @@
 
         },
         {
-            "playbookID": "C2SEC-Domain_Scan-Test"
-        },
-        {
             "playbookID": "Phishing test - attachment",
             "timeout": 600,
             "nightly": true,
