@@ -214,7 +214,7 @@ def get_entry_for_object(title, obj, contents, headers=None, contextKey=None, hu
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, basestring):
+        if isinstance(headers, str):
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
@@ -551,8 +551,8 @@ def enrich_offense_res_with_source_and_destination_address(response):
 
 # Helper method: Extracts all source and destination addresses ids from an offense result
 def extract_source_and_destination_addresses_ids(response):
-    src_ids = {}
-    dst_ids = {}
+    src_ids = {}  # type: dict
+    dst_ids = {}  # type: dict
     if isinstance(response, list):
         for offense in response:
             populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids)
@@ -700,7 +700,7 @@ def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None)
     obj = filter_dict_null(obj)
     human_readable_obj = filter_dict_null(human_readable_obj)
     if headers:
-        if isinstance(headers, basestring):
+        if isinstance(headers, str):
             headers = headers.split(',')
         headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
     human_readable_md = ''
@@ -777,7 +777,7 @@ def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_va
 
 # Creates an empty endpoint dictionary (for use in other methods)
 def create_empty_endpoint_dict(full_values):
-    endpoint_dict = {}
+    endpoint_dict = {}  # type: dict
     endpoint_dict['IPAddress'] = []
     endpoint_dict['OS'] = []
     if full_values:
