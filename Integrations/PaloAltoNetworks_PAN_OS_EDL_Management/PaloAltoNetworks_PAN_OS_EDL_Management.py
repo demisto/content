@@ -117,13 +117,13 @@ def scp_execute(file_name: str, file_path: str):
 ''' COMMANDS '''
 
 
-def pan_od_edl_get_external_file(file_path: str):
+def edl_get_external_file(file_path: str):
     command = f'cat {file_path}'
     result = ssh_execute(command)
     return result
 
 
-def pan_od_edl_get_external_file_command():
+def edl_get_external_file_command():
     """
     Get external file from web-server and prints to Warroom
     """
@@ -131,7 +131,7 @@ def pan_od_edl_get_external_file_command():
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
-    result = pan_od_edl_get_external_file(file_path)
+    result = edl_get_external_file(file_path)
 
     md = tableToMarkdown('File Content:', result, headers=['List'])
     demisto.results({
@@ -141,11 +141,11 @@ def pan_od_edl_get_external_file_command():
     })
 
 
-def pan_od_edl_search_external_file(file_path: str, search_string: str):
+def edl_search_external_file(file_path: str, search_string: str):
     return ssh_execute(f'grep {search_string} {file_path}')
 
 
-def pan_od_edl_search_external_file_command():
+def edl_search_external_file_command():
     """
     Search the external file and return all matching entries to Warroom
     """
@@ -154,7 +154,7 @@ def pan_od_edl_search_external_file_command():
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
     search_string = demisto.args().get('search_string')
 
-    result = pan_od_edl_search_external_file(file_path, search_string)
+    result = edl_search_external_file(file_path, search_string)
     if len(result) > 0:
         md = tableToMarkdown('Search Results', result, headers=['Result'])
 
@@ -171,7 +171,7 @@ def pan_od_edl_search_external_file_command():
         })
 
 
-def pan_od_edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
+def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name)
 
@@ -192,7 +192,7 @@ def pan_od_edl_update_external_file(file_path: str, list_name: str, verbose: boo
             return True
 
 
-def pan_od_edl_update():
+def edl_update():
     """
     Updates the instance context with the list name and items given
     Overrides external file path with internal list
@@ -240,7 +240,7 @@ def pan_od_edl_update():
     })
 
     # scp internal list to file_path
-    result = pan_od_edl_update_external_file(file_path, list_name, verbose)
+    result = edl_update_external_file(file_path, list_name, verbose)
     if result:
         if verbose:
             md = tableToMarkdown('Updated File Data:', result, headers=['Data'])
@@ -254,10 +254,10 @@ def pan_od_edl_update():
         })
 
 
-def pan_od_edl_update_from_external_file(list_name: str, file_path: str, type_: str):
+def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
-    file_data = pan_od_edl_get_external_file(file_path)
+    file_data = edl_get_external_file(file_path)
 
     set_internal = set(list_data)
     set_external = set(file_data.split('\n'))
@@ -274,7 +274,7 @@ def pan_od_edl_update_from_external_file(list_name: str, file_path: str, type_: 
     return list_data_new
 
 
-def pan_od_edl_update_from_external_file_command():
+def edl_update_from_external_file_command():
     """
     Updates internal list data with external file contents
     """
@@ -285,7 +285,7 @@ def pan_od_edl_update_from_external_file_command():
     type_ = demisto.args().get('type')
     verbose = demisto.args().get('verbose') == 'true'
 
-    list_data_new = pan_od_edl_update_from_external_file(list_name, file_path, type_)
+    list_data_new = edl_update_from_external_file(list_name, file_path, type_)
 
     if verbose:
         md = tableToMarkdown('List items:', list_data_new, headers=[list_name])
@@ -299,19 +299,19 @@ def pan_od_edl_update_from_external_file_command():
     })
 
 
-def pan_od_edl_delete_external_file(file_path: str):
+def edl_delete_external_file(file_path: str):
     ssh_execute('rm -f ' + file_path)
     return 'File deleted successfully'
 
 
-def pan_od_edl_delete_external_file_command():
+def edl_delete_external_file_command():
     """
     Delete external file
     """
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    result = pan_od_edl_delete_external_file(file_path)
+    result = edl_delete_external_file(file_path)
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -320,7 +320,7 @@ def pan_od_edl_delete_external_file_command():
     })
 
 
-def pan_od_edl_list_internal_lists_command():
+def edl_list_internal_lists_command():
     """
     List all instance context lists
     """
@@ -336,7 +336,7 @@ def pan_od_edl_list_internal_lists_command():
     })
 
 
-def pan_od_edl_search_internal_list_command():
+def edl_search_internal_list_command():
     """
     Search a string on internal list
     """
@@ -366,7 +366,7 @@ def pan_od_edl_search_internal_list_command():
         })
 
 
-def pan_od_edl_print_internal_list_command():
+def edl_print_internal_list_command():
     """
     Print to warroom instance context list
     """
@@ -389,7 +389,7 @@ def pan_od_edl_print_internal_list_command():
         })
 
 
-def pan_od_edl_dump_internal_list_command():
+def edl_dump_internal_list_command():
     """
     Dumps an instance context list to either a file or incident context
     """
@@ -429,7 +429,7 @@ def pan_od_edl_dump_internal_list_command():
         })
 
 
-def pan_od_edl_compare_command():
+def edl_compare_command():
     list_name = demisto.args().get('list_name')
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
@@ -444,7 +444,7 @@ def pan_od_edl_compare_command():
             'ContentsFormat': formats['text']
         })
 
-    file_data = pan_od_edl_get_external_file(file_path)
+    file_data = edl_get_external_file(file_path)
     if not file_data:
         demisto.results({
             'Type': 11,
@@ -490,34 +490,34 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'pan-os-edl-get-external-file':
-            pan_od_edl_get_external_file_command()
+            edl_get_external_file_command()
 
         elif demisto.command() == 'pan-os-edl-search-external-file':
-            pan_od_edl_search_external_file_command()
+            edl_search_external_file_command()
 
         elif demisto.command() == 'pan-os-edl-update':
-            pan_od_edl_update()
+            edl_update()
 
         elif demisto.command() == 'pan-os-edl-update-from-external-file':
-            pan_od_edl_update_from_external_file_command()
+            edl_update_from_external_file_command()
 
         elif demisto.command() == 'pan-os-edl-delete-external-file':
-            pan_od_edl_delete_external_file_command()
+            edl_delete_external_file_command()
 
         elif demisto.command() == 'pan-os-edl-list-internal-lists':
-            pan_od_edl_list_internal_lists_command()
+            edl_list_internal_lists_command()
 
         elif demisto.command() == 'pan-os-edl-search-internal-list':
-            pan_od_edl_search_internal_list_command()
+            edl_search_internal_list_command()
 
         elif demisto.command() == 'pan-os-edl-print-internal-list':
-            pan_od_edl_print_internal_list_command()
+            edl_print_internal_list_command()
 
         elif demisto.command() == 'pan-os-edl-dump-internal-list':
-            pan_od_edl_dump_internal_list_command()
+            edl_dump_internal_list_command()
 
         elif demisto.command() == 'pan-os-edl-compare':
-            pan_od_edl_compare_command()
+            edl_compare_command()
 
         else:
             return_error('Unrecognized command: ' + demisto.command())
