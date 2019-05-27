@@ -96,6 +96,9 @@
             "playbookID": "StixCreator-Test"
         },
         {
+            "playbookID": "CompareIncidentsLabels-test-playbook"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test",
             "nightly": true
