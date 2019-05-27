@@ -61,14 +61,14 @@ script:
       secret: false
     - default: false
       description: 'Start date for the data query, for example: "2018-04-20". Only
-        use this argument if the time_frame argument is "Custom".'
+        use this argument if the time-frame argument is "Custom".'
       isArray: false
       name: start-date
       required: false
       secret: false
     - default: false
       description: 'End date for the data query, for example: "2018-04-20". Only use
-        this argument if the time_frame argument is "Custom".'
+        this argument if the time-frame argument is "Custom".'
       isArray: false
       name: end-date
       required: false

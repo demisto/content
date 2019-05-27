@@ -179,7 +179,7 @@ def change_status(data_args):
 
 
 def execute_query(data_args):
-    #generate random string for request id
+    # generate random string for request id
     req_id = ''.join(random.choice(string.ascii_letters) for x in range(8))
     start, end = get_time_frame(data_args.get('time-frame'), data_args.get('start-date'), data_args.get('end-date'))
     delta = end - start
