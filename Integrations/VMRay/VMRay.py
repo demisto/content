@@ -126,10 +126,10 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         if isinstance(may_be_error_inside, dict):
             if 'error_msg' in may_be_error_inside:
                 return may_be_error_inside['error_msg']
-            if 'errors' in may_be_error_inside and len(may_be_error_inside['errors']):
+            if 'errors' in may_be_error_inside and may_be_error_inside.get('errors'):
                 return may_be_error_inside['errors']
-            for v in may_be_error_inside.values():
-                err_r = find_error(v)
+            for value in may_be_error_inside.values():
+                err_r = find_error(value)
                 if err_r:
                     return err_r
         return None
@@ -185,6 +185,14 @@ def dbot_score_by_hash(analysis):
 
 
 def build_job_data(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+        list: list of jobs
+    """
     def build_entry(entry_data):
         entry = dict()
         entry['JobID'] = entry_data.get('job_id')
@@ -234,7 +242,7 @@ def build_analysis_data(analyses):
             'JobCreated': analysis.get('analysis_job_started'),
             'SHA1': analysis.get('analysis_sample_sha1'),
             'MD5': analysis.get('analysis_sample_md5'),
-            'SHA256': analysis.get('analysis_sample_sha25'),
+            'SHA256': analysis.get('analysis_sample_sha256'),
         }
         for analysis in analyses
     ]
@@ -400,7 +408,7 @@ def get_analysis_command():
     if data:
         entry_context = build_analysis_data(data)
         human_readable = tableToMarkdown(
-            'Submission results from VMRay for ID {}:'.format(sample_id),
+            'Analysis results from VMRay for ID {}:'.format(sample_id),
             entry_context.get('VMRay.Analysis(val.AnalysisID === obj.AnalysisID)'),
             headers=['AnalysisID', 'SampleID', 'Severity']
         )
@@ -631,11 +639,12 @@ def get_threat_indicators_command():
         return_outputs(
             human_readable, entry_context, raw_response={'threat_indicators': data}
         )
-    return_outputs(
-        'No threat indicators for sample ID: {}'.format(sample_id),
-        {},
-        raw_response=raw_response,
-    )
+    else:
+        return_outputs(
+            'No threat indicators for sample ID: {}'.format(sample_id),
+            {},
+            raw_response=raw_response,
+        )
 
 
 def post_tags_to_analysis(analysis_id, tag):
@@ -830,12 +839,37 @@ def get_iocs_command():
             entry['Type'] = url.get('type')
             urls_list.append(entry)
 
+    files = data.get('files')
+    files_list = list()
+    for file_entry in files:
+        size = len(files)
+        iocs_size_table['File'] = size
+        iocs_size += size
+        entry = dict()
+        entry['AnalysisID'] = file_entry.get('analysis_ids')
+        entry['Filename'] = file_entry.get('filename')
+        entry['Operation'] = file_entry.get('operations')
+        entry['ID'] = file_entry.get('id')
+        hashes_list = list()
+        for hash_entry in file_entry.get('hashes'):
+            hashes_dict = dict()
+            hashes_dict['MD5'] = hash_entry.get('md5_hash')
+            hashes_dict['SHA1'] = hash_entry.get('sha1_hash')
+            hashes_dict['SSDeep'] = hash_entry.get('ssdeep_hash')
+            hashes_dict['SHA256'] = hash_entry.get('sha256_hash')
+            hashes_list.append(hashes_dict)
+
+        entry['Hashes'] = hashes_list
+        entry['Type'] = file_entry.get('type')
+        files_list.append(entry)
+
     iocs = {
         'URL': urls_list,
         'Mutex': mutex_list,
         'Domain': domain_list,
         'Registry': registry_list,
         'IP': ip_list,
+        'File': files_list
     }
 
     entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(sample_id): iocs}
@@ -843,7 +877,8 @@ def get_iocs_command():
         human_readable = tableToMarkdown(
             'Total of {} IOCs found in VMRay by sample {}'.format(iocs_size, sample_id),
             iocs_size_table,
-            headers=['URLs', 'IPs', 'Domains', 'Mutexes', 'Registry'],
+            headers=['URLs', 'IPs', 'Domains', 'Mutexes', 'Registry', 'File'],
+            removeNull=True
         )
     else:
         human_readable = '### No IOCs found in sample {}'.format(sample_id)

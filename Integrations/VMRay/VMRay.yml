@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://cloud.vmray.com
-  display: Server URL (e.g., https://192.168.0.1)
+  display: Server URL (e.g., https://cloud.vmray.com)
   name: server
   required: true
   type: 0
@@ -422,6 +422,33 @@ script:
       type: Number
     - contextPath: VMRay.Sample.IOC.Mutex.Type
       description: Type of mutex.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.AnalysisID
+      description: IDs of other analyses that containt the given file.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.Name
+      description: Name of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Operation
+      description: Operation of given file
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ID
+      description: ID of the file.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.Type
+      description: Type of file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
+      description: MD5 of given file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
+      description: SSDeep of given file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA256
+      description: SHA256 of given file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA1
+      description: SHA1 of given file.
       type: String
   - arguments:
     - default: false
