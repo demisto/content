@@ -1,0 +1,20 @@
+commonfields:
+  id: ComnpareIncidentsLabels
+  version: -1
+name: CompareIncidentsLabels
+script: "-"
+type: python
+tags:
+- incidents
+comment: Compares the labels of two incidents. Returns the different labels in them.
+enabled: true
+args:
+- name: inc1
+  required: true
+  description: Incident ID of first incident
+- name: inc2
+  required: true
+  description: Incident ID of second incident
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
