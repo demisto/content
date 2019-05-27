@@ -1,0 +1,125 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CheckPhish
+  version: -1
+configuration:
+- defaultvalue: https://developers.redmarlin.ai/api/neo/scan
+  display: CheckPhish URL
+  name: url
+  required: false
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Good Dispositions
+  name: good_disp
+  options:
+  - 'Zero-Day Phishing'
+  - 'Tech Support Scams'
+  - 'Gift Card Scams'
+  - 'Survey Scams'
+  - 'Adult Websites'
+  - 'Drug Pharmacy (Drug Spam) Websites'
+  - 'Illegal/Rogue Streaming Sites'
+  - 'Gambling Websites'
+  - 'Hacked Websites'
+  - 'Cryptojacking / Cryptomining'
+  required: false
+  type: 16
+- display: Suspicious Dispositions
+  name: susp_disp
+  options:
+  - 'Zero-Day Phishing'
+  - 'Tech Support Scams'
+  - 'Gift Card Scams'
+  - 'Survey Scams'
+  - 'Adult Websites'
+  - 'Drug Pharmacy (Drug Spam) Websites'
+  - 'Illegal/Rogue Streaming Sites'
+  - 'Gambling Websites'
+  - 'Hacked Websites'
+  - 'Cryptojacking / Cryptomining'
+  required: false
+  type: 16
+- display: Bad Dispositions
+  name: bad_disp
+  options:
+  - 'Zero-Day Phishing'
+  - 'Tech Support Scams'
+  - 'Gift Card Scams'
+  - 'Survey Scams'
+  - 'Adult Websites'
+  - 'Drug Pharmacy (Drug Spam) Websites'
+  - 'Illegal/Rogue Streaming Sites'
+  - 'Gambling Websites'
+  - 'Hacked Websites'
+  - 'Cryptojacking / Cryptomining'
+  required: false
+  type: 16
+description: Check any URL to detect scams
+display: CheckPhish
+name: CheckPhish
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Enter url(s) that you wish to check
+      isArray: true
+      name: urls
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the results of the check in CheckPhish
+    execution: false
+    name: CheckPhish-check-urls
+    outputs:
+    - contextPath: CheckPhish.Url.url
+      description: URL submitted
+      type: String
+    - contextPath: CheckPhish.Url.status
+      description: CheckPhish job status
+      type: String
+    - contextPath: CheckPhish.Url.jobID
+      description: CheckPhish jobID recieved when submitted
+      type: String
+    - contextPath: CheckPhish.Url.Disposition
+      description: The category of the URL according ot CheckPhish
+      type: String
+    - contextPath: CheckPhish.Url.brand
+      description: The brand countered by the URL
+      type: String
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: Indicator CheckPhish tested for
+      type: String
+    - contextPath: URL.Data
+      description: URL submitted
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: CheckPhish as vendor
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: The brand countered by the URL
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
