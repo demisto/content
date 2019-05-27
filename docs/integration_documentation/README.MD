@@ -26,8 +26,8 @@ Where there is missing information, be sure to fill out the document completely.
 
 
 ### Using commands parameter
-In order to generate output (human readble and context) examples automatically, one should create a text file containing commands examples, one per line.
-commands will be run one after the other and for each command only the first appearance will be shown in the documentation output.
+In order to generate output (human readable and context) examples automatically, one should create a text file containing command examples, one per line. The command examples should appear the same way they would as in the CLI in Demisto.
+Commands will be executed one after the other. If there are duplicates of a command included in the text file, only the output of the first execution of a command will be included in the generated documentation output.
 
 ### Good documentation examples:
 
