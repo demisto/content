@@ -794,7 +794,7 @@ def get_domain_name(domain_id):
             'Type': 11,
             'Contents': 'No Domain name was found.',
             'ContentsFormat': formats['text']
-    })
+        })
         return domain_id
 
 
