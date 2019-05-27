@@ -789,7 +789,12 @@ def get_domain_name(domain_id):
                 domain_id)}
         search_id = search(query_param)['search_id']
         return get_search_results(search_id)['events'][0]['Domain name']
-    except ValueError:
+    except Exception:
+        demisto.results({
+            'Type': 11,
+            'Contents': 'No Domain name was found.',
+            'ContentsFormat': formats['text']
+    })
         return domain_id
 
 
