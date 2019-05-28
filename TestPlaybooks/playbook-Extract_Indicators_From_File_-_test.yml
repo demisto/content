@@ -557,7 +557,50 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 760
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: bd12199f-16fd-4c4b-806a-cf99c425f408
+    type: regular
+    task:
+      id: bd12199f-16fd-4c4b-806a-cf99c425f408
+      version: -1
+      name: Download EXCEL file
+      description: Downloads a EXCEL file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/TestExcelFile.xlsx
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 570
         }
       }
     note: false
