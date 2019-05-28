@@ -1508,6 +1508,10 @@
         }
     ],
     "skipped_tests": {
+        "nexpose_test": "Failed on clear release notes build",
+        "McAfee-TIE Test": "Failed on clear release notes build",
+        "Test-Detonate URL - Phish.AI": "Failed on clear release notes build",
+        "Test Playbook McAfee ePO": "Failed on clear release notes build",
         "Ipstack_Test": "Failed on clear release notes build",
         "Forescout-Test": "Failed on clear release notes build",
         "LogRhythm REST test": "Failed on clear release notes build",
