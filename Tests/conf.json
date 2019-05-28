@@ -1474,6 +1474,14 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Forescout",
+            "playbookID": "Forescout-Test"
+        },
+        {
+            "integrations": "LogRhythmRest",
+            "playbookID": "LogRhythm REST test"
         }
     ],
     "skipped_tests": {
