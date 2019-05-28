@@ -28,7 +28,7 @@ def main():
         demisto.args().get('encoding')
     with open(file_path, 'r') as f:
         data = f.read(maxFileSize)
-        data = data.decode(char_enc, errors="replace")
+        data = data.decode(char_enc, errors="replace")  # type: ignore
         data = data.encode('utf-8')
 
     if data:
