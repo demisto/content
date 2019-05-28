@@ -1502,6 +1502,9 @@
         {
             "integrations": "vmray",
             "playbookID": "VMRay-Test"
+        },
+        {
+            "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
     "skipped_tests": {
