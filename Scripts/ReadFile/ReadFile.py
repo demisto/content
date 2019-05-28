@@ -34,11 +34,11 @@ def main():
     if data:
         message = 'Read %d bytes from file.' % (len(data))
         result = {"Type": entryTypes["note"],
-                         "ContentsFormat": formats["text"],
-                         "Contents": {"FileData": data},
-                         "HumanReadable": message,
-                         "EntryContext": {"FileData": data}
-                         }
+                  "ContentsFormat": formats["text"],
+                  "Contents": {"FileData": data},
+                  "HumanReadable": message,
+                  "EntryContext": {"FileData": data}
+                  }
     else:
         result = {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": 'No data could be read.'}
     return result
