@@ -171,12 +171,6 @@ script:
                 });
            }
         });
-        context[outputPaths.dbotscore] = {
-           Indicator : sha1 in res ? res.sha1 : (sha256 in res ? res.sha256 : res.md5),
-           Type: file,
-           Vendor: 'Hybrid Analysis',
-           Score: res.threatlevel > 1 ? 3 : 1
-        };
         return createTableEntry('Scan Results:', response, table, context);
     }
 
@@ -275,12 +269,7 @@ script:
                 });
            }
         });
-        context[outputPaths.dbotscore] = {
-             Indicator : sha1 in res ? res.sha1 : (sha256 in res ? res.sha256 : res.md5),
-             Type: file,
-             Vendor: 'Hybrid Analysis',
-             Score: res.threatlevel > 1 ? 3 : 1
-        };
+
         return createTableEntry('Search results:', result, table, context);
     }
     //Return the state of the submission
@@ -592,4 +581,3 @@ script:
   runonce: false
 tests:
 - "Detonate File - HybridAnalysis - Test"
-releaseNotes: added DBotScore outputs
