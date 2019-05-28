@@ -13,13 +13,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: db62a776-8c18-427e-882f-f7ed688bdcf0
+    taskid: 7cc9e9f8-f70c-4d6b-8e7f-081a5756ecb3
     type: start
     task:
-      id: db62a776-8c18-427e-882f-f7ed688bdcf0
+      id: 7cc9e9f8-f70c-4d6b-8e7f-081a5756ecb3
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -35,12 +34,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 457c42b9-0560-4bcb-82d2-9a811b2e5c7c
+    taskid: f918fc80-3e02-4ce9-8e1e-66f186f44e24
     type: regular
     task:
-      id: 457c42b9-0560-4bcb-82d2-9a811b2e5c7c
+      id: f918fc80-3e02-4ce9-8e1e-66f186f44e24
       version: -1
       name: Download TXT file
       description: Downloads a TXT file using HTTP GET.
@@ -77,12 +77,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 389f0a8f-5d83-4c4e-8985-b63942105268
+    taskid: 9ba0b12c-e0fb-4a62-8aef-de50a3a3768a
     type: condition
     task:
-      id: 389f0a8f-5d83-4c4e-8985-b63942105268
+      id: 9ba0b12c-e0fb-4a62-8aef-de50a3a3768a
       version: -1
       name: Were the correct indicators extracted?
       description: Checks whether specific indicators were extracted from each one
@@ -158,15 +159,15 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 44c63007-771f-4c5b-8ef2-62e9857feb24
+    taskid: 174aeaf4-93ca-49b0-8011-a6e4cdfa22f9
     type: title
     task:
-      id: 44c63007-771f-4c5b-8ef2-62e9857feb24
+      id: 174aeaf4-93ca-49b0-8011-a6e4cdfa22f9
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -180,12 +181,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: b637222e-8d0a-4b36-8157-211518859d3a
+    taskid: 813882c7-cf6c-45c6-88d4-63c7893ea2e6
     type: regular
     task:
-      id: b637222e-8d0a-4b36-8157-211518859d3a
+      id: 813882c7-cf6c-45c6-88d4-63c7893ea2e6
       version: -1
       name: Make test fail
       description: Causes the test playbook to fail if the correct email addresses
@@ -211,12 +213,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: fba4e84a-c285-49ba-8579-90f4c735b7b8
+    taskid: 092f59be-9e2e-4755-8318-2e5ffbae9178
     type: title
     task:
-      id: fba4e84a-c285-49ba-8579-90f4c735b7b8
+      id: 092f59be-9e2e-4755-8318-2e5ffbae9178
       version: -1
       name: Download Files
       type: title
@@ -239,12 +242,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 8726ac21-b307-4695-8404-5d1be7d090cf
+    taskid: c2db2131-eb83-4f45-8337-83c729aa1415
     type: regular
     task:
-      id: 8726ac21-b307-4695-8404-5d1be7d090cf
+      id: c2db2131-eb83-4f45-8337-83c729aa1415
       version: -1
       name: Download DOC file
       description: Downloads a DOC file using HTTP GET.
@@ -281,12 +285,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 2d6acf31-9480-4bce-8536-199a117b9a9a
+    taskid: c0922d1e-8538-4569-8a3a-397d1efd8f34
     type: regular
     task:
-      id: 2d6acf31-9480-4bce-8536-199a117b9a9a
+      id: c0922d1e-8538-4569-8a3a-397d1efd8f34
       version: -1
       name: Download DOCX file
       description: Downloads a DOCX file using HTTP GET.
@@ -323,12 +328,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: c2d3c796-dca9-4ab0-8f47-2b195d85aac2
+    taskid: 7dee853c-c654-496e-8c89-858415862006
     type: regular
     task:
-      id: c2d3c796-dca9-4ab0-8f47-2b195d85aac2
+      id: 7dee853c-c654-496e-8c89-858415862006
       version: -1
       name: Download PDF file
       description: Downloads a PDF file using HTTP GET.
@@ -365,12 +371,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 80b24b26-62f5-410c-8db8-621b66828f94
+    taskid: 1748d573-7ac5-42cc-81a1-f7d33700de9d
     type: regular
     task:
-      id: 80b24b26-62f5-410c-8db8-621b66828f94
+      id: 1748d573-7ac5-42cc-81a1-f7d33700de9d
       version: -1
       name: Delete Context
       description: Delete the context of the incident to start with clear context.
@@ -399,12 +406,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 86e50667-958b-4156-8a5a-f2055b42080c
+    taskid: 4773650a-cf51-4d4f-890b-36dccdb69c6a
     type: condition
     task:
-      id: 86e50667-958b-4156-8a5a-f2055b42080c
+      id: 4773650a-cf51-4d4f-890b-36dccdb69c6a
       version: -1
       name: Did the PDF file return outputs?
       description: |-
@@ -452,28 +460,7 @@ tasks:
             value:
               complex:
                 root: File
-                accessor: xap
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
                 accessor: Author
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: dc
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: xapmm
             iscontext: true
       - - operator: isExists
           left:
@@ -505,12 +492,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 92125e06-aaf4-4afc-8a7e-ba7f63a3f6c9
+    taskid: 2a9f039f-26e7-47df-8975-25a4fe7ed226
     type: regular
     task:
-      id: 92125e06-aaf4-4afc-8a7e-ba7f63a3f6c9
+      id: 2a9f039f-26e7-47df-8975-25a4fe7ed226
       version: -1
       name: Download EML file
       description: Downloads an EML file using HTTP GET.
@@ -547,12 +535,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: b6dd871e-0d86-4dec-81c2-30ba4aeae03d
+    taskid: 42a60f66-9ef7-4b5b-8bda-34e7c5cdd17c
     type: playbook
     task:
-      id: b6dd871e-0d86-4dec-81c2-30ba4aeae03d
+      id: 42a60f66-9ef7-4b5b-8bda-34e7c5cdd17c
       version: -1
       name: Extract Indicators From File - Generic
       playbookName: Extract Indicators From File - Generic
@@ -573,6 +562,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
