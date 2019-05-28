@@ -3,26 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
-            "integrations": "AlienVault OTX",
-            "playbookID": "AlienVaultOTX Test"
-        },
-        {
-            "integrations": "AlienVault USM Anywhere",
-            "playbookID": "AlienVaultUSMAnywhereTest"
-        },
-        {
-            "playbookID": "PhishLabsTestPopulateIndicators"
-        },
-        {
-            "integrations": "PhishLabs IOC",
-            "playbookID": "PhishLabsIOC TestPlaybook",
-            "fromversion": "4.1.0"
-        },
-        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
         },
@@ -1507,6 +1487,10 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
         },
         {
             "integrations": "Forescout",
