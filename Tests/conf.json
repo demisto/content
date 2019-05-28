@@ -7,6 +7,10 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "AlienVault OTX",
+            "playbookID": "AlienVaultOTX Test"
+        },
+        {
             "integrations": "AlienVault USM Anywhere",
             "playbookID": "AlienVaultUSMAnywhereTest"
         },
