@@ -198,14 +198,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: Thu Jan 01 02:00:00 IST 1970
+      defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: false
-      defaultValue: Wed Jan 01 02:00:00 IST 2020
+      defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
       isArray: false
       name: endTime
@@ -327,14 +327,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: Thu Jan 01 02:00:00 IST 1970
+      defaultValue: '1970-01-01 00:00:00'
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: false
-      defaultValue: Wed Jan 01 02:00:00 IST 2020
+      defaultValue: '2020-01-01 00:00:00'
       description: Query end time. For example, endTime="2018-04-26 00:00:00"
       isArray: false
       name: endTime
@@ -441,14 +441,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: Thu Jan 01 02:00:00 IST 1970
+      defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: false
-      defaultValue: Wed Jan 01 02:00:00 IST 2020
+      defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
       isArray: false
       name: endTime
@@ -583,3 +583,4 @@ script:
 tests:
 - Palo Alto Networks Cortex Test
 fromversion: 4.1.0
+releaseNotes: "-"
