@@ -63,14 +63,59 @@ outputs:
   description: 'Could be: Fail / Suspicious / Undetermined / Pass'
   type: Unknown
 script: |-
-  import demistomock as demisto
-  from CommonServerPython import *
-  from CommonServerUserPython import *
+  import re
+  import traceback
+
+  '''HELPER FUNCTIONS'''
+
+
+  def get_spf(auth, spf):
+      spf_context = {}
+      if auth == None:
+          spf_context["Validation-Result"] = spf.split(" ")[0].lower()
+          sender_ip=re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", spf)
+      else:
+          result= re.search(r"spf=(\w+)", auth)
+          if result is not None:
+              spf_context["Validation-Result"]=result.group(1)
+          sender_ip=re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", auth)
+      if sender_ip!=[]:
+          spf_context["Sender-IP"] = sender_ip[0]
+      if spf is not None:
+          spf_context["Reason"] = re.findall(r"[(](.+)[)]", spf)[0]
+      return spf_context
+
+  def get_dkim(auth):
+      dkim_context={}
+      if auth!=None:
+          result = re.search(r"dkim=(\w+)", auth)
+          if result is not None:
+              dkim_context["Validation-Result"] = result.group(1)
+          reason= re.findall("dkim=\w+ [(](.+)[)]",auth)
+          if reason!=[]:
+              dkim_context["Reason"] = reason[0]
+          domain=re.findall("dkim=[\w\W]+\W(\w+\.com)",auth)
+          if domain!=[]:
+              dkim_context["Signing-Domain"]=domain[0]
+      return dkim_context
+
+  def get_dmarc(auth):
+      dmarc_context={}
+      if auth!=None:
+          d=1
 
   try:
-      auth=demisto.args().get('authentication_results')
-      spf=demisto.args().get('received_spf')
-
+      auth = demisto.args().get('authentication_results')
+      spf = demisto.args().get('received_spf')
+      if auth is None and spf is None:
+          context = {
+              "Email.AuthenticityCheck": "undetermined"
+          }
+          return_outputs("No header information was found.", context)
+          sys.exit(0)
+      spf_data = get_spf(auth, spf)
+      dkim_data=get_dkim(auth)
+      demisto.results(spf_data)
 
   except Exception as ex:
       demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
