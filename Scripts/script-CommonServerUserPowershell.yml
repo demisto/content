@@ -1,0 +1,15 @@
+commonfields:
+  id: CommonServerUserPowershell
+  version: 1
+name: CommonServerUserPowershell
+script: ""
+type: python
+tags:
+- infra
+- server
+comment: Common user defined code that will be merged into each server script when
+  it runs
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
