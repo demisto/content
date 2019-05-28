@@ -545,6 +545,19 @@ tasks:
                     right:
                       value:
                         simple: xlsx
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                  - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Excel
                 accessor: EntryID
                 transformers:
                 - operator: uniq
