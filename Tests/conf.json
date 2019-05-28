@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Minerva Labs Anti-Evasion Platform",
+            "playbookID": "Minerva Test playbook"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test"
         },
@@ -190,10 +194,14 @@
             "playbookID": "Mimecast test"
         },
         {
-            "playbookID": "CreateEmailHtmlBody_test_pb"
+            "playbookID": "CreateEmailHtmlBody_test_pb",
+            "fromversion": "4.1.0"
         },
         {
           "playbookID": "ReadPDFFile-Test"
+        },
+        {
+            "playbookID": "ReadPDFFileV2-Test"
         },
         {
           "playbookID": "JSONtoCSV-Test"
@@ -339,11 +347,6 @@
               "VirusTotal - Private API"
           ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500
-        },
-        {
-            "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
         {
@@ -999,7 +1002,8 @@
         },
         {
             "integrations": "Whois",
-            "playbookID": "whois_test"
+            "playbookID": "whois_test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -1026,10 +1030,6 @@
         {
             "integrations": "RSA NetWitness v11.1",
             "playbookID": "RSA NetWitness Test"
-        },
-        {
-            "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
         },
         {
             "playbookID": "ExifReadTest"
@@ -1385,12 +1385,16 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test"
+            "integrations": "AWS - EC2",
+            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
         },
         {
-            "integrations": "AWS - S3v2",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+            "integrations": "AWS - EC2",
+            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -1406,13 +1410,6 @@
         {
             "integrations": "carbonblackprotection",
             "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
-        },
-        {
-            "integrations": [
-                "AWS - EC2",
-                "AWS - EC2_copy"
-            ],
-            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
         },
         {
             "integrations": "DomainTools",
@@ -1445,10 +1442,6 @@
             "playbookID": "TestIsEmailAddressInternal"
         },
         {
-            "integrations": "AWS - S3",
-            "playbookID": "113aca8a-ee52-419f-89a6-150ee232d0d1"
-        },
-        {
             "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
         },
         {
@@ -1456,18 +1449,36 @@
             "playbookID": "GoogleCloudCompute-Test"
         },
         {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AWS - S3",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+        },
+        {
             "integrations": "Image OCR",
             "playbookID": "TestImageOCR"
         },
         {
             "playbookID": "EWS test"
+        },
+        {
+            "integrations": "fireeye",
+            "playbookID": "Detonate File - FireEye AX - Test"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "Rasterize Test"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
         }
     ],
     "skipped_tests": {
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
-        "url_enrichment_-_generic_test": "Deprecated playbook - the playbook seems to be deleted",
         "EWS test": "Old test",
-        "url_enrichment_-_generic_test": "Deprecated playbook",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1486,11 +1497,9 @@
         "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
         "DomainTools-Test": "No instance",
         "Remedy-On-Demand-Test": "No instance",
-        "97393cfc-2fc4-4dfe-8b6e-af64067fc436": "No instance",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
         "d66e5f86-e045-403f-819e-5058aa603c32": "skipped until PR is merged (pr 3220)",
-        "113aca8a-ee52-419f-89a6-150ee232d0d1": "skipped until PR is merged (pr 3512)",
         "Carbon Black Enterprise Protection V2 Test": "Data changes within Carbon Black on a weekly basis - which requires to update the test",
         "5dc848e5-a649-4394-8300-386770d39d75": "old test, needs to check if relevant",
         "Get File Sample By Hash - Generic - Test": "old test, needs to check if relevant",
@@ -1499,7 +1508,8 @@
         "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
-        "okta_test_playbook": "test failed (Issue 17041)"
+        "okta_test_playbook": "test failed (Issue 17041)",
+        "Detonate File - FireEye AX - Test": "No instance"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1537,13 +1547,12 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "RSA Archer": "No instance",
         "Cisco Spark": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
 
@@ -1552,11 +1561,11 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota."
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "VirusTotal - Private API": "reached api alloted quota."
     },
     "nigthly_integrations": [
         "Lastline",
@@ -1566,6 +1575,7 @@
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
+        "AWS - EC2": "SSL Validation fails for STS",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
@@ -1673,7 +1683,6 @@
         "DUO Admin": "Missing proxy and trust any cert option #16893",
         "AWS - CloudWatchLogs": "Integration requires SSL",
         "AWS - CloudTrail": "Integration requires SSL",
-        "AWS - EC2": "Integration requires SSL",
         "AWS - S3": "Integration requires SSL",
         "Image OCR": "Doesn't perform network communication"
     }
