@@ -1,0 +1,1 @@
+Analyzes suspicious domains and IP addresses
