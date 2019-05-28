@@ -120,7 +120,7 @@ def slack_notifier(build_url, slack_token):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="content-team",
+            channel="dmst-content-team",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
