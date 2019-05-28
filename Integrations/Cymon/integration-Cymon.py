@@ -100,7 +100,7 @@ def get_domain_report(domain_full_report):
         timestamp = datetime.strptime(
             report.get('Timestamp', datetime.now().strftime("%Y-%m-%d %H:%M:%S")), '%Y-%m-%d %H:%M:%S')
 
-        if (title in reports and reports.get(title).get('Timestamp') < timestamp) or title not in reports:
+        if (title in reports and reports.get(title).get('Timestamp') < timestamp) or title not in reports:  # type: ignore
             reports.update({title: {
                 'Feed': report.get('Feed'),
                 'Timestamp': timestamp,
@@ -117,15 +117,15 @@ def get_domain_report(domain_full_report):
     for report in reports:
         report_results.append({
             'Title': report,
-            'Feed': reports.get(report).get('Feed'),
-            'Timestamp': reports.get(report).get('Timestamp').strftime("%Y-%m-%d %H:%M:%S"),
+            'Feed': reports.get(report).get('Feed'),  # type: ignore
+            'Timestamp': reports.get(report).get('Timestamp').strftime("%Y-%m-%d %H:%M:%S"),  # type: ignore
             # Formatting the timestamp to human readable date and time
-            'Tags': reports.get(report).get('Tags'),
-            'Hostname': reports.get(report).get('Hostname'),
-            'IP': reports.get(report).get('IP'),
-            'Domain': reports.get(report).get('Domain'),
-            'Reported By': reports.get(report).get('Reported By'),
-            'Location': reports.get(report).get('Location')
+            'Tags': reports.get(report).get('Tags'),  # type: ignore
+            'Hostname': reports.get(report).get('Hostname'),  # type: ignore
+            'IP': reports.get(report).get('IP'),  # type: ignore
+            'Domain': reports.get(report).get('Domain'),  # type: ignore
+            'Reported By': reports.get(report).get('Reported By'),  # type: ignore
+            'Location': reports.get(report).get('Location')  # type: ignore
         })
 
     return {
