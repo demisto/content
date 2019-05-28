@@ -15,11 +15,11 @@ def get_file_encoding(filepath):
 
 
 def main():
-    maxFileSize = demisto.get(demisto.args(), 'maxFileSize')
-    if maxFileSize:
-        maxFileSize = int(maxFileSize)
+    max_file_size = demisto.get(demisto.args(), 'maxFileSize')
+    if max_file_size:
+        max_file_size = int(max_file_size)
     else:
-        maxFileSize = 1024 ** 2
+        max_file_size = 1024 ** 2
     res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
     file_path = res[0]['Contents']['path']
     if not demisto.args().get('encoding'):
@@ -27,12 +27,15 @@ def main():
     else:
         demisto.args().get('encoding')
     with open(file_path, 'r') as f:
-        data = f.read(maxFileSize)
-        data = data.decode(char_enc, errors="replace")  # type: ignore
+        data = f.read(max_file_size)
+        try:
+            data = data.decode(char_enc, errors="replace")  # type: ignore
+        except LookupError:
+            return_error('Encoding type was not found. Please try another.')
         data = data.encode('utf-8')
 
     if data:
-        message = 'Read %d bytes from file.' % (len(data))
+        message = 'Read {} bytes from file.'.format(len(data))
         result = {"Type": entryTypes["note"],
                   "ContentsFormat": formats["text"],
                   "Contents": {"FileData": data},
@@ -40,9 +43,12 @@ def main():
                   "EntryContext": {"FileData": data}
                   }
     else:
-        result = {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": 'No data could be read.'}
+        return_error('No data could be read.')
     return result
 
 
 if __name__ == "__builtin__" or __name__ == '__main__':
-    demisto.results(main())
+    try:
+        demisto.results(main())
+    except Exception as e:
+        return_error('Failed to run script - {}'.format(str(e)))
