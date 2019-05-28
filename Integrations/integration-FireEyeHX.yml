@@ -3247,6 +3247,5 @@ script:
       domain names and IP addresses. '
   isfetch: true
   runonce: false
-releaseNotes: "Fixed issue which caused error when running fetch-incidents and get-alert."
 tests:
   - FireEye HX Test

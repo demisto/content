@@ -1724,4 +1724,3 @@ script:
     description: Get all mssp sub accounts
   isfetch: true
   runonce: false
-releaseNotes: "Added the severity_level parameter, which fetches incidents based on the incident severity level."
