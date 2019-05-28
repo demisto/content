@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 from datetime import datetime, timedelta
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -15,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 API_KEY = demisto.params().get('apikey')
 OWNER = demisto.params().get('owner')
-REPO =  demisto.params().get('repository')
+REPO = demisto.params().get('repository')
 BASE_URL = 'https://api.github.com'
 FETCH_INTERVAL = demisto.params()['fetch_interval']
 
@@ -23,8 +22,8 @@ FETCH_INTERVAL = demisto.params()['fetch_interval']
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, json=None, params=None , command=None):
-    if method is 'GET':
+def http_request(method, url_suffix, json=None, params=None, command=None):
+    if method == 'GET':
         headers = {}
     elif method in ('POST', 'PATCH'):
         if not API_KEY:
@@ -68,7 +67,7 @@ def fetch_incidents():
     if last_run_time is None:
         last_run_time = now_utc - timedelta(minutes=int(FETCH_INTERVAL))
     else:
-        last_run_time= datetime.strptime(last_run_time, '%Y-%m-%dT%H:%M:%SZ')
+        last_run_time = datetime.strptime(last_run_time, '%Y-%m-%dT%H:%M:%SZ')
 
     all_issues = List_all_issues('false')
 
@@ -180,7 +179,6 @@ def close_issue(issue_id):
     data = {"state": "close"}
 
     data = json.dumps(data)
-    #return_error(data)
     res = http_request('PATCH', suffix, data, None, 'close')
     return res
 
@@ -264,14 +262,15 @@ def get_download_count_command():
         for asset in release['assets']:
             count = count + asset['download_count']
 
-        download_counts.insert(0,
-               {'ID': release['id'], 'release name': release['name'], 'download_count': count})
+        download_counts.insert(0, {
+            'ID': release['id'],
+            'release name': release['name'],
+            'download_count': count})
 
     human_readable = tableToMarkdown('the download count is:', download_counts, header_list)
     entry_context = {'Git.issue(val.ID && val.ID == obj.ID)': res}
 
     return_outputs(human_readable, entry_context, res)
-
 
 
 def test_module():
