@@ -12,7 +12,7 @@ jobs:
     environment:
       CONTENT_VERSION: "19.5.1"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "a267c8adf281e8261d4080e554f41b02196ec2a7" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "33441eb94314f3779b8c17b0540f0394be4b6c20" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
