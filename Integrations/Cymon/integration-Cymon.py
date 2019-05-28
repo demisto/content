@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import datetime
 import requests
 import os
 
@@ -94,7 +93,7 @@ def get_domain_full_report(domain):
 
 
 def get_domain_report(domain_full_report):
-    reports = {}
+    reports = {}  # type:dict
 
     for report in domain_full_report:
         title = report.get('Title')
@@ -228,7 +227,7 @@ def get_ip_events_sources(ip):
 
 def get_ip_events(ip):
     url = '{}/{}/{}/{}?limit={}'.format(SERVER_URL_V1, 'ip', ip, 'events', 100)
-    events = {}
+    events = {}  # type:dict
 
     next_link = url
 
@@ -287,7 +286,7 @@ def get_ip_domains(ip, max_len):
 
 def get_ip_urls(ip, max_len):
     url = '{}/{}/{}/{}?limit={}'.format(SERVER_URL_V1, 'ip', ip, 'urls', max_len)
-    urls = {}
+    urls = {}  # type:dict
 
     response = http_request('GET', url, DEFAULT_HEADERS)
 
@@ -356,9 +355,6 @@ def create_ip_command_markdown(ip, sources, events, domains, urls, asn):
 
 
 def create_ip_command_context(ip, asn, events, domains):
-    context = {}  # type:dict
-    description = None  # type:str
-
     if events:
         description = 'Reported suspicious activities: '
 
@@ -369,7 +365,7 @@ def create_ip_command_context(ip, asn, events, domains):
     else:
         description = 'No suspicious activities were reported'
 
-    asn_in_context = {}
+    asn_in_context = {}  # type:dict
 
     if asn:
         asn_in_context = {
