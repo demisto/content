@@ -370,11 +370,7 @@ script:
   runonce: false
   script: '-'
   type: python
-<<<<<<< HEAD
   subtype: python3
 releaseNotes: "-"
-=======
-releaseNotes: Updated Demistobot-OAuth2 Flow
->>>>>>> Update oauth2 integration interaction with demistobot
 tests:
 - MicrosoftGraphMail-Test

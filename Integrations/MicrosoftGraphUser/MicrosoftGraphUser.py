@@ -5,6 +5,8 @@ from CommonServerUserPython import *
 '''IMPORTS'''
 import requests
 from datetime import datetime
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -13,11 +15,13 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
 TENANT = demisto.getParam('tenant')
 TOKEN = demisto.getParam('token')
+AUTH_ID = demisto.getParam('auth_id')
+ENC_KEY = demisto.getParam('auth_key')
 HEADERS = {"Authorization": TOKEN, "Accept": "application/json"}
-USE_SSL = not demisto.params().get('unsecure', False)
+USE_SSL = not demisto.params().get('insecure', False)
 
 ''' CONSTANTS '''
-DEMISTOBOT = "https://demistobot.demisto.com/msg-user-token"
+TOKEN_RETRIEVAL_URL = "https://demistobot.demisto.com/msg-user-token"
 PRODUCT = "MicrosoftGraphUser"
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
@@ -64,37 +68,101 @@ def epoch_seconds():
     return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_token(refresh_token=False):
+def get_encrypted(auth_id: str, key: str) -> str:
     """
-    Check if we have a valid token and if not get one
+
+    Args:
+        auth_id (str): auth_id from Demistobot
+        key (str): key from Demistobot
+
+    Returns:
+
     """
-    ctx = demisto.getIntegrationContext()
-    if {'token', 'stored', 'expires'} <= set(ctx) and not refresh_token:
-        if epoch_seconds() - ctx.get('stored') < ctx.get('expires'):
-            return ctx.get('token')
-    response = requests.get(
-        DEMISTOBOT,
-        headers=HEADERS,
-        params={"tenant": TENANT, "product": PRODUCT},
-        verify=USE_SSL,
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = enc_key.encode()
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    stored = integration_context.get('stored')
+    if access_token and stored:
+        if epoch_seconds() - stored < 60 * 60 - 30:
+            return access_token
+    headers = {
+        'Authorization': AUTH_ID,
+        'Accept': 'application/json'
+    }
+
+    dbot_response = requests.get(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        params={'token': get_encrypted(TENANT, ENC_KEY)},
+        verify=USE_SSL
     )
-    data = response.json()
-    if not response.ok:
-        return_error(f'API call to MS Graph failed [{data.get("status")} {data.get("title")}] - {data.get("detail")}')
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response: [{}]. Exception: {}'.format(err_response.content, ex))
+        raise Exception(msg)
+    try:
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    token = parsed_response.get('token')
 
     demisto.setIntegrationContext({
-        'token': data.get('token'),
+        'access_token': access_token,
         'stored': epoch_seconds(),
-        'expires': data.get('expires', 3600) - 30
+        'token': token
     })
-    return data.get('token')
+    return access_token
 
 
-def http_request(method, url_suffix, params=None, body=None, do_not_refresh_token=False):
+def http_request(method, url_suffix, params=None, body=None):
     """
     Generic request to Microsoft Graph
     """
-    token = get_token()
+    token = get_access_token()
     response = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -110,9 +178,6 @@ def http_request(method, url_suffix, params=None, body=None, do_not_refresh_toke
     try:
         data = response.json() if response.text else {}
         if not response.ok:
-            if demisto.get(data, "error.message") == 'InvalidAuthenticationToken' and not do_not_refresh_token:
-                get_token(refresh_token=True)  # try refreshing the token only once (avoid endless loop)
-                return http_request(method, url_suffix, params, body, do_not_refresh_token=True)
             return_error(f'API call to MS Graph failed [{response.status_code}] - {demisto.get(data, "error.message")}')
         elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
             demisto.debug(str(response.headers))
@@ -125,7 +190,7 @@ def http_request(method, url_suffix, params=None, body=None, do_not_refresh_toke
 
 
 def test_function():
-    token = get_token()
+    token = get_access_token()
     response = requests.get(
         BASE_URL + 'users',
         headers={
