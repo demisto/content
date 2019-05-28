@@ -39,6 +39,6 @@ tags:
 - ingestion
 timeout: '0'
 type: python
-dockerimage: devdemisto/encode-detect:1.0.0.310
+dockerimage: demisto/python3
 runas: DBotWeakRole
 runonce: false
