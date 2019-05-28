@@ -1476,6 +1476,10 @@
             "playbookID": "RasterizeImageTest"
         },
         {
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
         },
