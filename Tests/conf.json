@@ -1508,6 +1508,14 @@
         }
     ],
     "skipped_tests": {
+        "Ipstack_Test": "Failed on clear release notes build",
+        "Forescout-Test": "Failed on clear release notes build",
+        "LogRhythm REST test": "Failed on clear release notes build",
+        "VMRay-Test": "Failed on clear release notes build",
+        "urlscan_malicious_Test": "Failed on clear release notes build",
+        "Jask_Test": "Failed on clear release notes build",
+        "whois_test": "Failed on clear release notes build",
+        "TestShowScheduledEntries": "Failed on clear release notes build",
         "Process Email - Generic for Rasterize": "Clear Release Notes issue",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
