@@ -11,9 +11,21 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Slack API bot token
+  name: bot_token
+  required: true
+  type: 4
+- display: Slack API Token for channel creation
+  name: channel_token
+  required: true
+  type: 4
+- display: Dedicated channel
+  name: channel
+  required: true
+  type: 0
+description: Send messages and notifications to your Slack Team.
 display: Slack
 name: Slack
-description: Add poop emojies to messages in Slack.
 script:
   dockerimage: devtesting/slack:1.0.0.1558884736
   isfetch: false
