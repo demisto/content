@@ -13,4 +13,4 @@ ASSETID=$1
 VERSION=$3
 SERVER_VERSION=$4
 
-python release_notes.py  $VERSION changelog.txt delete-changelog.txt $ASSETID $SERVER_VERSION
+python release_notes.py $VERSION changelog.txt delete-changelog.txt $ASSETID $SERVER_VERSION $GITHUB_TOKEN
