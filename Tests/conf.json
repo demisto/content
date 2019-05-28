@@ -1474,6 +1474,10 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
         }
     ],
     "skipped_tests": {
