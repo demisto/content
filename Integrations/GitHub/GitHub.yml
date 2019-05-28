@@ -1,0 +1,190 @@
+category: Utilities
+commonfields:
+  id: GitHub
+  version: -1
+configuration:
+- display: owner
+  name: owner
+  required: true
+  type: 0
+- display: apikey
+  name: apikey
+  required: true
+  type: 0
+- display: repository
+  name: repository
+  required: true
+  type: 0
+- defaultvalue: '720'
+  display: fetch_interval
+  name: fetch_interval
+  required: false
+  type: 0
+description: git hub integration
+display: GitHub
+name: GitHub
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: 'true'
+      description: boolean. true- show all. false- show open
+      isArray: false
+      name: show-all
+      required: false
+      secret: false
+    deprecated: false
+    description: list all the issues
+    execution: false
+    name: List-all-issues
+    outputs:
+    - contextPath: Git.issue.ID
+      description: 'uniqu '
+      type: Unknown
+    - contextPath: Git.issue.title
+      description: issue title
+      type: Unknown
+    - contextPath: Git.issue.state
+      description: issue state
+      type: Unknown
+    - contextPath: Git.issue.body
+      description: issue body
+      type: Unknown
+    - contextPath: Git.issue.assignees
+      description: issue assignees
+      type: Unknown
+    - contextPath: Git.issue.labels
+      description: issue labels
+      type: Unknown
+  - arguments:
+    - default: true
+      description: the title of the new issue
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: the body of the new issue
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: The number of the milestone to associate this issue with
+      isArray: false
+      name: milestone
+      required: false
+      secret: false
+    - default: false
+      description: labels to associate with this issue
+      isArray: true
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue.
+      isArray: false
+      name: assignees
+      required: false
+      secret: false
+    deprecated: false
+    description: creates a new issue
+    execution: false
+    name: create-issue
+    outputs:
+    - contextPath: Git.issue
+      description: uniqu
+      type: Unknown
+  - arguments:
+    - default: false
+      description: issue id
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    deprecated: false
+    description: closes the issue
+    execution: false
+    name: close-issue
+    outputs:
+    - contextPath: Git.issue.ID
+      description: uniqu
+      type: Unknown
+    - contextPath: Git.issue.state
+      description: the issue state
+      type: Unknown
+  - arguments:
+    - default: false
+      description: issue id
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    - default: false
+      description: title
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: body
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: state
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: labels
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: milestone
+      isArray: false
+      name: milestone
+      required: false
+      secret: false
+    - default: false
+      description: assignees
+      isArray: false
+      name: assignees
+      required: false
+      secret: false
+    deprecated: false
+    description: updates an issue
+    execution: false
+    name: update-issue
+    outputs:
+    - contextPath: Git.issue
+      description: uniqu
+      type: Unknown
+  - arguments:
+    - default: false
+      description: issue id
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    deprecated: false
+    description: search an issue
+    execution: false
+    name: search-issue
+    outputs:
+    - contextPath: Git.issue
+      description: issue id
+      type: Unknown
+  - deprecated: false
+    description: get-download-count
+    execution: false
+    name: get-download-count
+  dockerimage: demisto/python:2.7.15.155
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
