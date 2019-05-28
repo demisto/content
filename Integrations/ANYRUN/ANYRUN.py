@@ -71,7 +71,7 @@ def underscore_to_camel_case(s):
         The converted string (e.g. heLLoWorld).
     """
 
-    if not isinstance(s, STRING_TYPES):
+    if not isinstance(s, str):
         return s
     components = s.split('_')
     return ''.join(x.title() if i != 0 else x for i, x in enumerate(components))
