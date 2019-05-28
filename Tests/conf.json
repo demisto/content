@@ -1486,9 +1486,26 @@
         {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
+        },
+        {
+            "integrations": "AlienVault USM Anywhere",
+            "playbookID": "AlienVaultUSMAnywhereTest"
+        },
+        {
+            "playbookID": "PhishLabsTestPopulateIndicators"
+        },
+        {
+            "integrations": "PhishLabs IOC",
+            "playbookID": "PhishLabsIOC TestPlaybook",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
         }
     ],
     "skipped_tests": {
+        "Process Email - Generic for Rasterize": "Clear Release Notes issue",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
