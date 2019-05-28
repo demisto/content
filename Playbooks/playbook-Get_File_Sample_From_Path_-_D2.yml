@@ -195,5 +195,3 @@ outputs:
   description: The file to sample.
   type: unknown
 releaseNotes: "-"
-tests:
-  - get_file_sample_from_path_-_d2_-_test
