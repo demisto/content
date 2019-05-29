@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: Intezer_cpy
+  id: Intezer
   version: -1
 configuration:
 - display: API Key
@@ -17,8 +17,8 @@ configuration:
   required: false
   type: 8
 description: Malware detection and analysis based on code reuse
-display: Intezer_cpy
-name: Intezer_cpy
+display: Intezer
+name: Intezer
 script:
   commands:
   - arguments:
