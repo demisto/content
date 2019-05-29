@@ -178,7 +178,7 @@ script:
       description: List of host properties to include in the output for the targeted
         endpoint. If a specified host property is not found, the property is omitted
         from the outputs. For a list of potential host properties that can be specified,
-        run the 'forescout-get-hostfields' command. Requested fields should
+        run the 'forescout-get-host-fields' command. Requested fields should
         be comma separated.
       isArray: true
       name: fields
