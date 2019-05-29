@@ -8,7 +8,7 @@
         },
         {
             "integrations": "CheckPhish",
-            "playbookID": "playbook-CheckPhish-Test"
+            "playbookID": "CheckPhish-Test"
         },
         {
             "integrations": "MicrosoftGraphMail",

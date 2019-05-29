@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://developers.redmarlin.ai/api/neo/scan
-  display: CheckPhish URL
+  display: CheckPhish API URL
   name: url
   required: false
   type: 0
@@ -12,37 +12,42 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Good Dispositions
+- display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default value:
+    clean)'
   name: good_disp
   options:
   - suspicious
-  - ' likely_phish'
-  - ' phish'
+  - likely_phish
+  - drug_spam
+  - phish
   required: false
   type: 16
-- display: Suspicious Dispositions
+- display: 'Suspicious Dispositions (CheckPhish labels for suspicious phishing URLs.
+    Default value: suspicious)'
   name: susp_disp
   options:
   - suspicious
-  - ' likely_phish'
-  - ' phish'
+  - likely_phish
+  - drug_spam
+  - phish
   required: false
   type: 16
-- display: Bad Dispositions
+- display: 'Bad Dispositions (CheckPhish labels for phishing URLs. Default value:
+    likely_phish, phish)'
   name: bad_disp
   options:
   - suspicious
-  - ' likely_phish'
-  - ' phish'
+  - likely_phish
+  - drug_spam
+  - phish
   required: false
   type: 16
 description: Check any URL to detect scams
@@ -55,26 +60,26 @@ script:
       description: Enter url(s) that you wish to check
       isArray: true
       name: urls
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get the results of the check in CheckPhish
     execution: false
     name: CheckPhish-check-urls
     outputs:
-    - contextPath: CheckPhish.Url.url
+    - contextPath: CheckPhish.URL.url
       description: URL submitted
       type: String
-    - contextPath: CheckPhish.Url.status
+    - contextPath: CheckPhish.URL.status
       description: CheckPhish job status
       type: String
-    - contextPath: CheckPhish.Url.jobID
+    - contextPath: CheckPhish.URL.jobID
       description: CheckPhish jobID recieved when submitted
       type: String
-    - contextPath: CheckPhish.Url.Disposition
+    - contextPath: CheckPhish.URL.disposition
       description: The category of the URL according ot CheckPhish
       type: String
-    - contextPath: CheckPhish.Url.brand
+    - contextPath: CheckPhish.URL.brand
       description: The brand countered by the URL
       type: String
     - contextPath: DBotScore.Score

@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from urlparse import urlparse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,12 +18,7 @@ GOOD_DISP = demisto.params().get('good_disp')
 SUSP_DISP = demisto.params().get('susp_disp')
 BAD_DISP = demisto.params().get('bad_disp')
 USE_SSL = not demisto.params().get('insecure', False)
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy('proxy')
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -37,9 +31,12 @@ PENDING_STATUS = 'PENDING'
 DONE_STATUS = 'DONE'
 
 DEFAULT_GOOD_DISP = {'clean'}
-DEFAULT_SUSP_DISP = {'suspicious'}
-DEFAULT_BAD_DISP = {'likely_phish', 'phish'}
 
+DEFAULT_SUSP_DISP = {'suspicious',
+                     'drug_spam'}
+
+DEFAULT_BAD_DISP = {'likely_phish',
+                    'phish'}
 
 ''' HELPER FUNCTIONS '''
 
@@ -56,17 +53,11 @@ def http_request(method, url, params=None, data=None):
     if res.status_code not in {200}:
         return_error('Error in API call to CheckPhish [%d] - %s' % (res.status_code, res.reason))
 
-    return res.json()
-
-
-def is_valid_url(url):
     try:
-        if 'http' not in url:
-            url = 'http://' + url
-        res = urlparse(url)
-        return all([res.scheme, res.netloc])
+        return res.json()
+
     except ValueError:
-        return False
+        return None
 
 
 def unite_dispositions():
@@ -87,22 +78,41 @@ def get_dbot_score(disposition):
         return 2
     if disposition in DEFAULT_GOOD_DISP:
         return 1
+    return 0
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
 def test_module():
-    query = {'apiKey': API_KEY, 'urlInfo': {'url': 'https://www.google.com'}}
+    query = {'apiKey': API_KEY,
+             'urlInfo': {'url': 'https://www.google.com'}}
     res = http_request('POST', BASE_URL, data=json.dumps(query))
     if res and 'message' not in res:
         return 'ok'
-    return res['message']
+
+    return res['message']  # the message field contains the error message
 
 
 def submit_to_checkphish(url):
-    if is_valid_url(url):
-        query = {'apiKey': API_KEY, 'urlInfo': {'url': url}, 'scanType': 'full'}
+    """ Submit a URL for analysis in CheckPhish
+
+    Args:
+        url(str): URL to be sent to CheckPhish for analysis
+
+    Returns:
+        (str). jobID retrieved from CheckPhish for the URL
+
+    """
+    if 'http' not in url:
+        url = 'http://' + url
+
+    if re.match(urlRegex, url):
+        query = {
+            'apiKey': API_KEY,
+            'urlInfo': {'url': url},
+            'scanType': 'full'
+        }
         res = http_request('POST', BASE_URL, data=json.dumps(query))
 
         if res:
@@ -110,47 +120,57 @@ def submit_to_checkphish(url):
 
     else:
         return_error(url + ' is not a valid url')
-        return False
 
 
 def get_status_checkphish(jobID):
-    query = {'apiKey': API_KEY, 'jobID': jobID}
+    query = {'apiKey': API_KEY,
+             'jobID': jobID}
     res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
 
     if res and res['status'] == DONE_STATUS:
         return True
+
     return False
 
 
 def get_result_checkphish(jobID):
-    query = {'apiKey': API_KEY, 'jobID': jobID}
+    query = {'apiKey': API_KEY,
+             'jobID': jobID}
     res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
 
     if res and 'errorMessage' not in res:
-        result = {'url': res['url'],
-                  'jobID': jobID,
-                  'status': res['status'],
-                  'disposition': res['disposition'],
-                  'brand': res['brand']}
+        result = {
+            'url': res['url'],
+            'jobID': jobID,
+            'status': res['status'],
+            'disposition': res['disposition'],
+            'brand': res['brand']
+        }
 
         url_dict = {'Data': result['url']}
 
         if result['disposition'] != CLEAN_STATUS:
-            url_dict['Malicious'] = {'Vendor': 'CheckPhish',
-                                     'Description': 'Phishing countered to ' + result['brand']
-                                     }
+            url_dict['Malicious'] = {
+                'Vendor': 'CheckPhish',
+                'Description': 'Countered towards ' + result['brand']
+            }
 
-        dbot_score = {'Type': 'url',
-                      'Vendor': 'CheckPhish',
-                      'Indicator': result['url'],
-                      'Score': get_dbot_score(result['disposition'])}
+        dbot_score = {
+            'Type': 'url',
+            'Vendor': 'CheckPhish',
+            'Indicator': result['url'],
+            'Score': get_dbot_score(result['disposition'])
+        }
 
-        context = {'CheckPhish.Url' + outputPaths['url']: result,
-                   outputPaths['url']: url_dict,
-                   'DBotScore': dbot_score}
+        context = {
+            'CheckPhish.' + outputPaths['url']: result,
+            outputPaths['url']: url_dict,
+            'DBotScore': dbot_score
+        }
 
-        human_readable = tableToMarkdown('CheckPhish reputation for: ' + result['url'],
-                                         result, ['url', 'disposition', 'brand', 'status', 'jobID'])
+        human_readable = tableToMarkdown('CheckPhish reputation for ' + result['url'],
+                                         result,
+                                         ['url', 'disposition', 'brand', 'status', 'jobID'])
 
         return_outputs(human_readable, context, res)
 
@@ -168,7 +188,7 @@ def checkphish_check_urls():
             job_ids.append(submit)
 
     while len(job_ids):
-        for job_id in job_ids:
+        for job_id in job_ids[:]:
             if get_status_checkphish(job_id):
                 get_result_checkphish(job_id)
                 job_ids.remove(job_id)
@@ -186,7 +206,7 @@ try:
         checkphish_check_urls()
 
 # Log exceptions
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(str(e))
     LOG.print_log()
     raise
