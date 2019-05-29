@@ -11,8 +11,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: ""
-  display: API Token
+- display: API Token
   name: token
   required: true
   type: 4
@@ -86,9 +85,21 @@ script:
     execution: false
     name: create-issue
     outputs:
-    - contextPath: confirmation
-      description: ""
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the changed issue
+      type: String
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the creeated issue
       type: Unknown
+    - contextPath: GitHub.Issue.State
+      description: The state of the created issue
+      type: String
   - arguments:
     - default: false
       description: The number of the issue to be closed
@@ -100,6 +111,22 @@ script:
     description: closes an existing issue
     execution: false
     name: close-issue
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the closed issue
+      type: String
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the closed issue
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the closed issue
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the closed issue
+      type: String
+    - contextPath: GitHub.Issue.State
+      description: State of closed issue
+      type: String
   - arguments:
     - default: false
       description: number of the issue to be updated
@@ -152,6 +179,19 @@ script:
     description: Updates the parameters of a given issue
     execution: false
     name: update-issue
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the updated issue
+      type: String
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of updated issue
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: Body of updated issue
+      type: String
+    - contextPath: GitHub.Issue.State
+      description: State of updated issue
+      type: String
   - arguments:
     - default: false
       defaultValue: '1'
@@ -165,6 +205,22 @@ script:
     description: Lists all issues that the user can see
     execution: false
     name: list-all-issues
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: ID of the issue
+      type: String
+    - contextPath: GitHub.Issue.Repository
+      description: Repository of issue
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: Title of issue
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: Body of issue
+      type: String
+    - contextPath: GitHub.Issue.State
+      description: State of issue
+      type: String
   - arguments:
     - default: false
       description: The query line for the search
@@ -176,11 +232,34 @@ script:
     description: Searches issues matching a given query
     execution: false
     name: search-issues
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: ID of issue
+      type: String
+    - contextPath: GitHub.Issue.Repository
+      description: Repository of issue
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: Title of issue
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: Body of issue
+      type: String
+    - contextPath: GitHub.Issue.State
+      description: State of issue
+      type: String
   - deprecated: false
     description: Returns the total amount of downloads over all the releases of the
       repository
     execution: false
     name: get-download-count
+    outputs:
+    - contextPath: GitHub.Release.URL
+      description: URL for the release
+      type: String
+    - contextPath: GitHub.Release.Download_count
+      description: Download count for the release
+      type: Number
   isfetch: true
   runonce: false
   script: '-'

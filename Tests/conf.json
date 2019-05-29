@@ -1507,6 +1507,10 @@
         {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
+        },
+        {
+            "integrations": "git",
+            "playbookID": "Git_Integration-Test"
         }
     ],
     "skipped_tests": {
