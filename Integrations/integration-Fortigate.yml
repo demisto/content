@@ -1446,4 +1446,6 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
+tests:
+  - Fortigate Test
 releaseNotes: "Added enhancement to update-policy, enabled keeping the existing data."
