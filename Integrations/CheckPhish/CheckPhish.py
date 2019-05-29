@@ -13,8 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-BASE_URL = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+BASE_URL = demisto.params()['url']
 API_KEY = demisto.params().get('token')
 GOOD_DISP = demisto.params().get('good_disp')
 SUSP_DISP = demisto.params().get('susp_disp')
@@ -38,18 +37,8 @@ PENDING_STATUS = 'PENDING'
 DONE_STATUS = 'DONE'
 
 DEFAULT_GOOD_DISP = {'clean'}
-
-DEFAULT_SUSP_DISP = {'Tech Support Scams',
-                     'Gift Card Scams',
-                     'Survey Scams',
-                     'Adult Websites',
-                     'Drug Pharmacy (Drug Spam) Websites',
-                     'Illegal/Rogue Streaming Sites',
-                     'Gambling Websites'}
-
-DEFAULT_BAD_DISP = {'Zero-Day Phishing',
-                    'Hacked Websites',
-                    'Cryptojacking / Cryptomining'}
+DEFAULT_SUSP_DISP = {'suspicious'}
+DEFAULT_BAD_DISP = {'likely_phish', 'phish'}
 
 
 ''' HELPER FUNCTIONS '''
@@ -72,6 +61,8 @@ def http_request(method, url, params=None, data=None):
 
 def is_valid_url(url):
     try:
+        if 'http' not in url:
+            url = 'http://' + url
         res = urlparse(url)
         return all([res.scheme, res.netloc])
     except ValueError:
@@ -102,8 +93,8 @@ def get_dbot_score(disposition):
 
 
 def test_module():
-    query = {'apiKey': API_KEY, 'urlInfo': {'url': 'www.google.com'}}
-    res = http_request('POST', BASE_URL, json.dumps(query))
+    query = {'apiKey': API_KEY, 'urlInfo': {'url': 'https://www.google.com'}}
+    res = http_request('POST', BASE_URL, data=json.dumps(query))
     if res and 'message' not in res:
         return 'ok'
     return res['message']
@@ -111,8 +102,8 @@ def test_module():
 
 def submit_to_checkphish(url):
     if is_valid_url(url):
-        query = {'apiKey': API_KEY, 'urlInfo': {'url': url}}
-        res = http_request('POST', BASE_URL, json.dumps(query))
+        query = {'apiKey': API_KEY, 'urlInfo': {'url': url}, 'scanType': 'full'}
+        res = http_request('POST', BASE_URL, data=json.dumps(query))
 
         if res:
             return res['jobID']
@@ -124,7 +115,7 @@ def submit_to_checkphish(url):
 
 def get_status_checkphish(jobID):
     query = {'apiKey': API_KEY, 'jobID': jobID}
-    res = http_request('POST', BASE_URL, json.dumps(query))
+    res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
 
     if res and res['status'] == DONE_STATUS:
         return True
@@ -133,7 +124,7 @@ def get_status_checkphish(jobID):
 
 def get_result_checkphish(jobID):
     query = {'apiKey': API_KEY, 'jobID': jobID}
-    res = http_request('POST', BASE_URL, json.dumps(query))
+    res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
 
     if res and 'errorMessage' not in res:
         result = {'url': res['url'],
@@ -146,7 +137,7 @@ def get_result_checkphish(jobID):
 
         if result['disposition'] != CLEAN_STATUS:
             url_dict['Malicious'] = {'Vendor': 'CheckPhish',
-                                     'Description': 'Phishing countered to' + result['brand']
+                                     'Description': 'Phishing countered to ' + result['brand']
                                      }
 
         dbot_score = {'Type': 'url',
@@ -155,7 +146,7 @@ def get_result_checkphish(jobID):
                       'Score': get_dbot_score(result['disposition'])}
 
         context = {'CheckPhish.Url' + outputPaths['url']: result,
-                   'URL' + outputPaths['url']: url_dict,
+                   outputPaths['url']: url_dict,
                    'DBotScore': dbot_score}
 
         human_readable = tableToMarkdown('CheckPhish reputation for: ' + result['url'],
@@ -168,12 +159,12 @@ def get_result_checkphish(jobID):
 
 
 def checkphish_check_urls():
-    urls = demisto.args().get('urls')
+    urls = argToList(demisto.args().get('urls'))
     job_ids = []
 
     for url in urls:
         submit = submit_to_checkphish(url)
-        if not submit:
+        if submit:
             job_ids.append(submit)
 
     while len(job_ids):
@@ -192,7 +183,6 @@ try:
         demisto.results(test_module())
 
     elif demisto.command() == 'CheckPhish-check-urls':
-        unite_dispositions()
         checkphish_check_urls()
 
 # Log exceptions

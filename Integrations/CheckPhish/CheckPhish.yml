@@ -24,46 +24,25 @@ configuration:
 - display: Good Dispositions
   name: good_disp
   options:
-  - 'Zero-Day Phishing'
-  - 'Tech Support Scams'
-  - 'Gift Card Scams'
-  - 'Survey Scams'
-  - 'Adult Websites'
-  - 'Drug Pharmacy (Drug Spam) Websites'
-  - 'Illegal/Rogue Streaming Sites'
-  - 'Gambling Websites'
-  - 'Hacked Websites'
-  - 'Cryptojacking / Cryptomining'
+  - suspicious
+  - ' likely_phish'
+  - ' phish'
   required: false
   type: 16
 - display: Suspicious Dispositions
   name: susp_disp
   options:
-  - 'Zero-Day Phishing'
-  - 'Tech Support Scams'
-  - 'Gift Card Scams'
-  - 'Survey Scams'
-  - 'Adult Websites'
-  - 'Drug Pharmacy (Drug Spam) Websites'
-  - 'Illegal/Rogue Streaming Sites'
-  - 'Gambling Websites'
-  - 'Hacked Websites'
-  - 'Cryptojacking / Cryptomining'
+  - suspicious
+  - ' likely_phish'
+  - ' phish'
   required: false
   type: 16
 - display: Bad Dispositions
   name: bad_disp
   options:
-  - 'Zero-Day Phishing'
-  - 'Tech Support Scams'
-  - 'Gift Card Scams'
-  - 'Survey Scams'
-  - 'Adult Websites'
-  - 'Drug Pharmacy (Drug Spam) Websites'
-  - 'Illegal/Rogue Streaming Sites'
-  - 'Gambling Websites'
-  - 'Hacked Websites'
-  - 'Cryptojacking / Cryptomining'
+  - suspicious
+  - ' likely_phish'
+  - ' phish'
   required: false
   type: 16
 description: Check any URL to detect scams
