@@ -16,16 +16,10 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
-CONTEXT = demisto.getIntegrationContext()
+TENANT_ID = PARAMS.get('tenant_id')
 AUTH_ID = PARAMS.get('auth_id')
-# If there's a stored token in integration context, it's newer than current
-TOKEN = CONTEXT.get('token')
-if not TOKEN:
-    TOKEN = PARAMS.get('token')
-
 ENC_KEY = PARAMS.get('auth_key')
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-mail-token'
-TENANT_ID = PARAMS.get('tenant_id')
 # Remove trailing slash to prevent wrong URL path to service
 URL = PARAMS.get('url')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
@@ -99,13 +93,11 @@ def get_access_token():
             'There was a problem in retrieving an updated access token.\n'
             'The response from the Demistobot server did not contain the expected content.'
         )
-    access_token = parsed_response.get('access_token')
-    token = parsed_response.get('token')
+    access_token = parsed_response.get('token')
 
     demisto.setIntegrationContext({
         'access_token': access_token,
-        'stored': epoch_seconds(),
-        'token': token
+        'stored': epoch_seconds()
     })
     return access_token
 

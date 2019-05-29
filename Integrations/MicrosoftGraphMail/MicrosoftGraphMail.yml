@@ -13,10 +13,6 @@ configuration:
   name: tenant_id
   required: true
   type: 4
-- display: Authentication Token (see Detailed Instructions (?) section)
-  name: token
-  required: true
-  type: 4
 - display: Authentication ID (see Detailed Instructions (?) section)
   name: auth_id
   required: true
