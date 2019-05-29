@@ -63,8 +63,3 @@ tests:
 - Extract Indicators From File - test
 - ReadPDFFileV2-Test
 fromversion: 4.1.0
-releaseNotes: "Reimplemented ReadPDFFile script. Deprecated maxFileSize (as it wasn't used) and added new functionality:
-               - Expanded metadata: metadata displays more information than before.
-               - Shows pdf images: The script extracts the images in the pdf, and displays them (as a fileEntry) in the war room.
-               - Added argument 'maxImages': max amount of images to extract from the pdf (default is 20).
-               - Added support for encrypted file - added new argument for encrypted files (userPassword)."
