@@ -481,6 +481,6 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: New Forescout 8.1 Integration
+releaseNotes: "-"
 tests:
 - Forescout-Test
