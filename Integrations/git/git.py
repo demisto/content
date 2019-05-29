@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import json
 import requests
 from datetime import datetime, timedelta
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -159,18 +158,20 @@ def create_issue(title, body, milestone, labels, assignees):
         return_error("Error: No title given for created issue")
 
     data = data_formatting(title=title, body=body, milestone=milestone, labels=labels, assignees=assignees, state=None)
-    response = http_request(method='POST', url_suffix=USER_SUFFIX+ISSUE_SUFFIX, data=data)
+    response = http_request(method='POST', url_suffix=USER_SUFFIX + ISSUE_SUFFIX, data=data)
     return response
 
 
 def close_issue(issue_number):
-    response = http_request(method='PATCH', url_suffix=USER_SUFFIX+ISSUE_SUFFIX+"/"+str(issue_number), data={'state': 'closed'})
+    response = http_request(method='PATCH', url_suffix=USER_SUFFIX + ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
+                            data={'state': 'closed'})
     return response
 
 
 def update_issue(issue_number, title, body, state, milestone, labels, assign):
     data = data_formatting(title=title, body=body, milestone=milestone, labels=labels, assignees=assign, state=state)
-    response = http_request(method='PATCH', url_suffix=USER_SUFFIX+ISSUE_SUFFIX+"/"+str(issue_number), data=data)
+    response = http_request(method='PATCH', url_suffix=USER_SUFFIX + ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
+                            data=data)
     if response.get('errors'):
         return_error(response.get('errors'))
 
@@ -182,7 +183,7 @@ def list_all_issue(only_open):
     if only_open is False:
         params = {'state': 'all'}
 
-    response = http_request(method='GET', url_suffix=USER_SUFFIX+ISSUE_SUFFIX, params=params)
+    response = http_request(method='GET', url_suffix=USER_SUFFIX + ISSUE_SUFFIX, params=params)
     return response
 
 
@@ -195,7 +196,7 @@ def search_issue(query):
 
 
 def get_download_count():
-    response = http_request(method='GET', url_suffix=USER_SUFFIX+RELEASE_SUFFIX)
+    response = http_request(method='GET', url_suffix=USER_SUFFIX + RELEASE_SUFFIX)
     count_per_release = []
     for release in response:
         total_download_count = 0
@@ -260,7 +261,7 @@ def fetch_incidents_command():
         start_time = datetime.now() - timedelta(days=int(fetch_time[0]))
 
     last_time = start_time
-    issue_list = http_request(method='GET', url_suffix=USER_SUFFIX+ISSUE_SUFFIX, params={'state': 'all'})
+    issue_list = http_request(method='GET', url_suffix=USER_SUFFIX + ISSUE_SUFFIX, params={'state': 'all'})
     incidents = []
     for issue in issue_list:
         updated_at_str = issue.get('updated_at')
