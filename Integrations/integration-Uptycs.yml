@@ -399,8 +399,10 @@ script:
                         "upt_asset_id":demisto.args().get('asset_id'),
                         "code":demisto.args().get('code'),
                         "host_name":demisto.args().get('host_name_is'),
-                        "value":demisto.args().get('value')
+                        "value":demisto.args().get('value'),
+                        "key":demisto.args().get('key')
                         }
+
             query = apply_equals_cuts(query, equal_cuts)
             like_cuts = {
                         "host_name":demisto.args().get('host_name_like')
@@ -433,7 +435,7 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['id', 'host_name', 'grouping', 'code', 'assigned_to',
             'alert_time', 'updated_at', 'metadata', 'asset', 'status', 'upt_asset_id',
-            'created_at', 'description', 'severity', 'value']
+            'created_at', 'description', 'severity', 'value', 'key']
 
         if context != None:
             remove_context_entries(context, context_entries_to_keep)
@@ -475,7 +477,9 @@ script:
         equal_cuts = {
                     "upt_asset_id":demisto.args().get('asset_id'),
                     "code":demisto.args().get('code'),
-                    "host_name":demisto.args().get('host_name_is')
+                    "host_name":demisto.args().get('host_name_is'),
+                    "key":demisto.args().get('key'),
+                    "value":demisto.args().get('value')
                     }
         query = apply_equals_cuts(query, equal_cuts)
         like_cuts = {
@@ -509,7 +513,7 @@ script:
         context = query_results.get('items')
         context_entries_to_keep = ['upt_asset_id', 'host_name', 'grouping', 'code', 'assigned_to',
             'event_time', 'updated_at', 'metadata', 'asset', 'status', 'id',
-            'created_at', 'description', 'severity', 'value']
+            'created_at', 'description', 'severity', 'value', 'key']
 
         if context != None:
             remove_context_entries(context, context_entries_to_keep)
@@ -2141,6 +2145,9 @@ script:
       description: Varies for different alerts.  For example, a Bad IP alert would
         have the IP address as the value.  A program crash alert would have the name
         of the program which crashed as the value.
+    - name: key
+      description: Varies for different alerts.  This tells you what type of alert
+        identifier is stored in the 'value' column.
     outputs:
     - contextPath: Uptycs.Alerts.description
       description: Description of alert
@@ -2178,6 +2185,9 @@ script:
     - contextPath: Uptycs.Alerts.pid
       description: pid of the process which was responsible for firing the alert
       type: number
+    - contextPath: Uptycs.Alerts.key
+      description: Type of indicator that is stored in the 'value' column.
+      type: string
     description: return alerts from Uptycs DB
   - name: uptycs-get-alert-rules
     arguments:
@@ -2251,11 +2261,18 @@ script:
       description: 'Specifies how far back you want to look.  Format examples: 2 hours,
         4 minutes, 6 month, 1 day, etc.'
       defaultValue: 1 days
+    - name: key
+      description: Varies for different events.  This tells you what type of alert
+        indicator is stored in the 'value' column.
+    - name: value
+      description: Varies for different events.  For example, a Bad IP alert would
+        have the IP address as the value.  A program crash alert would have the name
+        of the program which crashed as the value.
     outputs:
     - contextPath: Uptycs.Events.description
       description: Description of event
       type: string
-    - contextPath: Uptycs.Events.asset_id
+    - contextPath: Uptycs.Events.upt_asset_id
       description: Uptycs asset ID
       type: string
     - contextPath: Uptycs.Events.code
@@ -2281,6 +2298,9 @@ script:
       type: string
     - contextPath: Uptycs.Events.severity
       description: The severity of the event
+      type: string
+    - contextPath: Uptycs.Events.key
+      description: Type of indicator that is stored in the 'value' column.
       type: string
     description: return events from Uptycs DB
   - name: uptycs-get-process-open-sockets
