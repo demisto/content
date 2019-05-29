@@ -202,7 +202,7 @@ def get_download_count():
     for release in response:
         total_download_count = 0
         for asset in release['assets']:
-            total_download_count = total_download_count+asset['download_count']
+            total_download_count = total_download_count + asset['download_count']
 
         release_info = {
             'URL': release.get('url'),
