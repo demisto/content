@@ -488,8 +488,6 @@ class IntegrationContent(Content):
 
         res = ""
         if rn != '-':
-            print rn
-            import pdb; pdb.set_trace()
             res = release_notes_item(cnt["display"], rn)
 
         return res
