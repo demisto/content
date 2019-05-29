@@ -39,7 +39,7 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params="", data=""):
+def http_request(method, url_suffix, params, data):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
@@ -164,7 +164,7 @@ def create_issue(title, body, milestone, labels, assignees):
 
 
 def close_issue(issue_number):
-    response = http_request(method='PATCH', url_suffix=USER_SUFFIX+ISSUE_SUFFIX+"/"+str(issue_number), data={'state':'closed'})
+    response = http_request(method='PATCH', url_suffix=USER_SUFFIX+ISSUE_SUFFIX+"/"+str(issue_number), data={'state': 'closed'})
     return response
 
 
