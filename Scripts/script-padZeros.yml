@@ -1,0 +1,30 @@
+commonfields:
+  id: 64664112-1c07-4ad0-83e2-5363da976001
+  version: 3
+name: padZeros
+script: |-
+  args = demisto.args()
+
+  s = str(args.get('value'))
+  length = int(args.get('length', 0))
+
+  demisto.results(s.zfill(length))
+type: python
+tags:
+- transformer
+- string
+- number
+comment: Pad string with zeros
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: String to pad
+- name: length
+  required: true
+  description: Length
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Added padZero string transformer"
