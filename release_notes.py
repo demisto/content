@@ -5,6 +5,7 @@ import sys
 import yaml
 import os
 import requests
+import argparse
 
 from Tests.test_utils import print_error, print_warning
 from Tests.test_utils import server_version_compare
@@ -83,7 +84,7 @@ class Content:
         return
 
     @abc.abstractmethod
-    def modified_release_notes(self, data):
+    def modified_release_notes(self, file_path, data):
         return
 
     @abc.abstractmethod
@@ -99,7 +100,7 @@ class Content:
             new_count = 0
             for path in store:
                 with open(path, 'r') as f:
-                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), ),
+                    print ' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
 
@@ -111,7 +112,7 @@ class Content:
                     if title_prefix == NEW_RN:
                         ans = self.added_release_notes(cnt)
                     elif title_prefix == MODIFIED_RN:
-                        ans = self.modified_release_notes(cnt)
+                        ans = self.modified_release_notes(path, cnt)
                     else:
                         # should never get here
                         print_error("Error:\n Unknown release notes type" % (title_prefix))
@@ -186,7 +187,7 @@ class ScriptContent(Content):
             return ""
         return release_notes_item(cnt["name"], cnt["comment"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -197,7 +198,7 @@ class ScriptContent(Content):
         return res
 
 
-Content.register(ScriptContent)
+# Content.register(ScriptContent)
 
 
 class PlaybookContent(Content):
@@ -216,7 +217,7 @@ class PlaybookContent(Content):
 
         return release_notes_item(cnt["name"], rn)
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -227,7 +228,7 @@ class PlaybookContent(Content):
         return res
 
 
-Content.register(PlaybookContent)
+# Content.register(PlaybookContent)
 
 
 class ReportContent(Content):
@@ -243,7 +244,7 @@ class ReportContent(Content):
             return ""
         return release_notes_item(cnt["name"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -254,7 +255,7 @@ class ReportContent(Content):
         return res
 
 
-Content.register(ReportContent)
+# Content.register(ReportContent)
 
 
 class DashboardContent(Content):
@@ -271,7 +272,7 @@ class DashboardContent(Content):
 
         return release_notes_item(cnt["name"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -282,7 +283,7 @@ class DashboardContent(Content):
         return res
 
 
-Content.register(DashboardContent)
+# Content.register(DashboardContent)
 
 
 class WidgetContent(Content):
@@ -299,7 +300,7 @@ class WidgetContent(Content):
 
         return release_notes_item(cnt["name"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -310,7 +311,7 @@ class WidgetContent(Content):
         return res
 
 
-Content.register(WidgetContent)
+# Content.register(WidgetContent)
 
 
 class IncidentFieldContent(Content):
@@ -332,7 +333,7 @@ class IncidentFieldContent(Content):
 
         return add_dot(rn) + "\n"
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -343,7 +344,7 @@ class IncidentFieldContent(Content):
         return res
 
 
-Content.register(IncidentFieldContent)
+# Content.register(IncidentFieldContent)
 
 
 class LayoutContent(Content):
@@ -376,7 +377,7 @@ class LayoutContent(Content):
 
         return LayoutContent.get_release_notes(cnt)
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
 
         if len(rn) == 0:
@@ -388,7 +389,7 @@ class LayoutContent(Content):
         return LayoutContent.get_release_notes(cnt)
 
 
-Content.register(LayoutContent)
+# Content.register(LayoutContent)
 
 
 class ClassifierContent(Content):
@@ -415,7 +416,7 @@ class ClassifierContent(Content):
 
         return ClassifierContent.get_release_notes(cnt)
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
 
         if len(rn) == 0:
@@ -427,7 +428,7 @@ class ClassifierContent(Content):
         return ClassifierContent.get_release_notes(cnt)
 
 
-Content.register(ClassifierContent)
+# Content.register(ClassifierContent)
 
 
 class ReputationContent(Content):
@@ -445,7 +446,7 @@ class ReputationContent(Content):
         # This should never happen
         return ""
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, file_path, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -456,7 +457,7 @@ class ReputationContent(Content):
         return res
 
 
-Content.register(ReputationContent)
+# Content.register(ReputationContent)
 
 
 class IntegrationContent(Content):
@@ -469,18 +470,32 @@ class IntegrationContent(Content):
     def added_release_notes(self, cnt):
         return release_notes_item(cnt["display"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
-        rn = cnt.get("releaseNotes", "")
-        if len(rn) == 0:
-            return None
-        res = ""
+    def modified_release_notes(self, file_path, cnt):
+        file_name = os.path.basename(file_path)
+        rn_path = os.path.join('Releases', 'LatestRelease', os.path.splitext(file_name)[0] + '.md')
 
+        if not os.path.isfile(rn_path):
+            print_error('no releaseNotes were provided for {}'.format(file_path))
+            return None
+
+        # rn = cnt.get("releaseNotes", "")
+        with open(rn_path) as f:
+            rn = f.read()
+
+        if len(rn) == 0:
+            print_error('no releaseNotes were provided for {}'.format(file_path))
+            return None
+
+        res = ""
         if rn != '-':
+            print rn
+            import pdb; pdb.set_trace()
             res = release_notes_item(cnt["display"], rn)
+
         return res
 
 
-Content.register(IntegrationContent)
+# Content.register(IntegrationContent)
 
 release_note_generator = {
     INTEGRATIONS_DIR: IntegrationContent(),
@@ -558,6 +573,11 @@ def get_release_notes_draft(github_token):
 
     res = requests.get('https://api.github.com/repos/demisto/content/releases',
                        headers={'Authorization': 'token {}'.format(github_token)})
+
+    if res.status_code != 200:
+        print_warning('unable to get release draft ({}), reason:\n{}'.format(res.status_code, res.text))
+        return ''
+
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
@@ -596,23 +616,26 @@ def create_content_descriptor(version, asset_id, res, github_token):
         outfile.write(release_notes)
 
 
-def main(argv):
-    if len(argv) < 6:
-        print_error("<Release version>, <File with the full list of changes>,"
-                    "<Complete diff file for deleted files>, <assetID>, <Server version>, <Github Token>")
-        sys.exit(1)
-    files = parse_change_list(argv[1])
+def main():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('version', help='Release version')
+    arg_parser.add_argument('change_log', help='File with the full list of changes')
+    arg_parser.add_argument('deleted_files', help='Complete diff file for deleted files')
+    arg_parser.add_argument('asset_id', help='Asset ID')
+    arg_parser.add_argument('server_version', help='Server version')
+    arg_parser.add_argument('github_token', help='Github token')
+    args = arg_parser.parse_args()
 
-    for file in files:
-        create_file_release_notes(file, argv[2])
+    files = parse_change_list(args.change_log)
 
-    server_version = argv[4]
+    for file_ in files:
+        create_file_release_notes(file_, args.deleted_files)
 
     res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
         value = release_note_generator[key]
-        ans = value.generate_release_notes(server_version)
+        ans = value.generate_release_notes(args.server_version)
         if ans is None:
             missing_release_notes = True
         elif len(ans) > 0:
@@ -621,13 +644,9 @@ def main(argv):
     if missing_release_notes:
         sys.exit(1)
 
-    version = argv[0]
-    asset_id = argv[3]
-    github_token = argv[5]
-
     release_notes = "\n---\n".join(res)
-    create_content_descriptor(version, asset_id, release_notes, github_token)
+    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
