@@ -1,0 +1,70 @@
+id: playbook-CheckPhish-Test
+version: 2
+name: playbook-CheckPhish-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ef846b9a-f3b3-415e-81a8-8864de34adae
+    type: start
+    task:
+      id: ef846b9a-f3b3-415e-81a8-8864de34adae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a295c537-0024-470b-82c1-bf4d2acfb0ed
+    type: regular
+    task:
+      id: a295c537-0024-470b-82c1-bf4d2acfb0ed
+      version: -1
+      name: CheckPhish-check-urls
+      description: Get the results of the check in CheckPhish
+      script: CheckPhish|||CheckPhish-check-urls
+      type: regular
+      iscommand: true
+      brand: CheckPhish
+    scriptarguments:
+      urls:
+        simple: http://demisto.com,paypal-secure.online,https://github.com,http://www.w3.org,http://www.yahoo.com,www.fontedevidaeterna.org.br
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
