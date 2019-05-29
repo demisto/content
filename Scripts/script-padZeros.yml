@@ -1,6 +1,6 @@
 commonfields:
-  id: 64664112-1c07-4ad0-83e2-5363da976001
-  version: 3
+  id: padZeros
+  version: -1
 name: padZeros
 script: |-
   args = demisto.args()
