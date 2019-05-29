@@ -1,2 +1,2 @@
 To allow us access to the Windows Defender app, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fatp&client_id=d4e3905e-b159-4f53-8588-3785a2140c0b).
-After authorising Demisto app, you will get a tenant ID and a token, which should be inserted in the integration instance settings.
+After authorising the Demisto app, you will receive a Tenant ID, Authentication ID and an Authentication Key, which should be inserted in the integration instance settings.

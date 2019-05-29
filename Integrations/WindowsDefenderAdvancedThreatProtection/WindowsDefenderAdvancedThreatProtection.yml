@@ -8,13 +8,17 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Tenant ID (as received from the admin consent - see detailed instructions
-    (?))
+- display: Tenant ID (received from the admin consent - see Detailed Instructions
+    (?) section)
   name: tenant_id
   required: true
-  type: 0
-- display: Token (as received from the admin consent - see detailed instructions (?))
-  name: token
+  type: 4
+- display: Authentication ID (see Detailed Instructions (?) section)
+  name: auth_id
+  required: true
+  type: 4
+- display: Authentication Key (see Detailed Instructions (?) section)
+  name: auth_key
   required: true
   type: 4
 - display: Fetch incidents
@@ -38,8 +42,8 @@ configuration:
   name: fetch_severity
   required: false
   type: 0
-- display: Trust any certificate (unsecure)
-  name: unsecure
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
@@ -724,6 +728,7 @@ script:
       description: Flag for network user only - set to true if related user is only
         network user.
       type: boolean
+  dockerimage: demisto/crypto:1.0.0.303
   isfetch: true
   runonce: false
   script: '-'
@@ -733,4 +738,4 @@ releaseNotes: 'Added 3 new commands: - microsoft-atp-advanced-hunting - Run adva
   new alert entity using event data, as obtained from the Advanced Hunting. - microsoft-atp-get-alert-related-user
   - Retrieves the user associated to a specific alert.'
 tests:
-  - Test - Windows Defender Advanced Threat Protection
+- Test - Windows Defender Advanced Threat Protection

@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 requests.packages.urllib3.disable_warnings()
 
 if not demisto.params()['proxy']:
@@ -15,10 +17,12 @@ if not demisto.params()['proxy']:
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/api'
 TENANT_ID = demisto.params()['tenant_id']
-TOKEN = demisto.params()['token']
-USE_SSL = not demisto.params().get('unsecure', False)
+AUTH_ID = demisto.params()['auth_id']
+ENC_KEY = demisto.params()['auth_key']
+USE_SSL = not demisto.params().get('insecure', False)
 FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
 FETCH_STATUS = demisto.params().get('fetch_status').split(',')
+TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/atp-token'
 
 ''' HELPER FUNCTIONS '''
 
@@ -32,42 +36,131 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_token():
+def get_encrypted(auth_id: str, key: str) -> str:
     """
-    Check if we have a valid token and if not get one
+
+    Args:
+        auth_id (str): auth_id from Demistobot
+        key (str): key from Demistobot
+
+    Returns:
+
     """
-    ctx = demisto.getIntegrationContext()
-    if ctx.get('token') and ctx.get('stored'):
-        if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
-            return ctx.get('token')
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = enc_key.encode()
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    stored = integration_context.get('stored')
+    if access_token and stored:
+        if epoch_seconds() - stored < 60 * 60 - 30:
+            return access_token
     headers = {
-        'Authorization': TOKEN,
+        'Authorization': AUTH_ID,
         'Accept': 'application/json'
     }
-    r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers,
-                     params={'tenant': TENANT_ID, 'product': 'ATP'}, verify=USE_SSL)
-    if r.status_code not in {200, 201}:
-        return_error('Error in authentication with the application. Please check the credentials.')
-    data = r.json()
-    if r.status_code != requests.codes.ok:
-        error_object = json.loads(data.get('detail'))
-        error_details = error_object.get('error_description')
-        if error_details:
-            return_error(error_details)
-        else:
-            return_error(error_object)
-    demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
-    return data.get('token')
+
+    dbot_response = requests.get(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        params={'token': get_encrypted(TENANT_ID, ENC_KEY)},
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response: [{}]. Exception: {}'.format(err_response.content, ex))
+        raise Exception(msg)
+    try:
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('token')
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'stored': epoch_seconds()
+    })
+    return access_token
+
+
+# def get_token():
+#     """
+#     Check if we have a valid token and if not get one
+#     """
+#     ctx = demisto.getIntegrationContext()
+#     if ctx.get('token') and ctx.get('stored'):
+#         if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
+#             return ctx.get('token')
+#     headers = {
+#         'Authorization': TOKEN,
+#         'Accept': 'application/json'
+#     }
+#     r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers,
+#                      params={'tenant': TENANT_ID, 'product': 'ATP'}, verify=USE_SSL)
+#     if r.status_code not in {200, 201}:
+#         return_error('Error in authentication with the application. Please check the credentials.')
+#     data = r.json()
+#     if r.status_code != requests.codes.ok:
+#         error_object = json.loads(data.get('detail'))
+#         error_details = error_object.get('error_description')
+#         if error_details:
+#             return_error(error_details)
+#         else:
+#             return_error(error_object)
+#     demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
+#     return data.get('token')
 
 
 def http_request(method, url_suffix, json=None, params=None):
 
+    token = get_access_token()
     r = requests.request(
         method,
         BASE_URL + url_suffix,
         json=json,
         headers={
-            'Authorization': 'Bearer ' + get_token(),
+            'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         }
     )
@@ -480,7 +573,7 @@ def list_alerts_command():
         if (severity and severity != alert_severity) or (status and status != alert_status):
             continue
         current_alert_output = {}
-        for key, value in alert.iteritems():
+        for key, value in alert.items():
             if value or value is False:
                 current_alert_output[capitalize_first_letter(key).replace('Id', 'ID')] = value
         output.append(current_alert_output)
@@ -634,7 +727,7 @@ def create_alert_command():
         'ID': response.get('id'),
         'Status': response.get('status')
     }
-    output = {k: v for k, v in output.iteritems() if v is not None}
+    output = {k: v for k, v in output.items() if v is not None}
     ec = {
         'MicrosoftATP.Alert': output
     }
@@ -745,9 +838,30 @@ def fetch_incidents():
 
 
 def test_function():
-    cmd_url = '/alerts?$top=1'
-    http_request('GET', cmd_url)
-    demisto.results('ok')
+    token = get_access_token()
+    response = requests.get(
+        BASE_URL + '/alerts',
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        params={'$top': '1'},
+        verify=USE_SSL
+    )
+    try:
+        data = response.json() if response.text else {}
+        if not response.ok:
+            return_error(f'API call to Windows Advanced Threat Protection. '
+                         f'Please check authentication related parameters. '
+                         f'[{response.status_code}] - {response.reason}')
+
+        demisto.results('ok')
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'API call to Windows Advanced Threat Protection failed, could not parse result. '
+                     f'Please check authentication related parameters. [{response.status_code}]')
 
 
 ''' EXECUTION CODE '''
@@ -800,7 +914,5 @@ try:
     elif demisto.command() == 'microsoft-atp-get-alert-related-user':
         get_alert_related_user_command()
 
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error(e.message)
+except Exception as e:
+    return_error(str(e))
