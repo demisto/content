@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import re
 import requests
 import json
+from datetime import datetime
 import shutil
 
 # disable insecure warnings
@@ -135,7 +136,7 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'problem_id', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input',
              'watch_list', 'work_end', 'work_notes', 'work_notes_list',
-             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
+             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state', 'caller']
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -177,9 +178,9 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
                                        auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
             shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
         except Exception as e:
-            raise Exception('Failed to upload file - ' + e.message)
+            raise Exception('Failed to upload file - ' + str(e))
     else:
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params,
+        res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
                                auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
 
     try:
@@ -187,7 +188,7 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
     except Exception as e:
         if not res.content:
             return ''
-        raise Exception('Error parsing reply - {} - {}'.format(res.content, e.message))
+        raise Exception('Error parsing reply - {} - {}'.format(res.content, str(e)))
 
     if 'error' in obj:
         message = obj.get('error', {}).get('message')
@@ -409,7 +410,7 @@ def get_ticket_command():
     else:
         ticket = res['result']
 
-    entries = []
+    entries = []  # type: List[Dict]
 
     if get_attachments.lower() != 'false':
         entries = get_ticket_attachment_entries(ticket['sys_id'])
@@ -492,7 +493,7 @@ def get_record_command():
 
 def get(table_name, record_id, number=None):
     path = None
-    query_params = {}
+    query_params = {}  # type: Dict
     if record_id:
         path = 'table/' + table_name + '/' + record_id
     elif number:
@@ -518,7 +519,7 @@ def get_ticket_attachments(ticket_id):
 
 def get_ticket_attachment_entries(ticket_id):
     entries = []
-    links = []
+    links = []  # type: List[Tuple[str, str]]
     attachments_res = get_ticket_attachments(ticket_id)
     if 'result' in attachments_res and len(attachments_res['result']) > 0:
         attachments = attachments_res['result']
@@ -1418,7 +1419,7 @@ def test_module():
     if 'result' not in res:
         return_error('ServiceNow error: ' + str(res))
     ticket = res['result']
-    if demisto.params().get('isFetch'):
+    if ticket and demisto.params().get('isFetch'):
         if isinstance(ticket, list):
             ticket = ticket[0]
         if TIMESTAMP_FIELD not in ticket:
@@ -1485,6 +1486,6 @@ except Exception as e:
     LOG(e)
     LOG.print_log()
     if not raise_exception:
-        return_error(str(e.message))
+        return_error(str(e))
     else:
         raise

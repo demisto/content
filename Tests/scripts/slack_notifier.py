@@ -80,7 +80,7 @@ def get_fields():
 
     if failed_tests:
         field_failed_tests = {
-            "title": "Failed tests",
+            "title": "Failed tests - ({})".format(len(failed_tests)),
             "value": '\n'.join(failed_tests),
             "short": False
         }
@@ -89,16 +89,16 @@ def get_fields():
 
     if skipped_tests:
         field_skipped_tests = {
-            "title": "Skipped tests",
-            "value": '\n'.join(skipped_tests),
+            "title": "Skipped tests - ({})".format(len(skipped_tests)),
+            "value": '',
             "short": True
         }
         content_team_fields.append(field_skipped_tests)
 
     if skipped_integrations:
         field_skipped_integrations = {
-            "title": "Skipped integrations",
-            "value": '\n'.join(skipped_integrations),
+            "title": "Skipped integrations - ({})".format(len(skipped_integrations)),
+            "value": '',
             "short": True
         }
         content_team_fields.append(field_skipped_integrations)
@@ -120,7 +120,7 @@ def slack_notifier(build_url, slack_token):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="content-team",
+            channel="dmst-content-team",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
