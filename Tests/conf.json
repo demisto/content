@@ -1508,7 +1508,7 @@
         }
     ],
     "skipped_tests": {
-        "Mistake in Forescout-Test": "Should be skipped (issue 17016)",
+        "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
