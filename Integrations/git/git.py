@@ -38,7 +38,7 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params, data):
+def http_request(method, url_suffix, params=None, data=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
@@ -79,10 +79,25 @@ def data_formatting(title, body, milestone, labels, assignees, state):
     return data
 
 
+def context_create_issue(response, issue):
+    """
+    creates GitHub.Issue EntryContext and results to be printed in Demisto
+    Args:
+        response (dict): The raw HTTP response to be inserted to the 'Contents' field
+        issue (dict or list of dicts): A dictionary or a list of dictionaries formatted for Demisto results
+
+    """
+    ec = {
+        'GitHub.Issue(val.Repository == obj.Repository  && val.ID == obj.ID)': issue
+    }
+    return_outputs(tableToMarkdown("Issue Table", issue), ec, response)
+
+
 def issue_format(issue, result_token=False):
 
     """
-    gets a HTTP response containing an issue and creates a dictionary with selected fields representing an issue in Demisto.
+    gets a HTTP response containing an issue and creates a dictionary with selected fields representing an issue in
+     Demisto.
     Args:
         issue (dict): An HTTP response representing an issue, formatted as a dictionary
         result_token (bool): controlling what the function returns
@@ -119,20 +134,6 @@ def issue_table_create(issue_list, response):
         issue_table.append(issue_format(issue))
 
     context_create_issue(response, issue_table)
-
-
-def context_create_issue(response, issue):
-    """
-    creates GitHub.Issue EntryContext and results to be printed in Demisto
-    Args:
-        response (dict): The raw HTTP response to be inserted to the 'Contents' field
-        issue (dict or list of dicts): A dictionary or a list of dictionaries formatted for Demisto results
-
-    """
-    ec = {
-        'GitHub.Issue(val.Repository == obj.Repository  && val.ID == obj.ID)': issue
-    }
-    return_outputs(tableToMarkdown("Issue Table", issue), ec, response)
 
 
 def context_create_release(release_list, response):
