@@ -6,7 +6,7 @@ display: Netcraft
 category: Authentication
 description: An integration for Netcraft, allowing you to open and handle takedown requests.
 configuration:
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
