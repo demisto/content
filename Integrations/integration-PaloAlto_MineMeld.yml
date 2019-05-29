@@ -243,7 +243,7 @@ script:
                     'type': json.loads(updated_miner_list[indicator])['type'],
                     'ttl': -1
                 }
-                updated_miner_list = { indicator: json.dumps(request_params) }
+                updated_miner_list[indicator] = json.dumps(request_params)
         else:
             # remove indicator from miner, if nothing was removed, indicator not on miner
             for indicator in indicators:
@@ -699,17 +699,20 @@ script:
 
     def update_miner():
         miner = demisto.args()['miner']
-        indicator = demisto.args()['indicator']
-        type_ = demisto.args().get('type',get_indicator_type(indicator))
+        indicators = argToList(demisto.args()['indicator'])
+        if len(indicators) < 1:
+            return_error('Insert at least 1 indicator')
+        type_ = demisto.args().get('type',get_indicator_type(indicators[0]))
         comment = demisto.args().get('comment','')
 
-        if ' ' in indicator:
-            return_error("Don't use space in indicator")
+        for indicator in indicators:
+            if ' ' in indicator:
+                return_error("Don't use space in indicator")
 
         if demisto.command() == 'minemeld-add-to-miner':
-            add_indicator_to_miner(MineMeldClient, miner, indicator, type_, comment)
+            add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment)
         elif demisto.command() == 'minemeld-remove-from-miner':
-            remove_indicator_from_miner(MineMeldClient, miner, indicator)
+            remove_indicator_from_miner(MineMeldClient, miner, indicators)
 
         demisto.results('Performed action successfully')
 
@@ -1129,4 +1132,3 @@ script:
   runonce: false
 tests:
   - minemeld_test
-releaseNotes: change display name - Palo Alto Networks Minemeld

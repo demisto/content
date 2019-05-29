@@ -172,10 +172,11 @@ tasks:
           left:
             value:
               simple: Endpoint.OS
+            iscontext: true
           right:
             value:
               simple: Windows
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
               simple: Endpoint.OS

@@ -53,7 +53,7 @@ script: |
           ReadableContentsFormat: formats.markdown,
           EntryContext: keysToKeepObj
       };
-  } else if (args.index) {
+  } else if (args.index !== undefined) {
       // delete key in a specific index
       var index = parseInt(args.index);
       if (isNaN(index)) {

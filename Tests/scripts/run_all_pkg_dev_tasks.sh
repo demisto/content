@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Find all package directories and run the pkg_dev_tasks_in_docker.py script. Will run only against
+# Find all package directories and run the pkg_dev_test_tasks.py script. Will run only against
 # packages which have changed comparing in git. Unless SKIP_GIT_COMPARE_FILTER evn var is set.
-# Speciy any parameter to this script that will be passed to the pkg_dev_tasks_in_docker.py as is
+# Speciy any parameter to this script that will be passed to the pkg_dev_test_tasks.py as is
 
 # Env vars:
 # SKIP_GIT_COMPARE_FILTER: if set will not compare the git commit and run against all pkgs (nightly)
@@ -19,10 +19,15 @@ if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
         # example of comapre url: https://github.com/demisto/content/compare/62f0bd03be73...1451bf0f3c2a
         DIFF_COMPARE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/compare/::g')    
         if [ -z "${DIFF_COMPARE}" ]; then
-            echo "Failed: extracting diff compare from CIRCLE_COMPARE_URL: ${CIRCLE_COMPARE_URL}"
-            exit 1
+            echo "Failed: extracting diff compare from CIRCLE_COMPARE_URL: ${CIRCLE_COMPARE_URL} using instead: HEAD~1...HEAD"
+            DIFF_COMPARE="HEAD~1...HEAD"            
         fi                
     fi
+fi
+
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ${d}) ]]; then
+    echo "CommonServerPython modified. Going to ignore git changes and run all tests"
+    DIFF_COMPARE=""
 fi
 
 CURRENT_DIR=`pwd`
@@ -38,9 +43,9 @@ SUCCESS_STATUS=""
 FAIL_STATUS=""
 
 for d in `find Integrations Scripts Beta_Integrations -maxdepth 1 -mindepth 1 -type d -print | sort`; do
-    if [[ -z "${DIFF_COMPARE}" ]] || [[ $(git diff $DIFF_COMPARE -- ${d}) ]]; then
+    if [[ -z "${DIFF_COMPARE}" ]] || [[ $(git diff --name-status $DIFF_COMPARE -- ${d}) ]]; then
         echo "**** `date`: Running dev tasks for: $d"
-        ${PKG_DEV_TASKS_DIR}/pkg_dev_tasks_in_docker.py -d "$d" $*
+        ${PKG_DEV_TASKS_DIR}/pkg_dev_test_tasks.py -d "$d" $*
         if [[ $? -ne 0 ]]; then
             FAIL_STATUS=`printf "${FAIL_STATUS}\n\t-$d"`        
         else

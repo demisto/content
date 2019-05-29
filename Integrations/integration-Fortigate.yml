@@ -107,6 +107,39 @@ script:
         return False
 
 
+    def create_addr_string(list_of_addr_data_dicts):
+            addr_string = ""
+            for addr_index in range(0, len(list_of_addr_data_dicts)):
+                cur_addr_data = list_of_addr_data_dicts[addr_index]
+                cur_addr_name = cur_addr_data.get("name")
+                if addr_index == len(list_of_addr_data_dicts) - 1:
+                    addr_string += "{}".format(cur_addr_name)
+                else:
+                    addr_string += "{}\n".format(cur_addr_name)
+            return addr_string
+
+
+    def str_to_bool(str_representing_bool):
+        return str_representing_bool and str_representing_bool.lower() == 'true'
+
+
+    def generate_src_or_dst_request_data(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove):
+        address_list_for_request = policy_field_value.split(",")
+        if str_to_bool(keep_original_data):
+            policy_data = get_policy_request(policy_id)[0] # the return value is an array with one element
+            existing_adresses_list = policy_data.get(policy_field)
+            existing_adresses_list = [address_data["name"] for address_data in existing_adresses_list]
+            if add_or_remove.lower() == "add":
+                for address in existing_adresses_list:
+                    if address not in address_list_for_request:
+                        address_list_for_request.append(address)
+            else:
+                address_list_for_request = [address for address in existing_adresses_list if address not in address_list_for_request]
+
+        address_data_dicts_for_request = policy_addr_array_from_arg(address_list_for_request, False)
+        return address_data_dicts_for_request
+
+
     def logout(session):
         """
         Due to limited amount of simultaneous connections we log out after each API request. Simple post request to /logout endpoint without params.
@@ -114,6 +147,17 @@ script:
         url_suffix = '/logout'
         params = {}
         session.post(SERVER+url_suffix, data=params, verify=USE_SSL)
+
+    def policy_addr_array_from_arg(policy_addr_data, is_data_string = True):
+        # if the data isn't in string format, it's already an array and requires no formatting
+        policy_adr_str_array = policy_addr_data.split(",") if is_data_string else policy_addr_data
+        policy_addr_dict_array = []
+        for src_addr_name in policy_adr_str_array:
+            cur_addr_dict = {
+                "name": src_addr_name
+            }
+            policy_addr_dict_array.append(cur_addr_dict)
+        return policy_addr_dict_array
 
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -433,10 +477,10 @@ script:
 
                 src_address = policy.get('srcaddr')
                 if src_address and isinstance(src_address, list) and isinstance(src_address[0], dict):
-                    src_address = src_address[0].get('name')
+                    src_address = create_addr_string(src_address)
                 dest_address = policy.get('dstaddr')
                 if dest_address and isinstance(dest_address, list) and isinstance(dest_address[0], dict):
-                    dest_address = dest_address[0].get('name')
+                    dest_address = create_addr_string(dest_address)
                 service = policy.get('service')
                 if service and isinstance(service, list) and isinstance(service[0], dict):
                     service = service[0].get('name')
@@ -501,8 +545,13 @@ script:
         policy_id = demisto.args().get('policyID')
         policy_field = demisto.args().get('field')
         policy_field_value = demisto.args().get('value')
+        keep_original_data = demisto.args().get('keep_original_data')
+        add_or_remove = demisto.args().get('add_or_remove')
 
-        update_policy = update_policy_request(policy_id, policy_field, policy_field_value)
+        if keep_original_data and keep_original_data.lower() == 'true' and not add_or_remove:
+            return_error("Error: add_or_remove must be specified if keep_original_data is true.")
+
+        update_policy = update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
         policy = get_policy_request(policy_id)[0]
         all_security_profiles = [ policy.get('webfilter-profile'), policy.get('ssl-ssh-profile'), policy.get('dnsfilter-profile'),                                                                                                     policy.get('profile-protocol-options'), policy.get('profile-type'), policy.get('av-profile') ]
 
@@ -559,7 +608,7 @@ script:
         })
 
 
-    def update_policy_request(policy_id, policy_field, policy_field_value):
+    def update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove):
         uri_suffix = 'cmdb/firewall/policy/' + policy_id
         if not does_path_exist(uri_suffix):
             return_error('Requested policy ID ' + policy_id + ' does not exist in Firewall config.')
@@ -574,7 +623,12 @@ script:
         if policy_field in field_to_api_key:
             policy_field = field_to_api_key[policy_field]
 
+        if policy_field in {'srcaddr', 'dstaddr'}:
+            policy_field_value = generate_src_or_dst_request_data(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
+
         payload = {
+            'policyid': int(policy_id),
+            'q_origin_key': int(policy_id),
             policy_field: policy_field_value
         }
 
@@ -591,16 +645,15 @@ script:
         policy_description = demisto.args().get('description', '')
         policy_srcintf = demisto.args().get('sourceIntf')
         policy_dstintf = demisto.args().get('dstIntf')
-        policy_source_address = demisto.args().get('source')
-        policy_destination_address = demisto.args().get('destination')
+        policy_source_address = policy_addr_array_from_arg(demisto.args().get('source'))
+        policy_destination_address = policy_addr_array_from_arg(demisto.args().get('destination'))
         policy_service = demisto.args().get('service')
         policy_action = demisto.args().get('action')
         policy_status = demisto.args().get('status')
         policy_log = demisto.args().get('log')
         policy_nat = demisto.args().get('nat')
 
-        create_policy = create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf, policy_source_address,                                                                          policy_destination_address, policy_service, policy_action, policy_status, policy_log, policy_nat)
-
+        create_policy = create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf, policy_source_address, policy_destination_address, policy_service, policy_action, policy_status, policy_log, policy_nat)
         contents.append({
             'Name': policy_name,
             'Description': policy_description,
@@ -658,8 +711,8 @@ script:
                 'name': policy_name,
                 'srcintf': [{'name': policy_srcintf }],
                 'dstintf': [{'name': policy_dstintf }],
-                'srcaddr': [{'name': policy_source_address }],
-                'dstaddr': [{'name': policy_destination_address }],
+                'srcaddr': policy_source_address,
+                'dstaddr': policy_destination_address,
                 'action': policy_action,
                 'status': policy_status,
                 'schedule': 'always',
@@ -1151,6 +1204,23 @@ script:
     - name: value
       required: true
       description: Value of field parameter to update
+    - name: keep_original_data
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to keep the original data or not. Only relevant if the
+        updated field is "source" or "destination". If the supplied value is 'True',
+        the current data will not be replaced. Instead, the supplied addresses will
+        be added / removed from the existing data.
+    - name: add_or_remove
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Whether to add or remove the supplied addresses from the existing
+        data. Only relevant in case the field to update is "source" or "destination",
+        and keep_original_data is specified to 'True'.
     outputs:
     - contextPath: Fortigate.Policy.Name
       description: Policy name
@@ -1378,3 +1448,4 @@ script:
   runonce: false
 tests:
   - Fortigate Test
+releaseNotes: "Added enhancement to update-policy, enabled keeping the existing data."

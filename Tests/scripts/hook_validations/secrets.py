@@ -297,17 +297,20 @@ def get_white_list():
 
 
 def get_file_contents(file_path, file_extension):
-    # if pdf file, parse text
-    if file_extension == '.pdf':
-        file_contents = extract_text_from_pdf(file_path)
-    else:
-        # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
-        with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
-            file_contents = commited_file.read()
+    try:
+        # if pdf file, parse text
+        if file_extension == '.pdf':
+            file_contents = extract_text_from_pdf(file_path)
+        else:
+            # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
+            with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
+                file_contents = commited_file.read()
 
-    file_contents = ignore_base64(file_contents)
-
-    return file_contents
+        file_contents = ignore_base64(file_contents)
+        return file_contents
+    except Exception as ex:
+        print("Failed opening file: {}. Exception: {}".format(file_path, ex))
+        raise
 
 
 def extract_text_from_pdf(file_path):
@@ -316,11 +319,10 @@ def extract_text_from_pdf(file_path):
     try:
         pdf_file_obj = open('./' + file_path, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+        num_pages = pdf_reader.numPages
     except PyPDF2.utils.PdfReadError:
         print('ERROR: Could not parse PDF file in path: {} - ***Review Manually***'.format(file_path))
         return file_contents
-    num_pages = pdf_reader.numPages
-
     while page_num < num_pages:
         pdf_page = pdf_reader.getPage(page_num)
         page_num += 1
@@ -343,6 +345,8 @@ def is_secrets_disabled(line, skip_secrets):
     elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
         skip_secrets = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
+        skip_secrets = False
+    elif not skip_secrets:
         skip_secrets = False
 
     return skip_secrets
