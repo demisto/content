@@ -10,6 +10,7 @@ from copy import deepcopy
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 CREDENTIALS = demisto.params().get('credentials')
@@ -104,7 +105,6 @@ REFERENCE_NAMES_MAP = {
     'name': 'Name',
     'creation_time': 'CreationTime',
     'element_type': 'ElementType',
-    'number_of_elements': 'NumberOfElements',
     'time_to_live': 'TimeToLive',
     'timeout_type': 'TimeoutType',
     'data': 'Data',
@@ -112,6 +112,22 @@ REFERENCE_NAMES_MAP = {
     'source': 'Source',
     'value': 'Value',
     'first_seen': 'FirstSeen'
+}
+
+DEVICE_MAP = {
+    'asset_scanner_ids': 'AssetScannerIDs',
+    'custom_properties': 'CustomProperties',
+    'deleted': 'Deleted',
+    'description': 'Description',
+    'event_collector_ids': 'EventCollectorIDs',
+    'flow_collector_ids': 'FlowCollectorIDs',
+    'flow_source_ids': 'FlowSourceIDs',
+    'id': 'ID',
+    'log_source_ids': 'LogSourceIDs',
+    'log_source_group_ids': 'LogSourceGroupIDs',
+    'name': 'Name',
+    'qvm_scanner_ids': 'QVMScannerIDs',
+    'tenant_id': 'TenantID'
 }
 
 ''' Utility methods '''
@@ -150,9 +166,9 @@ def convert_to_str(obj):
 
 
 # Filters recursively from dictionary (d1) all keys that do not appear in d2
-def filter_dict_nonintersection_key_to_value(d1, d2):
+def filter_dict_non_intersection_key_to_value(d1, d2):
     if isinstance(d1, list):
-        return map(lambda x: filter_dict_nonintersection_key_to_value(x, d2), d1)
+        return map(lambda x: filter_dict_non_intersection_key_to_value(x, d2), d1)
     elif isinstance(d1, dict) and isinstance(d2, dict):
         d2values = d2.values()
         return dict((k, v) for k, v in d1.items() if k in d2values)
@@ -175,8 +191,8 @@ def replace_keys(src, trans_map):
     return src
 
 
-# Transforms flat dictionary to comma seperated values
-def dict_values_to_comma_seperated_string(dic):
+# Transforms flat dictionary to comma separated values
+def dict_values_to_comma_separated_string(dic):
     return ','.join(convert_to_str(v) for v in dic.itervalues())
 
 
@@ -199,7 +215,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
 
 
 # Generic function that receives a result json, and turns it into an entryObject
-def get_entry_for_object(title, obj, contents, headers=None, contextKey=None, humanReadable=None):
+def get_entry_for_object(title, obj, contents, headers=None, context_key=None, human_readable=None):
     if len(obj) == 0:
         return {
             'Type': entryTypes['note'],
@@ -213,13 +229,13 @@ def get_entry_for_object(title, obj, contents, headers=None, contextKey=None, hu
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
-    ec = {contextKey: obj} if contextKey else obj
+    ec = {context_key: obj} if context_key else obj
     return {
         'Type': entryTypes['note'],
         'Contents': contents,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': humanReadable if humanReadable else tableToMarkdown(title, obj, headers),
+        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers),
         'EntryContext': ec
     }
 
@@ -407,6 +423,24 @@ def delete_reference_set_value(ref_name, value):
     return send_request('DELETE', url, params=params)
 
 
+def get_devices(_range='', _filter='', _fields=''):
+    url = '{0}/api/config/domain_management/domains'.format(SERVER)
+    params = {'filter': _filter} if _filter else {}
+    headers = dict(AUTH_HEADERS)
+    if _fields:
+        params['fields'] = _fields
+    if _range:
+        headers['Range'] = 'items={0}'.format(_range)
+    return send_request('GET', url, headers, params=params)
+
+
+def get_domains_by_id(domain_id, _fields=''):
+    url = '{0}/api/config/domain_management/domains/{1}'.format(SERVER, domain_id)
+    headers = dict(AUTH_HEADERS)
+    params = {'fields': _fields} if _fields else {}
+    return send_request('GET', url, headers, params=params)
+
+
 ''' Command methods '''
 
 
@@ -418,46 +452,46 @@ def test_module():
 
 def fetch_incidents():
     query = demisto.params().get('query')
-    lastRun = demisto.getLastRun()
-    offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
-    if lastRun and offenseId == 0:
-        startTime = lastRun['startTime'] if 'startTime' in lastRun else '0'
-        fetchQuery = 'start_time>{0}{1}'.format(startTime, ' AND ({0})'.format(query) if query else '')
+    last_run = demisto.getLastRun()
+    offense_id = last_run['id'] if last_run and 'id' in last_run else 0
+    if last_run and offense_id == 0:
+        start_time = last_run['startTime'] if 'startTime' in last_run else '0'
+        fetch_query = 'start_time>{0}{1}'.format(start_time, ' AND ({0})'.format(query) if query else '')
     else:
-        fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
+        fetch_query = 'id>{0} {1}'.format(offense_id, 'AND ({0})'.format(query) if query else '')
         # qradar returns offenses sorted desc on id and there's no way to change sorting.
-        # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
+        # if we get `offensesPerCall` offenses it means we (probably) have more than that so we
         # start looking for the end of the list by doubling the page position until we're empty.
         # then start binary search back until you find the end of the list and finally return
         # `offensesPerCall` from the end.
-    raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetchQuery)
+    raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
     if len(raw_offenses) >= OFFENSES_PER_CALL:
-        lastOffensePos = find_last_page_pos(fetchQuery)
-        raw_offenses = get_offenses(_range='{0}-{1}'.format(lastOffensePos - OFFENSES_PER_CALL + 1, lastOffensePos))
+        last_offense_pos = find_last_page_pos(fetch_query)
+        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos))
     incidents = []
     enrich_offense_res_with_source_and_destination_address(raw_offenses)
     for offense in raw_offenses:
-        offenseId = max(offenseId, offense['id'])
+        offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
-    demisto.setLastRun({'id': offenseId})
+    demisto.setLastRun({'id': offense_id})
     return incidents
 
 
 # Finds the last page position for QRadar query that receives a range parameter
-def find_last_page_pos(fetchQuery):
+def find_last_page_pos(fetch_query):
     # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
-    if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetchQuery)) == 0:
+    if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)) == 0:
         return OFFENSES_PER_CALL - 1
     # Search up until we don't have any more results
     pos = OFFENSES_PER_CALL * 2
-    while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetchQuery)) == 1:
+    while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
         pos = pos * 2
     # Binary search the gap from the las step
     high = pos
     low = pos / 2
     while high > low + 1:
         pos = (high + low) / 2
-        if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetchQuery)) == 1:
+        if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
             # we still have results, raise the bar
             low = pos
         else:
@@ -486,7 +520,7 @@ def get_offenses_command():
     raw_offenses = get_offenses(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
     offenses = deepcopy(raw_offenses)
     enrich_offense_result(offenses)
-    offenses = filter_dict_nonintersection_key_to_value(replace_keys(offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
+    offenses = filter_dict_non_intersection_key_to_value(replace_keys(offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
 
     # prepare for printing:
     headers = demisto.args().get('headers')
@@ -494,7 +528,7 @@ def get_offenses_command():
         offenses_names_map_cpy = dict(OFFENSES_NAMES_MAP)
         offenses_names_map_cpy.pop('id', None)
         offenses_names_map_cpy.pop('description', None)
-        headers = 'ID,Description,' + dict_values_to_comma_seperated_string(offenses_names_map_cpy)
+        headers = 'ID,Description,' + dict_values_to_comma_separated_string(offenses_names_map_cpy)
 
     return get_entry_for_object('QRadar offenses', offenses, raw_offenses, headers, 'QRadar.Offense(val.ID === obj.ID)')
 
@@ -570,7 +604,7 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
 
 # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
 def enrich_source_addresses_dict(src_adrs):
-    src_ids_str = dict_values_to_comma_seperated_string(src_adrs)
+    src_ids_str = dict_values_to_comma_separated_string(src_adrs)
     source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
     src_res = send_request('GET', source_url, AUTH_HEADERS)
     for src_adr in src_res:
@@ -578,10 +612,10 @@ def enrich_source_addresses_dict(src_adrs):
     return src_adrs
 
 
-# Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding
-# to the ids
+# Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to
+# the ids
 def enrich_destination_addresses_dict(dst_adrs):
-    dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
+    dst_ids_str = dict_values_to_comma_separated_string(dst_adrs)
     destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
     dst_res = send_request('GET', destination_url, AUTH_HEADERS)
     for dst_adr in dst_res:
@@ -618,8 +652,8 @@ def get_offense_by_id_command():
     raw_offense = get_offense_by_id(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
     offense = deepcopy(raw_offense)
     enrich_offense_result(offense, full_enrichment=True)
-    offense = filter_dict_nonintersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP),
-                                                       SINGLE_OFFENSE_NAMES_MAP)
+    offense = filter_dict_non_intersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP),
+                                                        SINGLE_OFFENSE_NAMES_MAP)
     return get_entry_for_object('QRadar Offenses', offense, raw_offense, demisto.args().get('headers'),
                                 'QRadar.Offense(val.ID === obj.ID)')
 
@@ -636,8 +670,8 @@ def update_offense_command():
     raw_offense = update_offense(offense_id)
     offense = deepcopy(raw_offense)
     enrich_offense_result(offense, full_enrichment=True)
-    offense = filter_dict_nonintersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP),
-                                                       SINGLE_OFFENSE_NAMES_MAP)
+    offense = filter_dict_non_intersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP),
+                                                        SINGLE_OFFENSE_NAMES_MAP)
     return get_entry_for_object('QRadar Offense', offense, raw_offense, demisto.args().get('headers'),
                                 'QRadar.Offense(val.ID === obj.ID)')
 
@@ -645,8 +679,8 @@ def update_offense_command():
 def search_command():
     raw_search = search(demisto.args())
     search_res = deepcopy(raw_search)
-    search_res = filter_dict_nonintersection_key_to_value(replace_keys(search_res, SEARCH_ID_NAMES_MAP),
-                                                          SEARCH_ID_NAMES_MAP)
+    search_res = filter_dict_non_intersection_key_to_value(replace_keys(search_res, SEARCH_ID_NAMES_MAP),
+                                                           SEARCH_ID_NAMES_MAP)
     return get_entry_for_object('QRadar Search', search_res, raw_search, demisto.args().get('headers'),
                                 'QRadar.Search(val.ID === obj.ID)')
 
@@ -655,7 +689,7 @@ def get_search_command():
     search_id = demisto.args().get('search_id')
     raw_search = get_search(search_id)
     search = deepcopy(raw_search)
-    search = filter_dict_nonintersection_key_to_value(replace_keys(search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+    search = filter_dict_non_intersection_key_to_value(replace_keys(search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
     return get_entry_for_object('QRadar Search Info', search, raw_search, demisto.args().get('headers'),
                                 'QRadar.Search(val.ID === "{0}")'.format(search_id))
 
@@ -668,9 +702,9 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    humanReadable = tableToMarkdown(title, context_obj, None).replace('\t', '\n')
+    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', '\n')
     return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
-                                humanReadable=humanReadable)
+                                human_readable=human_readable)
 
 
 def get_assets_command():
@@ -728,9 +762,9 @@ def create_assets_result(assets, full_values=False):
 
 
 def transform_single_asset_to_hr(asset):
-    '''
+    """
     Prepares asset for human readable
-    '''
+    """
     hr_asset = []
     for k, v in asset.iteritems():
         if isinstance(v, dict):
@@ -741,8 +775,7 @@ def transform_single_asset_to_hr(asset):
 
 
 def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
-    asset_dict = {}
-    asset_dict['ID'] = asset['id']
+    asset_dict = {'ID': asset['id']}
     for interface in asset['interfaces']:
         if full_values:
             endpoint_dict['MACAddress'].append(interface['mac_address'])
@@ -772,9 +805,7 @@ def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_va
 
 # Creates an empty endpoint dictionary (for use in other methods)
 def create_empty_endpoint_dict(full_values):
-    endpoint_dict = {}  # type: dict
-    endpoint_dict['IPAddress'] = []
-    endpoint_dict['OS'] = []
+    endpoint_dict = {'IPAddress': [], 'OS': []}  # type: dict
     if full_values:
         endpoint_dict['MACAddress'] = []
         endpoint_dict['Domain'] = []
@@ -813,10 +844,10 @@ def get_closing_reasons_command():
     # prepare for printing:
     closing_reasons_map.pop('id', None)
     closing_reasons_map.pop('text', None)
-    headers = 'ID,Name,' + dict_values_to_comma_seperated_string(closing_reasons_map)
+    headers = 'ID,Name,' + dict_values_to_comma_separated_string(closing_reasons_map)
 
     return get_entry_for_object('Offense Closing Reasons', closing_reasons, raw_closing_reasons,
-                                contextKey='QRadar.Offense.ClosingReasons', headers=headers)
+                                context_key='QRadar.Offense.ClosingReasons', headers=headers)
 
 
 def get_note_command():
@@ -830,7 +861,7 @@ def get_note_command():
     note = replace_keys(raw_note, note_names_map)
     if 'CreateTime' in note:
         note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-    return get_entry_for_object('QRadar note created successfuly', note, raw_note, demisto.args().get('headers'),
+    return get_entry_for_object('QRadar note created successfully', note, raw_note, demisto.args().get('headers'),
                                 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
 
 
@@ -902,9 +933,8 @@ def delete_reference_set_command():
         'Contents': raw_ref,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': "Reference Data Deletion Task for '{0}' was intiated. Refernce set '{0}' should be deleted "
-                         "shortly.".format(
-            ref_name)
+        'HumanReadable': "Reference Data Deletion Task for '{0}' was initiated. Reference set '{0}' should be deleted "
+                         "shortly.".format(ref_name)
     }
 
 
@@ -917,7 +947,7 @@ def update_reference_set_value_command():
     raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     enrich_reference_set_result(ref)
-    return get_entry_for_reference_set(ref, title='Element value was updated successfuly in reference set:')
+    return get_entry_for_reference_set(ref, title='Element value was updated successfully in reference set:')
 
 
 def delete_reference_set_value_command():
@@ -929,43 +959,93 @@ def delete_reference_set_value_command():
     raw_ref = delete_reference_set_value(args.get('ref_name'), value)
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     enrich_reference_set_result(ref)
-    return get_entry_for_reference_set(ref, title='Element value was deleted successfuly in reference set:')
+    return get_entry_for_reference_set(ref, title='Element value was deleted successfully in reference set:')
+
+
+def get_domains_command():
+    args = demisto.args()
+    raw_domains = get_devices(args.get('range'), args.get('filter'), args.get('fields'))
+    domains = []
+
+    for raw_domain in raw_domains:
+        domain = replace_keys(raw_domain, DEVICE_MAP)
+        domains.append(domain)
+    if len(domains) == 0:
+        return demisto.results('No Domains Found')
+    else:
+        ec = {'QRadar.Domains': createContext(domains, removeNull=True)}
+        return {
+            'Type': entryTypes['note'],
+            'Contents': domains,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Domains Found', domains),
+            'EntryContext': ec
+        }
+
+
+def get_domains_by_id_command():
+    args = demisto.args()
+    raw_domains = get_domains_by_id(args.get('id'), args.get('fields'))
+    formatted_domain = replace_keys(raw_domains, DEVICE_MAP)
+
+    if len(formatted_domain) == 0:
+        return demisto.results('No Domain Found')
+    else:
+        ec = {'QRadar.Domains': createContext(formatted_domain, removeNull=True)}
+        return {
+            'Type': entryTypes['note'],
+            'Contents': raw_domains,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Domains Found', formatted_domain, removeNull=True),
+            'EntryContext': ec
+        }
 
 
 # Command selector
-if demisto.command() == 'test-module':
-    demisto.results(test_module())
-elif demisto.command() == 'fetch-incidents':
-    demisto.incidents(fetch_incidents())
-elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
-    demisto.results(get_offenses_command())
-elif demisto.command() == 'qradar-offense-by-id':
-    demisto.results(get_offense_by_id_command())
-elif demisto.command() in ['qradar-update-offense', 'qr-update-offense']:
-    demisto.results(update_offense_command())
-elif demisto.command() in ['qradar-searches', 'qr-searches']:
-    demisto.results(search_command())
-elif demisto.command() in ['qradar-get-search', 'qr-get-search']:
-    demisto.results(get_search_command())
-elif demisto.command() in ['qradar-get-search-results', 'qr-get-search-results']:
-    demisto.results(get_search_results_command())
-elif demisto.command() in ['qradar-get-assets', 'qr-get-assets']:
-    demisto.results(get_assets_command())
-elif demisto.command() == 'qradar-get-asset-by-id':
-    demisto.results(get_asset_by_id_command())
-elif demisto.command() == 'qradar-get-closing-reasons':
-    demisto.results(get_closing_reasons_command())
-elif demisto.command() == 'qradar-get-note':
-    demisto.results(get_note_command())
-elif demisto.command() == 'qradar-create-note':
-    demisto.results(create_note_command())
-elif demisto.command() == 'qradar-get-reference-by-name':
-    demisto.results(get_reference_by_name_command())
-elif demisto.command() == 'qradar-create-reference-set':
-    demisto.results(create_reference_set_command())
-elif demisto.command() == 'qradar-delete-reference-set':
-    demisto.results(delete_reference_set_command())
-elif demisto.command() in ('qradar-create-reference-set-value', 'qradar-update-reference-set-value'):
-    demisto.results(update_reference_set_value_command())
-elif demisto.command() == 'qradar-delete-reference-set-value':
-    demisto.results(delete_reference_set_value_command())
+try:
+    LOG('Command being called is {command}'.format(command=demisto.command()))
+    if demisto.command() == 'test-module':
+        demisto.results(test_module())
+    elif demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
+    elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
+        demisto.results(get_offenses_command())
+    elif demisto.command() == 'qradar-offense-by-id':
+        demisto.results(get_offense_by_id_command())
+    elif demisto.command() in ['qradar-update-offense', 'qr-update-offense']:
+        demisto.results(update_offense_command())
+    elif demisto.command() in ['qradar-searches', 'qr-searches']:
+        demisto.results(search_command())
+    elif demisto.command() in ['qradar-get-search', 'qr-get-search']:
+        demisto.results(get_search_command())
+    elif demisto.command() in ['qradar-get-search-results', 'qr-get-search-results']:
+        demisto.results(get_search_results_command())
+    elif demisto.command() in ['qradar-get-assets', 'qr-get-assets']:
+        demisto.results(get_assets_command())
+    elif demisto.command() == 'qradar-get-asset-by-id':
+        demisto.results(get_asset_by_id_command())
+    elif demisto.command() == 'qradar-get-closing-reasons':
+        demisto.results(get_closing_reasons_command())
+    elif demisto.command() == 'qradar-get-note':
+        demisto.results(get_note_command())
+    elif demisto.command() == 'qradar-create-note':
+        demisto.results(create_note_command())
+    elif demisto.command() == 'qradar-get-reference-by-name':
+        demisto.results(get_reference_by_name_command())
+    elif demisto.command() == 'qradar-create-reference-set':
+        demisto.results(create_reference_set_command())
+    elif demisto.command() == 'qradar-delete-reference-set':
+        demisto.results(delete_reference_set_command())
+    elif demisto.command() in ('qradar-create-reference-set-value', 'qradar-update-reference-set-value'):
+        demisto.results(update_reference_set_value_command())
+    elif demisto.command() == 'qradar-delete-reference-set-value':
+        demisto.results(delete_reference_set_value_command())
+    elif demisto.command() == 'qradar-get-domains':
+        demisto.results(get_domains_command())
+    elif demisto.command() == 'qradar-get-domain-by-id':
+        demisto.results(get_domains_by_id_command())
+except Exception as e:
+    return_error('Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e),
+                                                                                            message=e.message))
