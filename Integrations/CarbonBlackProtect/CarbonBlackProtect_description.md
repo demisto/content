@@ -1,0 +1,2 @@
+To find a API key corresponding with a particular Carbon Black user account, log into the console as that user, then click the username in the upper right -> Profile info.
+Then, click the "API Token" button on the left hand side to reveal the API token for the logged-in user. If there is no API token displayed, click the "Reset" button to create a new one.

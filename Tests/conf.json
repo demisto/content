@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Minerva Labs Anti-Evasion Platform",
+            "playbookID": "Minerva Test playbook"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test"
+        },
+        {
             "integrations": "Symantec Management Center",
             "playbookID": "SymantecMC_TestPlaybook"
         },
@@ -134,7 +142,8 @@
         },
         {
             "integrations": "OTRS",
-            "playbookID": "OTRS Test"
+            "playbookID": "OTRS Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Attivo Botsink",
@@ -185,10 +194,14 @@
             "playbookID": "Mimecast test"
         },
         {
-            "playbookID": "CreateEmailHtmlBody_test_pb"
+            "playbookID": "CreateEmailHtmlBody_test_pb",
+            "fromversion": "4.1.0"
         },
         {
           "playbookID": "ReadPDFFile-Test"
+        },
+        {
+            "playbookID": "ReadPDFFileV2-Test"
         },
         {
           "playbookID": "JSONtoCSV-Test"
@@ -328,8 +341,12 @@
           "playbookID": "devo_test_playbook"
         },
         {
-          "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
+          "playbookID": "URL Enrichment - Generic v2 - Test",
+          "integrations": [
+              "Rasterize",
+              "VirusTotal - Private API"
+          ],
+            "instance_names": "virus_total_private_api_general",
             "timeout": 500
         },
         {
@@ -393,7 +410,7 @@
             "nightly": true
         },
         {
-            "integrations": "WildFire",
+            "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test"
         },
         {
@@ -744,7 +761,8 @@
         },
         {
             "integrations": "urlscan.io",
-            "playbookID": "urlscan_malicious_Test"
+            "playbookID": "urlscan_malicious_Test",
+            "timeout": 300
         },
         {
             "integrations": "EWS v2",
@@ -778,7 +796,8 @@
         {
             "playbookID": "Cybereason Test",
             "integrations": "Cybereason",
-            "timeout": 1200
+            "timeout": 1200,
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "VirusTotal - Private API",
@@ -818,6 +837,10 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test"
+        },
+        {
+            "integrations": "Microsoft Graph User",
+            "playbookID": "Microsoft Graph - Test"
         },
         {
             "integrations": "RedLock",
@@ -979,7 +1002,8 @@
         },
         {
             "integrations": "Whois",
-            "playbookID": "whois_test"
+            "playbookID": "whois_test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -1008,10 +1032,6 @@
             "playbookID": "RSA NetWitness Test"
         },
         {
-            "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
-        },
-        {
             "playbookID": "ExifReadTest"
         },
         {
@@ -1031,7 +1051,7 @@
         {
             "integrations": [
                 "Lastline",
-                "WildFire",
+                "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
                 "McAfee Advanced Threat Defense"
@@ -1041,7 +1061,8 @@
             "nightly" : true
         },
         {
-            "playbookID": "detonate_file_-_generic_test"
+            "playbookID": "detonate_file_-_generic_test",
+            "toversion": "3.6.0"
         },
         {
             "playbookID": "STIXParserTest"
@@ -1082,7 +1103,8 @@
         {
             "integrations": "Zscaler",
             "playbookID": "Zscaler Test",
-            "nightly": true
+            "nightly": true,
+            "timeout": 500
         },
         {
             "playbookID": "DemistoUploadFileToIncident Test",
@@ -1125,6 +1147,28 @@
             ]
         },
         {
+            "playbookID": "Phishing v2 Test - Attachment",
+            "timeout": 600,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
+            "playbookID": "Phishing v2 Test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "Demisto REST API",
+                "Palo Alto Minemeld"
+            ]
+        },
+        {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
         },
@@ -1152,9 +1196,19 @@
             "playbookID": "MySQL Test"
         },
         {
+            "playbookID": "Email Address Enrichment - Generic v2 - Test"
+        },
+        {
+            "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
+            "integrations": "Active Directory Query v2"
+        },
+        {
             "integrations": "Phishme Intelligence",
             "playbookID": "Test - PhishMe Intelligence",
             "timeout": 500
+        },
+        {
+            "playbookID": "GDPRContactAuthorities Test"
         },
         {
             "integrations": "Google Resource Manager",
@@ -1172,11 +1226,20 @@
             "playbookID": "Autoextract - Test"
         },
         {
-            "playbookID": "FilterByList - Test"
+            "playbookID": "FilterByList - Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Kafka V2",
             "playbookID": "Kafka Test"
+        },
+        {
+            "playbookID": "File Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_private_api_general",
+            "integrations": [
+                "VirusTotal - Private API",
+                "Cylance Protect v2"
+            ]
         },
         {
             "integrations": "McAfee Active Response",
@@ -1205,13 +1268,35 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
+            "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "File Enrichment - Generic Test"
+            "playbookID": "Account Enrichment - Generic v2 - Test",
+            "integrations": "activedir"
+        },
+        {
+            "playbookID": "Endpoint Enrichment - Generic v2 - Test",
+            "integrations": [
+                "FalconHost",
+                "Cylance Protect",
+                "carbonblack",
+                "epo",
+                "activedir"
+            ]
+        },
+        {
+            "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
+            "integrations": [
+                "FalconHost",
+                "Cylance Protect v2",
+                "carbonblack-v2",
+                "epo",
+                "Active Directory Query v2"
+            ]
         },
         {
             "playbookID": "EmailReputationTest",
@@ -1227,6 +1312,14 @@
         {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
+        },
+        {
+            "playbookID": "Account Enrichment - Generic v2.1 - Test",
+            "integrations": "Active Directory Query v2"
+        },
+        {
+            "integrations": "Cisco Umbrella Investigate",
+            "playbookID": "Domain Enrichment - Generic v2 - Test"
         },
         {
             "integrations": "Google BigQuery",
@@ -1246,13 +1339,190 @@
             "fromversion": "4.1.0"
         },
         {
+            "playbookID": "IP Enrichment - Generic v2 - Test",
+            "integrations": "Threat Crowd",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Cherwell",
+            "playbookID": "Cherwell Example Scripts - test"
+        },
+        {
+            "integrations": "Cherwell",
+            "playbookID": "Cherwell - test"
+        },
+        {
+            "integrations": "CarbonBlackProtectionV2",
+            "playbookID": "Carbon Black Enterprise Protection V2 Test"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_query_v2",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "ANYRUN-Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File - ANYRUN - Test"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "Netcraft",
+            "playbookID": "Netcraft test"
+        },
+        {
+            "integrations": "EclecticIQ Platform",
+            "playbookID": "EclecticIQ Test"
+        },
+        {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AWS - EC2",
+            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
+        },
+        {
+            "integrations": "AWS - EC2",
+            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
+        },
+        {
+            "integrations": "ANYRUN",
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
+        },
+        {
+            "integrations": "AWS - CloudWatchLogs",
+            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
+        },
+        {
+            "integrations": "AWS - CloudTrail",
+            "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
+        },
+        {
+            "playbookID": "5dc848e5-a649-4394-8300-386770d39d75"
+        },
+        {
+            "integrations": "carbonblackprotection",
+            "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
+        },
+        {
+            "integrations": "DomainTools",
+            "playbookID": "DomainTools-Test"
+        },
+        {
+            "integrations": "Cisco Spark",
+            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
+        },
+        {
+            "playbookID": "Get File Sample By Hash - Generic - Test"
+        },
+        {
+            "playbookID": "Get File Sample From Hash - Generic - Test"
+        },
+        {
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
+        },
+        {
+            "playbookID": "get_file_sample_from_path_-_d2_-_test"
+        },
+        {
+            "integrations": "Remedy On-Demand",
+            "playbookID": "Remedy-On-Demand-Test"
+        },
+        {
+            "playbookID": "ssdeepreputationtest"
+        },
+        {
+            "playbookID": "TestIsEmailAddressInternal"
+        },
+        {
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
+            "playbookID": "FormattingPerformance - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AWS - S3",
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+        },
+        {
+            "integrations": "Image OCR",
+            "playbookID": "TestImageOCR"
+        },
+        {
+            "playbookID": "EWS test"
+        },
+        {
+            "integrations": "fireeye",
+            "playbookID": "Detonate File - FireEye AX - Test"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "Rasterize Test"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
+        },
+        {
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
+        },
+        {
+            "integrations": "Forescout",
+            "playbookID": "Forescout-Test"
+        },
+        {
+            "integrations": "LogRhythmRest",
+            "playbookID": "LogRhythm REST test"
+        },
+        {
+            "integrations": "AlienVault USM Anywhere",
+            "playbookID": "AlienVaultUSMAnywhereTest"
+        },
+        {
+            "playbookID": "PhishLabsTestPopulateIndicators"
+        },
+        {
+            "integrations": "PhishLabs IOC",
+            "playbookID": "PhishLabsIOC TestPlaybook",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
+        },
+        {
+            "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
     "skipped_tests": {
-        "detonate_file_-_generic_test": "relevant only for v3.6",
+        "nexpose_test": "Failed on clear release notes build",
+        "McAfee-TIE Test": "Failed on clear release notes build",
+        "Test-Detonate URL - Phish.AI": "Failed on clear release notes build",
+        "Test Playbook McAfee ePO": "Failed on clear release notes build",
+        "Ipstack_Test": "Failed on clear release notes build",
+        "Forescout-Test": "Failed on clear release notes build",
+        "LogRhythm REST test": "Failed on clear release notes build",
+        "VMRay-Test": "Failed on clear release notes build",
+        "urlscan_malicious_Test": "Failed on clear release notes build",
+        "Jask_Test": "Failed on clear release notes build",
+        "whois_test": "Failed on clear release notes build",
+        "TestShowScheduledEntries": "Failed on clear release notes build",
+        "Process Email - Generic for Rasterize": "Clear Release Notes issue",
+        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
+        "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1263,10 +1533,27 @@
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
+        "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
+        "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
-        "Cybereason Test": "Test is failing due to connection issues though it's in unmockable (issue 16555)"
+        "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
+        "DomainTools-Test": "No instance",
+        "Remedy-On-Demand-Test": "No instance",
+        "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
+        "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
+        "d66e5f86-e045-403f-819e-5058aa603c32": "skipped until PR is merged (pr 3220)",
+        "Carbon Black Enterprise Protection V2 Test": "Data changes within Carbon Black on a weekly basis - which requires to update the test",
+        "5dc848e5-a649-4394-8300-386770d39d75": "old test, needs to check if relevant",
+        "Get File Sample By Hash - Generic - Test": "old test, needs to check if relevant",
+        "Get File Sample From Hash - Generic - Test": "old test, needs to check if relevant",
+        "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test": "old test, needs to check if relevant",
+        "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
+        "ssdeepreputationtest": "old test, needs to check if relevant",
+        "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
+        "okta_test_playbook": "test failed (Issue 17041)",
+        "Detonate File - FireEye AX - Test": "No instance"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1275,10 +1562,15 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
+        "EclecticIQ Platform": "Instance Issues",
+        "Google Cloud Compute": "Can't test yet",
+        "McAfee Advanced Threat Defense": "License expired",
+        "Cymon": "The service was discontinued since April 30th, 2019.",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
+        "McAfee Advanced Threat Defense": "no license, issue 16909",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1296,13 +1588,14 @@
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
-
+        "ANYRUN": "No instance",
+        "Snowflake": "Looks like account expired, needs looking into",
+        "Cisco Spark": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Whois": "Host periodically bans connection",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
 
@@ -1314,7 +1607,8 @@
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota."
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "VirusTotal - Private API": "reached api alloted quota."
     },
     "nigthly_integrations": [
         "Lastline",
@@ -1322,6 +1616,9 @@
     ],
     "unmockable_integrations": {
         "Google BigQuery": "SSL problem",
+        "Netcraft": "SSL failure",
+        "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
+        "AWS - EC2": "SSL Validation fails for STS",
         "Palo Alto Networks Cortex": "SDK",
         "Devo": "Pending Check",
         "Jask": "Integration requires SSL",
@@ -1395,13 +1692,11 @@
         "McAfee ESM-v10": "Checking",
         "Salesforce": "Checking",
         "okta": "Checking",
-        "WildFire": "Checking",
         "WhatsMyBrowser": "Checking",
         "Check Point": "Checking",
         "Awake Security": "Checking",
         "CIRCL": "Checking",
         "Thinkst Canary": "Checking",
-        "Cymon": "Checking",
         "SplunkPy": "Checking",
         "Symantec Advanced Threat Protection": "Checking",
         "ProtectWise": "Nightly - Checking",
@@ -1423,7 +1718,15 @@
         "Zscaler": "might be dynamic test",
         "Skyformation": "Failure to connect to proxy",
         "Remedy AR": "Failure to connect to proxy",
-        "Snowflake": "Isn't working with mocking enabled - needs investigation",
-        "Google Cloud Compute": "checking"
+        "Snowflake": "Trust any cert not working: issue #16572",
+        "Google Cloud Compute": "checking",
+        "jira-v2": "inconsistent test (uploads randomly generated file each time)",
+        "Microsoft Graph User": "checking",
+        "Cherwell": "HTTPConnectionPool(host='172.17.0.1', port=9997): Max retries exceeded with url: (Caused by ProxyError('Cannot connect to proxy",
+        "DUO Admin": "Missing proxy and trust any cert option #16893",
+        "AWS - CloudWatchLogs": "Integration requires SSL",
+        "AWS - CloudTrail": "Integration requires SSL",
+        "AWS - S3": "Integration requires SSL",
+        "Image OCR": "Doesn't perform network communication"
     }
 }

@@ -864,8 +864,6 @@ tasks:
     nexttasks:
       '#none#':
       - "35"
-      - "36"
-      - "37"
     scriptarguments:
       days_ago: {}
       domain:
@@ -1002,66 +1000,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-  "36":
-    id: "36"
-    taskid: 3ae50076-e77e-467b-82b6-6485b048aa95
-    type: regular
-    task:
-      id: 3ae50076-e77e-467b-82b6-6485b048aa95
-      version: -1
-      name: Verify output -  VigilanteATI.Domain.accounts.email
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: VigilanteATI.Domain.accounts.email
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-  "37":
-    id: "37"
-    taskid: 4a85fcd7-0f41-4c04-8af4-a564a5acfd0c
-    type: regular
-    task:
-      id: 4a85fcd7-0f41-4c04-8af4-a564a5acfd0c
-      version: -1
-      name: Verify output -  VigilanteATI.Domain.accounts.password
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: VigilanteATI.Domain.accounts.password
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
           "y": 2440
         }
       }
