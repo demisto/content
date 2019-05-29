@@ -340,7 +340,7 @@ def get_alert_details_command(args):
             network_connections_hr = []
             for connection in network_connections:
                 connection_hr = {}
-                for key, value in connection.iteritems():
+                for key, value in connection.items():
                     if value or value is False:
                         connection_hr[capitalize_first_letter(key)] = value
                 network_connections_hr.append(connection_hr)
@@ -353,7 +353,7 @@ def get_alert_details_command(args):
             processes_hr = []
             for process in processes:
                 process_hr = {}
-                for key, value in process.iteritems():
+                for key, value in process.items():
                     if value or value is False:
                         process_hr[capitalize_first_letter(key)] = value
                 processes_hr.append(process_hr)
@@ -379,7 +379,7 @@ def get_alert_details_command(args):
             user_states_hr = []
             for state in user_states:
                 state_hr = {}
-                for key, value in state.iteritems():
+                for key, value in state.items():
                     if value or value is False:
                         state_hr[capitalize_first_letter(key)] = value
                 user_states_hr.append(state_hr)
@@ -417,7 +417,7 @@ def get_alert_details_command(args):
             registry_keys_hr = []
             for r_key in registry_keys:
                 r_key_hr = {}
-                for key, value in r_key.iteritems():
+                for key, value in r_key.items():
                     if value or value is False:
                         r_key_hr[capitalize_first_letter(key)] = value
                 registry_keys_hr.append(r_key_hr)
@@ -588,14 +588,14 @@ def test_function():
     try:
         data = response.json() if response.text else {}
         if not response.ok:
-            return_error(f'API call to MS Graph failed. Please check authentication related parameters.'
+            return_error(f'API call to MS Graph Security failed. Please check authentication related parameters.'
                          f' [{response.status_code}] - {demisto.get(data, "error.message")}')
 
         demisto.results('ok')
 
     except TypeError as ex:
         demisto.debug(str(ex))
-        return_error(f'API call to MS Graph failed, could not parse result. '
+        return_error(f'API call to MS Graph Security failed, could not parse result. '
                      f'Please check authentication related parameters. [{response.status_code}]')
 
 
@@ -623,6 +623,4 @@ try:
         get_user_command()
 
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+    return_error(str(e))
