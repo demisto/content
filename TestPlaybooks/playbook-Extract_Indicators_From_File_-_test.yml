@@ -572,7 +572,7 @@ tasks:
       id: bd12199f-16fd-4c4b-806a-cf99c425f408
       version: -1
       name: Download XLSX file
-      description: Downloads a XLSX file using HTTP GET.
+      description: Downloads an XLSX file using HTTP GET.
       scriptName: http
       type: regular
       iscommand: false
