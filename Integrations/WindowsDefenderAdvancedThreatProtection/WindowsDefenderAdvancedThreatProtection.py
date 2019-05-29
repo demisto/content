@@ -124,34 +124,6 @@ def get_access_token():
     return access_token
 
 
-# def get_token():
-#     """
-#     Check if we have a valid token and if not get one
-#     """
-#     ctx = demisto.getIntegrationContext()
-#     if ctx.get('token') and ctx.get('stored'):
-#         if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
-#             return ctx.get('token')
-#     headers = {
-#         'Authorization': TOKEN,
-#         'Accept': 'application/json'
-#     }
-#     r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers,
-#                      params={'tenant': TENANT_ID, 'product': 'ATP'}, verify=USE_SSL)
-#     if r.status_code not in {200, 201}:
-#         return_error('Error in authentication with the application. Please check the credentials.')
-#     data = r.json()
-#     if r.status_code != requests.codes.ok:
-#         error_object = json.loads(data.get('detail'))
-#         error_details = error_object.get('error_description')
-#         if error_details:
-#             return_error(error_details)
-#         else:
-#             return_error(error_object)
-#     demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
-#     return data.get('token')
-
-
 def http_request(method, url_suffix, json=None, params=None):
 
     token = get_access_token()
