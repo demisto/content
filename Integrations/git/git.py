@@ -180,7 +180,7 @@ def update_issue(issue_number, title, body, state, milestone, labels, assign):
 
 
 def list_all_issue(only_open):
-    params = {}
+    params = {}  # type: dict
     if only_open is False:
         params = {'state': 'all'}
 
