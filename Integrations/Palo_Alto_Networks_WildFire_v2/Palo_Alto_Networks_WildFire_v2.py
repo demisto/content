@@ -580,7 +580,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
 
         res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
 
-        file_name = 'wildfire_report_' + file_hash
+        file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
         result = fileResult(file_name, res_pdf.content,
                             file_type)  # will be saved under 'InfoFile' in the context.

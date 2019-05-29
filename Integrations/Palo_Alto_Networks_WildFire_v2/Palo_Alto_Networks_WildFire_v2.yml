@@ -353,3 +353,4 @@ script:
   type: python
 tests:
 - Wildfire Test
+releaseNotes: return wildfire-report as pdf file
