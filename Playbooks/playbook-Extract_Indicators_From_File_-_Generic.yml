@@ -532,6 +532,7 @@ tasks:
                     right:
                       value:
                         simple: xls
+                    ignorecase: true
                 - - operator: isNotExists
                     left:
                       value:
@@ -545,6 +546,7 @@ tasks:
                     right:
                       value:
                         simple: xlsx
+                    ignorecase: true
                 - - operator: isNotExists
                     left:
                       value:
@@ -558,6 +560,7 @@ tasks:
                     right:
                       value:
                         simple: Excel
+                    ignorecase: true
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -693,6 +696,21 @@ tasks:
               right:
                 value:
                   simple: xlsx
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+            - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Excel
+              ignorecase: true
           accessor: EntryID
           transformers:
           - operator: uniq
