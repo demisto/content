@@ -14,15 +14,12 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
 TENANT = demisto.getParam('tenant')
-TOKEN = demisto.getParam('token')
 AUTH_ID = demisto.getParam('auth_id')
 ENC_KEY = demisto.getParam('auth_key')
-HEADERS = {"Authorization": TOKEN, "Accept": "application/json"}
 USE_SSL = not demisto.params().get('insecure', False)
 
 ''' CONSTANTS '''
 TOKEN_RETRIEVAL_URL = "https://demistobot.demisto.com/msg-user-token"
-PRODUCT = "MicrosoftGraphUser"
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
@@ -385,4 +382,3 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
-    raise
