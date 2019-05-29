@@ -121,7 +121,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
         sc.api_call(
             "chat.postMessage",
-            channel="content-lab-tests",
+            channel="dmst-content-lab",
             username="Instances nightly report",
             as_user="False",
             attachments=attachments,
