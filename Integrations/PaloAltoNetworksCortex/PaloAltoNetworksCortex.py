@@ -38,7 +38,7 @@ if not demisto.params().get('proxy', False):
 FETCH_QUERY_DICT = {
     'Traps Threats': 'SELECT * FROM tms.threat',
     'Firewall Threats': 'SELECT * FROM panw.threat',
-    'XDR Alerts': 'SELECT * FROM magnifier.alert'
+    'Cortex XDR Analytics': 'SELECT * FROM magnifier.alert'
 }
 
 THREAT_TABLE_HEADERS = [
@@ -342,7 +342,7 @@ def get_start_time(date_type, time_value):
 def convert_log_to_incident(log):
     log_contents = log.get('_source')
     if log_contents.get('id'):
-        log_contents['xdr_id'] = log_contents.get('id') # XDR ID before it is overwritten
+        log_contents['xdr_id'] = log_contents.get('id')  # XDR ID before it is overwritten
     log_contents['id'] = log.get('_id')
     log_contents['score'] = log.get('_score')
     if 'Traps' in FETCH_QUERY:  # type: ignore
@@ -352,7 +352,7 @@ def convert_log_to_incident(log):
         time_generated = log_contents.get('time_generated')
         occurred = datetime.utcfromtimestamp(time_generated).isoformat() + 'Z'
         time_received = log_contents.get('receive_time')
-    elif 'XDR' in FETCH_QUERY:
+    elif 'XDR' in FETCH_QUERY:  # type: ignore
         # first_detected_at in alert.schedule can be present or not, can be in s or ms
         # if not detected, fallback to time_generated
         try:
@@ -360,20 +360,20 @@ def convert_log_to_incident(log):
         except ValueError:
             time_received = 0
 
-        occurred_raw = ''
-        first_detected_at = ''
+        occurred_raw = 0
+        first_detected_at = None
         try:
-            first_detected_at  = str(log_contents.get('alert').get('schedule').get('first_detected_at'))
+            first_detected_at = str(log_contents.get('alert', {}).get('schedule', {}).get('first_detected_at'))
         except AttributeError:
             first_detected_at = None
         if first_detected_at is not None:
-            if len(first_detected_at) == 13: # ms
-                occurred_raw = int(float(first_detected_at)/1000)
-            elif len(first_detected_at) == 10: # s
+            if len(first_detected_at) == 13:  # ms
+                occurred_raw = int(float(first_detected_at) / 1000)
+            elif len(first_detected_at) == 10:  # s
                 occurred_raw = int(first_detected_at)
-            else: # unknown length, fallback to time_received
+            else:  # unknown length, fallback to time_received
                 occurred_raw = int(time_received)
-        else: # not present, fallback to time_received
+        else:  # not present, fallback to time_received
             occurred_raw = int(time_received)
         occurred = datetime.utcfromtimestamp(occurred_raw).isoformat() + 'Z'
 

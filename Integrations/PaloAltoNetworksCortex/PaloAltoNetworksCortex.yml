@@ -39,7 +39,7 @@ configuration:
   options:
   - Traps Threats
   - Firewall Threats
-  - XDR Alerts
+  - Cortex XDR Analytics
   required: false
   type: 15
 - defaultvalue: 24 hours
@@ -635,3 +635,4 @@ script:
 tests:
 - Palo Alto Networks Cortex Test
 fromversion: 4.1.0
+releaseNotes: "Added Cortex XDR Analytics query type for fetch incidents"
