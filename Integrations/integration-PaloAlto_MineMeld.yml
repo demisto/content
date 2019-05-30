@@ -1132,4 +1132,3 @@ script:
   runonce: false
 tests:
   - minemeld_test
-releaseNotes: Handle addition and removal of multiple indicators on miners
