@@ -10,7 +10,7 @@ configuration:
 - display: apikey
   name: apikey
   required: true
-  type: 0
+  type: 4
 - display: repository
   name: repository
   required: true
