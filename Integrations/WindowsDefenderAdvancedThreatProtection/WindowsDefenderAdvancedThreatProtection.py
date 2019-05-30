@@ -17,12 +17,16 @@ if not demisto.params()['proxy']:
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/api'
 TENANT_ID = demisto.params()['tenant_id']
-AUTH_ID = demisto.params()['auth_id']
+AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = demisto.params()['auth_key']
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
 FETCH_STATUS = demisto.params().get('fetch_status').split(',')
-TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/atp-token'
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/atp-token'
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 
 ''' HELPER FUNCTIONS '''
 
