@@ -563,5 +563,6 @@ outputs:
 - contextPath: URL.Description
   description: Additional information for the URL.
   type: string
+releaseNotes: "-"
 tests:
-  - url_enrichment_-_generic_test
+  - URL Enrichment - Generic v2 - Test
