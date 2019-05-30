@@ -14,12 +14,16 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
 TENANT = demisto.getParam('tenant')
-AUTH_ID = demisto.getParam('auth_id')
+AUTH_AND_TOKEN_URL = demisto.getParam('auth_id').split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = demisto.getParam('auth_key')
 USE_SSL = not demisto.params().get('insecure', False)
 
 ''' CONSTANTS '''
-TOKEN_RETRIEVAL_URL = "https://demistobot.demisto.com/msg-user-token"
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = "https://demistobot.demisto.com/msg-user-token"
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
