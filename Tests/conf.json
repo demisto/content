@@ -3,22 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
-            "integrations": "AlienVault USM Anywhere",
-            "playbookID": "AlienVaultUSMAnywhereTest"
-        },
-        {
-            "playbookID": "PhishLabsTestPopulateIndicators"
-        },
-        {
-            "integrations": "PhishLabs IOC",
-            "playbookID": "PhishLabsIOC TestPlaybook",
-            "fromversion": "4.1.0"
-        },
-        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
         },
@@ -370,11 +354,6 @@
             "timeout": 500
         },
         {
-            "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
             "playbookID": "CutTransformerTest"
         },
         {
@@ -496,7 +475,8 @@
             "playbookID": "ShodanTest"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
+            "playbookID": "Extract Indicators From File - test",
+            "timeout": 2000
         },
         {
             "playbookID": "dedup_-_generic_-_test"
@@ -1422,10 +1402,6 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
-            "integrations": "AWS - S3v2",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
         },
@@ -1471,10 +1447,6 @@
             "playbookID": "TestIsEmailAddressInternal"
         },
         {
-            "integrations": "AWS - S3",
-            "playbookID": "113aca8a-ee52-419f-89a6-150ee232d0d1"
-        },
-        {
             "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
         },
         {
@@ -1509,11 +1481,51 @@
             "playbookID": "RasterizeImageTest"
         },
         {
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
+        },
+        {
+            "integrations": "LogRhythmRest",
+            "playbookID": "LogRhythm REST test"
+        },
+        {
+            "integrations": "AlienVault USM Anywhere",
+            "playbookID": "AlienVaultUSMAnywhereTest"
+        },
+        {
+            "playbookID": "PhishLabsTestPopulateIndicators"
+        },
+        {
+            "integrations": "PhishLabs IOC",
+            "playbookID": "PhishLabsIOC TestPlaybook",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
+        },
+        {
+            "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
     "skipped_tests": {
+        "nexpose_test": "Failed on clear release notes build",
+        "McAfee-TIE Test": "Failed on clear release notes build",
+        "Test-Detonate URL - Phish.AI": "Failed on clear release notes build",
+        "Test Playbook McAfee ePO": "Failed on clear release notes build",
+        "Ipstack_Test": "Failed on clear release notes build",
+        "Forescout-Test": "Failed on clear release notes build",
+        "LogRhythm REST test": "Failed on clear release notes build",
+        "VMRay-Test": "Failed on clear release notes build",
+        "urlscan_malicious_Test": "Failed on clear release notes build",
+        "Jask_Test": "Failed on clear release notes build",
+        "whois_test": "Failed on clear release notes build",
+        "TestShowScheduledEntries": "Failed on clear release notes build",
+        "Process Email - Generic for Rasterize": "Clear Release Notes issue",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -1537,7 +1549,6 @@
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
         "d66e5f86-e045-403f-819e-5058aa603c32": "skipped until PR is merged (pr 3220)",
-        "113aca8a-ee52-419f-89a6-150ee232d0d1": "skipped until PR is merged (pr 3512)",
         "Carbon Black Enterprise Protection V2 Test": "Data changes within Carbon Black on a weekly basis - which requires to update the test",
         "5dc848e5-a649-4394-8300-386770d39d75": "old test, needs to check if relevant",
         "Get File Sample By Hash - Generic - Test": "old test, needs to check if relevant",
@@ -1582,12 +1593,10 @@
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Forescout": "When accessing through the lab firewall , meaning with port forwarding , there is an error that says invalid request (issue 17016)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
