@@ -208,9 +208,9 @@ def get_download_count():
         count_per_release.append(release_info)
 
     ec = {
-        'GitHub.Release( val.URL == obj.URL )': release_list
+        'GitHub.Release( val.URL == obj.URL )': count_per_release
     }
-    return_outputs(tableToMarkdown('Release Table', release_list), ec, response)
+    return_outputs(tableToMarkdown('Releases:', count_per_release), ec, response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
