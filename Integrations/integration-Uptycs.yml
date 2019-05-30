@@ -1809,6 +1809,9 @@ script:
 
     def uptycs_post_saved_query_command():
         query_results = uptycs_post_saved_query()
+        if query_results.get("status") == 500:
+            return_error("Internal Server Error, check whether a query with this \
+            name has already been saved")
 
         human_readable = tableToMarkdown('Uptycs Posted Query', query_results, ['name','type','description','query','executionType','grouping','custom'])
 
