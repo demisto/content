@@ -27,12 +27,6 @@ RELEASE_SUFFIX = '/releases'
 HEADERS = {
     'Authorization': "Bearer " + TOKEN
 }
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 ''' HELPER FUNCTIONS '''
@@ -51,8 +45,10 @@ def http_request(method, url_suffix, params=None, data=None):
     # Handle error responses gracefully
     if res.status_code >= 400:
         return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
-
-    return res.json()
+    try:
+        return res.json()
+    except Exception as excep:
+        return_error('Error in HTTP request - {}'.format(str(excep)))
 
 
 def data_formatting(title, body, milestone, labels, assignees, state):
@@ -80,8 +76,7 @@ def data_formatting(title, body, milestone, labels, assignees, state):
 
 
 def context_create_issue(response, issue):
-    """
-    creates GitHub.Issue EntryContext and results to be printed in Demisto
+    """ Create GitHub.Issue EntryContext and results to be printed in Demisto
     Args:
         response (dict): The raw HTTP response to be inserted to the 'Contents' field
         issue (dict or list of dicts): A dictionary or a list of dictionaries formatted for Demisto results
@@ -95,8 +90,7 @@ def context_create_issue(response, issue):
 
 def issue_format(issue, result_token=False):
 
-    """
-    gets a HTTP response containing an issue and creates a dictionary with selected fields representing an issue in
+    """ Get a HTTP response containing an issue and creates a dictionary with selected fields representing an issue in
      Demisto.
     Args:
         issue (dict): An HTTP response representing an issue, formatted as a dictionary
@@ -120,8 +114,8 @@ def issue_format(issue, result_token=False):
 
 
 def issue_table_create(issue_list, response):
-    """
-    gets an HTTP response and a list containing several issues, sends each issue to be reformatted.
+    """ Get an HTTP response and a list containing several issues, sends each issue to be reformatted.
+
     Args:
         issue_list(list of dict): A list of issues derived from the HTTP response
         response (dict):A raw HTTP response sent for 'Contents' field in context
@@ -137,8 +131,7 @@ def issue_table_create(issue_list, response):
 
 
 def context_create_release(release_list, response):
-    """
-        creates GitHub.Release EntryContext and results to be printed in Demisto
+    """ Create GitHub.Release EntryContext and results to be printed in Demisto
     Args:
         release_list (list of dict): A list of dictionaries representing GitHub.Release under the repository
         response (dict): The raw HTTP response to be inserted to the 'Contents' field
@@ -158,21 +151,38 @@ def create_issue(title, body, milestone, labels, assignees):
     if title == "":
         return_error("Error: No title given for created issue")
 
-    data = data_formatting(title=title, body=body, milestone=milestone, labels=labels, assignees=assignees, state=None)
-    response = http_request(method='POST', url_suffix=USER_SUFFIX + ISSUE_SUFFIX, data=data)
+    data = data_formatting(title=title,
+                           body=body,
+                           milestone=milestone,
+                           labels=labels,
+                           assignees=assignees,
+                           state=None)
+
+    response = http_request(method='POST',
+                            url_suffix=USER_SUFFIX + ISSUE_SUFFIX,
+                            data=data)
     return response
 
 
 def close_issue(issue_number):
-    response = http_request(method='PATCH', url_suffix=USER_SUFFIX + ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
+    response = http_request(method='PATCH',
+                            url_suffix=USER_SUFFIX + ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
                             data={'state': 'closed'})
     return response
 
 
 def update_issue(issue_number, title, body, state, milestone, labels, assign):
-    data = data_formatting(title=title, body=body, milestone=milestone, labels=labels, assignees=assign, state=state)
-    response = http_request(method='PATCH', url_suffix=USER_SUFFIX + ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
+    data = data_formatting(title=title,
+                           body=body,
+                           milestone=milestone,
+                           labels=labels,
+                           assignees=assign,
+                           state=state)
+
+    response = http_request(method='PATCH',
+                            url_suffix=USER_SUFFIX + ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
                             data=data)
+
     if response.get('errors'):
         return_error(response.get('errors'))
 
@@ -181,15 +191,20 @@ def update_issue(issue_number, title, body, state, milestone, labels, assign):
 
 def list_all_issue(only_open):
     params = {}  # type: dict
-    if only_open is False:
+    if only_open == 'true':
         params = {'state': 'all'}
 
-    response = http_request(method='GET', url_suffix=USER_SUFFIX + ISSUE_SUFFIX, params=params)
+    response = http_request(method='GET',
+                            url_suffix=USER_SUFFIX + ISSUE_SUFFIX,
+                            params=params)
     return response
 
 
 def search_issue(query):
-    response = http_request(method='GET', url_suffix='/search/issues', params={'q': query})
+    response = http_request(method='GET',
+                            url_suffix='/search/issues',
+                            params={'q': query})
+
     if response.get('errors'):
         return_error(response.get('errors'))
 
@@ -197,7 +212,9 @@ def search_issue(query):
 
 
 def get_download_count():
-    response = http_request(method='GET', url_suffix=USER_SUFFIX + RELEASE_SUFFIX)
+    response = http_request(method='GET',
+                            url_suffix=USER_SUFFIX + RELEASE_SUFFIX)
+
     count_per_release = []
     for release in response:
         total_download_count = 0
@@ -210,7 +227,8 @@ def get_download_count():
         }
         count_per_release.append(release_info)
 
-    context_create_release(release_list=count_per_release, response=response)
+    context_create_release(release_list=count_per_release,
+                           response=response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -238,7 +256,7 @@ def update_command():
 
 def list_all_command():
     only_open = demisto.args().get('open_or_all')
-    response = list_all_issue(bool(only_open))
+    response = list_all_issue(only_open)
     issue_table_create(response, response)
 
 
@@ -262,7 +280,10 @@ def fetch_incidents_command():
         start_time = datetime.now() - timedelta(days=int(fetch_time[0]))
 
     last_time = start_time
-    issue_list = http_request(method='GET', url_suffix=USER_SUFFIX + ISSUE_SUFFIX, params={'state': 'all'})
+    issue_list = http_request(method='GET',
+                              url_suffix=USER_SUFFIX + ISSUE_SUFFIX,
+                              params={'state': 'all'})
+
     incidents = []
     for issue in issue_list:
         updated_at_str = issue.get('updated_at')
@@ -282,9 +303,17 @@ def fetch_incidents_command():
 
 
 '''EXECUTION'''
+handle_proxy()
 LOG('command is %s' % (demisto.command(),))
 try:
-    if demisto.command() == 'create-issue':
+    if demisto.command() == 'test-module':
+        issue_list = http_request(method='GET',
+                                  url_suffix=USER_SUFFIX + ISSUE_SUFFIX,
+                                  params={'state': 'all'})
+        demisto.results("ok")
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents_command()
+    elif demisto.command() == 'create-issue':
         create_command()
     elif demisto.command() == 'close-issue':
         close_command()
@@ -298,8 +327,7 @@ try:
         get_download_command()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
-    elif demisto.command() == 'test-module':
-        demisto.results("ok")
+
 except Exception as e:
     LOG(e.message)
     LOG.print_log()
