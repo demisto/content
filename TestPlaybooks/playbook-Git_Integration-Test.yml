@@ -69,12 +69,12 @@ tasks:
     task:
       id: e448e079-55cd-4dd3-8a00-669e5bad3bab
       version: -1
-      name: create-issue
-      description: Creates an issue in git
-      script: git|||create-issue
+      name: GitHub-create-issue
+      description: Creates an issue in GitHub
+      script: GitHub|||GitHub-create-issue
       type: regular
       iscommand: true
-      brand: git
+      brand: GitHub
     nexttasks:
       '#none#':
       - "3"
@@ -157,12 +157,12 @@ tasks:
     task:
       id: 692164c7-3699-4e4c-877d-b1c177f88160
       version: -1
-      name: update-issue
+      name: GitHub-update-issue
       description: Updates the parameters of a given issue
-      script: git|||update-issue
+      script: GitHub|||GitHub-update-issue
       type: regular
       iscommand: true
-      brand: git
+      brand: GitHub
     nexttasks:
       '#none#':
       - "5"
@@ -276,10 +276,10 @@ tasks:
       version: -1
       name: search-issues
       description: Searches issues matching a given query
-      script: git|||search-issues
+      script: GitHub|||GitHub-search-issues
       type: regular
       iscommand: true
-      brand: git
+      brand: GitHub
     nexttasks:
       '#none#':
       - "7"
@@ -306,10 +306,10 @@ tasks:
       version: -1
       name: list-all-issues
       description: Lists all issues that the user can see
-      script: git|||list-all-issues
+      script: GitHub|||GitHub-list-all-issues
       type: regular
       iscommand: true
-      brand: git
+      brand: GitHub
     nexttasks:
       '#none#':
       - "10"
@@ -371,10 +371,10 @@ tasks:
       version: -1
       name: close-issue
       description: closes an existing issue
-      script: git|||close-issue
+      script: GitHub|||GitHub-close-issue
       type: regular
       iscommand: true
-      brand: git
+      brand: GitHub
     nexttasks:
       '#none#':
       - "14"
@@ -402,10 +402,10 @@ tasks:
       name: get-download-count
       description: Returns the total amount of downloads over all the releases of
         the repository
-      script: git|||get-download-count
+      script: GitHub|||GitHub-get-download-count
       type: regular
       iscommand: true
-      brand: git
+      brand: GitHub
     nexttasks:
       '#none#':
       - "13"
