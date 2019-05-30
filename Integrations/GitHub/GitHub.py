@@ -119,7 +119,7 @@ def List_all_issues(show_all):
 def List_all_issues_command():
     show_all = demisto.args()['show-all']
     issues = List_all_issues(show_all)
-    issue_list = []  # type : dict
+    issue_list = []  # type: dict
     for s in issues:
         context = get_issue_context(s)
         issue_list.insert(0, context)
@@ -223,7 +223,7 @@ def get_download_count():
 def get_download_count_command():
     res = get_download_count()
     header_list = ['ID', 'name', 'download_count']
-    download_counts = []  # type : dict
+    download_counts = []  # type: dict
     for release in res:
         count = 0
         for asset in release['assets']:
