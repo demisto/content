@@ -1508,6 +1508,7 @@
         }
     ],
     "skipped_tests": {
+        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
