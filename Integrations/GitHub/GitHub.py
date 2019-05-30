@@ -17,33 +17,28 @@ OWNER = demisto.params().get('owner')
 REPO = demisto.params().get('repository')
 BASE_URL = 'https://api.github.com'
 FETCH_INTERVAL = demisto.params()['fetch_interval']
-
+SUFFIX = {'list': '/repos/{}/{}/issues'.format(OWNER, REPO),
+          'create': '/repos/{}/{}/issues'.format(OWNER, REPO),
+          'close': '/repos/{}/{}/issues/'.format(OWNER, REPO,),
+          'update': '/repos/{}/{}/issues/'.format(OWNER, REPO),
+          'search': '/repos/{}/{}/issues/'.format(OWNER, REPO),
+          'download_count': '/repos/{}/{}/releases'.format(OWNER, REPO)
+          }
+HEADERS = {'Content-Type': 'application/json',
+           'Accept': 'application/vnd.github.v3+json',
+           'Authorization': 'Bearer ' + API_KEY
+           }
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, json=None, params=None, command=None):
-    if method == 'GET':
-        headers = {}
-    elif method in ('POST', 'PATCH'):
-        if not API_KEY:
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        else:
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.github.v3+json',
-                'Authorization': API_KEY
-            }
-
+def http_request(method, url_suffix, json=None, params=None):
     try:
         res = requests.request(
             method,
             BASE_URL + url_suffix,
             data=json,
-            headers=headers,
+            headers=HEADERS,
             params=params
         )
 
@@ -56,7 +51,7 @@ def http_request(method, url_suffix, json=None, params=None, command=None):
         return res.json()
 
     except Exception as e:
-        raise(e)
+        return_error("Error:\n{}".format(str(e)))
 
 
 def fetch_incidents():
@@ -95,13 +90,9 @@ def fetch_incidents():
 
 
 def get_issue_context(issue):
-    label_context = []
-    for l in issue['labels']:
-        label_context.append(l['name'])
 
-    assignee_context = []
-    for a in issue['assignees']:
-        assignee_context.append(a['login'])
+    label_context = [label['name'] for label in issue['labels']]
+    assignee_context = [assignee['login'] for assignee in issue['assignees']]
 
     context = {
         'ID': issue['number'],
@@ -116,9 +107,9 @@ def get_issue_context(issue):
 
 
 def List_all_issues(show_all):
-    suffix = '/repos/{}/{}/issues'.format(OWNER, REPO)
+    suffix = SUFFIX['list']
     if show_all == 'false':
-        res = http_request('GET', suffix, None, None)
+        res = http_request('GET', suffix)
     else:
         res = http_request('GET', suffix, None, {'state': 'all'})  # include close issues
 
@@ -128,13 +119,13 @@ def List_all_issues(show_all):
 def List_all_issues_command():
     show_all = demisto.args()['show-all']
     issues = List_all_issues(show_all)
-    issue_list = []
+    issue_list = []  # type : dict
     for s in issues:
         context = get_issue_context(s)
         issue_list.insert(0, context)
 
     header_list = ['ID', 'title', 'state', 'locked', 'body', 'assignees', 'labels']
-    human_readable = tableToMarkdown('issues list: ', issue_list, header_list)
+    human_readable = tableToMarkdown('issue list', issue_list, header_list)
     entry_context = {
         'Git.issue(val.ID && val.ID == obj.ID)': issue_list
     }
@@ -142,134 +133,113 @@ def List_all_issues_command():
     return_outputs(human_readable, entry_context, issues)
 
 
-def create_issue(args):
-    suffix = '/repos/{}/{}/issues'.format(OWNER, REPO)
-    data = {}
+def create_or_update_issue(command):
+    args = demisto.args()
     for key in args.keys():
-        data[key] = args[key]
+        if key == 'labels':
+            args['labels'] = args['labels'].split(',')
+        if key == 'assignees':
+            args['assignees'] = args['assignees'].split(',')
+    args = json.dumps(args)
+    if command == 'create':
+        suffix = SUFFIX['create']
+        res = http_request('POST', suffix, json=args)
+    else:
+        suffix = SUFFIX['update'] + demisto.args()['issue_id']
+        res = http_request('PATCH', suffix, args)
 
-    if 'labels' in data:
-        data['labels'] = data['labels'].split(',')
-
-    if 'assignees' in data:
-        data['assignees'] = data['assignees'].split(',')
-
-    data = json.dumps(data)
-    # return_error(data)
-    res = http_request('POST', suffix, data, None)
     return res
 
 
 def create_issue_command():
-    args = demisto.args()
-    res = create_issue(args)
+    res = create_or_update_issue('create')
     context = get_issue_context(res)
 
     header_list = ['ID', 'title', 'state', 'locked', 'body', 'assignees', 'labels']
-    human_readable = tableToMarkdown('created issue successfully: ', context, header_list, removeNull=True)
+    human_readable = tableToMarkdown('created issue successfully', context, header_list, removeNull=True)
     entry_context = {
-        'Git.issue(val.id && val.id == obj.id)': context
+        'Git.issue(val.ID && val.ID == obj.ID)': context
     }
-
     return_outputs(human_readable, entry_context, res)
 
 
-def close_issue(issue_id):
-    suffix = '/repos/{}/{}/issues/{}'.format(OWNER, REPO, issue_id)
+def close_issue():
+    suffix = SUFFIX['close'] + demisto.args()['issue_id']
     data = {"state": "close"}
-
     data = json.dumps(data)
-    res = http_request('PATCH', suffix, data, None, 'close')
+    res = http_request('PATCH', suffix, data, params='close')
     return res
 
 
 def close_issue_command():
-    args = demisto.args()
-    res = close_issue(args['issue_id'])
-
+    res = close_issue()
     context = get_issue_context(res)
 
     header_list = ['ID', 'title', 'state', 'locked', 'body', 'assignees', 'labels']
-    human_readable = tableToMarkdown('issues list: ', context, header_list)
-    entry_context = {'Git.issue(val.ID && val.ID == obj.ID)': context}
-
+    human_readable = tableToMarkdown('closed issue successfully', context, header_list)
+    entry_context = {
+        'Git.issue(val.ID && val.ID == obj.ID)': context
+    }
     return_outputs(human_readable, entry_context, res)
-
-
-def update_issue(args):
-    suffix = '/repos/{}/{}/issues/{}'.format(OWNER, REPO, args['issue_id'])
-    data = {}
-    for key in args.keys():
-        data[key] = args[key]
-
-    if 'labels' in data:
-        data['labels'] = data['labels'].split(',')
-
-    if 'assignees' in data:
-        data['assignees'] = data['assignees'].split(',')
-
-    data = json.dumps(data)
-    # return_error(data)
-    res = http_request('PATCH', suffix, data, None)
-    return res
 
 
 def update_issue_command():
-    args = demisto.args()
-    res = update_issue(args)
-
+    res = create_or_update_issue('update')
     context = get_issue_context(res)
 
     header_list = ['ID', 'title', 'state', 'locked', 'body', 'assignees', 'labels']
-    human_readable = tableToMarkdown('issues list: ', context, header_list)
-    entry_context = {'Git.issue(val.ID && val.ID == obj.ID)': context}
-
+    human_readable = tableToMarkdown('updated issue successfully', context, header_list)
+    entry_context = {
+        'Git.issue(val.ID && val.ID == obj.ID)': context
+    }
     return_outputs(human_readable, entry_context, res)
 
 
-def search_issue(issue_id):
-    suffix = '/repos/{}/{}/issues/{}'.format(OWNER, REPO, issue_id)
-    res = http_request('GET', suffix, None, None)
+def search_issue():
+    suffix = SUFFIX['search'] + demisto.args()['issue_id']
+    res = http_request('GET', suffix)
     return res
 
 
 def search_issue_command():
-    issue_id = demisto.args()['issue_id']
-    res = search_issue(issue_id)
+    res = search_issue()
 
     context = get_issue_context(res)
 
     header_list = ['ID', 'title', 'state', 'locked', 'body', 'assignees', 'labels']
-    human_readable = tableToMarkdown('issues list: ', context, header_list)
-    entry_context = {'Git.issue(val.ID && val.ID == obj.ID)': context}
-
+    human_readable = tableToMarkdown('issue searched', context, header_list)
+    entry_context = {
+        'Git.issue(val.ID && val.ID == obj.ID)': context
+    }
     return_outputs(human_readable, entry_context, res)
 
 
 def get_download_count():
-    suffix = '/repos/{}/{}/releases'.format(OWNER, REPO)
-    res = http_request('GET', suffix, None, None)
+    suffix = SUFFIX['download_count']
+    res = http_request('GET', suffix)
     return res
 
 
 def get_download_count_command():
     res = get_download_count()
-    header_list = ['ID', 'release name', 'download_count']
-    download_counts = []
+    header_list = ['ID', 'name', 'download_count']
+    download_counts = []  # type : dict
     for release in res:
         count = 0
-
         for asset in release['assets']:
             count = count + asset['download_count']
 
-        download_counts.insert(0, {
+        insert_release = {
             'ID': release['id'],
-            'release name': release['name'],
-            'download_count': count})
+            'name': release['name'],
+            'download_count': count
+        }
+        download_counts.insert(0, insert_release)
 
     human_readable = tableToMarkdown('the download count is:', download_counts, header_list)
-    entry_context = {'Git.issue(val.ID && val.ID == obj.ID)': res}
-
+    entry_context = {
+        'Git.issue(val.ID && val.ID == obj.ID)': res
+    }
     return_outputs(human_readable, entry_context, res)
 
 
@@ -279,21 +249,20 @@ def test_module():
     """
     try:
         http_request('GET', '/repos/reutshal/GitHubRepo/issues')
-
     except Exception as e:
-        raise Exception(e.message)
+        return_error("Error:\n{}".format(str(e)))
+
     demisto.results("ok")
 
 
 ''' EXECUTION CODE '''
 
 command = demisto.command()
-# LOG('command is %s' % (command,))
 
 try:
     if command == 'test-module':
         test_module()
-    elif demisto.command() == 'fetch-incidents':
+    elif command == 'fetch-incidents':
         fetch_incidents()
     elif command == 'List-all-issues':
         List_all_issues_command()

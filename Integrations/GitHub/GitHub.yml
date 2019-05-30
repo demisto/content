@@ -16,9 +16,9 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '720'
-  display: fetch_interval
+  display: fetch interval in minutes
   name: fetch_interval
-  required: false
+  required: true
   type: 0
 description: git hub integration
 display: GitHub
@@ -92,8 +92,10 @@ script:
     execution: false
     name: create-issue
     outputs:
-    - contextPath: Git.issue
+    - contextPath: Git.issue.ID
       description: uniqu
+      type: Unknown
+    - contextPath: Git.issue.title
       type: Unknown
   - arguments:
     - default: false
@@ -161,8 +163,26 @@ script:
     execution: false
     name: update-issue
     outputs:
-    - contextPath: Git.issue
+    - contextPath: Git.issue.ID
       description: uniqu
+      type: Unknown
+    - contextPath: Git.issue.title
+      description: issue title
+      type: Unknown
+    - contextPath: Git.issue.body
+      description: issue body
+      type: Unknown
+    - contextPath: Git.issue.state
+      description: issue state
+      type: Unknown
+    - contextPath: Git.issue.labels
+      description: issue labels
+      type: Unknown
+    - contextPath: Git.issue.milestone
+      description: issue milestone
+      type: Unknown
+    - contextPath: Git.issue.assignees
+      description: issue assignees
       type: Unknown
   - arguments:
     - default: false
@@ -176,15 +196,25 @@ script:
     execution: false
     name: search-issue
     outputs:
-    - contextPath: Git.issue
+    - contextPath: Git.issue.id
       description: issue id
       type: Unknown
   - deprecated: false
     description: get-download-count
     execution: false
     name: get-download-count
+    outputs:
+    - contextPath: Git.release.ID
+      description: release id
+      type: Unknown
+    - contextPath: Git.release.name
+      description: release name
+      type: Unknown
+    - contextPath: Git.release.download_count
+      description: release download count
+      type: Unknown
   dockerimage: demisto/python:2.7.15.155
-  isfetch: true
+  isfetch: false
   runonce: false
   script: '-'
   type: python
