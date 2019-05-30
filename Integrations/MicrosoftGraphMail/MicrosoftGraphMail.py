@@ -17,9 +17,13 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
 TENANT_ID = PARAMS.get('tenant_id')
-AUTH_ID = PARAMS.get('auth_id')
+AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = PARAMS.get('auth_key')
-TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-mail-token'
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-mail-token'
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 # Remove trailing slash to prevent wrong URL path to service
 URL = PARAMS.get('url')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
