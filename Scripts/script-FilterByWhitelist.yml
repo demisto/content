@@ -96,4 +96,3 @@ runonce: false
 tests:
   - FilterByList - Test
 runas: DBotWeakRole
-releaseNotes: "Added ability to ignore case"
