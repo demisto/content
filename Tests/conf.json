@@ -1610,8 +1610,8 @@
     ],
     "unmockable_integrations": {
         "McAfee-TIE": "Empty mock file ",
-        "LogRhythmRest": " Checking if the test module issue is related to proxy",
-        "vmray": "Checking if the test module issue is related to proxy (might be related)",
+        "LogRhythmRest": "test module when using mocks",
+        "vmray": "test module when using mocks",
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
