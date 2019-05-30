@@ -21,10 +21,14 @@ PARAMS = demisto.params()
 SERVER = PARAMS['host'][:-1] if PARAMS['host'].endswith('/') else PARAMS['host']
 BASE_URL = SERVER + '/v1.0/'
 TENANT = PARAMS['tenant_id']
-AUTH_ID = PARAMS.get('auth_id')
+AUTH_AND_TOKEN_URL = PARAMS['auth_id'].split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = PARAMS.get('auth_key')
 USE_SSL = not PARAMS.get('insecure', False)
-TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-security-token'
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-security-token'
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 
 ''' HELPER FUNCTIONS '''
 
