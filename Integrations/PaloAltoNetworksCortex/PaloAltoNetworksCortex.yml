@@ -90,57 +90,57 @@ configuration:
   - wildfire-virus
   required: false
   type: 16
-- display: Severity of alerts to fetch (XDR)
+- display: Severity of alerts to fetch (XDR Analytics)
   name: xdr_severity
   defaultvalue: ""
   type: 16
   required: false
   options:
   - all
-  - Info
-  - Low
-  - Medium
   - High
-- display: Category of alerts to fetch (XDR)
+  - Medium
+  - Low
+  - Info
+- display: Category of alerts to fetch (XDR Analytics)
   name: xdr_category
   defaultvalue: ""
   type: 16
   required: false
   options:
   - all
-  - Grayware
-  - Malware
-  - Script Connecting to Rare External Host
-  - scrons.exe Rare Child Process
-  - SpamBot Traffic
-  - Uncommon Remote Scheduled Task Creation via schtasks.exe
-  - Uncommon Local Scheduled Task Creation via schtasks.exe
-  - Uncommon Net User
-  - DNS Tunneling
-  - Failed DNS
-  - Random Looking DNS
-  - Recurring Rare Domain Access
-  - Recurring Rare IP Access
-  - Tunneling Process
-  - Failed Connections
-  - High Connection Rate
-  - Port Scan
-  - Uncommon ARP Cache Listing via arp.exe
-  - Uncommon IP Configuration Listing via ipconfig.exe
-  - Uncommon Routing Table Listing via route.exe
-  - Uncommon Net Group Execution
-  - Uncommon net localgroup Execution
   - Consecutive Connections
-  - New Administrative Behavior
-  - Remote Command Execution
-  - Reverse Connection
-  - SMB/KRB Traffic from Non-Standard Process
-  - wmiprsve.exe Rare Child Process
-  - wsmprovhost.exe Rare Child Process
+  - DNS Tunneling
+  - Failed Connections
+  - Failed DNS
+  - Grayware
+  - High Connection Rate
   - Large Upload (FTP)
   - Large Upload (Generic)
   - Large Upload (HTTPS)
-  - Large Upload (SMTP)  
+  - Large Upload (SMTP)
+  - Malware
+  - New Administrative Behavior
+  - Port Scan
+  - Random Looking DNS
+  - Recurring Rare Domain Access
+  - Recurring Rare IP Access
+  - Remote Command Execution
+  - Reverse Connection
+  - SMB/KRB Traffic from Non-Standard Process
+  - Script Connecting to Rare External Host
+  - SpamBot Traffic
+  - Tunneling Process
+  - Uncommon ARP Cache Listing via arp.exe
+  - Uncommon IP Configuration Listing via ipconfig.exe
+  - Uncommon Local Scheduled Task Creation via schtasks.exe
+  - Uncommon Net Group Execution
+  - Uncommon Net User
+  - Uncommon Remote Scheduled Task Creation via schtasks.exe
+  - Uncommon Routing Table Listing via route.exe
+  - Uncommon net localgroup Execution
+  - scrons.exe Rare Child Process
+  - wmiprsve.exe Rare Child Process
+  - wsmprovhost.exe Rare Child Process
 description: This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex
 name: Palo Alto Networks Cortex
