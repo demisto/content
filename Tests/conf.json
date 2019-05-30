@@ -471,7 +471,8 @@
             "playbookID": "ShodanTest"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
+            "playbookID": "Extract Indicators From File - test",
+            "timeout": 2000
         },
         {
             "playbookID": "dedup_-_generic_-_test"
