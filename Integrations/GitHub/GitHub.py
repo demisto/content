@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-
+USE_SSL = not demisto.params().get('insecure', False)
 API_KEY = demisto.params().get('apikey')
 OWNER = demisto.params().get('owner')
 REPO = demisto.params().get('repository')
@@ -39,7 +39,8 @@ def http_request(method, url_suffix, json=None, params=None):
             BASE_URL + url_suffix,
             data=json,
             headers=HEADERS,
-            params=params
+            params=params,
+            verify=USE_SSL
         )
 
         if res.status_code == 410:
@@ -223,7 +224,7 @@ def get_download_count():
 def get_download_count_command():
     res = get_download_count()
     header_list = ['ID', 'name', 'download_count']
-    download_counts = []  # type: list
+    download_counts = []  # type:list
     for release in res:
         count = 0
         for asset in release['assets']:
@@ -238,7 +239,7 @@ def get_download_count_command():
 
     human_readable = tableToMarkdown('the download count is:', download_counts, header_list)
     entry_context = {
-        'Git.issue(val.ID && val.ID == obj.ID)': res
+        'Git.release(val.ID && val.ID == obj.ID)': download_counts
     }
     return_outputs(human_readable, entry_context, res)
 

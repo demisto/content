@@ -1222,7 +1222,7 @@
             "timeout": 500,
             "nightly": true
         },
-                {
+        {
             "integrations": "GitHub",
             "playbookID": "GitHub-Test"
         },

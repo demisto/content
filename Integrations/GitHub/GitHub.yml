@@ -20,6 +20,10 @@ configuration:
   name: fetch_interval
   required: true
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: git hub integration
 display: GitHub
 name: GitHub
@@ -197,7 +201,7 @@ script:
     execution: false
     name: search-issue
     outputs:
-    - contextPath: Git.issue.id
+    - contextPath: Git.issue.ID
       description: issue id
       type: Unknown
   - deprecated: false
