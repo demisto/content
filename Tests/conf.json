@@ -1580,7 +1580,6 @@
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
@@ -1609,7 +1608,9 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
-        "vmray": "Checking if the test module issue is related to proxy",
+        "McAfee-TIE": "Empty mock file ",
+        "LogRhythm": "Need to fix SOAP api",
+        "vmray": "Checking if the test module issue is related to proxy (might be related)",
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
