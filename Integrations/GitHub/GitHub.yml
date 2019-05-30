@@ -96,6 +96,7 @@ script:
       description: uniqu
       type: Unknown
     - contextPath: Git.issue.title
+      description: issue title
       type: Unknown
   - arguments:
     - default: false
