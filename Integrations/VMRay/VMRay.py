@@ -17,7 +17,7 @@ ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 requests.packages.urllib3.disable_warnings()
 
 # Remove proxy
-handle_proxy()
+PROXIES = handle_proxy()
 
 ''' HELPER DICTS '''
 SEVERITY_DICT = {
@@ -132,7 +132,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
 
     url = SERVER + url_suffix
     r = requests.request(
-        method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL
+        method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL, proxies=PROXIES
     )
     # Handle errors
     try:
