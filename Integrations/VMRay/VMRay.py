@@ -17,11 +17,7 @@ ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 requests.packages.urllib3.disable_warnings()
 
 # Remove proxy
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy()
 
 ''' HELPER DICTS '''
 SEVERITY_DICT = {
