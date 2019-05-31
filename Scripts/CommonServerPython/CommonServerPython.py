@@ -1374,6 +1374,33 @@ outputPaths = {
     'dbotscore': 'DBotScore'
 }
 
+
+def replace_in_keys(src, existing='.', new='_'):
+    """
+        Replace a substring in all of the keys of a dictionary (or list of dictionaries)
+
+        :type src: ``dict`` or ``list``
+        :param src: The dictionary (or list of dictionaries) with keys that need replacement. (required)
+
+        :type existing: ``str``
+        :param existing: substring to replace.
+
+        :type new: ``str``
+        :param new: new substring that will replace the existing substring.
+
+        :return: The dictionary (or list of dictionaries) with keys after substring replacement.
+        :rtype: ``dict`` or ``list``
+    """
+    def replace_str(src_str):
+        if callable(getattr(src_str, "decode", None)):
+            src_str = src_str.decode('utf-8')
+        return src_str.replace(existing, new)
+
+    if isinstance(src, list):
+        return [replace_in_keys(x, existing, new) for x in src]
+    return {replace_str(k): v for k, v in src.items()}
+
+
 # ############################## REGEX FORMATTING ###############################
 regexFlags = re.M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
