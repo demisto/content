@@ -446,7 +446,7 @@ script:
 
             md.append({'Name': entity['codename'],
                        'ID': entity['id'],
-                       'IP Addresses': str(iplist),
+                       'IP Addresses': str(", ".join(iplist)),
                        'ThreatX Risk Score': e_risk,
                        'DBot Score': dbscore
                        })
@@ -650,11 +650,11 @@ script:
   - name: threatx-get-entities
     arguments:
     - name: entity_name
-      description: One or more comma separated names of the Entity
+      description: One or more comma separated Entity names
     - name: entity_id
-      description: One or more comma separated ID hashes of the Entity
+      description: One or more comma separated Entity ID hashes
     - name: entity_ip
-      description: One or more comma separated IP addresses of the Entity
+      description: One or more comma separated Entity IP addresses
     outputs:
     - contextPath: Threatx.Entity.ID
       description: ID hash of the Entity
