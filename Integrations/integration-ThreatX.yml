@@ -446,7 +446,7 @@ script:
 
             md.append({'Name': entity['codename'],
                        'ID': entity['id'],
-                       'IP Addresses': str(", ".join(iplist)),
+                       'IP Addresses': ', '.join(iplist),
                        'ThreatX Risk Score': e_risk,
                        'DBot Score': dbscore
                        })
