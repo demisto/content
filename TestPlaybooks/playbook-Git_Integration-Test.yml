@@ -117,10 +117,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: aee1d524-b1f5-4855-873a-e998da6973fc
+    taskid: a5ebc543-9d66-42b1-8716-63c8fbac36a0
     type: condition
     task:
-      id: aee1d524-b1f5-4855-873a-e998da6973fc
+      id: a5ebc543-9d66-42b1-8716-63c8fbac36a0
       version: -1
       name: Verify Results - search
       type: condition
@@ -149,15 +149,6 @@ tasks:
           right:
             value:
               simple: '"new issue"'
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: GitHub.Issue.ID
-            iscontext: true
-          right:
-            value:
-              simple: ID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -170,10 +161,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 867ca638-9547-448f-8eb4-60827ea63fb5
+    taskid: a69bc890-91d5-4ecb-87e7-de2edbd90c73
     type: condition
     task:
-      id: 867ca638-9547-448f-8eb4-60827ea63fb5
+      id: a69bc890-91d5-4ecb-87e7-de2edbd90c73
       version: -1
       name: Verify Results - list all
       type: condition
@@ -194,15 +185,6 @@ tasks:
           right:
             value:
               simple: Git-Integration
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: GitHub.Issue.ID
-            iscontext: true
-          right:
-            value:
-              simple: ID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -479,10 +461,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 2d9ce6f9-439a-423c-8f65-7b1dbeacd4f0
+    taskid: 80106000-5bb3-4b07-8517-d313a91ae107
     type: condition
     task:
-      id: 2d9ce6f9-439a-423c-8f65-7b1dbeacd4f0
+      id: 80106000-5bb3-4b07-8517-d313a91ae107
       version: -1
       name: Verify Results - update
       type: condition
@@ -511,15 +493,6 @@ tasks:
           right:
             value:
               simple: '"new issue"'
-      - - operator: isEqualString
-          left:
-            value:
-              simple: GitHub.Issue.ID
-            iscontext: true
-          right:
-            value:
-              simple: ID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -532,10 +505,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: c8c35b1c-35fb-41a2-8e4a-c9b7284c7ea8
+    taskid: 562f18f9-1708-43aa-8c7f-9f50a9f33fc6
     type: condition
     task:
-      id: c8c35b1c-35fb-41a2-8e4a-c9b7284c7ea8
+      id: 562f18f9-1708-43aa-8c7f-9f50a9f33fc6
       version: -1
       name: Verify Results - closed
       type: condition
@@ -556,15 +529,6 @@ tasks:
           right:
             value:
               simple: closed
-      - - operator: isEqualString
-          left:
-            value:
-              simple: GitHub.Issue.ID
-            iscontext: true
-          right:
-            value:
-              simple: ID
-            iscontext: true
     view: |-
       {
         "position": {
