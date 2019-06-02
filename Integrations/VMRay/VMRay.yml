@@ -497,5 +497,4 @@ script:
   runonce: false
   script: ''
   type: python
-releaseNotes: Added several new commands. Added a detonate playbook.
 fromversion: 4.0.0
