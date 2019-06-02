@@ -151,7 +151,7 @@ def create_issue_table(issue_list, response, limit):
     issue_count = 0
     for issue in issue_list:
         issue_table.append(issue_format(issue))
-        issue_count = issue_count+1
+        issue_count = issue_count + 1
         if issue_count == limit:
             break
 
@@ -243,8 +243,8 @@ def get_download_count():
     ec = {
         'GitHub.Release( val.ID == obj.ID )': count_per_release
     }
-    return_outputs(tableToMarkdown('Releases:', count_per_release, headers=RELEASE_HEADERS, removeNull=True)
-                   , ec, response)
+    return_outputs(tableToMarkdown('Releases:', count_per_release, headers=RELEASE_HEADERS, removeNull=True), ec,
+                   response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
