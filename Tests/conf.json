@@ -19,6 +19,10 @@
             "playbookID": "Tufin Test"
         },
         {
+            "integrations": "Looker",
+            "playbookID": "Test-Looker"
+        },
+        {
             "integrations": "Vertica",
             "playbookID": "Vertica Test"
         },
@@ -471,7 +475,8 @@
             "playbookID": "ShodanTest"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
+            "playbookID": "Extract Indicators From File - test",
+            "timeout": 2000
         },
         {
             "playbookID": "dedup_-_generic_-_test"
@@ -1478,9 +1483,40 @@
         {
             "integrations": "Ipstack",
             "playbookID": "Ipstack_Test"
+        },
+        {
+            "integrations": "Forescout",
+            "playbookID": "Forescout-Test"
+        },
+        {
+            "integrations": "LogRhythmRest",
+            "playbookID": "LogRhythm REST test"
+        },
+        {
+            "integrations": "AlienVault USM Anywhere",
+            "playbookID": "AlienVaultUSMAnywhereTest"
+        },
+        {
+            "playbookID": "PhishLabsTestPopulateIndicators"
+        },
+        {
+            "integrations": "PhishLabs IOC",
+            "playbookID": "PhishLabsIOC TestPlaybook",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
+        },
+        {
+            "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
     "skipped_tests": {
+        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
+        "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "Forescout-Test": "Should be skipped (issue 17016)",
+        "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -1548,7 +1584,6 @@
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
@@ -1565,17 +1600,22 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "MicrosoftGraphMail": "Inactive integration",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "VirusTotal - Private API": "reached api alloted quota."
+        "VirusTotal - Private API": "reached api alloted quota.",
+        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "McAfee-TIE": "Empty mock file ",
+        "LogRhythmRest": "test module when using mocks",
+        "vmray": "test module when using mocks",
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
