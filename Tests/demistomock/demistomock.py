@@ -493,9 +493,22 @@ def demistoUrls():
     return exampleDemistoUrls
 
 
+
 def appendContext(key, data, dedup=False):
     return None
+
 
 def dt(obj=None, trnsfrm=None):
     return ""
 
+
+def addEntry(id, entry, username=None, email=None, footer=None):
+    return ""
+
+
+def mirrorInvestigation(id, mirrorType, autoClose=False):
+    return ""
+
+
+def updateModuleHealth(error):
+    return ""
