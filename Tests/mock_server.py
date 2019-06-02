@@ -272,8 +272,7 @@ class MITMProxy:
         log_file_full_path = os.path.join(os.getcwd(), log_file)
         for _ in range(PROXY_PROCESS_TIMEOUT):
             print('###################### ' + str(log_file_full_path) + '\n')
-            print('###################### ' + str(os.path.exists(log_file_full_path)) + '\n')
-            print('###################### ' + str(os.path.isfile(log_file_full_path)) + '\n')
+            print('###################### ' + str(self.ami.call(['ls', log_file])) + '\n')
             time.sleep(PROXY_PROCESS_INTERVAL)
 
     def stop(self):
