@@ -1,5 +1,4 @@
- This is a GitHub API integration done for intro-exercise.
- 
+
  In order to access the requested repository, you must provide 
  the username, repository name and API key as parameters for the
  integration.

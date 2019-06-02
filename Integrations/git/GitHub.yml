@@ -11,20 +11,6 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: '3'
-  display: First fetch timestamp in terms of days
-  name: fetch_time
-  required: false
-  type: 0
-- display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
-- defaultvalue: 'true'
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - display: Username of the repository owner
   name: user
   required: false
@@ -33,11 +19,20 @@ configuration:
   name: repository
   required: false
   type: 0
-- defaultvalue: https://api.github.com
-  display: Base url for GitHub
-  name: url
-  required: true
+- defaultvalue: '3'
+  display: First fetch timestamp in terms of days
+  name: fetch_time
+  required: false
   type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: Integration to GitHub API
 display: GitHub
 name: GitHub
@@ -45,7 +40,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Required. The title of the issue.
+      description: The title of the issue.
       isArray: false
       name: title
       required: true
@@ -54,12 +49,6 @@ script:
       description: The contents of the issue.
       isArray: false
       name: body
-      required: false
-      secret: false
-    - default: false
-      description: The number of the milestone to associate this issue with.
-      isArray: false
-      name: milestone
       required: false
       secret: false
     - default: false
@@ -81,7 +70,7 @@ script:
     outputs:
     - contextPath: GitHub.Issue.ID
       description: The ID of the changed issue
-      type: String
+      type: Number
     - contextPath: GitHub.Issue.Repository
       description: The repository of the created issue
       type: String
@@ -94,12 +83,30 @@ script:
     - contextPath: GitHub.Issue.State
       description: The state of the created issue
       type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels associated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Assignees asociated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue
+      type: String
   - arguments:
     - default: false
       description: The number of the issue to be closed
       isArray: false
-      name: issue_number
-      required: false
+      name: ID
+      required: true
       secret: false
     deprecated: false
     description: closes an existing issue
@@ -107,25 +114,43 @@ script:
     name: GitHub-close-issue
     outputs:
     - contextPath: GitHub.Issue.ID
-      description: The ID of the closed issue
-      type: String
+      description: The ID of the changed issue
+      type: Number
     - contextPath: GitHub.Issue.Repository
-      description: The repository of the closed issue
+      description: The repository of the created issue
       type: String
     - contextPath: GitHub.Issue.Title
-      description: The title of the closed issue
+      description: The title of the created issue
       type: String
     - contextPath: GitHub.Issue.Body
-      description: The body of the closed issue
-      type: String
+      description: The body of the creeated issue
+      type: Unknown
     - contextPath: GitHub.Issue.State
-      description: State of closed issue
+      description: The state of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels associated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Assignees asociated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue
       type: String
   - arguments:
     - default: false
       description: number of the issue to be updated
       isArray: false
-      name: issue_number
+      name: ID
       required: true
       secret: false
     - default: false
@@ -144,13 +169,6 @@ script:
       description: State of the issue. Either open or closed.
       isArray: false
       name: state
-      required: false
-      secret: false
-    - default: false
-      description: 'The number of the milestone to associate this issue with or null
-        to remove current. '
-      isArray: false
-      name: milestone
       required: false
       secret: false
     - default: false
@@ -175,24 +193,58 @@ script:
     name: GitHub-update-issue
     outputs:
     - contextPath: GitHub.Issue.ID
-      description: The ID of the updated issue
-      type: String
+      description: The ID of the changed issue
+      type: Number
     - contextPath: GitHub.Issue.Repository
-      description: The repository of updated issue
+      description: The repository of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the created issue
       type: String
     - contextPath: GitHub.Issue.Body
-      description: Body of updated issue
-      type: String
+      description: The body of the creeated issue
+      type: Unknown
     - contextPath: GitHub.Issue.State
-      description: State of updated issue
+      description: The state of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels associated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Assignees asociated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue
       type: String
   - arguments:
-    - default: false
-      defaultValue: '1'
-      description: Boolean- gets 1 to show only open issues and 0 to show all issues.
-        Default set to 1
+    - auto: PREDEFINED
+      default: false
+      defaultValue: open
+      description: 'Indicates the state of the issues to return. Can be ''open'',
+        ''closed'' or ''all''. Default: ''open'''
       isArray: false
-      name: open_or_all
+      name: state
+      predefined:
+      - open
+      - closed
+      - all
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: 'How many issues to be printed by the command. Default: 50, Limited
+        up to 200'
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -201,26 +253,52 @@ script:
     name: GitHub-list-all-issues
     outputs:
     - contextPath: GitHub.Issue.ID
-      description: ID of the issue
-      type: String
+      description: The ID of the changed issue
+      type: Number
     - contextPath: GitHub.Issue.Repository
-      description: Repository of issue
+      description: The repository of the created issue
       type: String
     - contextPath: GitHub.Issue.Title
-      description: Title of issue
+      description: The title of the created issue
       type: String
     - contextPath: GitHub.Issue.Body
-      description: Body of issue
-      type: String
+      description: The body of the creeated issue
+      type: Unknown
     - contextPath: GitHub.Issue.State
-      description: State of issue
+      description: The state of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels associated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Assignees asociated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue
       type: String
   - arguments:
     - default: false
-      description: The query line for the search
+      description: 'The query line for the search. For help look here: https://help.github.com/en/articles/searching-issues-and-pull-requests'
       isArray: false
       name: query
       required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: 'How many issues to be printed by the command. Default: 50, Limited
+        up to 200'
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Searches issues matching a given query
@@ -228,19 +306,37 @@ script:
     name: GitHub-search-issues
     outputs:
     - contextPath: GitHub.Issue.ID
-      description: ID of issue
-      type: String
+      description: The ID of the changed issue
+      type: Number
     - contextPath: GitHub.Issue.Repository
-      description: Repository of issue
+      description: The repository of the created issue
       type: String
     - contextPath: GitHub.Issue.Title
-      description: Title of issue
+      description: The title of the created issue
       type: String
     - contextPath: GitHub.Issue.Body
-      description: Body of issue
-      type: String
+      description: The body of the creeated issue
+      type: Unknown
     - contextPath: GitHub.Issue.State
-      description: State of issue
+      description: The state of the created issue
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels associated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Assignees asociated with the issue
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue
       type: String
   - deprecated: false
     description: Returns the total amount of downloads over all the releases of the
@@ -248,12 +344,24 @@ script:
     execution: false
     name: GitHub-get-download-count
     outputs:
-    - contextPath: GitHub.Release.URL
-      description: URL for the release
-      type: String
+    - contextPath: GitHub.Release.ID
+      description: ID for the release
+      type: Number
     - contextPath: GitHub.Release.Download_count
       description: Download count for the release
       type: Number
+    - contextPath: GitHub.Release.Name
+      description: Name of the release
+      type: String
+    - contextPath: GitHub.Release.Body
+      description: Body of the release
+      type: String
+    - contextPath: GitHub.Release.Created_at
+      description: When was the release created
+      type: Date
+    - contextPath: GitHub.Release.Published_at
+      description: When was the release published
+      type: Date
   isfetch: true
   runonce: false
   script: '-'

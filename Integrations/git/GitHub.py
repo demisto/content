@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token')
-BASE_URL = demisto.params().get('url')
+BASE_URL = 'https://api.github.com'
 REP = demisto.params().get('repository')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
@@ -22,6 +22,10 @@ FETCH_TIME = demisto.params().get('fetch_time', '30 days')
 USER_SUFFIX = '/repos/{}/{}'.format(USER, REP)
 ISSUE_SUFFIX = USER_SUFFIX + '/issues'
 RELEASE_SUFFIX = USER_SUFFIX + '/releases'
+
+RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
+ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
+                 'Assignees', 'Labels']
 
 # Headers to be sent in requests
 HEADERS = {
@@ -43,7 +47,10 @@ def http_request(method, url_suffix, params=None, data=None):
         headers=HEADERS
     )
     # Handle error responses gracefully
-    if res.status_code >= 400:
+    if res.status_code == 422:
+        return_error('Error illegal assignee - must be a registered GitHub username')
+
+    elif res.status_code >= 400:
         return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
     try:
         return res.json()
@@ -51,7 +58,7 @@ def http_request(method, url_suffix, params=None, data=None):
         return_error('Error in HTTP request - {}'.format(str(excep)))
 
 
-def data_formatting(title, body, milestone, labels, assignees, state):
+def data_formatting(title, body, labels, assignees, state):
     """This method creates a dictionary to be used as "data" field in an http request."""
     data = {}
     if title is not None:
@@ -63,9 +70,6 @@ def data_formatting(title, body, milestone, labels, assignees, state):
     if state is not None:
         data['state'] = state
 
-    if milestone is not None:
-        data['milestone'] = int(milestone)
-
     if labels is not None:
         data['labels'] = labels.split(',')
 
@@ -76,7 +80,8 @@ def data_formatting(title, body, milestone, labels, assignees, state):
 
 
 def context_create_issue(response, issue):
-    """ Create GitHub.Issue EntryContext and results to be printed in Demisto
+    """ Create GitHub.Issue EntryContext and results to be printed in Demisto.
+
     Args:
         response (dict): The raw HTTP response to be inserted to the 'Contents' field
         issue (dict or list): A dictionary or a list of dictionaries formatted for Demisto results
@@ -85,7 +90,22 @@ def context_create_issue(response, issue):
     ec = {
         'GitHub.Issue(val.Repository == obj.Repository && val.ID == obj.ID)': issue
     }
-    return_outputs(tableToMarkdown("Issues:", issue), ec, response)
+    return_outputs(tableToMarkdown("Issues:", issue, headers=ISSUE_HEADERS, removeNull=True), ec, response)
+
+
+def list_create(issue, list_name, element_name):
+    """ Creates a list if parameters exist in issue
+    Args:
+        issue: an issue from GitHub
+        list_name: the name of the list in the issue
+        element_name: the field name of the element in the list
+    Returns:
+        The created list or None if it does not exist
+    """
+    if issue.get(list_name) is not None:
+        return [element.get(element_name) for element in issue.get(list_name)]
+    else:
+        None
 
 
 def issue_format(issue):
@@ -96,17 +116,26 @@ def issue_format(issue):
     Returns:
         Returns a dictionary representing an issue in Demisto
     """
+    closed_by = None
+    if issue.get('closed_by') is not None and issue.get('state') == 'closed':
+        closed_by = issue.get('closed_by').get('login')
     form = {
         'ID': issue.get('number'),
-        'Repository': issue.get('repository_url'),
+        'Repository': REP,
         'Title': issue.get('title'),
         'Body': issue.get('body'),
-        'State': issue.get('state')
+        'State': issue.get('state'),
+        'Labels': list_create(issue, 'labels', 'name'),
+        'Assignees': list_create(issue, 'assignees', 'login'),
+        'Created_at': issue.get('created_at'),
+        'Updated_at': issue.get('updated_at'),
+        'Closed_at': issue.get('closed_at'),
+        'Closed_by': closed_by
     }
     return form
 
 
-def create_issue_table(issue_list, response):
+def create_issue_table(issue_list, response, limit):
     """ Get an HTTP response and a list containing several issues, sends each issue to be reformatted.
 
     Args:
@@ -117,9 +146,14 @@ def create_issue_table(issue_list, response):
         The issues are sent to Demisto as a list
 
     """
+    issue_list.reverse()
     issue_table = []
+    issue_count = 0
     for issue in issue_list:
         issue_table.append(issue_format(issue))
+        issue_count = issue_count+1
+        if issue_count == limit:
+            break
 
     context_create_issue(response, issue_table)
 
@@ -127,13 +161,12 @@ def create_issue_table(issue_list, response):
 ''' REQUESTS FUNCTIONS '''
 
 
-def create_issue(title, body, milestone, labels, assignees):
+def create_issue(title, body, labels, assignees):
     if title == "":
         return_error("Error: No title given for created issue")
 
     data = data_formatting(title=title,
                            body=body,
-                           milestone=milestone,
                            labels=labels,
                            assignees=assignees,
                            state=None)
@@ -144,23 +177,22 @@ def create_issue(title, body, milestone, labels, assignees):
     return response
 
 
-def close_issue(issue_number):
+def close_issue(id):
     response = http_request(method='PATCH',
-                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
+                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
                             data={'state': 'closed'})
     return response
 
 
-def update_issue(issue_number, title, body, state, milestone, labels, assign):
+def update_issue(id, title, body, state, labels, assign):
     data = data_formatting(title=title,
                            body=body,
-                           milestone=milestone,
                            labels=labels,
                            assignees=assign,
                            state=state)
 
     response = http_request(method='PATCH',
-                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(issue_number)),
+                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
                             data=data)
 
     if response.get('errors'):
@@ -169,11 +201,8 @@ def update_issue(issue_number, title, body, state, milestone, labels, assign):
     return response
 
 
-def list_all_issue(only_open):
-    params = {}  # type: dict
-    if only_open == 'true':
-        params = {'state': 'all'}
-
+def list_all_issue(state):
+    params = {'state': state}
     response = http_request(method='GET',
                             url_suffix=ISSUE_SUFFIX,
                             params=params)
@@ -202,15 +231,20 @@ def get_download_count():
             total_download_count = total_download_count + asset['download_count']
 
         release_info = {
-            'URL': release.get('url'),
-            'Download_count': total_download_count
+            'ID': release.get('id'),
+            'Download_count': total_download_count,
+            'Name': release.get('name'),
+            'Body': release.get('body'),
+            'Created_at': release.get('created_at'),
+            'Published_at': release.get('published_at')
         }
         count_per_release.append(release_info)
 
     ec = {
-        'GitHub.Release( val.URL == obj.URL )': count_per_release
+        'GitHub.Release( val.ID == obj.ID )': count_per_release
     }
-    return_outputs(tableToMarkdown('Releases:', count_per_release), ec, response)
+    return_outputs(tableToMarkdown('Releases:', count_per_release, headers=RELEASE_HEADERS, removeNull=True)
+                   , ec, response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -219,36 +253,42 @@ def get_download_count():
 def create_command():
     args = demisto.args()
     response = create_issue(args.get('title'), args.get('body'),
-                            args.get('milestone'), args.get('labels'), args.get('assignees'))
+                            args.get('labels'), args.get('assignees'))
     issue = issue_format(response)
     context_create_issue(response, issue)
 
 
 def close_command():
-    issue_number = demisto.args().get('issue_number')
-    response = close_issue(issue_number)
+    id = demisto.args().get('ID')
+    response = close_issue(id)
     issue = issue_format(response)
     context_create_issue(response, issue)
 
 
 def update_command():
     args = demisto.args()
-    response = update_issue(args['issue_number'], args.get('title'), args.get('body'), args.get('state'),
-                            args.get('milestone'), args.get('labels'), args.get('assignees'))
+    response = update_issue(args.get('ID'), args.get('title'), args.get('body'), args.get('state'),
+                            args.get('labels'), args.get('assignees'))
     issue = issue_format(response)
     context_create_issue(response, issue)
 
 
 def list_all_command():
-    only_open = demisto.args().get('all')
-    response = list_all_issue(only_open)
-    create_issue_table(response, response)
+    state = demisto.args().get('state')
+    limit = int(demisto.args().get('limit'))
+    if limit > 200:
+        limit = 200
+    response = list_all_issue(state)
+    create_issue_table(response, response, limit)
 
 
 def search_command():
     q = demisto.args().get('query')
+    limit = int(demisto.args().get('limit'))
+    if limit > 200:
+        limit = 200
     response = search_issue(q)
-    create_issue_table(response['items'], response)
+    create_issue_table(response['items'], response, limit)
 
 
 def fetch_incidents_command():
@@ -307,6 +347,6 @@ try:
         get_download_count()
 
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
     raise

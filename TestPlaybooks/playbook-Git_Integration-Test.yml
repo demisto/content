@@ -42,8 +42,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "12"
+      - "16"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"
@@ -62,46 +62,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: e448e079-55cd-4dd3-8a00-669e5bad3bab
-    type: regular
-    task:
-      id: e448e079-55cd-4dd3-8a00-669e5bad3bab
-      version: -1
-      name: GitHub-create-issue
-      description: Creates an issue in GitHub
-      script: GitHub|||GitHub-create-issue
-      type: regular
-      iscommand: true
-      brand: GitHub
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      assignees: {}
-      body: {}
-      labels: {}
-      milestone: {}
-      title:
-        simple: '"A whole new bug!"'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "3":
     id: "3"
-    taskid: a75cd271-3d10-46e1-8d12-aa3b85211193
+    taskid: 6bfea940-6b9d-4d79-8097-9d85a1cc7411
     type: condition
     task:
-      id: a75cd271-3d10-46e1-8d12-aa3b85211193
+      id: 6bfea940-6b9d-4d79-8097-9d85a1cc7411
       version: -1
       name: Verify Results - create
       type: condition
@@ -109,9 +75,8 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
-      - "8"
-      - "9"
+      - "17"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -123,7 +88,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '"A whole new bug!"'
+              simple: '"new issue"'
       - - operator: isEqualString
           left:
             value:
@@ -131,7 +96,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://api.github.com/repos/roysagi/Git-Integration
+              simple: Git-Integration
       - - operator: isEqualString
           left:
             value:
@@ -150,93 +115,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 692164c7-3699-4e4c-877d-b1c177f88160
-    type: regular
-    task:
-      id: 692164c7-3699-4e4c-877d-b1c177f88160
-      version: -1
-      name: GitHub-update-issue
-      description: Updates the parameters of a given issue
-      script: GitHub|||GitHub-update-issue
-      type: regular
-      iscommand: true
-      brand: GitHub
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      assignees: {}
-      body:
-        simple: '"new information"'
-      issue_number:
-        simple: ${GitHub.Issue.ID}
-      labels: {}
-      milestone: {}
-      state: {}
-      title: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 4021c091-ce45-4c3e-8906-1ff7439d566e
-    type: condition
-    task:
-      id: 4021c091-ce45-4c3e-8906-1ff7439d566e
-      version: -1
-      name: Verify Results - update
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${GitHub.Issue.Repository}
-            iscontext: true
-          right:
-            value:
-              simple: https://api.github.com/repos/roysagi/Git-Integration
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${GitHub.Issue.Body}
-            iscontext: true
-          right:
-            value:
-              simple: '"new information"'
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
-    taskid: ebb8d599-cc4c-4f0f-823f-6c78e66d7381
+    taskid: 7a45782f-e8e8-4abd-8946-936e33e3b7d8
     type: condition
     task:
-      id: ebb8d599-cc4c-4f0f-823f-6c78e66d7381
+      id: 7a45782f-e8e8-4abd-8946-936e33e3b7d8
       version: -1
       name: Verify Results - search
       type: condition
@@ -244,7 +128,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "11"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -256,71 +140,29 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://api.github.com/repos/roysagi/Git-Integration
+              simple: Git-Integration
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${GitHub.Issue.Title}
+            iscontext: true
+          right:
+            value:
+              simple: '"new issue"'
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: GitHub.Issue.ID
+            iscontext: true
+          right:
+            value:
+              simple: ID
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 790,
           "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 0b3c7b5f-63ab-4fc3-8849-86a63641deeb
-    type: regular
-    task:
-      id: 0b3c7b5f-63ab-4fc3-8849-86a63641deeb
-      version: -1
-      name: search-issues
-      description: Searches issues matching a given query
-      script: GitHub|||GitHub-search-issues
-      type: regular
-      iscommand: true
-      brand: GitHub
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      query:
-        simple: user:roysagi
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 99f9aaaa-1ebc-4a1b-81b7-416cb9f0dd6f
-    type: regular
-    task:
-      id: 99f9aaaa-1ebc-4a1b-81b7-416cb9f0dd6f
-      version: -1
-      name: list-all-issues
-      description: Lists all issues that the user can see
-      script: GitHub|||GitHub-list-all-issues
-      type: regular
-      iscommand: true
-      brand: GitHub
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      open_or_all: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 790
         }
       }
     note: false
@@ -328,18 +170,18 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 0dbd34ef-8c58-47c4-8435-553d24d9ba8a
+    taskid: 97d6c4ea-8ad7-4af5-8d0e-0c6e503bb218
     type: condition
     task:
-      id: 0dbd34ef-8c58-47c4-8435-553d24d9ba8a
+      id: 97d6c4ea-8ad7-4af5-8d0e-0c6e503bb218
       version: -1
-      name: Verify Results
+      name: Verify Results - list all
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "11"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -351,142 +193,29 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://api.github.com/repos/roysagi/Git-Integration
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: de248d10-92ec-4d91-81a8-369644d381ec
-    type: regular
-    task:
-      id: de248d10-92ec-4d91-81a8-369644d381ec
-      version: -1
-      name: close-issue
-      description: closes an existing issue
-      script: GitHub|||GitHub-close-issue
-      type: regular
-      iscommand: true
-      brand: GitHub
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      issue_number:
-        simple: ${GitHub.Issue.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: c27310b7-eec5-455e-8b69-42687ed05971
-    type: regular
-    task:
-      id: c27310b7-eec5-455e-8b69-42687ed05971
-      version: -1
-      name: get-download-count
-      description: Returns the total amount of downloads over all the releases of
-        the repository
-      script: GitHub|||GitHub-get-download-count
-      type: regular
-      iscommand: true
-      brand: GitHub
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1330,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 439e54ad-c530-42f3-8e86-7c561a7a5584
-    type: condition
-    task:
-      id: 439e54ad-c530-42f3-8e86-7c561a7a5584
-      version: -1
-      name: Verify Results - download
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
+              simple: Git-Integration
       - - operator: containsGeneral
           left:
             value:
-              simple: ${GitHub.Release.URL}
+              simple: ${GitHub.Issue.Title}
             iscontext: true
           right:
             value:
-              simple: https://api.github.com/repos/roysagi/Git-Integration/releases/17519182
-    view: |-
-      {
-        "position": {
-          "x": 1330,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 1f339cb6-1c41-4a63-8c92-c873cb601b8e
-    type: condition
-    task:
-      id: 1f339cb6-1c41-4a63-8c92-c873cb601b8e
-      version: -1
-      name: Verify Results - close
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
+              simple: '"new issue"'
+      - - operator: containsGeneral
           left:
             value:
-              simple: ${GitHub.Issue.State}
+              simple: GitHub.Issue.ID
             iscontext: true
           right:
             value:
-              simple: closed
+              simple: ID
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1360
+          "x": 470,
+          "y": 1380
         }
       }
     note: false
@@ -515,8 +244,369 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 460,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 5b745235-88a0-42b8-8c84-46e71dda3081
+    type: regular
+    task:
+      id: 5b745235-88a0-42b8-8c84-46e71dda3081
+      version: -1
+      name: GitHub-create-issue
+      description: Creates an issue in GitHub
+      script: GitHub|||GitHub-create-issue
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "3"
+      - "25"
+    scriptarguments:
+      assignees: {}
+      body: {}
+      labels: {}
+      title:
+        simple: '"new issue"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 450,
-          "y": 1540
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 0ce815e2-0d64-4d2a-8529-c80200145ee8
+    type: regular
+    task:
+      id: 0ce815e2-0d64-4d2a-8529-c80200145ee8
+      version: -1
+      name: GitHub-search-issues
+      description: Searches issues matching a given query
+      script: GitHub|||GitHub-search-issues
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: '"user: roysagi title:"new issue"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 14816c73-d9d0-4deb-81c2-c4f0d1fe79bf
+    type: regular
+    task:
+      id: 14816c73-d9d0-4deb-81c2-c4f0d1fe79bf
+      version: -1
+      name: GitHub-update-issue
+      description: Updates the parameters of a given issue
+      script: GitHub|||GitHub-update-issue
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      ID:
+        simple: ${GitHub.Issue.ID}
+      assignees: {}
+      body:
+        simple: '"new information"'
+      labels: {}
+      state: {}
+      title: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 0b0cfb84-8349-4e07-88ba-fa8b96419f38
+    type: regular
+    task:
+      id: 0b0cfb84-8349-4e07-88ba-fa8b96419f38
+      version: -1
+      name: GitHub-list-all-issues
+      description: Lists all issues that the user can see
+      script: GitHub|||GitHub-list-all-issues
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit: {}
+      state:
+        simple: open
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 0a4657d7-7511-4f80-8ff4-33fd4bd72b73
+    type: regular
+    task:
+      id: 0a4657d7-7511-4f80-8ff4-33fd4bd72b73
+      version: -1
+      name: GitHub-close-issue
+      description: closes an existing issue
+      script: GitHub|||GitHub-close-issue
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      ID:
+        simple: ${GitHub.Issue.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 0075cbf3-d568-408f-8f03-33b22b3bb319
+    type: regular
+    task:
+      id: 0075cbf3-d568-408f-8f03-33b22b3bb319
+      version: -1
+      name: GitHub-get-download-count
+      description: Returns the total amount of downloads over all the releases of
+        the repository
+      script: GitHub|||GitHub-get-download-count
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 28be173e-8563-46f1-8d1e-3d6f2d8726ea
+    type: condition
+    task:
+      id: 28be173e-8563-46f1-8d1e-3d6f2d8726ea
+      version: -1
+      name: Verify Results - count
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${GitHub.Release.ID}
+            iscontext: true
+          right:
+            value:
+              simple: "17519182"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: GitHub.Release.Download_count
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 642d29e3-be8c-44b9-8dee-92dff4cee709
+    type: condition
+    task:
+      id: 642d29e3-be8c-44b9-8dee-92dff4cee709
+      version: -1
+      name: Verify Results - update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${GitHub.Issue.Body}
+            iscontext: true
+          right:
+            value:
+              simple: '"new information"'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${GitHub.Issue.Title}
+            iscontext: true
+          right:
+            value:
+              simple: '"new issue"'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GitHub.Issue.ID
+            iscontext: true
+          right:
+            value:
+              simple: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: c0fdf111-e60d-4578-8684-36b56e6e10ef
+    type: condition
+    task:
+      id: c0fdf111-e60d-4578-8684-36b56e6e10ef
+      version: -1
+      name: Verify Results - closed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${GitHub.Issue.State}
+            iscontext: true
+          right:
+            value:
+              simple: closed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GitHub.Issue.ID
+            iscontext: true
+          right:
+            value:
+              simple: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: b595b523-4a22-4a82-83a3-62172a35588d
+    type: regular
+    task:
+      id: b595b523-4a22-4a82-83a3-62172a35588d
+      version: -1
+      name: Store ID
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: ID
+      value:
+        simple: ${GitHub.Issue.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 525
         }
       }
     note: false
@@ -527,9 +617,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1585,
-        "width": 1680,
-        "x": 30,
+        "height": 2005,
+        "width": 1770,
+        "x": -60,
         "y": 50
       }
     }
