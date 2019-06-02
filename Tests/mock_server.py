@@ -269,16 +269,15 @@ class MITMProxy:
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
-        log_file_status = 2
-        counter = 0
+        log_file_exists = False
+        seconds_since_init = 0
         # Make sure process is up and running
-        # While log file doesn't exist and less than PROXY_PROCESS_INIT_TIMEOUT seconds has passed
-        while log_file_status > 0 and counter < PROXY_PROCESS_INIT_TIMEOUT:
+        while not log_file_exists and seconds_since_init < PROXY_PROCESS_INIT_TIMEOUT:
             # Check if log file exist
-            log_file_status = self.ami.call(['ls', log_file])
+            log_file_exists = self.ami.call(['ls', log_file]) == 0
             time.sleep(PROXY_PROCESS_INIT_INTERVAL)
-            counter += 1
-        if log_file_status > 0:
+            seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
+        if not log_file_exists:
             self.stop()
             raise Exception("Proxy process took to long to go up.")
 
