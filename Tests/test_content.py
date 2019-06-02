@@ -325,6 +325,7 @@ def extract_filtered_tests():
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
+        filtered_tests = ['Fidelis-Test','ThreatMiner-Test']
         is_filter_configured = True if filtered_tests else False
         run_all = True if RUN_ALL_TESTS_FORMAT in filtered_tests else False
 
