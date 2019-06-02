@@ -64,10 +64,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 6bfea940-6b9d-4d79-8097-9d85a1cc7411
+    taskid: b6e7317a-a854-471a-895a-fdcd6d6987dc
     type: condition
     task:
-      id: 6bfea940-6b9d-4d79-8097-9d85a1cc7411
+      id: b6e7317a-a854-471a-895a-fdcd6d6987dc
       version: -1
       name: Verify Results - create
       type: condition
@@ -84,7 +84,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${GitHub.Issue.Title}
+              simple: GitHub.Issue.Title
             iscontext: true
           right:
             value:
@@ -92,7 +92,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${GitHub.Issue.Repository}
+              simple: GitHub.Issue.Repository
             iscontext: true
           right:
             value:
@@ -100,7 +100,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${GitHub.Issue.State}
+              simple: GitHub.Issue.State
             iscontext: true
           right:
             value:
@@ -117,10 +117,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 7a3f56b7-f4c6-4b07-8038-3e559fc90dc4
+    taskid: aee1d524-b1f5-4855-873a-e998da6973fc
     type: condition
     task:
-      id: 7a3f56b7-f4c6-4b07-8038-3e559fc90dc4
+      id: aee1d524-b1f5-4855-873a-e998da6973fc
       version: -1
       name: Verify Results - search
       type: condition
@@ -170,10 +170,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: fbbbec52-0bab-4b2e-876f-7c8d53345059
+    taskid: 867ca638-9547-448f-8eb4-60827ea63fb5
     type: condition
     task:
-      id: fbbbec52-0bab-4b2e-876f-7c8d53345059
+      id: 867ca638-9547-448f-8eb4-60827ea63fb5
       version: -1
       name: Verify Results - list all
       type: condition
@@ -194,14 +194,6 @@ tasks:
           right:
             value:
               simple: Git-Integration
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: GitHub.Issue.Title
-            iscontext: true
-          right:
-            value:
-              simple: '"new issue"'
       - - operator: containsGeneral
           left:
             value:
@@ -540,10 +532,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: c0fdf111-e60d-4578-8684-36b56e6e10ef
+    taskid: c8c35b1c-35fb-41a2-8e4a-c9b7284c7ea8
     type: condition
     task:
-      id: c0fdf111-e60d-4578-8684-36b56e6e10ef
+      id: c8c35b1c-35fb-41a2-8e4a-c9b7284c7ea8
       version: -1
       name: Verify Results - closed
       type: condition
@@ -559,7 +551,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${GitHub.Issue.State}
+              simple: GitHub.Issue.State
             iscontext: true
           right:
             value:
