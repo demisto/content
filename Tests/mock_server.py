@@ -272,7 +272,7 @@ class MITMProxy:
         for _ in range(PROXY_PROCESS_TIMEOUT):
             print('###################### ' + str(log_file) + '\n')
             print('###################### ' + str(os.path.exists(log_file)) + '\n')
-            print('###################### ' + str(os.path.exists(log_file)) + '\n')
+            print('###################### ' + str(os.path.isfile(log_file)) + '\n')
             time.sleep(PROXY_PROCESS_INTERVAL)
 
     def stop(self):
