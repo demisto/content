@@ -5,7 +5,6 @@ import time
 import unicodedata
 from subprocess import call, Popen, PIPE, check_call, check_output
 
-
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
 PROXY_PROCESS_TIMEOUT = 20
 PROXY_PROCESS_INTERVAL = 1
@@ -273,7 +272,6 @@ class MITMProxy:
         for _ in PROXY_PROCESS_TIMEOUT:
             print os.path.exists(log_file)
             time.sleep(PROXY_PROCESS_INTERVAL)
-
 
     def stop(self):
         if not self.process:
