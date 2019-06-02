@@ -117,10 +117,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: a5ebc543-9d66-42b1-8716-63c8fbac36a0
+    taskid: 0f71d60e-59ff-4b09-85f4-7c7c39ab6ad1
     type: condition
     task:
-      id: a5ebc543-9d66-42b1-8716-63c8fbac36a0
+      id: 0f71d60e-59ff-4b09-85f4-7c7c39ab6ad1
       version: -1
       name: Verify Results - search
       type: condition
@@ -227,10 +227,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 5b745235-88a0-42b8-8c84-46e71dda3081
+    taskid: 6032a275-7b29-4a60-8c19-13cb4d9ca5bb
     type: regular
     task:
-      id: 5b745235-88a0-42b8-8c84-46e71dda3081
+      id: 6032a275-7b29-4a60-8c19-13cb4d9ca5bb
       version: -1
       name: GitHub-create-issue
       description: Creates an issue in GitHub
@@ -245,7 +245,8 @@ tasks:
     scriptarguments:
       assignees: {}
       body: {}
-      labels: {}
+      labels:
+        simple: newbug
       title:
         simple: '"new issue"'
     separatecontext: false
@@ -261,10 +262,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 0ce815e2-0d64-4d2a-8529-c80200145ee8
+    taskid: 4227665d-9648-40fd-800f-ce82be3eca9d
     type: regular
     task:
-      id: 0ce815e2-0d64-4d2a-8529-c80200145ee8
+      id: 4227665d-9648-40fd-800f-ce82be3eca9d
       version: -1
       name: GitHub-search-issues
       description: Searches issues matching a given query
@@ -278,7 +279,7 @@ tasks:
     scriptarguments:
       limit: {}
       query:
-        simple: '"user: roysagi title:"new issue"'
+        simple: '"user:roysagi label:newbug"'
     separatecontext: false
     view: |-
       {
