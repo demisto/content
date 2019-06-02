@@ -271,11 +271,11 @@ class MITMProxy:
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
         log_file_status = 2
         counter = 0
+        # Make sure process is up and running
         # While log file doesn't exist and less than PROXY_PROCESS_INIT_TIMEOUT seconds has passed
         while log_file_status > 0 and counter < PROXY_PROCESS_INIT_TIMEOUT:
             # Check if log file exist
             log_file_status = self.ami.call(['ls', log_file])
-            print('###################### ' + str(log_file_status) + '\n')
             time.sleep(PROXY_PROCESS_INIT_INTERVAL)
             counter += 1
         if log_file_status > 0:
