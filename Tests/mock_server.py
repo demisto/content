@@ -269,7 +269,7 @@ class MITMProxy:
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
-        for _ in PROXY_PROCESS_TIMEOUT:
+        for _ in range(PROXY_PROCESS_TIMEOUT):
             print os.path.exists(log_file)
             time.sleep(PROXY_PROCESS_INTERVAL)
 
