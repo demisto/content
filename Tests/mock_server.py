@@ -269,10 +269,11 @@ class MITMProxy:
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
+        log_file_full_path = os.path.join(os.getcwd(), log_file)
         for _ in range(PROXY_PROCESS_TIMEOUT):
-            print('###################### ' + str(log_file) + '\n')
-            print('###################### ' + str(os.path.exists(log_file)) + '\n')
-            print('###################### ' + str(os.path.isfile(log_file)) + '\n')
+            print('###################### ' + str(log_file_full_path) + '\n')
+            print('###################### ' + str(os.path.exists(log_file_full_path)) + '\n')
+            print('###################### ' + str(os.path.isfile(log_file_full_path)) + '\n')
             time.sleep(PROXY_PROCESS_INTERVAL)
 
     def stop(self):
