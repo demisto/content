@@ -32,6 +32,5 @@
 	"caseInsensitive": true,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": "",
-	"releaseNotes": "Changed the field to non-mandatory"
+	"breachScript": ""
 }
