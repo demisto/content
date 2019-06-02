@@ -10,7 +10,6 @@
   "endingDate": "0001-01-01T00:00:00Z",
   "timezoneOffset": 0,
   "cronView": false,
-  "releaseNotes": "changed occurred time format in decoder",
   "scheduled": false,
   "tags": [],
   "createdBy": "DBot",

@@ -1,0 +1,384 @@
+commonfields:
+  id: FortiSIEM
+  version: -1
+name: FortiSIEM
+display: FortiSIEM
+category: Analytics & SIEM
+description: Search and update events of FortiSIEM and manage resource lists.
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Server URL (e.g. https://192.168.0.1)
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: fortisiem-get-events-by-incident
+    arguments:
+    - name: incID
+      required: true
+      description: ID of the incident by which to filter.
+    - name: maxResults
+      description: Maximum number of results to return.
+      defaultValue: "10"
+    - name: extendedData
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to extend the data.
+      defaultValue: "true"
+    - name: maxWaitTime
+      description: Maximum time for the event report to finish (in seconds).
+      defaultValue: "60"
+    outputs:
+    - contextPath: FortiSIEM.Events.EventType
+      description: Event type.
+      type: string
+    - contextPath: FortiSIEM.Events.EventID
+      description: FortiSIEM Event ID.
+      type: string
+    - contextPath: FortiSIEM.Events.RawEventLog
+      description: Raw Event Log.
+      type: string
+    - contextPath: FortiSIEM.Events.ReportingDevice
+      description: Reporting Device.
+      type: string
+    - contextPath: FortiSIEM.Events.IncidentID
+      description: Incident ID.
+      type: number
+    - contextPath: FortiSIEM.Events.User
+      description: Event User.
+      type: string
+    - contextPath: FortiSIEM.Events.EventReceiveTime
+      description: Event received timestamp.
+      type: number
+    - contextPath: FortiSIEM.Events.EventName
+      description: Event Name.
+      type: string
+    - contextPath: FortiSIEM.Events.ReportingIP
+      description: Reporting IP address.
+      type: string
+    - contextPath: FortiSIEM.Events.SystemEventCategory
+      description: System Event Category.
+      type: string
+    - contextPath: FortiSIEM.Events.EventAction
+      description: EventAction.
+      type: string
+    - contextPath: FortiSIEM.Events.RelayingIP
+      description: Relaying IP address.
+      type: string
+    - contextPath: FortiSIEM.Events.EventSeverityCategory
+      description: Severity Category.
+      type: string
+    - contextPath: FortiSIEM.Events.OrganizationName
+      description: Organization Name.
+      type: string
+    - contextPath: FortiSIEM.Events.ReportingVendor
+      description: Reporting Vendor.
+      type: string
+    - contextPath: FortiSIEM.Events.ReportingModel
+      description: Reporting Model.
+      type: string
+    - contextPath: FortiSIEM.Events.OrganizationName
+      description: Organization name.
+      type: string
+    - contextPath: FortiSIEM.Events.CollectorID
+      description: Collector ID.
+      type: number
+    - contextPath: FortiSIEM.Events.EventParserName
+      description: Name of raw event parser.
+      type: string
+    - contextPath: FortiSIEM.Events.HostIP
+      description: Host IP address.
+      type: string
+    - contextPath: FortiSIEM.Events.HostName
+      description: Host name.
+      type: string
+    - contextPath: FortiSIEM.Events.FileName
+      description: Name of the file associated with the event.
+      type: string
+    - contextPath: FortiSIEM.Events.ProcessName
+      description: Name of the process associated with the event.
+      type: string
+    - contextPath: FortiSIEM.Events.JobName
+      description: Name of the job associated with the event.
+      type: string
+    - contextPath: FortiSIEM.Events.Status
+      description: Event status.
+      type: string
+    - contextPath: FortiSIEM.Events.DestinationPort
+      description: Port of the traffic's destination.
+      type: string
+    - contextPath: FortiSIEM.Events.SourcePort
+      description: Port of the traffic's origin.
+      type: string
+    - contextPath: FortiSIEM.Events.DestinationIP
+      description: Destination IP address for the web.
+      type: string
+    - contextPath: FortiSIEM.Events.SourceIP
+      description: "IP address of the traffic's origin. The source varies by the direction:
+        l In HTTP requests, this is the web browser or other client. l In HTTP responses,
+        this is the physical server."
+      type: string
+    - contextPath: FortiSIEM.Events.ExtendedData
+      description: All additional data returned by FortiSIEM.
+      type: string
+    - contextPath: FortiSIEM.Events.DestinationInterface
+      description: Interface of the traffic's destination.
+      type: string
+    - contextPath: FortiSIEM.Events.NATTranslation
+      description: NAT source port.
+      type: string
+    - contextPath: FortiSIEM.Events.Protocol
+      description: 'tcp: The protocol used by web traffic (tcp by default).'
+      type: string
+    - contextPath: FortiSIEM.Events.SourceMAC
+      description: MAC address associated with the source IP address.
+      type: string
+    - contextPath: FortiSIEM.Events.NATIP
+      description: NAT source IP.
+      type: string
+    description: Get events by incidents
+  - name: fortisiem-clear-incident
+    arguments:
+    - name: incident_id
+      required: true
+      description: ID of the incident to close.
+    - name: close_reason
+      description: Reason for closing.
+    description: Clear (close) a FortiSIEM incident.
+  - name: fortisiem-get-events-by-filter
+    arguments:
+    - name: maxResults
+      description: Maximum number of results to return.
+      defaultValue: "10"
+    - name: extendedData
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to extend the data.
+      defaultValue: "true"
+    - name: maxWaitTime
+      description: Maximum time for the event report to finish (in seconds).
+      defaultValue: "60"
+    - name: reptDevIpAddr
+      description: Reporting IP address.
+    - name: destIpAddr
+      description: Destination IP address.
+    - name: srcIpAddr
+      description: Source IP address.
+    - name: destMACAddr
+      description: Destination MAC address.
+    - name: srcMACAddr
+      description: Source MAC address.
+    - name: destDomain
+      description: Destination domain.
+    - name: srcDomain
+      description: Source domain.
+    - name: destName
+      description: Destination name.
+    - name: srcName
+      description: Source name.
+    - name: destAction
+      description: Destination action.
+    - name: destUser
+      description: Destination user.
+    - name: reportWindow
+      description: Relative report time value.
+      defaultValue: "1"
+    - name: reportWindowUnit
+      auto: PREDEFINED
+      predefined:
+      - Minute
+      - Day
+      - Hour
+      - Daily
+      description: Relative report time unit.
+      defaultValue: Minute
+    - name: eventType
+      description: event type.
+    - name: srcGeoCountry
+      description: Source geo country.
+    - name: User
+      description: User.
+    outputs:
+    - contextPath: FortiSIEM.Events.EventType
+      description: FortiSIEM event type.
+      type: Unknown
+    - contextPath: FortiSIEM.Events.SourceCountry
+      description: Event source country.
+      type: Unknown
+    description: Returns an event list according to the specified filters.
+  - name: fortisiem-get-cmdb-devices
+    arguments:
+    - name: device_ip
+      description: CSV list of device IPs.
+    - name: limit
+      description: Maximum number of results to return.
+      defaultValue: "50"
+    outputs:
+    - contextPath: FortiSIEM.CmdbDevice
+      description: CMDB devices.
+      type: Unknown
+    description: Returns the description of each device.
+  - name: fortisiem-get-events-by-query
+    arguments:
+    - name: query
+      required: true
+      description: The query to get events.
+    - name: report-window
+      description: Interval time of the search.
+      defaultValue: "60"
+    - name: interval-type
+      auto: PREDEFINED
+      predefined:
+      - Minute
+      - Hourly
+      - Daily
+      description: Interval unit.
+      defaultValue: Minute
+    - name: limit
+      description: Maximum number of results to return.
+    - name: extended-data
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to extend the data.
+      defaultValue: "true"
+    - name: max-wait-time
+      description: Command timeout.
+    outputs:
+    - contextPath: FortiSIEM.Events.EventType
+      description: FortiSIEM event type.
+      type: Unknown
+    - contextPath: FortiSIEM.Events.SourceCountry
+      description: Event source country.
+      type: Unknown
+    description: Returns event list filtered by query
+  - name: fortisiem-get-lists
+    arguments: []
+    description: Get all FortiSIEM resource lists hierarchy.
+  - name: fortisiem-add-item-to-resource-list
+    arguments:
+    - name: group_id
+      required: true
+      description: ID of the resource group. Run the "fortisiem-get-lists" command
+        to get the ID. command.
+    - name: object-info
+      required: true
+      description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2'
+    - name: resource_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Reports
+      - Rules
+      - Networks
+      - Watch Lists
+      - Protocols
+      - Malware IP
+      - Event Type
+      - Malware Domains
+      - Malware Urls
+      - Malware Hash
+      - Malware Processes
+      - Country Groups
+      - Default Password
+      - Anonymity Network
+      - User Agents
+      - Remediations
+      description: Resource Type
+    outputs:
+    - contextPath: FortiSIEM.Resource
+      description: 'Resource object in fortiSIEM lists. '
+      type: Unknown
+    description: add element to a resource list.
+  - name: fortisiem-remove-item-from-resource-list
+    arguments:
+    - name: ids
+      required: true
+      description: CSV list of resource IDs.
+    - name: resource_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Reports
+      - Rules
+      - Networks
+      - Watch Lists
+      - Protocols
+      - Malware IP
+      - Event Type
+      - Malware Domains
+      - Malware Urls
+      - Malware Hash
+      - Malware Processes
+      - Country Groups
+      - Default Password
+      - Anonymity Network
+      - User Agents
+      - Remediations
+      description: Resource Type
+    description: Removes elements from a resource list.
+  - name: fortisiem-get-resource-list
+    arguments:
+    - name: group_id
+      required: true
+      description: ID of the resource group. Run the "fortisiem-get-lists" command
+        to get the ID.
+    - name: resource_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Reports
+      - Rules
+      - Networks
+      - Watch Lists
+      - Protocols
+      - Malware IP
+      - Event Type
+      - Malware Domains
+      - Malware Urls
+      - Malware Hash
+      - Malware Processes
+      - Country Groups
+      - Default Password
+      - Anonymity Network
+      - User Agents
+      - Remediations
+      description: Resource type.
+    description: Lists all elements in a resource list.
+  isfetch: true
+  runonce: false
+tests:
+  - No Test

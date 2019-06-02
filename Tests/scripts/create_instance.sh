@@ -12,7 +12,8 @@ AMI_NAME=$2
 #Get nightly image of the server
 IMAGE_ID=$(aws ec2 describe-images \
     --filters Name=name,Values=$AMI_NAME \
-    --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
+    --owners 676921422616 \
+    --query 'Images[*].[ImageId,Name,CreationDate]' --output text | sort -k2 -r | head -n1)
 
 echo $IMAGE_ID > image_id.txt
 

@@ -1,0 +1,163 @@
+args:
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Clean html from text value?
+  isArray: false
+  name: cleanHtml
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Remove line breaks?
+  isArray: false
+  name: removeLineBreaks
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- default: false
+  defaultValue: utf-8
+  description: Text encoding
+  isArray: false
+  name: encoding
+  required: false
+  secret: false
+- default: false
+  description: If non-empty hash the words with this seed.
+  isArray: false
+  name: hashWordWithSeed
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: Remove non-english words
+  isArray: false
+  name: removeNonEnglishWords
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Remove english stop words ("the", "a", "an", etc)
+  isArray: false
+  name: removeStopWords
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Remove punctuation
+  isArray: false
+  name: removePunctuation
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Replace emails with magic
+  isArray: false
+  name: replaceEmails
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Replace urls with magic
+  isArray: false
+  name: replaceUrls
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Replace numbers with magic
+  isArray: false
+  name: replaceNumbers
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: Remove non-alphabetic words
+  isArray: false
+  name: removeNonAlphaWords
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: 'Use lemmatization. you can read more about lemma here: https://en.wikipedia.org/wiki/Lemmatisation'
+  isArray: false
+  name: useLemmatization
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- default: false
+  description: The text value
+  isArray: false
+  name: value
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: Is the input text value is json encoded?
+  isArray: false
+  name: isValueJson
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+comment: Tokenize the words in a input text.
+commonfields:
+  id: WordTokenizerNLP
+  version: -1
+enabled: true
+name: WordTokenizerNLP
+outputs:
+- contextPath: WordTokenizeOutput
+  description: Output text
+  type: Unknown
+script: ''
+system: false
+tags:
+- phishing
+- ml
+timeout: '0'
+type: python
+dockerimage: demisto/dl:1.2
+runas: DBotWeakRole
+runonce: true
+tests:
+- No test

@@ -2,6 +2,7 @@
   "id": "disk-current-usage",
   "version": -1,
   "fromVersion": "3.5.0",
+  "toVersion": "4.6.0",
   "name": "Disk Current Usage",
   "dataType": "system",
   "widgetType": "number",
