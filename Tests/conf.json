@@ -1565,7 +1565,6 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "QRadar": "Instance is unreachable",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "McAfee Advanced Threat Defense": "no license, issue 16909",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
