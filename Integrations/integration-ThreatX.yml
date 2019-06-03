@@ -674,7 +674,7 @@ script:
       required: true
       description: ID hash of the Entity
     outputs:
-    - contextPath: Threatx.Entity.Notes
+    - contextPath: Threatx.Entity.Note
       description: Notes attached to the Entity
       type: number
     description: Get the notes attached to an Entity by Entity ID
