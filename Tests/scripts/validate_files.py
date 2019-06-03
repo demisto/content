@@ -71,6 +71,8 @@ class FilesValidator(object):
             file_status = file_data[0]
             file_path = file_data[1]
 
+            if file_status.lower().startswith('r'):
+                file_path = file_data[2]
             if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
                 dir_path = os.path.dirname(file_path)
                 try:
@@ -80,7 +82,7 @@ class FilesValidator(object):
             elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
 
-            if checked_type(file_path, OLD_YML_FORMAT_FILE):
+            if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE):
                 old_format_files.add(file_path)
             elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
                 modified_files_list.add(file_path)
