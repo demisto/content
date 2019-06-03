@@ -1,4 +1,4 @@
- ## Set Up a Remote Web Browswer
+ ## Set Up a Remote Web Server
  To use the Palo Alto Networks PAN-OS EDL Management integration, you need to set up a remote web server.
  1. Set up a remote server with Apache.
  2. Generate a pair of SSH keys and send the keys to the Apache server.
