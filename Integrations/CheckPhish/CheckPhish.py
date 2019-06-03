@@ -18,7 +18,6 @@ GOOD_DISP = demisto.params().get('good_disp')
 SUSP_DISP = demisto.params().get('susp_disp')
 BAD_DISP = demisto.params().get('bad_disp')
 USE_SSL = not demisto.params().get('insecure', False)
-handle_proxy('proxy')
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -30,13 +29,19 @@ CLEAN_STATUS = 'clean'
 PENDING_STATUS = 'PENDING'
 DONE_STATUS = 'DONE'
 
-DEFAULT_GOOD_DISP = {'clean'}
+DEFAULT_GOOD_DISP = {
+    'clean'
+}
 
-DEFAULT_SUSP_DISP = {'suspicious',
-                     'drug_spam'}
+DEFAULT_SUSP_DISP = {
+    'suspicious',
+    'drug_spam'
+}
 
-DEFAULT_BAD_DISP = {'likely_phish',
-                    'phish'}
+DEFAULT_BAD_DISP = {
+    'likely_phish',
+    'phish'
+}
 
 ''' HELPER FUNCTIONS '''
 
@@ -57,7 +62,7 @@ def http_request(method, url, params=None, data=None):
         return res.json()
 
     except ValueError:
-        return None
+        return_error('Failed to parse response from service,  please try again later')
 
 
 def unite_dispositions():
@@ -85,8 +90,10 @@ def get_dbot_score(disposition):
 
 
 def test_module():
-    query = {'apiKey': API_KEY,
-             'urlInfo': {'url': 'https://www.google.com'}}
+    query = {
+        'apiKey': API_KEY,
+        'urlInfo': {'url': 'https://www.google.com'}
+    }
     res = http_request('POST', BASE_URL, data=json.dumps(query))
     if res and 'message' not in res:
         return 'ok'
@@ -115,16 +122,17 @@ def submit_to_checkphish(url):
         }
         res = http_request('POST', BASE_URL, data=json.dumps(query))
 
-        if res:
-            return res['jobID']
+        return res['jobID']
 
     else:
         return_error(url + ' is not a valid url')
 
 
-def get_status_checkphish(jobID):
-    query = {'apiKey': API_KEY,
-             'jobID': jobID}
+def is_job_ready_checkphish(jobID):
+    query = {
+        'apiKey': API_KEY,
+        'jobID': jobID
+    }
     res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
 
     if res and res['status'] == DONE_STATUS:
@@ -134,8 +142,10 @@ def get_status_checkphish(jobID):
 
 
 def get_result_checkphish(jobID):
-    query = {'apiKey': API_KEY,
-             'jobID': jobID}
+    query = {
+        'apiKey': API_KEY,
+        'jobID': jobID
+    }
     res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
 
     if res and 'errorMessage' not in res:
@@ -147,12 +157,14 @@ def get_result_checkphish(jobID):
             'brand': res['brand']
         }
 
-        url_dict = {'Data': result['url']}
+        url_dict = {
+            'Data': result['url']
+        }
 
         if result['disposition'] != CLEAN_STATUS:
             url_dict['Malicious'] = {
                 'Vendor': 'CheckPhish',
-                'Description': 'Countered towards ' + result['brand']
+                'Description': 'Targets ' + result['brand']
             }
 
         dbot_score = {
@@ -189,7 +201,7 @@ def checkphish_check_urls():
 
     while len(job_ids):
         for job_id in job_ids[:]:
-            if get_status_checkphish(job_id):
+            if is_job_ready_checkphish(job_id):
                 get_result_checkphish(job_id)
                 job_ids.remove(job_id)
 
@@ -197,6 +209,8 @@ def checkphish_check_urls():
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
+handle_proxy()
+unite_dispositions()
 
 try:
     if demisto.command() == 'test-module':

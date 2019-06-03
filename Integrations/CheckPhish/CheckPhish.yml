@@ -26,8 +26,14 @@ configuration:
   options:
   - suspicious
   - likely_phish
-  - drug_spam
   - phish
+  - scam
+  - adult
+  - drug_spam
+  - gambling
+  - cryptojacking
+  - streaming
+  - hacked_website
   required: false
   type: 16
 - display: 'Suspicious Dispositions (CheckPhish labels for suspicious phishing URLs.
@@ -36,8 +42,14 @@ configuration:
   options:
   - suspicious
   - likely_phish
-  - drug_spam
   - phish
+  - scam
+  - adult
+  - drug_spam
+  - gambling
+  - cryptojacking
+  - streaming
+  - hacked_website
   required: false
   type: 16
 - display: 'Bad Dispositions (CheckPhish labels for phishing URLs. Default value:
@@ -46,8 +58,14 @@ configuration:
   options:
   - suspicious
   - likely_phish
-  - drug_spam
   - phish
+  - scam
+  - adult
+  - drug_spam
+  - gambling
+  - cryptojacking
+  - streaming
+  - hacked_website
   required: false
   type: 16
 description: Check any URL to detect scams
@@ -59,7 +77,7 @@ script:
     - default: false
       description: Enter url(s) that you wish to check
       isArray: true
-      name: urls
+      name: url
       required: true
       secret: false
     deprecated: false

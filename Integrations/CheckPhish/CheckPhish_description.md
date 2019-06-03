@@ -16,7 +16,7 @@ for Example: www.demisto.com,www.google.com,www.youtube.com
 
 Also, you can modify the severity levels of any response received from CheckPhish, 
 our recommendation, and default parameters are the following:\
-Good = {clean}\
-Suspicious = {suspicious, drug_spam}\
-Bad = {likely_phish, phish}\
+Good = clean\
+Suspicious = suspicious, drug_spam\
+Bad = likely_phish, phish\
 note that the worst category in which a label is included in, will be the affective one. 
