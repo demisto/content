@@ -424,7 +424,7 @@ def edl_dump_internal_list_command():
             'Contents': md,
             'ContentsFormat': formats['markdown'],
             'EntryContext': {
-                "RemoteFileManagement(val.ListName == obj.ListName)": ec
+                "PANOSEDL(val.ListName == obj.ListName)": ec
             }
         })
 
