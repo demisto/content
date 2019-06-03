@@ -34,13 +34,18 @@ DEFAULT_GOOD_DISP = {
 }
 
 DEFAULT_SUSP_DISP = {
-    'suspicious',
-    'drug_spam'
+    'drug_spam',
+    'gambling',
+    'hacked_website',
+    'streaming',
+    'suspicious'
 }
 
 DEFAULT_BAD_DISP = {
+    'cryptojacking',
+    'phish',
     'likely_phish',
-    'phish'
+    'scam'
 }
 
 ''' HELPER FUNCTIONS '''
@@ -55,14 +60,15 @@ def http_request(method, url, params=None, data=None):
         data=data,
         headers=HEADERS
     )
+
     if res.status_code not in {200}:
         return_error('Error in API call to CheckPhish [%d] - %s' % (res.status_code, res.reason))
 
     try:
         return res.json()
 
-    except ValueError:
-        return_error('Failed to parse response from service,  please try again later')
+    except ValueError as err:
+        return_error('Failed to parse response from service\n%s' % (str(err)))
 
 
 def unite_dispositions():
@@ -191,7 +197,7 @@ def get_result_checkphish(jobID):
 
 
 def checkphish_check_urls():
-    urls = argToList(demisto.args().get('urls'))
+    urls = argToList(demisto.args().get('url'))
     job_ids = []
 
     for url in urls:
