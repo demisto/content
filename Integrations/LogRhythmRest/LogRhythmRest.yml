@@ -413,4 +413,3 @@ script:
   type: python
 tests:
 - LogRhythm REST test
-releaseNotes: Added REST API commands.
