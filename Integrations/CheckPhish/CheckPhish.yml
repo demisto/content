@@ -12,14 +12,6 @@ configuration:
   name: token
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default value:
     clean)'
   name: good_disp
@@ -68,6 +60,14 @@ configuration:
   - suspicious
   required: false
   type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Check any URL to detect scams
 display: CheckPhish
 name: CheckPhish
