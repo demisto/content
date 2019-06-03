@@ -1,20 +1,33 @@
 args:
 - auto: PREDEFINED
   default: false
-  description: Authentication-Results header from mail
-  isArray: false
-  name: authentication_results
+  description: A list of dictionaries of headers in the form of "Header name":"Header
+    value".
+  isArray: true
+  name: headers
   predefined:
   - admin
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  description: Received -SPF header from Email
+- default: false
+  description: This is in order to update the context from ParseEmailFiles. If runing
+    script manualy, could keep empty.
   isArray: false
-  name: received_spf
-  predefined:
-  - admin
+  name: from
+  required: false
+  secret: false
+- default: false
+  description: This is in order to update the context from ParseEmailFiles. If runing
+    script manualy, could keep empty.
+  isArray: false
+  name: to
+  required: false
+  secret: false
+- default: false
+  description: This is in order to update the context from ParseEmailFiles. If runing
+    script manualy, could keep empty.
+  isArray: false
+  name: subject
   required: false
   secret: false
 comment: Checks Email authenticity based on its SPF, DMARC and DKIM
@@ -53,7 +66,7 @@ outputs:
 - contextPath: Email.DMARC.Tags
   description: DMARC Tags (if found)
   type: String
-- contextPath: EMail.DMARC.From-Domain
+- contextPath: Email.DMARC.From-Domain
   description: Sender's Domain
   type: String
 - contextPath: Email.DKIM.Signing-Domain
@@ -61,6 +74,12 @@ outputs:
   type: String
 - contextPath: Email.AuthenticityCheck
   description: 'Could be: Fail / Suspicious / Undetermined / Pass'
+  type: Unknown
+- contextPath: Email.DKIM
+  type: Unknown
+- contextPath: Email.SPF
+  type: Unknown
+- contextPath: Email.DMARC
   type: Unknown
 script: |-
   import re
@@ -73,49 +92,111 @@ script: |-
       spf_context = {}
       if auth == None:
           spf_context["Validation-Result"] = spf.split(" ")[0].lower()
-          sender_ip=re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", spf)
+          sender_ip = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", spf)
       else:
-          result= re.search(r"spf=(\w+)", auth)
+          result = re.search(r"spf=(\w+)", auth)
           if result is not None:
-              spf_context["Validation-Result"]=result.group(1)
-          sender_ip=re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", auth)
-      if sender_ip!=[]:
+              spf_context["Validation-Result"] = result.group(1).lower()
+          sender_ip = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", auth)
+      if sender_ip != []:
           spf_context["Sender-IP"] = sender_ip[0]
       if spf is not None:
           spf_context["Reason"] = re.findall(r"[(](.+)[)]", spf)[0]
       return spf_context
 
+
   def get_dkim(auth):
-      dkim_context={}
-      if auth!=None:
+      dkim_context = {}
+      if auth != None:
           result = re.search(r"dkim=(\w+)", auth)
           if result is not None:
-              dkim_context["Validation-Result"] = result.group(1)
-          reason= re.findall("dkim=\w+ [(](.+)[)]",auth)
-          if reason!=[]:
-              dkim_context["Reason"] = reason[0]
-          domain=re.findall("dkim=[\w\W]+\W(\w+\.com)",auth)
-          if domain!=[]:
-              dkim_context["Signing-Domain"]=domain[0]
+              dkim_context["Validation-Result"] = result.group(1).lower()
+          reason = re.search("dkim=\w+ [(](.+?)[)]", auth)
+          if reason is not None:
+              dkim_context["Reason"] = reason.group(1)
+          domain = re.findall("dkim=[\w\W]+\W(\w+\.com)", auth)
+          if domain != []:
+              dkim_context["Signing-Domain"] = domain[0]
       return dkim_context
 
+
   def get_dmarc(auth):
-      dmarc_context={}
-      if auth!=None:
-          d=1
+      dmarc_context = {}
+      if auth != None:
+          result = re.search(r"dmarc=(\w+)", auth)
+          if result is not None:
+              dmarc_context["Validation-Result"] = result.group(1).lower()
+          reason = re.findall("dmarc=\w+ [(](.+?)[)]", auth)
+          if reason != []:
+              tags = reason[0]
+              tags_data = {}
+              for tag in tags.split(" "):
+                  values = tag.split("=")
+                  tags_data[values[0]] = values[1]
+              dmarc_context["Tags"] = tags_data
+          domain = re.findall("dmarc=[\w\W]+header.from=(\w+\.com)", auth)
+          if domain != []:
+              dmarc_context["Signing-Domain"] = domain[0]
+      return dmarc_context
+
+
+  def auth_check(spf_data, dkim_data, dmarc_data):
+      spf = spf_data.get('Validation-Result')
+      dmarc = dmarc_data.get('Validation-Result')
+      dkim = dkim_data.get('Validation-Result')
+
+      if spf == 'fail' or dkim == 'fail' or dmarc == 'fail':
+          return "Fail"
+      if spf == 'softfail' or dkim == 'policy':
+          return "Suspicious"
+      undetermined = [None, "none", "temperror", "permerror"]
+      if dmarc in undetermined or spf in undetermined or dkim in undetermined \
+              or dkim == "neutral":
+          return "Undetermined"
+      return "Pass"
+
 
   try:
-      auth = demisto.args().get('authentication_results')
-      spf = demisto.args().get('received_spf')
+      headers= argToList(demisto.args().get("headers"))
+      from_ = demisto.args().get("from")
+      to = demisto.args().get("to")
+      subject = demisto.args().get("subject")
+
+      auth=None
+      spf=None
+      for header in headers:
+          if header.get('name')=="Authentication-Results":
+              auth=header.get('value')
+          if header.get('name')== "Received-SPF":
+              spf=header.get('value')
+
+      email_key="Email(val.From && val.From === '{}' && val.To=== '{}' && val.Subject === '{}')".\
+          format(from_,to,subject)
+
       if auth is None and spf is None:
           context = {
-              "Email.AuthenticityCheck": "undetermined"
+              "{}.AuthenticityCheck".format(email_key): "undetermined"
           }
           return_outputs("No header information was found.", context)
           sys.exit(0)
       spf_data = get_spf(auth, spf)
-      dkim_data=get_dkim(auth)
-      demisto.results(spf_data)
+      dkim_data = get_dkim(auth)
+      dmarc_data = get_dmarc(auth)
+
+      authenticity = auth_check(spf_data, dkim_data, dmarc_data)
+
+      md = "This Email's authenticity is: **{}**\n".format(authenticity)
+      md = md + tableToMarkdown("SPF", spf_data, ["Validation-Result", "Reason", "Sender-IP"])
+      md = md + tableToMarkdown("DKIM", dkim_data, ["Validation-Result", "Reason", "Signing-Domain"])
+      md = md + tableToMarkdown("DMARC", dmarc_data, ["Validation-Result", "Tags", "Signing-Domain"])
+
+      ec = {
+          "{}.SPF".format(email_key): spf_data,
+          "{}.DMARC".format(email_key): dmarc_data,
+          "{}.DKIM".format(email_key): dkim_data,
+          "{}.AuthenticityCheck".format(email_key): authenticity
+      }
+      return_outputs(md, ec)
 
   except Exception as ex:
       demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
