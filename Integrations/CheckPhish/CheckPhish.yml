@@ -24,48 +24,48 @@ configuration:
     clean)'
   name: good_disp
   options:
-  - suspicious
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
   - likely_phish
   - phish
   - scam
-  - adult
-  - drug_spam
-  - gambling
-  - cryptojacking
   - streaming
-  - hacked_website
+  - suspicious
   required: false
   type: 16
 - display: 'Suspicious Dispositions (CheckPhish labels for suspicious phishing URLs.
     Default value: suspicious)'
   name: susp_disp
   options:
-  - suspicious
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
   - likely_phish
   - phish
   - scam
-  - adult
-  - drug_spam
-  - gambling
-  - cryptojacking
   - streaming
-  - hacked_website
+  - suspicious
   required: false
   type: 16
 - display: 'Bad Dispositions (CheckPhish labels for phishing URLs. Default value:
     likely_phish, phish)'
   name: bad_disp
   options:
-  - suspicious
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
   - likely_phish
   - phish
   - scam
-  - adult
-  - drug_spam
-  - gambling
-  - cryptojacking
   - streaming
-  - hacked_website
+  - suspicious
   required: false
   type: 16
 description: Check any URL to detect scams
