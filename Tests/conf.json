@@ -771,7 +771,7 @@
         {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test",
-            "timeout": 600
+            "timeout": 300
         },
         {
             "integrations": "EWS v2",
