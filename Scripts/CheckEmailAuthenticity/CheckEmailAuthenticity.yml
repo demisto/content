@@ -10,24 +10,136 @@ args:
   required: false
   secret: false
 - default: false
-  description: This is in order to update the context from ParseEmailFiles. If runing
-    script manualy, could keep empty.
+  description: Override value for SPF=None. Could be Fail / Suspicious / Undetermined
+    / Pass
   isArray: false
-  name: from
+  name: SPF_override_none
   required: false
   secret: false
 - default: false
-  description: This is in order to update the context from ParseEmailFiles. If runing
-    script manualy, could keep empty.
+  description: Override value for SPF=neutral. Could be Fail / Suspicious / Undetermined
+    / Pass
   isArray: false
-  name: to
+  name: SPF_override_neutral
   required: false
   secret: false
 - default: false
-  description: This is in order to update the context from ParseEmailFiles. If runing
-    script manualy, could keep empty.
+  description: Override value for SPF=pass. Could be Fail / Suspicious / Undetermined
+    / Pass
   isArray: false
-  name: subject
+  name: SPF_override_pass
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=fail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_fail
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=softfail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_softfail
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=temperror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_temperror
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=permerror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_permerror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=none. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_none
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=pass. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_pass
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=fail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_fail
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=policy. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_policy
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=neutral. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_neutral
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=temperror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_temperror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=permerror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_permerror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=none. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_none
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=pass. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_pass
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=fail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_fail
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=temperror.Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_temperror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=permerror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_permerror
   required: false
   secret: false
 comment: Checks Email authenticity based on its SPF, DMARC and DKIM
@@ -114,7 +226,7 @@ script: |-
           reason = re.search("dkim=\w+ [(](.+?)[)]", auth)
           if reason is not None:
               dkim_context["Reason"] = reason.group(1)
-          domain = re.findall("dkim=[\w\W]+\W(\w+\.com)", auth)
+          domain = re.findall("dkim=[\w\W]+?[=@](\w+\.[^ ]+)", auth)
           if domain != []:
               dkim_context["Signing-Domain"] = domain[0]
       return dkim_context
@@ -134,16 +246,23 @@ script: |-
                   values = tag.split("=")
                   tags_data[values[0]] = values[1]
               dmarc_context["Tags"] = tags_data
-          domain = re.findall("dmarc=[\w\W]+header.from=(\w+\.com)", auth)
+          domain = re.findall("dmarc=[\w\W]+header.from=(\w+\.[^ ]+)", auth)
           if domain != []:
               dmarc_context["Signing-Domain"] = domain[0]
       return dmarc_context
 
 
-  def auth_check(spf_data, dkim_data, dmarc_data):
+  def auth_check(spf_data, dkim_data, dmarc_data, override_dict):
       spf = spf_data.get('Validation-Result')
       dmarc = dmarc_data.get('Validation-Result')
       dkim = dkim_data.get('Validation-Result')
+
+      if "spf-{}".format(spf) in override_dict:
+          return override_dict.get("spf-{}".format(spf))
+      if "dkim-{}".format(dkim) in override_dict:
+          return override_dict.get("dkim-{}".format(dkim))
+      if "dmarc-{}".format(dmarc) in override_dict:
+          return override_dict.get("dmarc-{}".format(dmarc))
 
       if spf == 'fail' or dkim == 'fail' or dmarc == 'fail':
           return "Fail"
@@ -156,22 +275,164 @@ script: |-
       return "Pass"
 
 
+  '''MAIN FUNCTION'''
+
   try:
-      headers= argToList(demisto.args().get("headers"))
-      from_ = demisto.args().get("from")
-      to = demisto.args().get("to")
-      subject = demisto.args().get("subject")
+      headers = argToList(demisto.args().get("headers"))
 
-      auth=None
-      spf=None
+      auth = None
+      spf = None
+      message_id = ""
+
+      ### getting override options from user
+      override_dict = {}
+
+      override_options = ["fail", "suspicious", "undetermined", "pass", "Fail", "Suspicious", "Undetermined", "Pass"]
+
+      override = demisto.args().get("SPF_override_none")
+      if override in override_options:
+          override_dict["spf-none"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("SPF_override_neutral")
+      if override in override_options:
+          override_dict["spf-neutral"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("SPF_override_pass")
+      if override in override_options:
+          override_dict["spf-pass"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("SPF_override_fail")
+      if override in override_options:
+          override_dict["spf-fail"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("SPF_override_softfail")
+      if override in override_options:
+          override_dict["spf-softfail"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("SPF_override_temperror")
+      if override in override_options:
+          override_dict["spf-temperror"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("SPF_override_perm")
+      if override in override_options:
+          override_dict["spf-permerror"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_none")
+      if override in override_options:
+          override_dict["dkim-none"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_pass")
+      if override in override_options:
+          override_dict["dkim-pass"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_fail")
+      if override in override_options:
+          override_dict["dkim-fail"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_policy")
+      if override in override_options:
+          override_dict["dkim-policy"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_neutral")
+      if override in override_options:
+          override_dict["dkim-neutral"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_temperror")
+      if override in override_options:
+          override_dict["dkim-temperror"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DKIM_override_permerror")
+      if override in override_options:
+          override_dict["dkim-permerror"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DMARC_override_none")
+      if override in override_options:
+          override_dict["dmarc-none"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DMARC_override_pass")
+      if override in override_options:
+          override_dict["dmarc-pass"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DMARC_override_fail")
+      if override in override_options:
+          override_dict["dmarc-fail"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DMARC_override_temperror")
+      if override in override_options:
+          override_dict["dmarc-temperror"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+
+      override = demisto.args().get("DMARC_override_permerror")
+      if override in override_options:
+          override_dict["dmarc-permerror"] = override.lower()
+      else:
+          if override is not None:
+              return_error("Invaild override input.")
+      #####done override options\
       for header in headers:
-          if header.get('name')=="Authentication-Results":
-              auth=header.get('value')
-          if header.get('name')== "Received-SPF":
-              spf=header.get('value')
+          if isinstance(header, dict):
+              if header.get('name') == "Authentication-Results":
+                  auth = header.get('value')
+              if header.get('name') == "Received-SPF":
+                  spf = header.get('value')
+              if header.get('name') == 'Message-ID':
+                  message_id = header.get('value')
 
-      email_key="Email(val.From && val.From === '{}' && val.To=== '{}' && val.Subject === '{}')".\
-          format(from_,to,subject)
+      email_key = "Email(val.Headers.filter(function(header) { return header && header.name === 'Message-ID' && header.value === '%s';}))" % \
+                  (message_id)
 
       if auth is None and spf is None:
           context = {
@@ -183,7 +444,7 @@ script: |-
       dkim_data = get_dkim(auth)
       dmarc_data = get_dmarc(auth)
 
-      authenticity = auth_check(spf_data, dkim_data, dmarc_data)
+      authenticity = auth_check(spf_data, dkim_data, dmarc_data, override_dict)
 
       md = "This Email's authenticity is: **{}**\n".format(authenticity)
       md = md + tableToMarkdown("SPF", spf_data, ["Validation-Result", "Reason", "Sender-IP"])
