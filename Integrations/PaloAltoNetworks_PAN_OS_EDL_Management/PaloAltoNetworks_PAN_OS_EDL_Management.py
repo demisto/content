@@ -36,7 +36,7 @@ def create_certificate_file(authentication: dict):
         cert_file.flush()
         os.chmod(cert_file.name, 0o400)
     else:
-        return_error('Provide a certificate in order to connect to the remote server.')
+        return_error('To connect to the remote server, provide a certificate.')
 
     return cert_file
 
