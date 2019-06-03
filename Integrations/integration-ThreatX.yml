@@ -202,7 +202,9 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id === obj.Id)': ip
+                'IP(val.Address === obj.Address)': {
+                    'Address': ip
+                }
         }
 
         return_outputs(md, ec, results)
@@ -227,7 +229,9 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id === obj.Id)': ip
+                'IP(val.Address === obj.Address)': {
+                    'Address': ip
+                }
         }
 
         return_outputs(md, ec, results)
@@ -256,7 +260,9 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id === obj.Id)': ip
+                'IP(val.Address === obj.Address)': {
+                    'Address': ip
+                }
         }
 
         return_outputs(md, ec, results)
@@ -281,7 +287,9 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id === obj.Id)': ip
+                'IP(val.Address === obj.Address)': {
+                    'Address': ip
+                }
         }
 
         return_outputs(md, ec, results)
@@ -310,7 +318,9 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id === obj.Id)': ip
+                'IP(val.Address === obj.Address)': {
+                    'Address': ip
+                }
         }
 
         return_outputs(md, ec, results)
@@ -335,7 +345,9 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id === obj.Id)': ip
+                'IP(val.Address === obj.Address)': {
+                    'Address': ip
+                }
         }
 
         return_outputs(md, ec, results)
@@ -459,7 +471,7 @@ script:
                     'Risk': e_risk
                 },
                 'DBotScore': dbot_scores,
-                'IP': ip_enrich
+                'IP(val.Address === obj.Address)': ip_enrich
             }
 
             output.append({
@@ -677,6 +689,8 @@ script:
     - contextPath: Threatx.Entity.Note
       description: Notes attached to the Entity
       type: number
+    - contextPath: Threatx.Entity.ID
+      description: ID hash of the Entity
     description: Get the notes attached to an Entity by Entity ID
   - name: threatx-add-entity-note
     arguments:
