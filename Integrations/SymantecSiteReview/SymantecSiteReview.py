@@ -134,7 +134,7 @@ def site_lookup_command():
         }
         if url_dbot_score:
             risk_description = [risk['name'] for risk in list_risk_levels()
-                                if risk['number'] == site_detail['ThreatRiskLevel']]
+                                if risk['number'] == site_detail['ThreatRiskLevel']][0]
             url_dict['Malicious'] = {
                 'Vendor': 'SymantecSiteReview',
                 'Description': 'Found the site as ' + risk_description
