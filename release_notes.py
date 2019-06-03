@@ -238,13 +238,7 @@ class PlaybookContent(Content):
         return "Playbooks"
 
     def added_release_notes(self, file_path, cnt):
-        rn = cnt.get("description")
-        if not rn:
-            return None
-        if rn == IGNORE_RN:
-            return ""
-
-        return release_notes_item(cnt["name"], rn)
+        return release_notes_item(cnt["name"], cnt['description'])
 
     def modified_release_notes(self, file_path, cnt):
         rn = super(PlaybookContent, self).modified_release_notes(file_path, cnt)
@@ -264,10 +258,6 @@ class ReportContent(Content):
         return "Reports"
 
     def added_release_notes(self, file_path, cnt):
-        rn = super(ReportContent, self).added_release_notes(file_path, cnt)
-        if rn == IGNORE_RN:
-            return ""
-
         return release_notes_item(cnt["name"], cnt["description"])
 
     def modified_release_notes(self, file_path, cnt):
@@ -288,10 +278,6 @@ class DashboardContent(Content):
         return "Dashboards"
 
     def added_release_notes(self, file_path, cnt):
-        rn = super(DashboardContent, self).added_release_notes(file_path, cnt)
-        if rn == IGNORE_RN:
-            return ""
-
         return release_notes_item(cnt["name"], cnt["description"])
 
     def modified_release_notes(self, file_path, cnt):
@@ -312,10 +298,6 @@ class WidgetContent(Content):
         return "Widgets"
 
     def added_release_notes(self, file_path, cnt):
-        rn = super(WidgetContent, self).added_release_notes(file_path, cnt)
-        if rn == IGNORE_RN:
-            return ""
-
         return release_notes_item(cnt["name"], cnt["description"])
 
     def modified_release_notes(self, file_path, cnt):
@@ -421,7 +403,7 @@ class ClassifierContent(Content):
         if rn:
             return self.get_release_notes(file_path, cnt)
         else:
-            # error or ignored rn
+            # error
             return rn
 
     def modified_release_notes(self, file_path, cnt):
