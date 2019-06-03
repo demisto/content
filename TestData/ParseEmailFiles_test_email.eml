@@ -73,16 +73,11 @@ this format, some or all of this message may not be legible.
 --B_3611854690_125258389
 Content-type: multipart/alternative;
 	boundary="B_3611854690_551918661"
-
-
 --B_3611854690_551918661
 Content-type: text/plain;
 	charset="UTF-8"
 Content-transfer-encoding: 7bit
-
 Test body
-
-
 --B_3611854690_551918661
 Content-type: text/html;
 	charset="UTF-8"
@@ -137,11 +132,7 @@ pan></p>
 </div>
 </body>
 </html>
-
-
 --B_3611854690_551918661--
-
-
 --B_3611854690_125258389
 Content-type: application/vnd.openxmlformats-officedocument.wordprocessingml.document; name="parseEmailDoc.docx";
  x-mac-creator="4F50494D"
@@ -149,8 +140,6 @@ Content-ID: <686F5E7079420D45A24ED508C0243CA1@namprd11.prod.outlook.com>
 Content-disposition: attachment;
 	filename="parseEmailDoc.docx"
 Content-transfer-encoding: base64
-
-
 UEsDBBQABgAIAAAAIQDfpNJsWgEAACAFAAATAAgCW0NvbnRlbnRfVHlwZXNdLnhtbCCiBAIo
 oAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -376,7 +365,6 @@ Content-ID: <66B5D74754E5BF43928B4C90DA47EF62@namprd11.prod.outlook.com>
 Content-disposition: attachment;
 	filename="parseEmailPDF.pdf"
 Content-transfer-encoding: base64
-
 JVBERi0xLjMKJcTl8uXrp/Og0MTGCjQgMCBvYmoKPDwgL0xlbmd0aCA1IDAgUiAvRmlsdGVy
 IC9GbGF0ZURlY29kZSA+PgpzdHJlYW0KeAGlkDsLwkAQhPv8ijE+uBS57D2DrWJjF9hOrA5S
 CFeE+//gJUE4EbSQLWZnWT5md8KACd05KYQEWiqFPCKp7ernRjl4beVRI0ScGG7dzKJND+d6
@@ -626,4 +614,3 @@ IAp0cmFpbGVyCjw8IC9TaXplIDI0IC9Sb290IDEyIDAgUiAvSW5mbyAxIDAgUiAvSUQgWyA8
 MDEwYTA0MjIzNDkzYTcwZTNiNWUwMDgwY2Q3YjkzYzA+CjwwMTBhMDQyMjM0OTNhNzBlM2I1
 ZTAwODBjZDdiOTNjMD4gXSA+PgpzdGFydHhyZWYKMTI2ODgKJSVFT0YK
 --B_3611854690_125258389--
-

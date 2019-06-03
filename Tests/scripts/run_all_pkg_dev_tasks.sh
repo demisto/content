@@ -25,6 +25,11 @@ if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
     fi
 fi
 
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ${d}) ]]; then
+    echo "CommonServerPython modified. Going to ignore git changes and run all tests"
+    DIFF_COMPARE=""
+fi
+
 CURRENT_DIR=`pwd`
 SCRIPT_DIR=$(dirname ${BASH_SOURCE})
 PKG_DEV_TASKS_DIR=${SCRIPT_DIR}

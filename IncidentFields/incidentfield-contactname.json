@@ -1,7 +1,6 @@
 {
 	"id": "incident_contactname",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T11:17:29.254822349Z",
 	"name": "Contact Name",
 	"ownerOnly": false,
@@ -11,7 +10,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": true,
+	"required": false,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,
