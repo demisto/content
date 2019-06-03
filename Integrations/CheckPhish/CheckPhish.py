@@ -14,9 +14,9 @@ requests.packages.urllib3.disable_warnings()
 
 BASE_URL = demisto.params()['url']
 API_KEY = demisto.params().get('token')
-GOOD_DISP = demisto.params().get('good_disp', [])
-SUSP_DISP = demisto.params().get('susp_disp', [])
-BAD_DISP = demisto.params().get('bad_disp', [])
+GOOD_DISP = argToList(demisto.params().get('good_disp'))
+SUSP_DISP = argToList(demisto.params().get('susp_disp'))
+BAD_DISP = argToList(demisto.params().get('bad_disp'))
 USE_SSL = not demisto.params().get('insecure', False)
 
 HEADERS = {
