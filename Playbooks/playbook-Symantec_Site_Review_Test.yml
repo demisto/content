@@ -1,14 +1,14 @@
-id: 4126e8b7-e080-4e18-80b6-00791196f759
-version: 1
+id: Symantec Site Review Test
+version: -1
 name: Symantec Site Review Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1c667795-3bfd-4fd6-86af-15cba9177a32
+    taskid: e0ac5263-2994-4f1c-846c-a0dbbca33259
     type: start
     task:
-      id: 1c667795-3bfd-4fd6-86af-15cba9177a32
+      id: e0ac5263-2994-4f1c-846c-a0dbbca33259
       version: -1
       name: ""
       iscommand: false
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 0dd71877-715f-45f9-8ddb-2b76807c16a7
+    taskid: 731cc972-64b9-427a-8d7e-6bee6a0dbc79
     type: regular
     task:
-      id: 0dd71877-715f-45f9-8ddb-2b76807c16a7
+      id: 731cc972-64b9-427a-8d7e-6bee6a0dbc79
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -58,44 +59,13 @@ tasks:
       }
     note: false
     timertriggers: []
-  "2":
-    id: "2"
-    taskid: f9120b76-27b7-466f-8aeb-ff2ade716c70
-    type: regular
-    task:
-      id: f9120b76-27b7-466f-8aeb-ff2ade716c70
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 8849727a-aba3-4e59-87cc-c306a591d560
+    taskid: 3b2e36b1-7707-453d-830f-8c84a354b75c
     type: regular
     task:
-      id: 8849727a-aba3-4e59-87cc-c306a591d560
+      id: 3b2e36b1-7707-453d-830f-8c84a354b75c
       version: -1
       name: List Risk Levels
       script: '|||symantec-site-list-risklevels'
@@ -115,20 +85,27 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: c754bf0f-8d3a-4904-817d-e1ea401a0da4
-    type: regular
+    taskid: 1c5a8f55-5a94-4b7d-824e-0d65e6354a77
+    type: condition
     task:
-      id: c754bf0f-8d3a-4904-817d-e1ea401a0da4
+      id: 1c5a8f55-5a94-4b7d-824e-0d65e6354a77
       version: -1
       name: Review Context
-      type: regular
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${SymantecSiteReview.RiskLevel}
     separatecontext: false
     view: |-
       {
@@ -139,48 +116,33 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 53f9cbbb-ab47-4763-8965-13600f84c44a
-    type: regular
+    taskid: 06b1c1e1-f4f6-464c-8f32-1056a33ad3d3
+    type: condition
     task:
-      id: 53f9cbbb-ab47-4763-8965-13600f84c44a
+      id: 06b1c1e1-f4f6-464c-8f32-1056a33ad3d3
       version: -1
       name: Review Context
-      type: regular
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: c38f6340-31ea-475b-8ede-14904e783b1e
-    type: regular
-    task:
-      id: c38f6340-31ea-475b-8ede-14904e783b1e
-      version: -1
-      name: Site Lookup
-      script: '|||symantec-site-lookup'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
     scriptarguments:
-      urls:
-        simple: www.demisto.com,www.symantec.com
+      left:
+        complex:
+          root: SymantecSiteReview
+          accessor: Site.URL
+      right:
+        simple: http://google.com/
+    results:
+    - AreValuesEqual
     separatecontext: false
     view: |-
       {
@@ -191,12 +153,44 @@ tasks:
       }
     note: false
     timertriggers: []
-  "7":
-    id: "7"
-    taskid: ef87de42-9ffe-40b5-84b0-48f5bd772a8d
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 055c404a-8d76-4e3b-8323-4f87dc82dc9b
     type: regular
     task:
-      id: ef87de42-9ffe-40b5-84b0-48f5bd772a8d
+      id: 055c404a-8d76-4e3b-8323-4f87dc82dc9b
+      version: -1
+      name: Site Lookup
+      script: '|||symantec-site-lookup'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: google.com
+      urls:
+        simple: www.demisto.com,www.symantec.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: fc507b69-9cda-4eba-872b-4c49dc619924
+    type: regular
+    task:
+      id: fc507b69-9cda-4eba-872b-4c49dc619924
       version: -1
       name: Close Investigation
       script: Builtin|||closeInvestigation
@@ -217,17 +211,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1115,
         "width": 380,
         "x": 50,
         "y": 50

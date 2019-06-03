@@ -1,0 +1,77 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Symantec Site Review
+  version: -1
+configuration:
+- defaultvalue: https://sitereview.bluecoat.com
+  display: API Server URL
+  name: url
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+description: Symantec Site Review (Bluecoat)
+display: Symantec Site Review
+name: Symantec Site Review
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: URLs to lookup. Can be a single value or comma separated list
+        of values.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Symantec WebPulse Site Review Request
+    execution: false
+    name: symantec-site-lookup
+    outputs:
+    - contextPath: SymantecSiteReview.Site.URL
+      description: URL of the checked site
+      type: string
+    - contextPath: SymantecSiteReview.Site.CategorizationID
+      description: Site Categorization Number
+      type: string
+    - contextPath: SymantecSiteReview.Site.CategorizationName
+      description: Site Categorization Name
+      type: string
+    - contextPath: SymantecSiteReview.Site.ResolvedIP
+      description: Site Resolved IP Address
+      type: string
+    - contextPath: SymantecSiteReview.Site.ThreatRiskLevel
+      description: Site Threat Risk Level
+      type: string
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: Indicator CheckPhish tested for
+      type: String
+  - deprecated: false
+    description: Threat Risk Level Descriptions
+    execution: false
+    name: symantec-site-list-risklevels
+    outputs:
+    - contextPath: SymantecSiteReview.RiskLevel
+      description: Threat Risk Levels
+      type: Unknown
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
