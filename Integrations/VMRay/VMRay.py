@@ -184,11 +184,12 @@ def build_job_data(data):
     """
 
     Args:
-        data:
+        data: any kind of object.
 
     Returns:
         list: list of jobs
     """
+
     def build_entry(entry_data):
         entry = dict()
         entry['JobID'] = entry_data.get('job_id')
@@ -749,6 +750,26 @@ def get_iocs(sample_id):
 
 
 def get_iocs_command():
+    def get_hashed(lst):
+        """
+
+        Args:
+            lst (List[dict]): list of hashes attributes
+
+        Returns:
+            List[dict]:list of hashes attributes in demisto's favor
+        """
+        hashes_dict = {
+            'MD5': 'md5_hash',
+            'SHA1': 'sha1_hash',
+            'SHA256': 'sha256_hash',
+            'SSDeep': 'ssdeep_hash'
+        }
+        return [
+            {k: hashes.get(v) for k, v in hashes_dict.items()}
+            for hashes in lst
+        ]
+
     sample_id = demisto.args().get('sample_id')
     check_id(sample_id)
     raw_response = get_iocs(sample_id)
@@ -757,118 +778,95 @@ def get_iocs_command():
     # Initialize counters
     iocs_size = 0
     iocs_size_table = dict()
+    iocs = dict()
 
     domains = data.get('domains')
-    domain_list = list()
     if domains:
         size = len(domains)
         iocs_size_table['Domain'] = size
         iocs_size += size
-
-        for domain in domains:
-            entry = dict()
-            entry['AnalysisID'] = domain.get('analysis_ids')
-            entry['Domain'] = domain.get('domain')
-            entry['ID'] = domain.get('id')
-            entry['Type'] = domain.get('type')
-            domain_list.append(entry)
+        iocs['Domain'] = [
+            {
+                'AnalysisID': domain.get('analysis_ids'),
+                'Domain': domain.get('domain'),
+                'ID': domain.get('id'),
+                'Type': domain.get('type'),
+            } for domain in domains
+        ]
 
     ips = data.get('ips')
-    ip_list = list()
     if ips:
         size = len(ips)
         iocs_size_table['IP'] = size
         iocs_size += size
-
-        for ip in ips:
-            entry = dict()
-            entry['AnalysisID'] = ip.get('analysis_ids')
-            entry['IP'] = ip.get('ip_address')
-            entry['ID'] = ip.get('id')
-            entry['Type'] = ip.get('type')
-            ip_list.append(entry)
+        iocs['IP'] = [
+            {
+                'AnalysisID': ip.get('analysis_ids'),
+                'IP': ip.get('ip_address'),
+                'ID': ip.get('id'),
+                'Type': ip.get('type')
+            } for ip in ips
+        ]
 
     mutexes = data.get('mutexes')
-    mutex_list = list()
     if mutexes:
         size = len(mutexes)
         iocs_size_table['Mutex'] = size
         iocs_size += size
-
-        for mutex in mutexes:
-            entry = dict()
-            entry['AnalysisID'] = mutex.get('analysis_ids')
-            entry['Name'] = mutex.get('mutex_name')
-            entry['Operation'] = mutex.get('operations')
-            entry['ID'] = mutex.get('id')
-            entry['Type'] = mutex.get('type')
-            mutex_list.append(entry)
+        iocs['Mutex'] = [{
+            'AnalysisID': mutex.get('analysis_ids'),
+            'Name': mutex.get('mutex_name'),
+            'Operation': mutex.get('operations'),
+            'ID': mutex.get('id'),
+            'Type': mutex.get('type')
+        } for mutex in mutexes
+        ]
 
     registry = data.get('registry')
-    registry_list = list()
     if registry:
         size = len(registry)
         iocs_size_table['Registry'] = size
         iocs_size += size
-
-        for reg in registry:
-            entry = dict()
-            entry['AnalysisID'] = reg.get('analysis_ids')
-            entry['Name'] = reg.get('reg_key_name')
-            entry['Operation'] = reg.get('operations')
-            entry['ID'] = reg.get('id')
-            entry['Type'] = reg.get('type')
-            registry_list.append(entry)
+        iocs['Registry'] = [
+            {
+                'AnalysisID': reg.get('analysis_ids'),
+                'Name': reg.get('reg_key_name'),
+                'Operation': reg.get('operations'),
+                'ID': reg.get('id'),
+                'Type': reg.get('type'),
+            } for reg in registry
+        ]
 
     urls = data.get('urls')
-    urls_list = list()
     if urls:
         size = len(urls)
         iocs_size_table['URL'] = size
         iocs_size += size
-        for url in urls:
-            entry = dict()
-            entry['AnalysisID'] = url.get('analysis_ids')
-            entry['URL'] = url.get('url')
-            entry['Operation'] = url.get('operations')
-            entry['ID'] = url.get('id')
-            entry['Type'] = url.get('type')
-            urls_list.append(entry)
+        iocs['URL'] = [
+            {
+                'AnalysisID': url.get('analysis_ids'),
+                'URL': url.get('url'),
+                'Operation': url.get('operations'),
+                'ID': url.get('id'),
+                'Type': url.get('type'),
+            } for url in urls
+        ]
 
     files = data.get('files')
-    files_list = list()
     if files:
-        for file_entry in files:
-            size = len(files)
-            iocs_size_table['File'] = size
-            iocs_size += size
-            entry = dict()
-            entry['AnalysisID'] = file_entry.get('analysis_ids')
-            entry['Filename'] = file_entry.get('filename')
-            entry['Operation'] = file_entry.get('operations')
-            entry['ID'] = file_entry.get('id')
-            hashes_list = list()
-            hashes = file_entry.get('hashes')
-            for hash_entry in hashes:
-                hashes_dict = dict()
-                hashes_dict['MD5'] = hash_entry.get('md5_hash')
-                hashes_dict['SHA1'] = hash_entry.get('sha1_hash')
-                hashes_dict['SSDeep'] = hash_entry.get('ssdeep_hash')
-                hashes_dict['SHA256'] = hash_entry.get('sha256_hash')
-                hashes_list.append(hashes_dict)
-
-            entry['Hashes'] = hashes_list
-            entry['Type'] = file_entry.get('type')
-            files_list.append(entry)
-
-    iocs = {
-        'URL': urls_list,
-        'Mutex': mutex_list,
-        'Domain': domain_list,
-        'Registry': registry_list,
-        'IP': ip_list,
-        'File': files_list
-    }
+        size = len(files)
+        iocs_size_table['File'] = size
+        iocs_size += size
+        iocs['File'] = [
+            {
+                'AnalysisID': file_entry.get('analysis_ids'),
+                'Filename': file_entry.get('filename'),
+                'Operation': file_entry.get('operations'),
+                'ID': file_entry.get('id'),
+                'Type': file_entry.get('type'),
+                'Hashes': get_hashed(file_entry.get('hashes'))
+            } for file_entry in files
+        ]
 
     entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(sample_id): iocs}
     if iocs_size:
