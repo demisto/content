@@ -11,6 +11,7 @@ tasks:
       id: e0ac5263-2994-4f1c-846c-a0dbbca33259
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -37,6 +38,7 @@ tasks:
       name: Delete Context
       scriptName: DeleteContext
       type: regular
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -68,6 +70,7 @@ tasks:
       id: 3b2e36b1-7707-453d-830f-8c84a354b75c
       version: -1
       name: List Risk Levels
+      description: ""
       script: '|||symantec-site-list-risklevels'
       type: regular
       iscommand: true
@@ -162,6 +165,7 @@ tasks:
       id: 055c404a-8d76-4e3b-8323-4f87dc82dc9b
       version: -1
       name: Site Lookup
+      description: ""
       script: '|||symantec-site-lookup'
       type: regular
       iscommand: true
@@ -195,6 +199,7 @@ tasks:
       name: Close Investigation
       script: Builtin|||closeInvestigation
       type: regular
+      description: ""
       iscommand: true
       brand: Builtin
     scriptarguments:
