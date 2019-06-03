@@ -4,7 +4,7 @@ commonfields:
 name: ThreatX
 display: ThreatX
 category: Network Security
-image: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABgAAAAAQAAAGAAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAJagAwAEAAAAAQAAABoAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJTQQlAAAAAAAQ1B2M2Y8AsgTpgAmY7PhCfv/AABEIABoAlgMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2wBDAAICAgICAgMCAgMFAwMDBQYFBQUFBggGBgYGBggJCAgICAgICQkJCQkJCQkLCwsLCwsNDQ0NDQ8PDw8PDw8PDw//2wBDAQICAgQEBAcEBAcQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/3QAEAAr/2gAMAwEAAhEDEQA/AOh+Ifg//gq5N4+8UXHg2810eH5dW1F9OEeq6NGi2BupTahUlDSAeRswHO4dCAeK+MPh9+0x+3T8VPHNn8N/AfxC13U/Ed+9xHDa/abCHc1qHab95Laqg2CNjy3OOM8V/VNKB5bfQ/yr+WD/AIJ6/wDJ9HhH/r78Rf8Aom7oA/Uc/Fv4ufsZfsn6l8T/ANpXxJe+Kvid4iaSPSdGu54Z1tZtrtDB/o6xxuIYwZ7uRcgAbEZsKW/Sj4b397qvw98MapqU7XN5e6XZTzSsAGkllgRnYgcAsxJwOK/nl/4K4arqN3+0fZ6NeXkjafZeFrLyYmc+XD9tnvftDKp+VWk8mMs2M/IueBir/hn/AIKF/tsaN4b0rSNK8LWUtlY2kEEDnwpqzlooo1VCWW5CtlQOQAD1FAHq3/BS/wDaW+PHwi+P6eGfhp431Hw5pa+FrO/+zWhhEZuXnv1Z2EkMhJKwoDgjgV7h+298bfi18OP2V/gz4x8D+LL/AEbW9ekslv723aPz7kPpE1w+8vG6ZaVAxOzr0xX4vftO/GX4ofHLxxP40+LlhFpuuxaKtisMOn3Gmr9lhNzJG3k3LySEl5ZBv3bTjAHynP6of8FFf+TMvgH/ANdbD/0xXNAHifweu/8Agp58d/Bq+Pfht411G/0V7m4tFln1bTrZzLbNskHlvZEgBuAc81DP+1z+3b+yX8TLXw58dZp9ejlRbh9L1b7LNHeWxfaZLK/tI4yrHBUFt4V8B41BDHc/Yz/4KI/CX9m74Mw/C3xd4d1zVNVTUtQvt+nixaIx3cplUAT3kMhZV+98mPQkV4x+1l+0bqP7cfxc8G6Z8KfBmor/AGRbzWlhZOsc+oXk91NDNIzrbPLHFEnkxruaQqmWaRkGMgH17+3/APtY/EfTG+Efi/4CeNNR0LQfG/h641VVtPKjM4ea18kyLNFJtdVlZSMAg8HpXhvgy5/4KtfEHwppXjfwdqHijU9D1u3S7srpNR0KNZoJBlHCSmORQw5w6K3qBXMft7/DrWPg74M/Z2+G+tSRz6r4a8IXFrctCS8X2mO5sjIEJALIJCQpwMgZxWj8Hv2yP22vA3wt8LeDvh/4LGo+GtGsIbXTrj/hE9VvfNtohtjf7RDMsU2R/GgCt1AoA+tf2YtB/wCCk1n8d/Cdz8cj4gPgVJbn+1Pt2oaPNb7DaTiLcloxmb/SPKwF78ngGv1D+OnxY0b4HfCTxN8U9dw0GgWbzRxZAa4uWwlvAmSMvNMyIo7k1+fn7G/7Uf7Wfxd+MZ8I/GfwkNH8ODSry6+0/wDCO6hpOLqF4FiTzruR423q8h2gZ+XNfPf/AAVz+O63eteHfgBo1wxg0pV13WViblpnDpY25AYBiFEswUgjeIj1xQB8Pw/tqfto20MXjQ+O9ZnsVv8AyFZ1tzpkt+kQuzacQK/llCGK7wRC33s9P3N+M/jr4vfHr9k3w78Rv2SLi6j8ReJJNMvYvsc9tBNFbO2LyJnuT5QaL5kZTk7l4BPFfPniX9iprP8A4JyQ/DKCySbx3pEJ8XFVC75NZObi5t1I2cPbs9mpP8GM5rzP/gkb8eVlj8Q/s+6zcmRNr6/oZbPMchUX0IyOMO8dwFJz++cAYQ0AfL/xd8ef8FLvgRotj4i+LHinX9B0/U7n7HbynUNKud84iebZtghdh+7jdskAcYznFfbP7BXxG/as+NngnxHY/Ea81O+8L62tymk+Lhc2YvNN1O0by5YGjTy3eFiFKZgIDK4YlXXGr/wWF/5Ip4E/7Gdv/TXfV6t/wSv/AOTTrP8A7Dut/wDpU1TOCknF9TSlVcJqcd1qfPXgP9oT49/CL42W/hD4uazqHiGOC9j0rULGYJJn7S6JFcWgSJGZmZ0kj5O+NiuN/A+k/wBs/wDaX1PwJ9n+GHw51F7HxHcCO61C7h2iSytiSYo0LqyiWcrk5B2xAk4LIa9T/aSuPhd8K57P9oDXNMivfGOlQSado0bEKLm7mBMRcYJP2ZTI3mcmONpMda/KT4RWGjfFv476Pb/FjVd1v4hv5J76eXP+m3J+dLUnJEa3DDyxk7VRRCOWXH5RmuLxOCvl0a3NOpLRt6xi+77v+tz+rOHMuyzO5Q4jrYNU6dCm+eMYrlqVI3btBaNRWvm2ovSLP1I/Y5074t6x4Ml+I3xX8Tajq66+FOl2l26gRWYwROypHH885+ZM9I8dCxFfZHkp6H/vtv8AGnQQQW8SQwKI44wFVVAAVQMAAdgBwBUuB61+lYHARpUY05Scmure5/NufZ9PG4yriowjBSekYpJJbJJJJaLd9Xq9Wf/Q/fiX/Vt9D/Kv5Xf+Cek1u37dXhJFmjLi88QjaHUtzBdkfLnPI56dK/qlIBBBryDw98J/hZ4c1y313w94N0bS9SgZzHdWunW0E6FwwYrIkauNwJBweQTmgD+f3/grfLDH+01KskiIz+ENOChmClj5mp8AE8n6V/RH8KOfhd4POc/8SbT/AP0mjrH8YfCn4X+MdYfWPF3g/Rtcv5IEt2uL7T7e5mMKFysZeWNmKKXchc4G44HJr0nTLa3s9PtrOziSCCCNI4441CoiKAFVVHAAAwAOAKAP5rf+CvM8EX7TqJNKiM/guxChnClj9p1PhQTknntX0n/wUXkjT9jD4BvI6oglsPmZgq86HcdzxX68eMfhf8NPGOtf2p4u8JaRrl75CQ+ffWFvcy+UpYhN8qM2wFmIXOASfU1b8RfD/wAB+JdF0vRPEfhvTdV07S8G0truzhnhtysZjUxRyIyxkRkoNoGFJHTigD8t/wBgb9nj4OfG79jO807xv4Z0++utX1TWrX+0xbxG/hVZyIZILnaZEaHAaMhsDA7V8D/Dvx18QP8Agmx+1DqHhfxgkeoadMLe21RFVYhqmjvI5hvrINyJUy8iRqSN4lt2z+7cf0veDvC3hnwfpP8AY/hLSLPRLDzZJfs9jbx20PmSHLvsiVV3MeWOMk9awfG/w6+H3jS/tL3xj4Y0vXbi1ikjhkv7KC6eNHKsyo0qMVUkAkDgkA0AfkD/AMFSvCeo/Erwl8O/2lPAE0Gu+B9PsZYZ7u2fcI49Qmt5ra4J6CBzGY2fP7t2XcNpJXzb4Ef8FXPCnwe+Dfg34WXngG41Wbwtplvp73UesWcSTmBdu9UYblDYyAeRX7oaL4G8FaZ4NuPBum+H9PtPD85nWTTobSGOzcXBLzBoFQRkSszM+V+Ykk5JNcJ/won4IZ/5J54d/wDBTZ//ABqgDxD4BftuaT8aPhN42+N+t+FZvB3g/wAFJIZLq4vI7o3TQQ+fOIvKQKRGpRchmJdimAVNfgh8P/hz8V/29fj54mvdFvLO11zWDda7f3N27yWtkm+KOKBmgXcGRTHBCMKWETN2Nf1F2/w88AW3giTwVb+GdMi8PTSs76atlAtk7vJ5rM0ATyiWk+ckrktz15qfwR8O/h/4Kvbu88G+GdM0Ge8jSOeSwsoLV5UjLMiu0SKWClmKg5AJOOpoA/DA/wDBKH9qg5B+JejnP/T9rH/xdfG2veHfiL+wB+0xoMviS5s59Y8LNZ6vE9nIVgv9PuBLHNHEJcSfvIhPCVxxIFOcYr+uCvNPG3w5+HvjPUrbUPGHhfS9duraJoopb+ygupI4y24qrSoxVS3OAcZ5oA/LX/gq14o0Pxn+zb8LvGHh68iutI1rXY7y1uA6+W8E+k3ro27O3BVhzmvov/gnNouo/Df9j7SdU8cR/wBj2t5c6prSPcEJt0+6maaKdwcFFeLEgDYO0jIBOK+r7/4X/DTVvC+meE9V8JaRe6HpTubOwmsLeS0tiVdP3MLRmOP5HZflUcMR0Jrste0jSdU0GXRdSsoLvT5tsT200ayQtGCMK0bAqVGBwRiscTUcKcpromdGDoqpWhTezaX3s/GDxT4i8R/tsftAWei6BM9voMe+KyIHNlpKFDcXkinIE852lQwyGMSEfLJn1L9s39mzSvAGmaV8Svh3ZfY9HsYrew1KGI7fs/k8W17uGCGLYSVxyG2SZG1jX6aeEfBvhDwzeXVz4b0Ox0ma4RUle0tYoGdVJIDGNVJAJJAPc11OuafYarpN1puqW0V5Z3UbRzQzIskciMCCrowKsp7ggg18DS4cp18HWrV5c1Sbb5raq21j95xvidXwGbYPD4CnyYeilH2d78ylbmbdlq9LO2jV9bu/yx+yH8f1+Mfgc6N4guVk8W+HEjhvjlQbuIjEd2qg8eZgrIP4ZAw6FSfrvP8Anj/GvJdO+H3gLRLn7do3hrTLC5ZDGZbezhicoxBK7kQHaSqkjoSB6Ctz+ydL/wCfOH/v2v8AhXrZfm9anRjCp7zS32v+Z8bxJkGErY6rVw8fZwk7qOjSvulotL7K2i06H//Z
+image: data:image/jpeg;base64,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
 description: The ThreatX integration allows automated enforcement and intel gathering
   actions.
 detaileddescription: |-
@@ -17,15 +17,15 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: ThreatX Server URL (e.g., https://provision.threatx.io)
+  name: url
+  defaultvalue: https://provision.threatx.io
+  type: 0
+  required: true
 - display: API Key
   name: api_key
   defaultvalue: ""
   type: 4
-  required: true
-- display: URL
-  name: url
-  defaultvalue: https://provision.threatx.io
-  type: 0
   required: true
 - display: DBot Score Threshold
   name: dbot_threshold
@@ -37,7 +37,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -202,7 +202,7 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id == obj.Id)': ip
+            'IP.Address(val.Id === obj.Id)': ip
         }
 
         return_outputs(md, ec, results)
@@ -227,7 +227,7 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id == obj.Id)': ip
+            'IP.Address(val.Id === obj.Id)': ip
         }
 
         return_outputs(md, ec, results)
@@ -256,7 +256,7 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id == obj.Id)': ip
+            'IP.Address(val.Id === obj.Id)': ip
         }
 
         return_outputs(md, ec, results)
@@ -281,7 +281,7 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id == obj.Id)': ip
+            'IP.Address(val.Id === obj.Id)': ip
         }
 
         return_outputs(md, ec, results)
@@ -310,7 +310,7 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id == obj.Id)': ip
+            'IP.Address(val.Id === obj.Id)': ip
         }
 
         return_outputs(md, ec, results)
@@ -335,7 +335,7 @@ script:
                              removeNull=True)
 
         ec = {
-            'IP.Address(val.Id == obj.Id)': ip
+            'IP.Address(val.Id === obj.Id)': ip
         }
 
         return_outputs(md, ec, results)
@@ -437,8 +437,8 @@ script:
 
                     if dbscore == 3:
                         ip_enrich.append({
+                            'Address': ipdot,
                             'Malicious': {
-                                'Data': ipdot,
                                 'Vendor': 'ThreatX',
                                 'Description': 'ThreatX risk score is ' + str(e_risk)
                             }
@@ -452,7 +452,7 @@ script:
                        })
 
             ec = {
-                'Threatx.Entity(val.ID && val.ID == obj.ID)': {
+                'Threatx.Entity(val.ID && val.ID === obj.ID)': {
                     'ID': entity['id'],
                     'Name': entity['codename'],
                     'IP': iplist,
@@ -464,7 +464,7 @@ script:
 
             output.append({
                 'Type': entryTypes['note'],
-                "HumanReadable": tableToMarkdown('Entities', md),
+                'HumanReadable': tableToMarkdown('Entities', md),
                 'ContentsFormat': formats['json'],
                 'Contents': entity,
                 'EntryContext': ec})
@@ -501,7 +501,7 @@ script:
                              headerTransform=string_to_table_header)
 
         ec = {
-            'Threatx.Entity(val.ID && val.ID == obj.ID)': {
+            'Threatx.Entity(val.ID && val.ID === obj.ID)': {
                 'ID': entity_id,
                 'Note': sorted_results
             }
@@ -553,10 +553,10 @@ script:
             return_error('Unable to parse the List Users response.')
 
     ''' EXECUTION CODE '''
-    handle_proxy()
-    initialize()
     demisto.info('command is %s' % (demisto.command(),))
     try:
+        handle_proxy()
+        initialize()
         if demisto.command() == 'test-module':
             test_module_command()
         elif demisto.command() == 'threatx-block-ip':
@@ -579,7 +579,7 @@ script:
             add_entity_note_command()
 
     except Exception as e:
-        return_error(e.message)
+        return_error(str(e))
   type: python
   commands:
   - name: threatx-block-ip
