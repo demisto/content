@@ -70,7 +70,7 @@ tasks:
       version: -1
       name: AlienVault !url
       description: Query url in AlienVault OTX
-      script: '|||url'
+      script: 'AlienVault OTX|||url'
       type: regular
       iscommand: true
       brand: ""
@@ -85,19 +85,6 @@ tasks:
       threshold: {}
       url:
         simple: https://social.technet.microsoft.com/Forums/en-US/4bd3093f-8e2d-42df-bc64-330788d18801/to-test-ms-ata?forum=mata
-      using:
-        complex:
-          root: modules
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: modules.name
-                iscontext: true
-              right:
-                value:
-                  simple: AlienVault
-          accessor: name
       wait: {}
     separatecontext: false
     view: |-
@@ -119,7 +106,7 @@ tasks:
       version: -1
       name: AlienVault !ip
       description: Check IP Reputation
-      script: '|||ip'
+      script: 'AlienVault OTX|||ip'
       type: regular
       iscommand: true
       brand: ""
@@ -134,19 +121,6 @@ tasks:
       retries: {}
       sampleSize: {}
       threshold: {}
-      using:
-        complex:
-          root: modules
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: modules.name
-                iscontext: true
-              right:
-                value:
-                  simple: AlienVault
-          accessor: name
       wait: {}
     separatecontext: false
     view: |-
@@ -168,7 +142,7 @@ tasks:
       version: -1
       name: AlienVault !ipv6
       description: Query IP in AlienVault OTX
-      script: '|||ipv6'
+      script: 'AlienVault OTX|||ipv6'
       type: regular
       iscommand: true
       brand: ""
@@ -178,19 +152,6 @@ tasks:
     scriptarguments:
       ip:
         simple: 2603:10b6:0:54::19
-      using:
-        complex:
-          root: modules
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: modules.name
-                iscontext: true
-              right:
-                value:
-                  simple: AlienVault
-          accessor: name
     separatecontext: false
     view: |-
       {
@@ -211,7 +172,7 @@ tasks:
       version: -1
       name: AlienVault domain
       description: Check domain reputation
-      script: '|||domain'
+      script: 'AlienVault OTX|||domain'
       type: regular
       iscommand: true
       brand: ""
@@ -223,19 +184,6 @@ tasks:
       retries: {}
       sampleSize: {}
       threshold: {}
-      using:
-        complex:
-          root: modules
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: modules.name
-                iscontext: true
-              right:
-                value:
-                  simple: AlienVault
-          accessor: name
       wait: {}
     separatecontext: false
     view: |-
