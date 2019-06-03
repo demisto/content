@@ -280,6 +280,7 @@ class MITMProxy:
         if not log_file_exists:
             self.stop()
             raise Exception("Proxy process took to long to go up.")
+        print('Proxy process up and running. Took {} seconds'.format(seconds_since_init))
 
     def stop(self):
         if not self.process:
