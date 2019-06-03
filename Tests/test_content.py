@@ -172,7 +172,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
             return
 
         else:
-            print("Test failed with mock, recording new mock file.")
+            print("Test failed with mock, recording new mock file. (Mock: Recording)")
             rerecord = True
     else:
         print(start_message + ' (Mock: Recording)')
