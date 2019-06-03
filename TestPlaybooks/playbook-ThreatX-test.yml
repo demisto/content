@@ -1,0 +1,465 @@
+id: 29908122-9b80-4aad-8bd9-735c9250fcfd
+version: 11
+name: ThreatX-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5867e753-76e3-4c88-8df6-f11cbec13ca6
+    type: start
+    task:
+      id: 5867e753-76e3-4c88-8df6-f11cbec13ca6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6b26a423-234a-42b9-810f-113db6cf5274
+    type: regular
+    task:
+      id: 6b26a423-234a-42b9-810f-113db6cf5274
+      version: -1
+      name: threatx-block-ip
+      description: Temporarily block an IP or CIDR
+      script: ThreatX|||threatx-block-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1e75360c-3d54-42bf-8ffb-43dd58395615
+    type: regular
+    task:
+      id: 1e75360c-3d54-42bf-8ffb-43dd58395615
+      version: -1
+      name: threatx-unblock-ip
+      description: Unblock a blocked IP or CIDR
+      script: ThreatX|||threatx-unblock-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 5135f6c8-8861-4d88-8fe3-921fcf3483b5
+    type: regular
+    task:
+      id: 5135f6c8-8861-4d88-8fe3-921fcf3483b5
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: de8db4b8-b48d-4b7c-8559-211f67d43053
+    type: regular
+    task:
+      id: de8db4b8-b48d-4b7c-8559-211f67d43053
+      version: -1
+      name: threatx-blacklist-ip
+      description: Add an IP or CIDR to the Blacklist
+      script: ThreatX|||threatx-blacklist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 97667f43-53b1-459f-8da8-9756310c9e80
+    type: regular
+    task:
+      id: 97667f43-53b1-459f-8da8-9756310c9e80
+      version: -1
+      name: threatx-whitelist-ip
+      description: Add an IP or CIDR to the Whitelist
+      script: ThreatX|||threatx-whitelist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 63a527d9-8d08-448e-8ab6-172678c2b745
+    type: regular
+    task:
+      id: 63a527d9-8d08-448e-8ab6-172678c2b745
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 152adf71-66b3-49df-8872-251c19519435
+    type: regular
+    task:
+      id: 152adf71-66b3-49df-8872-251c19519435
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: a7a2e65c-73e2-40cd-82ef-beca7bc3da29
+    type: regular
+    task:
+      id: a7a2e65c-73e2-40cd-82ef-beca7bc3da29
+      version: -1
+      name: threatx-unblacklist-ip
+      description: Remove an IP or CIDR from the Blacklist
+      script: ThreatX|||threatx-unblacklist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 081af0ae-0e9c-4371-8380-0aeaf9a252ff
+    type: regular
+    task:
+      id: 081af0ae-0e9c-4371-8380-0aeaf9a252ff
+      version: -1
+      name: threatx-add-entity-note
+      description: 'Add a new note to the Entity. Example: !threatx-add-entity-note
+        entity_id=566056709695514809 message="test note"'
+      script: ThreatX|||threatx-add-entity-note
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entity_id:
+        simple: "566056709675514809"
+      message:
+        simple: Demisto test playbook note
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9832c90a-681f-4b54-86ae-0d44905b85f4
+    type: regular
+    task:
+      id: 9832c90a-681f-4b54-86ae-0d44905b85f4
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 643ac58e-7fec-409b-897a-ef0121aea284
+    type: regular
+    task:
+      id: 643ac58e-7fec-409b-897a-ef0121aea284
+      version: -1
+      name: threatx-get-entity-notes
+      description: Get the notes attached to an Entity by Entity ID
+      script: ThreatX|||threatx-get-entity-notes
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entity_id:
+        simple: "566056709675514809"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 374bd2c9-bc28-45d9-8356-9c08c95006c4
+    type: regular
+    task:
+      id: 374bd2c9-bc28-45d9-8356-9c08c95006c4
+      version: -1
+      name: threatx-get-entities
+      description: 'Get high-level Entity information via the Entity ID, Entity Name,
+        or Entity IP. Example: !threatx-get-entities entity_name=CynicalGraaf,MJ12Bot
+        entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14'
+      script: ThreatX|||threatx-get-entities
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    scriptarguments:
+      entity_id:
+        simple: ${Threatx.Entity.ID}
+      entity_ip: {}
+      entity_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: afa30851-22c1-4484-82a2-13a22f889e9d
+    type: regular
+    task:
+      id: afa30851-22c1-4484-82a2-13a22f889e9d
+      version: -1
+      name: threatx-unwhitelist-ip
+      description: Remove an IP or CIDR from the Whitelist
+      script: ThreatX|||threatx-unwhitelist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    scriptarguments:
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 216215d5-8578-4090-8a8a-79d6e58030f3
+    type: regular
+    task:
+      id: 216215d5-8578-4090-8a8a-79d6e58030f3
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 1700,
+        "x": 10,
+        "y": 60
+      }
+    }
+  }
+inputs: []
+outputs: []
