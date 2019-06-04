@@ -694,6 +694,8 @@ script:
     - contextPath: Threatx.Entity.IP
       description: IP address of the Entity
       type: string
+    - contextPath: Threatx.Entity.Risk
+      description: Risk score of the Entity
     description: 'Get high-level Entity information via the Entity ID, Entity Name,
       or Entity IP. Example: !threatx-get-entities entity_name=CynicalGraaf,MJ12Bot
       entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14'
@@ -708,6 +710,12 @@ script:
       type: number
     - contextPath: Threatx.Entity.ID
       description: ID hash of the Entity
+    - contextPath: Threatx.Entity.Note.content
+      description: Content of the Note
+    - contextPath: Threatx.Entity.Note.timestamp
+      description: Timestamp of the Note
+    - contextPath: Threatx.Entity.Note.username
+      description: Author of the Note
     description: Get the notes attached to an Entity by Entity ID
   - name: threatx-add-entity-note
     arguments:
