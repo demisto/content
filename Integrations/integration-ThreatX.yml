@@ -208,9 +208,9 @@ script:
                              removeNull=True)
 
         ec = {
-                'IP(val.Address === obj.Address)': {
-                    'Address': ip
-                }
+            'IP(val.Address === obj.Address)': {
+                'Address': ip
+            }
         }
 
         return_outputs(md, ec, results)
@@ -235,9 +235,9 @@ script:
                              removeNull=True)
 
         ec = {
-                'IP(val.Address === obj.Address)': {
-                    'Address': ip
-                }
+            'IP(val.Address === obj.Address)': {
+                'Address': ip
+            }
         }
 
         return_outputs(md, ec, results)
@@ -266,9 +266,9 @@ script:
                              removeNull=True)
 
         ec = {
-                'IP(val.Address === obj.Address)': {
-                    'Address': ip
-                }
+            'IP(val.Address === obj.Address)': {
+                'Address': ip
+            }
         }
 
         return_outputs(md, ec, results)
@@ -293,9 +293,9 @@ script:
                              removeNull=True)
 
         ec = {
-                'IP(val.Address === obj.Address)': {
-                    'Address': ip
-                }
+            'IP(val.Address === obj.Address)': {
+                'Address': ip
+            }
         }
 
         return_outputs(md, ec, results)
@@ -324,9 +324,9 @@ script:
                              removeNull=True)
 
         ec = {
-                'IP(val.Address === obj.Address)': {
-                    'Address': ip
-                }
+            'IP(val.Address === obj.Address)': {
+                'Address': ip
+            }
         }
 
         return_outputs(md, ec, results)
@@ -351,9 +351,9 @@ script:
                              removeNull=True)
 
         ec = {
-                'IP(val.Address === obj.Address)': {
-                    'Address': ip
-                }
+            'IP(val.Address === obj.Address)': {
+                'Address': ip
+            }
         }
 
         return_outputs(md, ec, results)
@@ -423,13 +423,11 @@ script:
 
             if 'actors' in entity:
                 for actor in entity['actors']:
-                    # Convert decimal IP to dotted quad
                     if 'ip_address' in actor:
                         ipdot = pretty_ip(actor['ip_address'])
                         iplist.append(ipdot)
                         actor['ip_address'] = ipdot
 
-                    # Convert interval_time_start, interval_time_stop, fingerprint.last_seen to pretty time format
                     try:
                         actor['interval_time_start'] = pretty_time(actor['interval_time_start'])
                     except:
@@ -445,7 +443,6 @@ script:
                     except:
                         pass
 
-                    # Set Dbot score
                     dbscore = set_dbot_score(risk_score)
 
                     dbot_scores.append({
