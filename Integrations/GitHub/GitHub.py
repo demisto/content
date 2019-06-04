@@ -17,16 +17,18 @@ OWNER = demisto.params().get('owner')
 REPO = demisto.params().get('repository')
 BASE_URL = 'https://api.github.com'
 FETCH_INTERVAL = demisto.params()['fetch_interval']
-SUFFIX = {'list': '/repos/{}/{}/issues'.format(OWNER, REPO),
-          'create': '/repos/{}/{}/issues'.format(OWNER, REPO),
-          'close': '/repos/{}/{}/issues/'.format(OWNER, REPO,),
-          'update': '/repos/{}/{}/issues/'.format(OWNER, REPO),
-          'search': '/repos/{}/{}/issues/'.format(OWNER, REPO),
-          'download_count': '/repos/{}/{}/releases'.format(OWNER, REPO)
+SUFFIX = {
+    'list': '/repos/{}/{}/issues'.format(OWNER, REPO),
+    'create': '/repos/{}/{}/issues'.format(OWNER, REPO),
+    'close': '/repos/{}/{}/issues/'.format(OWNER, REPO,),
+    'update': '/repos/{}/{}/issues/'.format(OWNER, REPO),
+    'search': '/repos/{}/{}/issues/'.format(OWNER, REPO),
+    'download_count': '/repos/{}/{}/releases'.format(OWNER, REPO)
           }
-HEADERS = {'Content-Type': 'application/json',
-           'Accept': 'application/vnd.github.v3+json',
-           'Authorization': 'Bearer ' + API_KEY
+HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': 'Bearer ' + API_KEY
            }
 
 ''' HELPER FUNCTIONS '''
@@ -112,7 +114,7 @@ def List_all_issues(show_all):
     if show_all == 'false':
         res = http_request('GET', suffix)
     else:
-        res = http_request('GET', suffix, None, {'state': 'all'})  # include close issues
+        res = http_request('GET', suffix, params={'state': 'all'})  # include close issues
 
     return res
 
@@ -136,11 +138,11 @@ def List_all_issues_command():
 
 def create_or_update_issue(command):
     args = demisto.args()
-    for key in args.keys():
-        if key == 'labels':
-            args['labels'] = args['labels'].split(',')
-        if key == 'assignees':
-            args['assignees'] = args['assignees'].split(',')
+    if 'labels' in args.keys():
+        args['labels'] = args['labels'].split(',')
+    if 'assignees' in args.keys():
+        args['assignees'] = args['assignees'].split(',')
+
     args = json.dumps(args)
     if command == 'create':
         suffix = SUFFIX['create']
@@ -168,7 +170,7 @@ def close_issue():
     suffix = SUFFIX['close'] + demisto.args()['issue_id']
     data = {"state": "close"}
     data = json.dumps(data)
-    res = http_request('PATCH', suffix, data, params='close')
+    res = http_request('PATCH', suffix, data)
     return res
 
 
