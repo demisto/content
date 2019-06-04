@@ -25,7 +25,7 @@ def main():
     if not demisto.args().get('encoding'):
         char_enc = get_file_encoding(file_path)
     else:
-        demisto.args().get('encoding')
+        char_enc = demisto.args().get('encoding')
     with open(file_path, 'r') as f:
         data = f.read(max_file_size)
         try:
