@@ -1,0 +1,288 @@
+id: DBot_Train_URL_Classifier_Test
+version: -1
+name: DBot Train URL Classifier Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a537b59e-df01-4331-8bfa-140db8e500cb
+    type: start
+    task:
+      id: a537b59e-df01-4331-8bfa-140db8e500cb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 29a2c48e-1968-4a80-8939-7ffc9d5dc39a
+    type: regular
+    task:
+      id: 29a2c48e-1968-4a80-8939-7ffc9d5dc39a
+      version: -1
+      name: Create URLs
+      scriptName: createURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d7dd41fa-97ee-40ed-83a2-4c08bb4e2a0d
+    type: playbook
+    task:
+      id: d7dd41fa-97ee-40ed-83a2-4c08bb4e2a0d
+      version: -1
+      name: DBot Train URL Classifier
+      description: Create a machine learning URL classifier based on URL indicators
+        score in Demisto.
+      playbookName: DBot Train URL Classifier
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicatorsQuery:
+        simple: (reputation:Bad or reputation:Good) and type:URL and created:>="7
+          days ago"
+      maxIndicators:
+        simple: "10000"
+      modelAccuracyThreshold:
+        simple: "0"
+      modelName:
+        simple: url_test
+      overrideModel:
+        simple: "true"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d624767b-a881-45eb-8dd6-d645179be09a
+    type: regular
+    task:
+      id: d624767b-a881-45eb-8dd6-d645179be09a
+      version: -1
+      name: Predict URL
+      scriptName: DBotPredictURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      input:
+        simple: www.google.com/?q=Should+be+ok
+      modelName:
+        simple: url_test
+      threshold:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: dfa028ed-b056-409e-8d36-37a2e640d86f
+    type: condition
+    task:
+      id: dfa028ed-b056-409e-8d36-37a2e640d86f
+      version: -1
+      name: Validate prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+      yes2:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: DBotPredictURL.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictURL.Label
+            iscontext: true
+          right:
+            value:
+              simple: valid
+    - label: yes2
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: DBotPredictURL.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictURL.Label
+            iscontext: true
+          right:
+            value:
+              simple: malicious
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: bf2726f7-dbcb-45ae-8c08-5ca509b87d25
+    type: title
+    task:
+      id: bf2726f7-dbcb-45ae-8c08-5ca509b87d25
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 137d4271-1107-40b7-8295-a252204104fe
+    type: regular
+    task:
+      id: 137d4271-1107-40b7-8295-a252204104fe
+      version: -1
+      name: Verify Human Readable
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: Similar to other
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 3e402fce-fe10-4739-8e34-a31c3dc8ce49
+    type: title
+    task:
+      id: 3e402fce-fe10-4739-8e34-a31c3dc8ce49
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+Tests:
+  - DBot_Train_URL_Classifier

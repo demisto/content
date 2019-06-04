@@ -1,0 +1,48 @@
+args:
+- default: false
+  description: URL value
+  isArray: false
+  name: input
+  required: true
+  secret: false
+- default: false
+  defaultValue: '0.8'
+  description: Consider only results above this probability score
+  isArray: false
+  name: threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: url
+  description: The URL model name
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+comment: Predict URL using URL classifcation model.
+commonfields:
+  id: 58168aae-647f-477e-b98a-812fd13f6a0d
+  version: -1
+enabled: false
+name: DBotPredictURL
+outputs:
+- contextPath: DBotPredictURL.URL
+  description: The predicted URL
+  type: String
+- contextPath: DBotPredictURL.Probability
+  description: The prediction probability (0-1)
+  type: Unknown
+- contextPath: DBotPredictURL.Label
+  description: 'The prediction label: valid \ malicious'
+  type: Unknown
+script: '-'
+system: false
+tags:
+- reputation
+- ml
+timeout: '0'
+type: python
+dockerimage: demisto/dl:1.3
+tests:
+- DBot_Train_URL_Classifier
+fromversion: 4.1.0

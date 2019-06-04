@@ -1,0 +1,32 @@
+args:
+- default: false
+  defaultValue: '10000'
+  description: Maximum number of indicators
+  isArray: false
+  name: maxIndicators
+  required: false
+  secret: false
+- default: false
+  defaultValue: (reputation:Bad or reputation:Good) and type:URL
+  description: Fetch indicators using this query
+  isArray: false
+  name: query
+  required: false
+  secret: false
+comment: Prepare URL data file for training
+commonfields:
+  id: a3a4bfcd-3281-4d22-8869-5924e15e6a8c
+  version: -1
+enabled: false
+name: DBotPrepareURLData
+outputs:
+- contextPath: DBotURLFileName
+  description: Ouput file name of the URL data (json)
+  type: String
+script: '-'
+system: false
+timeout: '0'
+tags: []
+type: python
+tests:
+  - DBot_Train_URL_Classifier

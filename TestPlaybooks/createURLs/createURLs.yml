@@ -1,0 +1,10 @@
+comment: Create good and bad URLs
+commonfields:
+  id: 2f16db73-325c-4197-9139-ad66919fb469
+  version: -1
+enabled: false
+name: createURLs
+script: '-'
+system: false
+timeout: '0'
+type: python
