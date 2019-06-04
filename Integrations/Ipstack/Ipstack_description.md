@@ -1,9 +1,7 @@
-Integration with Ipstack to get location data on IPs
+To configure an instance of the ipstack integration, you need your ipstack API Key.
 
-## Configuration Parameters
-
-**api_key**  
-api key to authenticate against ipstack
-
-To get Your API Key, go to Ipstack.com
-After you login, under the dashboard tab You will find Your API Key.
+## How to Get Your API Key
+1. Go to ipstack.com
+2. Log in using your ipstack credentials.
+3. Click the **Dashboard** tab.
+4. Locate and copy your API Key.
