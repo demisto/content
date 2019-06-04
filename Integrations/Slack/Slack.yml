@@ -27,12 +27,81 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '1'
+  display: Minimum incident severity to send messages to slack by (1-4, 1 is lowest)
+  name: min_severity
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  required: false
+  type: 16
+- defaultvalue: View it on
+  display: General footer to display in Slack messages with links
+  name: General link footer
+  required: false
+  type: 0
+- defaultvalue: View it on
+  display: Footer to display in Slack messages with links
+  name: Link footer
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack Team.
 display: Slack
 name: Slack
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The type of mirroring can be "all" to mirror everything, "chat"
+        to mirror only chatting but not commands, or "none" to stop mirroring.
+      isArray: false
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'Should we auto-close the channel when the incident is closed. '
+      isArray: false
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: both
+      description: The mirroring direction - Slack to Demisto, Demisto to Slack or
+        both
+      isArray: false
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: group
+      description: Mirror the incident to a group or a channel.
+      isArray: false
+      name: mirrorTo
+      predefined:
+      - channel
+      - group
+      required: false
+      secret: false
+    deprecated: false
     description: Mirror the investigation in slack
     execution: false
     name: slack-mirror-investigation
@@ -43,6 +112,55 @@ script:
   - deprecated: false
     execution: false
     name: add_entry
+  - arguments:
+    - default: true
+      description: The text content of the message
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: Send a direct message by specifying a Slack user name
+      isArray: false
+      name: to
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Send a message to a specified channel.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: false
+      description: Send a message to a specified group.
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: Send a link to an entry to Slack.
+      isArray: false
+      name: entry
+      required: false
+      secret: false
+    - default: false
+      description: Do not add URL back to the Demisto management console.
+      isArray: false
+      name: IgnoreAddURL
+      required: false
+      secret: false
+    - default: false
+      description: Specify a thread id, to send a reply to another message.
+      isArray: false
+      name: threadID
+      required: false
+      secret: false
+    deprecated: false
+    description: Send a message to a slack user, group or channel.
+    execution: false
+    name: slack-send
   dockerimage: devtesting/slack:1.0.0.1558884736
   isfetch: false
   longRunning: true
