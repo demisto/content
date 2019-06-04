@@ -29,4 +29,4 @@ timeout: '0'
 tags: []
 type: python
 tests:
-  - DBot_Train_URL_Classifier
+  - DBot_Train_URL_Classifier_Test

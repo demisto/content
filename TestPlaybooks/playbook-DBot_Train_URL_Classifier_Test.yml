@@ -285,4 +285,4 @@ view: |-
 inputs: []
 outputs: []
 Tests:
-  - DBot_Train_URL_Classifier
+  - DBot_Train_URL_Classifier_Test

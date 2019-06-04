@@ -204,4 +204,4 @@ outputs:
   type: Number
 fromversion: 4.1.0
 tests:
-  - DBot_Train_URL_Classifier
+  - DBot_Train_URL_Classifier_Test
