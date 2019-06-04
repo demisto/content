@@ -337,8 +337,9 @@ script: |-
   def test_camelize():
       assert str(camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_')) == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
       assert str(camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_')) == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
-      demisto.results("Camelize test finished successfuly!")
 
+  def test_replace_in_keys():
+      assert str(replace_in_keys({'a.b': 'c', 'd.e': 'f'})) == "{u'a_b': 'c', u'd_e': 'f'}"
 
   def test_date_to_timestamp():
       assert date_to_timestamp('2018-11-06T08:56:41') == 1541494601000
@@ -413,6 +414,7 @@ script: |-
       'TBLMD' : test_tbl_to_md,
       'HASH'  : test_hash_djb2,
       'CAMELIZE': test_camelize,
+      'REPLACE_IN_KEYS': test_replace_in_keys,
       'DATE_TO_TIMESTAMP': test_date_to_timestamp,
       'PASCAL_TO_SPACE' : test_pascalToSpace,
       'ARG_TO_LIST': test_argToList,
@@ -523,6 +525,7 @@ args:
   - FLTNCL
   - HASH
   - CAMELIZE
+  - REPLACE_IN_KEYS
   - DATE_TO_TIMESTAMP
   - PASCAL_TO_SPACE
   - RETURN_OUTPUTS

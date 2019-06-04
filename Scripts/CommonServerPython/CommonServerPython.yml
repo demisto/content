@@ -12,6 +12,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Logger support for Python3."
+releaseNotes: "Camelize support for Python3. Fixed bug in Camelize function."
 tests:
   - TestCommonPython
