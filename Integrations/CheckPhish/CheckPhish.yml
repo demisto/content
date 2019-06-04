@@ -12,8 +12,8 @@ configuration:
   name: token
   required: true
   type: 4
-- display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default value:
-    clean)'
+- display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is
+    "clean")'
   name: good_disp
   options:
   - adult
@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 16
 - display: 'Suspicious Dispositions (CheckPhish labels for suspicious phishing URLs.
-    Default value: suspicious)'
+    Default is "suspicious")'
   name: susp_disp
   options:
   - adult
@@ -44,8 +44,8 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Bad Dispositions (CheckPhish labels for phishing URLs. Default value:
-    likely_phish, phish)'
+- display: 'Bad Dispositions (CheckPhish labels for phishing URLs. Defaults are 
+    "likely_phish", "phish")'
   name: bad_disp
   options:
   - adult
@@ -68,58 +68,58 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Check any URL to detect scams
+description: Check any URL to detect supsicious behavior.
 display: CheckPhish
 name: CheckPhish
 script:
   commands:
   - arguments:
     - default: false
-      description: Enter url(s) that you wish to check
+      description: A CSV list of URLs to check.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Get the results of the check in CheckPhish
+    description: Checks URLs in CheckPhish and returns the results.
     execution: false
     name: CheckPhish-check-urls
     outputs:
     - contextPath: CheckPhish.URL.url
-      description: URL submitted
+      description: URL that was submitted.
       type: String
     - contextPath: CheckPhish.URL.status
-      description: CheckPhish job status
+      description: CheckPhish job status.
       type: String
     - contextPath: CheckPhish.URL.jobID
-      description: CheckPhish jobID recieved when submitted
+      description: CheckPhish jobID recieved when submitted.
       type: String
     - contextPath: CheckPhish.URL.disposition
-      description: The category of the URL according ot CheckPhish
+      description: The category of the URL, according to CheckPhish.
       type: String
     - contextPath: CheckPhish.URL.brand
-      description: The brand countered by the URL
+      description: The brand countered by the URL.
       type: String
     - contextPath: DBotScore.Score
-      description: Score retrieved for Dbot
+      description: DBot score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Type of indicator tested for
+      description: Indicator type that was tested.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor who provided DBot Score
+      description: Vendor that provided the DBot score.
       type: String
     - contextPath: DBotScore.Indicator
-      description: Indicator CheckPhish tested for
+      description: Indicator that CheckPhish tested.
       type: String
     - contextPath: URL.Data
-      description: URL submitted
+      description: URL that was submitted.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: CheckPhish as vendor
+      description: CheckPhish as vendor.
       type: String
     - contextPath: URL.Malicious.Description
-      description: The brand countered by the URL
+      description: The brand countered by the URL.
       type: String
   isfetch: false
   runonce: false
