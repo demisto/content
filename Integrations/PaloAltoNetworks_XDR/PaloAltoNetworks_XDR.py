@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
 from datetime import datetime, timezone
 import secrets
 import string
@@ -16,15 +15,14 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-API_KEY = demisto.params().get('apikey')
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
-# Should we use SSL
+
 USE_SSL = not demisto.params().get('insecure', False)
-# How many time before the first fetch to retrieve incidents
+API_KEY = demisto.params().get('apikey')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-# Service base URL
 BASE_URL = SERVER + '/api/webapp/public_api/v1'
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -92,9 +90,6 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-# print (json.dumps(HEADERS, indent=4))
-
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -110,7 +105,7 @@ def http_request(method, url_suffix, params=None, data=None):
         headers=HEADERS
     )
     # Handle error responses gracefully
-    if res.status_code not in {200}:
+    if res.status_code not in [200]:
         if 'err_code' in res.text:
             error = res.json().get('reply')
             raise ValueError('Error occurred while doing HTTP request.\nURL: {}\nstatus_code: {}\nerr_code: {}'
@@ -118,9 +113,12 @@ def http_request(method, url_suffix, params=None, data=None):
                              .format(BASE_URL+url_suffix, res.status_code, error.get('err_code'),
                                      error.get('err_msg'), error.get('err_extra')))
 
-        raise ValueError('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+        raise ValueError('Error in API call to Palo Alto Networks XDR [%d] - %s' % (res.status_code, res.reason))
 
-    return res.json()
+    try:
+        return res.json()
+    except Exception:
+        raise ValueError("Failed to parse HTTP response to JSON. Original response: \n\n{}".format(res.text))
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -180,7 +178,9 @@ def get_incidents_command():
 
     return_outputs(
         readable_output=tableToMarkdown('Incidents', raw_incidents),
-        outputs=None,
+        outputs={
+            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': raw_incidents
+        },
         raw_response=raw_incidents
     )
 
@@ -306,15 +306,15 @@ def get_incident_extra_data_command():
     else:
         readable_output.append(tableToMarkdown('File Artifacts', []))
 
+    incident.update({
+        'alerts': alerts,
+        'file_artifacts': file_artifacts,
+        'network_artifacts': network_artifacts
+    })
     return_outputs(
         readable_output='\n'.join(readable_output),
         outputs={
-            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': {
-                'incident_id': incident_id,
-                'alerts': alerts,
-                'file_artifacts': file_artifacts,
-                'network_artifacts': network_artifacts
-            }
+            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': incident
         },
         raw_response=raw_incident
     )
@@ -344,7 +344,7 @@ def update_incident_command():
     assigned_user_mail = demisto.args().get('assigned_user_mail')
     assigned_user_pretty_name = demisto.args().get('assigned_user_pretty_name')
     status = demisto.args().get('status')
-    severity = demisto.args().get('severity')
+    severity = demisto.args().get('manual_severity')
     unassign_user = demisto.args().get('unassign_user') == 'true'
     resolve_comment = demisto.args().get('resolve_comment')
 
@@ -389,8 +389,7 @@ def update_incident(incident_id, assigned_user_mail, assigned_user_pretty_name, 
         'update_data': update_data
     }
 
-    res = http_request('POST', '/incidents/update_incident/', data={'request_data': request_data})
-    print(res)
+    http_request('POST', '/incidents/update_incident/', data={'request_data': request_data})
 
 
 def fetch_incidents():
