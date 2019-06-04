@@ -722,6 +722,5 @@ script:
     description: Moves all the events from Archive state to New event state.
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - Minerva Test playbook
