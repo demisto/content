@@ -45,6 +45,8 @@ configuration:
 script:
   script: |
     ''' IMPORTS '''
+    import socket
+    import struct
     import time
     from operator import itemgetter
     import requests
@@ -100,19 +102,22 @@ script:
                                                })
                 demisto.info(str(res.status_code) + ' from server during login. Clearing session token cache.')
 
-            return_error('HTTP %s Error in API call to ThreatX service - %s' % (res.status_code, res.text))
+            return_error('HTTP %d Error in API call to ThreatX service - %s' % (res.status_code, res.text))
 
         if not res.text:
             resp_json = {}
 
-        resp_json = res.json()
+        try:
+            resp_json = res.json()
+        except:
+            return_error('Could not parse the response from ThreatX.')
 
         if 'Ok' not in resp_json:
             if url_suffix == '/login':
                 demisto.setIntegrationContext({'session_token': None,
                                                'token_expires': None
                                                })
-                return_error('Login response error - %s. Clearing session token cache.' % (res.text))
+                return_error('Login response error - %s.' % (res.text))
 
             return_error(res.text)
 
@@ -122,7 +127,7 @@ script:
                     demisto.setIntegrationContext({'session_token': None,
                                                    'token_expires': None
                                                    })
-                    return_error('Invalid credentials. Clearing session token cache.')
+                    return_error('Invalid credentials.')
 
         return resp_json['Ok']
 
@@ -161,8 +166,9 @@ script:
         return
 
     def pretty_ip(decimal_ip):
-        """Convert decimal ip to dotted quad notation"""
-        return '.'.join([str(decimal_ip >> (i << 3) & 0xFF) for i in range(4)[::-1]])
+        """Convert decimal ip to dotted quad format"""
+        packed_ip = struct.pack("!I", decimal_ip)
+        return socket.inet_ntoa(packed_ip)
 
     def pretty_time(input_time):
         """Convert unix epoch time to human readable format"""
@@ -391,6 +397,8 @@ script:
         entity_id = demisto.args().get('entity_id', None)
         entity_ip = demisto.args().get('entity_ip', None)
         results = get_entities(entity_name, entity_id, entity_ip)
+        e_risk = None
+        e_id = None
         md = []
         dbot_scores = []
         ip_enrich = []
@@ -398,18 +406,20 @@ script:
 
         for entity in results:
             # Grab the entity risk so we can set the Dbot score for the Actor IPs
-            e_id = entity['id']
-            e_risk = get_entity_risk(e_id)
+            e_id = entity.get('id')
 
-            if isinstance(e_risk, list):
-                if 'risk' in e_risk[-1]:
-                    e_risk = e_risk[-1]['risk']
+            if e_id:
+                e_risk = get_entity_risk(e_id)
+
+            if isinstance(e_risk, list) and e_risk:
+                if isinstance(e_risk[-1], dict) and 'risk' in e_risk[-1]:
+                    risk_score = e_risk[-1]['risk']
                 else:
-                    e_risk = 0
+                    risk_score = 0
             else:
-                e_risk = 0
+                risk_score = 0
 
-            entity['risk'] = e_risk
+            entity['risk'] = risk_score
 
             iplist = []
 
@@ -438,7 +448,7 @@ script:
                         pass
 
                     # Set Dbot score
-                    dbscore = set_dbot_score(e_risk)
+                    dbscore = set_dbot_score(risk_score)
 
                     dbot_scores.append({
                         'Vendor' : 'ThreatX',
@@ -452,14 +462,18 @@ script:
                             'Address': ipdot,
                             'Malicious': {
                                 'Vendor': 'ThreatX',
-                                'Description': 'ThreatX risk score is ' + str(e_risk)
+                                'Description': 'ThreatX risk score is ' + str(risk_score)
                             }
+                        })
+                    else:
+                        ip_enrich.append({
+                            'Address': ipdot
                         })
 
             md.append({'Name': entity['codename'],
                        'ID': entity['id'],
                        'IP Addresses': ', '.join(iplist),
-                       'ThreatX Risk Score': e_risk,
+                       'ThreatX Risk Score': risk_score,
                        'DBot Score': dbscore
                        })
 
@@ -468,7 +482,7 @@ script:
                     'ID': entity['id'],
                     'Name': entity['codename'],
                     'IP': iplist,
-                    'Risk': e_risk
+                    'Risk': risk_score
                 },
                 'DBotScore': dbot_scores,
                 'IP(val.Address === obj.Address)': ip_enrich
@@ -559,10 +573,15 @@ script:
         results = test_module()
 
         if isinstance(results, list):
-            if 'username' in results[0]:
-                demisto.results('ok')
+            if results:
+                if 'username' in results[0]:
+                    demisto.results('ok')
+                else:
+                    return_error('Unexpected response from ThreatX.')
+            else:
+                return_error('Empty response from ThreatX.')
         else:
-            return_error('Unable to parse the List Users response.')
+            return_error('Unrecognized response from ThreatX.')
 
     ''' EXECUTION CODE '''
     demisto.info('command is %s' % (demisto.command(),))
