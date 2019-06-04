@@ -3162,6 +3162,6 @@ script:
       description: name of query
       type: string
     description: Save a query to the Uptycs DB
-  dockerimage: bkschmolluptycs/demisto_uptycs:latest
+  dockerimage: uptycs/demisto:latest
   isfetch: true
   runonce: true
