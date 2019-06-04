@@ -188,12 +188,18 @@ outputs:
   description: 'Could be: Fail / Suspicious / Undetermined / Pass'
   type: Unknown
 - contextPath: Email.DKIM
+  description: DKIM information extracted from the mail
   type: Unknown
 - contextPath: Email.SPF
+  description: SPF information extracted from the mail
   type: Unknown
 - contextPath: Email.DMARC
+  description: DMARC information extracted from the mail
   type: Unknown
 script: |-
+  import demistomock as demisto
+  from CommonServerPython import *
+  from CommonServerUserPython import *
   import re
   import traceback
 
