@@ -7,7 +7,7 @@
             "playbookID": "Minerva Test playbook"
         },
         {
-            "playbookID": "DBot_Train_URL_Classifier"
+            "playbookID": "DBot_Train_URL_Classifier_Test"
         },
         {
             "integrations": "MicrosoftGraphMail",
