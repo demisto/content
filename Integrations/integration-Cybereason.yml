@@ -18,7 +18,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "true"
   type: 8
@@ -1961,3 +1961,4 @@ script:
   runonce: false
 tests:
   - Cybereason Test
+releaseNotes: "-"
