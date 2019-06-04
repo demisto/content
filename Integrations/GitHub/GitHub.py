@@ -24,12 +24,12 @@ SUFFIX = {
     'update': '/repos/{}/{}/issues/'.format(OWNER, REPO),
     'search': '/repos/{}/{}/issues/'.format(OWNER, REPO),
     'download_count': '/repos/{}/{}/releases'.format(OWNER, REPO)
-          }
+}
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/vnd.github.v3+json',
     'Authorization': 'Bearer ' + API_KEY
-           }
+}
 
 ''' HELPER FUNCTIONS '''
 
