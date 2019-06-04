@@ -196,7 +196,126 @@ outputs:
 - contextPath: Email.DMARC
   description: DMARC information extracted from the mail
   type: Unknown
-script: '-'
+script: "import re\nimport traceback\n\n'''HELPER FUNCTIONS'''\n\n\ndef get_spf(auth,\
+  \ spf):\n    spf_context = {}\n    if auth is None:\n        spf_context[\"Validation-Result\"\
+  ] = spf.split(\" \")[0].lower()\n        sender_ip = re.findall(r\"\\d{1,3}\\.\\\
+  d{1,3}\\.\\d{1,3}\\.\\d{1,3}\", spf)\n    else:\n        result = re.search(r\"\
+  spf=(\\w+)\", auth)\n        if result is not None:\n            spf_context[\"\
+  Validation-Result\"] = result.group(1).lower()\n        sender_ip = re.findall(r\"\
+  \\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\", auth)\n    if sender_ip != []:\n  \
+  \      spf_context[\"Sender-IP\"] = sender_ip[0]\n    if spf is not None:\n    \
+  \    spf_context[\"Reason\"] = re.findall(r\"[(](.+)[)]\", spf)[0]\n    return spf_context\n\
+  \n\ndef get_dkim(auth):\n    dkim_context = {}\n    if auth is not None:\n     \
+  \   result = re.search(r\"dkim=(\\w+)\", auth)\n        if result is not None:\n\
+  \            dkim_context[\"Validation-Result\"] = result.group(1).lower()\n   \
+  \     reason = re.search(\"dkim=\\w+ [(](.+?)[)]\", auth)\n        if reason is\
+  \ not None:\n            dkim_context[\"Reason\"] = reason.group(1)\n        domain\
+  \ = re.findall(\"dkim=[\\w\\W]+?[=@](\\w+\\.[^ ]+)\", auth)\n        if domain !=\
+  \ []:\n            dkim_context[\"Signing-Domain\"] = domain[0]\n    return dkim_context\n\
+  \n\ndef get_dmarc(auth):\n    dmarc_context = {}\n    if auth is not None:\n   \
+  \     result = re.search(r\"dmarc=(\\w+)\", auth)\n        if result is not None:\n\
+  \            dmarc_context[\"Validation-Result\"] = result.group(1).lower()\n  \
+  \      reason = re.findall(\"dmarc=\\w+ [(](.+?)[)]\", auth)\n        if reason\
+  \ != []:\n            tags = reason[0]\n            tags_data = {}\n           \
+  \ for tag in tags.split(\" \"):\n                values = tag.split(\"=\")\n   \
+  \             tags_data[values[0]] = values[1]\n            dmarc_context[\"Tags\"\
+  ] = tags_data\n        domain = re.findall(\"dmarc=[\\w\\W]+header.from=(\\w+\\\
+  .[^ ]+)\", auth)\n        if domain != []:\n            dmarc_context[\"Signing-Domain\"\
+  ] = domain[0]\n    return dmarc_context\n\n\ndef auth_check(spf_data, dkim_data,\
+  \ dmarc_data, override_dict):\n    spf = spf_data.get('Validation-Result')\n   \
+  \ dmarc = dmarc_data.get('Validation-Result')\n    dkim = dkim_data.get('Validation-Result')\n\
+  \n    if \"spf-{}\".format(spf) in override_dict:\n        return override_dict.get(\"\
+  spf-{}\".format(spf))\n    if \"dkim-{}\".format(dkim) in override_dict:\n     \
+  \   return override_dict.get(\"dkim-{}\".format(dkim))\n    if \"dmarc-{}\".format(dmarc)\
+  \ in override_dict:\n        return override_dict.get(\"dmarc-{}\".format(dmarc))\n\
+  \n    if spf == 'fail' or dkim == 'fail' or dmarc == 'fail':\n        return \"\
+  Fail\"\n    if spf == 'softfail' or dkim == 'policy':\n        return \"Suspicious\"\
+  \n    undetermined = [None, \"none\", \"temperror\", \"permerror\"]\n    if dmarc\
+  \ in undetermined or spf in undetermined or dkim in undetermined \\\n          \
+  \  or dkim == \"neutral\":\n        return \"Undetermined\"\n    return \"Pass\"\
+  \n\n\n'''MAIN FUNCTION'''\n\ntry:\n    headers = argToList(demisto.args().get(\"\
+  headers\"))\n\n    auth = None\n    spf = None\n    message_id = \"\"\n\n    # getting\
+  \ override options from user\n    override_dict = {}\n\n    override_options = [\"\
+  fail\", \"suspicious\", \"undetermined\", \"pass\", \"Fail\", \"Suspicious\", \"\
+  Undetermined\", \"Pass\"]\n\n    override = demisto.args().get(\"SPF_override_none\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-none\"] = override.lower()\n\
+  \    else:\n        if override is not None:\n            return_error(\"Invaild\
+  \ override input.\")\n\n    override = demisto.args().get(\"SPF_override_neutral\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-neutral\"]\
+  \ = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"SPF_override_pass\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-pass\"] = override.lower()\n\
+  \    else:\n        if override is not None:\n            return_error(\"Invaild\
+  \ override input.\")\n\n    override = demisto.args().get(\"SPF_override_fail\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-fail\"] = override.lower()\n\
+  \    else:\n        if override is not None:\n            return_error(\"Invaild\
+  \ override input.\")\n\n    override = demisto.args().get(\"SPF_override_softfail\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-softfail\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"SPF_override_temperror\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-temperror\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"SPF_override_perm\"\
+  )\n    if override in override_options:\n        override_dict[\"spf-permerror\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_none\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-none\"] =\
+  \ override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_pass\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-pass\"] =\
+  \ override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_fail\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-fail\"] =\
+  \ override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_policy\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-policy\"]\
+  \ = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_neutral\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-neutral\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_temperror\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-temperror\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DKIM_override_permerror\"\
+  )\n    if override in override_options:\n        override_dict[\"dkim-permerror\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DMARC_override_none\"\
+  )\n    if override in override_options:\n        override_dict[\"dmarc-none\"] =\
+  \ override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DMARC_override_pass\"\
+  )\n    if override in override_options:\n        override_dict[\"dmarc-pass\"] =\
+  \ override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DMARC_override_fail\"\
+  )\n    if override in override_options:\n        override_dict[\"dmarc-fail\"] =\
+  \ override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DMARC_override_temperror\"\
+  )\n    if override in override_options:\n        override_dict[\"dmarc-temperror\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n\n    override = demisto.args().get(\"DMARC_override_permerror\"\
+  )\n    if override in override_options:\n        override_dict[\"dmarc-permerror\"\
+  ] = override.lower()\n    else:\n        if override is not None:\n            return_error(\"\
+  Invaild override input.\")\n    #done override options\\\n    \n    for header in\
+  \ headers:\n        if isinstance(header, dict):\n            if header.get('name')\
+  \ == \"Authentication-Results\":\n                auth = header.get('value')\n \
+  \           if header.get('name') == \"Received-SPF\":\n                spf = header.get('value')\n\
+  \            if header.get('name') == 'Message-ID':\n                message_id\
+  \ = header.get('value')\n\n    email_key = \"Email(val.Headers.filter(function(header)\
+  \ { return header && header.name ===\" \\\n                \" 'Message-ID' && header.value\
+  \ === '%s';}))\" % \\\n                (message_id)\n\n    if auth is None and spf\
+  \ is None:\n        context = {\n            \"{}.AuthenticityCheck\".format(email_key):\
+  \ \"undetermined\"\n        }\n        return_outputs(\"No header information was\
+  \ found.\", context)\n        sys.exit(0)\n    spf_data = get_spf(auth, spf)\n \
+  \   dkim_data = get_dkim(auth)\n    dmarc_data = get_dmarc(auth)\n\n    authenticity\
+  \ = auth_check(spf_data, dkim_data, dmarc_data, override_dict)\n\n    md = \"This\
+  \ Email's authenticity is: **{}**\\n\".format(authenticity)\n    md = md + tableToMarkdown(\"\
+  SPF\", spf_data, [\"Validation-Result\", \"Reason\", \"Sender-IP\"])\n    md = md\
+  \ + tableToMarkdown(\"DKIM\", dkim_data, [\"Validation-Result\", \"Reason\", \"\
+  Signing-Domain\"])\n    md = md + tableToMarkdown(\"DMARC\", dmarc_data, [\"Validation-Result\"\
+  , \"Tags\", \"Signing-Domain\"])\n\n    ec = {\n        \"{}.SPF\".format(email_key):\
+  \ spf_data,\n        \"{}.DMARC\".format(email_key): dmarc_data,\n        \"{}.DKIM\"\
+  .format(email_key): dkim_data,\n        \"{}.AuthenticityCheck\".format(email_key):\
+  \ authenticity\n    }\n    return_outputs(md, ec)\n\nexcept Exception as ex:\n \
+  \   demisto.error(str(ex) + \"\\n\\nTrace:\\n\" + traceback.format_exc())\n    return_error(ex.message)"
 system: false
 tags:
 - phishing

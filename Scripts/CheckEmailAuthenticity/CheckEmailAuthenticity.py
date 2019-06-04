@@ -9,7 +9,7 @@ import traceback
 
 def get_spf(auth, spf):
     spf_context = {}
-    if auth == None:
+    if auth is None:
         spf_context["Validation-Result"] = spf.split(" ")[0].lower()
         sender_ip = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", spf)
     else:
@@ -26,7 +26,7 @@ def get_spf(auth, spf):
 
 def get_dkim(auth):
     dkim_context = {}
-    if auth != None:
+    if auth is not None:
         result = re.search(r"dkim=(\w+)", auth)
         if result is not None:
             dkim_context["Validation-Result"] = result.group(1).lower()
@@ -41,7 +41,7 @@ def get_dkim(auth):
 
 def get_dmarc(auth):
     dmarc_context = {}
-    if auth != None:
+    if auth is not None:
         result = re.search(r"dmarc=(\w+)", auth)
         if result is not None:
             dmarc_context["Validation-Result"] = result.group(1).lower()
@@ -91,7 +91,7 @@ try:
     spf = None
     message_id = ""
 
-    ### getting override options from user
+    # getting override options from user
     override_dict = {}
 
     override_options = ["fail", "suspicious", "undetermined", "pass", "Fail", "Suspicious", "Undetermined", "Pass"]
@@ -228,7 +228,8 @@ try:
     else:
         if override is not None:
             return_error("Invaild override input.")
-    #####done override options\
+    #done override options\
+
     for header in headers:
         if isinstance(header, dict):
             if header.get('name') == "Authentication-Results":
@@ -238,7 +239,8 @@ try:
             if header.get('name') == 'Message-ID':
                 message_id = header.get('value')
 
-    email_key = "Email(val.Headers.filter(function(header) { return header && header.name === 'Message-ID' && header.value === '%s';}))" % \
+    email_key = "Email(val.Headers.filter(function(header) { return header && header.name ===" \
+                " 'Message-ID' && header.value === '%s';}))" % \
                 (message_id)
 
     if auth is None and spf is None:
