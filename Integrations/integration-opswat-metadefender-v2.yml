@@ -321,4 +321,3 @@ script:
   runonce: false
 tests:
   - No tests - no instance
-releaseNotes: "-"
