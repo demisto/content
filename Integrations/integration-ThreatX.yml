@@ -405,6 +405,8 @@ script:
         output = []
 
         for entity in results:
+            risk_score = 0
+
             # Grab the entity risk so we can set the Dbot score for the Actor IPs
             e_id = entity.get('id')
 
@@ -414,10 +416,6 @@ script:
             if isinstance(e_risk, list) and e_risk:
                 if isinstance(e_risk[-1], dict) and 'risk' in e_risk[-1]:
                     risk_score = e_risk[-1]['risk']
-                else:
-                    risk_score = 0
-            else:
-                risk_score = 0
 
             entity['risk'] = risk_score
 
