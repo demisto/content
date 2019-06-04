@@ -1,0 +1,433 @@
+id: 79b5d8a6-2636-480c-8e1c-a3ab2e58ffb5
+version: -1
+name: Detonate File - VMRay
+description: Detonating file with VMRay
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1de2f2b-64cb-4df5-8490-07c49e7255b6
+    type: start
+    task:
+      id: c1de2f2b-64cb-4df5-8490-07c49e7255b6
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
+    type: playbook
+    task:
+      id: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${VMRay.Submission.SubmissionID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: submission_id
+      PollingCommandName:
+        simple: vmray-get-submission
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: VMRay.Submission(val.IsFinished == false).SubmissionID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4216b614-64bb-4a43-8cd8-e24b6b85efd9
+    type: condition
+    task:
+      id: 4216b614-64bb-4a43-8cd8-e24b6b85efd9
+      version: -1
+      name: Is there any active VMRay instance?
+      description: Check for active instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: vmray
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 087ea815-c0b4-4604-8b43-099927639fa9
+    type: condition
+    task:
+      id: 087ea815-c0b4-4604-8b43-099927639fa9
+      version: -1
+      name: Is there any file to detonate?
+      description: Check if file exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 46c971ef-9691-4b18-888b-a8fccf7b8c7c
+    type: regular
+    task:
+      id: 46c971ef-9691-4b18-888b-a8fccf7b8c7c
+      version: -1
+      name: Send file to VMRay
+      description: Submit sample to VMRay
+      script: '|||vmray-upload-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      archive_password: {}
+      document_password: {}
+      entry_id:
+        simple: ${inputs.File.EntryID}
+      file_id:
+        simple: ${File.EntryID}
+      max_jobs: {}
+      reanalyze: {}
+      sample_type: {}
+      shareable: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b5eb756b-903d-4f8e-8b09-f8bcad28627c
+    type: title
+    task:
+      id: b5eb756b-903d-4f8e-8b09-f8bcad28627c
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 2a0709fc-42f1-4ac8-80ef-aa53b3b65576
+    type: regular
+    task:
+      id: 2a0709fc-42f1-4ac8-80ef-aa53b3b65576
+      version: -1
+      name: Get sample
+      description: get sample by sample id
+      script: '|||vmray-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        simple: ${VMRay.Submission.SampleID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: ca3caa5c-0828-41e1-8b12-77771fdaf140
+    type: regular
+    task:
+      id: ca3caa5c-0828-41e1-8b12-77771fdaf140
+      version: -1
+      name: Get submission
+      description: Gets a submission result
+      script: '|||vmray-get-submission'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      submission_id:
+        simple: ${VMRay.Submission.SubmissionID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_6_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    simple: ${File}
+  required: false
+  description: The file to detonate
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: How often to poll for results
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: How long to wait before giving up waiting for results
+- key: document_password
+  value: {}
+  required: false
+  description: Fill if the file is password-protected document
+- key: archive_password
+  value: {}
+  required: false
+  description: Fill if the file is password-protected archive
+- key: sample_type
+  value: {}
+  required: false
+  description: Specify sample type
+- key: shareable
+  value: {}
+  required: false
+  description: Make the file shareable
+- key: reanalyze
+  value: {}
+  required: false
+  description: Should VMRay re-analyze the file
+- key: max_jobs
+  value: {}
+  required: false
+  description: Max jobs to create in VMRay
+- key: tags
+  value: {}
+  required: false
+  description: Tags of file, comma seperated
+outputs:
+- contextPath: VMRay.Job.JobID
+  description: ID of a new job
+  type: number
+- contextPath: VMRay.Job.SampleID
+  description: ID of sample
+  type: number
+- contextPath: VMRay.Job.Created
+  description: |
+    Timestamp of created job
+  type: date
+- contextPath: VMRay.Job.VMName
+  description: Name of virtual machine
+  type: string
+- contextPath: VMRay.Job.VMID
+  description: ID of virtual machine
+  type: number
+- contextPath: VMRay.Sample.SampleID
+  description: Sample ID of task
+  type: number
+- contextPath: VMRay.Sample.Created
+  description: |
+    Timestamp of created sample
+  type: date
+- contextPath: VMRay.Submission.SubmissionID
+  description: Submission ID
+  type: number
+- contextPath: VMRay.Submission.HadErrors
+  description: If there are any errors in the submission
+- contextPath: VMRay.Submission.IsFinished
+  description: Status of submission (true or false)
+  type: boolean
+- contextPath: VMRay.Submission.MD5
+  description: MD5 of of sample in submission
+  type: string
+- contextPath: VMRay.Submission.SHA1
+  description: SHA1 of of sample in submission
+  type: string
+- contextPath: VMRay.Submission.SHA256
+  description: SHA256 of of sample in submission
+  type: string
+- contextPath: VMRay.Submission.Severity
+  description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted,
+    Whitelested, Unknown)
+  type: string
+- contextPath: VMRay.Submission.SSDeep
+  description: SSDeep of of sample in submission
+  type: string
+- contextPath: VMRay.Submission.SampleID
+  description: ID of sample in submission
+  type: number
+  type: number
+- contextPath: VMRay.Sample.FileName
+  description: File name of sample
+  type: string
+- contextPath: VMRay.Sample.MD5
+  description: MD5 of sample
+  type: string
+- contextPath: VMRay.Sample.SHA1
+  description: SHA1 of sample
+  type: string
+- contextPath: VMRay.Sample.SHA256
+  description: SHA256 of sample
+  type: string
+- contextPath: VMRay.Sample.SSDeep
+  description: SSDeep of sample
+  type: string
+- contextPath: VMRay.Sample.Severity
+  description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted,
+    Whitelested, Unknown)
+  type: string
+- contextPath: VMRay.Sample.Type
+  description: File type
+  type: string
+- contextPath: VMRay.Sample.Classifications
+  description: Classifications of sample
+  type: string
+fromversion: 4.0.0

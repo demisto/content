@@ -1,7 +1,6 @@
 {
 	"id": "incident_approximatenumberofaffecteddatasubjects",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-16T10:36:19.006319903Z",
 	"name": "Approximate number of affected data subjects",
 	"ownerOnly": false,
@@ -11,7 +10,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": true,
+	"required": false,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,
