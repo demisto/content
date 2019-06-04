@@ -120,7 +120,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: RemoteFileManagement.ListItems
+              simple: PANOSEDL.ListItems
             iscontext: true
           right:
             value:
