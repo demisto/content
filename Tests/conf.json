@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "DBot_Train_URL_Classifier"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test"
         },
