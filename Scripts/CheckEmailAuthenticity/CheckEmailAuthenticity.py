@@ -237,7 +237,7 @@ try:
             if header.get('name') == "Received-SPF":
                 spf = header.get('value')
             if header.get('name') == 'Message-ID':
-                message_id = header.get('value')
+                message_id = header.get('value')  # type: ignore
 
     email_key = "Email(val.Headers.filter(function(header) { return header && header.name ===" \
                 " 'Message-ID' && header.value === '%s';}))" % \
