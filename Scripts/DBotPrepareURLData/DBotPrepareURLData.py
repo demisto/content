@@ -19,7 +19,7 @@ def main():
         return_error("Error query indicators")
     indicators = res[0]['Contents']
     indicators = sorted(indicators, key=lambda x: x['firstSeen'])
-    urls = collections.OrderedDict() # type: collections.MutableMapping[str, int]
+    urls = collections.OrderedDict()  # type: collections.MutableMapping[str, int]
     count_good = 0
     count_bad = 0
     for i in indicators:

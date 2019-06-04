@@ -21,6 +21,7 @@ def get_file_path(file_name):
         sys.exit(0)
     return res[0]['Contents']['path']
 
+
 def main():
 
     filename = demisto.args()['inputFilename']
