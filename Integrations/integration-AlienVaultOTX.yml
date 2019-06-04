@@ -459,6 +459,6 @@ script:
     description: Query url in AlienVault OTX
   runonce: false
 fromversion: 3.0.1
-releaseNotes: fixing !url plus adding a test
+releaseNotes: Fix !url to try extract base url, and return a readable error in case of failure
 tests:
   - AlienVaultOTX Test
