@@ -1513,7 +1513,8 @@
         }
     ],
     "skipped_tests": {
-       "LogRhythmRest": "Unstable environment Adi is checking",
+        "LogRhythmRest": "Unstable environment Adi is checking",
+        "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "Forescout-Test": "Should be skipped (issue 17016)",
