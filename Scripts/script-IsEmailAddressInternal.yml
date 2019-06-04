@@ -48,31 +48,31 @@ args:
 - name: email
   required: true
   default: true
-  description: The email address to check
+  description: The email address to check.
   isArray: true
 - name: domain
-  description: List of internal domains to check, comma separated
+  description: A CSV list of internal domains to check.
   isArray: true
 - name: include_subdomains
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: Include subdomains of the domain list?
+  description: Whether to include subdomains of the domain list. Default is "no".
   defaultValue: "no"
 outputs:
 - contextPath: Account.Email.Address
-  description: The Email account full address
+  description: The full email address for the account.
   type: string
 - contextPath: Account.Email.Username
-  description: The Email account username
+  description: The username associated with the email address.
   type: string
 - contextPath: Account.Email.Domain
-  description: The Email account domain
+  description: The email account domain.
   type: string
 - contextPath: Account.Email.NetworkType
-  description: The Email account NetworkType (could be Internal/External)
+  description: The email account NetworkType ("Internal" or "External").
   type: string
 scripttarget: 0
 runonce: false
-releaseNotes: "upgrade script to check list of email addresses"
+releaseNotes: "Added the ability to check a list of email addresses."
