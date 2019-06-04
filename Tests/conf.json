@@ -1315,6 +1315,10 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
+            "playbookID": "PAN OS EDL Management - Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management"
+        },
+        {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
         },
