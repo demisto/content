@@ -1,3 +1,4 @@
+# pylint: disable=no-member
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -56,7 +57,7 @@ def main():
     }
 
     if scores['accuracy'] < accuracy_threshold:
-        return_error("Model accuracy %.2f is below threshold %.2f".format(scores['accuracy'], accuracy_threshold))
+        return_error("Model accuracy %.2f is below threshold %.2f" % (scores['accuracy'], accuracy_threshold))
     if scores['precision'] < accuracy_threshold:
         return_error("Model precision %.2f is below threshold %.2f" % (scores['precision'], accuracy_threshold))
 
