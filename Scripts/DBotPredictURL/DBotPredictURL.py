@@ -51,24 +51,29 @@ def format_prediction(prediction):
     }
 
 
-MODEL_NAME = demisto.args()['modelName']
-res = demisto.executeCommand('getMLModel', {'modelName': MODEL_NAME})
-if is_error(res):
-    return_error(get_error(res))
-encoded_model = res[0]['Contents']['modelData']
+def main():
+    MODEL_NAME = demisto.args()['modelName']
+    res = demisto.executeCommand('getMLModel', {'modelName': MODEL_NAME})
+    if is_error(res):
+        return_error(get_error(res))
+    encoded_model = res[0]['Contents']['modelData']
 
-urls = demisto.args()['input']
-if type(urls) is not list:
-    urls = [urls]
+    urls = demisto.args()['input']
+    if type(urls) is not list:
+        urls = [urls]
 
-demisto_ml.url_load_model(encoded_model, MODEL_NAME)
-predictions = demisto_ml.url_predict(MODEL_NAME, urls)
-entries = []
-threshold = float(demisto.args()['threshold'])
-for prediction in predictions:
-    entry = get_entry_with_dbot_score(prediction['url'],
-                                      prediction['label'],
-                                      prediction['probability'],
-                                      threshold)
-    entries.append(entry)
-demisto.results(entries)
+    demisto_ml.url_load_model(encoded_model, MODEL_NAME)
+    predictions = demisto_ml.url_predict(MODEL_NAME, urls)
+    entries = []
+    threshold = float(demisto.args()['threshold'])
+    for prediction in predictions:
+        entry = get_entry_with_dbot_score(prediction['url'],
+                                          prediction['label'],
+                                          prediction['probability'],
+                                          threshold)
+        entries.append(entry)
+    demisto.results(entries)
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
