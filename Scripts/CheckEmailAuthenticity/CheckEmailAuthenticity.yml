@@ -196,7 +196,7 @@ outputs:
 - contextPath: Email.DMARC
   description: DMARC information extracted from the mail
   type: Unknown
-script: -
+script: '-'
 system: false
 tags:
 - phishing
