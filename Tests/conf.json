@@ -1614,6 +1614,7 @@
     ],
     "unmockable_integrations": {
         "McAfee-TIE": "Empty mock file ",
+        "vmray": "not passing mocks",
         "LogRhythmRest": "test module when using mocks",
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
