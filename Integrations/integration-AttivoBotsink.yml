@@ -19,7 +19,7 @@ configuration:
   required: true
 - display: Do not verify server SSL
   name: insecure
-  defaultvalue: "False"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Minimum severity when fetching events; "Very High", "High", "Medium"
@@ -939,3 +939,6 @@ script:
     description: List all deceptive users
   isfetch: true
   runonce: false
+releaseNotes: "Fixed duplication bug in fetch-incidents. Also, updated error handling."
+tests:	
+  - AttivoBotsinkTest
