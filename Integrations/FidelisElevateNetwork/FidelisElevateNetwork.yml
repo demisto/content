@@ -240,5 +240,6 @@ script:
     description: Runs PCAP file analysis in Fidelis Elevate.
   isfetch: true
   runonce: false
+releaseNotes: "Added error suppression of logout."
 tests:
   - Fidelis-Test
