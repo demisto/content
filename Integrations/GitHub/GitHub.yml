@@ -11,11 +11,11 @@ configuration:
   name: token
   required: true
   type: 4
-- display: Username of the repository owner
+- display: Username of the repository owner.
   name: user
   required: false
   type: 0
-- display: The name of the requested repository
+- display: The name of the requested repository.
   name: repository
   required: false
   type: 0
@@ -24,16 +24,22 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: Use system proxy settings
+- display: Use system proxy settings.
   name: proxy
   required: false
   type: 8
 - defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+  display: Trust any certificate (not secure).
   name: insecure
   required: false
   type: 8
 description: Integration to GitHub API
+detaileddescription: "To access the requested repository, you need to provide \n the\
+  \ username, repository name, and API key as parameters for the\n integration.\n\
+  \ \n To generate your personal access token, visit:\n https://github.com/settings/tokens\n\
+  \ \n The integration supports the following workflows:\n - Create an issue\n - Update\
+  \ an issue\n - Close an issue\n - List all issues\n - Search for specific issues\n\
+  \ - Get the download count for each release in a repository"
 display: GitHub
 name: GitHub
 script:
@@ -117,7 +123,7 @@ script:
       description: The ID of the closed issue.
       type: Number
     - contextPath: GitHub.Issue.Repository
-      description: The repository of the closed issue
+      description: The repository of the closed issue.
       type: String
     - contextPath: GitHub.Issue.Title
       description: The title of the closed issue
@@ -172,9 +178,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Labels to apply to this issue. Pass one or more Labels to
-        replace the set of Labels on this Issue. Send an empty array ([]) to clear
-        all Labels from the Issue. '
+      description: 'Labels to apply to this issue. Pass one or more Labels to replace
+        the set of Labels on this Issue. Send an empty array ([]) to clear all Labels
+        from the Issue. '
       isArray: true
       name: labels
       required: false
@@ -229,8 +235,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: open
-      description: 'The state of the issues to return. Can be ''open'',
-        ''closed'' or ''all''. Default is ''open'''
+      description: The state of the issues to return. Can be 'open', 'closed' or 'all'.
+        Default is 'open'
       isArray: false
       name: state
       predefined:
@@ -241,7 +247,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'The number of issues to return. Default is 50. Maximum is 200.'
+      description: The number of issues to return. Default is 50. Maximum is 200.
       isArray: false
       name: limit
       required: false
@@ -286,14 +292,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The query line for the search. See the [GitHub documentation](https://help.github.com/en/articles/searching-issues-and-pull-requests) for more information.'
+      description: The query line for the search. See the [GitHub documentation](https://help.github.com/en/articles/searching-issues-and-pull-requests)
+        for more information.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'The number of issues to return. Default is 50. Maximum is 200.'
+      description: The number of issues to return. Default is 50. Maximum is 200.
       isArray: false
       name: limit
       required: false
@@ -360,6 +367,7 @@ script:
     - contextPath: GitHub.Release.Published_at
       description: Date when the release was published.
       type: Date
+  dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
   script: '-'

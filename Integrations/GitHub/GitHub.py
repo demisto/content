@@ -15,11 +15,11 @@ requests.packages.urllib3.disable_warnings()
 USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token')
 BASE_URL = 'https://api.github.com'
-REP = demisto.params().get('repository')
+REPOSITORY = demisto.params().get('repository')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
 
-USER_SUFFIX = '/repos/{}/{}'.format(USER, REP)
+USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
 ISSUE_SUFFIX = USER_SUFFIX + '/issues'
 RELEASE_SUFFIX = USER_SUFFIX + '/releases'
 
@@ -47,11 +47,11 @@ def http_request(method, url_suffix, params=None, data=None):
         headers=HEADERS
     )
     # Handle error responses gracefully
-    if res.status_code == 422:
-        return_error('Error illegal assignee - must be a registered GitHub username')
+    # if res.status_code == 422:
+    #     return_error('Error illegal assignee - must be a registered GitHub username')
 
-    elif res.status_code >= 400:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+    if res.status_code >= 400:
+        return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
     try:
         return res.json()
     except Exception as excep:
@@ -95,11 +95,13 @@ def context_create_issue(response, issue):
 
 def list_create(issue, list_name, element_name):
     """ Creates a list if parameters exist in issue
+
     Args:
         issue: an issue from GitHub
         list_name: the name of the list in the issue
         element_name: the field name of the element in the list
     Returns:
+
         The created list or None if it does not exist
     """
     if issue.get(list_name) is not None:
@@ -111,9 +113,11 @@ def list_create(issue, list_name, element_name):
 def issue_format(issue):
     """ Get a HTTP response containing an issue and creates a dictionary with selected fields representing an issue in
      Demisto.
+
     Args:
         issue (dict): An HTTP response representing an issue, formatted as a dictionary
     Returns:
+
         Returns a dictionary representing an issue in Demisto
     """
     closed_by = None
@@ -121,7 +125,7 @@ def issue_format(issue):
         closed_by = issue.get('closed_by').get('login')
     form = {
         'ID': issue.get('number'),
-        'Repository': REP,
+        'Repository': REPOSITORY,
         'Title': issue.get('title'),
         'Body': issue.get('body'),
         'State': issue.get('state'),
@@ -143,6 +147,7 @@ def create_issue_table(issue_list, response, limit):
         response (dict):A raw HTTP response sent for 'Contents' field in context
 
     Returns:
+
         The issues are sent to Demisto as a list
 
     """
@@ -196,7 +201,7 @@ def update_issue(id, title, body, state, labels, assign):
                             data=data)
 
     if response.get('errors'):
-        return_error(response.get('errors'))
+        return_error("Got the following error from the service:\n" + response.get('errors'))
 
     return response
 
@@ -306,7 +311,7 @@ def fetch_incidents_command():
 
     incidents = []
     for issue in issue_list:
-        updated_at_str = issue.get('updated_at')
+        updated_at_str = issue.get('created_at')
         updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
         if updated_at > start_time:
             inc = {
