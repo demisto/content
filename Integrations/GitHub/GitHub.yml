@@ -34,12 +34,6 @@ configuration:
   required: false
   type: 8
 description: Integration to GitHub API
-detaileddescription: "To access the requested repository, you need to provide \n the\
-  \ username, repository name, and API key as parameters for the\n integration.\n\
-  \ \n To generate your personal access token, visit:\n https://github.com/settings/tokens\n\
-  \ \n The integration supports the following workflows:\n - Create an issue\n - Update\
-  \ an issue\n - Close an issue\n - List all issues\n - Search for specific issues\n\
-  \ - Get the download count for each release in a repository"
 display: GitHub
 name: GitHub
 script:
@@ -371,3 +365,4 @@ script:
   isfetch: true
   runonce: false
   script: '-'
+  type: python
