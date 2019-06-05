@@ -278,6 +278,7 @@ def list_all_command():
     limit = int(demisto.args().get('limit'))
     if limit > 200:
         limit = 200
+
     response = list_all_issue(state)
     create_issue_table(response, response, limit)
 
@@ -287,6 +288,7 @@ def search_command():
     limit = int(demisto.args().get('limit'))
     if limit > 200:
         limit = 200
+
     response = search_issue(q)
     create_issue_table(response['items'], response, limit)
 
