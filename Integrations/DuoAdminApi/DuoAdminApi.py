@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 # imports
-import datetime
 import calendar
 import duo_client
 
@@ -20,19 +19,19 @@ INVALID_SECRET_ERROR_STRING = 'Invalid signature in request credentials'
 # Maps
 
 OPTIONS_TO_TIME = {
-    '10_seconds_ago': datetime.datetime.now() - datetime.timedelta(seconds=10),
+    '10_seconds_ago': datetime.now() - timedelta(seconds=10),
     # left here for backwards compatability
-    '1_minutes_ago': datetime.datetime.now() - datetime.timedelta(minutes=1),
-    '1_minute_ago': datetime.datetime.now() - datetime.timedelta(minutes=1),
-    '10_minutes_ago': datetime.datetime.now() - datetime.timedelta(minutes=10),
-    '1_hour_ago': datetime.datetime.now() - datetime.timedelta(hours=1),
-    '10_hours_ago': datetime.datetime.now() - datetime.timedelta(hours=10),
-    '1_day_ago': datetime.datetime.now() - datetime.timedelta(days=1),
-    '1_week_ago': datetime.datetime.now() - datetime.timedelta(days=7),
-    '1_month_ago': datetime.datetime.now() - datetime.timedelta(days=30),
-    '1_year_ago': datetime.datetime.now() - datetime.timedelta(days=365),
-    '5_years_ago': datetime.datetime.now() - datetime.timedelta(days=1825),
-    '10_years_ago': datetime.datetime.now() - datetime.timedelta(days=3650)
+    '1_minutes_ago': datetime.now() - timedelta(minutes=1),
+    '1_minute_ago': datetime.now() - timedelta(minutes=1),
+    '10_minutes_ago': datetime.now() - timedelta(minutes=10),
+    '1_hour_ago': datetime.now() - timedelta(hours=1),
+    '10_hours_ago': datetime.now() - timedelta(hours=10),
+    '1_day_ago': datetime.now() - timedelta(days=1),
+    '1_week_ago': datetime.now() - timedelta(days=7),
+    '1_month_ago': datetime.now() - timedelta(days=30),
+    '1_year_ago': datetime.now() - timedelta(days=365),
+    '5_years_ago': datetime.now() - timedelta(days=1825),
+    '10_years_ago': datetime.now() - timedelta(days=3650)
 }
 
 
@@ -149,7 +148,7 @@ def get_authentication_logs_by_user(username, mintime):
         2,
         username=username,
         mintime=time_to_timestamp_milliseconds(OPTIONS_TO_TIME[mintime]),
-        maxtime=time_to_timestamp_milliseconds(datetime.datetime.now()),
+        maxtime=time_to_timestamp_milliseconds(datetime.now()),
         limit='50'
     )
 
