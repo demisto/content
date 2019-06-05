@@ -241,7 +241,7 @@ def check_in_credentials():
 
     check_in = check_in_credentials_request(request_id, data)
 
-    demisto.results('The request has been Successful')
+    demisto.results('The release was successfully checked-in/released')
 
 
 def change_credentials_request(account_id, data):
