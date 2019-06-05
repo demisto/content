@@ -284,6 +284,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.5.0
-Tests:
-  - DBot_Train_URL_Classifier_Test
