@@ -23,3 +23,5 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
+tests:
+  - FormattedDateToEpochTest
