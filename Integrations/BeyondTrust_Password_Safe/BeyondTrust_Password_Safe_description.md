@@ -1,0 +1,1 @@
+To Generate the API key, enter the UI, go to Configuration, under General go to API Registration
