@@ -2,15 +2,7 @@ commonfields:
   id: FormattedDateToEpoch
   version: -1
 name: FormattedDateToEpoch
-script: |-
-  import datetime
-
-  dateValue = demisto.args()['value']
-  formatter = demisto.args()['formatter']
-
-  dateObj = datetime.datetime.strptime(dateValue, formatter)
-
-  demisto.results(int(dateObj.strftime('%s')))
+script: '-'
 type: python
 tags:
 - transformer
@@ -24,9 +16,10 @@ args:
   required: true
   description: Time stamp to convert
 - name: formatter
+  defaultValue: '%Y-%m-%dT%H:%M:%S'
   required: true
   description: Python 'strptime' formatter string
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3
+dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
