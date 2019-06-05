@@ -70,7 +70,7 @@ def get_entry_for_object(title, obj, contents, context, headers=None, human_read
         }
 
     if headers:
-        if isinstance(headers, basestring):
+        if isinstance(headers, (str, unicode)):
             headers = headers.split(',')
 
         if isinstance(obj, dict):
@@ -113,19 +113,19 @@ def test_instance():
     except Exception as e:
         if hasattr(e, 'data'):
             # error data for 40103 is not informative enough so we write our own
-            if e.data['code'] == 40103:
+            if e.__getattribute__('data')['code'] == 40103:
                 demisto.results('Invalid secret key in request credentials')
 
             else:
-                demisto.results(e.data['message'])
+                demisto.results(e.__getattribute__('data')['message'])
 
         elif hasattr(e, 'strerror'):
-            demisto.results(e.strerror)
+            demisto.results(e.__getattribute__('strerror'))
 
         else:
             demisto.results('Unknown error: ' + str(e))
 
-
+\
 def get_all_users():
     res = admin_api.get_users()
 
