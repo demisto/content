@@ -166,6 +166,9 @@
             "playbookID": "Fortigate Test"
         },
         {
+            "playbookID": "FormattedDateToEpochTest"
+        },
+        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
