@@ -286,7 +286,7 @@ tasks:
       - "11"
     scriptarguments:
       entity_id:
-        simple: "566056709675514809"
+        simple: "870617232157515386"
       message:
         simple: Demisto test playbook note
     separatecontext: false
@@ -348,7 +348,7 @@ tasks:
       - "32"
     scriptarguments:
       entity_id:
-        simple: "566056709675514809"
+        simple: "870617232157515386"
     separatecontext: false
     view: |-
       {
@@ -380,7 +380,7 @@ tasks:
       - "38"
     scriptarguments:
       entity_id:
-        simple: "566056709675514809"
+        simple: "870617232157515386"
       entity_ip: {}
       entity_name: {}
     separatecontext: false
