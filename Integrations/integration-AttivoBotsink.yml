@@ -940,5 +940,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "Fixed duplication bug in fetch-incidents. Also, updated error handling."
-tests:	
+tests:
   - AttivoBotsinkTest
