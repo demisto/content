@@ -46,7 +46,37 @@ def http_request(method, url_suffix, params=None, data=None):
         headers=HEADERS
     )
     if res.status_code >= 400:
-        return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+        try:
+            res = res.json()
+
+            if res.get('errors') is None:
+                return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
+            else:
+                error_code = res.get('errors')[0].get('code')
+                if error_code == 'missing_field':
+                    return_error('Error: the field: "{}" requires a value'.format(res.get('errors')[0].get('field')))
+
+                elif error_code == 'invalid':
+                    field = res.get('errors')[0].get('field')
+                    if field == 'q':
+                        return_error('Error: invalid query - {}'.format(res.get('errors')[0].get('message')))
+
+                    else:
+                        return_error('Error: the field: "{}" has an invalid value'.format(field))
+
+                elif error_code == 'missing':
+                    return_error('Error: {} does not exist'.format(res.get('errors')[0].get('resource')))
+
+                elif error_code == 'already_exists':
+                    return_error('Error: the field {} must be unique'.format(res.get('errors')[0].get('field')))
+
+                else:
+                    return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
+        except Exception as excep:
+            return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+            return_error('Error in HTTP request - {}'.format(str(excep)))  # not reachable
 
     try:
         return res.json()
@@ -162,9 +192,6 @@ def create_issue_table(issue_list, response, limit):
 
 
 def create_issue(title, body, labels, assignees):
-    if title == "":
-        return_error("Error: No title given for created issue")
-
     data = data_formatting(title=title,
                            body=body,
                            labels=labels,
@@ -194,10 +221,6 @@ def update_issue(id, title, body, state, labels, assign):
     response = http_request(method='PATCH',
                             url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
                             data=data)
-
-    if response.get('errors'):
-        return_error("Got the following error from the service:\n" + response.get('errors'))
-
     return response
 
 
@@ -213,10 +236,6 @@ def search_issue(query):
     response = http_request(method='GET',
                             url_suffix='/search/issues',
                             params={'q': query})
-
-    if response.get('errors'):
-        return_error(response.get('errors'))
-
     return response
 
 

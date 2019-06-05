@@ -577,14 +577,14 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: b595b523-4a22-4a82-83a3-62172a35588d
+    taskid: cf5902a0-5dd1-4882-843c-4c1b1402ebff
     type: regular
     task:
-      id: b595b523-4a22-4a82-83a3-62172a35588d
+      id: cf5902a0-5dd1-4882-843c-4c1b1402ebff
       version: -1
       name: Store ID
-      description: Sets key/value pair in incident's context
-      scriptName: SetContext
+      description: Sets a value into the context with the given context key
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -592,6 +592,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      append: {}
       key:
         simple: ID
       value:
