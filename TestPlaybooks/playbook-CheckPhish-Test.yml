@@ -1,5 +1,5 @@
 id: CheckPhish-Test
-version: 18
+version: -1
 name: CheckPhish-Test
 starttaskid: "0"
 tasks:
