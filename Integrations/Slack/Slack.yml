@@ -39,12 +39,12 @@ configuration:
   type: 16
 - defaultvalue: View it on
   display: General footer to display in Slack messages with links
-  name: General link footer
+  name: general_footer
   required: false
   type: 0
 - defaultvalue: View it on
   display: Footer to display in Slack messages with links
-  name: Link footer
+  name: footer
   required: false
   type: 0
 description: Send messages and notifications to your Slack Team.
@@ -145,10 +145,15 @@ script:
       name: entry
       required: false
       secret: false
-    - default: false
-      description: Do not add URL back to the Demisto management console.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Do not add a URL to the Demisto management console.
       isArray: false
-      name: IgnoreAddURL
+      name: ignoreAddURL
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -161,6 +166,10 @@ script:
     description: Send a message to a slack user, group or channel.
     execution: false
     name: slack-send
+  - deprecated: false
+    description: Close the mirrored Slack channel for this incident.
+    execution: false
+    name: slack-close-channel
   dockerimage: devtesting/slack:1.0.0.1558884736
   isfetch: false
   longRunning: true
