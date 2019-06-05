@@ -1,6 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from datetime import datetime
 
 date_value = demisto.args()['value']
