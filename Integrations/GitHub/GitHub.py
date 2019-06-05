@@ -74,9 +74,8 @@ def http_request(method, url_suffix, params=None, data=None):
                 else:
                     return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
-        except Exception as excep:
+        except ValueError:
             return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
-            return_error('Error in HTTP request - {}'.format(str(excep)))  # not reachable
 
     try:
         return res.json()
