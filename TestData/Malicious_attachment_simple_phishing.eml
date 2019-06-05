@@ -1,0 +1,31 @@
+MIME-Version: 1.0
+Date: Wed, 5 Jun 2019 16:45:05 +0300
+Message-ID: <CAJaFoefKV5aZQ7xb_oBuvz_JYdga=6KTLvVtMaea=uNSbGBxCg@mail.gmail.com>
+Subject: Take this, prince
+From: Ido Van Dijk <ivandijk@paloaltonetworks.com>
+To: Ido Van Dijk <ivandijk@paloaltonetworks.com>
+Content-Type: multipart/mixed; boundary="0000000000000b62a0058a93ce78"
+
+--0000000000000b62a0058a93ce78
+Content-Type: multipart/alternative; boundary="0000000000000b629d058a93ce76"
+
+--0000000000000b629d058a93ce76
+Content-Type: text/plain; charset="UTF-8"
+
+
+
+--0000000000000b629d058a93ce76
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr"><br></div>
+
+--0000000000000b629d058a93ce76--
+--0000000000000b62a0058a93ce78
+Content-Type: text/plain; charset="US-ASCII"; name="malicious_present_url.txt"
+Content-Disposition: attachment; filename="malicious_present_url.txt"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_jwjaakx60
+Content-ID: <f_jwjaakx60>
+
+aHR0cDovL3d3dy5ndWdvcmlzdG9iYXIuaXQvdmVydGVtYXRlL2NzY3Mv
+--0000000000000b62a0058a93ce78--
