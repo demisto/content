@@ -44,4 +44,3 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: "Updated arguments descriptions."

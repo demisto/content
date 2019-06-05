@@ -105,6 +105,5 @@ script:
   script: '-'
   type: python
 defaultEnabled: true
-releaseNotes: "Added a parameter that permits to return warnings instead of errors"
 tests:
   - Rasterize Test
