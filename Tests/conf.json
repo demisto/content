@@ -1621,8 +1621,7 @@
     },
     "nigthly_integrations": [
         "Lastline",
-        "TruSTAR",
-        "AbuseIPDB"
+        "TruSTAR"
     ],
     "unmockable_integrations": {
         "Autofocus": "JS integration, problem listed in issue 15544",
