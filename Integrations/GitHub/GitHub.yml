@@ -371,4 +371,3 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
