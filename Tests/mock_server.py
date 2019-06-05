@@ -1,11 +1,13 @@
 import os
 import signal
 import string
+import time
 import unicodedata
 from subprocess import call, Popen, PIPE, check_call, check_output
 
-
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
+PROXY_PROCESS_INIT_TIMEOUT = 20
+PROXY_PROCESS_INIT_INTERVAL = 1
 
 
 def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
@@ -267,6 +269,18 @@ class MITMProxy:
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
+        log_file_exists = False
+        seconds_since_init = 0
+        # Make sure process is up and running
+        while not log_file_exists and seconds_since_init < PROXY_PROCESS_INIT_TIMEOUT:
+            # Check if log file exist
+            log_file_exists = silence_output(self.ami.call, ['ls', log_file], stdout='null', stderr='null') == 0
+            time.sleep(PROXY_PROCESS_INIT_INTERVAL)
+            seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
+        if not log_file_exists:
+            self.stop()
+            raise Exception("Proxy process took to long to go up.")
+        print('Proxy process up and running. Took {} seconds'.format(seconds_since_init))
 
     def stop(self):
         if not self.process:
