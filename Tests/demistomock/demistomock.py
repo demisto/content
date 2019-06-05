@@ -479,7 +479,9 @@ def getIntegrationContext():
     return integrationContext
 
 
-def incidents(incidents):
+def incidents(incidents=None):
+    if not incidents:
+        return ""
     return results(
         {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
     )
