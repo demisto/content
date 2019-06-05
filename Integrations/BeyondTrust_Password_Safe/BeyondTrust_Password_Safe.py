@@ -304,6 +304,8 @@ try:
         check_in_credentials()
     elif demisto.command() == 'beyondtrust-change-credentials':
         change_credentials()
+    elif demisto.command() == 'fetch-credentials':
+        fetch_credentials()
 
 # Log exceptions
 except Exception, e:
