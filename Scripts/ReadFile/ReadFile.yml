@@ -41,3 +41,4 @@ timeout: '0'
 type: python
 runas: DBotWeakRole
 runonce: false
+releaseNotes: 'Enabled auto-detection of file encoding'
