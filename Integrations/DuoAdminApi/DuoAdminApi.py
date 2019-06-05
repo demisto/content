@@ -2,14 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 # imports
-import requests
-import base64
-import email
-import hmac
-import hashlib
-import urllib
-import binascii
-import json
 import datetime
 import calendar
 import duo_client
