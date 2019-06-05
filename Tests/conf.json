@@ -1517,6 +1517,7 @@
         }
     ],
     "skipped_tests": {
+        "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
@@ -1670,6 +1671,10 @@
         "Palo Alto Networks Cortex": "SDK",
         "Netcraft": "SSL failure",
         "AWS - EC2": "SSL Validation fails for STS",
-        "AWS - S3": "Integration requires SSL"
+        "AWS - S3": "Integration requires SSL",
+        "Recorded Future": "might be dynamic test",
+        "Cylance Protect": "Test module issue",
+        "AlphaSOC Wisdom": "Test module issue",
+        "Google BigQuery": "Integration has no proxy checkbox"
     }
 }
