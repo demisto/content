@@ -47,29 +47,29 @@ def http_request(method, url_suffix, params=None, data=None):
     )
     if res.status_code >= 400:
         try:
-            res = res.json()
+            json_res = res.json()
 
-            if res.get('errors') is None:
+            if json_res.get('errors') is None:
                 return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
             else:
-                error_code = res.get('errors')[0].get('code')
+                error_code = json_res.get('errors')[0].get('code')
                 if error_code == 'missing_field':
-                    return_error('Error: the field: "{}" requires a value'.format(res.get('errors')[0].get('field')))
+                    return_error('Error: the field: "{}" requires a value'.format(json_res.get('errors')[0].get('field')))
 
                 elif error_code == 'invalid':
-                    field = res.get('errors')[0].get('field')
+                    field = json_res.get('errors')[0].get('field')
                     if field == 'q':
-                        return_error('Error: invalid query - {}'.format(res.get('errors')[0].get('message')))
+                        return_error('Error: invalid query - {}'.format(json_res.get('errors')[0].get('message')))
 
                     else:
                         return_error('Error: the field: "{}" has an invalid value'.format(field))
 
                 elif error_code == 'missing':
-                    return_error('Error: {} does not exist'.format(res.get('errors')[0].get('resource')))
+                    return_error('Error: {} does not exist'.format(json_res.get('errors')[0].get('resource')))
 
                 elif error_code == 'already_exists':
-                    return_error('Error: the field {} must be unique'.format(res.get('errors')[0].get('field')))
+                    return_error('Error: the field {} must be unique'.format(json_res.get('errors')[0].get('field')))
 
                 else:
                     return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
