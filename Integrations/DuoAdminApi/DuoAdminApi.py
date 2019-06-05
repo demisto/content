@@ -125,7 +125,7 @@ def test_instance():
         else:
             demisto.results('Unknown error: ' + str(e))
 
-\
+
 def get_all_users():
     res = admin_api.get_users()
 
