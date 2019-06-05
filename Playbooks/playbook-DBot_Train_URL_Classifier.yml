@@ -202,6 +202,6 @@ outputs:
 - contextPath: DBotURLClassifier.EvaluationScores.accuracy
   description: The url classifcation model accuracy (0-1)
   type: Number
-fromversion: 4.1.0
+fromversion: 4.5.0
 tests:
   - DBot_Train_URL_Classifier_Test

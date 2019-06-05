@@ -45,4 +45,4 @@ type: python
 dockerimage: demisto/dl:1.3
 tests:
 - DBot_Train_URL_Classifier_Test
-fromversion: 4.1.0
+fromversion: 4.5.0

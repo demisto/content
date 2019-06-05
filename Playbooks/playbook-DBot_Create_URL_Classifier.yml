@@ -138,6 +138,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
+fromversion: 4.5.0
 tests:
   - DBot_Train_URL_Classifier_Test
