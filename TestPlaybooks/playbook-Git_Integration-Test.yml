@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 430,
+          "y": -40
         }
       }
     note: false
@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 440,
+          "y": 115
         }
       }
     note: false
@@ -109,7 +109,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 590
+          "y": 695
         }
       }
     note: false
@@ -258,7 +258,6 @@ tasks:
       brand: GitHub
     nexttasks:
       '#none#':
-      - "3"
       - "25"
     scriptarguments:
       assignees: {}
@@ -271,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 430
+          "x": 440,
+          "y": 325
         }
       }
     note: false
@@ -303,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 790,
-          "y": 800
+          "y": 830
         }
       }
     note: false
@@ -338,8 +337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 790
+          "x": 120,
+          "y": 840
         }
       }
     note: false
@@ -589,6 +588,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
       key:
         simple: ID
@@ -598,8 +600,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 525
+          "x": 440,
+          "y": 500
         }
       }
     note: false
@@ -610,10 +612,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2005,
-        "width": 1770,
-        "x": -60,
-        "y": 50
+        "height": 2095,
+        "width": 1590,
+        "x": 120,
+        "y": -40
       }
     }
   }

@@ -37,7 +37,6 @@ HEADERS = {
 
 
 def http_request(method, url_suffix, params=None, data=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -46,14 +45,12 @@ def http_request(method, url_suffix, params=None, data=None):
         data=json.dumps(data),
         headers=HEADERS
     )
-    # Handle error responses gracefully
-    # if res.status_code == 422:
-    #     return_error('Error illegal assignee - must be a registered GitHub username')
-
     if res.status_code >= 400:
         return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
     try:
         return res.json()
+
     except Exception as excep:
         return_error('Error in HTTP request - {}'.format(str(excep)))
 
@@ -83,9 +80,8 @@ def context_create_issue(response, issue):
     """ Create GitHub.Issue EntryContext and results to be printed in Demisto.
 
     Args:
-        response (dict): The raw HTTP response to be inserted to the 'Contents' field
-        issue (dict or list): A dictionary or a list of dictionaries formatted for Demisto results
-
+        response (dict): The raw HTTP response to be inserted to the 'Contents' field.
+        issue (dict or list): A dictionary or a list of dictionaries formatted for Demisto results.
     """
     ec = {
         'GitHub.Issue(val.Repository == obj.Repository && val.ID == obj.ID)': issue
@@ -94,35 +90,36 @@ def context_create_issue(response, issue):
 
 
 def list_create(issue, list_name, element_name):
-    """ Creates a list if parameters exist in issue
+    """ Creates a list if parameters exist in issue.
 
     Args:
-        issue: an issue from GitHub
-        list_name: the name of the list in the issue
-        element_name: the field name of the element in the list
-    Returns:
+        issue(dict): an issue from GitHub.
+        list_name (str): the name of the list in the issue.
+        element_name (str): the field name of the element in the list.
 
-        The created list or None if it does not exist
+    Returns:
+        The created list or None if it does not exist.
     """
     if issue.get(list_name) is not None:
         return [element.get(element_name) for element in issue.get(list_name)]
+
     else:
         None
 
 
 def issue_format(issue):
-    """ Get a HTTP response containing an issue and creates a dictionary with selected fields representing an issue in
-     Demisto.
+    """ Create a dictionary with selected fields representing an issue in Demisto.
 
     Args:
         issue (dict): An HTTP response representing an issue, formatted as a dictionary
-    Returns:
 
-        Returns a dictionary representing an issue in Demisto
+    Returns:
+        (dict). representing an issue in Demisto.
     """
     closed_by = None
     if issue.get('closed_by') is not None and issue.get('state') == 'closed':
         closed_by = issue.get('closed_by').get('login')
+
     form = {
         'ID': issue.get('number'),
         'Repository': REPOSITORY,
@@ -147,9 +144,7 @@ def create_issue_table(issue_list, response, limit):
         response (dict):A raw HTTP response sent for 'Contents' field in context
 
     Returns:
-
-        The issues are sent to Demisto as a list
-
+        The issues are sent to Demisto as a list.
     """
     issue_list.reverse()
     issue_table = []
