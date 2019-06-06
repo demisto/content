@@ -420,7 +420,6 @@ script:
         ec = {}
         dbot_scores = []
         ip_enrich = []
-        output = []
 
         for entity in results:
             risk_score = 0
