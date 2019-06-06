@@ -96,3 +96,4 @@ scripttarget: 0
 runonce: false
 tests:
   - No test
+releaseNotes: "-"
