@@ -10,6 +10,7 @@ CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^
 
 
 def get_yaml_obj(entry_id):
+    data = ''
     try:
         yml_file_path = demisto.getFilePath(entry_id)['path']
         with open(yml_file_path, 'r') as yml_file:
