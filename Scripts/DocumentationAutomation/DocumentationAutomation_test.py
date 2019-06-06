@@ -10,8 +10,11 @@ def test_get_yaml_obj(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     # sanity
+    file_path = os.path.join('Integrations', 'ANYRUN', 'ANYRUN.yml')  # relevant for circle builds
+    if not os.path.isfile(file_path):
+        file_path = os.path.join('..', '..', 'Integrations', 'ANYRUN', 'ANYRUN.yml')  # relevant for local builds
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'path': os.path.join('..', '..', 'Integrations', 'ANYRUN', 'ANYRUN.yml')})
+                        return_value={'path': file_path})
     data = get_yaml_obj('12345')
     # error count should not change
     assert return_error_mock.call_count == 0
@@ -20,7 +23,7 @@ def test_get_yaml_obj(mocker):
 
     # invalid yml
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'path': os.path.join('..', '..', 'Integrations', 'ANYRUN', 'ANYRUN.py')})
+                        return_value={'path': os.path.splitext(file_path)[0] + '.py'})
     get_yaml_obj('234')
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
