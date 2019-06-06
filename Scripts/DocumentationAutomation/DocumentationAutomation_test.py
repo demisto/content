@@ -78,7 +78,3 @@ def test_extract_command():
     assert len(expected) == len(args)
     for k, v in expected.items():
         assert args[k] == v
-
-
-
-
