@@ -2878,3 +2878,4 @@ script:
     description: fetch scan results for a scan
 hidden: false
 fromversion: 3.5.0
+releaseNotes: “-“
