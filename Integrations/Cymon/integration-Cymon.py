@@ -30,7 +30,7 @@ DEFAULT_HEADERS = {
 
 
 def cymon_says():
-    return_error('Cymon was discontinued April 30, 2019. Please try another service.')
+    return_error('Cymon service discontinued. Please disable or delete the integration instance.')
 
 
 def http_request(method, url, headers):
@@ -454,7 +454,7 @@ try:
     command = demisto.command()
 
     if command == 'test-module':
-        demisto.results('Cymon has been Deprecated and is no longer in service.')
+        demisto.results('Cymon has been Deprecated and is no longer in service. Please delete the instance.')
     elif command == 'ip':
         cymon_says()
     elif command == 'domain':
