@@ -1137,7 +1137,9 @@ script:
             headers=ALERT_MAIN_ATTRIBUTES
         )
 
-        event_type = re.sub("([a-z])([A-Z])","\g<1> \g<2>",alert.get('event_type','NewEvent')).title()
+        event_type = alert.get('event_type')
+        event_type = 'NewEvent' if not event_type else event_type
+        event_type = re.sub("([a-z])([A-Z])","\g<1> \g<2>", event_type).title()
         event_table = tableToMarkdown(
             event_type,
             alert.get('event_values')
@@ -2237,7 +2239,8 @@ script:
 
     def parse_alert_to_incident(alert):
 
-        event_type = alert.get('event_type', 'NewEvent')
+        event_type = alert.get('event_type')
+        event_type = 'NewEvent' if not event_type else event_type
         event_values = alert.get('event_values', {})
         event_indicators_map = {
             'fileWriteEvent': 'fileWriteEvent/fileName',

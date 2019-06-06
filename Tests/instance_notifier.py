@@ -112,16 +112,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="devops-events",
-            username="Instances nightly report",
-            as_user="False",
-            attachments=attachments,
-            text="You have {0} instances configurations".format(integrations_counter)
-        )
-
-        sc.api_call(
-            "chat.postMessage",
-            channel="content-lab-tests",
+            channel="dmst-content-lab",
             username="Instances nightly report",
             as_user="False",
             attachments=attachments,
