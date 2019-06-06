@@ -105,10 +105,10 @@ def get_pdf_metadata(file_path):
             # camelize key
             if ' ' in key:
                 if 'PDF' in key:
-                    key = key.title().replace('Pdf','PDF').replace(' ','')
+                    key = key.title().replace('Pdf' , 'PDF').replace(' ' , '')
 
                 else:
-                    key = key.title().replace(' ','')
+                    key = key.title().replace(' ' , '')
 
             # handle values with and without ':'
             value = ''
