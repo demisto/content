@@ -90,6 +90,7 @@ class FilesValidator(object):
             file_path = file_data[1]
 
             if file_status.lower().startswith('r'):
+                file_status = 'r'
                 file_path = file_data[2]
             if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
                 dir_path = os.path.dirname(file_path)
