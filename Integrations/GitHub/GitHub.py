@@ -50,7 +50,7 @@ def http_request(method, url_suffix, params=None, data=None):
             json_res = res.json()
 
             if json_res.get('errors') is None:
-                return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+                return_error('Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
             else:
                 error_code = json_res.get('errors')[0].get('code')
@@ -72,7 +72,7 @@ def http_request(method, url_suffix, params=None, data=None):
                     return_error('Error: the field {} must be unique'.format(json_res.get('errors')[0].get('field')))
 
                 else:
-                    return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+                    return_error('Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
         except ValueError:
             return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
