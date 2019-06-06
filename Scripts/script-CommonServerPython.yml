@@ -22,7 +22,7 @@ script: |-
   IS_PY3 = sys.version_info[0] == 3
   STRING_TYPES = (str, bytes) if IS_PY3 else (str, unicode)
 
-  entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
+  entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15, 'widget': 17}
   formats = {'html': 'html', 'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
   brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'WildFire', 'cy': 'cylance', 'cs': 'crowdstrike-intel'}
   providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
@@ -1538,5 +1538,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
 tests:
   - TestCommonPython
