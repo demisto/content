@@ -1679,6 +1679,24 @@
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
-        "AlphaSOC Wisdom": "Test module issue"
+        "AlphaSOC Wisdom": "Test module issue" ,
+        "HashiCorp Vault": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "SNDBOX": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "RTIR": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+        "SCADAfence CNM": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "Preempt": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "Rapid7 Nexpose": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "QRadar": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "Centreon":"Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "RSA NetWitness v11.1": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "Zscaler": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "vmray": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+	    "Panorama": "Test playbook fails - unable to use playbacks investigating",
+	    "Palo Alto Minemeld": "Test playbook fails - unable to use playbacks investigating",
+        "EWS v2": "Test playbook fails - unable to use playbacks investigating",
+	    "Symantec Endpoint Protection V2": "Test playbook fails - unable to use playbacks investigating",
+	    "jira-v2": "Test playbook fails - unable to use playbacks investigating",
+	    "SplunkPy": "Test playbook fails - unable to use playbacks investigating",
+	    "Cuckoo Sandbox": "Test playbook fails - unable to use playbacks investigating"
     }
 }
