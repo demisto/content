@@ -1496,10 +1496,6 @@
             "playbookID": "Forescout-Test"
         },
         {
-            "integrations": "GitHub",
-            "playbookID": "Git_Integration-Test"
-        },
-        {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
         },
