@@ -55,7 +55,7 @@ def test_extract_command():
 
     # edge cases
     cmd, args = extract_command('!command SomeParam=8.8.8.8 dash-arg="args" special_chars="1qazxsw2 EW3- *3d" '
-                                'backTick=`hello "hello" \'hello\'` triple_quote="""this is a multi quotes"""')
+                                'backTick=`hello "hello" \'hello\'` triple_quotes="""this is a multi quotes"""')
     expected = {
         'SomeParam': '8.8.8.8',
         'dash-arg': 'args',
