@@ -68,7 +68,7 @@ def test_get_metadata_without_encrypted(tmp_path):
         'Pages': '1',
         'Encrypted': 'no',
         'PageSize': '595 x 842 pts (A4)',
-        'Page￿￿Rot': '0',
+        'PageRot': '0',
         'FileSize': '18920 bytes',
         'Optimized': 'no',
         'PDFVersion': '1.3'
