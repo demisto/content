@@ -27,7 +27,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: DBot Score Threshold
+- display: IP Threshold. Minimum risk score from ThreatX to consider the IP malicious.
   name: dbot_threshold
   defaultvalue: "70"
   type: 0
@@ -110,7 +110,7 @@ script:
         try:
             resp_json = res.json()
         except:
-            return_error('Could not parse the response from ThreatX.')
+            return_error('Could not parse the response from ThreatX: %s' % (res.text))
 
         if 'Ok' not in resp_json:
             if url_suffix == '/login':
@@ -359,7 +359,7 @@ script:
         return_outputs(md, ec, results)
 
     @logger
-    def get_entities(entity_name, entity_id, entity_ip):
+    def get_entities(entity_name, entity_id, entity_ip, timeframe):
         commands = {
             'command': 'list',
             'query': {}
@@ -380,6 +380,22 @@ script:
             my_entity_ip = {'ip_addresses': entity_ips}
             commands['query'].update(my_entity_ip)
 
+        first_seen = None
+
+        if timeframe is not None:
+            if timeframe == '1-Hour':
+                first_seen = int(time.time() - (60 * 60))
+            elif timeframe == '1-Day':
+                first_seen = int(time.time() - (24 * 60 * 60))
+            elif timeframe == '1-Week':
+                first_seen = int(time.time() - (7 * 24 * 60 * 60))
+            elif timeframe == '1-Month':
+                first_seen = int(time.time() - (31 * 24 * 60 * 60))
+
+        if first_seen:
+            my_timeframe = {'first_seen': first_seen}
+            commands['query'].update(my_timeframe)
+
         return http_request('/entities', commands)
 
     @logger
@@ -396,10 +412,12 @@ script:
         entity_name = demisto.args().get('entity_name', None)
         entity_id = demisto.args().get('entity_id', None)
         entity_ip = demisto.args().get('entity_ip', None)
-        results = get_entities(entity_name, entity_id, entity_ip)
+        timeframe = demisto.args().get('timeframe', None)
+        results = get_entities(entity_name, entity_id, entity_ip, timeframe)
         e_risk = None
         e_id = None
         md = []
+        ec = {}
         dbot_scores = []
         ip_enrich = []
         output = []
@@ -466,34 +484,23 @@ script:
                         })
 
             md.append({'Name': entity['codename'],
-                       'ID': entity['id'],
+                       'ID': e_id,
                        'IP Addresses': ', '.join(iplist),
-                       'ThreatX Risk Score': risk_score,
-                       'DBot Score': dbscore
+                       'ThreatX Risk Score': risk_score
                        })
 
-            ec = {
+            ec.update({
                 'Threatx.Entity(val.ID && val.ID === obj.ID)': {
-                    'ID': entity['id'],
+                    'ID': e_id,
                     'Name': entity['codename'],
                     'IP': iplist,
                     'Risk': risk_score
                 },
                 'DBotScore': dbot_scores,
                 'IP(val.Address === obj.Address)': ip_enrich
-            }
+            })
 
-            output.append({
-                'Type': entryTypes['note'],
-                'HumanReadable': tableToMarkdown('Entities', md),
-                'ContentsFormat': formats['json'],
-                'Contents': entity,
-                'EntryContext': ec})
-
-        if output:
-            demisto.results(output)
-        else:
-            return_outputs('No Entities Returned', None)
+        return_outputs(tableToMarkdown('Entities', md), ec, results)
 
     @logger
     def get_entity_notes(entity_id):
@@ -681,6 +688,19 @@ script:
       description: One or more comma separated Entity ID hashes
     - name: entity_ip
       description: One or more comma separated Entity IP addresses
+    - name: timeframe
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 1-Hour
+      - 1-Day
+      - 1-Week
+      - 1-Month
+      - 3-Months
+      description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day,
+        1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large
+        number of Entities can timeout.'
+      defaultValue: 1-Hour
     outputs:
     - contextPath: Threatx.Entity.ID
       description: ID hash of the Entity
@@ -694,13 +714,15 @@ script:
     - contextPath: Threatx.Entity.Risk
       description: Risk score of the Entity
     description: 'Get high-level Entity information via the Entity ID, Entity Name,
-      or Entity IP. Example: !threatx-get-entities entity_name=CynicalGraaf,MJ12Bot
-      entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14'
+      or Entity IP. Example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
+      entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long
+      look-back timeframes for a large number of Entities can timeout.'
   - name: threatx-get-entity-notes
     arguments:
     - name: entity_id
       required: true
-      description: ID hash of the Entity
+      description: 'ID hash of the Entity. Note: this value can be retrieved using
+        the "!threatx-get-entities" command.'
     outputs:
     - contextPath: Threatx.Entity.Note
       description: Notes attached to the Entity
@@ -718,7 +740,8 @@ script:
     arguments:
     - name: entity_id
       required: true
-      description: ID hash of the Entity
+      description: 'ID hash of the Entity. Note: this value can be retrieved using
+        the "!threatx-get-entities" command.'
     - name: message
       required: true
       description: Contents of the note

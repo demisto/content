@@ -383,6 +383,8 @@ tasks:
         simple: "870617232157515386"
       entity_ip: {}
       entity_name: {}
+      timeframe:
+        simple: "3-Months"
     separatecontext: false
     view: |-
       {
