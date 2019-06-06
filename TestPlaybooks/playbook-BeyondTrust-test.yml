@@ -1,0 +1,217 @@
+id: BeyondTrust-Test
+version: 11
+name: BeyondTrust-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1ed93534-971b-4a5e-8a13-f5a6214888a4
+    type: start
+    task:
+      id: 1ed93534-971b-4a5e-8a13-f5a6214888a4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 47d9c91b-35e7-4a1e-8e8d-e9724cdf499a
+    type: regular
+    task:
+      id: 47d9c91b-35e7-4a1e-8e8d-e9724cdf499a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 7433dd2c-de0e-4b47-8509-119cc369148e
+    type: regular
+    task:
+      id: 7433dd2c-de0e-4b47-8509-119cc369148e
+      version: -1
+      name: Get Managed Accounts
+      description: Returns a list of Managed Accounts requestable by the current user.
+      script: '|||beyondtrust-get-managed-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0527fc32-cf2b-43f9-8ab9-36adf1c92779
+    type: regular
+    task:
+      id: 0527fc32-cf2b-43f9-8ab9-36adf1c92779
+      version: -1
+      name: Get Managed Systems
+      description: Returns a list of Managed Systems.
+      script: '|||beyondtrust-get-managed-systems'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 7e22a513-44c6-4c6d-8801-05d0f04ce23d
+    type: regular
+    task:
+      id: 7e22a513-44c6-4c6d-8801-05d0f04ce23d
+      version: -1
+      name: Create release request
+      description: Creates a new credentials release request.
+      script: '|||beyondtrust-create-release-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      access_policy_schedule_id: {}
+      access_type: {}
+      account_id:
+        complex:
+          root: BeyondTrust
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: BeyondTrust.Account.AccountId
+                iscontext: true
+              right:
+                value:
+                  simple: "6"
+          accessor: Account.AccountId
+      conflict_option: {}
+      duration_minutes:
+        simple: "2"
+      reason: {}
+      system_id:
+        complex:
+          root: BeyondTrust
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: BeyondTrust.Account.SystemId
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Account.SystemId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1a7b0a89-54df-48e7-86c2-59abdff6df7a
+    type: regular
+    task:
+      id: 1a7b0a89-54df-48e7-86c2-59abdff6df7a
+      version: -1
+      name: Check-In Request
+      description: Checks-in/releases a request before it has expired.
+      script: '|||beyondtrust-check-in-credentials'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      reason: {}
+      request_id:
+        simple: ${BeyondTrust.Request.RequestID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 840,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
