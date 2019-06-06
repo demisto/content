@@ -6,7 +6,7 @@ import sys
 
 reload(sys)
 sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
-CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?')
+CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?', re.S)
 
 
 def get_yaml_obj(entry_id):
