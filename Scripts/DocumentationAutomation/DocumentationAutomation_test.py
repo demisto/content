@@ -10,6 +10,7 @@ def test_get_yaml_obj(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     # sanity
+    print os.getcwd()
     file_path = os.path.join('Integrations', 'ANYRUN', 'ANYRUN.yml')  # relevant for circle builds
     if not os.path.isfile(file_path):
         file_path = os.path.join('..', '..', 'Integrations', 'ANYRUN', 'ANYRUN.yml')  # relevant for local builds
