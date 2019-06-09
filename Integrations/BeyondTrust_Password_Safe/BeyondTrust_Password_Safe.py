@@ -36,18 +36,32 @@ SESSION = requests.session()
 
 def http_request(method, suffix_url, data=None):
     url = BASE_URL + suffix_url
+    try:
+        res = SESSION.request(
+            method,
+            url,
+            verify=USE_SSL,
+            data=data,
+            headers=HEADERS
+        )
+        except requests.exceptions.SSLError:
+        ssl_error = 'Could not connect to BeyonTrust: Could not verify certificate.'
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(ssl_error)
+        return return_error(ssl_error)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+        connection_error = 'Could not connect to BeyondTrust: {}'.format(str(e))
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(connection_error)
+        return return_error(connection_error)
 
-    res = SESSION.request(
-        method,
-        url,
-        verify=USE_SSL,
-        data=data,
-        headers=HEADERS
-    )
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 204}:
-        return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {res.content})')
-
+        if res.status_code == 401:
+            return_error('Could not connect to BeyondTrust - wrong credentials')
+        else:
+            return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {res.content})')
     try:
         return res.json()
     except ValueError:
@@ -88,20 +102,23 @@ def get_managed_accounts():
     Returns a list of Managed Accounts that can be requested by the current user.
     """
     data = []
+    headers = ['AccountName', 'AccountID', 'SystemName', 'SystemID', 'DomainName', 'LastChangeDate', 'NextChangeDate']
     managed_accounts = get_managed_accounts_request()
     for account in managed_accounts:
         data.append({
-            'PlatformID': account.get('PlatformID'),
+            'LastChangeDate': account.get('LastChangeDate'),
+            'NextChangeDate': account.get('NextChangeDate'),
             'SystemID': account.get('SystemId'),
             'SystemName': account.get('SystemName'),
             'DomainName': account.get('DomainName'),
             'AccountID': account.get('AccountId'),
             'AccountName': account.get('AccountName')
+
         })
 
     entry_context = {'BeyondTrust.Account(val.AccountId === obj.AccountId)': managed_accounts}
 
-    return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, removeNull=True), entry_context,
+    return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, headers, removeNull=True), entry_context,
                    managed_accounts)
 
 
@@ -175,7 +192,6 @@ def create_release():
     account_id = demisto.args().get('account_id')
     duration_minutes = demisto.args().get('duration_minutes')
     reason = demisto.args().get('reason')
-    access_policy_schedule_id = demisto.args().get('access_policy_schedule_id')
     conflict_option = demisto.args().get('conflict_option')
 
     data = {
@@ -190,9 +206,6 @@ def create_release():
     if reason:
         data['Reason'] = reason
 
-    if access_policy_schedule_id:
-        data['AccessPolicyScheduleID'] = access_policy_schedule_id
-
     if conflict_option:
         data['ConflictOption'] = conflict_option
 
@@ -203,7 +216,7 @@ def create_release():
 
     response = {
         'RequestID': request_id,
-        'Credentials': credentials
+        'Password': credentials
     }
 
     entry_context = {'BeyondTrust.Request(val.AccountId === obj.AccountId)': createContext(response)}
@@ -339,8 +352,8 @@ try:
         get_credentials()
     elif demisto.command() == 'beyondtrust-check-in-credentials':
         check_in_credentials()
-    elif demisto.command() == 'beyondtrust-change-credentials':
-        change_credentials()
+    # elif demisto.command() == 'beyondtrust-change-credentials':
+    #     change_credentials()
     elif demisto.command() == 'fetch-credentials':
         fetch_credentials()
 
