@@ -139,7 +139,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     md += 'Detections / Total: **' + str(positives) + '/' + str(vt_response.get('total')) + '**\n'
     md += 'Resource: [' + str(vt_response.get('resource')) + '](' + str(vt_response.get('resource')) + ')\n'
     md += 'VT Link: [' + str(vt_response.get('permalink')) + '](' + str(vt_response.get('permalink')) + ')\n'
-    dbotScore = 0;
+    dbotScore = 0
 
     if (positives >= threshold or is_enough_preferred_vendors(vt_response)):
         ec.update({
@@ -264,8 +264,8 @@ def check_file_behaviour_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "A report wasn't found for file " + file_hash +
-                             ". Virus Total returned the following response: " + json.dumps(
+            'HumanReadable': "A report wasn't found for file "
+                             + file_hash + ". Virus Total returned the following response: " + json.dumps(
                 response.get('verbose_msg'))
         }
 
@@ -426,9 +426,10 @@ def get_domain_report_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "Domain " + domain +
-                             " not in Virus Total's dataset. Virus Total returned the following response: " +
-                             json.dumps(response.get('verbose_msg'))
+            'HumanReadable': "Domain "
+                             + domain
+                             + " not in Virus Total's dataset. Virus Total returned the following response: "
+                             + json.dumps(response.get('verbose_msg'))
         }
 
     communicating_hashes = response.get('detected_communicating_samples', None)
@@ -574,7 +575,7 @@ def get_url_report_command():
     ec = {
         'DBotScore': [],
         outputPaths['url']: [],
-        }
+    }
     for url, res in responses_dict.iteritems():
         url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
         md += url_md
@@ -764,9 +765,10 @@ def get_ip_report_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "IP " + ip +
-                             "not in Virus Total's dataset. Virus Total returned the following response: " +
-                             json.dumps(response.get('verbose_msg'))
+            'HumanReadable': "IP "
+                             + ip
+                             + "not in Virus Total's dataset. Virus Total returned the following response: "
+                             + json.dumps(response.get('verbose_msg'))
         }
 
     ec = {}
@@ -795,8 +797,8 @@ def get_ip_report_command():
     if detected_downloaded_samples:
         detected_downloaded_samples = detected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are detected by at least one antivirus solution and were downloaded " +
-            "by VirusTotal from the IP address provided",
+            "Latest files that are detected by at least one antivirus solution and were downloaded "
+            + "by VirusTotal from the IP address provided",
             detected_downloaded_samples)
 
     undetected_downloaded_samples = response.get('undetected_downloaded_samples', None)
@@ -804,8 +806,8 @@ def get_ip_report_command():
     if undetected_downloaded_samples:
         undetected_downloaded_samples = undetected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are not detected by any antivirus solution and were downloaded by" +
-            " VirusTotal from the IP address provided",
+            "Latest files that are not detected by any antivirus solution and were downloaded by"
+            + " VirusTotal from the IP address provided",
             undetected_downloaded_samples)
 
     detected_communicating_samples = response.get('detected_communicating_samples', None)
@@ -994,8 +996,10 @@ def hash_communication_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following response: " + json.dumps(
-                response.get('verbose_msg'))
+            'HumanReadable': "A report wasn't found for file "
+                             + file_hash
+                             + ". Virus Total returned the following response: "
+                             + json.dumps(response.get('verbose_msg'))
         }
 
     # network data contains all the communication data
