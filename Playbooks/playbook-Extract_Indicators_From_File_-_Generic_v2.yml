@@ -823,7 +823,7 @@ tasks:
       id: 2d1ba725-7a79-4ea0-8c84-94ce9007608b
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether the Image OCR integration is enabled.
+      description: Checks whether there is an active instance of the Image OCR integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -869,8 +869,7 @@ tasks:
       id: 9a4d578f-2723-4b9e-82c0-97bb5f7afccf
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG and GIF image files. Also provides
-        reputation for any extracted indicators, using auto-extract.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
@@ -962,44 +961,43 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file to extract indicators from.
+  description: The file from which to extract indicators.
 outputs:
 - contextPath: Domain.Name
-  description: Extracted domains
+  description: Extracted domains.
 - contextPath: Account.Email.Address
-  description: Extracted emails
+  description: Extracted emails addresses.
 - contextPath: File.MD5
-  description: Extracted MD5
+  description: Extracted MD5 hash.
 - contextPath: File.SHA1
-  description: Extracted SHA1
+  description: Extracted SHA1 hash.
 - contextPath: File.SHA256
-  description: Extracted SHA256
+  description: Extracted SHA256 hash.
 - contextPath: IP.Address
-  description: Extracted IPs
+  description: Extracted IP addresses.
 - contextPath: File.Text
-  description: The extracted text of the PDF file, or of images extracted from the
-    PDF file.
+  description: The text or images extracted from the PDF file.
 - contextPath: File.Producer
-  description: The PDF File producer
+  description: The PDF file producer.
 - contextPath: File.Title
-  description: The PDF File Title
+  description: The title of the PDF file.
 - contextPath: File.xap
-  description: The PDF File xap
+  description: The xap of the PDF file.
 - contextPath: File.Author
-  description: The PDF File Author
+  description: The author of the PDF file.
 - contextPath: File.dc
-  description: The PDF File dc
+  description: The dc of the PDF file.
 - contextPath: File.xapmm
-  description: The PDF File xapmm
+  description: The xapmm of the PDF file.
 - contextPath: File.ModDate
-  description: The PDF File ModDate
+  description: The ModDate of the PDF file.
 - contextPath: File.CreationDate
-  description: The PDF File CreationDate
+  description: The CreationDate of the PDF file.
 - contextPath: File.Pages
-  description: Number of pages in PDF file
+  description: Number of pages in PDF file.
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the PDF file
+  description: List of URLs that were extracted from the PDF file.
   type: unknown
-releaseNotes: "A new playbook that now extracts images from PDF files, and uses Image OCR to extract text contained in them"
+releaseNotes: "Extracts images and text from PDF files. Images are extractd using the Image OCR integration."
 tests:
   - Extract Indicators From File - Generic v2 - Test
