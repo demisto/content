@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
 API_KEY = demisto.params().get('key')
+SYSTEM_NAME = demisto.params().get('system_name')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
@@ -26,10 +27,10 @@ BASE_URL = SERVER + '/BeyondTrust/api/public/v3'
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': f'PS-Auth key={API_KEY}; runas={USERNAME}; pwd=[{PASSWORD}];'
 }
 
 SESSION = requests.session()
+RAISE_EXCEPTION_ON_ERROR: bool = False
 
 ''' HELPER FUNCTIONS '''
 
@@ -44,7 +45,7 @@ def http_request(method, suffix_url, data=None):
             data=data,
             headers=HEADERS
         )
-        except requests.exceptions.SSLError:
+    except requests.exceptions.SSLError:
         ssl_error = 'Could not connect to BeyonTrust: Could not verify certificate.'
         if RAISE_EXCEPTION_ON_ERROR:
             raise Exception(ssl_error)
@@ -83,13 +84,6 @@ def signout():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
-    """
-    Singing in the execution code
-    """
-    pass
-
-
 def get_managed_accounts_request():
     suffix_url = '/managedaccounts'
     response = http_request('GET', suffix_url)
@@ -102,21 +96,21 @@ def get_managed_accounts():
     Returns a list of Managed Accounts that can be requested by the current user.
     """
     data = []
-    headers = ['AccountName', 'AccountID', 'SystemName', 'SystemID', 'DomainName', 'LastChangeDate', 'NextChangeDate']
+    headers = ['AccountName', 'AccountID', 'AssetName', 'SystemID', 'DomainName', 'LastChangeDate', 'NextChangeDate']
     managed_accounts = get_managed_accounts_request()
     for account in managed_accounts:
         data.append({
             'LastChangeDate': account.get('LastChangeDate'),
             'NextChangeDate': account.get('NextChangeDate'),
             'SystemID': account.get('SystemId'),
-            'SystemName': account.get('SystemName'),
+            'AssetName': account.get('SystemName'),
             'DomainName': account.get('DomainName'),
             'AccountID': account.get('AccountId'),
             'AccountName': account.get('AccountName')
 
         })
 
-    entry_context = {'BeyondTrust.Account(val.AccountId === obj.AccountId)': managed_accounts}
+    entry_context = {'BeyondTrust.Account(val.AccountID === obj.AccountID)': managed_accounts}
 
     return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, headers, removeNull=True), entry_context,
                    managed_accounts)
@@ -219,7 +213,7 @@ def create_release():
         'Password': credentials
     }
 
-    entry_context = {'BeyondTrust.Request(val.AccountId === obj.AccountId)': createContext(response)}
+    entry_context = {'BeyondTrust.Request(val.AccountID === obj.AccountID)': createContext(response)}
     return_outputs(tableToMarkdown('The request has been Successful', response), entry_context, response)
 
 
@@ -264,7 +258,7 @@ def check_in_credentials():
 
     """
     request_id = demisto.args().get('request_id')
-    reason = demisto.args().get('reason')
+    reason = str(demisto.args().get('reason')).encode('utf-8')
 
     data = {'Reason': reason if reason else ''}
 
@@ -273,62 +267,96 @@ def check_in_credentials():
     demisto.results('The release was successfully checked-in/released')
 
 
-# def change_credentials_request(account_id, data):
-#     suffix_url = f'/ManagedAccounts/{account_id}/Credentials'
-#     response = http_request('PUT', suffix_url, data=json.dumps(data))
-#
-#     return response
-#
-#
-# def change_credentials():
-#     """
-#     Updates the credentials for a Managed Account, optionally applying the change to the Managed System.
-#
-#     demisto parameter: (int) account_id
-#         ID of the account for which to set the credentials.
-#
-#     demisto parameter: (string) password
-#         The new password to set. If not given, generates a new, random password.
-#
-#     demisto parameter: (string) public_key
-#         The new public key to set on the host. This is required if PrivateKey is given and updateSystem=true.
-#
-#     demisto parameter: (string) private_key
-#         The private key to set (provide Passphrase if encrypted).
-#
-#     demisto parameter: (string) pass_phrase
-#         The passphrase to use for an encrypted private key.
-#
-#     demisto parameter: (bool) update_system
-#         Whether to update the credentials on the referenced system.
-#
-#     """
-#     account_id = demisto.args().get('account_id')
-#     password = demisto.args().get('password')
-#     public_key = demisto.args().get('public_key')
-#     private_key = demisto.args().get('private_key')
-#     pass_phrase = demisto.args().get('pass_phrase')
-#     update_system = demisto.args().get('update_system')
-#
-#     data = {
-#         'AccountId': account_id
-#     }
-#
-#     if password:
-#         data['Password'] = password
-#
-#     if private_key:
-#         if public_key and update_system == True:
-#             data['PrivateKey'] = private_key
-#             data['PublicKey'] = public_key
-#         else:
-#             return_error('Missing public key')
-#
-#     if pass_phrase:
-#         data['Passphrase'] = pass_phrase
-#     change_request = change_credentials_request(account_id, data)
-#
-#     demisto.results('The password has been changed')
+def change_credentials_request(account_id, data):
+    suffix_url = f'/ManagedAccounts/{account_id}/Credentials'
+    response = http_request('PUT', suffix_url, data=json.dumps(data))
+
+    return response
+
+
+def change_credentials():
+    """
+    Updates the credentials for a Managed Account, optionally applying the change to the Managed System.
+
+    demisto parameter: (int) account_id
+        ID of the account for which to set the credentials.
+
+    demisto parameter: (string) password
+        The new password to set. If not given, generates a new, random password.
+
+    demisto parameter: (string) public_key
+        The new public key to set on the host. This is required if PrivateKey is given and updateSystem=true.
+
+    demisto parameter: (string) private_key
+        The private key to set (provide Passphrase if encrypted).
+
+    demisto parameter: (string) pass_phrase
+        The passphrase to use for an encrypted private key.
+
+    demisto parameter: (bool) update_system
+        Whether to update the credentials on the referenced system.
+
+    """
+    account_id = demisto.args().get('account_id')
+    password = demisto.args().get('password')
+    public_key = demisto.args().get('public_key')
+    private_key = demisto.args().get('private_key')
+    pass_phrase = demisto.args().get('pass_phrase')
+    update_system = demisto.args().get('update_system')
+
+    data = {
+        'AccountId': account_id
+    }
+
+    if password:
+        data['Password'] = password
+
+    if private_key:
+        if public_key and update_system == True:
+            data['PrivateKey'] = private_key
+            data['PublicKey'] = public_key
+        else:
+            return_error('Missing public key')
+
+    if pass_phrase:
+        data['Passphrase'] = pass_phrase
+    change_request = change_credentials_request(account_id, data)
+
+    demisto.results('The password has been changed')
+
+
+def fetch_credentials():
+
+    credentials = []
+    identifier = demisto.args().get('identifier')
+    duration_minutes = 1
+    account_info = get_managed_accounts_request()
+
+    for account in account_info:
+        account_name = account.get('AccountName')
+        system_name = account.get('SystemName')
+        if SYSTEM_NAME and system_name not in SYSTEM_NAME:
+            continue
+        item = {
+            'SystemId': account.get('SystemId'),
+            'AccountId': account.get('AccountId'),
+            'DurationMinutes': duration_minutes
+        }
+
+        release_id = create_release_request(str(item))
+
+        password = get_credentials_request(str(release_id))
+
+        credentials.append({
+            'user': account_name,
+            'password': password,
+            'name': system_name
+        })
+
+    if identifier:
+        credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
+
+    demisto.credentials(credentials)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -340,7 +368,7 @@ try:
     signin()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        test_module()
+        get_managed_accounts_request()
         demisto.results('ok')
     elif demisto.command() == 'beyondtrust-get-managed-accounts':
         get_managed_accounts()
@@ -352,8 +380,8 @@ try:
         get_credentials()
     elif demisto.command() == 'beyondtrust-check-in-credentials':
         check_in_credentials()
-    # elif demisto.command() == 'beyondtrust-change-credentials':
-    #     change_credentials()
+    elif demisto.command() == 'beyondtrust-change-credentials':
+        change_credentials()
     elif demisto.command() == 'fetch-credentials':
         fetch_credentials()
 
