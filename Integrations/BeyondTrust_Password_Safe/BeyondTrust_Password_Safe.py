@@ -41,7 +41,7 @@ ERR_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, suffix_url: str, data: dict = None):
+def http_request(method: str, suffix_url: str, data: str = None):
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -52,7 +52,7 @@ def http_request(method: str, suffix_url: str, data: dict = None):
         HTTP method, e.g. 'GET', 'POST' ... etc.
     suffix_url : str
         API endpoint.
-    data: dict
+    data: str
         Data to be sent in a 'POST' request.
 
     Returns
@@ -114,7 +114,7 @@ def signout():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def get_managed_accounts_request() -> requests.Response:
+def get_managed_accounts_request() -> dict:
     """
     Request for all managed accounts
     """
@@ -149,7 +149,7 @@ def get_managed_accounts():
                    managed_accounts)
 
 
-def get_managed_systems_request() -> requests.Response:
+def get_managed_systems_request() -> dict or list:
     """
     Request for all managed systems
     """
@@ -183,7 +183,7 @@ def get_managed_systems():
                    managed_systems)
 
 
-def create_release_request(data: str) -> requests.Response:
+def create_release_request(data: str) -> dict or list:
     """
     Request for credentials release
     """
@@ -256,7 +256,7 @@ def create_release():
     return_outputs(tableToMarkdown('The new release was created successfully.', response), entry_context, response)
 
 
-def get_credentials_request(request_id: str) -> requests.Response:
+def get_credentials_request(request_id: str) -> dict or list:
     """
     Request for specific credentials
     """
@@ -282,7 +282,7 @@ def get_credentials():
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
-def check_in_credentials_request(request_id: str, data: str) -> requests.Response:
+def check_in_credentials_request(request_id: str, data: str) -> dict or list:
     """
     Request for check-in credentials
 
@@ -314,7 +314,7 @@ def check_in_credentials():
     demisto.results('The release was successfully checked-in/released')
 
 
-def change_credentials_request(account_id: str, data: str) -> requests.Response:
+def change_credentials_request(account_id: str, data: str) -> dict or list:
     """
     Request to change credentials
     """
