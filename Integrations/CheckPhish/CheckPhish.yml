@@ -28,8 +28,8 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Suspicious Dispositions (CheckPhish labels for suspicious phishing URLs.
-    Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious")'
+- display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs).
+    Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"'
   name: susp_disp
   options:
   - adult
@@ -44,8 +44,8 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Bad Dispositions (CheckPhish labels for phishing URLs. Defaults are 
-    "cryptojacking", "phish", "likely_phish", "scam")'
+- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are 
+    "cryptojacking", "phish", "likely_phish", "scam".'
   name: bad_disp
   options:
   - adult
@@ -81,7 +81,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks URLs in CheckPhish and returns the results.
+    description: Checks URLs against the CheckPhish database and returns the results.
     execution: false
     name: CheckPhish-check-urls
     outputs:
@@ -89,16 +89,16 @@ script:
       description: URL that was submitted.
       type: String
     - contextPath: CheckPhish.URL.status
-      description: CheckPhish job status.
+      description: CheckPhish job status of the URL.
       type: String
     - contextPath: CheckPhish.URL.jobID
-      description: CheckPhish jobID recieved when submitted.
+      description: CheckPhish jobID that was assigned to the URL when it was submitted.
       type: String
     - contextPath: CheckPhish.URL.disposition
-      description: The category of the URL, according to CheckPhish.
+      description: The CheckPhish category (disposition) of the URL.
       type: String
     - contextPath: CheckPhish.URL.brand
-      description: The brand countered by the URL.
+      description: The brand (attack target) countered by the URL.
       type: String
     - contextPath: DBotScore.Score
       description: DBot score.
@@ -116,10 +116,10 @@ script:
       description: URL that was submitted.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: CheckPhish as vendor.
+      description: CheckPhish.
       type: String
     - contextPath: URL.Malicious.Description
-      description: The brand countered by the URL.
+      description: The brand (attack target) countered by the URL.
       type: String
   isfetch: false
   runonce: false
