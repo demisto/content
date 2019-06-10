@@ -23,5 +23,5 @@ dockerimage: demisto/sane-doc-report
 runas: DBotWeakRole
 runonce: false
 subtype: python3
-test:
+tests:
 - No Test
