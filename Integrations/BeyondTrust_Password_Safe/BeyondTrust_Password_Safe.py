@@ -315,7 +315,7 @@ def change_credentials():
         data['Password'] = password
 
     if private_key:
-        if public_key and update_system == True:
+        if public_key and update_system is True:
             data['PrivateKey'] = private_key
             data['PublicKey'] = public_key
         else:
