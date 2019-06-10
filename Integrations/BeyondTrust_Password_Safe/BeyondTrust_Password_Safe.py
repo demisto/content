@@ -46,7 +46,7 @@ def http_request(method, suffix_url, data=None):
             headers=HEADERS
         )
     except requests.exceptions.SSLError:
-        ssl_error = 'Could not connect to BeyonTrust: Could not verify certificate.'
+        ssl_error = 'Could not connect to BeyondTrust: Could not verify certificate.'
         if RAISE_EXCEPTION_ON_ERROR:
             raise Exception(ssl_error)
         return return_error(ssl_error)
@@ -70,15 +70,16 @@ def http_request(method, suffix_url, data=None):
 
 
 def signin():
+
     suffix_url = '/Auth/SignAppin'
     header = {'Authorization': f'PS-Auth key={API_KEY}; runas={USERNAME}; pwd=[{PASSWORD}];'}
     SESSION.headers.update(header)
-    response = SESSION.post(BASE_URL + suffix_url, verify=USE_SSL)
+    SESSION.post(BASE_URL + suffix_url, verify=USE_SSL)
 
 
 def signout():
     suffix_url = '/auth/signout'
-    response = SESSION.post(BASE_URL + suffix_url)
+    SESSION.post(BASE_URL + suffix_url)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -96,13 +97,13 @@ def get_managed_accounts():
     Returns a list of Managed Accounts that can be requested by the current user.
     """
     data = []
-    headers = ['AccountName', 'AccountID', 'AssetName', 'SystemID', 'DomainName', 'LastChangeDate', 'NextChangeDate']
+    headers = ['AccountName', 'AccountID', 'AssetName', 'AssetID', 'DomainName', 'LastChangeDate', 'NextChangeDate']
     managed_accounts = get_managed_accounts_request()
     for account in managed_accounts:
         data.append({
             'LastChangeDate': account.get('LastChangeDate'),
             'NextChangeDate': account.get('NextChangeDate'),
-            'SystemID': account.get('SystemId'),
+            'AssetID': account.get('SystemId'),
             'AssetName': account.get('SystemName'),
             'DomainName': account.get('DomainName'),
             'AccountID': account.get('AccountId'),
@@ -131,12 +132,12 @@ def get_managed_systems():
     managed_systems = get_managed_systems_request()
     for managed_system in managed_systems:
         data.append({
-            'ManagedSystemID': managed_system.get('ManagedSystemID'),
+            'ManagedAssetID': managed_system.get('ManagedSystemID'),
             'ChangeFrequencyDays': managed_system.get('ChangeFrequencyDays'),
             'AssetID': managed_system.get('AssetID'),
             'DatabaseID': managed_system.get('DatabaseID'),
             'DirectoryID': managed_system.get('DirectoryID'),
-            'SystemName': managed_system.get('SystemName'),
+            'AssetName': managed_system.get('SystemName'),
             'PlatformID': managed_system.get('PlatformID'),
             'Port': managed_system.get('Port')
         })
@@ -147,7 +148,7 @@ def get_managed_systems():
                    managed_systems)
 
 
-def create_release_request(data):
+def create_release_request(data: dict):
     suffix_url = '/requests'
     response = http_request('POST', suffix_url, data=data)
 
@@ -214,10 +215,11 @@ def create_release():
     }
 
     entry_context = {'BeyondTrust.Request(val.AccountID === obj.AccountID)': createContext(response)}
-    return_outputs(tableToMarkdown('The request has been Successful', response), entry_context, response)
+    return_outputs(tableToMarkdown('The new release was created successfully.', response), entry_context, response)
 
 
-def get_credentials_request(request_id):
+def get_credentials_request(request_id: str):
+
     suffix_url = '/credentials/' + request_id
     response = http_request('GET', suffix_url)
 
@@ -239,7 +241,7 @@ def get_credentials():
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
-def check_in_credentials_request(request_id, data):
+def check_in_credentials_request(request_id: str, data: dict):
     suffix_url = f'/Requests/{request_id}/Checkin'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
 
@@ -262,12 +264,13 @@ def check_in_credentials():
 
     data = {'Reason': reason if reason else ''}
 
-    check_in = check_in_credentials_request(request_id, data)
+    check_in_credentials_request(request_id, data)
 
     demisto.results('The release was successfully checked-in/released')
 
 
-def change_credentials_request(account_id, data):
+def change_credentials_request(account_id: str, data: dict) -> requests.Response:
+
     suffix_url = f'/ManagedAccounts/{account_id}/Credentials'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
 
@@ -320,7 +323,8 @@ def change_credentials():
 
     if pass_phrase:
         data['Passphrase'] = pass_phrase
-    change_request = change_credentials_request(account_id, data)
+
+    change_credentials_request(account_id, data)
 
     demisto.results('The password has been changed')
 
@@ -335,7 +339,7 @@ def fetch_credentials():
     for account in account_info:
         account_name = account.get('AccountName')
         system_name = account.get('SystemName')
-        if SYSTEM_NAME and system_name not in SYSTEM_NAME:
+        if SYSTEM_NAME and system_name != SYSTEM_NAME:
             continue
         item = {
             'SystemId': account.get('SystemId'),
