@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CommonServerUserPowershell
 script: ""
-type: python
+type: powershell
 tags:
 - infra
 - server
