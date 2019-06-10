@@ -23,6 +23,5 @@ dockerimage: devdemisto/sane-doc-reports:1.0.0.347
 runas: DBotWeakRole
 runonce: false
 deprecated: true
-subtype: python3
 tests:
 - No Test
