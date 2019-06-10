@@ -1,1 +1,1 @@
- 
+ To generate tokens, browse to [demistobot](https://demistobot.demisto.com) and follow the instructions

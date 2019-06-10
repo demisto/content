@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Slack
+  id: SlackV2
   version: -1
 configuration:
 - display: Slack API bot token
@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 4
 - display: Dedicated slack channel
-  name: channel
+  name: incidentNotificationChannel
   required: true
   type: 0
 - display: Use system proxy settings
@@ -47,9 +47,13 @@ configuration:
   name: footer
   required: false
   type: 0
+- display: Should anyone be allowed to create incidents by DM
+  name: allowIncidents
+  required: false
+  type: 8
 description: Send messages and notifications to your Slack Team.
-display: Slack
-name: Slack
+display: SlackV2
+name: SlackV2
 script:
   commands:
   - arguments:
@@ -170,6 +174,47 @@ script:
     description: Close the mirrored Slack channel for this incident.
     execution: false
     name: slack-close-channel
+  - arguments:
+    - default: true
+      description: The file entry ID
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    - default: false
+      description: A user to send the file to.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: A private group to send the file to.
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: A channel to send the file to.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: false
+      description: Specify a thread id, to send a reply to another message.
+      isArray: false
+      name: threadID
+      required: false
+      secret: false
+    - default: false
+      description: A comment to add to the file.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Send a file to a slack user, channel or group.
+    execution: false
+    name: slack-send-file
   dockerimage: devtesting/slack:1.0.0.1558884736
   isfetch: false
   longRunning: true
