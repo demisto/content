@@ -2879,3 +2879,5 @@ script:
 hidden: false
 fromversion: 3.5.0
 releaseNotes: “-“
+tests:
+   - No test
