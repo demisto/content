@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: 'Return Errors '
   name: with_error
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 - defaultvalue: 'true'
@@ -107,3 +107,4 @@ script:
 defaultEnabled: true
 tests:
   - Rasterize Test
+releaseNotes: set with errors to false, and better error messages
