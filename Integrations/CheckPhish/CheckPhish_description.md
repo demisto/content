@@ -1,22 +1,24 @@
-Integration with CheckPhish - AI Powered Real-time Phishing Detection. 
-Send any URL for analysis, to detect the following scams and categories:
-Zero-Day Phishing,
-Tech Support Scams,
-Gift Card Scams,
-Survey Scams,
-Adult Websites,
-Drug Pharmacy (Drug Spam) Websites,
-Illegal/Rogue Streaming Sites,
-Gambling Websites,
-Hacked Websites,
-Cryptojacking / Cryptomining.
+## Supported Dispositions
+CheckPhish classifies URLs by the following dispositions (categories).
+- Zero-day phishing
+- Tech support scams
+- Gift card scams
+- Survey scams
+- Adult websites
+- Drug pharmacy (Drug Spam) websites
+- Illegal/rogue streaming sites
+- Gambling websites
+- Hacked Websites
+- Cryptojacking/cryptomining
 
-You can send as many URLs as you wish, according to your API privileges, using commas between the URLs, 
+## Sending URLs to Check
+There is no limit to the number of URLs you can send in each call. The limit is determined by your API privileges. using commas between the URLs, 
 for Example: www.demisto.com,www.google.com,www.youtube.com
 
-Also, you can modify the severity levels of any response received from CheckPhish, 
-our recommendation, and default parameters are the following:\
-Good = clean\
-Suspicious = drug_spam, gambling, hacked_website, streaming, suspicious\
-Bad = cryptojacking, phish, likely_phish, scam\
-note that the worst category in which a label is included in, will be the affective one. 
+## Modify Severity Levels
+You can modify the severity levels of any disposition received from CheckPhish. We recommend the following default parameters:\
+- Good = clean\
+- Suspicious = drug_spam, gambling, hacked_website, streaming, suspicious\
+- Bad = cryptojacking, phish, likely_phish, scam\
+
+**Note**: The worst category in which a label is included will be the effective one. 
