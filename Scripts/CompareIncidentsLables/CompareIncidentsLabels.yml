@@ -6,15 +6,15 @@ script: "-"
 type: python
 tags:
 - incidents
-comment: Compares the labels of two incidents. Returns the different labels in them.
+comment: Compares the labels of two incidents. Returns the labels that are unique to each incident.
 enabled: true
 args:
 - name: inc1
   required: true
-  description: Incident ID of first incident
+  description: Incident ID of the first incident.
 - name: inc2
   required: true
-  description: Incident ID of second incident
+  description: Incident ID of the second incident.
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
