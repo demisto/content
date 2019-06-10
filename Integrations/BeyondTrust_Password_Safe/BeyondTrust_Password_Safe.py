@@ -115,7 +115,7 @@ def signout():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def get_managed_accounts_request() -> dict:
+def get_managed_accounts_request():
     """
     Request for all managed accounts
     """
@@ -184,7 +184,7 @@ def get_managed_systems():
                    managed_systems)
 
 
-def create_release_request(data: str) -> Tuple[dict, list]:
+def create_release_request(data: str):
     """
     Request for credentials release
     """
@@ -257,7 +257,7 @@ def create_release():
     return_outputs(tableToMarkdown('The new release was created successfully.', response), entry_context, response)
 
 
-def get_credentials_request(request_id: str) -> Tuple[dict, list]:
+def get_credentials_request(request_id: str):
     """
     Request for specific credentials
     """
@@ -283,7 +283,7 @@ def get_credentials():
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
-def check_in_credentials_request(request_id: str, data: str) -> Tuple[dict, list]:
+def check_in_credentials_request(request_id: str, data: str):
     """
     Request for check-in credentials
 
@@ -315,7 +315,7 @@ def check_in_credentials():
     demisto.results('The release was successfully checked-in/released')
 
 
-def change_credentials_request(account_id: str, data: str) -> Tuple[dict, list]:
+def change_credentials_request(account_id: str, data: str):
     """
     Request to change credentials
     """
