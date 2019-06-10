@@ -367,7 +367,7 @@ def update_incident(incident_id, assigned_user_mail, assigned_user_pretty_name, 
     if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
         raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
     elif unassign_user:
-        update_data['assigned_user_mail'] = None
+        update_data['assigned_user_mail'] = 'none'
 
     if assigned_user_mail:
         update_data['assigned_user_mail'] = assigned_user_mail
@@ -388,7 +388,7 @@ def update_incident(incident_id, assigned_user_mail, assigned_user_pretty_name, 
         'incident_id': incident_id,
         'update_data': update_data
     }
-
+    demisto.info(json.dumps(request_data, indent=4))
     http_request('POST', '/incidents/update_incident/', data={'request_data': request_data})
 
 

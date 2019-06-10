@@ -31,6 +31,9 @@ args:
   name: playbook_name_to_run
   required: true
   secret: false
+comment: This task shouldn't be executed by itself. It should be triggered by TriggeredXDRIncidentSync
+  script. This script compares between Demisto incident and incident in XDR and updates
+  both incidents mutually
 commonfields:
   id: 836729f6-ca6e-464c-b832-9fb7c605cedb
   version: -1
@@ -38,6 +41,8 @@ enabled: false
 name: XDRIncidentSync
 script: '-'
 system: false
+tags:
+- xdr
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.3.221

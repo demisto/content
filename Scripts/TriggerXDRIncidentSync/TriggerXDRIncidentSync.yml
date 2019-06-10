@@ -19,13 +19,6 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: PaloAltoNetworksXDR.Incident
-  description: 'Only in rare cases you should change this value. '
-  isArray: false
-  name: xdr_incident_path_in_context
-  required: false
-  secret: false
-- default: false
   description: assigned_user_mail field name in Demisto
   isArray: false
   name: assigned_user_mail

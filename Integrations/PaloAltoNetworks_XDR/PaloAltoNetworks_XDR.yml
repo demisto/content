@@ -382,6 +382,7 @@ script:
       isArray: false
       name: manual_severity
       predefined:
+      - NONE
       - LOW
       - MEDIUM
       - HIGH
