@@ -5,21 +5,18 @@ import traceback
 
 try:
     inc1 = demisto.args().get('incident_id_1')
-    inc2 = demisto.args().get('incident_id_1')
+    inc2 = demisto.args().get('incident_id_2')
     res = demisto.executeCommand("getIncidents", {'id': inc1})
 
     if any(is_error(entry) for entry in res):
         return_error("Unable to fetch incident {}".format(inc1))
-    if (len(res[0].get('Contents').get('data')) > 1):
-        return_error("Found several incident IDs in inc1. Please enter a single ID.")
 
     inc1_data = res[0].get('Contents').get('data')
 
     res = demisto.executeCommand("getIncidents", {'id': inc2})
     if any(is_error(entry) for entry in res):
         return_error("Unable to fetch incident {}".format(inc2))
-    if (len(res[0].get('Contents').get('data')) > 1):
-        return_error("Found several incident IDs in inc2. Please enter a single ID.")
+
     inc2_data = res[0].get('Contents').get('data')
 
     if inc1_data is None or inc2_data is None:
