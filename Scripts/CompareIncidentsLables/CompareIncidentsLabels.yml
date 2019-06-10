@@ -13,31 +13,11 @@ args:
   secret: false
 comment: Compares the labels of two incidents. Returns the different labels in them.
 commonfields:
-  id: 21a11f24-aae8-4a53-85f4-b8ef3c336d1d
+  id: CompareIncidentsLabels
   version: -1
 enabled: true
 name: CompareIncidentsLabels
-script: "import traceback\n\ntry:\n    inc1 = demisto.args().get('inc1')\n    inc2\
-  \ = demisto.args().get('inc2')\n    res = demisto.executeCommand(\"getIncidents\"\
-  , {'id': inc1})\n\n    if any(is_error(entry) for entry in res):\n        return_error(\"\
-  Unable to fetch incident {}\".format(inc1))\n    if(len(res[0].get('Contents').get('data'))>1):\n\
-  \        return_error(\"Found several incident IDs in inc1. Please enter a single\
-  \ ID.\")\n    \n    inc1_data=res[0].get('Contents').get('data')\n\n    res = demisto.executeCommand(\"\
-  getIncidents\", {'id': inc2})\n    if any(is_error(entry) for entry in res):\n \
-  \       return_error(\"Unable to fetch incident {}\".format(inc2))\n    if(len(res[0].get('Contents').get('data'))>1):\n\
-  \        return_error(\"Found several incident IDs in inc2. Please enter asingle\
-  \ ID.\")\n    inc2_data=res[0].get('Contents').get('data')\n\n    if inc1_data is\
-  \ None or inc2_data is None:\n        return_error(\"One of the incidents does not\
-  \ exist.\")\n\n    inc1_labels = inc1_data[0].get('labels',[])\n    inc2_labels\
-  \ = inc2_data[0].get('labels',[])\n    in1not2 = []\n    in2not1 = []\n    for label\
-  \ in inc1_labels:\n        if label not in inc2_labels:\n            in1not2.append(label)\n\
-  \    for label in inc2_labels:\n        if label not in inc1_labels:\n         \
-  \   in2not1.append(label)\n\n    md = tableToMarkdown(\"Labels in issue {} but not\
-  \ in issue {}\".format(inc1, inc2), in1not2)\n    md += \"\\n\" + tableToMarkdown(\"\
-  Labels in issue {1} but not in issue {0}\".format(inc1, inc2), in2not1)\n\n    if\
-  \ not in2not1 and not in1not2:\n        md = \"No different labels.\"\n    return_outputs(md,\
-  \ {},{})\nexcept Exception as ex:\n    demisto.error(str(ex) + \"\\n\\nTrace:\\\
-  n\" + traceback.format_exc())\n    return_error(ex.message)"
+script: "-"
 system: false
 tags:
 - incidents
