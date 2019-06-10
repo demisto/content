@@ -1,0 +1,42 @@
+commonfields:
+  id: SaneDocReports
+  version: -1
+name: SaneDocReports
+script: |
+  import base64
+  from sane_doc_reports.main import run
+
+  try:
+      sane_json_b64 = demisto.args().get('saneJsonBase64','').encode("utf-8")
+      with open('sane.json', 'wb') as f:
+          f.write(base64.b64decode(sane_json_b64))
+
+      run('sane.json', 'out.docx')
+
+      with open('out.docx', 'rb') as f:
+          encoded = base64.b64encode(f.read()).decode("utf-8", "ignore")
+          out = {'data': 'encoded'}
+          ec_data = createContext(data=out)
+          ec = {'saneDocReport.data': ec_data}
+          return_outputs(readable_output='Successfully generated docx', outputs={}, raw_response={'data': encoded})
+  except Exception as e:
+      return_error(f'[SaneDocReports Automation Error] - {str(e)}')
+type: python
+tags:
+- sane-doc-reports
+- sane-reports
+- docx
+comment: Parse Sane-json-reports and export them as docx files (used internally).
+enabled: true
+args:
+- name: saneJsonBase64
+  required: true
+  default: true
+  description: sane report json file contents base64
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/sane-doc-reports
+runas: DBotWeakRole
+test:
+  - No Test
