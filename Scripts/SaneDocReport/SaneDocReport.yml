@@ -2,7 +2,7 @@ args:
 - default: true
   description: sane report json file contents base64
   isArray: false
-  name: saneJsonBase64
+  name: "sane_docx_report_base64"
   required: true
   secret: false
 comment: Parse Sane-json-reports and export them as docx files (used internally).
@@ -11,7 +11,7 @@ commonfields:
   version: -1
 enabled: true
 name: SaneDocReports
-script: '-'
+script: ''
 system: false
 tags:
 - sane-doc-reports
@@ -22,6 +22,7 @@ type: python
 dockerimage: demisto/sane-doc-report
 runas: DBotWeakRole
 runonce: false
-subtype: python3
+deprecated: true
 test:
 - No Test
+subtype: python3
