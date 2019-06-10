@@ -11,6 +11,10 @@
             "playbookID": "Minerva Test playbook"
         },
         {
+            "integrations": "CheckPhish",
+            "playbookID": "CheckPhish-Test"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test"
         },
