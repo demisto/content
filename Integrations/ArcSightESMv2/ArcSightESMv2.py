@@ -135,6 +135,7 @@ def login():
     }
     res = send_request(query_path, headers=headers, params=params, is_login=True)
     if not res.ok:
+        demisto.debug(res.text)
         return_error('Failed to login, check integration parameters.')
 
     try:
@@ -182,11 +183,11 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
             )
         return res
 
-    except Exception:
+    except Exception as ex:
+        demisto.debug(str(ex))
         return_error('Connection Error. Please check integration parameters')
 
 
-@logger
 def test():
     """
     Login (already done in global).
