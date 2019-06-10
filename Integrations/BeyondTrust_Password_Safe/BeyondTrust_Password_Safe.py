@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from typing import Tuple
+from typing import List, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -150,7 +150,7 @@ def get_managed_accounts():
                    managed_accounts)
 
 
-def get_managed_systems_request() -> Tuple[dict, list]:
+def get_managed_systems_request() -> List[Dict]:
     """
     Request for all managed systems
     """
