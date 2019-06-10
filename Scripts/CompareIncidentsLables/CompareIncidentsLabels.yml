@@ -1,27 +1,20 @@
-args:
-- default: false
-  description: Incident ID of first incident
-  isArray: false
-  name: inc1
-  required: true
-  secret: false
-- default: false
-  description: Incident ID of second incident
-  isArray: false
-  name: inc2
-  required: true
-  secret: false
-comment: Compares the labels of two incidents. Returns the different labels in them.
 commonfields:
   id: CompareIncidentsLabels
-  version: -1
-enabled: true
+  version: 260
 name: CompareIncidentsLabels
 script: "-"
-system: false
+type: python
 tags:
 - incidents
-timeout: '0'
-type: python
-runas: DBotWeakRole
+comment: Compares the labels of two incidents. Returns the different labels in them.
+enabled: true
+args:
+- name: inc1
+  required: true
+  description: Incident ID of first incident
+- name: inc2
+  required: true
+  description: Incident ID of second incident
+scripttarget: 0
 runonce: false
+runas: DBotWeakRole
