@@ -9,10 +9,10 @@ tags:
 comment: Compares the labels of two incidents. Returns the labels that are unique to each incident.
 enabled: true
 args:
-- name: inc1
+- name: incident_id_1
   required: true
   description: Incident ID of the first incident.
-- name: inc2
+- name: incident_id_1
   required: true
   description: Incident ID of the second incident.
 scripttarget: 0
