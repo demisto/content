@@ -30,12 +30,35 @@ HEADERS = {
 }
 
 SESSION = requests.session()
+ERR_DICT = {
+    '4031': 'User does not have permission.',
+    '4034': 'Request is not yet approved.',
+    '4091': 'Conflicting request exists. This user or another user has already requested a password for the'
+            'specified account'
+}
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, suffix_url, data=None):
+def http_request(method: str, suffix_url: str, data: str = None):
+    """
+    A wrapper for requests lib to send our requests and handle requests
+    and responses better
+
+    Parameters
+    ----------
+    method : str
+        HTTP method, e.g. 'GET', 'POST' ... etc.
+    suffix_url : str
+        API endpoint.
+    data : str
+        Data to be sent in a 'POST' request.
+
+    Returns
+    -------
+    Response JSON from having made the request.
+    """
     url = BASE_URL + suffix_url
     try:
         res = SESSION.request(
@@ -55,17 +78,11 @@ def http_request(method, suffix_url, data=None):
 
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 204}:
-        err_dict = {
-            '4031': 'User does not have permission.',
-            '4034': 'Request is not yet approved.',
-            '4091': 'Conflicting request exists. This user or another user has already requested a password for the'
-                    'specified account'
-        }
         txt = res.text
-        if txt in err_dict:
-            txt = err_dict[txt]
-        elif res.status_code in err_dict:
-            txt = err_dict[txt]
+        if txt in ERR_DICT:
+            txt = ERR_DICT[txt]
+        elif res.status_code in ERR_DICT:
+            txt = ERR_DICT[txt]
         elif res.status_code == 401:
             txt = 'Wrong credentials.'
         return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {txt})')
@@ -272,7 +289,6 @@ def get_credentials():
     request = str(request_id)
     response = get_credentials_request(request)
 
-
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
@@ -445,7 +461,7 @@ try:
 
 # Log exceptions
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
     raise
 finally:
