@@ -600,7 +600,6 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
