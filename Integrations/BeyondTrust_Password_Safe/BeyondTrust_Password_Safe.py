@@ -241,7 +241,7 @@ def get_credentials():
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
-def check_in_credentials_request(request_id: str, data: dict):
+def check_in_credentials_request(request_id: str, data: str):
     suffix_url = f'/Requests/{request_id}/Checkin'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
 
@@ -269,7 +269,7 @@ def check_in_credentials():
     demisto.results('The release was successfully checked-in/released')
 
 
-def change_credentials_request(account_id: str, data: dict) -> requests.Response:
+def change_credentials_request(account_id: str, data: str) -> requests.Response:
 
     suffix_url = f'/ManagedAccounts/{account_id}/Credentials'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
