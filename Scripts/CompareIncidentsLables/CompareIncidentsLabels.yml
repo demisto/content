@@ -1,6 +1,6 @@
 commonfields:
   id: CompareIncidentsLabels
-  version: 260
+  version: -1
 name: CompareIncidentsLabels
 script: "-"
 type: python
