@@ -37,6 +37,7 @@ DEFAULT_HEADERS = {
 
 ''' HELPER FUNCTIONS '''
 
+
 def is_enough_preferred_vendors(scan_results):
     if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
         return False
@@ -90,7 +91,6 @@ def http_request(method, url_suffix, params_dict, headers):
         elif res.status_code == 204:
             return_error("You've reached your API call quota. Contact your VirusTotal representative.")
 
-
     except Exception as e:
         error_message = str(e)
         error_message = re.sub('apikey=[a-zA-Z0-9]+', 'apikey=*apikey*', error_message)
@@ -114,7 +114,7 @@ def create_scans_table(scans):
             "Update": scans.get(scan).get('update', None),
             "Details": scans.get(scan).get('detail', None)
         }
-        if (dict_for_table['Detected'] is not None and dict_for_table['Detected'] == True):
+        if (dict_for_table['Detected'] is not None and dict_for_table['Detected'] is True):
             positives_scans_table.append(dict_for_table)
         else:
             negative_scans_table.append(dict_for_table)
@@ -241,7 +241,7 @@ def check_file_behaviour_command():
     # variables
     args = demisto.args()
     file_hash = args.get('resource')
-    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
+    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     if (full_response):
         max_len = 1000
@@ -264,7 +264,8 @@ def check_file_behaviour_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following response: " + json.dumps(
+            'HumanReadable': "A report wasn't found for file " + file_hash +
+                             ". Virus Total returned the following response: " + json.dumps(
                 response.get('verbose_msg'))
         }
 
@@ -400,7 +401,7 @@ def get_domain_report_command():
     # variables
     args = demisto.args()
     domain = args['domain']
-    threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10);
+    threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     if (full_response):
         max_len = 1000
@@ -425,8 +426,9 @@ def get_domain_report_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "Domain " + domain + " not in Virus Total's dataset. Virus Total returned the following response: " + json.dumps(
-                response.get('verbose_msg'))
+            'HumanReadable': "Domain " + domain +
+                             " not in Virus Total's dataset. Virus Total returned the following response: " +
+                             json.dumps(response.get('verbose_msg'))
         }
 
     communicating_hashes = response.get('detected_communicating_samples', None)
@@ -520,7 +522,7 @@ def get_file_report_command():
     short_format = args.get('shortFormat', None) == 'true'
     all_info = args.get('allInfo', None)
     all_info = 1 if all_info == 'true' else 0
-    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
+    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
 
     response = get_file_report(file_hash, all_info)
 
@@ -570,8 +572,8 @@ def get_url_report_command():
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
     md = ''
     ec = {
-            'DBotScore': [],
-            outputPaths['url']: [],
+        'DBotScore': [],
+        outputPaths['url']: [],
         }
     for url, res in responses_dict.iteritems():
         url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
@@ -681,7 +683,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
             }
         else:
             ec_url.update({
-                'VirusTotal':{'Resolutions': resolution[:max_len]},
+                'VirusTotal': {'Resolutions': resolution[:max_len]},
                 'Data': url
             })
 
@@ -690,7 +692,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     if scans is not None and not short_format:
         scans_table = create_scans_table(scans)
         scans_table_md = tableToMarkdown('Scans', scans_table)
-        if (ec_url.get('VirusTotal',False)):
+        if (ec_url.get('VirusTotal', False)):
             ec_url['VirusTotal']['Scans'] = scans_table
         else:
             ec_url['VirusTotal'] = {
@@ -702,11 +704,11 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
 
     if dropped_files is not None:
         if (ec_url.get('VirusTotal', False)):
-                ec_url['VirusTotal']['DroppedFiles'] = dropped_files
+            ec_url['VirusTotal']['DroppedFiles'] = dropped_files
         else:
             ec_url['VirusTotal'] = {
-            'DroppedFiles': dropped_files
-        }
+                'DroppedFiles': dropped_files
+            }
 
     return md, ec_url, ec_dbot
 
@@ -762,8 +764,9 @@ def get_ip_report_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "IP " + ip + "not in Virus Total's dataset. Virus Total returned the following response: " + json.dumps(
-                response.get('verbose_msg'))
+            'HumanReadable': "IP " + ip +
+                             "not in Virus Total's dataset. Virus Total returned the following response: " +
+                             json.dumps(response.get('verbose_msg'))
         }
 
     ec = {}
@@ -792,7 +795,8 @@ def get_ip_report_command():
     if detected_downloaded_samples:
         detected_downloaded_samples = detected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address provided",
+            "Latest files that are detected by at least one antivirus solution and were downloaded " +
+            "by VirusTotal from the IP address provided",
             detected_downloaded_samples)
 
     undetected_downloaded_samples = response.get('undetected_downloaded_samples', None)
@@ -800,7 +804,8 @@ def get_ip_report_command():
     if undetected_downloaded_samples:
         undetected_downloaded_samples = undetected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided",
+            "Latest files that are not detected by any antivirus solution and were downloaded by" +
+            " VirusTotal from the IP address provided",
             undetected_downloaded_samples)
 
     detected_communicating_samples = response.get('detected_communicating_samples', None)
@@ -834,7 +839,8 @@ def get_ip_report_command():
     ec['DBotScore'] = []
     dbotScore = 0
     bad_downloads_amount = len(detected_communicating_samples) if detected_communicating_samples else 0
-    detected_url_is_above_threshold = check_detected_urls_threshold(detected_urls, demisto.params().get('urlThreshold', None) or 10)
+    detected_url_is_above_threshold = check_detected_urls_threshold(detected_urls,
+                                                                    demisto.params().get('urlThreshold', None) or 10)
     if (bad_downloads_amount >= threshold or detected_url_is_above_threshold):
         ec.update({
             outputPaths['ip']: {
@@ -850,7 +856,7 @@ def get_ip_report_command():
             }
         })
         dbotScore = 3
-    elif (bad_downloads_amount >= threshold/2 or len(detected_urls) >= threshold/2):
+    elif (bad_downloads_amount >= threshold / 2 or len(detected_urls) >= threshold / 2):
         dbotScore = 2
     else:
         dbotScore = 1
@@ -934,8 +940,8 @@ def search_file_command():
     response = search_file(query)
 
     if (response.get('response_code') == -1):
-        return "There was some sort of error with your query. Virus Total returned the following response: " + json.dumps(
-            response.get('verbose_msg'))
+        return "There was some sort of error with your query. Virus Total returned the following response: " + \
+               json.dumps(response.get('verbose_msg'))
     elif (response.get('response_code') == 0):
         return "No files matched your query"
 
@@ -1113,7 +1119,7 @@ LOG('command is %s' % (demisto.command(),))
 try:
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        if check_file_behaviour('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'): # guardrails-disable-line
+        if check_file_behaviour('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
             demisto.results('ok')
         else:
             demisto.results('test failed')
