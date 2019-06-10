@@ -5,7 +5,8 @@ import base64
 from sane_doc_reports.main import run
 
 try:
-    sane_json_b64 = demisto.args().get('sane_docx_report_base64', '').encode("utf-8")
+    sane_json_b64 = demisto.args().get('sane_docx_report_base64', '').encode(
+        "utf-8")
     with open('sane.json', 'wb') as f:
         f.write(base64.b64decode(sane_json_b64))
 
