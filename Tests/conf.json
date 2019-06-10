@@ -1295,6 +1295,10 @@
             "integrations": "activedir"
         },
         {
+            "playbookID": "Extract Indicators From File - Generic v2 - Test",
+            "integrations": "Image OCR"
+        },
+        {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
