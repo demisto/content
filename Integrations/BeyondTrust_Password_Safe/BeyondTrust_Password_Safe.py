@@ -30,7 +30,7 @@ HEADERS = {
 }
 
 SESSION = requests.session()
-RAISE_EXCEPTION_ON_ERROR: bool = False
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -47,22 +47,28 @@ def http_request(method, suffix_url, data=None):
         )
     except requests.exceptions.SSLError:
         ssl_error = 'Could not connect to BeyondTrust: Could not verify certificate.'
-        if RAISE_EXCEPTION_ON_ERROR:
-            raise Exception(ssl_error)
         return return_error(ssl_error)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        connection_error = 'Could not connect to BeyondTrust: {}'.format(str(e))
-        if RAISE_EXCEPTION_ON_ERROR:
-            raise Exception(connection_error)
+        connection_error = f'Could not connect to BeyondTrust: {e}'
         return return_error(connection_error)
 
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 204}:
-        if res.status_code == 401:
-            return_error('Could not connect to BeyondTrust - wrong credentials')
-        else:
-            return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {res.content})')
+        err_dict = {
+            '4031': 'User does not have permission.',
+            '4034': 'Request is not yet approved.',
+            '4091': 'Conflicting request exists. This user or another user has already requested a password for the'
+                    'specified account'
+        }
+        txt = res.text
+        if txt in err_dict:
+            txt = err_dict[txt]
+        elif res.status_code in err_dict:
+            txt = err_dict[txt]
+        elif res.status_code == 401:
+            txt = 'Wrong credentials.'
+        return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {txt})')
     try:
         return res.json()
     except ValueError:
@@ -70,22 +76,31 @@ def http_request(method, suffix_url, data=None):
 
 
 def signin():
-
+    """
+    Starts a session in BeyondTrust
+    """
     suffix_url = '/Auth/SignAppin'
     header = {'Authorization': f'PS-Auth key={API_KEY}; runas={USERNAME}; pwd=[{PASSWORD}];'}
     SESSION.headers.update(header)
-    SESSION.post(BASE_URL + suffix_url, verify=USE_SSL)
+    http_request('POST', suffix_url)
 
 
 def signout():
+    """
+    Ends a session
+    """
+
     suffix_url = '/auth/signout'
-    SESSION.post(BASE_URL + suffix_url)
+    http_request('POST', suffix_url)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def get_managed_accounts_request():
+def get_managed_accounts_request() -> requests.Response:
+    """
+    Request for all managed accounts
+    """
     suffix_url = '/managedaccounts'
     response = http_request('GET', suffix_url)
 
@@ -117,7 +132,10 @@ def get_managed_accounts():
                    managed_accounts)
 
 
-def get_managed_systems_request():
+def get_managed_systems_request() -> requests.Response:
+    """
+    Request for all managed systems
+    """
     suffix_url = '/managedsystems'
     response = http_request('GET', suffix_url)
 
@@ -142,13 +160,21 @@ def get_managed_systems():
             'Port': managed_system.get('Port')
         })
 
-    entry_context = {'BeyondTrust.System(val.ManagedSystemID === obj.ManagedSystemID)': managed_systems}
+    entry_context = {'BeyondTrust.System(val.ManagedAssetID === obj.ManagedAssetID)': managed_systems}
 
     return_outputs(tableToMarkdown('BeyondTrust Managed Systems', data, removeNull=True), entry_context,
                    managed_systems)
 
 
-def create_release_request(data: dict):
+def create_release_request(data: str) -> requests.Response:
+    """
+    Request for credentials release
+    Args:
+        data: (str)
+
+    Returns: response
+
+    """
     suffix_url = '/requests'
     response = http_request('POST', suffix_url, data=data)
 
@@ -218,7 +244,15 @@ def create_release():
     return_outputs(tableToMarkdown('The new release was created successfully.', response), entry_context, response)
 
 
-def get_credentials_request(request_id: str):
+def get_credentials_request(request_id: str) -> requests.Response:
+    """
+    Request for specific credentials
+    Args:
+        request_id: (str)
+
+    Returns: response
+
+    """
 
     suffix_url = '/credentials/' + request_id
     response = http_request('GET', suffix_url)
@@ -238,10 +272,20 @@ def get_credentials():
     request = str(request_id)
     response = get_credentials_request(request)
 
+
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
-def check_in_credentials_request(request_id: str, data: str):
+def check_in_credentials_request(request_id: str, data: str) -> requests.Response:
+    """
+    Request for check-in credentials
+    Args:
+        request_id: (str)
+        data: (str)
+
+    Returns: response
+
+    """
     suffix_url = f'/Requests/{request_id}/Checkin'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
 
@@ -270,7 +314,15 @@ def check_in_credentials():
 
 
 def change_credentials_request(account_id: str, data: str) -> requests.Response:
+    """
+    Request to change credentials
+    Args:
+        account_id: (str)
+        data: (str)
 
+    Returns: response
+
+    """
     suffix_url = f'/ManagedAccounts/{account_id}/Credentials'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
 
@@ -330,7 +382,9 @@ def change_credentials():
 
 
 def fetch_credentials():
-
+    """
+    Returns: Account's credentials
+    """
     credentials = []
     identifier = demisto.args().get('identifier')
     duration_minutes = 1
