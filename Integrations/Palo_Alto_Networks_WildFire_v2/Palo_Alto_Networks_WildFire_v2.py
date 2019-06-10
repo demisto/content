@@ -502,7 +502,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
 
-        if 'evidence' in report:
+        if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
                     if '-md5' in report["evidence"]["file"]["entry"]:
