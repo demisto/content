@@ -1,5 +1,3 @@
-from typing import Union, Tuple
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -8,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from typing import Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
