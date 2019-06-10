@@ -122,7 +122,6 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
     return d
 
 
-@logger
 def login():
     query_path = 'www/core-service/rest/LoginService/login'
     headers = {
@@ -136,7 +135,6 @@ def login():
     }
     res = send_request(query_path, headers=headers, params=params, is_login=True)
     if not res.ok:
-        demisto.debug(res.text)
         return_error('Failed to login, check integration parameters.')
 
     try:
@@ -153,7 +151,6 @@ def login():
         return_error('Failed to login. Please check integration parameters')
 
 
-@logger
 def send_request(query_path, body=None, params=None, json=None, headers=None, method='post', is_login=False):
     if headers is None:
         headers = HEADERS
@@ -186,7 +183,6 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         return res
 
     except Exception as ex:
-        demisto.debug(str(ex))
         return_error('Connection Error. Please check integration parameters')
 
 
@@ -846,5 +842,5 @@ try:
         get_all_query_viewers_command()
 
 
-except Exception, e:
+except Exception as e:
     return_error(str(e))
