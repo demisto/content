@@ -4,8 +4,8 @@ from CommonServerUserPython import *
 import traceback
 
 try:
-    inc1 = demisto.args().get('inc1')
-    inc2 = demisto.args().get('inc2')
+    inc1 = demisto.args().get('incident_id_1')
+    inc2 = demisto.args().get('incident_id_1')
     res = demisto.executeCommand("getIncidents", {'id': inc1})
 
     if any(is_error(entry) for entry in res):
