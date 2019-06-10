@@ -139,12 +139,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: BeyondTrust.Account.AccountId
+                  simple: BeyondTrust.Account.AccountID
                 iscontext: true
               right:
                 value:
                   simple: "6"
-          accessor: Account.AccountId
+          accessor: Account.AccountID
       conflict_option: {}
       duration_minutes:
         simple: "2"
@@ -156,12 +156,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: BeyondTrust.Account.SystemId
+                  simple: BeyondTrust.Account.SystemID
                 iscontext: true
               right:
                 value:
                   simple: "2"
-          accessor: Account.SystemId
+          accessor: Account.SystemID
     separatecontext: false
     view: |-
       {
