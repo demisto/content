@@ -41,7 +41,7 @@ ERR_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, suffix_url: str, data: str = None):
+def http_request(method: str, suffix_url: str, data=None):
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
