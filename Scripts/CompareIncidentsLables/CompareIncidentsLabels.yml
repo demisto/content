@@ -1,20 +1,65 @@
+args:
+- default: false
+  description: Incident ID of first incident
+  isArray: false
+  name: inc1
+  required: true
+  secret: false
+- default: false
+  description: Incident ID of second incident
+  isArray: false
+  name: inc2
+  required: true
+  secret: false
+comment: Compares the labels of two incidents. Returns the different labels in them.
 commonfields:
   id: CompareIncidentsLabels
   version: -1
+enabled: true
 name: CompareIncidentsLabels
-script: '-'
-type: python
+script: |-
+  import traceback
+
+  try:
+      inc1 = demisto.args().get('inc1')
+      inc2 = demisto.args().get('inc2')
+      res = demisto.executeCommand("getIncidents", {'id': inc1})
+      if any(is_error(entry) for entry in res):
+          return_error("Unable to fetch incident {}".format(inc1))
+      inc1_data=res[0].get('Contents').get('data')
+
+      res = demisto.executeCommand("getIncidents", {'id': inc2})[0].get('Contents').get('data')
+      if any(is_error(entry) for entry in res):
+          return_error("Unable to fetch incident {}".format(inc2))
+      inc2_data=res[0].get('Contents').get('data')
+
+      if inc1_data is None or inc2_data is None:
+          return_error("One of the incidents does not exist.")
+
+      inc1_labels = inc1_data[0].get('labels',[])
+      inc2_labels = inc2_data[0].get('labels',[])
+      in1not2 = []
+      in2not1 = []
+      for label in inc1_labels:
+          if label not in inc2_labels:
+              in1not2.append(label)
+      for label in inc2_labels:
+          if label not in inc1_labels:
+              in2not1.append(label)
+
+      md = tableToMarkdown("Labels in issue {} but not in issue {}".format(inc1, inc2), in1not2)
+      md += "\n" + tableToMarkdown("Labels in issue {1} but not in issue {0}".format(inc1, inc2), in2not1)
+
+      if not in2not1 and not in1not2:
+          md = "No different labels."
+      return_outputs(md, {},{})
+  except Exception as ex:
+      demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
+      return_error(ex.message)
+system: false
 tags:
 - incidents
-comment: Compares the labels of two incidents. Returns the different labels in them.
-enabled: true
-args:
-- name: inc1
-  required: true
-  description: Incident ID of first incident
-- name: inc2
-  required: true
-  description: Incident ID of second incident
-scripttarget: 0
-runonce: false
+timeout: '0'
+type: python
 runas: DBotWeakRole
+runonce: false
