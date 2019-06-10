@@ -2,12 +2,12 @@ commonfields:
   id: Phishme Intelligence
   version: -1
 name: Phishme Intelligence
-display: Phishme Intelligence
+display: Cofense Intelligence
 category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
-description: Human-vetted, Phishing-specific Threat Intelligence from Phishme.
+image: data:image/png;base64,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
+description: Human-vetted, Phishing-specific Threat Intelligence from Cofense Intelligence.
 detaileddescription: |-
-  Human-vetted, Phishing-specific Threat Intelligence from PhishMe.
+  Human-vetted, Phishing-specific Threat Intelligence from Cofense Intelligence.
   How to get the API key:
   Log in to your PhishMe account.
   Go to Settings
@@ -58,9 +58,283 @@ configuration:
   defaultvalue: Major
   type: 0
   required: false
+- display: Version of Integration (1-PhishMe, 2-Cofense)
+  name: version
+  defaultvalue: "1"
+  type: 15
+  required: false
+  options:
+  - "1"
+  - "2"
 script:
-  script: |
+  script: |+
     var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
+
+
+    //'''PHISHME VERSION'''
+
+
+        var searchUrl_pm = function(url) {
+            var tmpargs = {};
+            tmpargs.urlSearch = url;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense URL Reputation for: "+url+"\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.urlThreshold;
+            var indicatorFnd = false;
+            if (threats.length && threats.length !== 0) {
+                ec[outputPaths.url] = {
+                    Data: url
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    threatAnalysis = checkThreat(threats[k], threshold, url);
+                    threatArray[k] = threats[k].id;
+                    md += threatAnalysis['md'];
+                    if (threatAnalysis.indicatorFound) {
+                        indicatorFnd = true;
+                        dbotScore = threatAnalysis['severityScore'];
+                    } else if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                    }
+                }
+                ec[outputPaths.url]['PhishMe'] = {};
+                ec[outputPaths.url].PhishMe['ThreatIDs'] = threatArray;
+                ec["PhishMe." + outputPaths.url] = {
+                    Data: url,
+                    ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.url].Malicious = {
+                        Vendor: 'PhishMe',
+                        Description: 'Match found in PhishMe database'
+                    };
+                    ec["PhishMe." + outputPaths.url].Malicious = ec[outputPaths.url].Malicious;
+                }
+            } else {
+                md += "No information found for this url";
+            }
+            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'PhishMe', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        };
+        var extractedString_pm = function(str,limit) {
+            var tmpargs = {};
+            tmpargs.extractedString = str;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var countThreats = 0;
+            var md = "## Cofense Search Reputation for: "+str+"\n";
+            var mdBody = "";
+            var ec = {};
+            if (threats.length !== 0) {
+                if(limit === undefined){
+                    limit = 10;
+                }
+                for(var i = 0; i < threats.length && (countThreats<limit); i++){
+                    if (threats[i].hasReport === true){
+                        countThreats += 1;
+                        mdBody += addMD(threats[i]);
+                    }
+                }
+                md += "There are " + countThreats + " threats regarding your string search.\n";
+                md += "### Details from the last campaign\n";
+                md += mdBody;
+                ec = {"PhishMe" : {}};
+                ec.PhishMe = {"String": str, "NumOfThreats": countThreats};
+            } else {
+                md += "There are no results for this search\n";
+                ec = {"PhishMe" : {}};
+                ec.PhishMe = {"String": str, "NumOfThreats": 0};
+            }
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        };
+        var checkEmail_pm = function(sender_name) {
+            var tmpargs = {};
+            tmpargs.watchListEmail = sender_name;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense email Reputation for: " + sender_name + "\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.emailThreshold;
+            var indicatorFnd = false;
+            var contextEmailKey = 'Email(val.Data && val.Data === obj.Data)';
+            if (threats.length && threats.length !== 0) {
+                ec[contextEmailKey] = {
+                    'Data': sender_name
+                };
+                ec[outputPaths.email] = {
+                    'Address': sender_name
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    threatAnalysis = checkThreat(threats[k], threshold, sender_name);
+                    threatArray[k] = threats[k].id;
+                    md += threatAnalysis['md'];
+                    if (threatAnalysis.indicatorFound) {
+                        indicatorFnd = true;
+                        dbotScore = threatAnalysis['severityScore'];
+                    } else if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                    }
+                }
+                ec[contextEmailKey]['PhishMe'] = {};
+                ec[contextEmailKey].PhishMe['ThreatIDs'] = threatArray;
+                ec['PhishMe.' + contextEmailKey] = {
+                    Data: sender_name,
+                    ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.email].Malicious = {
+                        Vendor: 'PhishMe',
+                        Description: 'Match found in PhishMe database'
+                    };
+                    ec["PhishMe." + contextEmailKey].Malicious = ec[outputPaths.email].Malicious;
+                }
+            } else {
+                md += "No infomation found for this email";
+            }
+            ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'PhishMe', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        };
+        var checkMD5_pm = function(str) {
+            var tmpargs = {};
+            tmpargs.allMD5 = str;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense Hash Reputation for: "+str+"\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.fileThreshold;
+            var indicatorFnd = false;
+            var threshold_score = calcScore(threshold);
+            if (threshold_score === -1) {
+                throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            }
+            if (threats.length !== 0) {
+                ec[outputPaths.file] = {
+                    MD5: str
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    var severityLevel = 0;
+                    for (var i = 0; i < threats[k].blockSet.length; i++){
+                        if (threats[k].blockSet[i]['impact']) {
+                            var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                            var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                            // if the queried indicator has a severity level, we'll take it
+                            if (threats[k].executableSet[i] && threats[k].executableSet[i]['md5Hex'] === str) {
+                                severityLevel = adjusted_score;
+                                dbotScore = severityLevel;
+                                indicatorFnd = true;
+                                break;
+                            }
+                            severityLevel = Math.max(severityLevel, adjusted_score);
+                        }
+                    }
+                    var threatLevel = calcVerdict(severityLevel);
+                    md += 'Verdict: ' + threatLevel +'\n';
+                    md += addMD(threats[k]);
+                    threatArray[k] = threats[k].id;
+                    if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, severityLevel);
+                    }
+                }
+                ec[outputPaths.file]['PhishMe'] = {};
+                ec[outputPaths.file]['ThreatIDs'] = threatArray;
+                ec['PhishMe.' + outputPaths.file] = {
+                        MD5: str,
+                        ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.file].Malicious = {
+                        Vendor: 'PhishMe',
+                        Description: 'Match found in PhishMe database'
+                    };
+                    ec["PhishMe." + outputPaths.file].Malicious = ec[outputPaths.file].Malicious;
+                }
+            } else {
+                md += "No information found for this hash";
+            }
+            ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'PhishMe', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        }
+        var checkIP_pm = function(ip) {
+            var tmpargs = {};
+            tmpargs.ip = ip;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense IP Reputation for: "+ip+"\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.ipThreshold;
+            var indicatorFnd = false;
+            var threshold_score = calcScore(threshold);
+            if (threshold_score === -1) {
+                throw "Cofence error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            }
+            if (threats.length && threats.length !== 0) {
+                ec[outputPaths.ip] = {
+                    Data: ip
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    var severityLevel = 0;
+                    for (var i = 0; i < threats[k].blockSet.length; i++){
+                        if (threats[k].blockSet[i].data === ip && threats[k].blockSet[i].ipDetail) {
+                            ec[outputPaths.ip].ASN = threats[k].blockSet[i].ipDetail.asn;
+                            ec[outputPaths.ip].GEO = {
+                                "Location": (threats[k].blockSet[i].ipDetail.latitude + ', ' + threats[k].blockSet[i].ipDetail.longitude),
+                                "Country": threats[k].blockSet[i].ipDetail.countryIsoCode
+                            };
+                        }
+                        if (threats[k].blockSet[i]['impact']) {
+                            var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                            var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                            // if the queried indicator has a severity level, we'll take it
+                            if (threats[k].blockSet[i]['ipDetail'] && threats[k].blockSet[i]['ipDetail']['ip']===ip) {
+                                severityLevel = adjusted_score;
+                                dbotScore = severityLevel;
+                                indicatorFnd = true;
+                                break;
+                            }
+                            severityLevel = Math.max(severityLevel, adjusted_score);
+                        }
+                    }
+                    var threatLevel = calcVerdict(severityLevel);
+                    md += 'Verdict: ' + threatLevel +'\n';
+                    md += addMD(threats[k]);
+                    threatArray[k] = threats[k].id;
+                    if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, severityLevel);
+                    }
+                }
+                ec[outputPaths.ip]['PhishMe'] = {};
+                ec[outputPaths.ip].PhishMe['ThreatIDs'] = threatArray;
+                ec["PhishMe." + outputPaths.ip] = {
+                    Data: ip,
+                    ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.ip].Malicious = {
+                        Vendor: 'PhishMe',
+                        Description: 'Match found in PhishMe database'
+                    };
+                    ec["PhishMe." + outputPaths.ip].Malicious = ec[outputPaths.ip].Malicious;
+                }
+            } else {
+                md += "No information found for this ip";
+            }
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'PhishMe', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        }
+
+
+
+
+    //'''COFENSE VERSION'''
 
     var sendRequest = function(method,api,urlargs) {
 
@@ -83,14 +357,14 @@ script:
         );
 
         if ((res.StatusCode < 200 || res.StatusCode >= 300) && res.success === false) {
-            throw 'PhishMe Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+            throw 'Cofense Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
 
         try{
             return JSON.parse(res.Body);
         }
         catch(exc){
-            throw "PhishMe Error: JSON parse error\n" + res;
+            throw "Cofense Error: JSON parse error\n" + res;
         }
     };
 
@@ -128,7 +402,7 @@ script:
         var md = '';
         var threshold_score = calcScore(threshold);
         if (threshold_score === -1) {
-            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
         }
         res = {}
         for (var i = 0; i < threat.blockSet.length; i++){
@@ -158,7 +432,7 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var ec = {};
-        var md = "## PhishMe URL Reputation for: "+url+"\n";
+        var md = "## Cofense URL Reputation for: "+url+"\n";
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.urlThreshold;
@@ -179,24 +453,24 @@ script:
                 }
             }
 
-            ec[outputPaths.url]['PhishMe'] = {};
-            ec[outputPaths.url].PhishMe['ThreatIDs'] = threatArray;
-            ec["PhishMe." + outputPaths.url] = {
+            ec[outputPaths.url]['Cofense'] = {};
+            ec[outputPaths.url].Cofense['ThreatIDs'] = threatArray;
+            ec["Cofense." + outputPaths.url] = {
                 Data: url,
                 ThreatIDs: threatArray
             };
             if (dbotScore === 3) {
                 ec[outputPaths.url].Malicious = {
-                    Vendor: 'PhishMe',
-                    Description: 'Match found in PhishMe database'
+                    Vendor: 'Cofense',
+                    Description: 'Match found in Cofense database'
                 };
-                ec["PhishMe." + outputPaths.url].Malicious = ec[outputPaths.url].Malicious;
+                ec["Cofense." + outputPaths.url].Malicious = ec[outputPaths.url].Malicious;
             }
         } else {
             md += "No information found for this url";
         }
 
-        ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'PhishMe', Score: dbotScore};
+        ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'Cofense', Score: dbotScore};
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
@@ -207,7 +481,7 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var countThreats = 0;
-        var md = "## PhishMe Search Reputation for: "+str+"\n";
+        var md = "## Cofense Search Reputation for: "+str+"\n";
         var mdBody = "";
         var ec = {};
 
@@ -227,13 +501,13 @@ script:
             md += "### Details from the last campaign\n";
             md += mdBody;
 
-            ec = {"PhishMe" : {}};
-            ec.PhishMe = {"String": str, "NumOfThreats": countThreats};
+            ec = {"Cofense" : {}};
+            ec.Cofense = {"String": str, "NumOfThreats": countThreats};
 
         } else {
             md += "There are no results for this search\n";
-            ec = {"PhishMe" : {}};
-            ec.PhishMe = {"String": str, "NumOfThreats": 0};
+            ec = {"Cofense" : {}};
+            ec.Cofense = {"String": str, "NumOfThreats": 0};
         }
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
@@ -245,7 +519,7 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var ec = {};
-        var md = "## PhishMe email Reputation for: " + sender_name + "\n";
+        var md = "## Cofense email Reputation for: " + sender_name + "\n";
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.emailThreshold;
@@ -269,25 +543,25 @@ script:
                     dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
                 }
             }
-            ec[contextEmailKey]['PhishMe'] = {};
-            ec[contextEmailKey].PhishMe['ThreatIDs'] = threatArray;
-            ec['PhishMe.' + contextEmailKey] = {
+            ec[contextEmailKey]['Cofense'] = {};
+            ec[contextEmailKey].Cofense['ThreatIDs'] = threatArray;
+            ec['Cofense.' + contextEmailKey] = {
                 Data: sender_name,
                 ThreatIDs: threatArray
             };
             if (dbotScore === 3) {
                 ec[outputPaths.email].Malicious = {
-                    Vendor: 'PhishMe',
-                    Description: 'Match found in PhishMe database'
+                    Vendor: 'Cofense',
+                    Description: 'Match found in Cofense database'
                 };
-                ec["PhishMe." + contextEmailKey].Malicious = ec[outputPaths.email].Malicious;
+                ec["Cofense." + contextEmailKey].Malicious = ec[outputPaths.email].Malicious;
             }
 
         } else {
             md += "No infomation found for this email";
         }
 
-        ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'PhishMe', Score: dbotScore};
+        ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'Cofense', Score: dbotScore};
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
@@ -298,14 +572,14 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var ec = {};
-        var md = "## PhishMe Hash Reputation for: "+str+"\n";
+        var md = "## Cofense Hash Reputation for: "+str+"\n";
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.fileThreshold;
         var indicatorFnd = false;
         var threshold_score = calcScore(threshold);
         if (threshold_score === -1) {
-            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
         }
         if (threats.length !== 0) {
             ec[outputPaths.file] = {
@@ -335,24 +609,24 @@ script:
                     dbotScore = Math.max(dbotScore, severityLevel);
                 }
             }
-            ec[outputPaths.file]['PhishMe'] = {};
+            ec[outputPaths.file]['Cofense'] = {};
             ec[outputPaths.file]['ThreatIDs'] = threatArray;
-            ec['PhishMe.' + outputPaths.file] = {
+            ec['Cofense.' + outputPaths.file] = {
                     MD5: str,
                     ThreatIDs: threatArray
             };
             if (dbotScore === 3) {
                 ec[outputPaths.file].Malicious = {
-                    Vendor: 'PhishMe',
-                    Description: 'Match found in PhishMe database'
+                    Vendor: 'Cofense',
+                    Description: 'Match found in Cofense database'
                 };
-                ec["PhishMe." + outputPaths.file].Malicious = ec[outputPaths.file].Malicious;
+                ec["Cofense." + outputPaths.file].Malicious = ec[outputPaths.file].Malicious;
             }
         } else {
             md += "No information found for this hash";
         }
 
-        ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'PhishMe', Score: dbotScore};
+        ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'Cofense', Score: dbotScore};
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     }
@@ -363,14 +637,14 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var ec = {};
-        var md = "## PhishMe IP Reputation for: "+ip+"\n";
+        var md = "## Cofense IP Reputation for: "+ip+"\n";
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.ipThreshold;
         var indicatorFnd = false;
         var threshold_score = calcScore(threshold);
         if (threshold_score === -1) {
-            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
         }
         if (threats.length && threats.length !== 0) {
             ec[outputPaths.ip] = {
@@ -407,24 +681,24 @@ script:
                     dbotScore = Math.max(dbotScore, severityLevel);
                 }
             }
-            ec[outputPaths.ip]['PhishMe'] = {};
-            ec[outputPaths.ip].PhishMe['ThreatIDs'] = threatArray;
-            ec["PhishMe." + outputPaths.ip] = {
+            ec[outputPaths.ip]['Cofense'] = {};
+            ec[outputPaths.ip].Cofense['ThreatIDs'] = threatArray;
+            ec["Cofense." + outputPaths.ip] = {
                 Data: ip,
                 ThreatIDs: threatArray
             };
             if (dbotScore === 3) {
                 ec[outputPaths.ip].Malicious = {
-                    Vendor: 'PhishMe',
-                    Description: 'Match found in PhishMe database'
+                    Vendor: 'Cofense',
+                    Description: 'Match found in Cofense database'
                 };
-                ec["PhishMe." + outputPaths.ip].Malicious = ec[outputPaths.ip].Malicious;
+                ec["Cofense." + outputPaths.ip].Malicious = ec[outputPaths.ip].Malicious;
             }
         } else {
             md += "No information found for this ip";
         }
 
-        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'PhishMe', Score: dbotScore};
+        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'Cofense', Score: dbotScore};
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     }
@@ -471,32 +745,65 @@ script:
         return res;
     }
 
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            res = updates();
-            if (res.success === true){
-                return 'ok';
-            }else {
-                return JSON.stringify(res);
-            }
+    if (params.version=="1"){
+            // This is the call made when pressing the integration test button.
+        switch (command) {
+            case 'test-module':
+                res = updates();
+                if (res.success === true){
+                    return 'ok';
+                }else {
+                    return JSON.stringify(res);
+                }
 
-        case "url":
-            return searchUrl(args.url);
+            case "url":
+                return searchUrl_pm(args.url);
 
-        case "phishme-search":
-            return extractedString(args.str, args.limit);
+            case "cofense-search":
+                return extractedString_pm(args.str, args.limit);
 
-        case "email":
-            return checkEmail(args.email)
+            case "email":
+                return checkEmail_pm(args.email)
 
-        case "file":
-            return checkMD5(args.file);
+            case "file":
+                return checkMD5_pm(args.file);
 
-        case "ip":
-            return checkIP(args.ip);
-        default:
+            case "ip":
+                return checkIP_pm(args.ip);
+            default:
+        }
     }
+    else{
+        switch (command) {
+            // This is the call made when pressing the integration test button.
+
+            case 'test-module':
+                res = updates();
+                if (res.success === true){
+                    return 'ok';
+                }else {
+                    return JSON.stringify(res);
+                }
+
+            case "url":
+                return searchUrl(args.url);
+
+            case "cofense-search":
+                return extractedString(args.str, args.limit);
+
+            case "email":
+                return checkEmail(args.email)
+
+            case "file":
+                return checkMD5(args.file);
+
+            case "ip":
+                return checkIP(args.ip);
+            default:
+        }
+    }
+
+
   type: javascript
   commands:
   - name: url
@@ -520,13 +827,13 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    - contextPath: PhishMe.URL.Data
+    - contextPath: Cofense.URL.Data
       description: Bad URLs found
-    - contextPath: PhishMe.URL.Malicious.Vendor
+    - contextPath: Cofense.URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
-    - contextPath: PhishMe.URL.Malicious.Description
+    - contextPath: Cofense.URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision
-    - contextPath: PhishMe.URL.PhishMe.ThreatIDs
+    - contextPath: Cofense.URL.PhishMe.ThreatIDs
       description: The thread ids retrieved by the vendor.
     description: Checks the reputation of a URL.
   - name: file
@@ -551,13 +858,13 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    - contextPath: PhishMe.File.MD5
+    - contextPath: Cofense.File.MD5
       description: File MD5
-    - contextPath: PhishMe.File.Malicious.Vendor
+    - contextPath: Cofense.File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    - contextPath: PhishMe.File.Malicious.Description
+    - contextPath: Cofense.File.Malicious.Description
       description: For malicious files, the reason that the vendor made the decision
-    - contextPath: PhishMe.File.ThreatIDs
+    - contextPath: Cofense.File.ThreatIDs
       description: The thread ids retrieved by the vendor.
     description: Checks the reputation of a file hash.
   - name: ip
@@ -581,13 +888,13 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    - contextPath: PhishMe.IP.Data
+    - contextPath: Cofense.IP.Data
       description: Bad IP Address found
-    - contextPath: PhishMe.IP.Malicious.Vendor
+    - contextPath: Cofense.IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision
-    - contextPath: PhishMe.IP.Malicious.Description
+    - contextPath: Cofense.IP.Malicious.Description
       description: For malicious IPs, the reason that the vendor made the decision
-    - contextPath: PhishMe.IP.PhishMe.ThreatIDs
+    - contextPath: Cofense.IP.Cofense.ThreatIDs
       description: The thread ids retrieved by the vendor.
     - contextPath: IP.ASN
       description: Autonomous System name for the IP.
@@ -606,9 +913,9 @@ script:
       description: Limit of strings to search
       defaultValue: "10"
     outputs:
-    - contextPath: PhishMe.NumOfThreats
+    - contextPath: Cofense.NumOfThreats
       description: Number of threats
-    - contextPath: PhishMe.String
+    - contextPath: Cofense.String
       description: String to search
     description: Search for extracted strings identified within malware campaigns.
   - name: email
@@ -634,16 +941,14 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    - contextPath: PhishMe.Email.Data
+    - contextPath: Cofense.Email.Data
       description: Sender address to check.
-    - contextPath: PhishMe.Email.Malicious.Vendor
+    - contextPath: Cofense.Email.Malicious.Vendor
       description: For malicious emails, the vendor that made the decision
-    - contextPath: PhishMe.Email.Malicious.Description
+    - contextPath: Cofense.Email.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision
-    - contextPath: PhishMe.Email.PhishMe.ThreatIDs
+    - contextPath: Cofense.Email.Cofense.ThreatIDs
       description: The thread ids retrieved by the vendor.
     description: Check the reputation of an email address.
   runonce: false
-hidden: false
-tests:
-  - Test - PhishMe Intelligence
+releaseNotes: "Updated integration names and titles, due to rebranding from PhishMe to Cofense"
