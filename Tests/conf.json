@@ -3,22 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
-            "integrations": "AlienVault USM Anywhere",
-            "playbookID": "AlienVaultUSMAnywhereTest"
-        },
-        {
-            "playbookID": "PhishLabsTestPopulateIndicators"
-        },
-        {
-            "integrations": "PhishLabs IOC",
-            "playbookID": "PhishLabsIOC TestPlaybook",
-            "fromversion": "4.1.0"
-        },
-        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
         },
@@ -33,6 +17,10 @@
         {
             "integrations": "Tufin",
             "playbookID": "Tufin Test"
+        },
+        {
+            "integrations": "Looker",
+            "playbookID": "Test-Looker"
         },
         {
             "integrations": "Vertica",
@@ -369,11 +357,6 @@
             "timeout": 500
         },
         {
-            "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
             "playbookID": "CutTransformerTest"
         },
         {
@@ -495,7 +478,8 @@
             "playbookID": "ShodanTest"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
+            "playbookID": "Extract Indicators From File - test",
+            "timeout": 2000
         },
         {
             "playbookID": "dedup_-_generic_-_test"
@@ -1421,10 +1405,6 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
-            "integrations": "AWS - S3v2",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
         },
@@ -1470,10 +1450,6 @@
             "playbookID": "TestIsEmailAddressInternal"
         },
         {
-            "integrations": "AWS - S3",
-            "playbookID": "113aca8a-ee52-419f-89a6-150ee232d0d1"
-        },
-        {
             "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
         },
         {
@@ -1508,11 +1484,42 @@
             "playbookID": "RasterizeImageTest"
         },
         {
+            "integrations": "Ipstack",
+            "playbookID": "Ipstack_Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
+        },
+        {
+            "integrations": "LogRhythmRest",
+            "playbookID": "LogRhythm REST test"
+        },
+        {
+            "integrations": "AlienVault USM Anywhere",
+            "playbookID": "AlienVaultUSMAnywhereTest"
+        },
+        {
+            "playbookID": "PhishLabsTestPopulateIndicators"
+        },
+        {
+            "integrations": "PhishLabs IOC",
+            "playbookID": "PhishLabsIOC TestPlaybook",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test"
+        },
+        {
+            "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
     "skipped_tests": {
+        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
+        "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "Forescout-Test": "Should be skipped (issue 17016)",
+        "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -1536,7 +1543,6 @@
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
         "d66e5f86-e045-403f-819e-5058aa603c32": "skipped until PR is merged (pr 3220)",
-        "113aca8a-ee52-419f-89a6-150ee232d0d1": "skipped until PR is merged (pr 3512)",
         "Carbon Black Enterprise Protection V2 Test": "Data changes within Carbon Black on a weekly basis - which requires to update the test",
         "5dc848e5-a649-4394-8300-386770d39d75": "old test, needs to check if relevant",
         "Get File Sample By Hash - Generic - Test": "old test, needs to check if relevant",
@@ -1581,12 +1587,10 @@
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Forescout": "When accessing through the lab firewall , meaning with port forwarding , there is an error that says invalid request (issue 17016)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1599,17 +1603,22 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "MicrosoftGraphMail": "Inactive integration",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "VirusTotal - Private API": "reached api alloted quota."
+        "VirusTotal - Private API": "reached api alloted quota.",
+        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "McAfee-TIE": "Empty mock file ",
+        "LogRhythmRest": "test module when using mocks",
+        "vmray": "test module when using mocks",
         "Google BigQuery": "SSL problem",
         "Netcraft": "SSL failure",
         "CarbonBlackProtectionV2": "Mocking makes fetch incidents fail",
@@ -1665,7 +1674,6 @@
         "OTRS": "Pending merge of branch proxy-unsecure-checks",
         "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
         "Preempt": "Insecure has a non empty default value, will require fixing and merging",
-        "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
         "HashiCorp Vault": "Test fails with mock - need to test without mock",
