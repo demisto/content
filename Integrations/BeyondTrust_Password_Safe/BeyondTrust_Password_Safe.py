@@ -41,7 +41,7 @@ ERR_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, suffix_url: str, data=None):
+def http_request(method: str, suffix_url: str, data: dict = None):
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -52,12 +52,12 @@ def http_request(method: str, suffix_url: str, data=None):
         HTTP method, e.g. 'GET', 'POST' ... etc.
     suffix_url : str
         API endpoint.
-    data : str
+    data: dict
         Data to be sent in a 'POST' request.
 
     Returns
     -------
-    Response JSON from having made the request.
+    Response from having made the request.
     """
     url = BASE_URL + suffix_url
     try:
@@ -186,11 +186,6 @@ def get_managed_systems():
 def create_release_request(data: str) -> requests.Response:
     """
     Request for credentials release
-    Args:
-        data: (str)
-
-    Returns: response
-
     """
     suffix_url = '/requests'
     response = http_request('POST', suffix_url, data=data)
@@ -264,11 +259,6 @@ def create_release():
 def get_credentials_request(request_id: str) -> requests.Response:
     """
     Request for specific credentials
-    Args:
-        request_id: (str)
-
-    Returns: response
-
     """
 
     suffix_url = '/credentials/' + request_id
@@ -295,11 +285,6 @@ def get_credentials():
 def check_in_credentials_request(request_id: str, data: str) -> requests.Response:
     """
     Request for check-in credentials
-    Args:
-        request_id: (str)
-        data: (str)
-
-    Returns: response
 
     """
     suffix_url = f'/Requests/{request_id}/Checkin'
@@ -332,12 +317,6 @@ def check_in_credentials():
 def change_credentials_request(account_id: str, data: str) -> requests.Response:
     """
     Request to change credentials
-    Args:
-        account_id: (str)
-        data: (str)
-
-    Returns: response
-
     """
     suffix_url = f'/ManagedAccounts/{account_id}/Credentials'
     response = http_request('PUT', suffix_url, data=json.dumps(data))
