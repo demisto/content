@@ -1,17 +1,26 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import traceback
 
 try:
     inc1 = demisto.args().get('inc1')
     inc2 = demisto.args().get('inc2')
-    inc1_data = demisto.executeCommand("getIncidents", {'id': inc1})[0].get('Contents').get('data')
-    inc2_data = demisto.executeCommand("getIncidents", {'id': inc2})[0].get('Contents').get('data')
+    res = demisto.executeCommand("getIncidents", {'id': inc1})
+    if any(is_error(entry) for entry in res):
+        return_error("Unable to fetch incident {}".format(inc1))
+    inc1_data=res[0].get('Contents').get('data')
+
+    res = demisto.executeCommand("getIncidents", {'id': inc2})[0].get('Contents').get('data')
+    if any(is_error(entry) for entry in res):
+        return_error("Unable to fetch incident {}".format(inc2))
+    inc2_data=res[0].get('Contents').get('data')
+
     if inc1_data is None or inc2_data is None:
         return_error("One of the incidents does not exist.")
 
-    inc1_labels = inc1_data[0].get('labels')
-    inc2_labels = inc2_data[0].get('labels')
+    inc1_labels = inc1_data[0].get('labels',[])
+    inc2_labels = inc2_data[0].get('labels',[])
     in1not2 = []
     in2not1 = []
     for label in inc1_labels:
@@ -22,10 +31,11 @@ try:
             in2not1.append(label)
 
     md = tableToMarkdown("Labels in issue {} but not in issue {}".format(inc1, inc2), in1not2)
-    md = md + "\n" + tableToMarkdown("Labels in issue {1} but not in issue {0}".format(inc1, inc2), in2not1)
+    md += "\n" + tableToMarkdown("Labels in issue {1} but not in issue {0}".format(inc1, inc2), in2not1)
 
-    if in2not1 == [] and in1not2 == []:
+    if not in2not1 and not in1not2:
         md = "No different labels."
-    return_outputs(md, {})
+    return_outputs(md, {},{})
 except Exception as ex:
-    demisto.results("An Error has occurred.")
+    demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
+    return_error(ex.message)
