@@ -1,3 +1,5 @@
+from typing import Union, Tuple
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -41,7 +43,7 @@ ERR_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, suffix_url: str, data: str = None):
+def http_request(method: str, suffix_url: str, data=None):
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better
@@ -65,7 +67,7 @@ def http_request(method: str, suffix_url: str, data: str = None):
             method,
             url,
             verify=USE_SSL,
-            data=data,
+            data=data,  # type: ignore
             headers=HEADERS
         )
     except requests.exceptions.SSLError:
@@ -149,7 +151,7 @@ def get_managed_accounts():
                    managed_accounts)
 
 
-def get_managed_systems_request() -> dict or list:
+def get_managed_systems_request() -> Tuple[dict, list]:
     """
     Request for all managed systems
     """
@@ -183,7 +185,7 @@ def get_managed_systems():
                    managed_systems)
 
 
-def create_release_request(data: str) -> dict or list:
+def create_release_request(data: str) -> Tuple[dict, list]:
     """
     Request for credentials release
     """
@@ -256,7 +258,7 @@ def create_release():
     return_outputs(tableToMarkdown('The new release was created successfully.', response), entry_context, response)
 
 
-def get_credentials_request(request_id: str) -> dict or list:
+def get_credentials_request(request_id: str) -> Tuple[dict, list]:
     """
     Request for specific credentials
     """
@@ -282,7 +284,7 @@ def get_credentials():
     demisto.results('The credentials for BeyondTrust request: ' + response)
 
 
-def check_in_credentials_request(request_id: str, data: str) -> dict or list:
+def check_in_credentials_request(request_id: str, data: str) -> Tuple[dict, list]:
     """
     Request for check-in credentials
 
@@ -314,7 +316,7 @@ def check_in_credentials():
     demisto.results('The release was successfully checked-in/released')
 
 
-def change_credentials_request(account_id: str, data: str) -> dict or list:
+def change_credentials_request(account_id: str, data: str) -> Tuple[dict, list]:
     """
     Request to change credentials
     """
