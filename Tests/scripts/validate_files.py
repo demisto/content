@@ -26,7 +26,8 @@ from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
-from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS
+from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS, \
+    get_yaml
 
 
 class FilesValidator(object):
@@ -47,6 +48,23 @@ class FilesValidator(object):
 
         self.conf_json_validator = ConfJsonValidator()
         self.id_set_validator = IDSetValidator(is_circle)
+
+    @staticmethod
+    def is_py_script_or_integration(file_path):
+        file_yml = get_yaml(file_path)
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if file_yml.get('script', {}).get('type', 'javascript') != 'python':
+                return False
+
+            return True
+
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if file_yml.get('type', 'javascript') != 'python':
+                return False
+
+            return True
+
+        return False
 
     @staticmethod
     def get_modified_files(files_string):
@@ -72,6 +90,7 @@ class FilesValidator(object):
             file_path = file_data[1]
 
             if file_status.lower().startswith('r'):
+                file_status = 'r'
                 file_path = file_data[2]
             if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
                 dir_path = os.path.dirname(file_path)
@@ -82,7 +101,8 @@ class FilesValidator(object):
             elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
 
-            if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE):
+            if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE) and \
+                    FilesValidator.is_py_script_or_integration(file_path):
                 old_format_files.add(file_path)
             elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
                 modified_files_list.add(file_path)
