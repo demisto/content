@@ -31,7 +31,7 @@ class IntegrationValidator(object):
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.load(get(file_path_from_master).content, Loader=yaml.FullLoader)
+                    self.old_integration = yaml.load(get(file_path_from_master, verify=False).content, Loader=yaml.FullLoader)
                 except Exception:
                     print_error("Could not find the old integration please make sure that you did not break "
                                 "backward compatibility")
