@@ -15,11 +15,11 @@ RELEASE_ENDPOINT = 'quarantine/release/{id_}'
 
 USER_PARAMS = demisto.params()
 SECURED = not USER_PARAMS.get('insecure')
-PP_TOKEN = demisto.params().pop('pp_token', None)
+PP_TOKEN = USER_PARAMS.get('pp_token', None)
 if PP_TOKEN is None:
     return_error('Perception Point token is mandatory. Please enter your token or cantact us at support@perception-point.io for assistance')
 try:
-    API_MAX_LOOPS = int(USER_PARAMS.pop('api_loops', 1))
+    API_MAX_LOOPS = int(USER_PARAMS.get('api_loops', 1))
 except:
     API_MAX_LOOPS = 1
 HEADER = {'Authorization': 'Token {}'.format(PP_TOKEN)}
