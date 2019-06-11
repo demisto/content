@@ -143,7 +143,7 @@ def alert_to_incident(line):
         raise Exception("no data")
 
     tenant, rule_name, rule_severity = data.get('rule_name').split("##")[:3]
-    alert_time = data.get('alert_time', datetime.datetime.now().isoformat())  # type: ignore
+    alert_time = data.get('alert_time', datetime.now().isoformat())  # pylint: disable
 
     return {
         'type': 'Luminate',
