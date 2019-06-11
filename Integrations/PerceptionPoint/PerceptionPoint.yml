@@ -1,0 +1,79 @@
+commonfields:
+  id: PerceptionPoint
+  version: -1
+name: PerceptionPoint
+display: PerceptionPoint
+category: Email Gateway
+description: Load incidents from Perception Point system and release falsely quarantined
+  emails
+detaileddescription: |-
+  Use your API token to:
+                   1. View and manage your incidents list. The list will be updated automatically in Incidents dashboard.
+                   2. Release email from quarantine and resend them to their recipients. Use the scan id as an argument.
+  If you don't have a token yet, contact us at support@perception-point.io
+  You can set the number of results returning by using the parameter "No. of API loops". Each loop returns 20 items top.
+configuration:
+- display: Token to use Perception Point's API
+  name: pp_token
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch blocked incidents
+  name: fetch_blocked
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch spam incidents
+  name: fetch_spam
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch malicious incidents
+  name: fetch_malicious
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: No. of API loops
+  name: api_loops
+  defaultvalue: "1"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: pp-release-email
+    arguments:
+    - name: scan_id
+      required: true
+      description: The PP scan id of the email
+    outputs:
+    - contextPath: PP.Released
+      description: The scan ID of the released email
+      type: number
+    description: Resends an email that was falsely quarantined using the scan id
+  dockerimage: demisto/python:1.3-alpine
+  isfetch: true
+  runonce: false
+tests:
+  - PerceptionPoint Test
