@@ -12,7 +12,6 @@ import traceback
 import tempfile
 import sys
 
-
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 # Based on MS-OXMSG protocol specification
@@ -3310,9 +3309,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     email_data = msg.as_dict(max_depth)
 
     if parse_only_headers:
-        return {
-                   "HeadersMap": email_data.get("HeadersMap")
-               }, []
+        return {"HeadersMap": email_data.get("HeadersMap")}, []
 
     attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
@@ -3383,9 +3380,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             raise Exception("Could not parse eml file!")
 
         if parse_only_headers:
-            return {
-                "HeadersMap": headers_map
-            }, []
+            return {"HeadersMap": headers_map}, []
 
         html = ''
         text = ''
