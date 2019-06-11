@@ -197,7 +197,7 @@ try:
                                        demisto.params()['api_key'],
                                        demisto.params()['api_secret'],
                                        VERIFY_CERTIFICATE)
-
+    handle_proxy()
     if demisto.command() == 'test-module':
         demisto.results('ok')
         sys.exit(0)
