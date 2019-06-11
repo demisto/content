@@ -72,7 +72,7 @@ tasks:
       name: Get Managed Accounts
       description: Returns a list of managed accounts that the current user has permissions
         to request.
-      script: BeyondTrust Password Safe|||beyondtrust-get-managed-accounts
+      script: '|||beyondtrust-get-managed-accounts'
       type: regular
       iscommand: true
       brand: BeyondTrust Password Safe
@@ -99,7 +99,7 @@ tasks:
       version: -1
       name: Get Managed Systems
       description: Returns a list of managed systems.
-      script: BeyondTrust Password Safe|||beyondtrust-get-managed-systems
+      script: '|||beyondtrust-get-managed-systems'
       type: regular
       iscommand: true
       brand: BeyondTrust Password Safe
@@ -123,7 +123,7 @@ tasks:
       version: -1
       name: 'Create release request '
       description: Creates a new credentials release request.
-      script: BeyondTrust Password Safe|||beyondtrust-create-release-request
+      script: '|||beyondtrust-create-release-request'
       type: regular
       iscommand: true
       brand: BeyondTrust Password Safe
@@ -161,7 +161,7 @@ tasks:
       version: -1
       name: Check-In credentials
       description: Checks-in/releases a request before it expires.
-      script: BeyondTrust Password Safe|||beyondtrust-check-in-credentials
+      script: '|||beyondtrust-check-in-credentials'
       type: regular
       iscommand: true
       brand: BeyondTrust Password Safe
