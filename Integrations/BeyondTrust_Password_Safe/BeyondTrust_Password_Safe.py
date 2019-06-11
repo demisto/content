@@ -306,7 +306,7 @@ def check_in_credentials():
 
     """
     request_id = demisto.args().get('request_id')
-    reason = str(demisto.args().get('reason')).encode('utf-8')
+    reason = str(demisto.args().get('reason'))
 
     data = {'Reason': reason if reason else ''}
 
