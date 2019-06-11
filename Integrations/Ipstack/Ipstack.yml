@@ -1,7 +1,7 @@
 commonfields:
   id: Ipstack
   version: -1
-name: ipstack
+name: Ipstack
 display: ipstack
 category: Data Enrichment & Threat Intelligence
 description: "One of the leading IP to geolocation \nAPIs and global IP database services."
