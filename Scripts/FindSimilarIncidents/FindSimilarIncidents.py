@@ -1,3 +1,4 @@
+# type: ignore
 from CommonServerPython import *
 import base64
 import collections
