@@ -1536,6 +1536,10 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "PerceptionPoint",
+            "playbookID": "PerceptionPoint Test"
+        },
+        {
             "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
