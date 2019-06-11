@@ -282,7 +282,7 @@ tasks:
       subject:
         simple: fail playbook
       to:
-        simple: yotam.tayeb@perception-point.io
+        simple: yotam.tayeb@perception-point.io  #disable-secrets-detection
     separatecontext: false
     view: |-
       {
