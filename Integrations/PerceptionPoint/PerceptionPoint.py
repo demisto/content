@@ -13,7 +13,7 @@ URL = 'http://api.perception-point.io/api/v1/{endpoint}'  # disable-secrets-dete
 INCIDENTS_ENDPOINT = 'scans/incidents/'
 RELEASE_ENDPOINT = 'quarantine/release/{id_}'
 
-USER_PARAMS = demisto.params()
+USER_PARAMS = dict(demisto.params())  # create a copy of params
 SECURED = not USER_PARAMS.get('insecure')
 PP_TOKEN = USER_PARAMS.get('pp_token', None)
 if PP_TOKEN is None:
