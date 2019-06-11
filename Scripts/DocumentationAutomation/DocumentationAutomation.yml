@@ -82,3 +82,4 @@ type: python
 runonce: false
 tests:
 - DocumentationTest
+releaseNotes: run command examples by the order they appear in the input

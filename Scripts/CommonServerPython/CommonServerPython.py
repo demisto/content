@@ -32,8 +32,10 @@ entryTypes = {
     'userManagement': 6,
     'image': 7,
     'plagroundError': 8,
+    'playgroundError': 8,
     'entryInfoFile': 9,
-    'map': 15
+    'map': 15,
+    'widget': 17
 }
 formats = {
     'html': 'html',
