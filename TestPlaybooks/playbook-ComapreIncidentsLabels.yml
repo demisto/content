@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -142,8 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 240
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -264,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -286,7 +286,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - "6"
     scriptarguments:
       affecteddata: {}
       affecteddatatype: {}
@@ -386,8 +386,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 600
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -451,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 780
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -513,8 +513,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 940
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: bb607639-6535-4d21-830e-8f2a651d933c
+    type: regular
+    task:
+      id: bb607639-6535-4d21-830e-8f2a651d933c
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -525,9 +555,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 985,
+        "height": 1115,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
