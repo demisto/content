@@ -3,8 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AlienVault OTX",
+            "playbookID": "AlienVaultOTX Test"
+        },
+        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
+        },
+        {
+            "integrations": "CheckPhish",
+            "playbookID": "CheckPhish-Test"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -114,6 +122,10 @@
         {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test"
+        },
+        {
+            "integrations": "BeyondTrust Password Safe",
+            "playbookID": "BeyondTrust-Test"
         },
         {
             "integrations": "Dell Secureworks",
@@ -1287,6 +1299,10 @@
             "integrations": "activedir"
         },
         {
+            "playbookID": "Extract Indicators From File - Generic v2 - Test",
+            "integrations": "Image OCR"
+        },
+        {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
             "integrations": [
                 "FalconHost",
@@ -1496,6 +1512,10 @@
             "playbookID": "Forescout-Test"
         },
         {
+            "integrations": "GitHub",
+            "playbookID": "Git_Integration-Test"
+        },
+        {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
         },
@@ -1628,6 +1648,7 @@
         "Autofocus": "JS integration, problem listed in issue 15544",
         "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "AlienVault OTX": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
