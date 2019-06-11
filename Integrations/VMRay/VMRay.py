@@ -17,11 +17,7 @@ ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 requests.packages.urllib3.disable_warnings()
 
 # Remove proxy
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+PROXIES = handle_proxy()
 
 ''' HELPER DICTS '''
 SEVERITY_DICT = {
@@ -126,17 +122,17 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         if isinstance(may_be_error_inside, dict):
             if 'error_msg' in may_be_error_inside:
                 return may_be_error_inside['error_msg']
-            if 'errors' in may_be_error_inside and len(may_be_error_inside['errors']):
+            if 'errors' in may_be_error_inside and may_be_error_inside.get('errors'):
                 return may_be_error_inside['errors']
-            for v in may_be_error_inside.values():
-                err_r = find_error(v)
+            for value in may_be_error_inside.values():
+                err_r = find_error(value)
                 if err_r:
                     return err_r
         return None
 
     url = SERVER + url_suffix
     r = requests.request(
-        method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL
+        method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL, proxies=PROXIES
     )
     # Handle errors
     try:
@@ -185,6 +181,15 @@ def dbot_score_by_hash(analysis):
 
 
 def build_job_data(data):
+    """
+
+    Args:
+        data: any kind of object.
+
+    Returns:
+        list: list of jobs
+    """
+
     def build_entry(entry_data):
         entry = dict()
         entry['JobID'] = entry_data.get('job_id')
@@ -234,7 +239,7 @@ def build_analysis_data(analyses):
             'JobCreated': analysis.get('analysis_job_started'),
             'SHA1': analysis.get('analysis_sample_sha1'),
             'MD5': analysis.get('analysis_sample_md5'),
-            'SHA256': analysis.get('analysis_sample_sha25'),
+            'SHA256': analysis.get('analysis_sample_sha256'),
         }
         for analysis in analyses
     ]
@@ -400,7 +405,7 @@ def get_analysis_command():
     if data:
         entry_context = build_analysis_data(data)
         human_readable = tableToMarkdown(
-            'Submission results from VMRay for ID {}:'.format(sample_id),
+            'Analysis results from VMRay for ID {}:'.format(sample_id),
             entry_context.get('VMRay.Analysis(val.AnalysisID === obj.AnalysisID)'),
             headers=['AnalysisID', 'SampleID', 'Severity']
         )
@@ -631,11 +636,12 @@ def get_threat_indicators_command():
         return_outputs(
             human_readable, entry_context, raw_response={'threat_indicators': data}
         )
-    return_outputs(
-        'No threat indicators for sample ID: {}'.format(sample_id),
-        {},
-        raw_response=raw_response,
-    )
+    else:
+        return_outputs(
+            'No threat indicators for sample ID: {}'.format(sample_id),
+            {},
+            raw_response=raw_response,
+        )
 
 
 def post_tags_to_analysis(analysis_id, tag):
@@ -744,6 +750,26 @@ def get_iocs(sample_id):
 
 
 def get_iocs_command():
+    def get_hashed(lst):
+        """
+
+        Args:
+            lst (List[dict]): list of hashes attributes
+
+        Returns:
+            List[dict]:list of hashes attributes in demisto's favor
+        """
+        hashes_dict = {
+            'MD5': 'md5_hash',
+            'SHA1': 'sha1_hash',
+            'SHA256': 'sha256_hash',
+            'SSDeep': 'ssdeep_hash'
+        }
+        return [
+            {k: hashes.get(v) for k, v in hashes_dict.items()}
+            for hashes in lst
+        ]
+
     sample_id = demisto.args().get('sample_id')
     check_id(sample_id)
     raw_response = get_iocs(sample_id)
@@ -752,98 +778,103 @@ def get_iocs_command():
     # Initialize counters
     iocs_size = 0
     iocs_size_table = dict()
+    iocs = dict()
 
     domains = data.get('domains')
-    domain_list = list()
     if domains:
         size = len(domains)
         iocs_size_table['Domain'] = size
         iocs_size += size
-
-        for domain in domains:
-            entry = dict()
-            entry['AnalysisID'] = domain.get('analysis_ids')
-            entry['Domain'] = domain.get('domain')
-            entry['ID'] = domain.get('id')
-            entry['Type'] = domain.get('type')
-            domain_list.append(entry)
+        iocs['Domain'] = [
+            {
+                'AnalysisID': domain.get('analysis_ids'),
+                'Domain': domain.get('domain'),
+                'ID': domain.get('id'),
+                'Type': domain.get('type'),
+            } for domain in domains
+        ]
 
     ips = data.get('ips')
-    ip_list = list()
     if ips:
         size = len(ips)
         iocs_size_table['IP'] = size
         iocs_size += size
-
-        for ip in ips:
-            entry = dict()
-            entry['AnalysisID'] = ip.get('analysis_ids')
-            entry['IP'] = ip.get('ip_address')
-            entry['ID'] = ip.get('id')
-            entry['Type'] = ip.get('type')
-            ip_list.append(entry)
+        iocs['IP'] = [
+            {
+                'AnalysisID': ip.get('analysis_ids'),
+                'IP': ip.get('ip_address'),
+                'ID': ip.get('id'),
+                'Type': ip.get('type')
+            } for ip in ips
+        ]
 
     mutexes = data.get('mutexes')
-    mutex_list = list()
     if mutexes:
         size = len(mutexes)
         iocs_size_table['Mutex'] = size
         iocs_size += size
-
-        for mutex in mutexes:
-            entry = dict()
-            entry['AnalysisID'] = mutex.get('analysis_ids')
-            entry['Name'] = mutex.get('mutex_name')
-            entry['Operation'] = mutex.get('operations')
-            entry['ID'] = mutex.get('id')
-            entry['Type'] = mutex.get('type')
-            mutex_list.append(entry)
+        iocs['Mutex'] = [{
+            'AnalysisID': mutex.get('analysis_ids'),
+            'Name': mutex.get('mutex_name'),
+            'Operation': mutex.get('operations'),
+            'ID': mutex.get('id'),
+            'Type': mutex.get('type')
+        } for mutex in mutexes
+        ]
 
     registry = data.get('registry')
-    registry_list = list()
     if registry:
         size = len(registry)
         iocs_size_table['Registry'] = size
         iocs_size += size
-
-        for reg in registry:
-            entry = dict()
-            entry['AnalysisID'] = reg.get('analysis_ids')
-            entry['Name'] = reg.get('reg_key_name')
-            entry['Operation'] = reg.get('operations')
-            entry['ID'] = reg.get('id')
-            entry['Type'] = reg.get('type')
-            registry_list.append(entry)
+        iocs['Registry'] = [
+            {
+                'AnalysisID': reg.get('analysis_ids'),
+                'Name': reg.get('reg_key_name'),
+                'Operation': reg.get('operations'),
+                'ID': reg.get('id'),
+                'Type': reg.get('type'),
+            } for reg in registry
+        ]
 
     urls = data.get('urls')
-    urls_list = list()
     if urls:
         size = len(urls)
         iocs_size_table['URL'] = size
         iocs_size += size
-        for url in urls:
-            entry = dict()
-            entry['AnalysisID'] = url.get('analysis_ids')
-            entry['URL'] = url.get('url')
-            entry['Operation'] = url.get('operations')
-            entry['ID'] = url.get('id')
-            entry['Type'] = url.get('type')
-            urls_list.append(entry)
+        iocs['URL'] = [
+            {
+                'AnalysisID': url.get('analysis_ids'),
+                'URL': url.get('url'),
+                'Operation': url.get('operations'),
+                'ID': url.get('id'),
+                'Type': url.get('type'),
+            } for url in urls
+        ]
 
-    iocs = {
-        'URL': urls_list,
-        'Mutex': mutex_list,
-        'Domain': domain_list,
-        'Registry': registry_list,
-        'IP': ip_list,
-    }
+    files = data.get('files')
+    if files:
+        size = len(files)
+        iocs_size_table['File'] = size
+        iocs_size += size
+        iocs['File'] = [
+            {
+                'AnalysisID': file_entry.get('analysis_ids'),
+                'Filename': file_entry.get('filename'),
+                'Operation': file_entry.get('operations'),
+                'ID': file_entry.get('id'),
+                'Type': file_entry.get('type'),
+                'Hashes': get_hashed(file_entry.get('hashes'))
+            } for file_entry in files
+        ]
 
     entry_context = {'VMRay.Sample(val.SampleID === {}).IOC'.format(sample_id): iocs}
     if iocs_size:
         human_readable = tableToMarkdown(
             'Total of {} IOCs found in VMRay by sample {}'.format(iocs_size, sample_id),
             iocs_size_table,
-            headers=['URLs', 'IPs', 'Domains', 'Mutexes', 'Registry'],
+            headers=['URLs', 'IPs', 'Domains', 'Mutexes', 'Registry', 'File'],
+            removeNull=True
         )
     else:
         human_readable = '### No IOCs found in sample {}'.format(sample_id)
