@@ -1615,13 +1615,13 @@
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "McAfee ESM-v10": "User name expired (issue 17407)",
-        "Intsight": "Account expired (issue 16351)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "Instance is not stable (issue 15497)",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
+        "Intsight": "Account expired (issue 16351) - UNSTABLE",
 
       "_comment": "~~~ OTHER ~~~",
         "iDefense": "DevOps investigation",
