@@ -49,7 +49,7 @@ FETCH_INCIDENTS_TYPE = [{'demisto_param': 'fetch_malicious',
 
 
 def build_fetch_incident_types(fetch_select):
-    fetch_type_dict = defaultdict(list)
+    fetch_type_dict = defaultdict(list)  # type: ignore
     for darg in FETCH_INCIDENTS_TYPE:
         darg_input = fetch_select.get(darg['demisto_param'])
         if darg_input:
@@ -69,7 +69,7 @@ def collect_incidents(**kwargs):
     list_url = build_request_url(LIST)
     api_res = get_pp_api_result(url=list_url, **kwargs)
     num_of_results = api_res.get('count')
-    incidents = []
+    incidents = []  # type: list
     api_loops = 0
     while num_of_results and api_loops < API_MAX_LOOPS:
         incidents += map(create_incident, api_res.get('results'))
@@ -96,8 +96,8 @@ def get_pp_api_result(url, **kwargs):
         except Exception:
             res_content = {}
         return res_content
-    except Exception as e:
-        return_error(e.message)
+    except Exception as err:
+        return_error(err)
 
 
 def build_request_url(api_action):
@@ -160,8 +160,9 @@ try:
     if demisto.command() == 'pp-release-email':
         command_release_email()
 except Exception as e:
-    message = f'Unexpected error: {e}, traceback: {traceback.print_exc()}'
-    LOG(message)
     LOG(str(e))
+    message = f'Unexpected error: {e}, traceback: \n'
+    LOG(message)
+    traceback.print_exc()
     LOG.print_log()
     return_error(message)
