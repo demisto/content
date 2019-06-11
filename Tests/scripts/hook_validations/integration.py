@@ -7,6 +7,7 @@ from Tests.test_utils import print_error, get_yaml
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 class IntegrationValidator(object):
     """IntegrationValidator is designed to validate the correctness of the file structure we enter to content repo. And
     also try to catch possible Backward compatibility breaks due to the preformed changes.
@@ -34,7 +35,8 @@ class IntegrationValidator(object):
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
                     print('getting file from: {}'.format(file_path_from_master))
-                    self.old_integration = yaml.load(requests.get(file_path_from_master, verify=False).content, Loader=yaml.FullLoader)
+                    self.old_integration = yaml.load(requests.get(file_path_from_master,
+                                                                  verify=False).content, Loader=yaml.FullLoader)
                 except Exception as e:
                     print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
