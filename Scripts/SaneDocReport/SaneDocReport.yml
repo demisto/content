@@ -12,6 +12,7 @@ commonfields:
 enabled: true
 name: SaneDocReports
 script: ''
+fromversion: 5.0.0
 system: false
 tags:
 - sane-doc-reports
@@ -19,7 +20,7 @@ tags:
 - docx
 timeout: '0'
 type: python
-dockerimage: devdemisto/sane-doc-reports:1.0.0.348
+dockerimage: demisto/sane-doc-reports:1.0.0.349
 runas: DBotWeakRole
 runonce: false
 deprecated: true
