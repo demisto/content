@@ -1,12 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 from luminateapi.luminate_python import LuminateV2Client
 import json
 import ast
 import dateparser
-import datetime
+# import datetime
 import time
 
 ''' CONSTS '''
@@ -15,13 +16,17 @@ VERIFY_CERTIFICATE = True
 MAX_ALERTS_FETCH = 500
 
 ''' FUNCTIONS '''
+
+
 ''' HELPER FUNCTIONS '''
+
+
 def human_readable_string_to_epoch(data):
     return int(dateparser.parse(data).strftime('%s')) * 1000
 
 
 def make_table_header(header):
-    return header.replace("@","").replace("_"," ").title()
+    return header.replace("@", "").replace("_", " ").title()
 
 
 def format_logs_output(data, context_path):
@@ -131,22 +136,23 @@ def destroy_user_sessions_by_email_command():
 
     return format_bulk_result(result, "Luminate.DestroySession")
 
-def alert_to_incident(line):
 
+def alert_to_incident(line):
     data = line.get("Data")
     if not data:
         raise Exception("no data")
 
     tenant, rule_name, rule_severity = data.get('rule_name').split("##")[:3]
-    alert_time = data.get('alert_time', datetime.datetime.now().isoformat())
+    alert_time = data.get('alert_time', datetime.datetime.now().isoformat())  # type: ignore
 
     return {
         'type': 'Luminate',
-        'name':  rule_name,
-        'occurred': alert_time.split(".")[0]+"Z",
+        'name': rule_name,
+        'occurred': alert_time.split(".")[0] + "Z",
         'severity': severity_to_level(rule_severity),
         'rawJSON': json.dumps(data),
     }
+
 
 def severity_to_level(severity):
     if severity.lower() == "high":
@@ -155,6 +161,7 @@ def severity_to_level(severity):
         return 2
     else:
         return 1
+
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
@@ -165,21 +172,22 @@ def fetch_incidents():
         last_fetch = human_readable_string_to_epoch("5 days ago")
     current_fetch = last_fetch
 
-    query = {"from_date":current_fetch}
+    query = {"from_date": current_fetch}
     result = luminate_client.get_alerts(MAX_ALERTS_FETCH, query, None)
 
     incidents = []
     # in case there is no alerts we move the last time to now.
-    temp_date=int(time.time() * 1000)
+    temp_date = int(time.time() * 1000)
     for data in result.get('Logs', []):
         incident = alert_to_incident(data)
         temp_date = human_readable_string_to_epoch(incident['occurred']) + 1000
 
         incidents.append(incident)
 
-    demisto.setLastRun({'time' : temp_date})
+    demisto.setLastRun({'time': temp_date})
 
     return incidents
+
 
 ''' EXECUTION CODE '''
 LOG('command is {}'.format(demisto.command()))
