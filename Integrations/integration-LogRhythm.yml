@@ -1575,4 +1575,3 @@ script:
   runonce: false
 tests:
 - LogRhythm-Test-Playbook
-releaseNotes: "Added several new commands. Added the LastHour option to time_frame argument."
