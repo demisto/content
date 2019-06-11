@@ -11,7 +11,7 @@ def test_get_yaml_obj(mocker):
 
     # sanity
     print os.getcwd()
-    file_path = os.path.join('test_data', 'ANYRUN.yml')
+    file_path = os.path.join('test_data', 'ANYRUN_yml.txt')
     mocker.patch.object(demisto, 'getFilePath',
                         return_value={'path': file_path})
     data = get_yaml_obj('12345')
@@ -22,7 +22,7 @@ def test_get_yaml_obj(mocker):
 
     # invalid yml
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'path': os.path.splitext(file_path)[0] + '.py'})
+                        return_value={'path': os.path.join('test_data', 'ANYRUN.py')})
     get_yaml_obj('234')
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
