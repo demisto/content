@@ -1,11 +1,8 @@
 import os
 import yaml
-import requests
+from requests import get
 
 from Tests.test_utils import print_error, get_yaml
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 
 class IntegrationValidator(object):
@@ -29,14 +26,12 @@ class IntegrationValidator(object):
             # The replace in the end is for Windows support
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
-                file_content = requests.get(git_hub_path).content
-                self.old_integration = yaml.load(file_content)
+                file_content = get(git_hub_path).content
+                self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    print('getting file from: {}'.format(file_path_from_master))
-                    self.old_integration = yaml.load(requests.get(file_path_from_master,
-                                                                  verify=False).content, Loader=yaml.FullLoader)
+                    self.old_integration = yaml.safe_load(get(file_path_from_master).content)
                 except Exception as e:
                     print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
