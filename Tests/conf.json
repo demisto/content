@@ -1615,6 +1615,7 @@
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "McAfee ESM-v10": "User name expired (issue 17407)",
+        "Intsight": "Account expired (issue 16351)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
