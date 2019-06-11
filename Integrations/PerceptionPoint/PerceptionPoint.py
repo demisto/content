@@ -9,7 +9,7 @@ import traceback
 from collections import defaultdict
 
 ''' INTEGRATION PARAMS '''
-URL = 'http://api.perception-point.io/api/v1/{endpoint}'
+URL = 'http://api.perception-point.io/api/v1/{endpoint}' #disable-secrets-detection
 INCIDENTS_ENDPOINT = 'scans/incidents/'
 RELEASE_ENDPOINT = 'quarantine/release/{id_}'
 
@@ -17,7 +17,7 @@ USER_PARAMS = demisto.params()
 SECURED = not USER_PARAMS.get('insecure')
 PP_TOKEN = USER_PARAMS.get('pp_token', None)
 if PP_TOKEN is None:
-    return_error('Perception Point token is mandatory. Please enter your token or cantact us at support@perception-point.io for assistance')
+    return_error('Perception Point token is mandatory. Please enter your token or contact PerceptionPoint support')
 try:
     API_MAX_LOOPS = int(USER_PARAMS.get('api_loops', 1))
 except:
@@ -118,7 +118,7 @@ def command_fetch_incidents():
             demisto.setLastRun({'scan_id': int(last_run_id)})
     except:
         return_error(
-            'An error occurred while trying to fetch new incidents. Please contact us at support@perception-point.io')
+            'An error occurred while trying to fetch new incidents. Please contact PerceptionPoint support')
 
 
 def release_email_and_get_message(scan_id_to_release):
@@ -145,7 +145,7 @@ def command_release_email():
         demisto.results(entry)
     except Exception as e:
         return_error(
-            'An error occurred while trying to release email. Please contact us at support@perception-point.io')
+            'An error occurred while trying to release email. Please contact PerceptionPoint support')
 
 
 ''' COMMAND CLASSIFIER'''
