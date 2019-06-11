@@ -124,6 +124,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "BeyondTrust Password Safe",
+            "playbookID": "BeyondTrust-Test"
+        },
+        {
             "integrations": "Dell Secureworks",
             "playbookID": "secureworks_test"
         },
