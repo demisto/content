@@ -124,7 +124,7 @@
             "playbookID": "hashicorp_test"
         },
         {
-            "integration": "BeyondTrust Password Safe",
+            "integrations": "BeyondTrust Password Safe",
             "playbookID": "BeyondTrust-Test"
         },
         {
