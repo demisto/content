@@ -22,7 +22,7 @@ def test_get_yaml_obj(mocker):
 
     # invalid yml
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'path': os.path.join('test_data', 'ANYRUN.py')})
+                        return_value={'path': os.path.join('test_data', 'not_yml_file.txt')})
     get_yaml_obj('234')
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
