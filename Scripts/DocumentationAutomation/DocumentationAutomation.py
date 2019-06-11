@@ -10,11 +10,14 @@ CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((\"[^"]+\")|(`.+`)|(\"\"\".+\"\"\")|([^
 
 
 def get_yaml_obj(entry_id):
-    data = ''
+    data = {}  # type: dict
     try:
         yml_file_path = demisto.getFilePath(entry_id)['path']
         with open(yml_file_path, 'r') as yml_file:
             data = yaml.safe_load(yml_file)
+        if not isinstance(data, dict):
+            raise ValueError()
+
     except (ValueError, yaml.YAMLError):
         return_error('Failed to open integration file')
 
