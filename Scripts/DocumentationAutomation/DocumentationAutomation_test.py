@@ -11,9 +11,7 @@ def test_get_yaml_obj(mocker):
 
     # sanity
     print os.getcwd()
-    file_path = os.path.join('Integrations', 'ANYRUN', 'ANYRUN.yml')  # relevant for circle builds
-    if not os.path.isfile(file_path):
-        file_path = os.path.join('..', '..', 'Integrations', 'ANYRUN', 'ANYRUN.yml')  # relevant for local builds
+    file_path = os.path.join('test_data', 'ANYRUN.yml')
     mocker.patch.object(demisto, 'getFilePath',
                         return_value={'path': file_path})
     data = get_yaml_obj('12345')
