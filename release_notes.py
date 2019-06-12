@@ -583,7 +583,7 @@ def main():
 
     fv = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, _ = fv.get_modified_files(change_log)
+    modified_files, added_files, _, _ = fv.get_modified_files(change_log)
     deleted_files = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
 
     for file_ in added_files:

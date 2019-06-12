@@ -1,8 +1,6 @@
 import os
 import re
 import sys
-import json
-import yaml
 
 from Tests.scripts.constants import *
 from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type, \
@@ -11,7 +9,7 @@ from Tests.test_utils import print_error, print_warning, run_command, get_yaml, 
 try:
     from pykwalify.core import Core
 except ImportError:
-    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
+    print('Please install pykwalify, you can do it by running: `pip install -I pykwalify`')
     sys.exit(1)
 
 
