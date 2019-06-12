@@ -11,8 +11,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+- defaultvalue: https://api.perch.rocks/
+  display: Server URL (e.g. https://api.perch.rocks/)
   name: url
   required: true
   type: 0
@@ -48,7 +48,7 @@ detaileddescription: Use these detailed instructions in order to retrieve the AP
   key
 display: Perch
 name: Perch
-script:
+script: ''
   commands:
   - arguments:
     - default: false

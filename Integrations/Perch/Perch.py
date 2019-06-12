@@ -72,10 +72,15 @@ def http_request(method, url_suffix, params=None, data=None, headers=None):
         headers=headers
     )
     # Handle error responses gracefully
-    if res.status_code not in {200}:
+    if res.status_code not in {200, 201}:
         return_error('Error in API call to Perch Integration [%d] - %s' % (res.status_code, res.reason))
 
     return res.json()
+
+def find_key_by_value(val, dic_map):
+    for key, value in dic_map.items():
+        if value == val:
+            return key
 
 
 def format_alerts(alert):
@@ -217,8 +222,14 @@ def indicator_params(args):
     params = []
     param = {}
     observables = []
+    communities = []
     if args.get('communities'):
-        param['communities'] = args.get('communities')
+        community = {
+            'id': args.get('communities')
+        }
+        communities.append(community)
+
+        param['communities'] = communities
     if args.get('type'):
         observable = {
             'type': OBSERVABLE_TYPES_MAP[args.get('type')],
@@ -347,14 +358,79 @@ def get_community():
         demisto.results('No communities were found')
 
 
+def format_indicator(indicator):
+    hr = makehash()  # type: dict
+    ec = makehash()  # type: dict
+    if indicator.get('id'):
+        hr['ID'] = indicator.get('id')
+        ec['ID'] = indicator.get('id')
+    if indicator.get('confidence'):
+        hr['Confidence'] = find_key_by_value(indicator.get('confidence'), CONFIDENCE_MAP)
+        ec['Confidence'] = find_key_by_value(indicator.get('confidence'), CONFIDENCE_MAP)
+    if indicator.get('created_at'):
+        hr['Created At'] = indicator.get('created_at')
+        ec['CreatedAt'] = indicator.get('created_at')
+    if indicator.get('created_by'):
+        hr['Created By'] = indicator.get('created_by')
+        ec['CreatedBy'] = indicator.get('created_by')
+    if indicator.get('description'):
+        hr['Description'] = indicator.get('description')
+        ec['Description'] = indicator.get('description')
+    if indicator.get('email_summary'):
+        hr['Email Summary'] = indicator.get('email_summary')
+        ec['EmailSummary'] = indicator.get('email_summary')
+    if indicator.get('title'):
+        hr['Title'] = indicator.get('title')
+        ec['Title'] = indicator.get('title')
+    if indicator.get('first_sighting'):
+        hr['First Sighting'] = indicator.get('first_sighting')
+        ec['FirstSighting'] = indicator.get('first_sighting')
+    if indicator.get('perch_id'):
+        hr['Perch ID'] = indicator.get('perch_id')
+        ec['PerchID'] = indicator.get('perch_id')
+    if indicator.get('team'):
+        hr['Team'] = indicator.get('team')
+        ec['Team'] = indicator.get('team')
+    if indicator.get('tlp'):
+        hr['TLP'] = find_key_by_value(indicator.get('tlp'), TLP_MAP)
+        ec['TLP'] = find_key_by_value(indicator.get('tlp'), TLP_MAP)
+    if indicator.get('updated_at'):
+        hr['Updated At'] = indicator.get('updated_at')
+        ec['UpdatedAt'] = indicator.get('updated_at')
+    if indicator.get('operator'):
+        hr['Operator'] = indicator.get('operator')
+        ec['Operator'] = indicator.get('operator')
+    # if indicator.get('observables'):
+    #     hr['First Sighting'] = indicator.get('first_sighting')
+    #     ec['FirstSighting'] = indicator.get('first_sighting')
+    return hr, ec
+
+
+
 def create_indicator():
     headers = authenticate()
     args = demisto.args()
     raw_data = indicator_params(args)
+    demisto.results(raw_data)
     data = json.dumps(raw_data)
-    url = '/indicator'
+    url = '/indicators'
     res = http_request('POST', url, headers=headers, data=data)
-    demisto.results(res)
+    indicator_hr, indicator_ec = format_indicator(res[0])
+    hr = ''
+    ec = {
+        "Perch": {
+            "Indicator": []
+        }
+    }  # type: dict
+    ec['Perch']['Indicator'].append(indicator_ec)
+    hr += tableToMarkdown('{title}'.format(title=indicator_hr.get('Title')), indicator_hr)
+    demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': res,
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
 
 
 def item_to_incident(item):
