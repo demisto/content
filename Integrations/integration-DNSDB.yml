@@ -22,6 +22,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     var serverUrl = params.url;
@@ -145,7 +150,7 @@ script:
                     'X-API-Key': [params.apiKey]
                 }
             },
-            false,
+            !params.unsecure,
             proxy
 
         );
