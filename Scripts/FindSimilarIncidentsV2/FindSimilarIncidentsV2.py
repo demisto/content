@@ -255,7 +255,7 @@ def merge_incident_fields(incident):
 
 
 # set the incident
-incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore
+incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore  # pylint: disable=no-value-for-parameter
 
 # validate fields
 exact_match_incident_fields = get_map_from_nested_dict(incident,

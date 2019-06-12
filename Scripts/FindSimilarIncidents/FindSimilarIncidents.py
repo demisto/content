@@ -8,7 +8,7 @@ DATE_UTIL = 'UEsDBAoAAAAAADWNxEwAAAAAAAAAAAAAAAAJABAAZGF0ZXV0aWwvVVgMANNTFVulTxV
 with open('dateutil.zip', 'wb') as f:
     f.write(base64.decodestring(DATE_UTIL))
 sys.path.insert(0, 'dateutil.zip')
-from dateutil import parser  # noqa: E402
+from dateutil import parser  # noqa: E402  # pylint: disable=import-error
 
 EXACT_MATCH = 0
 CONTAINS = '*'
@@ -260,7 +260,7 @@ def merge_incident_fields(incident):
 
 
 # set the incident
-incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore
+incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore  # pylint: disable=no-value-for-parameter
 
 # validate fields
 exact_match_incident_fields = get_map_from_nested_dict(incident,
