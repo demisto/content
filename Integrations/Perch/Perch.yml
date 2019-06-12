@@ -1,119 +1,231 @@
+category: Authentication
 commonfields:
   id: Perch
   version: -1
-name: Perch
-display: Perch
-category: Authentication
+configuration:
+- defaultvalue: https://api.perch.rocks/
+  display: Server URL (e.g. https://api.perch.rocks/)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: api-key
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Credentials
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: v1
+  display: API Version
+  name: version
+  required: false
+  type: 0
 description: Integration Template
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
-configuration:
-- display: Server URL (e.g. https://api.perch.rocks/)
-  name: url
-  defaultvalue: https://api.perch.rocks/
-  type: 0
-  required: true
-- display: API Token
-  name: api-key
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: Use system proxy
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  defaultvalue: 3 days
-  type: 0
-  required: false
-- display: Credentials
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: false
-- display: API Version
-  name: version
-  defaultvalue: v1
-  type: 0
-  required: false
+display: Perch
+name: Perch
 script:
-  script: ""
-  type: python
   commands:
-  - name: perch-search-alerts
-    arguments:
-    - name: page
+  - arguments:
+    - default: false
       description: Page of results to return
-    - name: page_size
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
       description: Results per page.
-    - name: closed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Alert is closed.
-    - name: closed_at
-      description: Time Alert was closed.
-    - name: community_id
-      description: Community ID that generated the Alert.
-    - name: created_at
-      description: Time Alert was created.
-    - name: dest_ip
-      description: IP Address of Destination.
-    - name: dest_port
-      description: Port of Destination.
-    - name: full_url
-      description: Full URL of Alert.
-    - name: id
-      description: ID of Alert.
-    - name: indicator_id
-      description: ID of Indicator.
-    - name: indicator_loaded
-      auto: PREDEFINED
+      isArray: false
+      name: closed
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Time Alert was closed.
+      isArray: false
+      name: closed_at
+      required: false
+      secret: false
+    - default: false
+      description: Community ID that generated the Alert.
+      isArray: false
+      name: community_id
+      required: false
+      secret: false
+    - default: false
+      description: Time Alert was created.
+      isArray: false
+      name: created_at
+      required: false
+      secret: false
+    - default: false
+      description: IP Address of Destination.
+      isArray: false
+      name: dest_ip
+      required: false
+      secret: false
+    - default: false
+      description: Port of Destination.
+      isArray: false
+      name: dest_port
+      required: false
+      secret: false
+    - default: false
+      description: Full URL of Alert.
+      isArray: false
+      name: full_url
+      required: false
+      secret: false
+    - default: false
+      description: ID of Alert.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: ID of Indicator.
+      isArray: false
+      name: indicator_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Is indicator loaded?
-    - name: observable_id
+      isArray: false
+      name: indicator_loaded
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: Observable ID.
-    - name: protocol
+      isArray: false
+      name: observable_id
+      required: false
+      secret: false
+    - default: false
       description: Protocol effected by Alert.
-    - name: sensor_id
+      isArray: false
+      name: protocol
+      required: false
+      secret: false
+    - default: false
       description: ID of sensor generating Alert.
-    - name: sensor_name
+      isArray: false
+      name: sensor_id
+      required: false
+      secret: false
+    - default: false
       description: Name of sensor generating Alert.
-    - name: soc_status
+      isArray: false
+      name: sensor_name
+      required: false
+      secret: false
+    - default: false
       description: Status within the SOC.
-    - name: src_ip
+      isArray: false
+      name: soc_status
+      required: false
+      secret: false
+    - default: false
       description: IP Address of source.
-    - name: src_port
+      isArray: false
+      name: src_ip
+      required: false
+      secret: false
+    - default: false
       description: Port of Source.
-    - name: status
+      isArray: false
+      name: src_port
+      required: false
+      secret: false
+    - default: false
       description: Status of Alert.
-    - name: status_updated_at
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
       description: Time status was last updated.
-    - name: team_id
+      isArray: false
+      name: status_updated_at
+      required: false
+      secret: false
+    - default: false
       description: ID of team generating the Alert.
-    - name: title
+      isArray: false
+      name: team_id
+      required: false
+      secret: false
+    - default: false
       description: Title of Alert.
-    - name: ts
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
       description: Timestamp of Alert.
-    - name: ordering
+      isArray: false
+      name: ts
+      required: false
+      secret: false
+    - default: false
       description: Ordering of Alerts returned.
-  - name: perch-get-community
-    arguments:
-    - name: id
+      isArray: false
+      name: ordering
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for Alerts in Perch.
+    execution: false
+    name: perch-search-alerts
+  - arguments:
+    - default: false
+      description: ID of the Community.
+      isArray: false
+      name: id
       required: true
-  - name: perch-list-communities
-    arguments: []
-  - name: perch-create-indicator
-    arguments: []
+      secret: false
+    deprecated: false
+    description: Gets community information by ID.
+    execution: false
+    name: perch-get-community
+  - deprecated: false
+    description: Lists all communities.
+    execution: false
+    name: perch-list-communities
+  - deprecated: false
+    description: Creates an indicator in Perch.
+    execution: false
+    name: perch-create-indicator
   dockerimage: demisto/python3:3.7.2.214
+  isfetch: false
   runonce: false
+  script: ''
+  type: python
