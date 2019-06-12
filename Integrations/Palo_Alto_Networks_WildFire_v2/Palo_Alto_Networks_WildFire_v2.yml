@@ -353,4 +353,3 @@ script:
   type: python
 tests:
 - Wildfire Test
-releaseNotes: Evidence data in report bug fix

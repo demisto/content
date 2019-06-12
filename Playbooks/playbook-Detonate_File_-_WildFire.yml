@@ -521,6 +521,5 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
-releaseNotes: Enable using WildFire and WildFire-v2 integrations to run the playbook.
 tests:
   - Wildfire Test
