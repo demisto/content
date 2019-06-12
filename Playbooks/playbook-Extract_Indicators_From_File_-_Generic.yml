@@ -780,6 +780,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-releaseNotes: "Fixed mistaken identification of excel files as word documents."
 tests:
   - Extract Indicators From File - test
