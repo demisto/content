@@ -1,0 +1,102 @@
+commonfields:
+  id: Intezer_v2
+  version: -1
+name: Intezer_v2
+display: Intezer v2
+category: Forensics & Malware Analysis
+image: data:image/png;base64,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
+description: Malware detection and analysis based on code reuse
+detaileddescription: |
+  Intezer’s cloud-based malware detection and analysis provides a fast, in-depth understanding of any file by mapping its code DNA.
+  See [https://analyze.intezer.com](https://analyze.intezer.com) for creating API key and more details.
+configuration:
+- display: API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: "-"
+  type: python
+  commands:
+  - name: intezer-analyze-by-hash
+    arguments:
+    - name: file_hash
+      required: true
+      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+    outputs:
+    - contextPath: Intezer.Analysis.ID
+      description: Intezer analysis id
+      type: string
+    - contextPath: Intezer.Analysis.Status
+      description: status of the analysis
+      type: string
+    - contextPath: Intezer.Analysis.Type
+      description: type of the analysis
+      type: string
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and
+      MD5
+  - name: intezer-analyze-by-file
+    arguments:
+    - name: file_entry_id
+      required: true
+      default: true
+      description: The file entry id to upload
+    outputs:
+    - contextPath: Intezer.Analysis.ID
+      description: Intezer analysis id
+      type: string
+    - contextPath: Intezer.Analysis.Status
+      description: status of the analysis
+      type: string
+    - contextPath: Intezer.Analysis.Type
+      description: type of the analysis
+      type: string
+    description: Checks file reputation for uploaded file (up to 32MB)
+  - name: intezer-get-analysis-result
+    arguments:
+    - name: analysis_id
+      description: The analysis ID we want to get results for
+      isArray: true
+    - name: analysis_type
+      auto: PREDEFINED
+      predefined:
+      - File
+      - Endpoint
+      description: The type of the analysis
+      defaultValue: File
+    - name: indicator_name
+      description: indicator to classify
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+    - contextPath: Endpoint.Metadata
+      description: Metadata returned from Intezer analysis (endpoint analysis id,
+        endpoint analysis url, families,  verdict, host_name)
+    description: Check the analysis status and get analysis result, support file and
+      endpoint analysis
+  dockerimage: demisto/python3:3.7.2.200
+  runonce: false
+releaseNotes: "Supports the new version of Intezer API. Supports endpoint analysis as well as File analysis"
+tests:
+  - No Tests
