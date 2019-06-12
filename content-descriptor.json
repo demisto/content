@@ -1,1 +1,11 @@
-{"releaseDate": "2019-05-30T13:47:00.0+00:00", "release": "19.5.0", "version": -1, "id": "", "installDate": "0001-01-01T00:00:00Z", "assetId": 1337, "releaseNotes": "## Demisto Content Release Notes for version 19.5.0 (1337)\n##### Published on 30 May 2019\n### Integrations\n\n####  2 New Integrations\n- __Ipstack__\nOne of the leading IP to geolocation \nAPIs and global IP database services worldwide.\n- __Palo Alto Networks PAN-OS__\nManage Palo Alto Networks Firewalls and Panorama. Make sure you read the Detailed Instructions section.\n\n####  Improved Integrations\n- __FortiGate__\n - Added enhancement to update-policy, enabled keeping the existing data.\n\n##### Removed Integrations\n- __Panorama__\n\n---\n### Scripts\n\n####  Improved Scripts\n- __IncidentAddSystem__\nAdded a new engine argument.\n\n---\n### Playbooks\n\n####  Improved Playbooks\n- __WildFire - Detonate file__\nEnable using WildFire and WildFire-v2 integrations to run the playbook.\n", "modified": "2019-05-30T13:47:00.0+00:00", "ignoreGit": false}
+{
+  "installDate": "0001-01-01T00:00:00Z",
+  "assetId": "REPLACE_THIS_WITH_CI_BUILD_NUM",
+  "releaseNotes": "## Demisto Content Release Notes for version 2.5.0",
+  "modified": "REPLACE_THIS_WITH_RELEASE_DATE",
+  "ignoreGit": false,
+  "releaseDate": "REPLACE_THIS_WITH_RELEASE_DATE",
+  "version": -1,
+  "release": "2.5.0",
+  "id": ""
+}

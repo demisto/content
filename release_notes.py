@@ -527,7 +527,7 @@ def get_release_notes_draft(github_token):
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    res = requests.get('https://api.github.com/repos/demisto/content/releases',
+    res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
                        headers={'Authorization': 'token {}'.format(github_token)})
 
     if res.status_code != 200:

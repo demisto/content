@@ -5,8 +5,8 @@ This script is used to validate the files in Content repository. Specifically fo
 3) Valid yml/json schema
 4) Having ReleaseNotes if applicable.
 
-It can be run to check only commited changes (if the first argument is 'true') or all the files in the repo.
-Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
+It can be run to check only committed changes (if the first argument is 'true') or all the files in the repo.
+Note - if it is run for all the files in the repo it won't check releaseNotes, use `release_notes.py`
 for that task.
 """
 import os
