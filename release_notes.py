@@ -568,7 +568,7 @@ def create_content_descriptor(version, asset_id, res, github_token):
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(content_descriptor, outfile)
 
-    with open('release-notes.txt', 'w') as outfile:
+    with open('release-notes.md', 'w') as outfile:
         outfile.write(release_notes)
 
 
