@@ -15,6 +15,7 @@ jobs:
       GIT_SHA1: "447631bf0e68b024f6004b005bafb051587cc42b" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Prepare Environment
           when: always
@@ -78,7 +79,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - setup_remote_docker
       - run:
           name: Run Unit Testing and Lint
           when: always
