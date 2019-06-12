@@ -75,7 +75,7 @@ def parse_datetime(datetime_str):
 
 def nested_dict_flatted(d, parent_key='', sep='.'):
     if d:
-        items = []
+        items = []  # type: ignore
         for k, v in d.items():
             new_key = parent_key + sep + k if parent_key else k
             if isinstance(v, list) and len(v) > 0:
@@ -108,7 +108,7 @@ def get_map_from_nested_dict(nested_dict, keys, raise_error=False):
 def get_incident_labels_map(labels):
     if labels is None:
         return {}
-    labels_map = {}
+    labels_map = {}  # type: ignore
     for label in labels:
         label_type = label['type']
         label_value = label['value']
@@ -255,7 +255,7 @@ def merge_incident_fields(incident):
 
 
 # set the incident
-incident = merge_incident_fields(demisto.incidents()[0])
+incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore
 
 # validate fields
 exact_match_incident_fields = get_map_from_nested_dict(incident,
