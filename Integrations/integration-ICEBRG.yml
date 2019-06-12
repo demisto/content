@@ -47,6 +47,10 @@ script:
   script: |
     var auth = 'IBToken ' + params.token;
     var sendRequest = function(method, api, endpoint, body) {
+        var unsecure = !params.insecure;
+        if (params.unsecure != null){
+            unsecure = !params.unsecure
+        }
         if (api == 'Search') {
             var url = params.url_search;
         } else {
@@ -65,7 +69,7 @@ script:
                         'Content-Type': ['application/json']
                     }
                 },
-                params.insecure,
+                unsecure,
                 params.proxy
             );
         } else {
@@ -398,3 +402,4 @@ script:
   isfetch: true
 tests:
 - Icebrg Test
+releaseNotes: Fixing unsecure option for tests (internal)
