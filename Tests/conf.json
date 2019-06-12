@@ -1645,6 +1645,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "ImageOCR": "Does not perform network traffic",
         "Autofocus": "JS integration, problem listed in issue 15544",
         "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
