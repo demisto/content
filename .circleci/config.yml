@@ -10,11 +10,12 @@ jobs:
       - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.5.1"
+      CONTENT_VERSION: "19.6.0"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "33441eb94314f3779b8c17b0540f0394be4b6c20" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "447631bf0e68b024f6004b005bafb051587cc42b" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Prepare Environment
           when: always
@@ -78,7 +79,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - setup_remote_docker
       - run:
           name: Run Unit Testing and Lint
           when: always
