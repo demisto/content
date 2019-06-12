@@ -132,6 +132,10 @@ script:
 
     var sendRequest = function(requestUrl,parameters) {
         var url = serverUrl + requestUrl + encodeToURLQuery(parameters);
+        var proxy = params.useproxy
+        if (params.proxy){
+            proxy = params.proxy
+        }
         var res = http(
             url,
             {
@@ -142,7 +146,7 @@ script:
                 }
             },
             false,
-            params.useproxy
+            proxy
 
         );
         if (res.StatusCode == 404 || res.StatusCode == 400) {
@@ -265,3 +269,4 @@ script:
       description: Filter results for entries seen for last time after (seconds)
     description: Lookup rrser records
   runonce: false
+releaseNotes: Supports mocks (internal)

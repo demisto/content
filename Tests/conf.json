@@ -1621,7 +1621,7 @@
         "Tanium": "Instance is not stable (issue 15497)",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
-        "Intsight": "Account expired (issue 16351) - UNSTABLE",
+        "IntSights": "Account expired (issue 16351) - UNSTABLE",
 
       "_comment": "~~~ OTHER ~~~",
         "iDefense": "DevOps investigation",
@@ -1648,6 +1648,7 @@
         "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "IntSights": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
