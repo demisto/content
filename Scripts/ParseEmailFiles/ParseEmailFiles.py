@@ -3231,9 +3231,10 @@ def save_attachments(attachments, root_email_file_name, max_depth):
     attached_emls = []
     for attachment in attachments:
         if attachment.data is not None:
-            demisto.results(fileResult(attachment.DisplayName, attachment.data))
+            display_name = attachment.DisplayName if attachment.DisplayName else attachment.AttachFilename
+            demisto.results(fileResult(display_name, attachment.data))
 
-            if max_depth > 0 and attachment.DisplayName.lower().endswith(".eml"):
+            if max_depth > 0 and display_name.lower().endswith(".eml"):
                 tf = tempfile.NamedTemporaryFile(delete=False)
 
                 try:
