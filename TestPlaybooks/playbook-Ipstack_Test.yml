@@ -1,5 +1,5 @@
-id: Ipstack_Test
-version: 9
+id: 816d601e-1643-40b8-8db5-3b6088bc3b48
+version: 10
 name: Ipstack_Test
 starttaskid: "0"
 tasks:
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 0522425c-8719-4dff-81c3-0189f23fc86c
+    taskid: 4178d0ab-0e9b-462b-8b58-9d50f232a5b9
     type: condition
     task:
-      id: 0522425c-8719-4dff-81c3-0189f23fc86c
+      id: 4178d0ab-0e9b-462b-8b58-9d50f232a5b9
       version: -1
       name: test result
       type: condition
@@ -128,35 +128,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: IP.Geo.Location
-            iscontext: true
-          right:
-            value:
-              simple: 52.3549,4.838
-      - - operator: isEqualString
-          left:
-            value:
               simple: Ipstack.ip.address
             iscontext: true
           right:
             value:
               simple: 5.57.16.220
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Ipstack.ip.latitude
-            iscontext: true
-          right:
-            value:
-              simple: "52.3549"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Ipstack.ip.longitude
-            iscontext: true
-          right:
-            value:
-              simple: "4.838"
     view: |-
       {
         "position": {
