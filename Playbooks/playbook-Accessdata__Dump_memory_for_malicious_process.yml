@@ -1,0 +1,341 @@
+id: b0069573-929e-4ffc-8326-d5a9da6849f2
+version: 1
+name: 'Accessdata: Dump memory for malicious process'
+description: This playbook dumps memory  if given process is running on legacy AD
+  agent
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 99bfc13d-9778-48de-8160-5c7f85e763d2
+    type: start
+    task:
+      id: 99bfc13d-9778-48de-8160-5c7f85e763d2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 2dd44568-cb36-41ef-8b90-58f660d49266
+    type: regular
+    task:
+      id: 2dd44568-cb36-41ef-8b90-58f660d49266
+      version: -1
+      name: Get process list from legacy agent
+      description: Call command to get process list from legacy agent
+      script: '|||accessdata-legacyagent-get-processlist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      caseid:
+        simple: ${inputs.caseid}
+      targetIP:
+        simple: ${inputs.targetIP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: d6f18812-652f-4ea5-81fc-89ec01fba64f
+    type: title
+    task:
+      id: d6f18812-652f-4ea5-81fc-89ec01fba64f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: d14035e3-7cd5-4399-8d2a-2c0b73ea5eeb
+    type: regular
+    task:
+      id: d14035e3-7cd5-4399-8d2a-2c0b73ea5eeb
+      version: -1
+      name: DeleteContext
+      description: Clear current context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: a1acf413-fcad-437f-8394-cdbf5c7ed963
+    type: regular
+    task:
+      id: a1acf413-fcad-437f-8394-cdbf5c7ed963
+      version: -1
+      name: Wait for "Get process list" job result
+      description: Calls a helper script to wait while the job is running
+      scriptName: AccessDataWaitForJobResult
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseid:
+        simple: ${inputs.caseid}
+      execution-timeout:
+        simple: "960"
+      jobid:
+        simple: ${Accessdata.Job(val.Type=="Volatile").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: abfe8f3f-4c6e-4a44-8c4d-f9729ccd7721
+    type: regular
+    task:
+      id: abfe8f3f-4c6e-4a44-8c4d-f9729ccd7721
+      version: -1
+      name: Read snapshot file from case folder
+      description: Reads a file from case folder and saves its content in current
+        contet
+      script: Quinc|||accessdata-read-casefile
+      type: regular
+      iscommand: true
+      brand: Quinc
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      filepath:
+        simple: ${Accessdata.Job.Result.SnapshotDetails.File}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 2424b8f3-70fd-4a13-8525-ca2025edeb43
+    type: regular
+    task:
+      id: 2424b8f3-70fd-4a13-8525-ca2025edeb43
+      version: -1
+      name: Check if process exists in process list
+      description: Reads contetn of XML file from context, converts it to JSON and
+        checks if given filename exists in process list. Returs yes or no
+      scriptName: AccessdataCheckProcessExistsInSnapshot
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      process:
+        simple: ${inputs.process_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 0b0e6851-bc26-42c8-851e-11bcadcb4f65
+    type: condition
+    task:
+      id: 0b0e6851-bc26-42c8-851e-11bcadcb4f65
+      version: -1
+      name: Does the  process exist?
+      description: Simple conditional task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Accessdata.Process.Exists
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 533fdb26-d5a0-4141-8332-58fdd2c26a3c
+    type: regular
+    task:
+      id: 533fdb26-d5a0-4141-8332-58fdd2c26a3c
+      version: -1
+      name: Create memory dump job
+      description: Creates legacy agent memory dump
+      script: Quinc|||accessdata-legacyagent-get-memorydump
+      type: regular
+      iscommand: true
+      brand: Quinc
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      caseid:
+        simple: ${inputs.caseid}
+      targetIP:
+        simple: ${inputs.targetIP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: a40ec3c1-54d3-405e-8bd2-bb2dbc634e57
+    type: regular
+    task:
+      id: a40ec3c1-54d3-405e-8bd2-bb2dbc634e57
+      version: -1
+      name: Wait for "Memory dump" job result
+      description: Calls a helper script to wait while the job is running
+      scriptName: AccessDataWaitForJobResult
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      caseid:
+        simple: ${inputs.caseid}
+      execution-timeout:
+        simple: "960"
+      jobid:
+        simple: ${Accessdata.Job(val.Type=="LegacyMemoryDump").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 680,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: caseid
+  value:
+    simple: "1"
+  required: true
+  description: ""
+- key: targetIP
+  value:
+    simple: 10.10.0.159
+  required: true
+  description: ""
+- key: process_name
+  value:
+    simple: explorer.exe
+  required: true
+  description: ""
+outputs:
+- contextPath: Result
+- contextPath: State
