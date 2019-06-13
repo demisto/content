@@ -82,6 +82,13 @@ class Content(object):
         return
 
     def get_release_notes(self, file_path, data):
+        """
+        Return the release notes relevant to the added yml file.
+
+        :param file_path: yml/json (or package yml)
+        :param data: object data
+        :return: raw release notes or None in case of an error.
+        """
         rn_path = get_release_notes_file_path(file_path)
 
         if not os.path.isfile(rn_path):
@@ -104,7 +111,7 @@ class Content(object):
 
         :param file_path: yml/json added (or package yml)
         :param data: object data
-        :return: raw release notes or None in case of an error
+        :return: raw release notes or None in case of an error.
         """
         return self.get_release_notes(file_path, data)
 
@@ -114,7 +121,7 @@ class Content(object):
 
         :param file_path: yml/json (or package yml)
         :param data: yml data
-        :return: raw release notes or None in case of an error
+        :return: raw release notes or None in case of an error.
         """
         rn = self.get_release_notes(file_path, data)
 
@@ -498,11 +505,16 @@ def handle_deleted_file(deleted_data, full_file_name):
 
 
 def create_file_release_notes(change_type, full_file_name, deleted_data):
+    """
+    Create release note for changed file.
+
+    :param change_type: git change status (A, M, D, R*)
+    :param full_file_name: path to file in repository
+    :param deleted_data: all removed files content
+    :return: None
+    """
     if isinstance(full_file_name, tuple):
         old_file_path, full_file_name = full_file_name
-
-    if "/" not in full_file_name:
-        return
 
     file_type = full_file_name.split("/")[0]
     base_name = os.path.basename(full_file_name)
@@ -510,7 +522,7 @@ def create_file_release_notes(change_type, full_file_name, deleted_data):
     file_type_mapping = release_note_generator.get(file_type)
 
     if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
-        print("Unsupported file type: {}".format(full_file_name))
+        print_warning("Unsupported file type: {}".format(full_file_name))
         return
 
     if change_type == "D":
@@ -524,6 +536,12 @@ def create_file_release_notes(change_type, full_file_name, deleted_data):
 
 
 def get_release_notes_draft(github_token):
+    """
+    if possible, download current release draft from content repository in github.
+
+    :param github_token: github token with push permission (in order to get the draft).
+    :return: draft text (or empty string on error).
+    """
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -581,6 +599,7 @@ def main():
     arg_parser.add_argument('github_token', help='Github token')
     args = arg_parser.parse_args()
 
+    # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
     modified_files, added_files, _, _ = fv.get_modified_files(change_log)
@@ -592,6 +611,7 @@ def main():
     for file_ in modified_files:
         create_file_release_notes('M', file_, deleted_files)
 
+    # join all release notes
     res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:

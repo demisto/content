@@ -224,7 +224,8 @@ class StructureValidator(object):
 
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
-            if not os.path.isfile(rn_path):
+            # check rn file exists and contain text
+            if not os.path.isfile(rn_path) or os.stat(rn_path).st_size == 0:
                 print_error('File {} is missing releaseNotes, please add.'.format(self.file_path))
                 self._is_valid = False
 
