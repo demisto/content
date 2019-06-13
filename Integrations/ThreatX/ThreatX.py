@@ -24,6 +24,8 @@ DBOT_THRESHOLD = int(demisto.params().get('dbot_threshold', 70))
 USE_SSL = not demisto.params().get('insecure')
 
 ''' HELPER FUNCTIONS '''
+
+
 def http_request(url_suffix, commands=None):
     state = demisto.getIntegrationContext()
 
