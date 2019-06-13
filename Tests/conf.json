@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatX",
+            "playbookID": "ThreatX-test"
+        },
+        {
             "integrations": "AlienVault OTX",
             "playbookID": "AlienVaultOTX Test"
         },
