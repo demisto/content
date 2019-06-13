@@ -8,7 +8,6 @@ from codecs import encode, decode
 
 RETURN_CODE = 0
 ERROR_MESSAGE = ''
-
 ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else 11  # 11 := entryTypes['warning']
 
 # flake8: noqa
