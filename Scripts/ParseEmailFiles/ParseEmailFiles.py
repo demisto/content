@@ -2627,7 +2627,7 @@ PROPS_ID_MAP = {
 ''' HELPER FUNCTION '''
 
 
-def recursive_convert_to_utf8(replace_to_utf):
+def recursive_convert_to_unicode(replace_to_utf):
     """Converts object into UTF-8 characters
     ignores errors
     Args:
@@ -2638,9 +2638,9 @@ def recursive_convert_to_utf8(replace_to_utf):
     """
     try:
         if isinstance(replace_to_utf, dict):
-            return {recursive_convert_to_utf8(k): recursive_convert_to_utf8(v) for k, v in replace_to_utf.items()}
+            return {recursive_convert_to_unicode(k): recursive_convert_to_unicode(v) for k, v in replace_to_utf.items()}
         if isinstance(replace_to_utf, list):
-            return [recursive_convert_to_utf8(i) for i in replace_to_utf if i]
+            return [recursive_convert_to_unicode(i) for i in replace_to_utf if i]
         if isinstance(replace_to_utf, str):
             return unicode(replace_to_utf, encoding='utf-8', errors='ignore')
         if not replace_to_utf:
@@ -3199,9 +3199,9 @@ def extract_address_eml(eml, s):
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
-    email_data = recursive_convert_to_utf8(email_data)
-    email_file_name = recursive_convert_to_utf8(email_file_name)
-    parent_email_file = recursive_convert_to_utf8(parent_email_file)
+    email_data = recursive_convert_to_unicode(email_data)
+    email_file_name = recursive_convert_to_unicode(email_file_name)
+    parent_email_file = recursive_convert_to_unicode(parent_email_file)
 
     md = u"### Results:\n"
     if email_file_name:
@@ -3576,8 +3576,8 @@ def main():
                              .format(str(e), traceback.format_exc()))
         else:
             return_error("Unknown file format: " + file_type)
-        output = recursive_convert_to_utf8(output)
-        email_data = recursive_convert_to_utf8(email_data)
+        output = recursive_convert_to_unicode(output)
+        email_data = recursive_convert_to_unicode(email_data)
         return_outputs(
             readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
             outputs={
