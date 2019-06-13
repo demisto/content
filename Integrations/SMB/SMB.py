@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 
-import os
 import tempfile
 from smb.SMBConnection import SMBConnection
 
@@ -22,6 +21,8 @@ DOMAIN = demisto.params().get('domain', None)
 
 
 ''' HELPER FUNCTIONS '''
+
+
 def split_path(path):
     delim = '/' if '/' in path else '\\'
     path = path.strip(delim)
