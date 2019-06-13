@@ -8,6 +8,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Return Errors
+  name: with_error
+  required: false
+  type: 8
 description: Provides data enrichment for domains and IP addresses.
 display: Whois
 name: Whois
@@ -19,13 +23,6 @@ script:
       isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Boolean. true -get errors, false- get warnings
-      isArray: false
-      name: with_error
-      required: false
       secret: false
     deprecated: false
     description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -160,5 +157,6 @@ script:
 defaultEnabled: false
 tests:
 - whois_test
+releaseNotes: "- Updates existing domains. \n- changed error logic to warnings by\
+  \ default \n- handled unsupported domains \n- changed outputs"
 fromversion: 4.1.0
-releaseNotes: "- Updates existing domains. \n- changed error logic to warnings by default \n- handled unsupported domains \n- changed outputs"

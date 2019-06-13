@@ -1,17 +1,17 @@
 id: whois_test
 version: -1
-name: whois_test
 fromversion: 4.1.0
+name: whois_test
 description: This is a test playbook for Whois. It will retrieve details for google.com
   and confirm the domain name is the same.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8bf469b0-c615-4d27-8731-8e4e47097f0c
+    taskid: d69484dc-b1a2-4792-8c58-4ff1a84d514f
     type: start
     task:
-      id: 8bf469b0-c615-4d27-8731-8e4e47097f0c
+      id: d69484dc-b1a2-4792-8c58-4ff1a84d514f
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +29,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 00f7bf76-951a-4954-8691-03c2e4974785
+    taskid: a5714c07-5cd9-43a1-8d44-7eb715783817
     type: regular
     task:
-      id: 00f7bf76-951a-4954-8691-03c2e4974785
+      id: a5714c07-5cd9-43a1-8d44-7eb715783817
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -53,17 +54,18 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 220
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: a6467015-ee1b-4583-82f5-5d9e2924843b
+    taskid: 9321667f-f097-4b41-8cc0-d779504accbb
     type: condition
     task:
-      id: a6467015-ee1b-4583-82f5-5d9e2924843b
+      id: 9321667f-f097-4b41-8cc0-d779504accbb
       version: -1
       name: Check results
       type: condition
@@ -86,21 +88,46 @@ tasks:
           right:
             value:
               simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.TechAdmin.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.Registrant.country
+            iscontext: true
+          right:
+            value:
+              simple: US
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 440,
           "y": 410
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 28422780-0ffe-4ee0-845f-b3536796f83f
+    taskid: 79b81c76-2e8e-4833-8ac1-9b4f0def1d69
     type: regular
     task:
-      id: 28422780-0ffe-4ee0-845f-b3536796f83f
+      id: 79b81c76-2e8e-4833-8ac1-9b4f0def1d69
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -128,12 +155,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 0824a18d-67c6-42c0-88fc-bae78cc3ce1e
+    taskid: 30368ef9-f399-4219-8fe2-a9053cb07fa7
     type: regular
     task:
-      id: 0824a18d-67c6-42c0-88fc-bae78cc3ce1e
+      id: 30368ef9-f399-4219-8fe2-a9053cb07fa7
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -157,12 +185,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 8941fa91-6e83-4908-84cd-3d8324278273
+    taskid: cac83a93-7a25-42aa-85b0-64c5609e4cd2
     type: regular
     task:
-      id: 8941fa91-6e83-4908-84cd-3d8324278273
+      id: cac83a93-7a25-42aa-85b0-64c5609e4cd2
       version: -1
       name: Print
       description: Prints text to war room (Markdown supprted)
@@ -183,12 +212,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: ac9621d4-007d-4df7-80c0-6c42c80f4d4a
+    taskid: 96b2e000-963e-43ce-8264-cc58dad66aef
     type: regular
     task:
-      id: ac9621d4-007d-4df7-80c0-6c42c80f4d4a
+      id: 96b2e000-963e-43ce-8264-cc58dad66aef
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -212,12 +242,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 4d70cb1f-d583-4dbe-843b-0156491c62db
+    taskid: d66596a2-6f56-478f-8269-adb7760e4f89
     type: condition
     task:
-      id: 4d70cb1f-d583-4dbe-843b-0156491c62db
+      id: d66596a2-6f56-478f-8269-adb7760e4f89
       version: -1
       name: Check results
       type: condition
@@ -238,6 +269,22 @@ tasks:
           right:
             value:
               simple: GOOGLE.COM
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.TechAdmin.country
+            iscontext: true
+          right:
+            value:
+              simple: US
     view: |-
       {
         "position": {
@@ -247,6 +294,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

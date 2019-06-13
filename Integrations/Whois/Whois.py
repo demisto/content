@@ -7247,7 +7247,7 @@ def whois_request(domain, server, port=43):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((server, port))
-    except socket.error, msg:
+    except socket.error as msg:
         RETURN_CODE = -1
         ERROR_MESSAGE = "Couldnt connect with the socket-server: %s" % msg
 
