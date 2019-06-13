@@ -1592,6 +1592,7 @@
         "McAfee Advanced Threat Defense": "License expired",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "Netskope": "No license, refusal to access due to PANW (issue 15581)",
+        "Snowflake": "User blocked after acquisition",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1608,7 +1609,6 @@
         "Salesforce": "User and password expired (issue 15901)",
         "RedCanary": "License expired (issue 17471)",
         "ANYRUN": "No instance (issue 17472)",
-        "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "McAfee ESM-v10": "User name expired (issue 17407)",
@@ -1629,6 +1629,7 @@
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MicrosoftGraphMail": "Inactive integration",
+        "Microsoft Graph": "Inactive integration",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
