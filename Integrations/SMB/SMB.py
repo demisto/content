@@ -1,19 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
+
 ''' IMPORTS '''
+
+
 import os
 import tempfile
 from smb.SMBConnection import SMBConnection
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
-
 ''' GLOBAL VARS '''
+
+
 USER = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 HOSTNAME = demisto.params()['hostname']
@@ -40,6 +39,8 @@ def connect():
 
 
 ''' FUNCTIONS '''
+
+
 def download():
     share, path = split_path(demisto.getArg('file_path'))
     with tempfile.NamedTemporaryFile() as file_obj:
@@ -50,6 +51,7 @@ def download():
             demisto.results(fileResult(filename, file_obj.read()))
         else:
             demisto.results(file_obj.read())
+
 
 def upload():
     share, path = split_path(demisto.getArg('file_path'))
@@ -69,9 +71,12 @@ def upload():
         file_bytes_transfered = conn.storeFile(share, path, file_obj)
         demisto.results("Transfered {} bytes of data.".format(file_bytes_transfered))
 
-''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(), ))
 
+''' EXECUTION CODE '''
+
+
+LOG('command is %s' % (demisto.command(), ))
+handle_proxy()
 conn = connect()
 try:
     if demisto.command() == 'test-module':
