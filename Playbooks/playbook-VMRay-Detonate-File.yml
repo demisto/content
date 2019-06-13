@@ -75,7 +75,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 895
         }
       }
@@ -205,7 +205,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 545
         }
       }
@@ -228,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 162.5,
+          "y": 1770
         }
       }
     note: false
@@ -250,7 +250,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "11"
     scriptarguments:
       sample_id:
         simple: ${VMRay.Submission.SampleID}
@@ -258,7 +258,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 1070
         }
       }
@@ -288,8 +288,169 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 1735cc5d-e223-47ea-8905-51616bed94f1
+    type: regular
+    task:
+      id: 1735cc5d-e223-47ea-8905-51616bed94f1
+      version: -1
+      name: Get analysis
+      description: Retrieves all analysis details for a specified sample.
+      script: '|||vmray-get-analysis-by-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      limit: {}
+      sample_id:
+        complex:
+          root: VMRay
+          accessor: Sample.SampleID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: d9177a3a-b705-45af-8b42-7ee487c17eda
+    type: condition
+    task:
+      id: d9177a3a-b705-45af-8b42-7ee487c17eda
+      description: check term
+      version: -1
+      name: Is analysis suspicious or malicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "13"
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VMRay
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: VMRay.Sample.Severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Malicious
+                accessor: Analysis.Severity
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: VMRay
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: VMRay.Sample.Severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Suspicious
+                accessor: Analysis.Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: c935d709-7974-4075-85a5-13e24aa25cdd
+    type: regular
+    task:
+      id: c935d709-7974-4075-85a5-13e24aa25cdd
+      version: -1
+      name: Get IOCs
+      description: Retrieves indicators of compropmise for a specified sample.
+      script: '|||vmray-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        complex:
+          root: VMRay
+          accessor: Analysis.SampleID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: ba1da627-1586-48db-8717-1c98e46a6178
+    type: regular
+    task:
+      id: ba1da627-1586-48db-8717-1c98e46a6178
+      version: -1
+      name: Get Thread Indicators
+      description: Retrieves threat indicators (VTI).
+      script: '|||vmray-get-threat-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        complex:
+          root: VMRay
+          accessor: Analysis.SampleID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1595
         }
       }
     note: false
@@ -302,8 +463,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 605,
+        "height": 1785,
+        "width": 1045,
         "x": 50,
         "y": 50
       }
@@ -404,7 +565,6 @@ outputs:
 - contextPath: VMRay.Submission.SampleID
   description: ID of sample in submission
   type: number
-  type: number
 - contextPath: VMRay.Sample.FileName
   description: File name of sample
   type: string
@@ -430,4 +590,70 @@ outputs:
 - contextPath: VMRay.Sample.Classifications
   description: Classifications of sample
   type: string
+- contextPath: VMRay.Sample.IOC.URL.AnalysisID
+  description: IDs of other analyses that contain the given URL.
+- contextPath: VMRay.Sample.IOC.URL.URL
+  description: URL.
+- contextPath: VMRay.Sample.IOC.URL.Operation
+  description: Operation of the specified URL.
+- contextPath: VMRay.Sample.IOC.URL.ID
+  description: ID of the URL.
+- contextPath: VMRay.Sample.IOC.URL.Type
+  description: Type of URL.
+- contextPath: VMRay.Sample.IOC.Domain.AnalysisID
+  description: IDs of other analyses that contain the given domain.
+- contextPath: VMRay.Sample.IOC.Domain.Domain
+  description: Domain.
+- contextPath: VMRay.Sample.IOC.Domain.ID
+  description: ID of the domain.
+- contextPath: VMRay.Sample.IOC.Domain.Type
+  description: Type of domain.
+- contextPath: VMRay.Sample.IOC.IP.AnalysisID
+  description: IDs of other analyses that contain the given IP address.
+- contextPath: VMRay.Sample.IOC.IP.IP
+  description: IP address.
+- contextPath: VMRay.Sample.IOC.IP.Operation
+  description: Operation of the given IP.
+- contextPath: VMRay.Sample.IOC.IP.ID
+  description: ID of the IP address.
+- contextPath: VMRay.Sample.IOC.IP.Type
+  description: Type of IP address.
+- contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
+  description: IDs of other analyses that containt the given IP.
+- contextPath: VMRay.Sample.IOC.Mutex.Name
+  description: Name of the mutex.
+- contextPath: VMRay.Sample.IOC.Mutex.Operation
+  description: Operation of given mutex
+- contextPath: VMRay.Sample.IOC.Mutex.ID
+  description: ID of the mutex.
+- contextPath: VMRay.Sample.IOC.Mutex.Type
+  description: Type of mutex.
+- contextPath: VMRay.Sample.IOC.File.AnalysisID
+  description: IDs of other analyses that containt the given file.
+- contextPath: VMRay.Sample.IOC.File.Name
+  description: Name of the file.
+- contextPath: VMRay.Sample.IOC.File.Operation
+  description: Operation of given file
+- contextPath: VMRay.Sample.IOC.File.ID
+  description: ID of the file.
+- contextPath: VMRay.Sample.IOC.File.Type
+  description: Type of file.
+- contextPath: VMRay.Sample.IOC.File.Hashes.MD5
+  description: MD5 of given file.
+- contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
+  description: SSDeep of given file.
+- contextPath: VMRay.Sample.IOC.File.Hashes.SHA256
+  description: SHA256 of given file.
+- contextPath: VMRay.Sample.IOC.File.Hashes.SHA1
+  description: SHA1 of given file.
+- contextPath: VMRay.ThreatIndicator.AnalysisID
+  description: List of connected analysis IDs.
+- contextPath: VMRay.ThreatIndicator.Category
+  description: Category of threat indicators.
+- contextPath: VMRay.ThreatIndicator.Classification
+  description: Classifications of threat indicators.
+- contextPath: VMRay.ThreatIndicator.ID
+  description: ID of a threat indicator.
+- contextPath: VMRay.ThreatIndicator.Operation
+  description: Operation the indicators caused.
 fromversion: 4.0.0
