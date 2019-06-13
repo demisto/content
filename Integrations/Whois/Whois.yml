@@ -161,3 +161,4 @@ defaultEnabled: false
 tests:
 - whois_test
 fromversion: 4.1.0
+releaseNotes: "changed error logic to warnings by default, handled unsupported domains, changed outputs"
