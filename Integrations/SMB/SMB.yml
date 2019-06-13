@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Server IP / Hostname (e.g. 1.2.3.4)
   name: hostname
-  required: true
+  required: false
   type: 0
 - defaultvalue: '445'
   display: Port
@@ -14,7 +14,7 @@ configuration:
   type: 0
 - display: Server NetBIOS (AD) Name
   name: nbname
-  required: true
+  required: false
   type: 0
 - display: Domain
   name: domain
@@ -35,47 +35,52 @@ name: Server Message Block (SMB)
 script:
   commands:
   - arguments:
-    - default: true
-      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
-      isArray: false
-      name: file_path
-      required: true
-      secret: false
-    - auto: PREDEFINED
+    - name: hostname
       default: false
-      defaultValue: 'yes'
-      description: Specify if the file should be downloaded and attached or only output
-      isArray: false
-      name: download_and_attach
+      description: Server IP / Hostname (e.g. 1.2.3.4)
+    - name: nbname
+      default: false
+      description: Server NetBIOS (AD) Name
+    - name: domain
+      default: false
+      description: The host domain
+    - name: file_path
+      required: true
+      default: true
+      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
+    - name: download_and_attach
+      default: false
+      auto: PREDEFINED
       predefined:
-      - 'yes'
-      - 'no'
-      required: false
-      secret: false
+      - "yes"
+      - "no"
+      description: Specify if the file should be downloaded and attached or only output
+      defaultValue: "yes"
     deprecated: false
     description: Download a file from the SMB server
     execution: false
     name: smb-download
   - arguments:
-    - default: false
-      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
-      isArray: false
-      name: file_path
+    - name: hostname
+      default: false
+      description: Server IP / Hostname (e.g. 1.2.3.4)
+    - name: nbname
+      default: false
+      description: Server NetBIOS (AD) Name
+    - name: domain
+      default: false
+      description: The host domain
+    - name: file_path
+      default: false
       required: true
-      secret: false
-    - default: false
+      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
+    - name: entryID
+      default: false
       description: EntryID to the file to send to the share
-      isArray: false
-      name: entryID
-      required: false
-      secret: false
-    - default: false
+    - name: content
+      default: false
       description: File content to send to the share. Ignored if EntryID argument
         is specified.
-      isArray: false
-      name: content
-      required: false
-      secret: false
     deprecated: false
     description: Upload a file to the SMB server
     execution: false
