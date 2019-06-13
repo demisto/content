@@ -85,6 +85,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - SMB test
