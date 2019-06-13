@@ -56,6 +56,34 @@ script:
       - "no"
       description: Specify if the file should be downloaded and attached or only output
       defaultValue: "yes"
+    outputs:
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: File SSDeep
+      type: string
+    - contextPath: File.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: File.Info
+      description: File info
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
     deprecated: false
     description: Download a file from the SMB server
     execution: false
