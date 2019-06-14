@@ -1,0 +1,369 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Dragos Worldview
+  version: -1
+configuration:
+- defaultvalue: https://intel.dragos.com
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: apitoken
+  required: true
+  type: 4
+- display: API Secret
+  name: apisecret
+  required: true
+  type: 4
+- display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+detaileddescription: "This integration exposes the `!file`, `!ip`, and `!domain` commands.\r\
+  \n Once configured, this integration will search Dragos WorldView API for\r\n information\
+  \ about the indicator referenced by the command (file hash,\r\n IP address, domain\
+  \ name). \r\n \r\n DBot score is calculated from the confidence level Dragos has\
+  \ in an\r\n indicator, and is outlined in the table below. \r\n \r\n| Dragos Confidence\
+  \  | DBot Score Name |  DBot Score  |\r\n|---|---|---|\r\n| Unknown  | Unknown \
+  \   | 0 |\r\n| Low      | Suspicious | 2 |\r\n| Moderate | Suspicious | 2 |\r\n\
+  | High     | Bad        | 3 |"
+display: Dragos Worldview
+name: Dragos Worldview
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Hash of file to check
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves information about a given file hash
+    execution: false
+    name: file
+    outputs:
+    - contextPath: Dragos.File.MD5
+      description: MD5 hash of file (if given)
+      type: String
+    - contextPath: Dragos.File.SHA1
+      description: SHA1 hash of file (if given)
+      type: String
+    - contextPath: Dragos.File.SHA256
+      description: SHA256 hash of file (if given)
+      type: String
+    - contextPath: Dragos.File.ActivityGroups
+      description: Activity group(s) associated with file
+      type: String
+    - contextPath: Dragos.File.AttackTechniques
+      description: MITRE ATT&CK Techniques this file is associated with
+      type: String
+    - contextPath: Dragos.File.PreAttackTechniques
+      description: MITRE Pre-ATT&CK Techniques this file is associated with
+      type: String
+    - contextPath: Dragos.File.KillChain
+      description: Stage of KillChain this file is associated with
+      type: String
+    - contextPath: Dragos.File.Comment
+      type: String
+    - contextPath: Dragos.File.Confidence
+      description: Confidence Dragos has in this indicator (low, moderate, high)
+      type: String
+    - contextPath: Dragos.File.Score
+      description: Dragos confidence extrapolated as DBot score
+      type: String
+    - contextPath: Dragos.File.FirstSeen
+      description: Date this file was first seen
+      type: Date
+    - contextPath: Dragos.File.LastSeen
+      description: Date this File was last seen
+      type: Date
+    - contextPath: Dragos.File.Updated
+      description: Date the indicator record for file was last updated
+      type: Date
+    - contextPath: Dragos.File.Products
+      description: The Dragos products this indicator is associated with
+      type: String
+    - contextPath: Dragos.File.UUID
+      description: The unique ID associated with this file
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: Vendor name contributing to malicious DBot score
+      type: String
+    - contextPath: File.Malicious.Description
+      description: Description of indicator from WorldView
+      type: String
+    - contextPath: DBotScore.Type
+      type: String
+    - contextPath: DBotScore.Vendor
+      type: String
+    - contextPath: DBotScore.Score
+      type: String
+    - contextPath: DBotScore.Indicator
+      type: String
+  - arguments:
+    - default: true
+      description: The IP to lookup
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves information about a given IP address
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: Dragos.IP.Value
+      description: Indicator name
+      type: String
+    - contextPath: Dragos.IP.ActivityGroups
+      description: Activity group(s) associated with indicator
+      type: String
+    - contextPath: Dragos.IP.AttackTechniques
+      description: MITRE ATT&CK Techniques this indicator has been associated with
+      type: String
+    - contextPath: Dragos.IP.PreAttackTechniques
+      description: MITRE Pre-ATT&CK Techniques this indicator has been associated
+        with
+      type: String
+    - contextPath: Dragos.IP.KillChain
+      description: Stage of KillChain this indicator is associated with
+      type: String
+    - contextPath: Dragos.IP.Comment
+      type: String
+    - contextPath: Dragos.IP.Confidence
+      description: Confidence Dragos has in this indicator (low, moderate, high)
+      type: String
+    - contextPath: Dragos.IP.Score
+      description: Dragos confidence extrapolated as DBot score
+      type: String
+    - contextPath: Dragos.IP.FirstSeen
+      description: Date this indicator was first seen
+      type: Date
+    - contextPath: Dragos.IP.LastSeen
+      description: Date this indicator was last seen
+      type: Date
+    - contextPath: Dragos.IP.Updated
+      description: Date the indicator record for indicator was last updated
+      type: Date
+    - contextPath: Dragos.IP.Products
+      description: The Dragos products this indicator is associated with
+      type: String
+    - contextPath: IP.Address
+      description: The IP address being searched for
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: Vendor name contributing to malicious DBot score
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: Description of indicator from WorldView
+      type: String
+    - contextPath: DBotScore.Type
+      type: String
+    - contextPath: DBotScore.Vendor
+      type: String
+    - contextPath: DBotScore.Score
+      type: String
+    - contextPath: DBotScore.Indicator
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Dragos.Domain.Value
+      description: Indicator name
+      type: String
+    - contextPath: Dragos.Domain.ActivityGroups
+      description: Activity group(s) associated with indicator
+      type: String
+    - contextPath: Dragos.Domain.AttackTechniques
+      description: MITRE ATT&CK Techniques this indicator has been associated with
+      type: String
+    - contextPath: Dragos.Domain.PreAttackTechniques
+      description: MITRE Pre-ATT&CK Techniques this indicator has been associated
+        with
+      type: String
+    - contextPath: Dragos.Domain.KillChain
+      description: Stage of KillChain this indicator is associated with
+      type: String
+    - contextPath: Dragos.Domain.Comment
+      type: String
+    - contextPath: Dragos.Domain.Confidence
+      description: Confidence Dragos has in this indicator (low, moderate, high)
+      type: String
+    - contextPath: Dragos.Domain.Score
+      description: Dragos confidence extrapolated as DBot score
+      type: String
+    - contextPath: Dragos.Domain.FirstSeen
+      description: Date this indicator was first seen
+      type: Date
+    - contextPath: Dragos.Domain.LastSeen
+      description: Date this indicator was last seen
+      type: Date
+    - contextPath: Dragos.Domain.Updated
+      description: Date the indicator record for this indicator was last updated
+      type: Date
+    - contextPath: Dragos.Domain.Products
+      description: The Dragos products this indicator is associated with
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name being searched
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor name contributing to malicious DBot score
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of indicator from WorldView
+      type: String
+    - contextPath: DBotScore.Type
+      type: String
+    - contextPath: DBotScore.Vendor
+      type: String
+    - contextPath: DBotScore.Score
+      type: String
+    - contextPath: DBotScore.Indicator
+      type: String
+  dockerimage: demisto/python3:latest
+  isfetch: false
+  runonce: false
+  script: "''' IMPORTS '''\n\n# import json\nimport requests\n# import re\n# from\
+    \ distutils.util import strtobool\n# \n\n# \n\n# Disable insecure warnings\nrequests.packages.urllib3.disable_warnings()\n\
+    \n''' GLOBALS/PARAMS '''\n\nAPI_TOKEN = demisto.params().get('apitoken')\nAPI_SECRET\
+    \ = demisto.params().get('apisecret')\n\n# Remove trailing slash to prevent wrong\
+    \ URL path to service\nSERVER = demisto.params()['url'][:-1] \\\n    if (demisto.params()['url']\
+    \ and demisto.params()['url'].endswith('/')) else demisto.params()['url']\n\n\n\
+    BASE_URL = SERVER + '/api/v1/'                         # Service base URL\nUSE_SSL\
+    \ = not demisto.params().get('insecure', False)  # Should we use SSL\nHEADERS\
+    \ = {                                            # Headers to be sent in requests\n\
+    \    'API-Token': API_TOKEN,\n    'API-Secret': API_SECRET,\n    'Content-Type':\
+    \ 'application/json',\n    'Accept': 'application/json'\n}\n\n# Remove proxy if\
+    \ not set to true in params\nif not demisto.params().get('proxy'):\n    del os.environ['HTTP_PROXY']\n\
+    \    del os.environ['HTTPS_PROXY']\n    del os.environ['http_proxy']\n    del\
+    \ os.environ['https_proxy']\n\n\n''' HELPER FUNCTIONS '''\n\n\ndef http_request(method,\
+    \ url_suffix, params=None, data=None):\n    \"\"\"\n    A wrapper for requests\
+    \ lib to send our requests and handle requests and responses better\n\n    :type\
+    \ method: ``str``\n    :param method: HTTP method for the request.\n\n    :type\
+    \ url_suffix: ``str``\n    :param url_suffix: The suffix of the URL (endpoint)\n\
+    \n    :type params: ``dict``\n    :param params: The URL params to be passed.\n\
+    \n    :type data: ``dict``\n    :param data: The body data of the request.\n \
+    \   :return:\n    \"\"\"\n    try:\n        res = requests.request(\n        \
+    \    method,\n            BASE_URL + url_suffix,\n            verify=USE_SSL,\n\
+    \            params=params,\n            data=data,\n            headers=HEADERS\n\
+    \        )\n        if res.status_code not in {200}:\n            return_error('Error\
+    \ in API call to Dragos WorldView [{}] - {}'.format(res.status_code, res.reason))\n\
+    \        return res.json()\n    except requests.exceptions.RequestException as\
+    \ e:\n        LOG(str(e))\n        return_error(e)\n    \n\ndef get_first(iterable,\
+    \ default=None):\n    \"\"\"\n    Returns the first item for an iterable object\n\
+    \n    :type iterable: ``obj``\n    :param iterable: An iterable object, like a\
+    \ dict\n\n    :type default: ``str``\n    :param default:  The default property\
+    \ to return\n\n    :return: First item within an iterable, or the default if not\
+    \ iterable\n    :rtype: ``dict``\n    \"\"\"\n    if iterable:\n        for item\
+    \ in iterable:\n            return item\n    return default\n\n\ndef indicator_confidence_to_dbot_score(confidence):\n\
+    \    \"\"\"\n    Converts Dragos' indicator confidence to DBot score, based on\
+    \ table below.\n\n    Dragos Confidence   DBot Score Name     DBot Score\n   \
+    \ -----------------   ---------------     ---------\n    Unknown             Unknown\
+    \             0\n    Low                 Suspicious          2\n    Moderate \
+    \           Suspicious          2\n    High                Bad               \
+    \  3\n\n    :type confidence: ``str``\n    :param confidence:\n\n    :return:\
+    \ DBot score\n    :rtype ``int``\n    \"\"\"\n    if confidence.lower() in ('low',\
+    \ 'moderate'):\n        score = 2\n    elif confidence.lower() == 'high':\n  \
+    \      score = 3\n    else:\n        score = 0\n    return score\n\n\ndef create_standard_output(indicator):\n\
+    \    \"\"\"\n    The 'indicators' API endpoint returns standard data for each\
+    \ indicator type. This helper just returns those standard\n    key => values as\
+    \ a dictionary.\n\n    This data is output to the War Room.\n\n    :param indicator:\n\
+    \    :return: Dragos indicator data\n    :rtype ``dict``\n    \"\"\"\n    standard_output\
+    \ = {\n        'Value': indicator.get('value'),\n        'ActivityGroups': indicator.get('activity_groups'),\n\
+    \        'AttackTechniques': indicator.get('attack_techniques'),\n        'PreAttackTechniques':\
+    \ indicator.get('pre_attack_techniques'),\n        'KillChain': indicator.get('kill_chain'),\n\
+    \        'Comment': indicator.get('comment'),\n        'Confidence': indicator.get('confidence'),\n\
+    \        'Score': indicator_confidence_to_dbot_score(indicator.get('confidence')),\n\
+    \        'FirstSeen': indicator.get('first_seen'),\n        'LastSeen': indicator.get('last_seen'),\n\
+    \        'Updated': indicator.get('updated'),\n        'Products': get_first(indicator.get('products'))\n\
+    \    }\n    return standard_output\n\n\ndef create_dbot_output(indicator, indicator_type,\
+    \ score):\n    \"\"\"\n    Helper to generate DBot score dictionary for incident\
+    \ context.\n\n    :param indicator: The actual value of the indicator\n    :param\
+    \ indicator_type: The type of indicator\n    :param score: The DBot score (0-3)\n\
+    \    :return: Demisto context data for DBot\n    :rtype: ``dict``\n    \"\"\"\n\
+    \    dbot_output = {\n        'Type': indicator_type,\n        'Indicator': indicator,\n\
+    \        'Vendor': 'Dragos Worldview',\n        'Score': score\n    }\n    return\
+    \ dbot_output\n\n\n''' COMMANDS + REQUESTS FUNCTIONS '''\n\n\ndef test_module():\n\
+    \    \"\"\"\n    Performs basic get request to validate integration configuration.\n\
+    \    \"\"\"\n    response = http_request('GET', 'products', {\"page_size\": 1})\n\
+    \    if 'total' not in response or 'error' in response:\n        return_error('Error\
+    \ retrieving test data.')\n    else:\n        demisto.results('ok')\n\n\ndef indicator_search_command():\n\
+    \    \"\"\"\n    Business logic for searching indicators of all types.\n\n   \
+    \ Searches Dragos API for information regarding an indicator, formats the various\
+    \ outputs for Demisto (incident\n    context, DBot score, war room markdown and\
+    \ indicator enrichment), and returns those results to the Demisto engine.\n\n\
+    \    :return: Demisto results\n    \"\"\"\n\n    # Demisto arguments for commands\
+    \ like file, ip, domain, are the same as the command name (e.g. !file file=<hash>).\n\
+    \    # The behavior is utilized here to retrieve the value of the indicator the\
+    \ user wishes to search for, and also to\n    # set the initial type of indicator.\n\
+    \    indicator = demisto.args().get(demisto.command())\n    indicator_type = demisto.command().lower()\n\
+    \    indicator_output = {}\n    context_sub = 'Dragos.{}'.format(demisto.command())\n\
+    \n    if demisto.command().lower() == 'file':\n        # Indicator type for FILE\
+    \ is the type of hash\n        indicator_type = get_hash_type(indicator)\n   \
+    \     indicator_output[indicator_type.upper()] = indicator\n\n        # DT selector\
+    \ to avoid duplicating data in Demisto context (file)\n        indicator_dt =\
+    \ ('File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
+    \ '\n                        'val.SHA256 && val.SHA256 == obj.SHA256)')\n    elif\
+    \ demisto.command().lower() == 'ip':\n        indicator_output['Address'] = indicator\n\
+    \n        # DT selector to avoid duplicating data in Demisto context (IP)\n  \
+    \      indicator_dt = 'IP(val.Address && val.Address == obj.Address)'\n    elif\
+    \ demisto.command().lower() == 'domain':\n        indicator_output['Name'] = indicator\n\
+    \n        # DT selector to avoid duplicating data in Demisto context (domain)\n\
+    \        indicator_dt = 'Domain(val.Name && val.Name == obj.Name)'\n\n    raw\
+    \ = indicator_search(indicator=indicator, indicator_type=indicator_type)\n\n \
+    \   if 'total' not in raw:\n        return_error('Error retrieving results for\
+    \ indicator [{}]'.format(indicator))\n    elif raw['total'] == 0:\n        demisto.results('Dragos\
+    \ has no information about indicator [{}]'.format(indicator))\n        return\
+    \ 0\n\n    response = get_first(raw['indicators'])\n    dbot_score = indicator_confidence_to_dbot_score(response.get('confidence'))\n\
+    \    dbot_output = create_dbot_output(indicator, indicator_type, dbot_score)\n\
+    \    war_room_table = create_standard_output(response)\n    war_room_table['UUID']\
+    \ = response.get('uuid')\n    hr_title = 'Dragos WorldView - {}'.format(indicator)\n\
+    \    hr = tableToMarkdown(hr_title, war_room_table)\n\n    # If the dbot score\
+    \ is 3, the indicator is malicious\n    if dbot_score == 3:\n        indicator_output['Malicious']\
+    \ = {\n            'Vendor': 'Dragos Worldview',\n            'Description': 'Confidence:\
+    \ {} Comment: {}'.format(response.get('confidence'), response.get('comment'))\n\
+    \        }\n\n    # Create the entry context\n    ec = {\n        'DBotScore':\
+    \ dbot_output,\n        context_sub: createContext(war_room_table, id=response.get('uuid'),\
+    \ removeNull=True),\n\n        # Using DT selectors to prevent duplicate context\
+    \ entry data\n        indicator_dt: indicator_output\n    }\n\n    # Output the\
+    \ sweet, sweet, results\n    demisto.results({\n        'Type': entryTypes['note'],\n\
+    \        'Contents': war_room_table,\n        'ContentsFormat': formats['json'],\n\
+    \        'ReadableContentsFormat': formats['markdown'],\n        'HumanReadable':\
+    \ hr,\n        'EntryContext': ec\n    })\n\n\n@logger\ndef indicator_search(indicator,\
+    \ indicator_type):\n    \"\"\"\n    Helper function, following Demisto best practice.\
+    \ Handles submitting request to API endpoints\n\n    :param indicator: The actual\
+    \ value of the indicator (file hash, ip address, domain name)\n    :param indicator_type:\
+    \ The type of indicator being search\n    :return: JSON\n    \"\"\"\n    params\
+    \ = {\"type\": indicator_type, \"value\": indicator}\n    response = http_request('GET',\
+    \ 'indicators', params, None)\n    return response\n\n\n''' COMMANDS MANAGER /\
+    \ SWITCH PANEL '''\n\n\nLOG('Command being called is %s' % (demisto.command()))\n\
+    \ntry:\n    command = demisto.command()\n    if command == 'test-module':\n  \
+    \      # This is the call made when pressing the integration test button.\n  \
+    \      test_module()\n    else:\n        indicator_search_command()\n\n# Log exceptions\n\
+    except Exception as e:\n    LOG(e.message)\n    LOG.print_log()\n    raise"
+  type: python
+image: data:image/png;base64,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
