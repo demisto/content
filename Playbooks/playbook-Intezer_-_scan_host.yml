@@ -1,0 +1,362 @@
+id: 69b48f50-9bb8-440e-8956-80344c3d23d3
+version: 52
+rolename:
+- Administrator
+name: Intezer - scan host
+description: |-
+  Uses Demisto's d2 agent to scan host using Intezer scanner.
+
+  Input:
+  * Hostname (default: ${Endpoint.Hostname})
+  * OS (default: windows)
+  * Credentials (default: Admin)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 816b1abc-8a51-4b98-8edb-8f200d16f878
+    type: start
+    task:
+      id: 816b1abc-8a51-4b98-8edb-8f200d16f878
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
+    type: regular
+    task:
+      id: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
+      version: -1
+      name: Add the endpoint as a System to this incident
+      description: Add the relevant endpoint to the System
+      scriptName: IncidentAddSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: ${inputs.Host}
+      os:
+        simple: ${inputs.OS}
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 8f83acc7-0fd8-43e6-80e5-3f3133a9f68c
+    type: regular
+    task:
+      id: 8f83acc7-0fd8-43e6-80e5-3f3133a9f68c
+      version: -1
+      name: d2 agent - Scan host by Intezer
+      scriptName: IntezerScanHost
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      host:
+        simple: ${inputs.Host}
+      intezer_api_key:
+        complex:
+          root: inputs.INTEZER_API_KEY
+      os:
+        simple: ${inputs.OS}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: bfdb339a-a8b5-4b46-822c-23b4d515787e
+    type: condition
+    task:
+      id: bfdb339a-a8b5-4b46-822c-23b4d515787e
+      version: -1
+      name: Does 'Host' input exist?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${inputs.Host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
+    type: title
+    task:
+      id: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 15be02f6-c144-4fa9-8192-1357fe432edd
+    type: condition
+    task:
+      id: 15be02f6-c144-4fa9-8192-1357fe432edd
+      version: -1
+      name: Is the OS type Windows?
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${inputs.OS}
+      right:
+        simple: windows
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 01357500-cfe2-4927-8c18-7f312292a404
+    type: playbook
+    task:
+      id: 01357500-cfe2-4927-8c18-7f312292a404
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: analysis_type
+      AdditionalPollingCommandArgValues:
+        simple: Endpoint
+      Ids:
+        complex:
+          root: Intezer
+          accessor: Analysis.ID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: intezer-get-analysis-result
+      Timeout:
+        simple: "15"
+      dt:
+        simple: Intezer.Analysis(val.Status !== 'Done').Status
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: aef64ffd-5f6c-4090-880c-51772b013102
+    type: regular
+    task:
+      id: aef64ffd-5f6c-4090-880c-51772b013102
+      version: -1
+      name: get-analysis-result
+      script: Intezer_v2|||intezer-get-analysis-result
+      type: regular
+      iscommand: true
+      brand: Intezer_v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: Intezer
+          accessor: Analysis.ID
+      analysis_type:
+        simple: Endpoint
+      indicator_name:
+        complex:
+          root: inputs.Host
+      result_url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: fbd19000-d042-4254-808b-4d29025806a8
+    type: regular
+    task:
+      id: fbd19000-d042-4254-808b-4d29025806a8
+      version: -1
+      name: D2-remove
+      scriptName: D2Remove
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      system:
+        complex:
+          root: inputs.Host
+      system_name:
+        complex:
+          root: inputs.Host
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_12_#default#": 0.11,
+      "15_6_yes": 0.58,
+      "7_12_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Host
+  value:
+    simple: 10.254.7.24
+  required: true
+  description: Deploy D2 on target Host
+- key: OS
+  value:
+    simple: windows
+  required: false
+  description: The default OS type of target host
+- key: Credentials
+  value:
+    simple: Admin
+  required: false
+  description: Name of the credential set from Demisto Settings -> Integrations ->
+    Credentials
+- key: INTEZER_API_KEY
+  value: {}
+  required: true
+  description: The Intezer api-key
+outputs: []
+tests:
+  - No Tests

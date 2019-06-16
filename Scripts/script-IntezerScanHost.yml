@@ -1,0 +1,48 @@
+commonfields:
+  id: 3093db30-1f57-466e-8d2e-d5d05f9cd5da
+  version: 14
+name: IntezerScanHost
+script: |2+
+
+  demisto.executeCommand('createNewIndicator', {'value':demisto.args()['host'], 'type': 'Hostname'})
+  endpoint_analysis_id = str(uuid.uuid4())
+  scanner_result = demisto.executeCommand('IntezerRunScanner', {'endpoint_analysis_id':endpoint_analysis_id,
+                                                                'api_key':demisto.args()['intezer_api_key'],
+                                                                'using':demisto.args()['host']})
+  if isError(scanner_result[0]):
+      demisto.results(scanner_result)
+
+  context_json = {'Intezer.Analysis':{'ID': endpoint_analysis_id,
+                                      'Type': 'Endpoint',
+                                      'Status': 'Created'}}
+
+
+  return_outputs('Endpoint analysis created', context_json)
+
+
+type: python
+tags: []
+enabled: true
+args:
+- name: host
+  required: true
+  description: Computer name
+- name: os
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - linux
+  - osx
+  - windows
+  description: OS
+- name: intezer_api_key
+  required: true
+  secret: true
+outputs:
+- contextPath: Intezer.Analysis.ID
+  description: 'Endpoint analysis id '
+  type: string
+scripttarget: 0
+timeout: 900ns
+runonce: false
+runas: DBotWeakRole
