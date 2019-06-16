@@ -141,8 +141,12 @@ def replace_keys(obj_to_build):
 
 def build_context(response):
     """
-    Gets a MISP's respone and building it to be in context. If missing key, will return the one written.
-    :type entities: dict
+    Gets a MISP's response and building it to be in context. If missing key, will return the one written.
+
+    Args:
+       response (requests.Response or dict):
+    Returns:
+        dict: context output
     """
     event_args = [
         'id',
@@ -232,8 +236,10 @@ def get_dbot_level(threat_level_id):
     4 = 0 (UNDEFINED to UNKNOWN)
     3 = 2 (LOW to SUSPICIOUS)
     1 | 2 = 3 (MED/HIGH to MALICIOUS)
-    :param threat_level_id:
-    :return dbot score:
+    Args:
+        threat_level_id (str):
+    Returns:
+        int: dbot score
     """
     if threat_level_id in ('1', '2'):
         return 3
@@ -245,13 +251,12 @@ def get_dbot_level(threat_level_id):
 
 def check_file():
     """
-    gets a file_hash and entities dict, returns misp events
+    gets a file_hash and entities dict, returns MISP events
 
-    :param file_hash: File's hash from demisto
-    :type file_hash: str
+    file_hash (str): File's hash from demisto
 
-    :return dict:
-        MISP's output formatted to demisto:
+    Returns:
+        dict: MISP's output formatted to demisto:
     """
     file_hash = demisto.args().get('file')
     # hashFormat will be used only in output
@@ -325,8 +330,7 @@ def check_file():
 def check_ip():
     """
     Gets a IP and returning its reputation (if exists)
-    :param ip: IP to check
-    :type ip: str
+    ip (str): IP to check
     """
     ip = demisto.args().get('ip')
     if not is_ip_valid(ip):
@@ -390,7 +394,7 @@ def upload_sample():
     """
     Misp needs to get files in base64. in the old integration (js) it was converted by a script.
     """
-    # Creating dict with demisto's arguments
+    # Creating dict with Demisto's arguments
     args = ['distribution', 'to_ids', 'category', 'info', 'analysis', 'comment', 'threat_level_id']
     args = {k:demisto.args().get(k) for k in args if demisto.args().get(k)}
     args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get('threat_level_id') in THREAT_LEVELS_NUMBERS else demisto.args().get('threat_level_id')
@@ -426,8 +430,8 @@ def upload_sample():
 
 def get_time_now():
     """
-    :return: time in year--month--day format
-    :rtype: str
+    Returns:
+    str: time in year--month--day format
     """
     time_now = time.gmtime(time.time())
     return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
@@ -436,13 +440,14 @@ def get_time_now():
 def create_event(ret_only_event_id=False):
     """
     Creating event in MISP with the given attriubute attribute
-    :param ret_only_event_id: returning event ID if set to True
-    :type ret_only_event_id: bool
-    :return event_id:
-    :rtype: int
+    Args:
+        ret_only_event_id (bool): returning event ID if set to True
+    Returns:
+        int: event_id
     """
     d_args = demisto.args()
-    # new_event in the old integration gets some args that belongs to attribute, so after creating the basic event, we will add attribute
+    # new_event in the old integration gets some args that belongs to attribute, so after creating the basic event,
+    # we will add attribute
     event_dic = {
         'distribution': d_args.get('distribution'),
         'threat_level_id': THREAT_LEVELS_NUMBERS.get(d_args.get('threat_level_id')) if d_args.get('threat_level_id') in THREAT_LEVELS_NUMBERS else d_args.get('threat_level_id'),
@@ -487,7 +492,8 @@ def create_event(ret_only_event_id=False):
 
 def add_attribute(eventid=None, internal=None):
     """
-    :param eventid: Event ID to add attribute to
+    Args:
+        eventid (int): Event ID to add attribute to
     :type eventid: int
     :param internal: if set to True, will not post results to Demisto
     :type internal: bool
