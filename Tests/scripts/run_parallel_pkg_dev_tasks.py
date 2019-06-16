@@ -68,15 +68,16 @@ def main():
                 print("============= {} =============".format(res[1]))
             print(res[0].stdout)
             print(res[0].stderr)
+    if fail_pkgs:
+        print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
+        print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
     if good_pkgs:
         print_color("\n******* SUCCESS PKGS: *******", LOG_COLORS.GREEN)
         print_color("\n\t{}\n".format("\n\t".join(good_pkgs)), LOG_COLORS.GREEN)
-    if fail_pkgs:
-        print_color("******* FAIL PKGS: *******", LOG_COLORS.RED)
-        print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
-        sys.exit(1)
     if not good_pkgs and not fail_pkgs:
         print_color("\n******* No changed packages found *******\n", LOG_COLORS.YELLOW)
+    if fail_pkgs:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
