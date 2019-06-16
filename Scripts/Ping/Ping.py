@@ -1,0 +1,41 @@
+import demistomock as demisto
+from CommonServerPython import *
+import subprocess
+import re
+
+
+def main():
+    try:
+        dest = demisto.args()['address']
+        ping_out = subprocess.check_output(['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT)
+        s = re.search(r"PING.*\((.+)\)", ping_out)
+        res = {}
+        if s:
+            res['destination_ip'] = s.group(1)
+        s = re.search(r"round-trip min/avg/max = (.+)/(.+)/(.+)\s+ms", ping_out)
+        if not s:
+            raise ValueError("Couldn't parse ping statistics:\n" + ping_out)
+        res['ret_code'] = 0
+        res['destination'] = dest
+        res['min_rtt'] = s.group(1)
+        res['avg_rtt'] = s.group(2)
+        res['max_rtt'] = s.group(3)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': tableToMarkdown("Ping Results", res),
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {"Ping": res}
+        })
+    except Exception as e:
+        if isinstance(e, subprocess.CalledProcessError):
+            msg = e.output
+        else:
+            msg = str(e)
+        return_error(msg)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
