@@ -244,3 +244,4 @@ script:
   subtype: python3
 tests:
 - PAN OS EDL Management - Test
+releaseNotes: "-"
