@@ -215,6 +215,121 @@ script:
     description: Get session details by session ID
     execution: false
     name: autofocus-get-session-details
+  - arguments:
+    - default: false
+      description: SHA256 of the sample to analyze
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Analysis environment
+      isArray: false
+      name: os
+      predefined:
+      - win7
+      - winxp
+      required: true
+      secret: false
+    deprecated: false
+    description: Get properties, behaviors, and activities observed for a sample
+    execution: false
+    name: autofocus-sample-analysis
+  - arguments:
+    - default: false
+      description: The public tag name, can be retreived from the top-tags command
+      isArray: false
+      name: tag_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details on a given tag
+    execution: false
+    name: autofocus-tag-details
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Scope of the search
+      isArray: false
+      name: scope
+      predefined:
+      - industry
+      - organization
+      - all
+      - global
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Tag class
+      isArray: false
+      name: class
+      predefined:
+      - actor
+      - campaign
+      - family
+      - exploit
+      - malicious_behavior
+      - malware_family
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      isArray: false
+      name: private
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      isArray: false
+      name: public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      isArray: false
+      name: commodity
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      isArray: false
+      name: unit42
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Perform a search to Identify the most popular tags
+    execution: false
+    name: autofocus-top-tags-search
+  - arguments:
+    - default: false
+      description: 'The AF Cookie for retrieving results of previous search. Note:
+        The AF Cookie expires 120 seconds after the search completes.'
+      isArray: false
+      name: af_cookie
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the results of a previous top tags search
+    execution: false
+    name: autofocus-top-tags-results
   dockerimage: demisto/python3:3.7.2.214
   isfetch: false
   runonce: false
