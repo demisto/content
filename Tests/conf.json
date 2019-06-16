@@ -1634,6 +1634,7 @@
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MicrosoftGraphMail": "Inactive integration",
         "Microsoft Graph": "Inactive integration",
+        "Joe Security": "Test playbook have missing `webid` argument",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
