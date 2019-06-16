@@ -595,12 +595,12 @@ def create_content_descriptor(version, asset_id, res, github_token):
 
 def filter_packagify_changes(modified_files, added_files, removed_files, tag):
     packagify_diff = {}  # type: dict
-    for f in removed_files:
-        if f.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, f).replace('\\', '/')
+    for file_path in removed_files:
+        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
+            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
             file_content = requests.get(github_path).content
             details = yaml.safe_load(file_content)
-            packagify_diff[details['name']] = f
+            packagify_diff[details['name']] = file_path
 
     updated_added_files = set()
     for file_path in added_files:
@@ -611,12 +611,19 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
             if details['name'] in packagify_diff:
                 # if name appears as added and removed, this is packagify process - treat as modified.
                 removed_files.remove(packagify_diff[details['name']])
-                modified_files.add(f)
+                modified_files.add(file_path)
                 continue
 
         updated_added_files.add(file_path)
 
     return modified_files, updated_added_files, removed_files
+
+
+def get_last_release_version():
+    tags = run_command('git tag').split('\n')
+    tags = [tag for tag in tags if tag.startswith('19.')]
+    tags.sort(reverse=True)
+    return tags[0]
 
 
 def main():
@@ -628,7 +635,7 @@ def main():
     arg_parser.add_argument('github_token', help='Github token')
     args = arg_parser.parse_args()
 
-    tag = args.version
+    tag = get_last_release_version()
 
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
