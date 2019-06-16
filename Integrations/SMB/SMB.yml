@@ -120,5 +120,8 @@ script:
   type: python
 tests:
 - SMB test
+<<<<<<< HEAD
 releaseNotes: Changed server configuration parameters to non-mandatory, and added them as command arguments.
 
+=======
+>>>>>>> a30d3a759ee80c8476bae3d4e2432f3597025a89

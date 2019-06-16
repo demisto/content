@@ -113,7 +113,5 @@ try:
         smb_download()
     elif demisto.command() == 'smb-upload':
         smb_upload()
-except Exception, e:
-    LOG(e)
-    LOG.print_log()
-    return_error(e.message)
+except Exception as e:
+    return_error(str(e))

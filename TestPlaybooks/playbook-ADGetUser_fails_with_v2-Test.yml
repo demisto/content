@@ -1,6 +1,7 @@
 id: Test ADGetUser Fails with no instances 'Active Directory Query' (old version)
 version: -1
 name: Test ADGetUser Fails with no instances 'Active Directory Query' (old version)
+fromversion: "4.1.0"
 starttaskid: "0"
 tasks:
   "0":
