@@ -154,7 +154,7 @@ script:
       defaultValue: 'false'
       description: Do not add a URL to the Demisto management console.
       isArray: false
-      name: ignoreAddURL
+      name: IgnoreAddURL
       predefined:
       - 'true'
       - 'false'
