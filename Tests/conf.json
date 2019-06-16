@@ -1614,6 +1614,10 @@
         "McAfee ESM-v10": "User name expired (issue 17407)",
         "icebrg": "Bad gateway on CircleCI",
         "Farsight DNSDB": "Must verify SSL, can't run on CircleCI",
+        "Remedy AR": "Getting 'Bad Gateway' on test.",
+        "XFE": "Failed to perform request user/profile",
+        "jira-v2": "Failure message: Unauthorized request, please check authentication related parameters. (85)",
+
 
 
       "_comment": "~~~ UNSTABLE ~~~",
@@ -1632,9 +1636,8 @@
         "Microsoft Graph": "Inactive integration",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "VirusTotal - Private API": "reached api alloted quota.",
+        "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
+        "VirusTotal - Private API": "reached api allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nigthly_integrations": [
