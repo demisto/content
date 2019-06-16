@@ -51,6 +51,9 @@ mapping:
         type: str
         enum: ['javascript', 'python']
         required: yes
+      subtype:
+        type: str
+        enum: ['python3', 'python2']        
       dockerimage:
         type: str
       isfetch:
