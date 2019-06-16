@@ -1,6 +1,6 @@
-id: 39f01788-631a-4662-82db-50030abc6cb4
-version: 23
-name: playbook-Cloaken-Test
+id: Cloaken-Test
+version: -1
+name: Cloaken-Test
 starttaskid: "0"
 tasks:
   "0":

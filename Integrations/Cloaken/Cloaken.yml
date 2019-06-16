@@ -1,0 +1,56 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cloaken
+  version: -1
+configuration:
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Server URL (e.g. https://cloaken.cypherint.com)
+  name: server_url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: do_not_verify_ssl
+  required: false
+  type: 8
+description: Unshorten urls through a tor proxy server. Unshorten urls onsite with
+  the power of Tor to prevent leaking ip addresses to adversaries.
+display: Cloaken
+name: Cloaken
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: url to unshorten
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: unshorten a url
+    execution: false
+    name: cloaken-unshorten-url
+    outputs:
+    - contextPath: Cloaken.unshortened_url
+      description: unshortened url
+      type: string
+    - contextPath: Cloaken.original_url
+      description: original url
+      type: string
+    - contextPath: URL.Data
+      description: unshortened url
+      type: string
+    - contextPath: Cloaken.status
+      description: 'status of response: BADREQUEST, OK'
+      type: number
+  dockerimage: demisto/cloaken:1.0.0.346
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
