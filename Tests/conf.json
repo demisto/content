@@ -1394,7 +1394,8 @@
                 "PhishTank",
                 "OpenPhish",
                 "Palo Alto Minemeld",
-                "Rasterize"
+                "Rasterize",
+                "mail-sender"
             ]
         },
         {
