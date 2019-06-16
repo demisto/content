@@ -354,4 +354,4 @@ script:
   subtype: python3
 tests:
 - Wildfire Test
-releaseNotes: return wildfire-report as pdf file
+releaseNotes: "-"
