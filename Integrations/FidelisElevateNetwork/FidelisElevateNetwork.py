@@ -49,9 +49,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
             except:  # noqa
                 error = res.content
 
-            return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error))
+            raise Exception('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error))
         else:
-            return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
+            raise Exception('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
 
     if is_json:
         try:

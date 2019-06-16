@@ -1,0 +1,1 @@
+To configure an integration instance, you need your BeyondTrust API key. The API key is generated after you configure an API Registration. For detailed instructions, see the [BeyondTrust Password Safe Admin Guide](https://www.beyondtrust.com/docs/password-safe/documents/6-9/ps-admin-6-9-0.pdf).

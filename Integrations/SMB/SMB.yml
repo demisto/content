@@ -1,0 +1,89 @@
+category: Utilities
+commonfields:
+  id: Server Message Block (SMB)
+  version: -1
+configuration:
+- display: Server IP / Hostname (e.g. 1.2.3.4)
+  name: hostname
+  required: true
+  type: 0
+- defaultvalue: '445'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- display: Server NetBIOS (AD) Name
+  name: nbname
+  required: true
+  type: 0
+- display: Domain
+  name: domain
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: File exchange with an SMB server
+display: Server Message Block (SMB)
+name: Server Message Block (SMB)
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'yes'
+      description: Specify if the file should be downloaded and attached or only output
+      isArray: false
+      name: download_and_attach
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    deprecated: false
+    description: Download a file from the SMB server
+    execution: false
+    name: smb-download
+  - arguments:
+    - default: false
+      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: EntryID to the file to send to the share
+      isArray: false
+      name: entryID
+      required: false
+      secret: false
+    - default: false
+      description: File content to send to the share. Ignored if EntryID argument
+        is specified.
+      isArray: false
+      name: content
+      required: false
+      secret: false
+    deprecated: false
+    description: Upload a file to the SMB server
+    execution: false
+    name: smb-upload
+  dockerimage: demisto/pysmb
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- SMB test
