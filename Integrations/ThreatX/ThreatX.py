@@ -62,7 +62,7 @@ def http_request(url_suffix, commands=None):
         return_error('HTTP %d Error in API call to ThreatX service - %s' % (res.status_code, res.text))
 
     if not res.text:
-        resp_json = {}
+        resp_json = {}  # type:dict
 
     try:
         resp_json = res.json()
@@ -108,10 +108,10 @@ def initialize():
 
     demisto.info('Initializing request...')
 
-    if session_token is None or token_expires < int(time.time()):
+    if session_token is None or (token_expires is not None and token_expires < int(time.time())):
         if session_token is None:
             demisto.info('Session token missing - getting new session token...')
-        elif token_expires < int(time.time()):
+        elif token_expires is not None and token_expires < int(time.time()):
             demisto.info('Session token expired - getting new session token...')
 
         r = http_request(endpoint, commands)
@@ -338,8 +338,8 @@ def unwhitelist_ip_command():
 def get_entities(entity_name, entity_id, entity_ip, timeframe):
     commands = {
         'command': 'list',
-        'query': {}
-    }
+        'query': dict()
+    }  # type: dict
 
     if entity_name is not None:
         entity_names = entity_name.split(',')
