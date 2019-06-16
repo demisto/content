@@ -31,10 +31,8 @@ def http_request(url_suffix, commands=None):
 
     if not state.get('session_token'):
         session_token = None
-        token_expires = None
     else:
         session_token = state.get('session_token')
-        token_expires = state.get('token_expires')
 
     if url_suffix != '/login':
         demisto.info('running request with url=%s with commands=%s' % (BASE_URL + url_suffix, commands))
@@ -68,7 +66,7 @@ def http_request(url_suffix, commands=None):
 
     try:
         resp_json = res.json()
-    except:
+    except ValueError:
         return_error('Could not parse the response from ThreatX: %s' % (res.text))
 
     if 'Ok' not in resp_json:
@@ -89,6 +87,7 @@ def http_request(url_suffix, commands=None):
                 return_error('Invalid credentials.')
 
     return resp_json['Ok']
+
 
 @logger
 def initialize():
@@ -124,14 +123,17 @@ def initialize():
     demisto.info('Cached session token not expired.')
     return
 
+
 def pretty_ip(decimal_ip):
     """Convert decimal ip to dotted quad format"""
     packed_ip = struct.pack("!I", decimal_ip)
     return socket.inet_ntoa(packed_ip)
 
+
 def pretty_time(input_time):
     """Convert unix epoch time to human readable format"""
     return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(input_time))
+
 
 def set_dbot_score(threatx_score):
     """Set the DBot Score based on the ThreatX risk score"""
@@ -142,7 +144,10 @@ def set_dbot_score(threatx_score):
     else:
         return 0
 
+
 ''' FUNCTIONS '''
+
+
 @logger
 def block_ip(ip):
     commands = {
@@ -155,6 +160,7 @@ def block_ip(ip):
     }
 
     return http_request('/lists', commands)
+
 
 @logger
 def block_ip_command():
@@ -174,6 +180,7 @@ def block_ip_command():
 
     return_outputs(md, ec, results)
 
+
 @logger
 def unblock_ip(ip):
     commands = {
@@ -182,6 +189,7 @@ def unblock_ip(ip):
     }
 
     return http_request('/lists', commands)
+
 
 @logger
 def unblock_ip_command():
@@ -201,6 +209,7 @@ def unblock_ip_command():
 
     return_outputs(md, ec, results)
 
+
 @logger
 def blacklist_ip(ip):
     commands = {
@@ -213,6 +222,7 @@ def blacklist_ip(ip):
     }
 
     return http_request('/lists', commands)
+
 
 @logger
 def blacklist_ip_command():
@@ -232,6 +242,7 @@ def blacklist_ip_command():
 
     return_outputs(md, ec, results)
 
+
 @logger
 def unblacklist_ip(ip):
     commands = {
@@ -240,6 +251,7 @@ def unblacklist_ip(ip):
     }
 
     return http_request('/lists', commands)
+
 
 @logger
 def unblacklist_ip_command():
@@ -259,6 +271,7 @@ def unblacklist_ip_command():
 
     return_outputs(md, ec, results)
 
+
 @logger
 def whitelist_ip(ip):
     commands = {
@@ -271,6 +284,7 @@ def whitelist_ip(ip):
     }
 
     return http_request('/lists', commands)
+
 
 @logger
 def whitelist_ip_command():
@@ -290,6 +304,7 @@ def whitelist_ip_command():
 
     return_outputs(md, ec, results)
 
+
 @logger
 def unwhitelist_ip(ip):
     commands = {
@@ -298,6 +313,7 @@ def unwhitelist_ip(ip):
     }
 
     return http_request('/lists', commands)
+
 
 @logger
 def unwhitelist_ip_command():
@@ -316,6 +332,7 @@ def unwhitelist_ip_command():
     }
 
     return_outputs(md, ec, results)
+
 
 @logger
 def get_entities(entity_name, entity_id, entity_ip, timeframe):
@@ -357,6 +374,7 @@ def get_entities(entity_name, entity_id, entity_ip, timeframe):
 
     return http_request('/entities', commands)
 
+
 @logger
 def get_entity_risk(entity_id):
     commands = {
@@ -365,6 +383,7 @@ def get_entity_risk(entity_id):
     }
 
     return http_request('/entities', commands)
+
 
 @logger
 def get_entities_command():
@@ -406,26 +425,26 @@ def get_entities_command():
 
                 try:
                     actor['interval_time_start'] = pretty_time(actor['interval_time_start'])
-                except:
+                except KeyError:
                     pass
 
                 try:
                     actor['interval_time_stop'] = pretty_time(actor['interval_time_stop'])
-                except:
+                except KeyError:
                     pass
 
                 try:
                     actor['fingerprint']['last_seen'] = pretty_time(actor['fingerprint']['last_seen'])
-                except:
+                except KeyError:
                     pass
 
                 dbscore = set_dbot_score(risk_score)
 
                 dbot_scores.append({
-                    'Vendor' : 'ThreatX',
-                    'Indicator' : ipdot,
-                    'Type' : 'ip',
-                    'Score' : dbscore
+                    'Vendor': 'ThreatX',
+                    'Indicator': ipdot,
+                    'Type': 'ip',
+                    'Score': dbscore
                 })
 
                 if dbscore == 3:
@@ -460,6 +479,7 @@ def get_entities_command():
 
     return_outputs(tableToMarkdown('Entities', md), ec, results)
 
+
 @logger
 def get_entity_notes(entity_id):
     commands = {
@@ -468,6 +488,7 @@ def get_entity_notes(entity_id):
     }
 
     return http_request('/entities', commands)
+
 
 @logger
 def get_entity_notes_command():
@@ -495,6 +516,7 @@ def get_entity_notes_command():
 
     return_outputs(md, ec, sorted_results)
 
+
 @logger
 def add_entity_note(entity_id, message):
     commands = {
@@ -506,6 +528,7 @@ def add_entity_note(entity_id, message):
     }
 
     return http_request('/entities', commands)
+
 
 @logger
 def add_entity_note_command():
@@ -520,6 +543,7 @@ def add_entity_note_command():
 
     return_outputs(md, None, results)
 
+
 @logger
 def test_module():
     commands = {
@@ -527,6 +551,7 @@ def test_module():
     }
 
     return http_request('/users', commands)
+
 
 @logger
 def test_module_command():
@@ -543,7 +568,10 @@ def test_module_command():
     else:
         return_error('Unrecognized response from ThreatX.')
 
+
 ''' EXECUTION CODE '''
+
+
 demisto.info('command is %s' % (demisto.command(),))
 try:
     handle_proxy()
