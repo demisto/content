@@ -7,6 +7,7 @@ import os
 import requests
 import argparse
 
+from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES
 from Tests.test_utils import print_error, print_warning, \
     run_command, server_version_compare, get_release_notes_file_path
 from Tests.scripts.validate_files import FilesValidator
@@ -46,6 +47,8 @@ REPUTATIONS_DIR = "Misc"
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
                        DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR,
                        CLASSIFIERS_DIR, REPUTATIONS_DIR]
+
+CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 
 
 def add_dot(text):
@@ -565,8 +568,8 @@ def get_release_notes_draft(github_token):
 def create_content_descriptor(version, asset_id, res, github_token):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
-    release_notes = "## Demisto Content Release Notes for version " + version + " (" + asset_id + ")\n"
-    release_notes += "##### Published on %s\n%s" % (datetime.datetime.now().strftime("%d %B %Y"), res)
+    release_notes = '## Demisto Content Release Notes for version {} ({})\n'.format(version, asset_id)
+    release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"), res)
     content_descriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(asset_id),
@@ -590,6 +593,32 @@ def create_content_descriptor(version, asset_id, res, github_token):
         outfile.write(release_notes)
 
 
+def filter_packagify_changes(modified_files, added_files, removed_files, tag):
+    packagify_diff = {}  # type: dict
+    for f in removed_files:
+        if f.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
+            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, f).replace('\\', '/')
+            file_content = requests.get(github_path).content
+            details = yaml.safe_load(file_content)
+            packagify_diff[details['name']] = f
+
+    updated_added_files = set()
+    for file_path in added_files:
+        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
+            with open(file_path) as f:
+                details = yaml.safe_load(f.read())
+
+            if details['name'] in packagify_diff:
+                # if name appears as added and removed, this is packagify process - treat as modified.
+                removed_files.remove(packagify_diff[details['name']])
+                modified_files.add(f)
+                continue
+
+        updated_added_files.add(file_path)
+
+    return modified_files, updated_added_files, removed_files
+
+
 def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
@@ -599,17 +628,24 @@ def main():
     arg_parser.add_argument('github_token', help='Github token')
     args = arg_parser.parse_args()
 
+    tag = args.version
+
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, _, _ = fv.get_modified_files(change_log)
-    deleted_files = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
+    modified_files, added_files, removed_files, _ = fv.get_modified_files(change_log)
+    modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
+                                                                          removed_files, tag)
+    deleted_data = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
 
-    for file_ in added_files:
-        create_file_release_notes('A', file_, deleted_files)
+    for file_path in added_files:
+        create_file_release_notes('A', file_path, deleted_data)
 
-    for file_ in modified_files:
-        create_file_release_notes('M', file_, deleted_files)
+    for file_path in modified_files:
+        create_file_release_notes('M', file_path, deleted_data)
+
+    for file_path in removed_files:
+        create_file_release_notes('D', file_path, deleted_data)
 
     # join all release notes
     res = []
