@@ -1,0 +1,766 @@
+id: Phishing - Simple
+version: -1
+fromversion: 4.1.0
+name: Phishing - Simple
+description: |-
+  Provides a basic response to phishing incidents. Playbook features:
+  - Calculates reputation for all indicators
+  - Extracts indicators from email attachments
+  - Calculates severity for the incident based on indicator reputation
+  - Updates reporting user about investigation status
+  - Allows manual remediation of the incident
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
+    type: start
+    task:
+      id: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fd442daa-fd30-4bcc-810b-5ea5e1c02b76
+    type: playbook
+    task:
+      id: fd442daa-fd30-4bcc-810b-5ea5e1c02b76
+      version: -1
+      name: Process Email - Generic
+      description: ""
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4088078f-6c08-43c2-8410-3b87ca001645
+    type: regular
+    task:
+      id: 4088078f-6c08-43c2-8410-3b87ca001645
+      version: -1
+      name: Acknowledge email
+      description: Sends an email to the user who reported the phishing email, telling
+        them that the email has been received and is being investigated.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Thank you for reporting a potential phishing attempt. We are investigating your case, please wait for our final verdict. There is no need to do anything with the email for now.
+
+          Sincerely,
+          Demisto's Security Team
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: '[Status Update]: ${incident.name}'
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 2fd9b929-7922-472b-8543-4b1eed010e55
+    type: condition
+    task:
+      id: 2fd9b929-7922-472b-8543-4b1eed010e55
+      version: -1
+      name: Is there a URL?
+      description: "Checks if there is at least one URL involved in the incident."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+    type: regular
+    task:
+      id: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+      version: -1
+      name: Get screenshots of URLs
+      description: Uses the Rasterize integration to create screenshots (images) of
+        the URLs involved in the incident.
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      width: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 7880d264-1c2e-4d82-8cce-6b0474677d25
+    type: condition
+    task:
+      id: 7880d264-1c2e-4d82-8cce-6b0474677d25
+      version: -1
+      name: Can we take URL screenshots?
+      description: Checks whether the user opted to get screenshots of URLs in the
+        playbook's "GetURLScreenshots" input, and whether the Rasterize integration
+        that will be used to produce such screenshots is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                    ignorecase: true
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetURLScreenshots
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: e6dd67a7-858c-4f88-8c53-163fb75163f0
+    type: condition
+    task:
+      id: e6dd67a7-858c-4f88-8c53-163fb75163f0
+      version: -1
+      name: Are there indicators with scores?
+      description: "Checks whether there is at least one indicator with a DBotScore."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: af3568f6-5f42-490d-8062-00993786a378
+    type: condition
+    task:
+      id: af3568f6-5f42-490d-8062-00993786a378
+      version: -1
+      name: How severe is the incident?
+      description: |-
+        Determines the severity of the incident, based on the score that was given to the indicators involved. The indicators are found in the DBotScore context key.
+
+        The severity level is determined by the highest score given to any of the indicators:
+        High - if there is a score higher than 2
+        Medium - if there is a score that is equal to 2
+        Low = if there is a score that is equal to 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      High:
+      - "13"
+      Low:
+      - "11"
+      Medium:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                transformers:
+                - operator: uniq
+            iscontext: true
+    - label: Medium
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                transformers:
+                - operator: uniq
+            iscontext: true
+    - label: Low
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e6c72e70-f70d-4174-8d29-8690080d3e16
+    type: regular
+    task:
+      id: e6c72e70-f70d-4174-8d29-8690080d3e16
+      version: -1
+      name: Set incident severity to "low"
+      description: Sets the incident severity to "low".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: low
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 28317c38-55d6-4b32-8c1e-5f5eb5d427f6
+    type: regular
+    task:
+      id: 28317c38-55d6-4b32-8c1e-5f5eb5d427f6
+      version: -1
+      name: Set incident severity to "medium"
+      description: Sets the incident severity to "medium".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: medium
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: a041165b-c919-443e-8c95-58f69ebb5ee6
+    type: regular
+    task:
+      id: a041165b-c919-443e-8c95-58f69ebb5ee6
+      version: -1
+      name: Set incident severity to "high"
+      description: Sets the incident severity to "high".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: high
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: d8a27696-4577-4150-8bae-5c56cc69c6d7
+    type: regular
+    task:
+      id: d8a27696-4577-4150-8bae-5c56cc69c6d7
+      version: -1
+      name: Manually investigate the incident
+      description: A manual task that allows the analyst to manually investigate the
+        incident, and resume the playbook when they choose to do so.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 92ec7f68-b256-42ff-8a3f-4b96f87acaa9
+    type: condition
+    task:
+      id: 92ec7f68-b256-42ff-8a3f-4b96f87acaa9
+      version: -1
+      name: Is the email malicious or benign?
+      description: Allows the analyst to decide whether the investigated email is
+        malicious or benign, according to their findings from the manual investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Benign:
+      - "17"
+      Malicious:
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 9b0470e1-8c93-485d-8b77-eaf1dc682487
+    type: regular
+    task:
+      id: 9b0470e1-8c93-485d-8b77-eaf1dc682487
+      version: -1
+      name: Update user that the email is malicious
+      description: Sends an email to the user who reported the phishing email, telling
+        them the email was found to be malicious.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          We have investigated your case and decided that the email is malicious.
+
+          Sincerely,
+          Demisto's Security Team
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: '[Status Update]: ${incident.name}'
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 53b80e1f-66a2-4e48-8265-3f27e8676545
+    type: regular
+    task:
+      id: 53b80e1f-66a2-4e48-8265-3f27e8676545
+      version: -1
+      name: Update user that the email is benign
+      description: Sends an email to the user who reported the phishing email, telling
+        them the email was found to be benign.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: '[Status Update]: ${incident.name}'
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 7d9c114d-717a-4d7d-8f27-019e3c914a39
+    type: regular
+    task:
+      id: 7d9c114d-717a-4d7d-8f27-019e3c914a39
+      version: -1
+      name: Manually remediate the incident
+      description: A manual task that allows the analyst to manually remediate the
+        incident, and resume the playbook when they choose to do so.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 67d2318c-bad7-4e5b-812b-e1f18c9a300f
+    type: regular
+    task:
+      id: 67d2318c-bad7-4e5b-812b-e1f18c9a300f
+      version: -1
+      name: Close investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      importantfield: {}
+      test2: {}
+      timefield1: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: a5999ec8-500c-408d-818c-2517e0c1cc15
+    type: playbook
+    task:
+      id: a5999ec8-500c-408d-818c-2517e0c1cc15
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      description: ""
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_7_yes": 0.52,
+      "5_8_#default#": 0.51,
+      "7_6_yes": 0.44,
+      "7_8_#default#": 0.51,
+      "8_11_#default#": 0.73
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2575,
+        "width": 1320,
+        "x": -20,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: GetURLScreenshots
+  value:
+    simple: "True"
+  required: false
+  description: Whether the user wants the Rasterize integration to be used to produce
+    images of URLs that are involved in the incident. A value of True means that screenshots
+    will be taken.
+outputs: []
+releaseNotes: "Demonstrates a basic approach for phishing incident response."
+tests:
+  - Phishing - Simple - Test
