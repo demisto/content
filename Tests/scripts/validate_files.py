@@ -333,7 +333,7 @@ class FilesValidator(object):
         if not self.conf_json_validator.is_valid_conf_json():
             self._is_valid = False
 
-        if branch_name != 'master':
+        if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
         else:
