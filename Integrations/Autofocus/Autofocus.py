@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -87,7 +86,83 @@ API_PARAM_DICT = {
         'fileurl': 'FileURL'
     }
 }
-
+ANALYSIS_LINE_KEYS = {
+    'behavior': {
+        'display_name': 'behavior',
+        'indexes': {
+            'risk': 0,
+            'behavior': -1
+        }
+    },
+    'process': {
+        'display_name': 'processes',
+        'indexes': {
+            'parent_process': 0,
+            'action': 1
+        }
+    },
+    'file': {
+        'display_name': 'files',
+        'indexes': {
+            'parent_process': 0,
+            'action': 1
+        }
+    },
+    'registry': {
+        'display_name': 'registry',
+        'indexes': {
+            'action': 1,
+            'parameters': 2
+        }
+    },
+    'dns': {
+        'display_name': 'DNS',
+        'indexes': {
+            'query': 0,
+            'response': 1
+        }
+    },
+    'http': {
+        'display_name': 'HTTP',
+        'indexes': {
+            'host': 0,
+            'method': 1,
+            'url': 2
+        }
+    },
+    'connection': {
+        'display_name': 'connections',
+        'indexes': {
+            'destination': 2
+        }
+    },
+    'mutex': {
+        'display_name': 'mutex',
+        'indexes': {
+            'process': 0,
+            'action': 1,
+            'parameters': 2
+        }
+    }
+}
+ANALYSIS_COVERAGE_KEYS = {
+    'wf_av_sig': {
+        'displayName': 'wildfire_signatures',
+        'fields': ['name', 'create_date']
+    },
+    'fileurl_sig': {
+        'displayName': 'wildfire_signatures',
+        'fields': ['name', 'create_date']
+    },
+    'dns_sig': {
+        'displayName': 'dns_signatures',
+        'fields': ['name', 'create_date']
+    },
+    'url_cat': {
+        'displayName': 'url_categories',
+        'fields': ['url', 'cat']
+    }
+}
 ''' HELPER FUNCTIONS '''
 
 
@@ -200,6 +275,165 @@ def get_session_details(session_id):
     parsed_result = parse_hits_response(result.get('hits'), 'search_results')
     return parsed_result
 
+
+def validate_if_line_needed(category, info_line):
+    line = info_line.get('line')
+    line_values = line.split(',')
+    category_indexes = ANALYSIS_LINE_KEYS.get(category).get('indexes')
+    if category == 'behavior':
+        risk_index = category_indexes.get('risk')
+        risk = line_values[risk_index].strip()
+        # only lines with risk higher the informational are considered
+        return not risk == 'informational'
+    elif category == 'registry':
+        action_index = category_indexes.get('action')
+        action = line_values[action_index].strip()
+        # Only lines with actions SetValueKey, CreateKey or RegSetValueEx are considered
+        return action == 'SetValueKey' or action == 'CreateKey' or action == 'RegSetValueEx'
+    elif category == 'file':
+        action_index = category_indexes.get('action')
+        action = line_values[action_index].strip()
+        benign_count = info_line.get('b')
+        malicious_count = info_line.get('m')
+        # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
+        return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
+    elif category == 'process':
+        action_index = category_indexes.get('action')
+        action = line_values[action_index].strip()
+        # Only lines with actions created, CreateKey or CreateProcessInternalW are considered
+        return action == 'created' or action == 'CreateProcessInternalW'
+    else:
+        return True
+
+
+def get_data_from_line(line, category_name):
+    category_indexes = ANALYSIS_LINE_KEYS.get(category_name).get('indexes')
+    values = line.split(',')
+    sub_categories = {}
+    for sub_category in category_indexes:
+        sub_category_index = category_indexes.get(sub_category)
+        sub_categories.update({
+            sub_category: values[sub_category_index]
+        })
+    return sub_categories
+
+
+def parse_lines_from_category(category_name, os, data):
+    info_lines = data.get(os)
+    new_lines = []
+    for info_line in info_lines:
+        value = validate_if_line_needed(category_name, info_line)
+        if value:
+            new_sub_categories = get_data_from_line(info_line.get('line'), category_name)
+            new_lines.append(new_sub_categories)
+    category_dict = ANALYSIS_LINE_KEYS.get(category_name)
+    new_category = {category_dict['display_name']: new_lines}
+    return new_category
+
+
+def parse_sample_analysis_response(resp, os):
+    analysis = {}
+    for category_name, data in resp.items():
+        if category_name in ANALYSIS_LINE_KEYS:
+            new_category = parse_lines_from_category(category_name, os, data)
+            analysis.update(new_category)
+
+    return analysis
+
+
+def sample_analysis(sample_id, os):
+    path = f'/sample/{sample_id}/analysis'
+    data = {
+        'platforms': [os],
+        'coverage': 'true'
+    }
+    result = http_request(path, data=data, err_operation='Sample analysis failed')
+    analysis_obj = parse_sample_analysis_response(result, os)
+    return analysis_obj
+
+
+def parse_tag_details_response(resp):
+    tag_details = resp.get('tag')
+    fields_to_extract_from_tag_details = [
+        'public_tag_name',
+        'tag_name',
+        'customer_name',
+        'source',
+        'tag_definition_scope',
+        'tag_definition_status',
+        'tag_class',
+        'count',
+        'lasthit',
+    ]
+    new_tag_info = {}
+    for field in fields_to_extract_from_tag_details:
+        new_tag_info[field] = tag_details.get(field)
+    return new_tag_info
+
+
+def autofocus_tag_details(tag_name):
+    path = f'/tag/{tag_name}'
+    resp = http_request(path, err_operation='Tag details operation failed')
+    tag_info = parse_tag_details_response(resp)
+    return tag_info
+
+
+def autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42):
+    query = {
+        "operator": "all",
+        "children": [
+            {
+                "field": "sample.tag_class",
+                "operator": "is",
+                "value": tag_class
+            }
+        ]
+    }
+    tag_scopes = list()
+    if private == 'True':
+        tag_scopes.append('private')
+    if public == 'True':
+        tag_scopes.append('public')
+    if commodity == 'True':
+        tag_scopes.append('commodity')
+    if unit42 == 'True':
+        tag_scopes.append('unit42')
+    data = {
+        'query': query,
+        'scope': scope,
+        'tagScopes': tag_scopes
+    }
+    path = '/top-tags/search/'
+    resp = http_request(path, data=data, err_operation='Top tags operation failed')
+    in_progress = resp.get('af_in_progress')
+    status = 'in progress' if in_progress else 'complete'
+    search_info = {
+        'AFCookie': resp.get('af_cookie'),
+        'Status': status
+    }
+    return search_info
+
+
+def parse_top_tags_response(response):
+    top_tags_list = []
+    for tag in response.get('top_tags'):
+        fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
+        new_tag = {}
+        for field in fields_to_extract_from_top_tags:
+            new_tag[field] = tag[field]
+        top_tags_list.append(new_tag)
+    return top_tags_list
+
+
+def get_top_tags_results(af_cookie):
+    path = f'/top-tags/results/{af_cookie}'
+    results = http_request(path, err_operation='Fetching top tags results failed')
+    top_tags = parse_top_tags_response(results)
+    in_progress = results.get('af_in_progress')
+    status = 'in progress' if in_progress else 'complete'
+    return top_tags, status
+
+
 ''' COMMANDS'''
 
 
@@ -307,6 +541,79 @@ def get_session_details_command():
     })
 
 
+def sample_analysis_command():
+    args = demisto.args()
+    sample_id = args.get('sample_id')
+    os = args.get('os')
+    analysis = sample_analysis(sample_id, os)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': {'ID': sample_id},
+        'HumanReadable': f'### Sample Analysis results for {sample_id}:'
+    })
+    for category_name, category_data in analysis.items():
+        md = tableToMarkdown(f'{category_name}:', category_data,
+                             headerTransform=string_to_table_header)
+        context = createContext(category_data, keyTransform=string_to_context_key)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': analysis,
+            'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID).{sample_id}.{category_name}': context},
+            'HumanReadable': md
+        })
+
+
+def tag_details_command():
+    args = demisto.args()
+    tag_name = args.get('tag_name')
+    result = autofocus_tag_details(tag_name)
+    md = tableToMarkdown(f'Tag {tag_name} details:', result, headerTransform=string_to_table_header)
+    context = createContext(result, keyTransform=string_to_context_key)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': result,
+        'EntryContext': {'AutoFocus.Tag(val.ID == obj.ID)': context},
+        'HumanReadable': md
+    })
+
+
+def top_tags_search_command():
+    args = demisto.args()
+    scope = args.get('scope')
+    tag_class = args.get('class')
+    private = args.get('private')
+    public = args.get('public')
+    commodity = args.get('commodity')
+    unit42 = args.get('unit42')
+    info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
+    md = tableToMarkdown(f'Top tags search Info:', info)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': info,
+        'EntryContext': {'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': info},
+        'HumanReadable': md
+    })
+
+
+def top_tags_results_command():
+    args = demisto.args()
+    af_cookie = args.get('af_cookie')
+    results, status = get_top_tags_results(af_cookie)
+    md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
+    context = createContext(results, keyTransform=string_to_context_key)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': results,
+        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context},
+        'HumanReadable': md
+    })
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -329,6 +636,15 @@ try:
         sessions_search_results_command()
     elif active_command == 'autofocus-get-session-details':
         get_session_details_command()
+    elif active_command == 'autofocus-sample-analysis':
+        sample_analysis_command()
+    elif active_command == 'autofocus-tag-details':
+        tag_details_command()
+    elif active_command == 'autofocus-top-tags-search':
+        top_tags_search_command()
+    elif active_command == 'autofocus-top-tags-results':
+        top_tags_results_command()
+
 
 # Log exceptions
 except Exception as e:
