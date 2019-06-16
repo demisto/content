@@ -8,7 +8,7 @@ def main():
     try:
         dest = demisto.args()['address']
         ping_out = subprocess.check_output(['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, text=True)
-        s = re.search(r"PING.*\((.+)\)", ping_out)
+        s = re.search(r"PING.*?\((.+)\)", ping_out)
         res = {}
         if s:
             res['destination_ip'] = s.group(1)
@@ -31,7 +31,7 @@ def main():
         })
     except Exception as e:
         if isinstance(e, subprocess.CalledProcessError):
-            msg = e.output
+            msg = e.output  # pylint: disable=no-member
         else:
             msg = str(e)
         return_error(msg)
