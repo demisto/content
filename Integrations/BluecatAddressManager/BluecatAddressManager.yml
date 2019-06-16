@@ -34,6 +34,10 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Configuration Name
+  name: conf_name
+  required: false
+  type: 0
 description: Integration Template
 display: BluecatAddressManager
 name: BluecatAddressManager
