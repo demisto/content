@@ -151,7 +151,7 @@ SAMPLE_ANALYSIS_COVERAGE_KEYS = {
         'fields': ['name', 'create_date']
     },
     'fileurl_sig': {
-        'display_name': 'wildfire_signatures',
+        'display_name': 'fileurl_signatures',
         'fields': ['name', 'create_date']
     },
     'dns_sig': {
@@ -317,6 +317,7 @@ def get_data_from_line(line, category_name):
         })
     return sub_categories
 
+
 def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
     sub_categories_list = []
     for item in sub_category_data:
@@ -327,6 +328,7 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
         sub_categories_list.append(new_sub_category)
     return sub_categories_list
 
+
 def parse_coverage_sub_categories(coverage_data):
     new_coverage = {}
     for sub_category_name, sub_category_data in coverage_data.items():
@@ -334,7 +336,7 @@ def parse_coverage_sub_categories(coverage_data):
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
             new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('display_name')
             new_coverage[new_sub_category_name] = new_sub_category_data
-    return new_coverage
+    return {'coverage': new_coverage}
 
 
 def parse_lines_from_category(category_name, data):
@@ -358,6 +360,7 @@ def parse_sample_analysis_response(resp, os):
         elif category_name == 'coverage':
             new_category = parse_coverage_sub_categories(os_data)
             analysis.update(new_category)
+
     return analysis
 
 
@@ -570,7 +573,7 @@ def sample_analysis_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': {'ID': sample_id},
+        'Contents': {'ID': sample_id, 'Analysis': analysis},
         'HumanReadable': f'### Sample Analysis results for {sample_id}:',
         'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID)': {'ID': sample_id, 'Analysis': context}},
     })
@@ -580,7 +583,7 @@ def sample_analysis_command():
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': analysis,
+            'Contents': category_data,
             'HumanReadable': md
         })
 
