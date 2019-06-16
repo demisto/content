@@ -33,6 +33,17 @@ def should_run_pkg(pkg_dir: str) -> bool:
     return False
 
 
+def handle_run_res(res: Tuple[subprocess.CompletedProcess, str], fail_pkgs: list, good_pkgs: list):
+    if res[0].returncode != 0:
+        fail_pkgs.append(res[1])
+        print_color("============= {} =============".format(res[1]), LOG_COLORS.RED)
+    else:
+        good_pkgs.append(res[1])
+        print("============= {} =============".format(res[1]))
+    print(res[0].stdout)
+    print(res[0].stderr)
+
+
 def main():
     if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
         print("Run pkg_dev_test_tasks.py in parallel. Accepts same parameters as pkg_dev_test_tasks.py.\n"
@@ -56,18 +67,17 @@ def main():
     if(len(pkgs_to_run) > 1):  # setup pipenv before hand to avoid conflics
         get_dev_requirements(2.7)
         get_dev_requirements(3.7)
+    # run CommonServer non parallel to avoid conflicts
+    # when we modify the file for mypy includes
+    if 'Scripts/CommonServerPython' in pkgs_to_run:
+        pkgs_to_run.remove('Scripts/CommonServerPython')
+        res = run_dev_task('Scripts/CommonServerPython', params)
+        handle_run_res(res, fail_pkgs, good_pkgs)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures_submit = [executor.submit(run_dev_task, dir, params) for dir in pkgs_to_run]
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
-            if res[0].returncode != 0:
-                fail_pkgs.append(res[1])
-                print_color("============= {} =============".format(res[1]), LOG_COLORS.RED)
-            else:
-                good_pkgs.append(res[1])
-                print("============= {} =============".format(res[1]))
-            print(res[0].stdout)
-            print(res[0].stderr)
+            handle_run_res(res, fail_pkgs, good_pkgs)
     if fail_pkgs:
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
