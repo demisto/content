@@ -54,7 +54,7 @@ if demisto.command() == 'cloaken-unshorten-url':
             ec,
             cloaken_context
         )
-    elif response_code == codes.bad_request:
+    elif response_code == 400:
         # url was malformed
         context = {
             'original_url': url,
