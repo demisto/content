@@ -86,7 +86,7 @@ API_PARAM_DICT = {
         'fileurl': 'FileURL'
     }
 }
-ANALYSIS_LINE_KEYS = {
+SAMPLE_ANALYSIS_LINE_KEYS = {
     'behavior': {
         'display_name': 'behavior',
         'indexes': {
@@ -145,21 +145,21 @@ ANALYSIS_LINE_KEYS = {
         }
     }
 }
-ANALYSIS_COVERAGE_KEYS = {
+SAMPLE_ANALYSIS_COVERAGE_KEYS = {
     'wf_av_sig': {
-        'displayName': 'wildfire_signatures',
+        'display_name': 'wildfire_signatures',
         'fields': ['name', 'create_date']
     },
     'fileurl_sig': {
-        'displayName': 'wildfire_signatures',
+        'display_name': 'wildfire_signatures',
         'fields': ['name', 'create_date']
     },
     'dns_sig': {
-        'displayName': 'dns_signatures',
+        'display_name': 'dns_signatures',
         'fields': ['name', 'create_date']
     },
     'url_cat': {
-        'displayName': 'url_categories',
+        'display_name': 'url_categories',
         'fields': ['url', 'cat']
     }
 }
@@ -279,7 +279,7 @@ def get_session_details(session_id):
 def validate_if_line_needed(category, info_line):
     line = info_line.get('line')
     line_values = line.split(',')
-    category_indexes = ANALYSIS_LINE_KEYS.get(category).get('indexes')
+    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category).get('indexes')
     if category == 'behavior':
         risk_index = category_indexes.get('risk')
         risk = line_values[risk_index].strip()
@@ -307,7 +307,7 @@ def validate_if_line_needed(category, info_line):
 
 
 def get_data_from_line(line, category_name):
-    category_indexes = ANALYSIS_LINE_KEYS.get(category_name).get('indexes')
+    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')
     values = line.split(',')
     sub_categories = {}
     for sub_category in category_indexes:
@@ -317,27 +317,47 @@ def get_data_from_line(line, category_name):
         })
     return sub_categories
 
+def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
+    sub_categories_list = []
+    for item in sub_category_data:
+        new_sub_category = {}
+        fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')
+        for field in fields_to_extract:
+            new_sub_category[field] = item.get(field)
+        sub_categories_list.append(new_sub_category)
+    return sub_categories_list
 
-def parse_lines_from_category(category_name, os, data):
-    info_lines = data.get(os)
+def parse_coverage_sub_categories(coverage_data):
+    new_coverage = {}
+    for sub_category_name, sub_category_data in coverage_data.items():
+        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
+            new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
+            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('display_name')
+            new_coverage[new_sub_category_name] = new_sub_category_data
+    return new_coverage
+
+
+def parse_lines_from_category(category_name, data):
     new_lines = []
-    for info_line in info_lines:
-        value = validate_if_line_needed(category_name, info_line)
-        if value:
+    for info_line in data:
+        if validate_if_line_needed(category_name, info_line):
             new_sub_categories = get_data_from_line(info_line.get('line'), category_name)
             new_lines.append(new_sub_categories)
-    category_dict = ANALYSIS_LINE_KEYS.get(category_name)
+    category_dict = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name)
     new_category = {category_dict['display_name']: new_lines}
     return new_category
 
 
 def parse_sample_analysis_response(resp, os):
     analysis = {}
-    for category_name, data in resp.items():
-        if category_name in ANALYSIS_LINE_KEYS:
-            new_category = parse_lines_from_category(category_name, os, data)
+    for category_name, os_data in resp.items():
+        if category_name in SAMPLE_ANALYSIS_LINE_KEYS:
+            data = os_data.get(os)
+            new_category = parse_lines_from_category(category_name, data)
             analysis.update(new_category)
-
+        elif category_name == 'coverage':
+            new_category = parse_coverage_sub_categories(os_data)
+            analysis.update(new_category)
     return analysis
 
 
@@ -546,21 +566,21 @@ def sample_analysis_command():
     sample_id = args.get('sample_id')
     os = args.get('os')
     analysis = sample_analysis(sample_id, os)
+    context = createContext(analysis, keyTransform=string_to_context_key)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': {'ID': sample_id},
-        'HumanReadable': f'### Sample Analysis results for {sample_id}:'
+        'HumanReadable': f'### Sample Analysis results for {sample_id}:',
+        'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID)': {'ID': sample_id, 'Analysis': context}},
     })
     for category_name, category_data in analysis.items():
-        md = tableToMarkdown(f'{category_name}:', category_data,
+        md = tableToMarkdown(f'{string_to_table_header(category_name)}:', category_data,
                              headerTransform=string_to_table_header)
-        context = createContext(category_data, keyTransform=string_to_context_key)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
             'Contents': analysis,
-            'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID).{sample_id}.{category_name}': context},
             'HumanReadable': md
         })
 

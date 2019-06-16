@@ -230,6 +230,10 @@ script:
       predefined:
       - win7
       - winxp
+      - android
+      - static_analyzer
+      - mac
+      - bare_metal
       required: true
       secret: false
     deprecated: false
@@ -238,7 +242,7 @@ script:
     name: autofocus-sample-analysis
   - arguments:
     - default: false
-      description: The public tag name, can be retreived from the top-tags command
+      description: The public tag name, can be retreived from the top-tags command.
       isArray: false
       name: tag_name
       required: true
@@ -247,6 +251,35 @@ script:
     description: Get details on a given tag
     execution: false
     name: autofocus-tag-details
+    outputs:
+    - contextPath: AutoFocus.Tag.TagName
+      description: Tag simple name
+      type: String
+    - contextPath: AutoFocus.Tag.PublicTagName
+      description: Tag public name. Usesd as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Count
+      description: Amount of samples matched this tag.
+      type: Number
+    - contextPath: AutoFocus.Tag.Lasthit
+      description: Tag last encounter date.
+      type: Date
+    - contextPath: AutoFocus.Tag.TagDefinitionScope
+      description: Scope of the tag - public/private/Unit42
+      type: String
+    - contextPath: AutoFocus.Tag.CustomerName
+      description: Organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Source
+      description: Organization or individual that discovered the threat defined in
+        the tag
+      type: String
+    - contextPath: AutoFocus.Tag.TagClass
+      description: Tag classification
+      type: String
+    - contextPath: AutoFocus.Tag.TagDefinitionStatus
+      description: enabled/disabled/removing/rescoping
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -318,6 +351,14 @@ script:
     description: Perform a search to Identify the most popular tags
     execution: false
     name: autofocus-top-tags-search
+    outputs:
+    - contextPath: AutoFocus.TopTagsSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.TopTagsSearch.SearchStatus
+      description: in progress / complete
+      type: String
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
@@ -330,6 +371,19 @@ script:
     description: Get the results of a previous top tags search
     execution: false
     name: autofocus-top-tags-results
+    outputs:
+    - contextPath: AutoFocus.TopTagsResults.Count
+      description: Amount of samples matched this tag.
+      type: Number
+    - contextPath: AutoFocus.TopTagsResults.PublicTagName
+      description: Tag public name. Usesd as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.TagName
+      description: Tag simple name.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.Lasthit
+      description: Tag last encounter date.
+      type: Date
   dockerimage: demisto/python3:3.7.2.214
   isfetch: false
   runonce: false
