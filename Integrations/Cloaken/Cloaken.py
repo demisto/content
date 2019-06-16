@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 # The command demisto.command() holds the command sent from the user.
 from cloakensdk.client import SyncClient
 from cloakensdk.resources import Url
-from requests import codes
 
 PROXY = handle_proxy("proxy", False)
 
