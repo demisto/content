@@ -278,7 +278,7 @@ class FilesValidator(object):
         invalid_files = []
         for f in old_format_files:
             yaml_data = get_yaml(f)
-            if not yaml_data['toversion']:  # we only fail on old format if no toversion (meaning it is latest)
+            if 'toversion' not in yaml_data:  # we only fail on old format if no toversion (meaning it is latest)
                 invalid_files.append(f)
         if invalid_files:
             print_error("You must update the following files to the new package format. The files are:\n{}".format(
