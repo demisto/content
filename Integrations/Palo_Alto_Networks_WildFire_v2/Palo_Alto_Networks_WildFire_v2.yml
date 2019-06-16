@@ -354,3 +354,4 @@ script:
   subtype: python3
 tests:
 - Wildfire Test
+releaseNotes: "-"
