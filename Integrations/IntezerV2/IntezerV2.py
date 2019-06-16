@@ -7,12 +7,17 @@ from CommonServerUserPython import *
 
 import requests
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 API_KEY = demisto.getParam('APIKey')
 SERVER_URL = 'https://analyze.intezer.com/api'
-API_VERSION = 'v2-0'
+API_VERSION = '/v2-0'
+BASE_URL = SERVER_URL + API_VERSION
 IS_AVAILABLE_URL = 'is-available'
 ERROR_PREFIX = 'Error from Intezer:'
 ACCEPTABLE_HTTP_CODES = {200, 201, 202}
+USE_SSL = not demisto.params().get('insecure', False)
 
 http_status_to_error_massage = {
     400: '400 Bad Request - Wrong or invalid parameters',
@@ -23,11 +28,13 @@ http_status_to_error_massage = {
     500: '500 Internal Server Error - Internal error',
     503: '503 Service Unavailable'
 }
-dbot_score_by_verdict = {'malicious': 3,
-                         'suspicious': 2,
-                         'trusted': 1,
-                         'neutral': 1,
-                         'no_threats': 1}
+dbot_score_by_verdict = {
+    'malicious': 3,
+    'suspicious': 2,
+    'trusted': 1,
+    'neutral': 1,
+    'no_threats': 1
+}
 
 ''' HELPER FUNCTIONS '''
 
@@ -41,7 +48,7 @@ def handle_response(response, acceptable_http_status_codes):
 
 
 def get_session():
-    response = requests.post(SERVER_URL + '/v2-0/get-access-token', json={'api_key': API_KEY})
+    response = requests.post(BASE_URL + '/get-access-token', json={'api_key': API_KEY}, verify=USE_SSL)
     response = handle_response(response, {200})
     session = requests.session()
     session.headers['Authorization'] = 'Bearer {}'.format(response['result'])
@@ -53,9 +60,8 @@ def get_session():
 
 
 def check_is_available():
-    session = get_session()
-    url = '{}/{}'.format(SERVER_URL, IS_AVAILABLE_URL)
-    result = session.get(url)
+    url = f'{SERVER_URL}/{IS_AVAILABLE_URL}'
+    result = SESSION.get(url, verify=USE_SSL)
 
     return 'ok' if result.json()['is_available'] else None
 
@@ -67,9 +73,8 @@ def analyze_by_hash():
 
 
 def make_analyze_by_hash_request(file_hash):
-    session = get_session()
     data = {'hash': file_hash}
-    return session.post(SERVER_URL + '/v2-0/analyze-by-hash', json=data)
+    return SESSION.post(BASE_URL + '/analyze-by-hash', json=data, verify=USE_SSL)
 
 
 def handle_analyze_by_hash_response(response, file_hash):
@@ -80,19 +85,14 @@ def handle_analyze_by_hash_response(response, file_hash):
             'Indicator': file_hash,
             'Score': 0
         }
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {'DBotScore': [dbot]},
-            'HumanReadable': 'Hash {} does not exist on Intezer genome database'.format(file_hash),
-            'ContentsFormat': formats['json'],
-            'Contents': ''
-        })
+        hr = f'Hash {file_hash} does not exist on Intezer genome database'
+        ec = {'DBotScore': [dbot]}
+        return_outputs(hr, ec)
         return
 
     elif response.status_code == 400:
-        return_error('File hash is not valid.\nIntezer file hash reputation supports only sha256, '
-                     'sha1 and md5 hash formats.\n')
+        return_error('File hash is not valid.\nIntezer file hash reputation supports only SHA-256, '
+                     'SHA-1 and MD5 hash formats.\n')
 
     handle_analyze_response(response)
 
@@ -103,11 +103,10 @@ def analyze_by_uploaded_file():
 
 
 def make_analyze_by_file_request(file_id):
-    session = get_session()
     file_data = demisto.getFilePath(file_id)
     with open(file_data['path'], 'rb') as file_to_upload:
         files = {'file': (file_data['name'], file_to_upload)}
-        return session.post(SERVER_URL + '/v2-0/analyze', files=files)
+        return SESSION.post(BASE_URL + '/analyze', files=files, verify=USE_SSL)
 
 
 def handle_analyze_response(response):
@@ -116,37 +115,30 @@ def handle_analyze_response(response):
     result_url = response['result_url']
     analysis_id = result_url.rsplit('/', 1)[-1]
 
-    context_json = {'Intezer.Analysis': {'ID': analysis_id, 'Status': 'Created', 'type':'File'}}
+    context_json = {'Intezer.Analysis(obj.ID === val.ID)': {'ID': analysis_id, 'Status': 'Created', 'type': 'File'}}
 
     return_outputs('Analysis created successfully', context_json, response)
 
 
 def check_analysis_status_and_get_results():
     analysis_type = demisto.args().get('analysis_type', 'File')
-    analysis_ids = argToList(demisto.getArg('analysis_id'))
+    analysis_ids = argToList(demisto.args().get('analysis_id'))
+    indicator_name = demisto.args().get('indicator_name')
 
     for analysis_id in analysis_ids:
         response = make_analysis_status_request(analysis_id, analysis_type)
         analysis_result = handle_analysis_result(response)
 
         if analysis_result and analysis_type == 'Endpoint':
-            enrich_dbot_and_display_endpoint_analysis_results(analysis_result, demisto.getArg('indicator_name'))
+            enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name)
         elif analysis_result and analysis_type == 'File':
             enrich_dbot_and_display_file_analysis_results(analysis_result)
 
 
 def make_analysis_status_request(analysis_id, analysis_type):
-    result_url = get_result_url(analysis_type, analysis_id)
-    session = get_session()
-    return session.get(result_url)
-
-
-def get_result_url(analysis_type, analysis_id):
-    result_url = '{}/{}/{}{}'.format(SERVER_URL, API_VERSION,
-                                         'endpoint-analyses/' if analysis_type == 'Endpoint' else 'analyses/',
-                                         analysis_id)
-
-    return result_url
+    analysis_endpoint = 'endpoint-analyses/' if analysis_type == 'Endpoint' else 'analyses/'
+    result_url = f'{BASE_URL}/{analysis_endpoint}{analysis_id}'
+    return SESSION.get(result_url, verify=USE_SSL)
 
 
 def handle_analysis_result(response):
@@ -166,9 +158,9 @@ def handle_analysis_result(response):
 
 
 def enrich_dbot_and_display_file_analysis_results(result):
-    verdict = result['verdict']
-    sha256 = result['sha256']
-    analysis_id = result['analysis_id']
+    verdict = result.get('verdict')
+    sha256 = result.get('sha256')
+    analysis_id = result.get('analysis_id')
 
     dbot = {
         'Vendor': 'Intezer',
@@ -191,10 +183,10 @@ def enrich_dbot_and_display_file_analysis_results(result):
 
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {outputPaths['dbotscore']: [dbot],
-                         outputPaths['file']: [file],
-                         'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id,
-                                                                 'Status': 'Done'}},
+        'EntryContext': {
+            outputPaths['dbotscore']: [dbot],
+            outputPaths['file']: [file],
+            'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}},
         'HumanReadable': presentable_result,
         'ContentsFormat': formats['json'],
         'Contents': result
@@ -208,7 +200,7 @@ def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=Non
 
     dbot = {
         'Vendor': 'Intezer',
-        'Type': 'Hostname',
+        'Type': 'hostname',
         'Indicator': indicator_name if indicator_name else computer_name,
         'Score': dbot_score_by_verdict.get(verdict, 0)
     }
@@ -218,35 +210,42 @@ def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=Non
     presentable_result = '## Intezer Endpoint analysis result\n'
     presentable_result += 'Host Name: {}\n'.format(computer_name)
     presentable_result += ' Verdict: **{}**\n'.format(verdict)
-    if 'families' in result and result['families'] != None:
+    if result.get('families') is not None:
         presentable_result += 'Families: **{}**\n'.format(result['families'])
     presentable_result += ' Scan Time: {}\n'.format(result['scan_start_time'])
     presentable_result += '[Analysis Link]({})\n'.format(result['analysis_url'])
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'DBotScore': [dbot], 'Endpoint': [endpoint],
-                         'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id,
-                                                                 'Status': 'Done'}},
-        'HumanReadable': presentable_result,
-        'ContentsFormat': formats['json'],
-        'Contents': result
-    })
+    ec = {
+             'DBotScore': [dbot],
+             'Endpoint': [endpoint],
+             'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
+    }
+    return_outputs(presentable_result, ec, result)
 
 
 ''' EXECUTION CODE '''
+
+
 try:
-    if demisto.command() == 'test-module':
-        demisto.results(check_is_available())
-    elif demisto.command() == 'intezer-analyze-by-hash':
-        analyze_by_hash()
-    elif demisto.command() == 'intezer-analyze-by-file':
-        analyze_by_uploaded_file()
-    elif demisto.command() == 'intezer-get-analysis-result':
-        check_analysis_status_and_get_results()
-
-
+    SESSION = get_session()
 except Exception as e:
-    LOG(e)
-    LOG.print_log(False)
-    return_error(e.message)
+    return_error(str(e))
+
+
+def main():
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            demisto.results(check_is_available())
+        elif demisto.command() == 'intezer-analyze-by-hash':
+            analyze_by_hash()
+        elif demisto.command() == 'intezer-analyze-by-file':
+            analyze_by_uploaded_file()
+        elif demisto.command() == 'intezer-get-analysis-result':
+            check_analysis_status_and_get_results()
+    except Exception as e:
+        return_error(str(e))
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()

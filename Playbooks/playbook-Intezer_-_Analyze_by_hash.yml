@@ -1,5 +1,5 @@
-id: 2451509c-125a-4d8d-8ffe-185e8eca1b25
-version: 35
+id: Intezer - Analyze by hash
+version: -1
 name: Intezer - Analyze by hash
 description: Analyze the given hash on Intezer Analyze and enrich the file reputation.
   Supports SHA256, SHA1 and MD5.
@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fb6cc030-9fdf-4d01-8702-87a7340cb6dc
+    taskid: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
     type: start
     task:
-      id: fb6cc030-9fdf-4d01-8702-87a7340cb6dc
+      id: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +28,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: d81d9fb9-89d5-48ce-8c5d-07d09edae0ae
+    taskid: 79296d69-cc45-44dd-89df-b937e2f7b8d7
     type: condition
     task:
-      id: d81d9fb9-89d5-48ce-8c5d-07d09edae0ae
+      id: 79296d69-cc45-44dd-89df-b937e2f7b8d7
       version: -1
       name: Is Intezer enabled
       description: Verify that there is a valid instance of Intezer enabled.
@@ -62,7 +63,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Intezer_v2
+                        simple: Intezer v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -84,12 +85,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: a4942a1c-5f24-45e0-8110-3f7b44049743
+    taskid: 36c0f591-4ad7-4a3d-8bc3-ec036e4f76cd
     type: title
     task:
-      id: a4942a1c-5f24-45e0-8110-3f7b44049743
+      id: 36c0f591-4ad7-4a3d-8bc3-ec036e4f76cd
       version: -1
       name: Done
       description: Done
@@ -100,33 +102,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": -105,
+          "y": 1275
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: ba60f063-bab7-41ad-88c4-ae4655f54307
+    taskid: be51ba42-9f41-4998-8033-81757c16970d
     type: regular
     task:
-      id: ba60f063-bab7-41ad-88c4-ae4655f54307
+      id: be51ba42-9f41-4998-8033-81757c16970d
       version: -1
       name: Intezer - Analyze File by hash
       description: Checks file reputation for uploaded file (up to 20MB)
-      script: Intezer_v2|||intezer-analyze-by-hash
+      script: Intezer v2|||intezer-analyze-by-hash
       type: regular
       iscommand: true
-      brand: Intezer_v2
+      brand: Intezer v2
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       file_hash:
         complex:
-          root: File
-          accessor: SHA256
+          root: inputs.hash
     separatecontext: false
     view: |-
       {
@@ -137,12 +139,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 93c4375d-f7c5-4067-8f7b-109890016eaf
+    taskid: 3480c94c-359c-4885-879f-cadcb54c02cc
     type: condition
     task:
-      id: 93c4375d-f7c5-4067-8f7b-109890016eaf
+      id: 3480c94c-359c-4885-879f-cadcb54c02cc
       version: -1
       name: Is there a hash to analyze?
       description: Asserts there's a hash to analyze
@@ -161,7 +164,8 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.HASH
+              complex:
+                root: inputs.hash
             iscontext: true
     view: |-
       {
@@ -172,12 +176,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 37ddde91-d11b-449d-8872-312def232706
+    taskid: 65112085-068e-4775-8a76-3618d54190f3
     type: playbook
     task:
-      id: 37ddde91-d11b-449d-8872-312def232706
+      id: 65112085-068e-4775-8a76-3618d54190f3
       version: -1
       name: GenericPolling
       description: |-
@@ -222,25 +227,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 5d156084-78f3-4c70-818e-c1b9ed0d81e7
+    taskid: 096e3c80-e044-4349-82be-937b9f9b7388
     type: regular
     task:
-      id: 5d156084-78f3-4c70-818e-c1b9ed0d81e7
+      id: 096e3c80-e044-4349-82be-937b9f9b7388
       version: -1
       name: Intezer - get analysis result
       description: Wait and get analysis result, support file and endpoint analysis
-      script: Intezer_v2|||intezer-get-analysis-result
+      script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
-      brand: Intezer_v2
+      brand: Intezer v2
     nexttasks:
       '#none#':
       - "6"
@@ -260,20 +266,72 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 895
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: e2064e11-e8c7-4881-8328-e95a83a81a1b
+    type: condition
+    task:
+      id: e2064e11-e8c7-4881-8328-e95a83a81a1b
+      version: -1
+      name: Was result returned?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: inputs.hash
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Intezer
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_6_#default#": 0.1,
+      "18_6_yes": 0.1,
+      "5_6_#default#": 0.29
+    },
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 605,
-        "x": 50,
+        "height": 1290,
+        "width": 760,
+        "x": -105,
         "y": 50
       }
     }
@@ -289,7 +347,7 @@ inputs:
     simple: "10"
   required: true
   description: How much time to wait before a timeout occurs  (minutes)
-- key: HASH
+- key: hash
   value:
     complex:
       root: File

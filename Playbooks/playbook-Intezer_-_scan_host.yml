@@ -1,5 +1,5 @@
-id: 69b48f50-9bb8-440e-8956-80344c3d23d3
-version: 52
+id: Intezer - scan host
+version: -1
 rolename:
 - Administrator
 name: Intezer - scan host
@@ -260,10 +260,10 @@ tasks:
       id: aef64ffd-5f6c-4090-880c-51772b013102
       version: -1
       name: get-analysis-result
-      script: Intezer_v2|||intezer-get-analysis-result
+      script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
-      brand: Intezer_v2
+      brand: Intezer v2
     nexttasks:
       '#none#':
       - "18"

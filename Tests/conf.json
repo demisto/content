@@ -521,6 +521,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Intezer v2",
+            "playbookID": "Intezer Testing v2"
+        },
+        {
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },

@@ -1,5 +1,5 @@
-id: 46d0be1f-a72b-4efc-8d94-5ee88c52f4b4
-version: 10
+id: Intezer - Analyze Uploaded file
+version: -1
 name: Intezer - Analyze Uploaded file
 description: Analyze uploaded file to Intezer Analyze and enrich the file reputation.
   (up to 32mb)
@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fb6cc030-9fdf-4d01-8702-87a7340cb6dc
+    taskid: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
     type: start
     task:
-      id: fb6cc030-9fdf-4d01-8702-87a7340cb6dc
+      id: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
       version: -1
       name: ""
       iscommand: false
@@ -28,15 +28,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 6dc2404f-7107-4645-8695-911e9b5e1baf
+    taskid: f9a353d1-22d1-4c1b-81eb-a78a88c3dde1
     type: condition
     task:
-      id: 6dc2404f-7107-4645-8695-911e9b5e1baf
+      id: f9a353d1-22d1-4c1b-81eb-a78a88c3dde1
       version: -1
       name: Is Intezer enabled
-      description: Verify that there is a valid instance of Intezer_v2 enabled.
+      description: Verify that there is a valid instance of Intezer v2 enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -62,7 +63,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Intezer_v2
+                        simple: Intezer v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -84,12 +85,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: a4942a1c-5f24-45e0-8110-3f7b44049743
+    taskid: e3072dee-dd42-416e-804e-d15c5e66ac48
     type: title
     task:
-      id: a4942a1c-5f24-45e0-8110-3f7b44049743
+      id: e3072dee-dd42-416e-804e-d15c5e66ac48
       version: -1
       name: Done
       description: Done
@@ -106,27 +108,27 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 4eeb65ac-de1f-4733-828a-76e83ce65f3b
+    taskid: 44c99bce-45d2-4786-8fee-87fe1be01165
     type: regular
     task:
-      id: 4eeb65ac-de1f-4733-828a-76e83ce65f3b
+      id: 44c99bce-45d2-4786-8fee-87fe1be01165
       version: -1
       name: Intezer - Analyze uploaded file
       description: Checks file reputation for uploaded file (up to 32MB)
-      script: intezer-analyze-by-file
+      script: '|||intezer-analyze-by-file'
       type: regular
       iscommand: true
-      brand: Intezer_v2
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
       file_entry_id:
         complex:
-          root: File
-          accessor: EntryID
+          root: inputs.File
     separatecontext: false
     view: |-
       {
@@ -137,12 +139,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 5e9c2286-ec6d-41d7-836c-2f3c73b36fa2
+    taskid: bc19a3b7-7876-4f90-8ce2-cf6e1da5016d
     type: condition
     task:
-      id: 5e9c2286-ec6d-41d7-836c-2f3c73b36fa2
+      id: bc19a3b7-7876-4f90-8ce2-cf6e1da5016d
       version: -1
       name: Is there a file to analyze?
       description: Asserts there's a file to analyze
@@ -172,12 +175,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: d51daf76-c6ab-4993-872f-1fcca172132d
+    taskid: be960d68-1a06-455f-8676-5d1b04402dc5
     type: playbook
     task:
-      id: d51daf76-c6ab-4993-872f-1fcca172132d
+      id: be960d68-1a06-455f-8676-5d1b04402dc5
       version: -1
       name: GenericPolling
       description: |-
@@ -228,19 +232,20 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: efb1df65-a998-4543-80aa-7e725f8f882e
+    taskid: 139f25d7-9d3b-4bf9-8e3b-10eaf6325eef
     type: regular
     task:
-      id: efb1df65-a998-4543-80aa-7e725f8f882e
+      id: 139f25d7-9d3b-4bf9-8e3b-10eaf6325eef
       version: -1
       name: Intezer - get analysis result
       description: Wait and get analysis result, support file and endpoint analysis
-      script: Intezer_v2|||intezer-get-analysis-result
+      script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
-      brand: Intezer_v2
+      brand: Intezer v2
     nexttasks:
       '#none#':
       - "6"
@@ -266,6 +271,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -283,6 +289,7 @@ inputs:
   value:
     complex:
       root: File
+      accessor: EntryID
   required: false
   description: File object of the file to detonate.
 - key: Interval

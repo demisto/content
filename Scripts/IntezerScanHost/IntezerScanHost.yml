@@ -6,6 +6,7 @@ script: "-"
 type: python
 tags: []
 enabled: true
+comment: Scans intezer host
 args:
 - name: host
   required: true
@@ -21,6 +22,7 @@ args:
 - name: intezer_api_key
   required: true
   secret: true
+  description: API key of intezer
 outputs:
 - contextPath: Intezer.Analysis.ID
   description: 'Endpoint analysis id '
