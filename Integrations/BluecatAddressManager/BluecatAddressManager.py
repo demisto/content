@@ -170,6 +170,60 @@ def test_module():
     demisto.results('ok')
 
 
+def query_ipv4_command():
+    ip = demisto.getArg('ip')
+    base_ip_raw_res = query_ipv4(ip)
+    base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
+    ip_object = {
+        'ID': base_ip_raw_res.get('id'),
+        'Name': base_ip_raw_res.get('name'),
+        'MACAddress': '',  # TODO: Complete this
+        'Parents': base_ip_parents
+    }
+    hr = create_human_readable_ip(ip_object, ip)
+    return_outputs(hr, {'AddressManager.ipv4(obj.ID === val.ID)': ip_object}, base_ip_raw_res)
+
+
+def query_ipv4(ip):
+    params = {
+        'containerId': CONF,
+        'address': ip
+    }
+    return http_request('GET', '/getIP4Address', params=params)
+
+
+def get_entity_parents(base_id):
+    base_ip_parents = []
+    entity_parent = get_entity_parent(id=base_id)
+    # entity with id 0 is root, and CONF is root of parent
+    while entity_parent.get('id') not in (None, 0, CONF):
+        base_ip_parents.append({
+            'ID': entity_parent.get('id'),
+            'Type': entity_parent.get('type'),
+            'Name': entity_parent.get('name'),
+            'CIDR': entity_parent.get('properties')
+        })
+        entity_parent = get_entity_parent(id=entity_parent.get('id'))
+
+    return base_ip_parents
+
+
+def get_entity_parent(id):
+    params = {
+        'entityId': id
+    }
+    return http_request('GET', '/getParent', params=params)
+
+
+def create_human_readable_ip(ip_object, ip_value):
+    ip_object_cpy = dict(ip_object)
+    reversed_parents = list(reversed(ip_object_cpy['Parents']))
+    ip_object_cpy.pop('Parents')
+    hr = tblToMd(f'{ip_value} IP Result:', ip_object_cpy)
+    hr += tblToMd('Parents Details:', reversed_parents)
+    return hr
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -187,6 +241,8 @@ def main():
     try:
         if command == 'test-module':
             test_module()
+        elif command == 'bluecat-am-query-ipv4':
+            query_ipv4_command()
 
     # Log exceptions
     except Exception as e:

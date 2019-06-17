@@ -44,11 +44,11 @@ name: BluecatAddressManager
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: The IP to get data about
       isArray: false
       name: ip
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Enriches an ipv4 with data about IP networks and blocks that it belongs
