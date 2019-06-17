@@ -9,6 +9,7 @@ configuration:
   type: 9
 - display: Server URL (e.g. https://cloaken.cypherint.com)
   name: server_url
+  defaultvalue: "https://cloaken.cypherint.com"
   required: true
   type: 0
 - display: Use system proxy settings
