@@ -202,7 +202,7 @@ def generate_md_context_get_issue(data):
 
 
 def generate_md_context_create_issue(data, project_name=None, project_key=None):
-    create_issue_obj = {"md": [], "context": {"Ticket": []}}
+    create_issue_obj = {"md": [], "context": {"Ticket": []}}  # type: ignore
     if project_name:
         data["projectName"] = project_name
 
@@ -213,8 +213,7 @@ def generate_md_context_create_issue(data, project_name=None, project_key=None):
         data["projectKey"] = demisto.getParam('projectKey')
 
     create_issue_obj['md'].append(data)  # type: ignore
-    create_issue_obj['context']['Ticket'].append(
-        {"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
+    create_issue_obj['context']['Ticket'].append({"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
     return create_issue_obj
 
 
