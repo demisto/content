@@ -246,6 +246,43 @@ def query_ipv6(ip):
     return http_request('GET', '/getIP6Address', params=params)
 
 
+def get_response_policies_command():
+    raw_response_policies = get_response_policies()
+    response_policies, hr = create_response_policies_result(raw_response_policies)
+    return_outputs(hr, response_policies, raw_response_policies)
+
+
+def get_response_policies():
+    params = {
+        'parentId': CONF,
+        'type': 'ResponsePolicy',
+        'start': demisto.getArg('start'),
+        'count': demisto.getArg('count'),
+    }
+    return http_request('GET', '/getEntities', params=params)
+
+
+def create_response_policies_result(raw_response_policies):
+    response_policies = []
+    hr = '## Response Policies:\n'
+    for response_policy in raw_response_policies:
+        response_policy_obj = {
+            'ID': response_policy.get('id'),
+            'Name': response_policy.get('name'),
+            'Type': response_policy.get('type')
+        }
+        properties = response_policy.get('properties').split('|')
+        for property in properties:
+            if property:
+                key_val_pair = property.split('=')
+                # camelize the key
+                key = key_val_pair[0].upper()[0] + key_val_pair[0][1:]
+                response_policy_obj[key] = key_val_pair[1]
+        hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
+        response_policies.append(response_policy_obj)
+    return {'AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -267,6 +304,8 @@ def main():
             query_ipv4_command()
         elif command == 'bluecat-am-query-ipv6':
             query_ipv6_command()
+        elif command == 'bluecat-am-get-response-policies':
+            get_response_policies_command()
 
     # Log exceptions
     except Exception as e:
