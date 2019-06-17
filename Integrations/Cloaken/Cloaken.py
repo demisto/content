@@ -45,7 +45,9 @@ if demisto.command() == 'cloaken-unshorten-url':
             'status': response_code
         }
         ec = {
-            outputPaths['url']: url_data,
+            outputPaths['url']: {
+                'Data': url_data
+            },
             'Cloaken': cloaken_context
         }
         return_outputs(

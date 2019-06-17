@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 54c06151-7d18-43bf-807b-8cd8df4440c8
+    taskid: 130b93f2-ac76-4727-8747-922cd92b8918
     type: regular
     task:
-      id: 54c06151-7d18-43bf-807b-8cd8df4440c8
+      id: 130b93f2-ac76-4727-8747-922cd92b8918
       version: -1
       name: cloaken
       description: unshorten a url
@@ -44,7 +45,7 @@ tasks:
       - "5"
     scriptarguments:
       url:
-        simple: https://test.com
+        simple: https://bit.ly/1Gtg3vp
     separatecontext: false
     view: |-
       {
@@ -55,12 +56,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: e623e017-e01a-4c07-8593-458095c083bb
+    taskid: 9cb6a5c5-bcad-48ee-81ad-956a09e22da9
     type: regular
     task:
-      id: e623e017-e01a-4c07-8593-458095c083bb
+      id: 9cb6a5c5-bcad-48ee-81ad-956a09e22da9
       version: -1
       name: Verify Original Context
       scriptName: VerifyContext
@@ -72,10 +74,10 @@ tasks:
       - "4"
     scriptarguments:
       expectedValue:
-        simple: https://test.com
+        simple: https://bit.ly/1Gtg3vp
       fields: {}
       path:
-        simple: Cloaken.[0].original_url
+        simple: Cloaken.original_url
     separatecontext: false
     view: |-
       {
@@ -86,12 +88,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 4ea6a2ab-c93c-4d71-89ec-f91e390442e1
+    taskid: d1ef050a-40c1-4b48-8d20-8a76999f6464
     type: regular
     task:
-      id: 4ea6a2ab-c93c-4d71-89ec-f91e390442e1
+      id: d1ef050a-40c1-4b48-8d20-8a76999f6464
       version: -1
       name: Verify URL Data
       scriptName: VerifyContext
@@ -100,7 +103,7 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: https://www.test.com/
+        simple: https://www.paloaltonetworks.com/
       fields: {}
       path:
         simple: URL.Data
@@ -114,12 +117,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 4a20a1a1-0eef-4d38-8819-4a2eb097e404
+    taskid: 08492adc-fbe2-4edf-82d5-cb83b366eadc
     type: regular
     task:
-      id: 4a20a1a1-0eef-4d38-8819-4a2eb097e404
+      id: 08492adc-fbe2-4edf-82d5-cb83b366eadc
       version: -1
       name: Verify unshortened
       scriptName: VerifyContext
@@ -131,10 +135,10 @@ tasks:
       - "3"
     scriptarguments:
       expectedValue:
-        simple: https://www.test.com/
+        simple: https://www.paloaltonetworks.com/
       fields: {}
       path:
-        simple: Cloaken.[0].unshortened_url
+        simple: Cloaken.unshortened_url
     separatecontext: false
     view: |-
       {
@@ -145,6 +149,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 14374e25-c797-4ff6-8247-6eac99388468
@@ -174,6 +179,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 1a6ab2be-980a-4cae-855b-99bd4d9135d8
@@ -203,6 +209,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
