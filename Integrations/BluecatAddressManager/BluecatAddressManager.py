@@ -143,6 +143,18 @@ def get_passed_mins(start_time, end_time_str):
     return time_delta.seconds / 60
 
 
+def properties_to_camelized_dict(properties):
+    properties = properties.split('|')
+    properties_dict = {}
+    for _property in properties:
+        if _property:
+            key_val_pair = _property.split('=')
+            # camelize the key
+            key = key_val_pair[0][0].upper() + key_val_pair[0][1:]
+            properties_dict[key] = key_val_pair[1]
+    return properties_dict
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -271,13 +283,7 @@ def create_response_policies_result(raw_response_policies):
             'Name': response_policy.get('name'),
             'Type': response_policy.get('type')
         }
-        properties = response_policy.get('properties').split('|')
-        for property in properties:
-            if property:
-                key_val_pair = property.split('=')
-                # camelize the key
-                key = key_val_pair[0].upper()[0] + key_val_pair[0][1:]
-                response_policy_obj[key] = key_val_pair[1]
+        response_policy_obj.update(properties_to_camelized_dict(response_policy.get('properties')))
         hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
         response_policies.append(response_policy_obj)
     return {'AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
