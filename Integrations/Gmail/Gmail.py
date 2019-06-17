@@ -7,7 +7,6 @@ import json
 import base64
 from datetime import datetime, timedelta
 import httplib2
-import datetime
 import urlparse
 from distutils.util import strtobool
 import sys
@@ -27,6 +26,7 @@ PROXY = demisto.params().get('proxy')
 
 
 ''' HELPER FUNCTIONS '''
+
 
 class TextExtractHtmlParser(HTMLParser):
     def __init__(self):
@@ -91,7 +91,7 @@ def get_http_client_with_proxy():
         https_proxy = 'https://' + https_proxy
     parsed_proxy = urlparse.urlparse(https_proxy)
     proxy_info = httplib2.ProxyInfo(
-        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,# disable-secrets-detection
+        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
         proxy_host=parsed_proxy.hostname,
         proxy_port=parsed_proxy.port,
         proxy_user=parsed_proxy.username,
@@ -118,6 +118,7 @@ def get_credentials(additional_scopes=None, delegated_user=None):
                                                                             scopes=scopes)
 
     return cred.create_delegated(delegated_user)
+
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
@@ -674,13 +675,11 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'pageToken': page_token,
         'includeSpamTrash': include_spam_trash,
     }
-
-
     service = get_service(
         'gmail',
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
-    command_args['userId'])
+        command_args['userId'])
     result = service.users().messages().list(**command_args).execute()
 
     return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
@@ -985,8 +984,6 @@ def list_filters(user_id, address=None, limit=100):
     command_args = {
         'userId': user_id,
     }
-
-
     service = get_service(
         'gmail',
         'v1',
