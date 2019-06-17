@@ -519,6 +519,48 @@ tasks:
                       value:
                         simple: eml
                     ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xls
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsx
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                  - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Excel
+                    ignorecase: true
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -627,6 +669,47 @@ tasks:
               right:
                 value:
                   simple: eml
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xls
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+            - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Excel
               ignorecase: true
           accessor: EntryID
           transformers:
