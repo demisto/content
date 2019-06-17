@@ -62,7 +62,7 @@ script:
     - contextPath: AddressManager.ipv4.Name
       description: Name of the address
       type: String
-    - contextPath: AddressManager.ipv4.MACAddress
+    - contextPath: AddressManager.ipv4.MacAddress
       description: Corresponding MAC address
       type: String
     - contextPath: AddressManager.ipv4.Parents.ID
@@ -96,7 +96,7 @@ script:
     - contextPath: AddressManager.ipv6.Name
       description: Name of the address
       type: String
-    - contextPath: AddressManager.ipv6.MACAddress
+    - contextPath: AddressManager.ipv6.MacAddress
       description: Corresponding MAC address
       type: String
     - contextPath: AddressManager.ipv6.Parents.ID

@@ -189,9 +189,9 @@ def query_ipv4_command():
     ip_object = {
         'ID': base_ip_raw_res.get('id'),
         'Name': base_ip_raw_res.get('name'),
-        'MACAddress': '',  # TODO: Complete this
         'Parents': base_ip_parents
     }
+    ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
     hr = create_human_readable_ip(ip_object, ip)
     return_outputs(hr, {'AddressManager.ipv4(obj.ID === val.ID)': ip_object}, base_ip_raw_res)
 
@@ -209,12 +209,13 @@ def get_entity_parents(base_id):
     entity_parent = get_entity_parent(id=base_id)
     # entity with id 0 is root, and CONF is root of parent
     while entity_parent.get('id') not in (None, 0, CONF):
-        base_ip_parents.append({
+        parent_obj = {
             'ID': entity_parent.get('id'),
             'Type': entity_parent.get('type'),
             'Name': entity_parent.get('name'),
-            'CIDR': entity_parent.get('properties')
-        })
+        }
+        parent_obj.update(properties_to_camelized_dict(entity_parent.get('properties')))
+        base_ip_parents.append(parent_obj)
         entity_parent = get_entity_parent(id=entity_parent.get('id'))
 
     return base_ip_parents
@@ -231,8 +232,8 @@ def create_human_readable_ip(ip_object, ip_value):
     ip_object_cpy = dict(ip_object)
     reversed_parents = list(reversed(ip_object_cpy['Parents']))
     ip_object_cpy.pop('Parents')
-    hr = tblToMd(f'{ip_value} IP Result:', ip_object_cpy)
-    hr += tblToMd('Parents Details:', reversed_parents)
+    hr = tblToMd(f'{ip_value} IP Result:', ip_object_cpy, headerTransform=pascalToSpace)
+    hr += tblToMd('Parents Details:', reversed_parents, headerTransform=pascalToSpace)
     return hr
 
 
@@ -243,9 +244,9 @@ def query_ipv6_command():
     ip_object = {
         'ID': base_ip_raw_res.get('id'),
         'Name': base_ip_raw_res.get('name'),
-        'MACAddress': '',  # TODO: Complete this
         'Parents': base_ip_parents
     }
+    ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
     hr = create_human_readable_ip(ip_object, ip)
     return_outputs(hr, {'AddressManager.ipv6(obj.ID === val.ID)': ip_object}, base_ip_raw_res)
 
