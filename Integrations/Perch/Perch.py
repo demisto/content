@@ -451,7 +451,7 @@ def test_module():
         authenticate()
         demisto.results('ok')
     except Exception as err:
-        return_error(err.message)
+        return_error(str(err))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
