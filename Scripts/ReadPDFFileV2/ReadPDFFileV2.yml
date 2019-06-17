@@ -124,9 +124,10 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/readpdf:1.0.0.299
+subtype: python3
+releaseNotes: "-"
 runas: DBotWeakRole
 runonce: false
-releaseNotes: 'Added additional fields to the script output as well as descriptions to all added fields. Some outputs had their names changed to better suit demisto standards (e.g. PDF version was changed to PDFVersion)'
 tests:
 - Extract Indicators From File - test
 - ReadPDFFileV2-Test

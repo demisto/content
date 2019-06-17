@@ -525,4 +525,3 @@ script:
   script: ''
   type: python
 fromversion: 4.0.0
-releaseNotes: fixed commands and proxy
