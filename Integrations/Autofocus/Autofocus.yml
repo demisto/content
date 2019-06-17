@@ -26,8 +26,6 @@ script:
       description: The query to retrieve samples
       isArray: false
       name: query
-      predefined:
-      - ''
       required: true
       secret: false
     - default: false
@@ -164,22 +162,41 @@ script:
       name: af_cookie
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: When set to true partial results will be displayed even when the
-        search is not complete
-      isArray: false
-      name: intermediate_results
-      predefined:
-      - 'False'
-      - 'True'
-      required: false
-      secret: false
     deprecated: false
     description: Get results of a previous samples search
     execution: false
     name: autofocus-samples-search-results
+    outputs:
+    - contextPath: AutoFocus.SamplesResults.Size
+      description: File size in bytes
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA1
+      description: File SHA1
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA256
+      description: File SHA256
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Created
+      description: Date created
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Finished
+      description: Date finshed
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Region
+      description: Sample region
+      type: String
+    - contextPath: AutoFocus.SamplesResults.FileType
+      description: File type
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Tags
+      description: Attached tags
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Verdict
+      description: Sample verdict
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.TagGroups
+      description: Groups of relevant tags
+      type: String
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
@@ -188,22 +205,38 @@ script:
       name: af_cookie
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: When set to true partial results will be displayed even when the
-        search is not complete
-      isArray: false
-      name: intermediate_results
-      predefined:
-      - 'False'
-      - 'True'
-      required: false
-      secret: false
     deprecated: false
     description: Get results of a previous sessions search
     execution: false
     name: autofocus-sessions-search-results
+    outputs:
+    - contextPath: AutoFocus.SessionsResults.FileName
+      description: File name
+      type: String
+    - contextPath: AutoFocus.SessionsResults.ID
+      description: Session ID. Used to get session details
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Industry
+      description: Related industry
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Region
+      description: Session regions
+      type: String
+    - contextPath: AutoFocus.SessionsResults.SHA256
+      description: SHA256
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Seen date
+      type: String
+    - contextPath: AutoFocus.SessionsResults.UploadSource
+      description: Source uploaded the sample
+      type: String
+    - contextPath: AutoFocus.SessionsResults.FileURL
+      description: File URL
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Tags
+      description: Relevant tags
+      type: String
   - arguments:
     - default: false
       description: The session ID
