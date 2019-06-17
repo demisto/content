@@ -27,12 +27,13 @@ class IntegrationValidator(object):
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
                 file_content = get(git_hub_path).content
-                self.old_integration = yaml.load(file_content)
+                self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.load(get(file_path_from_master).content, Loader=yaml.FullLoader)
-                except Exception:
+                    self.old_integration = yaml.safe_load(get(file_path_from_master).content)
+                except Exception as e:
+                    print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
                                 "backward compatibility")
                     self.old_integration = None
@@ -174,6 +175,9 @@ class IntegrationValidator(object):
         commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             context_list = []
+            if not command.get('outputs', []):
+                continue
+
             for output in command.get('outputs', []):
                 context_list.append(output['contextPath'])
 

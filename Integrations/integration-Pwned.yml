@@ -37,6 +37,7 @@ script:
                 Method: 'GET',
                 Headers: {
                     'Accept': ['application/json'],
+                    'User-Agent' : ['DBOT-API'],
                 }
             },
             false,
@@ -334,3 +335,4 @@ script:
   runonce: false
 tests:
   - Pwned test
+releaseNotes: '-'
