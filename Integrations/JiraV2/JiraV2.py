@@ -497,10 +497,10 @@ def upload_file(entry_id, issue_id):
         'X-Atlassian-Token': 'no-check',
     }
     res = requests.post(
-        BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
+        url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
         headers=headers,
         files={'file': get_file(entry_id)},
-        auth=(USERNAME, PASSWORD),
+        auth=(USERNAME, API_TOKEN or PASSWORD),
         verify=USE_SSL
     )
 
