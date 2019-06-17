@@ -446,6 +446,14 @@ def fetch_alerts():
     demisto.incidents(incidents)
 
 
+def test_module():
+    try:
+        authenticate()
+        demisto.results('ok')
+    except Exception as err:
+        return_error(err.message)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 # LOG('Command being called is %s' % (demisto.command()))
@@ -462,6 +470,8 @@ try:
         create_indicator()
     elif demisto.command() == 'fetch-incidents':
         fetch_alerts()
+    elif demisto.command() == 'test-module':
+        test_module()
 
 
 # Log exceptions
