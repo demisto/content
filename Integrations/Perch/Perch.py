@@ -239,9 +239,9 @@ def indicator_params(args):
     if args.get('description'):
         param['description'] = args.get('description')
     if args.get('tlp'):
-        param['tlp'] = TLP_MAP[args.get('tlp')]
+        param['tlp'] = TLP_MAP[args.get('tlp')]  # type: ignore
     if args.get('confidence'):
-        param['confidence'] = CONFIDENCE_MAP[args.get('confidence')]
+        param['confidence'] = CONFIDENCE_MAP[args.get('confidence')]  # type: ignore
     if args.get('operator'):
         param['operator'] = args.get('operator')
     if args.get('first_sighting'):
