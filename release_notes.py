@@ -70,6 +70,7 @@ class Content(object):
         self.added_store = []  # holds added file paths
         self.deleted_store = []  # holds deleted file paths
         self.show_secondary_header = True
+        self.is_missing_release_notes = False
 
     def add(self, change_type, data):
         if change_type == "M":
@@ -141,7 +142,6 @@ class Content(object):
     # create a release notes section for store (add or modified) - return None if found missing release notes
     def release_notes_section(self, store, title_prefix, current_server_version):
         res = ""
-        missing_rn = False
         if len(store) > 0:
             new_str = ""
             new_count = 0
@@ -167,7 +167,7 @@ class Content(object):
 
                     if ans is None:
                         print_error("Error:\n[%s] is missing releaseNotes/description entry" % (path,))
-                        missing_rn = True
+                        self.is_missing_release_notes = True
                     elif ans:
                         new_count += 1
                         new_str += ans
@@ -183,9 +183,6 @@ class Content(object):
 
                     res = "\n#### %s %s %s\n" % (count_str, title_prefix, self.get_header())
                 res += new_str
-
-        if missing_rn:
-            return None
 
         return res
 
@@ -661,16 +658,17 @@ def main():
     for key in RELEASE_NOTES_ORDER:
         value = release_note_generator[key]
         ans = value.generate_release_notes(args.server_version)
-        if ans is None:
+        if ans is None or value.is_missing_release_notes:
             missing_release_notes = True
         elif len(ans) > 0:
             res.append(ans)
 
-    if missing_release_notes:
-        sys.exit(1)
-
     release_notes = "\n---\n".join(res)
     create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token)
+
+    if missing_release_notes:
+        print_error("Error: some release notes are missing. See previous errors.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
