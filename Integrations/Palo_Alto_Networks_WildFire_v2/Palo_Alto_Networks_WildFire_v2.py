@@ -502,7 +502,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
 
-        if 'evidence' in report:
+        if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
                     if '-md5' in report["evidence"]["file"]["entry"]:
@@ -580,7 +580,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
 
         res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
 
-        file_name = 'wildfire_report_' + file_hash
+        file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
         result = fileResult(file_name, res_pdf.content,
                             file_type)  # will be saved under 'InfoFile' in the context.

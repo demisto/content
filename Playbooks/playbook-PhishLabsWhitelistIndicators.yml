@@ -197,6 +197,5 @@ inputs:
   required: false
   description: Whitelist indicators within this duration (from now).
 outputs: []
-releaseNotes: "-"
 tests:
   - PhishLabsTestPopulateIndicators

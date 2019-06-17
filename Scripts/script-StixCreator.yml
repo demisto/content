@@ -160,7 +160,8 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/stix2:1.0.0.204
+subtype: python3
+releaseNotes: "-"
 runas: DBotWeakRole
-releaseNotes: "Add support to registry indicators, CVE CVSS vulnerability and doesn't throw exception on total failure, support stix2_validator"
 tests:
 - StixCreator-Test
