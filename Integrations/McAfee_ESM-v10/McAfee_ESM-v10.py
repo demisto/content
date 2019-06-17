@@ -141,14 +141,16 @@ class NitroESM(object):
                                                 headers=self.v10_login_headers,
                                                 verify=VERIFY)
             self.cookie = self.login_response.headers.get('Set-Cookie')
-            try:
-                self.jwttoken = re.search('(^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)',
-                                          self.cookie).group(1)
-            except TypeError:
+
+            token = re.search(r'(^[\w\d-_=]+\.[\w\d-_=]+\.?[\w\d-_.+/=]*)', self.cookie)
+            if token is not None:
+                self.jwttoken = token.group(1)
+            else:
                 return_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(
                     self.login_url,
                     self.login_response.status_code,
                     self.login_response.text))
+
             self.xsrf_token = self.login_response.headers.get('Xsrf-Token')
             self.session_headers = {'Cookie': self.jwttoken,
                                     'X-Xsrf-Token': self.xsrf_token,
@@ -880,7 +882,7 @@ try:
         # if last_case < configuration_last_case:
         last_case = max(last_case, configuration_last_case)
 
-        incidents = []
+        incidents = []  # type: list
         mode = demisto.params().get('fetchTypes', 'alarms').lower()  # alarms is default for backward compatibility
 
         next_run = None
@@ -1084,10 +1086,10 @@ try:
 except Exception as ex:
     demisto.error('#### error in McAfee ESM v10: ' + str(ex))
     if demisto.command() == 'fetch-incidents':
-        LOG(traceback.format_exc(ex))
+        LOG(traceback.format_exc())
         LOG.print_log()
         raise
     else:
-        return_error(str(ex), error=traceback.format_exc(ex))
+        return_error(str(ex), error=traceback.format_exc())
 finally:
     esm.logout()
