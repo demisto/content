@@ -200,39 +200,46 @@ def test_module():
     demisto.results('ok')
 
 
-config = prepare()
-args = prepare_args(demisto.args())
+def main():
+    global config
+    config = prepare()
+    args = prepare_args(demisto.args())
 
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'send-mail':
-        demisto.results(send_email(**args))
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'send-mail':
+            demisto.results(send_email(**args))
 
-except Exception as e:
-    import time
+    except Exception as e:
+        import time
 
-    time.sleep(2)
-    debug_log = log_stream.getvalue()
-    error_message = ""
-    if "Status code: 401" in debug_log:
-        error_message = ("Got unauthorized from the server. "
-                         "Check credentials are correct and authentication"
-                         " method are supported. ")
+        time.sleep(2)
+        debug_log = log_stream.getvalue()
+        error_message = ""
+        if "Status code: 401" in debug_log:
+            error_message = ("Got unauthorized from the server. "
+                             "Check credentials are correct and authentication"
+                             " method are supported. ")
 
-        error_message += ("You can try using 'domain\\username' as username for authentication. "
-                          if AUTH_METHOD_STR.lower() == 'ntlm' else '')
-    if "Status code: 503" in debug_log:
-        error_message = "Got timeout from the server. " \
-                        "Probably the server is not reachable with the current settings. " \
-                        "Check proxy parameter. If you are using server URL - change to server IP address. "
-    error_message = error_message + "\n" + str(e)
-    stacktrace = traceback.format_exc()
-    if stacktrace:
-        debug_log += "\nFull stacktrace:\n" + stacktrace
+            error_message += ("You can try using 'domain\\username' as username for authentication. "
+                              if AUTH_METHOD_STR.lower() == 'ntlm' else '')
+        if "Status code: 503" in debug_log:
+            error_message = "Got timeout from the server. " \
+                            "Probably the server is not reachable with the current settings. " \
+                            "Check proxy parameter. If you are using server URL - change to server IP address. "
+        error_message = error_message + "\n" + str(e)
+        stacktrace = traceback.format_exc()
+        if stacktrace:
+            debug_log += "\nFull stacktrace:\n" + stacktrace
 
-    demisto.error("EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
-    if IS_TEST_MODULE:
-        demisto.results(error_message)
-    else:
-        return_error(error_message + '\n' + debug_log)
+        demisto.error("EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
+        if IS_TEST_MODULE:
+            demisto.results(error_message)
+        else:
+            return_error(error_message + '\n' + debug_log)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
