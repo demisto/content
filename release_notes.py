@@ -4,6 +4,7 @@ import json
 import sys
 import yaml
 import os
+import re
 import requests
 import argparse
 
@@ -621,8 +622,8 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
 
 def get_last_release_version():
     tags = run_command('git tag').split('\n')
-    tags = [tag for tag in tags if tag.startswith('19.')]
-    tags.sort(reverse=True)
+    tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
+    tags.sort(cmp=server_version_compare, reverse=True)
     return tags[0]
 
 
