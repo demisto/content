@@ -275,9 +275,14 @@ class FilesValidator(object):
         Args:
             old_format_files(set): file names which are in the old format.
         """
-        if old_format_files:
+        invalid_files = []
+        for f in old_format_files:
+            yaml_data = get_yaml(f)
+            if 'toversion' not in yaml_data:  # we only fail on old format if no toversion (meaning it is latest)
+                invalid_files.append(f)
+        if invalid_files:
             print_error("You must update the following files to the new package format. The files are:\n{}".format(
-                '\n'.join(list(old_format_files))))
+                '\n'.join(list(invalid_files))))
             self._is_valid = False
 
     def validate_committed_files(self, branch_name, is_backward_check=True):
