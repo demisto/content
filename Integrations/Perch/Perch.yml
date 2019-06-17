@@ -35,9 +35,7 @@ configuration:
   name: version
   required: false
   type: 0
-description: Integration Template
-detaileddescription: Use these detailed instructions in order to retrieve the API
-  key
+description: Perch is a co-managed threat detection and response platform.
 display: Perch
 name: Perch
 script:
