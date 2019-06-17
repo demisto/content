@@ -1,11 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import requests
 import json
 import collections
+import os
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -14,24 +17,16 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 API_KEY = demisto.params().get('api-key')
-
-# How many time before the first fetch to retrieve incidents
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
-# Should we use SSL
+FETCH_TIME = int(demisto.params().get('fetch_time', '7'))
+SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
+    demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
-
-# Service base URL
 BASE_URL = SERVER + '/' + demisto.params().get('version')
-# Remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
-
 
 TLP_MAP = {
     'WHITE': 0,
@@ -54,15 +49,15 @@ OBSERVABLE_TYPES_MAP = {
     'File Hash': 4
 }
 
-
 ''' HELPER FUNCTIONS '''
-# Allows nested keys to be accesible
+
+
+# Allows nested keys to be accessible
 def makehash():
     return collections.defaultdict(makehash)
 
 
 def http_request(method, url_suffix, params=None, data=None, headers=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -71,11 +66,11 @@ def http_request(method, url_suffix, params=None, data=None, headers=None):
         data=data,
         headers=headers
     )
-    # Handle error responses gracefully
     if res.status_code not in {200, 201}:
         return_error('Error in API call to Perch Integration [%d] - %s' % (res.status_code, res.reason))
 
     return res.json()
+
 
 def find_key_by_value(val, dic_map):
     for key, value in dic_map.items():
@@ -254,7 +249,6 @@ def indicator_params(args):
     if args.get('email_summary'):
         param['email_summary'] = args.get('email_summary')
     params.append(param)
-    demisto.results(str(params))
 
     return params
 
@@ -275,7 +269,6 @@ def search_alerts():
     url = '/alerts'
     res = http_request('GET', url, headers=headers, params=params)
     res_results = res.get('results')
-    # hr = tableToMarkdown('Found Alert', res_results, headerTransform=string_to_table_header, removeNull=True)
     hr = ''
     ec = {
         "Perch": {
@@ -296,14 +289,6 @@ def search_alerts():
             'HumanReadable': hr,
             'EntryContext': ec
         })
-
-
-def create_alert():
-    headers = authenticate()
-    args = demisto.args()
-    data = alerts_params(args)
-    url = '/alerts'
-    res = http_request('POST', url, headers=headers, data=data)
 
 
 def list_communities():
@@ -400,18 +385,13 @@ def format_indicator(indicator):
     if indicator.get('operator'):
         hr['Operator'] = indicator.get('operator')
         ec['Operator'] = indicator.get('operator')
-    # if indicator.get('observables'):
-    #     hr['First Sighting'] = indicator.get('first_sighting')
-    #     ec['FirstSighting'] = indicator.get('first_sighting')
     return hr, ec
-
 
 
 def create_indicator():
     headers = authenticate()
     args = demisto.args()
     raw_data = indicator_params(args)
-    demisto.results(raw_data)
     data = json.dumps(raw_data)
     url = '/indicators'
     res = http_request('POST', url, headers=headers, data=data)
@@ -425,12 +405,12 @@ def create_indicator():
     ec['Perch']['Indicator'].append(indicator_ec)
     hr += tableToMarkdown('{title}'.format(title=indicator_hr.get('Title')), indicator_hr)
     demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': res,
-            'HumanReadable': hr,
-            'EntryContext': ec
-        })
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': res,
+        'HumanReadable': hr,
+        'EntryContext': ec
+    })
 
 
 def item_to_incident(item):
@@ -446,16 +426,14 @@ def fetch_alerts():
     last_fetch = last_run.get('time')
     headers = authenticate()
     url = '/alerts'
-    parameters = {
-        'ordering': 'created_at'
-    }
-    res = http_request('GET', url, headers=headers, params=parameters)
-    items = res.get('results')
 
+    res = http_request('GET', url, headers=headers)
+    items = res.get('results')
+    items.sort(key=lambda r: r['created_at'])
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-
+        last_fetch_raw = datetime.now() - timedelta(days=FETCH_TIME)
+        last_fetch = date_to_timestamp(last_fetch_raw, '%Y-%m-%dT%H:%M:%S.%fZ')
     incidents = []
     for item in items:
         incident = item_to_incident(item)

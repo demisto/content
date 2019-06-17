@@ -1478,6 +1478,10 @@
         {
             "integrations": "Ipstack",
             "playbookID": "Ipstack_Test"
+        },
+        {
+            "integrations": "Perch",
+            "playbookID": "Perch-Test"
         }
     ],
     "skipped_tests": {
