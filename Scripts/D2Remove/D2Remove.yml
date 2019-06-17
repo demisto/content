@@ -5,7 +5,7 @@ name: D2Remove
 script: "-"
 type: python
 tags: []
-comment: Remove the D2 agent from the system using d2_remove command
+comment: Removes the Demisto D2 agent from the system using d2_remove command.
 enabled: true
 args:
 - name: system
