@@ -1,8 +1,8 @@
 id: Intezer - Analyze by hash
 version: -1
 name: Intezer - Analyze by hash
-description: Analyze the given hash on Intezer Analyze and enrich the file reputation.
-  Supports SHA256, SHA1 and MD5.
+description: Analyze the given file hash on Intezer Analyze and enrich the file reputation.
+  Supports SHA256, SHA1, and MD5.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,7 +37,7 @@ tasks:
       id: 79296d69-cc45-44dd-89df-b937e2f7b8d7
       version: -1
       name: Is Intezer enabled
-      description: Verify that there is a valid instance of Intezer enabled.
+      description: Checks if there is an instance of the Intezer integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -117,7 +117,7 @@ tasks:
       id: be51ba42-9f41-4998-8033-81757c16970d
       version: -1
       name: Intezer - Analyze File by hash
-      description: Checks file reputation for uploaded file (up to 20MB)
+      description: Checks the file reputation of the uploaded file. Max file size is 20 MB.
       script: Intezer v2|||intezer-analyze-by-hash
       type: regular
       iscommand: true
@@ -148,7 +148,7 @@ tasks:
       id: 3480c94c-359c-4885-879f-cadcb54c02cc
       version: -1
       name: Is there a hash to analyze?
-      description: Asserts there's a hash to analyze
+      description: Checks if there is a file hash to analyze.
       type: condition
       iscommand: false
       brand: ""
@@ -242,7 +242,7 @@ tasks:
       id: 096e3c80-e044-4349-82be-937b9f9b7388
       version: -1
       name: Intezer - get analysis result
-      description: Wait and get analysis result, support file and endpoint analysis
+      description: Wait and get analysis results. Supports file analysis and endpoint analysis.
       script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
@@ -341,12 +341,12 @@ inputs:
   value:
     simple: "1"
   required: true
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: How often the polling command should run (in minutes).
 - key: Timeout
   value:
     simple: "10"
   required: true
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: Amount of time to wait before a timeout occurs  (in minutes).
 - key: hash
   value:
     complex:
@@ -356,46 +356,46 @@ inputs:
   description: ""
 outputs:
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: SHA256 hash of the file.
   type: string
 - contextPath: File.Malicious
-  description: The File malicious description
+  description: The file malicious description.
   type: unknown
 - contextPath: File.Type
-  description: File type e.g. "PE"
+  description: 'File type, for example: "PE".'
   type: string
 - contextPath: File.Size
-  description: File size
+  description: File size.
   type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: MD5 hash of the file.
   type: string
 - contextPath: File.Name
-  description: Filename
+  description: File name.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: SHA1 hash of the file.
   type: string
 - contextPath: File
-  description: The File object
+  description: The file object.
   type: unknown
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that made the decision.
   type: string
 - contextPath: DBotScore
-  description: The DBotScore object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 tests:
   - No Tests
