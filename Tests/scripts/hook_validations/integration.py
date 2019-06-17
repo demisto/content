@@ -26,12 +26,12 @@ class IntegrationValidator(object):
             # The replace in the end is for Windows support
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
-                file_content = get(git_hub_path).content
+                file_content = get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.safe_load(get(file_path_from_master).content)
+                    self.old_integration = yaml.safe_load(get(file_path_from_master, verify=False).content)
                 except Exception as e:
                     print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
