@@ -21,12 +21,13 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 ''' CONSTANTS '''
 if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = "https://demistobot.demisto.com/msg-user-token"
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain'  # disable-secrets-detection
 else:
     TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
+APP_NAME = 'ms-graph-user'
 
 
 def camel_case_to_readable(text):
@@ -113,15 +114,16 @@ def get_access_token():
     if access_token and stored:
         if epoch_seconds() - stored < 60 * 60 - 30:
             return access_token
-    headers = {
-        'Authorization': AUTH_ID,
-        'Accept': 'application/json'
-    }
+    headers = {'Accept': 'application/json'}
 
-    dbot_response = requests.get(
+    dbot_response = requests.post(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={'token': get_encrypted(TENANT, ENC_KEY)},
+        data={
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT, ENC_KEY)
+        },
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
@@ -148,13 +150,11 @@ def get_access_token():
             'There was a problem in retrieving an updated access token.\n'
             'The response from the Demistobot server did not contain the expected content.'
         )
-    access_token = parsed_response.get('access_token')
-    token = parsed_response.get('token')
+    access_token = parsed_response.get('AccessToken')
 
     demisto.setIntegrationContext({
         'access_token': access_token,
-        'stored': epoch_seconds(),
-        'token': token
+        'stored': epoch_seconds()
     })
     return access_token
 
