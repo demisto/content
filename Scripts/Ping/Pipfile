@@ -10,6 +10,7 @@ pytest-mock = "*"
 flake8 = "*"
 
 [packages]
+autopep8 = "*"
 
 [requires]
 python_version = "3.7"
