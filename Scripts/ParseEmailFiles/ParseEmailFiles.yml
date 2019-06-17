@@ -94,6 +94,6 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Fixed ParseEmailFiles failure when there is eml inside an eml file"
 tests:
 - ParseEmailFiles-test
+releaseNotes: fixed issue 17131

@@ -32,8 +32,10 @@ entryTypes = {
     'userManagement': 6,
     'image': 7,
     'plagroundError': 8,
+    'playgroundError': 8,
     'entryInfoFile': 9,
-    'map': 15
+    'map': 15,
+    'widget': 17
 }
 formats = {
     'html': 'html',
@@ -1349,14 +1351,16 @@ def camelize(src, delim=' '):
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
     """
+
     def camelize_str(src_str, delim):
+        if callable(getattr(src_str, "decode", None)):
+            src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
-        return ''.join(map(lambda x: x.decode('utf-8').title(), components))
+        return ''.join(map(lambda x: x.title(), components))
 
     if isinstance(src, list):
-        return map(lambda x: camelize(x, delim), src)
-    src = {camelize_str(k, delim): v for k, v in src.iteritems()}
-    return src
+        return [camelize(x, delim) for x in src]
+    return {camelize_str(k, delim): v for k, v in src.items()}
 
 
 # Constants for common merge paths
@@ -1371,6 +1375,33 @@ outputPaths = {
     'email': 'Account.Email(val.Address && val.Address == obj.Address)',
     'dbotscore': 'DBotScore'
 }
+
+
+def replace_in_keys(src, existing='.', new='_'):
+    """
+        Replace a substring in all of the keys of a dictionary (or list of dictionaries)
+
+        :type src: ``dict`` or ``list``
+        :param src: The dictionary (or list of dictionaries) with keys that need replacement. (required)
+
+        :type existing: ``str``
+        :param existing: substring to replace.
+
+        :type new: ``str``
+        :param new: new substring that will replace the existing substring.
+
+        :return: The dictionary (or list of dictionaries) with keys after substring replacement.
+        :rtype: ``dict`` or ``list``
+    """
+    def replace_str(src_str):
+        if callable(getattr(src_str, "decode", None)):
+            src_str = src_str.decode('utf-8')
+        return src_str.replace(existing, new)
+
+    if isinstance(src, list):
+        return [replace_in_keys(x, existing, new) for x in src]
+    return {replace_str(k): v for k, v in src.items()}
+
 
 # ############################## REGEX FORMATTING ###############################
 regexFlags = re.M  # Multi line matching
