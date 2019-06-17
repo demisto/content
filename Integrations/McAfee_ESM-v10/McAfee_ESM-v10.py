@@ -130,12 +130,11 @@ class NitroESM(object):
                        }
         try:
             self.params_json = json.dumps(self.params)
-        except TypeError as te_ex:
+        except TypeError:
             return_error("Invalid parameters: {}".format(self.params))
 
     def login(self):
         try:
-            authString = base64.encodestring('%s:%s' % (self.user, self.passwd)).strip()
             self.v10_login_headers = {'Content-Type': 'application/json'}
             self.login_response = requests.post(self.login_url,
                                                 self.params_json,
@@ -145,10 +144,11 @@ class NitroESM(object):
             try:
                 self.jwttoken = re.search('(^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)',
                                           self.cookie).group(1)
-            except TypeError as te_ex:
-                return_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(self.login_url,
-                                                                                                 self.login_response.status_code,
-                                                                                                 self.login_response.text))
+            except TypeError:
+                return_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(
+                    self.login_url,
+                    self.login_response.status_code,
+                    self.login_response.text))
             self.xsrf_token = self.login_response.headers.get('Xsrf-Token')
             self.session_headers = {'Cookie': self.jwttoken,
                                     'X-Xsrf-Token': self.xsrf_token,
@@ -163,13 +163,11 @@ class NitroESM(object):
     def logout(self):
         if self.is_logged_in:
             try:
-                # headers = {'Cookie': self.cookie}
-                res = requests.delete(self.url + 'userLogout',
-                                      headers=self.session_headers,
-                                      # headers=headers,
-                                      data=json.dumps(''),
-                                      verify=VERIFY
-                                      )
+                requests.delete(self.url + 'userLogout',
+                                headers=self.session_headers,
+                                data=json.dumps(''),
+                                verify=VERIFY
+                                )
                 self.is_logged_in = False
             except Exception as e:
                 demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e),))
@@ -195,7 +193,7 @@ class NitroESM(object):
                     if VERSION != '10.0' and not cmd.startswith('v2'):
                         res = res['return']
                     return res
-                except:
+                except:  # noqa: E722
                     return_error(
                         'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code,
                                                                                              self.result.text))
@@ -657,21 +655,21 @@ def cases_to_entry(esm, title, cases):
             'Severity': case['severity']
         }
 
-        if case.has_key('assignedTo'):
+        if 'assignedTo' in case:
             fixed_case['Assignee'] = esm.user_id_to_name(case['assignedTo'])
             headers.append('Assignee')
 
-        if case.has_key('orgId'):
+        if 'orgId' in case:
             fixed_case['Organization'] = esm.organization_id_to_name(case['orgId'])
             headers.append('Organization')
 
         context_case = fixed_case.copy()
-        if case.has_key('eventList'):
+        if 'eventList' in case:
             fixed_case['Event List'] = json.dumps(case['eventList'])
             context_case['EventList'] = case['eventList']
             headers.append('Event List')
 
-        if case.has_key('notes'):
+        if 'notes' in case:
             fixed_case['Notes'] = json.dumps(case['notes'])
             context_case['Notes'] = case['notes']
             headers.append('Notes')
@@ -755,6 +753,7 @@ def organizations_to_entry(organizations):
         'HumanReadable': tblToMd('Organizations:', fixed_organizations, headers),
         'EntryContext': context
     }
+
 
 def case_events_to_entry(events):
     if not events:
@@ -859,7 +858,7 @@ def users_to_entry(users):
 
 @logger
 def get_minutes_left():
-    res = esm.cmdquery(cmd='sysGetMinutesLeft')
+    esm.cmdquery(cmd='sysGetMinutesLeft')
     esm.fetch_all_fields()
 
 
