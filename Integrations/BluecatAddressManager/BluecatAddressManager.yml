@@ -45,45 +45,38 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
+      description: The IP to get data about
       isArray: false
-      name: is_active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
-      isArray: false
-      name: limit
+      name: ip
       required: false
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Enriches an ipv4 with data about IP networks and blocks that it belongs
+      to, linked IPs and mac addresses, etc.
     execution: false
-    name: example-get-items
+    name: bluecat-am-query-ipv4
     outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+    - contextPath: AddressManager.ipv4.ID
+      description: The address manager id of the ip
+      type: Number
+    - contextPath: AddressManager.ipv4.Name
+      description: Name of the address
+      type: String
+    - contextPath: AddressManager.ipv4.MACAddress
+      description: Corresponding MAC address
+      type: String
+    - contextPath: AddressManager.ipv4.Parents.ID
+      description: ID of the parent IP address
+      type: String
+    - contextPath: AddressManager.ipv4.Parents.Type
+      description: Type of the parent IP address
+      type: String
+    - contextPath: AddressManager.ipv4.Parents.Name
+      description: Name of the parent IP address
+      type: String
+    - contextPath: AddressManager.ipv4.Parents.CIDR
+      description: Classless Inter-Domain Routing
+      type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false

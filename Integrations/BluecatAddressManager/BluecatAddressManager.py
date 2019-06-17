@@ -60,14 +60,11 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         :type safe: ``bool``
         :param safe: If set to true will return None in case of http error
 
-        :type get_token_flag: ``bool``
-        :param get_token_flag: If set to True will call get_token()
-
         :return: Returns the http request response json
         :rtype: ``dict``
     """
     headers['Authorization'] = get_token()
-    url = SERVER + url_suffix
+    url = BASE_URL + url_suffix
     try:
         res = requests.request(method, url, verify=USE_SSL, params=params, data=data, headers=headers)
         # Try to create a new token
@@ -112,6 +109,29 @@ def get_token(new_token=False):
     return auth_token
 
 
+def get_configuration():
+    """
+    Gets the chosen configuration to run queries on
+
+    :return: User configuration id, or the first configuration id if no user configuration provided
+    """
+    user_conf = demisto.params().get('conf_name')
+    params = {
+        'type': 'Configuration',
+        'start': 0,
+        'count': 100
+    }
+    confs = http_request('GET', '/getEntities', params)
+    if not confs:
+        return_error('No configurations could be fetched from the system')
+    if user_conf:
+        for conf in confs:
+            if conf.get('name') == user_conf:
+                return conf.get('id')
+
+    return confs[0].get('id')
+
+
 def get_passed_mins(start_time, end_time_str):
     """
         Returns the time passed in mins
@@ -136,9 +156,8 @@ def get_token_request():
     url = BASE_URL + '/login'
     res = requests.request('GET', url, verify=USE_SSL, params=url_args)
     if res.status_code != 200:
-        raise TokenException('Error: Failed to create a new token, please try again')
+        raise TokenException('Error: Failed to create a new token, please check your credentials')
     res_json = res.json()
-    demisto.info(f'\n#### Res: {res_json}')
     end_idx = res_json.index(end_delim)
     return res_json[start_idx:end_idx]
 
@@ -152,6 +171,12 @@ def test_module():
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+try:
+    CONF = get_configuration()
+except TokenException as e:
+    return_error(str(e))
 
 
 def main():
