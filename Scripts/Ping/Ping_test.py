@@ -2,25 +2,26 @@ import demistomock as demisto
 from CommonServerPython import entryTypes
 from Ping import main
 import re
+import pytest
 
 # To run the tests in an editor see: test_data/ping
 
 RETURN_ERROR_TARGET = 'Ping.return_error'
 
-
-def test_ping(mocker):
-    mocker.patch.object(demisto, 'args', return_value={'address': 'google.com'})
+@pytest.mark.parametrize('address', ['google.com', '8.8.8.8'])
+def test_ping(mocker, address):
+    mocker.patch.object(demisto, 'args', return_value={'address': address})
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
-    assert demisto.args()['address'] == 'google.com'
+    assert demisto.args()['address'] == address
     main()
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert 'google.com' in results[0]["EntryContext"]["Ping"]['destination']
-    assert re.match(r'\d+\.\d+\.\d+.\d+', results[0]["EntryContext"]["Ping"]['destination_ip']) is not None
+    assert address in results[0]["EntryContext"]["Ping"]['destination']
+    assert re.fullmatch(r'\d+\.\d+\.\d+.\d+', results[0]["EntryContext"]["Ping"]['destination_ip']) is not None
     assert results[0]["EntryContext"]["Ping"]['mdev_rtt']
 
 

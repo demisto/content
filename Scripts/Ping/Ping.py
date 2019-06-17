@@ -8,7 +8,7 @@ def main():
     try:
         dest = demisto.args()['address']
         ping_out = subprocess.check_output(['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, text=True)
-        s = re.search(r"PING.*?\((.+)\)", ping_out)
+        s = re.search(r"PING.*?\((.+?)\)", ping_out)
         res = {}
         if s:
             res['destination_ip'] = s.group(1)
@@ -21,14 +21,7 @@ def main():
         res['avg_rtt'] = s.group(2)
         res['max_rtt'] = s.group(3)
         res['mdev_rtt'] = s.group(4)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': res,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': tableToMarkdown("Ping Results", res),
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {"Ping": res}
-        })
+        return_outputs(readable_output=tableToMarkdown("Ping Results", res), outputs={"Ping": res},raw_response=res)        
     except Exception as e:
         if isinstance(e, subprocess.CalledProcessError):
             msg = e.output  # pylint: disable=no-member
