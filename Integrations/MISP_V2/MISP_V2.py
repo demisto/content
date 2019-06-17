@@ -1,11 +1,14 @@
+from typing import Union
+
 import demistomock as demisto
 from CommonServerPython import *
-import base64
+
 import requests
 import time
 import warnings
-from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
+from pymisp import ExpandedPyMISP, PyMISPError  # type: ignore
 import logging
+
 logging.getLogger("pymisp").setLevel(logging.ERROR)
 
 
@@ -15,17 +18,15 @@ def warn(*args, **kwargs):
     """
     pass
 
+
 # Disable requests warnings
 requests.packages.urllib3.disable_warnings()
 
 # Disable python warnings
 warnings.warn = warn
 
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+if not demisto.params().get('proxy', False):
+    proxy = handle_proxy()
 
 ''' GLOBALS/PARAMS '''
 MISP_KEY = demisto.params().get('api_key')
@@ -121,25 +122,34 @@ DISTRIBUTION_NUMBERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def convert_timestamp(timestamp):
+def convert_timestamp(timestamp: Union[str, int]) -> str:
     """
-    Gets a timestamp from MISP response (1546713469) and converts it to human readable format
+        Gets a timestamp from MISP response (1546713469) and converts it to human readable format
     """
     return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 
 
-def replace_keys(obj_to_build):
+def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]:
     """
     Replacing keys from MISP's format to Demisto's (as appear in ENTITIESDICT)
+
+    Args:
+        obj_to_build (Union[dict, list, str]): object to replace keys in
+
+    Returns:
+        Union[dict, list, str]: same object type that got in
     """
     if isinstance(obj_to_build, list):
         return [replace_keys(item) for item in obj_to_build]
     if isinstance(obj_to_build, dict):
-        return {(ENTITIESDICT[k] if k in ENTITIESDICT else k): replace_keys(v) for k, v in obj_to_build.items()}
+        return {
+            (ENTITIESDICT[key] if key in ENTITIESDICT else key): replace_keys(value)
+            for key, value in obj_to_build.items()
+        }
     return obj_to_build
 
 
-def build_context(response):
+def build_context(response: Union[dict, requests.Response]) -> dict:
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
 
@@ -176,10 +186,10 @@ def build_context(response):
     if isinstance(response, str):
         response = json.loads(json.dumps(response))
     # Remove 'Event' keyword
-    events = [event.get('Event') for event in response]
+    events = [event.get('Event') for event in response]  # type: ignore
     for i in range(0, len(events)):
         # Filter object from keys in event_args
-        events[i] = {k:events[i].get(k) for k in event_args if k in events[i]}
+        events[i] = {key: events[i].get(key) for key in event_args if key in events[i]}
 
         # Remove 'Event' keyword from 'RelatedEvent'
         if events[i].get('RelatedEvent'):
@@ -188,7 +198,7 @@ def build_context(response):
             # Get only IDs from related event
             related_events = list()
             for r_event in events[i].get('RelatedEvent'):
-                 related_events.append({'id': r_event.get('id')})
+                related_events.append({'id': r_event.get('id')})
             events[i]['RelatedEvent'] = related_events
 
         # Build Galaxy
@@ -208,16 +218,18 @@ def build_context(response):
             for tag in events[i].get('Tag'):
                 tag_list.append({'Name': tag.get('name')})
             events[i]['Tag'] = tag_list
-    events = replace_keys(events)
+    events = replace_keys(events)  # type: ignore
     return events
 
 
-def get_misp_threat_level(threat_level_id):
-    """
-    Gets MISP's thread level and returning it in Demisto's format
-    :param threat_level_id:
-    :type: str
-    :return Threat-level in demisto:
+def get_misp_threat_level(threat_level_id: str) -> str:
+    """Gets MISP's thread level and returning it in Demisto's format
+
+    Args:
+        threat_level_id: str of thread level in MISP
+
+    Returns:
+        str: Threat-level in Demisto
     """
     if threat_level_id == '1':
         return 'HIGH'
@@ -230,7 +242,7 @@ def get_misp_threat_level(threat_level_id):
     return_error('Invalid MISP Threat Level with threat_level_id: ' + threat_level_id)
 
 
-def get_dbot_level(threat_level_id):
+def get_dbot_level(threat_level_id: str) -> int:
     """
     MISP to DBOT:
     4 = 0 (UNDEFINED to UNKNOWN)
@@ -239,7 +251,7 @@ def get_dbot_level(threat_level_id):
     Args:
         threat_level_id (str):
     Returns:
-        int: dbot score
+        int: DBOT score
     """
     if threat_level_id in ('1', '2'):
         return 3
@@ -247,6 +259,7 @@ def get_dbot_level(threat_level_id):
         return 2
     if threat_level_id == '4':
         return 0
+    return 0
 
 
 def check_file():
@@ -293,15 +306,15 @@ def check_file():
             # if malicious, find file with given hash
             if dbot_score == 3:
                 file_obj['Malicious'] = {
-                        'Vendor': misp_organisation,
-                        'Description': f'file hash found in MISP event with ID: {event.get("id")}'
+                    'Vendor': misp_organisation,
+                    'Description': f'file hash found in MISP event with ID: {event.get("id")}'
                 }
 
             md_obj = {
                 'EventID': event.get('id'),
                 'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
                 'Organisation': misp_organisation
-                }
+            }
 
             file_list.append(file_obj)
             dbot_list.append(dbot_obj)
@@ -343,8 +356,8 @@ def check_ip():
         ip_list = list()
         md_list = list()
 
-        for e in misp_response:
-            event = e.get('Event')
+        for event_in_response in misp_response:
+            event = event_in_response.get('Event')
             dbot_score = get_dbot_level(event.get('threat_level_id'))
             misp_organisation = f'MISP.{event.get("Orgc").get("name")}'
 
@@ -358,9 +371,9 @@ def check_ip():
             # if malicious
             if dbot_score == 3:
                 ip_obj['Malicious'] = {
-                        'Vendor': misp_organisation,
-                        'Description': f'IP Found in MISP event: {event.get("id")}'
-                    }
+                    'Vendor': misp_organisation,
+                    'Description': f'IP Found in MISP event: {event.get("id")}'
+                }
             md_obj = {
                 'EventID': event.get('id'),
                 'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
@@ -396,9 +409,11 @@ def upload_sample():
     """
     # Creating dict with Demisto's arguments
     args = ['distribution', 'to_ids', 'category', 'info', 'analysis', 'comment', 'threat_level_id']
-    args = {k:demisto.args().get(k) for k in args if demisto.args().get(k)}
-    args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get('threat_level_id') in THREAT_LEVELS_NUMBERS else demisto.args().get('threat_level_id')
-    args['analysis'] = ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get('analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis')
+    args = {key: demisto.args().get(key) for key in args if demisto.args().get(key)}
+    args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get(
+        'threat_level_id') in THREAT_LEVELS_NUMBERS else demisto.args().get('threat_level_id')
+    args['analysis'] = ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get(
+        'analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis')
     event_id = demisto.args().get('event_id')
 
     file = demisto.getFilePath(demisto.args().get('fileEntryID'))
@@ -423,7 +438,8 @@ def upload_sample():
         'ContentsFormat': formats['json'],
         'Contents': res,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f"## MISP upload sample \n* message: {res.get('message')}\n* event id: {event_id}\n* file name: {filename}",
+        'HumanReadable':
+            f"## MISP upload sample \n* message: {res.get('message')}\n* event id: {event_id}\n* file name: {filename}",
         'EntryContext': ec,
     })
 
@@ -437,11 +453,12 @@ def get_time_now():
     return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
 
 
-def create_event(ret_only_event_id=False):
-    """
-    Creating event in MISP with the given attriubute attribute
+def create_event(ret_only_event_id: bool = False) -> Union[int, None]:
+    """Creating event in MISP with the given attribute
+
     Args:
         ret_only_event_id (bool): returning event ID if set to True
+
     Returns:
         int: event_id
     """
@@ -450,8 +467,10 @@ def create_event(ret_only_event_id=False):
     # we will add attribute
     event_dic = {
         'distribution': d_args.get('distribution'),
-        'threat_level_id': THREAT_LEVELS_NUMBERS.get(d_args.get('threat_level_id')) if d_args.get('threat_level_id') in THREAT_LEVELS_NUMBERS else d_args.get('threat_level_id'),
-        'analysis': ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get('analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis'),
+        'threat_level_id': THREAT_LEVELS_NUMBERS.get(d_args.get('threat_level_id')) if d_args.get(
+            'threat_level_id') in THREAT_LEVELS_NUMBERS else d_args.get('threat_level_id'),
+        'analysis': ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get(
+            'analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis'),
         'info': d_args.get('info'),
         'date': d_args.get('date') if d_args.get('date') else get_time_now(),
         'published': True if d_args.get('published') == 'true' else False,
@@ -463,7 +482,7 @@ def create_event(ret_only_event_id=False):
     event = MISP.new_event(**event_dic)
     event_id = event.get('id')
     if isinstance(event_id, str) and event_id.isdigit():
-            event_id = int(event_id)
+        event_id = int(event_id)
     elif not isinstance(event_id, int):
         return_error('EventID must be a number')
 
@@ -471,7 +490,7 @@ def create_event(ret_only_event_id=False):
         return event_id
 
     # add attribute
-    add_attribute(eventid=event_id, internal=True)
+    add_attribute(event_id=event_id, internal=True)
 
     event = MISP.search(eventid=event_id)
 
@@ -488,15 +507,15 @@ def create_event(ret_only_event_id=False):
         'HumanReadable': md,
         'EntryContext': ec
     })
+    return None
 
 
-def add_attribute(eventid=None, internal=None):
-    """
+def add_attribute(event_id: int = None, internal: bool = None):
+    """Adding attribute to given event
+
     Args:
-        eventid (int): Event ID to add attribute to
-    :type eventid: int
-    :param internal: if set to True, will not post results to Demisto
-    :type internal: bool
+        event_id (int): Event ID to add attribute to
+        internal(bool): if set to True, will not post results to Demisto
     """
     d_args = demisto.args()
     args = {
@@ -508,20 +527,23 @@ def add_attribute(eventid=None, internal=None):
         'comment': d_args.get('comment'),
         'value': d_args.get('value')
     }
-    if eventid:
-        args['id'] = eventid
-    if isinstance(args.get('id'), str) and args.get('id').isdigit():
+    if event_id:
+        args['id'] = event_id  # type: ignore
+    if isinstance(args.get('id'), str) and args.get('id').isdigit():  # type: ignore
         args['id'] = int(args['id'])
     elif not isinstance(args.get('id'), int):
         return_error('Invalid MISP event ID, must be a number')
     if args.get('distribution') is not None:
         if not isinstance(args.get('distribution'), int):
-            if isinstance(args.get('distribution'), str) and args.get('distribution').isdigit():
+            if isinstance(args.get('distribution'), str) and args.get('distribution').isdigit():  # type: ignore
                 args['distribution'] = int(args['distribution'])
             elif isinstance(args.get('distribution'), str) and args['distribution'] in DISTRIBUTION_NUMBERS:
                 args['distribution'] = DISTRIBUTION_NUMBERS.get(args['distribution'])
             else:
-                return_error("Distribution can be 'Your_organisation_only', 'This_community_only', 'Connected_communities' or 'All_communities'")
+                return_error(
+                    "Distribution can be 'Your_organisation_only', "
+                    "'This_community_only', 'Connected_communities' or 'All_communities'"
+                )
 
     event = MISP.get_event(args.get('id'))
 
@@ -559,10 +581,10 @@ def download_file():
     all_samples = True if demisto.args().get('allSamples') in ('1', 'true') else False
 
     response = MISP.download_samples(sample_hash=file_hash,
-                                    event_id=event_id,
-                                    all_samples=all_samples,
-                                    unzip=unzip
-                )
+                                     event_id=event_id,
+                                     all_samples=all_samples,
+                                     unzip=unzip
+                                     )
     if not response[0]:
         demisto.results(f"Couldn't find file with hash {file_hash}")
     else:
@@ -577,7 +599,7 @@ def download_file():
         else:
             file_buffer = response[1][0][2].getbuffer()
             filename = response[1][0][1]
-        demisto.results(fileResult(filename, file_buffer))
+        demisto.results(fileResult(filename, file_buffer))  # type: ignore
 
 
 def check_url():
@@ -589,8 +611,8 @@ def check_url():
         md_list = list()
         url_list = list()
 
-        for e in response:
-            event = e.get('Event')
+        for event_in_response in response:
+            event = event_in_response.get('Event')
             dbot_score = get_dbot_level(event.get('threat_level_id'))
             misp_organisation = f"MISP.{event.get('Orgc').get('name')}"
 
@@ -613,7 +635,7 @@ def check_url():
                 'EventID': event.get('id'),
                 'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
                 'Organisation': misp_organisation
-                }
+            }
             dbot_list.append(dbot_obj)
             md_list.append(md_obj)
             url_list.append(url_obj)
@@ -638,17 +660,19 @@ def check_url():
 def search():
     """
     will search in MISP
-    :return Object with results to demisto:
+    Returns
+     dict: Object with results to demisto:
     """
     d_args = demisto.args()
     # List of all applicable search arguments
-    search_args = ['event_id', 'value', 'type', 'category', 'org', 'tags', 'from', 'to', 'last', 'eventid', 'uuid', 'to_ids']
+    search_args = ['event_id', 'value', 'type', 'category', 'org', 'tags', 'from', 'to', 'last', 'eventid', 'uuid',
+                   'to_ids']
 
     args = dict()
     # Create dict to pass into the search
-    for k in search_args:
-        if k in d_args:
-            args[k] = d_args.get(k)
+    for arg in search_args:
+        if arg in d_args:
+            args[arg] = d_args.get(arg)
     # Replacing keys and values from Demisto to Misp's keys
     if 'type' in args:
         args['type_attribute'] = d_args.pop('type')
@@ -662,9 +686,9 @@ def search():
         response_for_context = build_context(response)
 
         # Prepare MD. getting all keys and values if exists
-        args_for_md = {k:v for k,v in args.items() if v}
+        args_for_md = {key: value for key, value in args.items() if value}
 
-        md =  tableToMarkdown('Results in MISP for search:', args_for_md)
+        md = tableToMarkdown('Results in MISP for search:', args_for_md)
         md_event = response_for_context[0]
         md += f'Total of {len(response_for_context)} events found\n'
         event_highlights = {
@@ -681,12 +705,12 @@ def search():
             md += tableToMarkdown(f'Galaxy:', md_event.get('Galaxy'))
 
         demisto.results({
-            'Type' : entryTypes['note'],
+            'Type': entryTypes['note'],
             'Contents': response,
-            'ContentsFormat' : formats['json'],
+            'ContentsFormat': formats['json'],
             'HumanReadable': md,
-            'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : {
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {
                 MISP_PATH: response_for_context
             }
         })
@@ -737,8 +761,7 @@ def add_tag():
 
 
 def add_sighting():
-    """
-    Add sighting to MISP attribute
+    """Adds sighting to MISP attribute
 
     """
     sighting = {
@@ -769,6 +792,49 @@ def test():
         return_error('MISP has not connected.')
 
 
+def add_feed():
+    """Gets an OSINT feed from url and publishing them to MISP
+    urls with feeds for example: `https://www.misp-project.org/feeds/`
+    feed format must be MISP.
+    """
+    headers = {'Accept': 'application/json'}
+    url = demisto.getArg('feed_url')  # type: str
+    url = url[:-1] if url.endswith('/') else url
+    limit = demisto.getArg('limit')  # type: str
+    limit_int = int(limit) if limit.isdigit() else 0
+
+    osint_url = f'{url}/manifest.json'
+    req = requests.get(osint_url, verify=USE_SSL, proxies=proxy, headers=headers)
+    try:
+        uri_list = req.json()
+        events_numbers = list()
+        for uri in uri_list:
+            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, proxies=proxy, headers=headers)
+            try:
+                req = req.json()
+            except ValueError:
+                return_error(f'No JSON could be decoded from OSINT file')
+            event = MISP.add_event(req)
+            if 'id' in event:
+                events_numbers.append(event['id'])
+            if not (len(events_numbers) % 5):
+                # Making script to sleep so MISP wouldn't get overflowed
+                time.sleep(1)
+            # If limit exists
+            if limit_int == len(events_numbers):
+                break
+
+        ec = {MISP_PATH: {'ID': events_numbers}}
+        md = tableToMarkdown(
+            f'Total of {len(events_numbers)} events was added to MISP.',
+            events_numbers,
+            headers='Event IDs'
+        )
+        return_outputs(md, outputs=ec)
+    except ValueError:
+        return_error(f'No JSON could be decoded from URL [{url}]')
+
+
 command = demisto.command()
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -795,6 +861,8 @@ try:
         add_sighting()
     elif command == 'misp-add-tag':
         add_tag()
+    elif command == 'misp-add-feed':
+        add_feed()
     elif command == 'file':
         check_file()
     elif command == 'url':

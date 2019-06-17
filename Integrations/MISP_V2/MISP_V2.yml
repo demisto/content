@@ -1230,11 +1230,31 @@ script:
     description: Add sighting to an attribute
     execution: false
     name: misp-add-sighting
+  - arguments:
+    - default: false
+      description: url of the feed
+      isArray: false
+      name: feed_url
+      required: true
+      secret: false
+    - default: false
+      description: Limit of files to add.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an OSINT feed.
+    execution: false
+    name: misp-add-feed
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: IDs of new created events
+      type: number
   dockerimage: demisto/pymisp:1.0.0.52
   isfetch: false
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - MISP V2 Test
