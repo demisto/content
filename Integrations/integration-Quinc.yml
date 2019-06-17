@@ -6,7 +6,7 @@ display: Quinc
 category: Forensics & Malware Analysis
 image: data:image/png;base64,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
 configuration:
-- display: ""
+- display: "Quin-C server url (e.g https://example.com:4443)"
   name: ServerName
   defaultvalue: ""
   type: 0
@@ -16,14 +16,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: ""
-  name: scheme
-  defaultvalue: http
-  type: 15
-  required: true
-  options:
-  - http
-  - https
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
 script:
   script: |-
     import sys, os, requests, datetime, json
@@ -31,6 +33,13 @@ script:
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+      del os.environ['HTTP_PROXY']
+      del os.environ['HTTPS_PROXY']
+      del os.environ['http_proxy']
+      del os.environ['https_proxy']
 
     AUTH_HEADERS = { 'EnterpriseApiKey' : demisto.params()['token'], 'Accept': 'application/json', 'Content-Type':  'application/json'}
     USE_SSL = not demisto.params().get('insecure', True)
@@ -42,240 +51,212 @@ script:
 
     # Sends request to the server using the given method, url, headers and params
     def send_request(method, url, body=None, headers=AUTH_HEADERS, params=None):
-        try:
-            res = requests.request(method, url, data=body, headers=headers, params=params, verify=USE_SSL)
-            res.raise_for_status()
-        except HTTPError, e:
-            err_json = res.json()
-            err_msg = ''
-            if 'message' in err_json:
-              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
-            elif 'http_response' in err_json:
-              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
-            if 'code' in err_json:
-              err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
-            return_error(err_msg)
+      try:
+        res = requests.request(method, url, data=body, headers=headers, params=params, verify=USE_SSL)
+        res.raise_for_status()
+      except HTTPError, e:
+        err_json = res.json()
+        err_msg = ''
+        if 'message' in err_json:
+          err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+        elif 'http_response' in err_json:
+          err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+        if 'code' in err_json:
+          err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+        return_error(err_msg)
+      try:
         return res.json()
+      except:
+        raise Exception("Failed to parse response to JSON. Original response: {}".format(res.text))
 
-    def SendQuincTestRequest():
-        url = 'api/v2/enterpriseapi/statuscheck';
-        res = send_request('GET', QUINC_URL + url)
-        return res.lower()
 
-    def QuincLegacyAgentSoftwareInventory(arg):
-        url = 'api/v2/enterpriseapi/agent/'+ arg['caseid'] +'/sofwareinventory';
-        data = {
-            'ips': { 'targets' : [arg['targetIP']]},
-            'SoftwareInvJob': {'Operation': 24 }
-        }
-        res = send_request('POST', QUINC_URL + url, json.dumps(data))
-        executeCommand('delContext', { key: JOBID_KEY });
-        return {
-            'Type': entryTypes['note'],
-            'Contents': res,
-            'ContentsFormat': formats['text'],
-            'HumanReadable': 'JobID: ' + str(res),
-            'EntryContext': {JOBID_KEY : res}
-        }
+    def send_quinc_test_request():
+      url = 'api/v2/enterpriseapi/statuscheck';
+      res = send_request('GET', QUINC_URL + url)
+      return res.lower()
 
     def create_jobstate_context(contents):
-        return {
-             JOB_KEY+'(val.ID == obj.ID)' : contents
-        }
+      return {
+        JOB_KEY+'(val.ID == obj.ID)' : contents
+      }
 
     def create_contents(id, state, result):
-        ec = {
-            'ID' : id,
-            'State': state,
-            'Result' : result
-        }
-        return ec
+      ec = {
+        'ID' : id,
+        'State': state,
+        'Result' : result
+      }
+      return ec
 
     def quinc_get_jobstatus_command(args):
-        url = 'api/v2/enterpriseapi/core/' + str(args['caseID']) + '/getjobstatus/' + str(args['jobID'])
-        res = send_request('GET', QUINC_URL + url)
+      url = 'api/v2/enterpriseapi/core/' + str(args['caseID']) + '/getjobstatus/' + str(args['jobID'])
+      res = send_request('GET', QUINC_URL + url)
 
-        if 'resultData' not in res:
-            contents = create_contents(args['jobID'], 'Failed', res)
-            return {
-                'Type' : entryTypes['note'],
-                'ContentsFormat' : formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
-        resultData = json.loads(res['resultData'])
-        if 'RealData' not in resultData:
-            contents = create_contents(args['jobID'], 'Failed', resultData)
-            return {
-                'Type' : entryTypes['note'],
-                'ContentsFormat' : formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
-        RealData = json.loads(resultData['RealData'])
-        if 'TaskStatusList' not in RealData:
-            contents = create_contents(args['jobID'], 'Failed', RealData)
-            return {
-                'Type' : entryTypes['note'],
-                'ContentsFormat' : formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No task data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
-
-        task = RealData['TaskStatusList'][0];
-        if task is not None:
-            if task['State'] is None:
-                contents = create_contents(args['jobID'], 'Unknown', task)
-                return {
-                    'Type' : entryTypes['note'],
-                    'ContentsFormat' : formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': "Cannot get job state",
-                    'EntryContext' : create_jobstate_context(contents)
-                }
-            if task['State'] != 'Success':
-                contents = create_contents(args['jobID'], task['State'], task)
-                return {
-                    'Type' : entryTypes['note'],
-                    'ContentsFormat' : formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': "Current job state: " + task['State'],
-                    'EntryContext': create_jobstate_context(contents)
-                }
-            else:
-                result = json.loads(task['Results'][0]['Data'])
-                res = json.loads(task['Results'][1]['Data'])
-                if result['OperationType'] == 24: #software inventory
-                    contents = create_contents(args['jobID'], 'Success', res['Applications'])
-                    return {
-                        'Type': entryTypes['note'],
-                        'Contents': contents,
-                        'ContentsFormat': formats['json'],
-                        'HumanReadable': tableToMarkdown('Applications', res['Applications'], ['Name', 'Version', 'Publisher',
-                        'InstallDate', 'InstallLocation', 'InstallSource', 'EstimatedSizeInBytes']),
-                        'EntryContext': create_jobstate_context(contents)
-                    }
-                elif result['OperationType'] == 12: #volatile data
-                    contents = create_contents(args['jobID'], 'Success', res)
-                    return {
-                        'Type': entryTypes['note'],
-                        'Contents': contents,
-                        'ContentsFormat': formats['json'],
-                        'HumanReadable': "Job completed successfully",
-                        'EntryContext': create_jobstate_context(contents)
-                    }
-                else:
-                    contents = create_contents(args['jobID'], 'Success', task)
-                    return {
-                        'Type' : entryTypes['note'],
-                        'ContentsFormat' : formats['json'],
-                        'Contents': contents,
-                        'HumanReadable': "Job completed successfully",
-                        'EntryContext': create_jobstate_context(contents)
-                    }
-        contents = create_contents(args['jobID'], 'Unknown', None)
+      if 'resultData' not in res:
+        contents = create_contents(args['jobID'], 'Failed', res)
         return {
+          'Type' : entryTypes['note'],
+          'ContentsFormat' : formats['json'],
+          'Contents': contents,
+          'HumanReadable': "No data in job result",
+          'EntryContext': create_jobstate_context(contents)
+        }
+      resultData = json.loads(res['resultData'])
+      if 'real_data' not in resultData:
+        contents = create_contents(args['jobID'], 'Failed', resultData)
+        return {
+          'Type' : entryTypes['note'],
+          'ContentsFormat' : formats['json'],
+          'Contents': contents,
+          'HumanReadable': "No data in job result",
+          'EntryContext': create_jobstate_context(contents)
+        }
+      real_data = json.loads(resultData['real_data'])
+      if 'TaskStatusList' not in real_data:
+        contents = create_contents(args['jobID'], 'Failed', real_data)
+        return {
+          'Type' : entryTypes['note'],
+          'ContentsFormat' : formats['json'],
+          'Contents': contents,
+          'HumanReadable': "No task data in job result",
+          'EntryContext': create_jobstate_context(contents)
+        }
+
+      task = real_data['TaskStatusList'][0]
+      if task is not None:
+        if task['State'] is None:
+          contents = create_contents(args['jobID'], 'Unknown', task)
+          return {
             'Type' : entryTypes['note'],
             'ContentsFormat' : formats['json'],
             'Contents': contents,
-            'HumanReadable': "Job exited unexpectedly",
+            'HumanReadable': "Cannot get job state",
             'EntryContext' : create_jobstate_context(contents)
-        }
-
-    def quinc_legacyagent_runvolatilejob_command(args):
-        url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + '/volatile';
-        data = {
-            'ips': { 'targets' : [args['targetIP']]},
-            'Volatile' : {
-                'Operation': 12,
-                'IncludeProcessTree' : True,
-                'ProcessTreeOptions' : {
-                    'DetectHiddenProcesses' : True,
-                    'IncludeDlls' : True,
-                    'IncludeSockets' : True
-                }
-            }
-        }
-        res = send_request('POST',  QUINC_URL + url, json.dumps(data))
-        ec = {
-            'ID': res,
-            'Type': 'Volatile'
-        }
-
-        return {
-            'Type' : entryTypes['note'],
-            'ContentsFormat' : formats['text'],
-            'Contents' : res,
-            'HumanReadable': "JobID: " + str(res),
-            'EntryContext': { JOB_KEY+'(val.ID && val.Type == obj.Type)' : ec }
-        }
-
-    def quinc_legacyagent_runmemoryacquisition_command(args):
-        url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + '/memoryacquistion';
-        data = {
-            'ips': { 'targets' : [args['targetIP']]},
-            'MemoryAcquistion' : { 'Operation': 11 }
-        }
-        res = send_request('POST',  QUINC_URL + url, json.dumps(data))
-        ec = {
-            'ID': res,
-            'Type': 'LegacyMemoryDump'
-        }
-        return {
+          }
+        if task['State'] != 'Success':
+          contents = create_contents(args['jobID'], task['State'], task)
+          return {
             'Type' : entryTypes['note'],
             'ContentsFormat' : formats['json'],
-            'Contents' : ec,
-            'HumanReadable': "JobID: " + str(res),
-            'EntryContext': { JOB_KEY+'(val.ID && val.Type == obj.Type)' : ec }
+            'Contents': contents,
+            'HumanReadable': "Current job state: " + task['State'],
+            'EntryContext': create_jobstate_context(contents)
+          }
+        else:
+          result = json.loads(task['Results'][0]['Data'])
+          res = json.loads(task['Results'][1]['Data'])
+          if result['OperationType'] == 24: #software inventory
+            contents = create_contents(args['jobID'], 'Success', res['Applications'])
+            return {
+              'Type': entryTypes['note'],
+              'Contents': contents,
+              'ContentsFormat': formats['json'],
+              'HumanReadable': tableToMarkdown('Applications', res['Applications'], ['Name', 'Version', 'Publisher',
+              'InstallDate', 'InstallLocation', 'InstallSource', 'EstimatedSizeInBytes']),
+              'EntryContext': create_jobstate_context(contents)
+            }
+          elif result['OperationType'] == 12: #volatile data
+            contents = create_contents(args['jobID'], 'Success', res)
+            return {
+              'Type': entryTypes['note'],
+              'Contents': contents,
+              'ContentsFormat': formats['json'],
+              'HumanReadable': "Job completed successfully",
+              'EntryContext': create_jobstate_context(contents)
+            }
+          else:
+            contents = create_contents(args['jobID'], 'Success', task)
+            return {
+              'Type' : entryTypes['note'],
+              'ContentsFormat' : formats['json'],
+              'Contents': contents,
+              'HumanReadable': "Job completed successfully",
+              'EntryContext': create_jobstate_context(contents)
+            }
+      contents = create_contents(args['jobID'], 'Unknown', None)
+      return {
+        'Type' : entryTypes['note'],
+        'ContentsFormat' : formats['json'],
+        'Contents': contents,
+        'HumanReadable': "Job exited unexpectedly",
+        'EntryContext' : create_jobstate_context(contents)
+      }
+
+    def quinc_legacyagent_runvolatilejob_command(args):
+      url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + '/volatile'
+      data = {
+        'ips': { 'targets' : [args['targetIP']]},
+        'Volatile' : {
+          'Operation': 12,
+          'IncludeProcessTree' : True,
+          'ProcessTreeOptions' : {
+            'DetectHiddenProcesses' : True,
+            'IncludeDlls' : True,
+            'IncludeSockets' : True
+          }
         }
+      }
+      res = send_request('POST',  QUINC_URL + url, json.dumps(data))
+      ec = {
+        'ID': res,
+        'Type': 'Volatile'
+      }
+
+      return {
+        'Type' : entryTypes['note'],
+        'ContentsFormat' : formats['text'],
+        'Contents' : res,
+        'HumanReadable': "JobID: " + str(res),
+        'EntryContext': { JOB_KEY+'(val.ID && val.Type == obj.Type)' : ec }
+      }
+
+    def quinc_legacyagent_runmemoryacquisition_command(args):
+      url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + '/memoryacquistion'
+      data = {
+        'ips': { 'targets' : [args['targetIP']]},
+        'MemoryAcquistion' : { 'Operation': 11 }
+      }
+      res = send_request('POST',  QUINC_URL + url, json.dumps(data))
+      ec = {
+        'ID': res,
+        'Type': 'LegacyMemoryDump'
+      }
+      return {
+        'Type' : entryTypes['note'],
+        'ContentsFormat' : formats['json'],
+        'Contents' : ec,
+        'HumanReadable': "JobID: " + str(res),
+        'EntryContext': { JOB_KEY+'(val.ID && val.Type == obj.Type)' : ec }
+      }
 
     def quinc_read_casefile_command(args):
-        url = 'api/v2/enterpriseapi/core/readfilecontents';
-        data = args['filepath']
-        res = send_request('POST',  QUINC_URL + url, json.dumps(data))
-        return {
-            'Type' : entryTypes['note'],
-            'ContentsFormat' : formats['text'],
-            'Contents' : res,
-            'EntryContext': { 'Accessdata.File.Contents' : res }
-        }
+      url = 'api/v2/enterpriseapi/core/readfilecontents'
+      data = args['filepath']
+      res = send_request('POST',  QUINC_URL + url, json.dumps(data))
+      return {
+          'Type' : entryTypes['note'],
+          'ContentsFormat' : formats['text'],
+          'Contents' : res,
+          'EntryContext': { 'Accessdata.File.Contents' : res }
+      }
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        demisto.results(SendQuincTestRequest())
-        sys.exit(0)
-    if demisto.command() == 'accessdata-legacyagent-get-software':
-        demisto.results(QuincLegacyAgentSoftwareInventory(demisto.args()))
-        sys.exit(0)
+      # This is the call made when pressing the integration test button.
+      demisto.results(send_quinc_test_request())
+      sys.exit(0)
     if demisto.command() == 'accessdata-get-jobstatus':
-        demisto.results(quinc_get_jobstatus_command(demisto.args()))
-        sys.exit(0)
+      demisto.results(quinc_get_jobstatus_command(demisto.args()))
+      sys.exit(0)
     if demisto.command() == 'accessdata-legacyagent-get-processlist':
-        demisto.results(quinc_legacyagent_runvolatilejob_command(demisto.args()))
-        sys.exit(0)
+      demisto.results(quinc_legacyagent_runvolatilejob_command(demisto.args()))
+      sys.exit(0)
     if demisto.command() == 'accessdata-legacyagent-get-memorydump':
-        demisto.results(quinc_legacyagent_runmemoryacquisition_command(demisto.args()))
-        sys.exit(0)
+      demisto.results(quinc_legacyagent_runmemoryacquisition_command(demisto.args()))
+      sys.exit(0)
     if demisto.command() == 'accessdata-read-casefile':
-        demisto.results(quinc_read_casefile_command(demisto.args()))
-        sys.exit(0)
-
-    if demisto.command() == 'fetch-incidents':
-        # You can store the last run time...
-        demisto.setLastRun({'time': 'now'})
-        # And retrieve it for use later:
-        lastRun = demisto.getLastRun()
-        # lastRun is a dictionary, with value "now" for key "time".
-        # JSON of the incident type created by this integration
-        demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
-        sys.exit(0)
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
+      demisto.results(quinc_read_casefile_command(demisto.args()))
+      sys.exit(0)
   type: python
   commands:
   - name: accessdata-legacyagent-get-software

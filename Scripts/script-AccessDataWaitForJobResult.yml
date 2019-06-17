@@ -1,6 +1,6 @@
 commonfields:
-  id: 62e0ac00-6e8b-490c-830c-fbdb9ab2be50
-  version: 1
+  id: AccessDataWaitForJobResult
+  version: -1
 name: AccessDataWaitForJobResult
 script: |
   import json
@@ -22,7 +22,7 @@ script: |
   sec = 0
   ec = {}
   resp = None
-  sleep(10) # ugly hack to be sure job is submitted, otherwise we get 404
+  sleep(10) # small waitto be sure job is submitted, otherwise we get 404
   while sec < timeout:
       if not feDone:
           status = "Done"

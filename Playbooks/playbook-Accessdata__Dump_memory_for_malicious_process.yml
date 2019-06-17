@@ -1,5 +1,5 @@
 id: b0069573-929e-4ffc-8326-d5a9da6849f2
-version: 1
+version: -1
 name: 'Accessdata: Dump memory for malicious process'
 description: This playbook dumps memory  if given process is running on legacy AD
   agent
