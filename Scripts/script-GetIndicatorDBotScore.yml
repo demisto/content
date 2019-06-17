@@ -32,7 +32,7 @@ script: |-
   for entry in data:
       indicator_type = entry["indicator_type"]
       score = entry["score"]
-      source = entry["source"]
+      source = entry.get('source','')
       if hasattr(INDICATOR_TYPE_DICTIONARY,indicator_type):
           indicator_type = INDICATOR_TYPE_DICTIONARY[indicator_type]
 
