@@ -8,6 +8,7 @@ import pytest
 
 RETURN_ERROR_TARGET = 'Ping.return_error'
 
+
 @pytest.mark.parametrize('address', ['google.com', '8.8.8.8'])
 def test_ping(mocker, address):
     mocker.patch.object(demisto, 'args', return_value={'address': address})

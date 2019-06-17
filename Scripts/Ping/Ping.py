@@ -21,7 +21,7 @@ def main():
         res['avg_rtt'] = s.group(2)
         res['max_rtt'] = s.group(3)
         res['mdev_rtt'] = s.group(4)
-        return_outputs(readable_output=tableToMarkdown("Ping Results", res), outputs={"Ping": res},raw_response=res)        
+        return_outputs(readable_output=tableToMarkdown("Ping Results", res), outputs={"Ping": res}, raw_response=res)
     except Exception as e:
         if isinstance(e, subprocess.CalledProcessError):
             msg = e.output  # pylint: disable=no-member
