@@ -21,8 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- defaultvalue: '7'
+  display: Previous days to fetch
   name: fetch_time
   required: false
   type: 0
@@ -225,7 +225,10 @@ script:
     execution: false
     name: perch-create-indicator
   dockerimage: demisto/python3:3.7.2.214
-  isfetch: false
+  isfetch: true
   runonce: false
   script: ''
   type: python
+releaseNotes: Initial release of new Perch Integration
+tests:
+- Perch-Test
