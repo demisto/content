@@ -433,6 +433,5 @@ script:
       description: Headers to display in Human readable format
     description: Get EC2 EBS Volume Information
 hidden: false
-releaseNotes: Changed name to reflect Deprecated status
 tests:
   - No test

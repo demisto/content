@@ -37,37 +37,4 @@ if [[ "${PKG_DEV_TASKS_DIR}" != /* ]]; then
     PKG_DEV_TASKS_DIR="${CURRENT_DIR}/${SCRIPT_DIR}"
 fi
 
-ERRORS_FOUND=false
-
-SUCCESS_STATUS=""
-FAIL_STATUS=""
-
-for d in `find Integrations Scripts Beta_Integrations -maxdepth 1 -mindepth 1 -type d -print | sort`; do
-    if [[ -z "${DIFF_COMPARE}" ]] || [[ $(git diff --name-status $DIFF_COMPARE -- ${d}) ]]; then
-        echo "**** `date`: Running dev tasks for: $d"
-        ${PKG_DEV_TASKS_DIR}/pkg_dev_test_tasks.py -d "$d" $*
-        if [[ $? -ne 0 ]]; then
-            FAIL_STATUS=`printf "${FAIL_STATUS}\n\t-$d"`        
-        else
-            SUCCESS_STATUS=`printf "${SUCCESS_STATUS}\n\t-$d"`
-        fi
-    fi
-done
-echo ""
-if [[ -n "$SUCCESS_STATUS"  ]]; then
-    echo "******* SUCCESS PKGS: *******" 
-    echo "$SUCCESS_STATUS"
-    echo ""
-fi
-if [[ -n "${FAIL_STATUS}"  ]]; then
-    echo -e "******* FAILED PKGS: *******"  1>&2
-    echo -e "\x1B[31m${FAIL_STATUS}\x1B[0m" 1>&2    
-    echo ""
-    exit 1
-fi
-
-if [ -z "$SUCCESS_STATUS" -a -z "$FAIL_STATUS" ]; then 
-    echo "******* No changed pkgs found *******"
-fi
-
-exit 0
+DIFF_COMPARE="${DIFF_COMPARE}" ${PKG_DEV_TASKS_DIR}/run_parallel_pkg_dev_tasks.py $*
