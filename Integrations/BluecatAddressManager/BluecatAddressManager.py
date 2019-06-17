@@ -224,6 +224,28 @@ def create_human_readable_ip(ip_object, ip_value):
     return hr
 
 
+def query_ipv6_command():
+    ip = demisto.getArg('ip')
+    base_ip_raw_res = query_ipv6(ip)
+    base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
+    ip_object = {
+        'ID': base_ip_raw_res.get('id'),
+        'Name': base_ip_raw_res.get('name'),
+        'MACAddress': '',  # TODO: Complete this
+        'Parents': base_ip_parents
+    }
+    hr = create_human_readable_ip(ip_object, ip)
+    return_outputs(hr, {'AddressManager.ipv6(obj.ID === val.ID)': ip_object}, base_ip_raw_res)
+
+
+def query_ipv6(ip):
+    params = {
+        'containerId': CONF,
+        'address': ip
+    }
+    return http_request('GET', '/getIP6Address', params=params)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -243,6 +265,8 @@ def main():
             test_module()
         elif command == 'bluecat-am-query-ipv4':
             query_ipv4_command()
+        elif command == 'bluecat-am-query-ipv6':
+            query_ipv6_command()
 
     # Log exceptions
     except Exception as e:

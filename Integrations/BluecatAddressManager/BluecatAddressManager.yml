@@ -77,6 +77,40 @@ script:
     - contextPath: AddressManager.ipv4.Parents.CIDR
       description: Classless Inter-Domain Routing
       type: String
+  - arguments:
+    - default: true
+      description: The IP to get data about
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Enriches an ipv6 with data about IP networks and blocks that it belongs
+      to, linked IPs and mac addresses, etc.
+    execution: false
+    name: bluecat-am-query-ipv6
+    outputs:
+    - contextPath: AddressManager.ipv6.ID
+      description: The address manager id of the ip
+      type: Number
+    - contextPath: AddressManager.ipv6.Name
+      description: Name of the address
+      type: String
+    - contextPath: AddressManager.ipv6.MACAddress
+      description: Corresponding MAC address
+      type: String
+    - contextPath: AddressManager.ipv6.Parents.ID
+      description: ID of the parent IP address
+      type: String
+    - contextPath: AddressManager.ipv6.Parents.Type
+      description: Type of the parent IP address
+      type: String
+    - contextPath: AddressManager.ipv6.Parents.Name
+      description: Name of the parent IP address
+      type: String
+    - contextPath: AddressManager.ipv6.Parents.CIDR
+      description: Classless Inter-Domain Routing
+      type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
