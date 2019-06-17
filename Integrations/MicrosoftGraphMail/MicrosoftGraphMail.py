@@ -21,7 +21,7 @@ AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = PARAMS.get('auth_key')
 if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/msg-mail-token'
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain'  # disable-secrets-detection
 else:
     TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 # Remove trailing slash to prevent wrong URL path to service
@@ -29,6 +29,7 @@ URL = PARAMS.get('url')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 # Service base URL
 BASE_URL = str(SERVER) + '/v1.0'
+APP_NAME = 'ms-graph-mail'
 
 USE_SSL = not PARAMS.get('insecure', False)
 # Remove proxy if not set to true in params
@@ -62,15 +63,16 @@ def get_access_token():
     if access_token and stored:
         if epoch_seconds() - stored < 60 * 60 - 30:
             return access_token
-    headers = {
-        'Authorization': AUTH_ID,
-        'Accept': 'application/json'
-    }
+    headers = {'Accept': 'application/json'}
 
-    dbot_response = requests.get(
+    dbot_response = requests.post(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={'token': get_encrypted(TENANT_ID, ENC_KEY)},
+        data={
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
+        },
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
@@ -97,7 +99,7 @@ def get_access_token():
             'There was a problem in retrieving an updated access token.\n'
             'The response from the Demistobot server did not contain the expected content.'
         )
-    access_token = parsed_response.get('token')
+    access_token = parsed_response.get('AccessToken')
 
     demisto.setIntegrationContext({
         'access_token': access_token,
