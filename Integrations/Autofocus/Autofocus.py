@@ -293,8 +293,8 @@ def validate_if_line_needed(category, info_line):
     elif category == 'file':
         action_index = category_indexes.get('action')
         action = line_values[action_index].strip()
-        benign_count = info_line.get('b')
-        malicious_count = info_line.get('m')
+        benign_count = info_line.get('b') if info_line.get('b') else 0
+        malicious_count = info_line.get('m') if info_line.get('m') else 1
         # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
         return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
     elif category == 'process':
@@ -508,10 +508,6 @@ def search_sessions_command():
     sort = args.get('sort')
     order = args.get('order')
     info = run_search('sessions', query=query, size=max_results, sort=sort, order=order)
-    # info = {
-    #     'AFCookie': af_cookie,
-    #     'Status': status
-    # }
     md = tableToMarkdown(f'Search Sessions Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
