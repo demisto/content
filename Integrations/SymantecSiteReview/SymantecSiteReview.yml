@@ -25,51 +25,50 @@ script:
   commands:
   - arguments:
     - default: false
-      description: URLs to lookup. Can be a single value or comma separated list
-        of values.
+      description: CSV list of one or more URLs to lookup.
       isArray: false
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Symantec WebPulse Site Review Request
+    description: Submits a URL to Symantec WebPulse Site for analysis.
     execution: false
     name: symantec-site-lookup
     outputs:
     - contextPath: SymantecSiteReview.Site.URL
-      description: URL of the checked site
+      description: URL of the checked site.
       type: string
     - contextPath: SymantecSiteReview.Site.CategorizationID
-      description: Site Categorization Number
+      description: Site Categorization Number.
       type: string
     - contextPath: SymantecSiteReview.Site.CategorizationName
-      description: Site Categorization Name
+      description: Site Categorization Name.
       type: string
     - contextPath: SymantecSiteReview.Site.ResolvedIP
-      description: Site Resolved IP Address
+      description: Site Resolved IP Address.
       type: string
     - contextPath: SymantecSiteReview.Site.ThreatRiskLevel
-      description: Site Threat Risk Level
+      description: Site Threat Risk Level.
       type: string
     - contextPath: DBotScore.Score
-      description: Score retrieved for Dbot
+      description: Score retrieved from DBot.
       type: Number
     - contextPath: DBotScore.Type
-      description: Type of indicator tested for
+      description: Type of indicator taht was tested.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor who provided DBot Score
+      description: Vendor who provided the DBot score.
       type: String
     - contextPath: DBotScore.Indicator
-      description: Indicator CheckPhish tested for
+      description: Indicator for which CheckPhish tested.
       type: String
   - deprecated: false
-    description: Threat Risk Level Descriptions
+    description: Returns threat risk-level descriptions.
     execution: false
     name: symantec-site-list-risklevels
     outputs:
     - contextPath: SymantecSiteReview.RiskLevel
-      description: Threat Risk Levels
+      description: Threat risk levels.
       type: Unknown
   isfetch: false
   runonce: false
