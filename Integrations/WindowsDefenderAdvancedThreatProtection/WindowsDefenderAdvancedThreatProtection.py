@@ -24,9 +24,10 @@ USE_SSL = not demisto.params().get('insecure', False)
 FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
 FETCH_STATUS = demisto.params().get('fetch_status').split(',')
 if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/atp-token'
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain'  # disable-secrets-detection
 else:
     TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
+APP_NAME = 'ms-defender-atp'
 
 ''' HELPER FUNCTIONS '''
 
@@ -84,15 +85,16 @@ def get_access_token():
     if access_token and stored:
         if epoch_seconds() - stored < 60 * 60 - 30:
             return access_token
-    headers = {
-        'Authorization': AUTH_ID,
-        'Accept': 'application/json'
-    }
+    headers = {'Accept': 'application/json'}
 
-    dbot_response = requests.get(
+    dbot_response = requests.post(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={'token': get_encrypted(TENANT_ID, ENC_KEY)},
+        data={
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
+        },
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
@@ -119,7 +121,7 @@ def get_access_token():
             'There was a problem in retrieving an updated access token.\n'
             'The response from the Demistobot server did not contain the expected content.'
         )
-    access_token = parsed_response.get('token')
+    access_token = parsed_response.get('AccessToken')
 
     demisto.setIntegrationContext({
         'access_token': access_token,
