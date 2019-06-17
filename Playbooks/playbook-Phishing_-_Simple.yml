@@ -122,7 +122,7 @@ tasks:
       id: 2fd9b929-7922-472b-8543-4b1eed010e55
       version: -1
       name: Is there a URL?
-      description: "Checks if there is at least one URL involved in the incident."
+      description: Checks if there is at least one URL involved in the incident.
       type: condition
       iscommand: false
       brand: ""
@@ -259,7 +259,7 @@ tasks:
       id: e6dd67a7-858c-4f88-8c53-163fb75163f0
       version: -1
       name: Are there indicators with scores?
-      description: "Checks whether there is at least one indicator with a DBotScore."
+      description: Checks whether there is at least one indicator with a DBotScore.
       type: condition
       iscommand: false
       brand: ""
@@ -309,6 +309,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "14"
       High:
       - "13"
       Low:
