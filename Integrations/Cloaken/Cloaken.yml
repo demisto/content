@@ -7,7 +7,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Server URL (e.g. https://cloaken.cypherint.com)
+- display: Server URL (e.g., https://cloaken.cypherint.com)
   name: server_url
   defaultvalue: "https://cloaken.cypherint.com"
   required: true
@@ -20,35 +20,34 @@ configuration:
   name: do_not_verify_ssl
   required: false
   type: 8
-description: Unshorten urls through a tor proxy server. Unshorten urls onsite with
-  the power of Tor to prevent leaking ip addresses to adversaries.
+description: Unshorten URLs onsite using the power of a Tor proxy server to prevent leaking IP addresses to adversaries.
 display: Cloaken
 name: Cloaken
 script:
   commands:
   - arguments:
     - default: false
-      description: url to unshorten
+      description: URL to unshorten.
       isArray: false
       name: url
       required: true
       secret: false
     deprecated: false
-    description: unshorten a url
+    description: Unshortens a URL.
     execution: false
     name: cloaken-unshorten-url
     outputs:
     - contextPath: Cloaken.unshortened_url
-      description: unshortened url
+      description: The unshortened URL.
       type: string
     - contextPath: Cloaken.original_url
-      description: original url
+      description: The original URL.
       type: string
     - contextPath: URL.Data
-      description: unshortened url
+      description: The unshortened URL.
       type: string
     - contextPath: Cloaken.status
-      description: 'status of response: BADREQUEST, OK'
+      description: 'Status of the response: BADREQUEST or OK.'
       type: number
   dockerimage: demisto/cloaken:1.0.0.346
   isfetch: false
