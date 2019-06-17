@@ -61,8 +61,8 @@ def smb_download():
         return_error('No hostname was configured for the integration, cannot establish connection.')
     elif not nbname:
         return_error('No NetBIOS name was configured for the integration, cannot establish connection.')
-    with connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nbname,
-                 port=PORT) as connection:
+    connection = connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nbname, port=PORT)
+    try:
         with tempfile.NamedTemporaryFile() as file_obj:
             file_attributes, filesize = connection.retrieveFile(share, path, file_obj)
             file_obj.seek(0)
@@ -71,6 +71,8 @@ def smb_download():
                 demisto.results(fileResult(filename, file_obj.read()))
             else:
                 demisto.results(file_obj.read())
+    finally:
+        connection.close()
 
 
 def smb_upload():
@@ -85,8 +87,8 @@ def smb_upload():
         return_error('No hostname was configured for the integration, cannot establish connection.')
     elif not nbname:
         return_error('No NetBIOS name was configured for the integration, cannot establish connection.')
-    with connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nbname,
-                 port=PORT) as connection:
+    connection = connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nbname, port=PORT)
+    try:
         if not entryID and not content:
             raise Exception("smb-upload requires one of the following arguments: content, entryID.")
         if entryID:
@@ -100,6 +102,8 @@ def smb_upload():
             file_obj.seek(0)
             file_bytes_transfered = connection.storeFile(share, path, file_obj)
             demisto.results("Transfered {} bytes of data.".format(file_bytes_transfered))
+    finally:
+        connection.close()
 
 
 ''' EXECUTION CODE '''
