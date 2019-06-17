@@ -998,6 +998,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file.
   type: unknown
-releaseNotes: "Extracts images and text from PDF files. Images are extractd using the Image OCR integration."
 tests:
   - Extract Indicators From File - Generic v2 - Test
