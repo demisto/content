@@ -1,0 +1,340 @@
+id: Bluecat Address Manager test
+version: -1
+name: Bluecat Address Manager test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e39da556-3b11-4362-8473-106c1da9f1ff
+    type: start
+    task:
+      id: e39da556-3b11-4362-8473-106c1da9f1ff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 92db5763-9474-4823-8c67-2072f87a7d41
+    type: regular
+    task:
+      id: 92db5763-9474-4823-8c67-2072f87a7d41
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d8cc789c-5fcb-42fb-8bf4-64735aade40f
+    type: regular
+    task:
+      id: d8cc789c-5fcb-42fb-8bf4-64735aade40f
+      version: -1
+      name: Query ipv4
+      description: Enriches an ipv4 with data about IP networks and blocks that it
+        belongs to, linked IPs and mac addresses, etc.
+      script: '|||bluecat-am-query-ipv4'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: 10.0.0.10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1afc39fc-86a8-43a8-8a82-87285def1e5b
+    type: condition
+    task:
+      id: 1afc39fc-86a8-43a8-8a82-87285def1e5b
+      version: -1
+      name: Assert ipv4 results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ipv4.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100923"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ipv4.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100923"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ipv4.Parents.CIDR
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a4bd6496-3bd5-4bf5-85d7-59fbfce10451
+    type: regular
+    task:
+      id: a4bd6496-3bd5-4bf5-85d7-59fbfce10451
+      version: -1
+      name: Query ipv6
+      description: Enriches an ipv6 with data about IP networks and blocks that it
+        belongs to, linked IPs and mac addresses, etc.
+      script: '|||bluecat-am-query-ipv6'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 2000::20C:29FF:FEB9:8FD3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e1e6bd4f-2878-48df-80ac-cc778f3eb885
+    type: condition
+    task:
+      id: e1e6bd4f-2878-48df-80ac-cc778f3eb885
+      version: -1
+      name: Assert ipv6 results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ipv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2000::20C:29FF:FEB9:8FD3
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ipv6.Parents.Prefix
+            iscontext: true
+          right:
+            value:
+              simple: 2000::/64
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ipv6.Parents.Type
+            iscontext: true
+          right:
+            value:
+              simple: IP6Block
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 1fc96511-4446-4564-8bc3-c2c8a637b7fb
+    type: regular
+    task:
+      id: 1fc96511-4446-4564-8bc3-c2c8a637b7fb
+      version: -1
+      name: Get response policies
+      description: Gets all response policies
+      script: '|||bluecat-am-get-response-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      count: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 184dd380-934b-4812-836c-7b7774406031
+    type: condition
+    task:
+      id: 184dd380-934b-4812-836c-7b7774406031
+      version: -1
+      name: Assert response policies
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ResponsePolicies.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100930"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ResponsePolicies.ResponsePolicyType
+            iscontext: true
+          right:
+            value:
+              simple: REDIRECT
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AddressManager
+                accessor: ResponsePolicies.RedirectTarget
+            iscontext: true
+          right:
+            value:
+              simple: foo.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

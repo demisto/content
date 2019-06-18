@@ -24,7 +24,6 @@ SERVER = demisto.params()['url'][:-1] \
     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
-# How many time before the first fetch to retrieve incidents
 # Service base URL
 BASE_URL = SERVER + '/Services/REST/v1'
 
