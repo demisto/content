@@ -3328,7 +3328,7 @@ def unfold(s):
     whitespace adjacent to line breaks) to a single space and removing leading
     & trailing whitespace.
     From: https://github.com/jwodder/headerparser/blob/master/headerparser/types.py#L39
-    >>> unfold('This is a \n folded string.\n')
+    unfold('This is a \n folded string.\n')
     'This is a folded string.'
     :param string s: a string to unfold
     :rtype: string
@@ -3404,10 +3404,36 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     if os.path.isabs(attachment_file_name):
                         attachment_file_name = os.path.basename(attachment_file_name)
 
-                if "message/rfc822" in part.get("Content-Type", ""):
+                if "message/rfc822" in part.get("Content-Type", "") \
+                        or ("application/octet-stream" in part.get("Content-Type", "")
+                            and "base64" in part.get("Content-Transfer-Encoding", "")
+                            and attachment_file_name.endswith(".eml")):
+
                     # .eml files
                     file_content = None
-                    if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
+
+                    base64_encoded = False
+                    if "base64" in part.get("Content-Transfer-Encoding", ""):
+                        base64_encoded = True
+                        file_content = part.get_payload()
+                        # attachment_file_name = part.get("Content-Description")
+                        # if attachment_file_name == "":
+                        #     # if there is no such header "Content-Description"
+                        #     # then we will check for file name from "Content-Type"
+                        #     if "name=" in part.get("Content-Type", ""):
+                        #         attachment_file_name = re.search(r'name=".+"$', part.get("Content-Type", "")).group()\
+                        #             .replace('name=', '').replace('"', '')
+                        #
+                        # if attachment_file_name == "":
+                        #     # if we still haven't found the name of the file then we should try to look in
+                        #     # Content-Disposition header
+                        #     # Example:
+                        #     # Content - Disposition: attachment; filename = "some+example.eml"; size = 15380;
+                        #     if "filename=" in part.get("Content-Disposition", ""):
+                        #         attachment_file_name = re.search(r'filename=".+"', part.get("Content-Disposition", ""))\
+                        #             .group().replace('filename=', '').replace('"', '')
+
+                    elif not base64_encoded and isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
                         if attachment_file_name is None or attachment_file_name == "":
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
@@ -3426,6 +3452,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             f.write(file_content)
                             f.close()
                             inner_eml, inner_attached_emails = handle_eml(file_path=f.name,
+                                                                          b64=base64_encoded,
                                                                           file_name=attachment_file_name,
                                                                           max_depth=max_depth - 1)
                             attached_emails.append(inner_eml)
@@ -3527,6 +3554,11 @@ def main():
             "Failed to load file entry with entry id: {}. Error: {}".format(
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
+    # parse_only_headers = False
+    # max_depth = 3
+    # file_type = "rfc 822 mail text, ascii text, with crlf line terminators"
+    # file_name = "[WO0000001423906]Analisi mail spam.eml"
+    # file_path = "/Users/aazadaliyev/Downloads/[WO0000001423906]Analisi mail spam.eml"
     try:
         file_type_lower = file_type.lower()
         if 'composite document file v2 document' in file_type_lower \
