@@ -156,7 +156,15 @@ def fetch_reports() -> None:
                 'severity': CATEGORIES_SEVERITY.get(category_id, 0)
             }
 
-            add_attachment(incident, report, report_body, report_id)
+            # load HTML attachment into the incident
+            attachment = load_attachment(report_body, report_id)
+            if attachment:
+                incident['attachment'] = attachment
+            else:
+                # attachment is not HTML file, keep it as plain text
+                report['report_body'] = report_body
+                incident['rawJSON'] = json.dumps(report)
+
             incidents.append(incident)
             already_fetched.append(report_id)
             if len(incidents) >= max_fetch:
@@ -167,18 +175,15 @@ def fetch_reports() -> None:
     demisto.setLastRun({'value': json.dumps(last_run)})
 
 
-def add_attachment(incident: dict, report: dict, report_body: Any, report_id: int) -> None:
+def load_attachment(report_body: Any, report_id: int) -> list:
     if report_body and 'HTML' in report_body:
         html_attachment = fileResult(filename=f'{report_id}-report.html', data=report_body.encode())
         attachment = {
             'path': html_attachment.get('FileID'),
             'name': html_attachment.get('FileName')
         }
-        incident['attachment'] = [attachment]
-
-    else:
-        report['report_body'] = report_body
-        incident['rawJSON'] = json.dumps(report)
+        return [attachment]
+    return []
 
 
 def search_reports_command() -> None:
