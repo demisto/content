@@ -10,7 +10,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": true,
+	"required": false,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,

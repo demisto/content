@@ -1,0 +1,527 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: vmray
+  version: -1
+configuration:
+- defaultvalue: https://cloud.vmray.com
+  display: Server URL (e.g., https://cloud.vmray.com)
+  name: server
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Ransomware analysis sandboxing.
+display: VMRay
+name: vmray
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Entry ID  of the file to submit.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Password of the document.
+      isArray: false
+      name: document_password
+      required: false
+      secret: false
+    - default: false
+      description: Password of an archive.
+      isArray: false
+      name: archive_password
+      required: false
+      secret: false
+    - default: false
+      description: Force type of the file.
+      isArray: false
+      name: sample_type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the file is shareable.
+      isArray: false
+      name: shareable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Analyze even if analyses already exist.
+      isArray: false
+      name: reanalyze
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Maximum number of jobs to create (number).
+      isArray: false
+      name: max_jobs
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of tags to add to the sample.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a sample to VMRay for analysis.
+    execution: false
+    name: vmray-upload-sample
+    outputs:
+    - contextPath: VMRay.Job.JobID
+      description: ID of a new job
+      type: Number
+    - contextPath: VMRay.Job.Created
+      description: Timestamp of job creation.
+      type: Date
+    - contextPath: VMRay.Job.SampleID
+      description: ID of the sample.
+      type: Number
+    - contextPath: VMRay.Job.VMName
+      description: Name of the virtual machine.
+      type: String
+    - contextPath: VMRay.Job.VMID
+      description: ID of the virtual machine.
+      type: Number
+    - contextPath: VMRay.Sample.SampleID
+      description: ID of the sample.
+      type: Number
+    - contextPath: VMRay.Sample.Created
+      description: Timestamp of sample creation.
+      type: Date
+    - contextPath: VMRay.Submission.SubmissionID
+      description: Submission ID.
+      type: Number
+  - arguments:
+    - default: false
+      description: Analysis sample ID.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results to return (number).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves all analysis details for a specified sample.
+    execution: false
+    name: vmray-get-analysis-by-sample
+    outputs:
+    - contextPath: VMRay.Analysis.AnalysisID
+      description: Analysis ID.
+      type: Number
+    - contextPath: VMRay.Analysis.SampleID
+      description: Sample ID in the analysis.
+      type: Number
+    - contextPath: VMRay.Analysis.Severity
+      description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted,
+        Whitelisted, Unknown).
+      type: String
+    - contextPath: VMRay.Analysis.JobCreated
+      description: Date when the analysis job started.
+      type: Date
+    - contextPath: VMRay.Analysis.MD5
+      description: MD5 hash of the sample.
+      type: String
+    - contextPath: VMRay.Analysis.SHA1
+      description: SHA1 hash of the sample.
+      type: String
+    - contextPath: VMRay.Analysis.SHA256
+      description: SHA256 hash of the sample.
+      type: String
+    - contextPath: VMRay.Analysis.SSDeep
+      description: ssdeep hash of the sample.
+      type: String
+  - arguments:
+    - default: false
+      description: Job sample ID.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves details for all jobs  for a specified sample.
+    execution: false
+    name: vmray-get-job-by-sample
+    outputs:
+    - contextPath: VMRay.Job.JobID
+      description: ID of the job.
+      type: Number
+    - contextPath: VMRay.Job.SampleID
+      description: Sample ID of the job.
+      type: Number
+    - contextPath: VMRay.Job.SubmissionID
+      description: ID of the submission.
+      type: Number
+    - contextPath: VMRay.Job.MD5
+      description: MD5 hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.SHA1
+      description: SHA1 hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.SHA256
+      description: SHA256 hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.SSDeep
+      description: ssdeep hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.VMName
+      description: Name of the virtual machine.
+      type: String
+    - contextPath: VMRay.Job.VMID
+      description: ID of the virtual machine.
+      type: Number
+    - contextPath: VMRay.Job.Status
+      description: 'Status of the job. '
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample'
+        command.
+      isArray: false
+      name: submission_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the results of a submission.
+    execution: false
+    name: vmray-get-submission
+    outputs:
+    - contextPath: VMRay.Submission.IsFinished
+      description: Whether the submission is finished (true or false).
+      type: Boolean
+    - contextPath: VMRay.Submission.HasErrors
+      description: Whether there are any errors in the submission (true or false).
+      type: Boolean
+    - contextPath: VMRay.Submission.SubmissionID
+      description: ID of the sample in the submission.
+      type: Number
+    - contextPath: VMRay.Submission.MD5
+      description: MD5 hash of the sample in the submission.
+      type: String
+    - contextPath: VMRay.Submission.SHA1
+      description: SHA1 hash of the sample in the submission.
+      type: String
+    - contextPath: VMRay.Submission.SHA256
+      description: SHA256 hash of the sample in the submission.
+      type: String
+    - contextPath: VMRay.Submission.SSDeep
+      description: ssdeep hash of the sample in the submission.
+      type: String
+    - contextPath: VMRay.Submission.Severity
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown).
+      type: String
+    - contextPath: VMRay.Submission.SampleID
+      description: ID of the sample in the submission.
+      type: Number
+  - arguments:
+    - default: false
+      description: ID of the sample.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a sample using the sample ID.
+    execution: false
+    name: vmray-get-sample
+    outputs:
+    - contextPath: VMRay.Sample.SampleID
+      description: ID of the sample.
+      type: Number
+    - contextPath: VMRay.Sample.FileName
+      description: File name of the sample.
+      type: String
+    - contextPath: VMRay.Sample.MD5
+      description: MD5 hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.SHA1
+      description: SHA1 hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.SHA256
+      description: SHA256 hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.SSDeep
+      description: ssdeep hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.Severity
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown).
+      type: String
+    - contextPath: VMRay.Sample.Type
+      description: File type.
+      type: String
+    - contextPath: VMRay.Sample.Created
+      description: Timestamp of sample creation.
+      type: Date
+    - contextPath: VMRay.Sample.Classifications
+      description: Classifications of the sample.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the sample. Can be obtaine from the 'VMRay.Sample.ID' output.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves threat indicators (VTI).
+    execution: false
+    name: vmray-get-threat-indicators
+    outputs:
+    - contextPath: VMRay.ThreatIndicator.AnalysisID
+      description: List of connected analysis IDs.
+      type: Number
+    - contextPath: VMRay.ThreatIndicator.Category
+      description: Category of threat indicators.
+      type: String
+    - contextPath: VMRay.ThreatIndicator.Classification
+      description: Classifications of threat indicators.
+      type: String
+    - contextPath: VMRay.ThreatIndicator.ID
+      description: ID of a threat indicator.
+      type: Number
+    - contextPath: VMRay.ThreatIndicator.Operation
+      description: Operation the indicators caused.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the submission to which to add tags.
+      isArray: false
+      name: submission_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of the analysis from which to delete tags.
+      isArray: false
+      name: analysis_id
+      required: false
+      secret: false
+    - default: false
+      description: Tag to add.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a tag to an analysis and/or a submission.
+    execution: false
+    name: vmray-add-tag
+  - arguments:
+    - default: false
+      description: ID of the analysis from which to delete a tag.
+      isArray: false
+      name: analysis_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of the submission from which to delete a tag.
+      isArray: false
+      name: submission_id
+      required: false
+      secret: false
+    - default: false
+      description: Tag to delete.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes tags from an analysis and/or a submission.
+    execution: false
+    name: vmray-delete-tag
+  - arguments:
+    - default: false
+      description: ID of the sample.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves indicators of compropmise for a specified sample.
+    execution: false
+    name: vmray-get-iocs
+    outputs:
+    - contextPath: VMRay.Sample.IOC.URL.AnalysisID
+      description: IDs of other analyses that contain the given URL.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.URL.URL
+      description: URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Operation
+      description: Operation of the specified URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.ID
+      description: ID of the URL.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.URL.Type
+      description: Type of URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.AnalysisID
+      description: IDs of other analyses that contain the given domain.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Domain.Domain
+      description: Domain.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.ID
+      description: ID of the domain.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Domain.Type
+      description: Type of domain.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.AnalysisID
+      description: IDs of other analyses that contain the given IP address.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.IP.IP
+      description: IP address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.Operation
+      description: Operation of the given IP.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.ID
+      description: ID of the IP address.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.IP.Type
+      description: Type of IP address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
+      description: IDs of other analyses that containt the given IP.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Mutex.Name
+      description: Name of the mutex.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.Operation
+      description: Operation of given mutex
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.ID
+      description: ID of the mutex.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Mutex.Type
+      description: Type of mutex.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.AnalysisID
+      description: IDs of other analyses that containt the given file.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.Name
+      description: Name of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Operation
+      description: Operation of given file
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ID
+      description: ID of the file.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.Type
+      description: Type of file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
+      description: MD5 of given file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
+      description: SSDeep of given file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA256
+      description: SHA256 of given file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA1
+      description: SHA1 of given file.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of a job.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a job by job ID.
+    execution: false
+    name: vmray-get-job-by-id
+    outputs:
+    - contextPath: VMRay.Job.JobID
+      description: ID of the job.
+      type: Number
+    - contextPath: VMRay.Job.SampleID
+      description: Sample ID of the job.
+      type: Number
+    - contextPath: VMRay.Job.SubmissionID
+      description: ID of the submission.
+      type: Number
+    - contextPath: VMRay.Job.MD5
+      description: MD5 hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.SHA1
+      description: SHA1 hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.SHA256
+      description: SHA256 hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.SSDeep
+      description: ssdeep hash of the sample in the job.
+      type: String
+    - contextPath: VMRay.Job.VMName
+      description: Name of the virtual machine.
+      type: String
+    - contextPath: VMRay.Job.VMID
+      description: ID of the virtual machine.
+      type: Number
+    - contextPath: VMRay.Job.Status
+      description: Status of the job.
+      type: String
+  - arguments:
+    - default: false
+      description: Sample ID.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: true
+    description: This command performs a function similiar to the 'vmray-get-job-by-sample'
+      command.
+    execution: false
+    name: get_job_sample
+  - arguments:
+    - default: false
+      description: ID of the sample.
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: true
+    description: similiar to vmray-get-sample
+    execution: false
+    name: get_results
+  - deprecated: true
+    description: Retrieves a sample using the sample ID. (Deprecated)
+    execution: false
+    name: upload_sample
+  dockerimage: demisto/python
+  isfetch: false
+  runonce: false
+  script: ''
+  type: python
+fromversion: 4.0.0
