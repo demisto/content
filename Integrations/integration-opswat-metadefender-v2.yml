@@ -290,7 +290,6 @@ script:
   type: python
   commands:
   - name: opswat-scan-file
-    deprecated: true
     arguments:
     - name: fileId
       required: true
@@ -305,7 +304,6 @@ script:
       type: string
     description: Scan file in OPSWAT
   - name: opswat-hash
-    deprecated: true
     arguments:
     - name: hash
       required: true
@@ -313,7 +311,6 @@ script:
       description: File hash (Can be any hash type)
     description: Check file hash on OPSWAT
   - name: opswat-scan-result
-    deprecated: true
     arguments:
     - name: id
       required: true
@@ -321,6 +318,8 @@ script:
       description: OPSWAT scan id
     description: Get OPSWAT result
   dockerimage: demisto/python3:3.7.2.214
+  subtype: python3
   runonce: false
 tests:
   - No tests - no instance
+releaseNotes: "-"
