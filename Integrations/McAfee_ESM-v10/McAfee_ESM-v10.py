@@ -109,7 +109,6 @@ class NitroESM(object):
         self.url = 'https://{}/rs/esm/'.format(self.esmhost)
         self.session_headers = {'Content-Type': 'application/json'}
         self._encode_login()
-        self._build_params()
         self.is_logged_in = False
         self._case_statuses = None
 
@@ -117,21 +116,16 @@ class NitroESM(object):
         self.b64_user = base64.b64encode(self.user.encode('utf-8')).decode()
         self.b64_passwd = base64.b64encode(self.passwd.encode('utf-8')).decode()
 
-    def _build_params(self):
-        self.params = {"username": self.b64_user,
-                       "password": self.b64_passwd,
-                       "locale": "en_US",
-                       "os": "Win32"
-                       }
-        try:
-            self.params_json = json.dumps(self.params)
-        except TypeError:
-            return_error("Invalid parameters: {}".format(self.params))
-
     def login(self):
         try:
+            params = {
+                "username": self.b64_user,
+                "password": self.b64_passwd,
+                "locale": "en_US",
+                "os": "Win32"
+            }
             login_response = requests.post(self.url + 'login',
-                                           json=self.params_json,
+                                           json=params,
                                            headers=self.session_headers,
                                            verify=VERIFY)
             jwttoken = login_response.cookies.get('JWTToken')
