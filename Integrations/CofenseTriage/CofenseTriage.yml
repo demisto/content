@@ -1,0 +1,254 @@
+commonfields:
+  id: Cofense Triage
+  version: -1
+name: Cofense Triage
+description: 'Cofense Triage (Tested with version 1.14.0). Cofense provides an API that superusers can use to
+programmatically extract data from Cofense Triage in JSON format'
+display: Cofense Triage
+category: Data Enrichment & Threat Intelligence
+configuration:
+  - display: Server URL (e.g. https://192.168.0.1)
+    name: host
+    defaultvalue: ""
+    type: 0
+    required: true
+  - display: User
+    name: user
+    defaultvalue: ""
+    type: 0
+    required: true
+  - display: API Token
+    name: token
+    defaultvalue: ""
+    type: 4
+    required: true
+  - display: Fetch incidents
+    name: isFetch
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Incident type
+    name: incidentType
+    defaultvalue: ""
+    type: 13
+    required: false
+  - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+      1 year)
+    name: date_range
+    defaultvalue: 3 days
+    type: 0
+    required: false
+  - display: Category ID to fetch - correspond to the ranking that determines the Cofense
+      Triage prioritization (1-5)
+    name: category_id
+    defaultvalue: ""
+    type: 0
+    required: false
+  - display: Match Priority - The highest match priority based on rule hits for the
+      report
+    name: match_priority
+    defaultvalue: ""
+    type: 0
+    required: false
+  - display: 'Tags - One or more tags of processed reports to filter on. Use commas
+    to separate multiple tags. '
+    name: tags
+    defaultvalue: ""
+    type: 0
+    required: false
+  - display: Maximum number of incidents to fetch each time
+    name: max_fetch
+    defaultvalue: "30"
+    type: 0
+    required: false
+  - display: Trust any certificate (unsecure)
+    name: insecure
+    defaultvalue: "false"
+    type: 8
+    required: false
+  - display: Use system proxy
+    name: proxy
+    required: false
+    type: 8
+script:
+  script: ""
+  type: python
+  subtype: python3
+  commands:
+    - name: cofense-search-reports
+      arguments:
+        - name: file_hash
+          description: File hash - either in MD5 or SHA256 format
+        - name: url
+          description: Reported urls
+        - name: subject
+          description: Report's subject
+        - name: reported_at
+          description: Retrieve reports that were reported after this time. e.g., "2 hours,
+            4 minutes, 6 month, 1 day"
+          defaultValue: 60 days
+        - name: created_at
+          description: Retrieve reports that were created after this time. e.g., "2 hours,
+            4 minutes, 6 month, 1 day"
+          defaultValue: 60 days
+        - name: reporter
+          description: Reporter name or ID
+        - name: max_matches
+          default: true
+          description: Maximum number of matches to fetch. (Default = 30)
+          defaultValue: "30"
+        - name: verbose
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Get all report's fields
+      outputs:
+        - contextPath: Report.ID
+          description: ID number of the report
+        - contextPath: Report.EmailAttachments
+          description: Email attachments
+        - contextPath: Report.EmailAttachments.id
+          description: Email attachment ID
+        - contextPath: Report.Tags
+          description: Report tags
+          type: string
+        - contextPath: Report.ClusterId
+          description: Cluster ID number
+          type: number
+        - contextPath: Report.CategoryId
+          description: Report category
+          type: number
+        - contextPath: Report.CreatedAt
+          description: Date of report creation
+          type: date
+        - contextPath: Report.ReportedAt
+          description: Reporting time
+          type: string
+        - contextPath: Report.MatchPriority
+          description: The highest match priority based on rule hits for the report
+          type: number
+        - contextPath: Report.ReporterId
+          description: Reporter ID
+          type: number
+        - contextPath: Report.Location
+          description: Location of the report
+        - contextPath: Report.Reporter
+          description: Reporter Email address
+          type: string
+        - contextPath: Report.SuspectFromAddress
+          description: Suspect from address
+          type: string
+        - contextPath: Report.ReportSubject
+          description: Report subject
+          type: string
+        - contextPath: Report.ReportBody
+          description: Report body
+          type: string
+        - contextPath: Report.Md5
+          description: MD5 hash of the file
+          type: number
+        - contextPath: Report.Sha256
+          description: Sha256 hash of the file
+      description: 'Query for different reports'
+    - name: cofense-get-attachment
+      arguments:
+        - name: attachment_id
+          required: true
+          description: ID of the attachment
+      outputs:
+        - contextPath: Attachment.ID
+          description: The ID number of the report that contains the attachment
+          type: string
+        - contextPath: File.Info
+          description: The threat classification assigned by Cylance.
+          type: string
+        - contextPath: File.Size
+          description: The date and time (in UTC) when the threat was found on the device.
+          type: string
+        - contextPath: File.EntryID
+          description: The file path where the threat was found on the device.
+          type: string
+        - contextPath: File.Name
+          description: The name of the threat.
+          type: string
+        - contextPath: File.SHA1
+          description: The Cylance score assigned to the threat.
+          type: number
+        - contextPath: File.SHA256
+          description: The SHA256 hash for the threat.
+          type: string
+        - contextPath: File.MD5
+          description: The threat sub-classification assigned by Cylance.
+          type: string
+      description: 'Retrieve attachment by it''s ID number '
+    - name: cofense-get-reporter
+      arguments:
+        - name: reporter_id
+          required: true
+          description: Reporter's ID
+      outputs:
+        - contextPath: Report.ID
+          description: ID of the reporter
+        - contextPath: Report.Email
+          description: Email of the reporter
+      description: Retrieves Email address of the reporter by ID
+    - name: cofense-get-report-by-id
+      arguments:
+        - name: report_id
+          required: true
+          description: ID of the report
+      outputs:
+        - contextPath: Report.ID
+          description: ID number of the report
+        - contextPath: Report.EmailAttachments
+          description: Email attachments
+        - contextPath: Report.EmailAttachments.id
+          description: Email attachment ID
+        - contextPath: Report.Tags
+          description: Report tags
+          type: string
+        - contextPath: Report.ClusterId
+          description: Cluster ID number
+          type: number
+        - contextPath: Report.CategoryId
+          description: Report category
+          type: number
+        - contextPath: Report.CreatedAt
+          description: Date of report creation
+          type: date
+        - contextPath: Report.ReportedAt
+          description: Reporting time
+          type: string
+        - contextPath: Report.MatchPriority
+          description: The highest match priority based on rule hits for the report
+          type: number
+        - contextPath: Report.ReporterId
+          description: Reporter ID
+          type: number
+        - contextPath: Report.Location
+          description: Location of the report
+        - contextPath: Report.Reporter
+          description: Reporter Email address
+          type: string
+        - contextPath: Report.SuspectFromAddress
+          description: Suspect from address
+          type: string
+        - contextPath: Report.ReportSubject
+          description: Report subject
+          type: string
+        - contextPath: Report.ReportBody
+          description: Report body
+          type: string
+        - contextPath: Report.Md5
+          description: MD5 hash of the file
+          type: number
+        - contextPath: Report.Sha256
+          description: Sha256 hash of the file
+      description: 'Retrieve a report by it''s ID number '
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: true
+  runonce: false
+tests:
+  - Cofense Triage Test
+releaseNotes: Cofense Triage new integration
