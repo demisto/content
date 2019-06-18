@@ -3,6 +3,11 @@ commonfields:
   id: Rasterize
   version: -1
 configuration:
+- display: 'Return Errors '
+  name: with_error
+  defaultvalue: "false"
+  type: 8
+  required: false
 - defaultvalue: 'true'
   display: Use system proxy settings
   name: proxy
@@ -101,4 +106,4 @@ script:
   type: python
 defaultEnabled: true
 tests:
-  - no test
+  - Rasterize Test
