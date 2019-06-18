@@ -26,6 +26,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 32b4cc36-31ab-483d-8b87-cfbc84a79d88
@@ -67,6 +68,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 44d6d733-6661-431f-89f5-fc50106d482f
@@ -107,6 +109,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: b403a865-1347-4375-8a09-63f2f0d3d868
@@ -128,6 +131,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 5d914019-8073-4eb7-8442-d26cba11b518
@@ -160,6 +164,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 22434ee7-bbcd-4b53-8039-2342f0d2748c
@@ -197,6 +202,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 72b0b1b7-6d32-47f4-843b-dd65a72799b5
@@ -234,6 +240,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: 64bbd9d7-9f77-4889-8300-434c7227524d
@@ -272,6 +279,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: d3af10c5-6fa6-4cf2-8f46-b4837c809131
@@ -299,11 +307,12 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: d5ac9c34-2298-48aa-810a-a0498e2bb113
@@ -318,7 +327,7 @@ tasks:
       brand: MISP V2
     nexttasks:
       '#none#':
-      - "5"
+      - "23"
     scriptarguments:
       event_id:
         simple: ${MISP.Event.ID}
@@ -327,11 +336,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 05dd6cc9-ad04-44f4-8a91-3a3ce048d5d6
@@ -360,6 +370,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
     taskid: 477db974-998e-4946-8980-fc92a08fb621
@@ -390,6 +401,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: df89695b-1a08-4951-8c7a-a4e748d61b2d
@@ -420,6 +432,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: dafcc0d8-8093-4b88-829c-7c37ab26829c
@@ -458,6 +471,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: 3d435e98-73be-4c31-89cc-1fe172514ae2
@@ -496,6 +510,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: fc77bdea-16c9-4c19-88ea-8ecbad035c96
@@ -539,6 +554,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
     taskid: ca95bdea-bfa2-456f-8e64-fdea285656c1
@@ -578,11 +594,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
     taskid: c6a2b94a-86db-42b3-8549-b852c21d2bb2
@@ -609,11 +626,12 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
     taskid: 3dae19cf-5b93-4a81-8277-6d884e0570d7
@@ -649,6 +667,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
     taskid: a46f4c12-a656-4b58-8e85-26404dd6986d
@@ -674,20 +693,154 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 2180
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: e136a064-04d2-448a-87f4-ee4a13519779
+    type: regular
+    task:
+      id: e136a064-04d2-448a-87f4-ee4a13519779
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: bd8462f8-1881-4a7e-8524-47b95d5968ad
+    type: regular
+    task:
+      id: bd8462f8-1881-4a7e-8524-47b95d5968ad
+      version: -1
+      name: Add feed
+      description: Adds an OSINT feed.
+      script: '|||misp-add-feed'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      feed_url:
+        simple: https://www.circl.lu/doc/misp/feed-osint/
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 960777df-fabf-46cf-8c6d-a2ae2d429fe3
+    type: regular
+    task:
+      id: 960777df-fabf-46cf-8c6d-a2ae2d429fe3
+      version: -1
+      name: Delete event
+      description: Deletes an event according to event ID.
+      script: '|||misp-delete-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      event_id:
+        complex:
+          root: MISP
+          accessor: Event.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: b99d557b-8820-4ebd-8868-55bccaf6faa5
+    type: condition
+    task:
+      id: b99d557b-8820-4ebd-8868-55bccaf6faa5
+      version: -1
+      name: Check if event created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MISP
+                accessor: Event.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 1110,
-        "x": -250,
+        "height": 3710,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
