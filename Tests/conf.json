@@ -1718,6 +1718,7 @@
         "RSA NetWitness v11.1": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
         "Zscaler": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
         "vmray": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
+        "McAfee ESM-v10": "Test playbook fails - unable to use playbacks due to `Connection aborted.', BadStatusLine('',)`",
         "Panorama": "Test playbook fails - unable to use playbacks investigating",
         "Palo Alto Minemeld": "Test playbook fails - unable to use playbacks investigating",
         "EWS v2": "Test playbook fails - unable to use playbacks investigating",
