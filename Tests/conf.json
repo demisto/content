@@ -578,6 +578,7 @@
         },
         {
             "integrations": "McAfee ESM-v10",
+            "instance_names": "v10.2.0",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
@@ -1619,7 +1620,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "McAfee ESM-v10": "User name expired (issue 17407)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
