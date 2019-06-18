@@ -280,6 +280,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -324,12 +327,34 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 91ffd101-dc58-49de-8beb-293f2de162fe
+    type: title
+    task:
+      id: 91ffd101-dc58-49de-8beb-293f2de162fe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50
