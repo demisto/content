@@ -250,7 +250,7 @@ def get_fields_from_hit_object(result_object, response_dict_name):
     new_object = {}
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     for key, value in result_object.items():
-        if key in af_params_dict:
+        if key in af_params_dict:   # type: ignore
             new_key = af_params_dict.get(key)
             new_object[new_key] = value
         else:
