@@ -6,7 +6,7 @@ description: Use the Cofense Triage integration to manage reports and attachment
 display: Cofense Triage
 category: Data Enrichment & Threat Intelligence
 configuration:
-  - display: Server URL (e.g. https://192.168.0.1)
+  - display: Server URL (e.g., https://192.168.0.1)
     name: host
     defaultvalue: ""
     type: 0
@@ -37,20 +37,19 @@ configuration:
     defaultvalue: 3 days
     type: 0
     required: false
-  - display: Category ID to fetch - correspond to the ranking that determines the Cofense
+  - display: Category ID to fetch - corresponds to the ranking that determines the Cofense
       Triage prioritization (1-5)
     name: category_id
     defaultvalue: ""
     type: 0
     required: false
-  - display: Match Priority - The highest match priority based on rule hits for the
+  - display: Match Priority - the highest match priority based on rule hits for the
       report
     name: match_priority
     defaultvalue: ""
     type: 0
     required: false
-  - display: 'Tags - One or more tags of processed reports to filter on. Use commas
-    to separate multiple tags. '
+  - display: 'Tags - CSV list of tags of processed reports by which to filter '
     name: tags
     defaultvalue: ""
     type: 0
@@ -77,87 +76,87 @@ script:
     - name: cofense-search-reports
       arguments:
         - name: file_hash
-          description: File hash - either in MD5 or SHA256 format
+          description: File hash, MD5 or SHA256.
         - name: url
-          description: Reported urls
+          description: The reported URLs.
         - name: subject
           description: Report's subject
         - name: reported_at
-          description: Retrieve reports that were reported after this time. e.g., "2 hours,
-            4 minutes, 6 month, 1 day"
+          description: 'Retrieve reports that were reported after this time, for example: "2 hours,
+            4 minutes, 6 month, 1 day".'
           defaultValue: 60 days
         - name: created_at
-          description: Retrieve reports that were created after this time. e.g., "2 hours,
-            4 minutes, 6 month, 1 day"
+          description: 'Retrieve reports that were created after this time, for example: "2 hours,
+            4 minutes, 6 month, 1 day".'
           defaultValue: 60 days
         - name: reporter
-          description: Reporter name or ID
+          description: Name or ID of the reporter.
         - name: max_matches
           default: true
-          description: Maximum number of matches to fetch. (Default = 30)
+          description: Maximum number of matches to fetch. Default is 30.
           defaultValue: "30"
         - name: verbose
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
-          description: Get all report's fields
+          description: Returns all fields of a report.
       outputs:
         - contextPath: Report.ID
-          description: ID number of the report
+          description: ID number of the report.
         - contextPath: Report.EmailAttachments
-          description: Email attachments
+          description: Email attachments.
         - contextPath: Report.EmailAttachments.id
-          description: Email attachment ID
+          description: Email attachment ID.
         - contextPath: Report.Tags
-          description: Report tags
+          description: Report tags.
           type: string
         - contextPath: Report.ClusterId
-          description: Cluster ID number
+          description: Cluster ID number.
           type: number
         - contextPath: Report.CategoryId
-          description: Report category
+          description: Report category.
           type: number
         - contextPath: Report.CreatedAt
-          description: Date of report creation
+          description: Report creation date.
           type: date
         - contextPath: Report.ReportedAt
-          description: Reporting time
+          description: Reporting time.
           type: string
         - contextPath: Report.MatchPriority
-          description: The highest match priority based on rule hits for the report
+          description: The highest match priority based on rule hits for the report.
           type: number
         - contextPath: Report.ReporterId
-          description: Reporter ID
+          description: Reporter ID.
           type: number
         - contextPath: Report.Location
-          description: Location of the report
+          description: Location of the report.
         - contextPath: Report.Reporter
-          description: Reporter Email address
+          description: Reporter email address.
           type: string
         - contextPath: Report.SuspectFromAddress
-          description: Suspect from address
+          description: Suspect from address.
           type: string
         - contextPath: Report.ReportSubject
-          description: Report subject
+          description: Report subject.
           type: string
         - contextPath: Report.ReportBody
-          description: Report body
+          description: Report body.
           type: string
         - contextPath: Report.Md5
-          description: MD5 hash of the file
+          description: MD5 hash of the file.
           type: number
         - contextPath: Report.Sha256
-          description: Sha256 hash of the file
-      description: 'Query for different reports'
+          description: SHA256 hash of the file.
+      description: 'Runs a query for reports.'
     - name: cofense-get-attachment
       arguments:
         - name: attachment_id
           required: true
-          description: ID of the attachment
+          description: ID of the attachment.
       outputs:
         - contextPath: Attachment.ID
-          description: The ID number of the report that contains the attachment
+          description: The ID number of the report that contains the attachment.
           type: string
         - contextPath: File.Info
           description: The threat classification assigned by Cylance.
@@ -172,25 +171,25 @@ script:
           description: The name of the threat.
           type: string
         - contextPath: File.SHA1
-          description: The Cylance score assigned to the threat.
+          description: The threat score assigned ny Cylance.
           type: number
         - contextPath: File.SHA256
-          description: The SHA256 hash for the threat.
+          description: The SHA256 hash of the threat.
           type: string
         - contextPath: File.MD5
           description: The threat sub-classification assigned by Cylance.
           type: string
-      description: 'Retrieve attachment by it''s ID number '
+      description: 'Retrieves an attachment by the attachment ID number. '
     - name: cofense-get-reporter
       arguments:
         - name: reporter_id
           required: true
-          description: Reporter's ID
+          description: ID of the reporter.
       outputs:
         - contextPath: Report.ID
-          description: ID of the reporter
+          description: ID of the reporter.
         - contextPath: Report.Email
-          description: Email of the reporter
+          description: Reporter email address.
       description: Retrieves Email address of the reporter by ID
     - name: cofense-get-report-by-id
       arguments:
@@ -201,50 +200,50 @@ script:
         - contextPath: Report.ID
           description: ID number of the report
         - contextPath: Report.EmailAttachments
-          description: Email attachments
+          description: Email attachments.
         - contextPath: Report.EmailAttachments.id
-          description: Email attachment ID
+          description: Email attachment ID.
         - contextPath: Report.Tags
-          description: Report tags
+          description: Report tags.
           type: string
         - contextPath: Report.ClusterId
-          description: Cluster ID number
+          description: Cluster ID number.
           type: number
         - contextPath: Report.CategoryId
-          description: Report category
+          description: Report category.
           type: number
         - contextPath: Report.CreatedAt
-          description: Date of report creation
+          description: Report creation date.
           type: date
         - contextPath: Report.ReportedAt
-          description: Reporting time
+          description: Reporting time.
           type: string
         - contextPath: Report.MatchPriority
-          description: The highest match priority based on rule hits for the report
+          description: The highest match priority based on rule hits for the report.
           type: number
         - contextPath: Report.ReporterId
-          description: Reporter ID
+          description: Reporter ID.
           type: number
         - contextPath: Report.Location
-          description: Location of the report
+          description: Location of the report.
         - contextPath: Report.Reporter
-          description: Reporter Email address
+          description: Reporter email address.
           type: string
         - contextPath: Report.SuspectFromAddress
-          description: Suspect from address
+          description: Suspect from address.
           type: string
         - contextPath: Report.ReportSubject
-          description: Report subject
+          description: Report subject.
           type: string
         - contextPath: Report.ReportBody
-          description: Report body
+          description: Report body.
           type: string
         - contextPath: Report.Md5
-          description: MD5 hash of the file
+          description: MD5 hash of the file.
           type: number
         - contextPath: Report.Sha256
-          description: Sha256 hash of the file
-      description: 'Retrieve a report by it''s ID number '
+          description: SHA256 hash of the file.
+      description: 'Retrieves a report by the report ID number. '
   dockerimage: demisto/python3:3.7.2.200
   isfetch: true
   runonce: false
