@@ -3416,22 +3416,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     if "base64" in part.get("Content-Transfer-Encoding", ""):
                         base64_encoded = True
                         file_content = part.get_payload()
-                        # attachment_file_name = part.get("Content-Description")
-                        # if attachment_file_name == "":
-                        #     # if there is no such header "Content-Description"
-                        #     # then we will check for file name from "Content-Type"
-                        #     if "name=" in part.get("Content-Type", ""):
-                        #         attachment_file_name = re.search(r'name=".+"$', part.get("Content-Type", "")).group()\
-                        #             .replace('name=', '').replace('"', '')
-                        #
-                        # if attachment_file_name == "":
-                        #     # if we still haven't found the name of the file then we should try to look in
-                        #     # Content-Disposition header
-                        #     # Example:
-                        #     # Content - Disposition: attachment; filename = "some+example.eml"; size = 15380;
-                        #     if "filename=" in part.get("Content-Disposition", ""):
-                        #         attachment_file_name = re.search(r'filename=".+"', part.get("Content-Disposition", ""))\
-                        #             .group().replace('filename=', '').replace('"', '')
 
                     elif not base64_encoded and isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
                         if attachment_file_name is None or attachment_file_name == "":
