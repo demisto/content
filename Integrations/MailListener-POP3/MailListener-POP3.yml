@@ -16,11 +16,6 @@ configuration:
   defaultvalue: pop.gmail.com
   type: 0
   required: true
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: "true"
-  type: 8
-  required: false
 - display: Use system proxy
   name: proxy
   defaultvalue: ""

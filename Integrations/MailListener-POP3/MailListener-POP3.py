@@ -11,12 +11,14 @@ from htmlentitydefs import name2codepoint
 from HTMLParser import HTMLParser, HTMLParseError
 
 
+''' GLOBALS/PARAMS '''
 SERVER = demisto.params().get('server', '')
 EMAIL = demisto.params().get('email', '')
 PASSWORD = demisto.params().get('password', '')
 PORT = int(demisto.params().get('port', '995'))
 SSL = demisto.params().get('ssl')
 FETCH_TIME = demisto.params().get('fetch_time', '7 days')
+
 # pop3 server connection object.
 pop3_server_conn = None  # type: ignore
 
@@ -366,6 +368,7 @@ def test_module():
 
 def main():
     try:
+        handle_proxy()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
