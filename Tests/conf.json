@@ -1611,7 +1611,6 @@
         "ANYRUN": "No instance (issue 17472)",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "McAfee ESM-v10": "User name expired (issue 17407)",
         "icebrg": "Bad gateway on CircleCI",
         "Farsight DNSDB": "Must verify SSL, can't run on CircleCI",
         "Remedy AR": "Getting 'Bad Gateway' on test.",
