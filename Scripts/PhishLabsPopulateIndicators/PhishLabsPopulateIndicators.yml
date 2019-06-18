@@ -72,6 +72,8 @@ timeout: 3.6µs
 type: python
 runas: DBotWeakRole
 dockerimage: demisto/python3:3.7.3.221
+subtype: python3
+releaseNotes: "-"
 runonce: false
 dependson:
   must: [
