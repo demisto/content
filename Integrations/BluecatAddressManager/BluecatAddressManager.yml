@@ -99,8 +99,8 @@ script:
     - contextPath: AddressManager.ipv6.Parents.Name
       description: Name of the parent IP address
       type: String
-    - contextPath: AddressManager.ipv6.Parents.CIDR
-      description: Classless Inter-Domain Routing
+    - contextPath: AddressManager.ipv6.Parents.Prefix
+      description: Prefix of the ip address
       type: String
   - arguments:
     - default: false
@@ -138,10 +138,10 @@ script:
     - contextPath: AddressManager.ResponsePolicies.RedirectTarget
       description: Target of redirect in case of REDIRECT policy type
       type: String
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
   script: '-'
   type: python
 tests:
-  - Bluecat Address Manager test
+- Bluecat Address Manager test

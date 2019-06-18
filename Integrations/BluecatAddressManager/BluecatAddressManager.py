@@ -16,16 +16,14 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+SERVER = demisto.params().get('url')[:-1] \
+    if (demisto.params().get('url') and demisto.params().get('url').endswith('/')) else demisto.params().get('url')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # Service base URL
-BASE_URL = SERVER + '/Services/REST/v1'
+BASE_URL = f'{SERVER}/Services/REST/v1'
 
 # Headers to be sent in requests
 HEADERS = {
@@ -159,8 +157,8 @@ def properties_to_camelized_dict(properties):
 
 def get_token_request():
     url_args = {
-        'username': USERNAME,
-        'password': PASSWORD
+        'username': demisto.params().get('credentials').get('identifier'),
+        'password': demisto.params().get('credentials').get('password')
     }
     start_idx = 16
     end_delim = ' <-'
