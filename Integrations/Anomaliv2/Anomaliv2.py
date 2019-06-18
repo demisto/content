@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 USERNAME = demisto.params().get('username')
-API_KEY = demisto.params().get('key')
+API_KEY = demisto.params().get('apikey')
 SERVER = demisto.params().get('url', '').strip('/')
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/api/'
