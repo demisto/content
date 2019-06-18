@@ -504,5 +504,5 @@ script:
   script: '-'
   type: python
   releaseNotes: Created AutoFocus V2 integration in a package strcture
-  tests:
-    - AutoFocus V2 test
+tests:
+  - AutoFocus V2 test
