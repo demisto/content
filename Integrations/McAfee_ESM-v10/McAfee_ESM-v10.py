@@ -142,7 +142,7 @@ class NitroESM(object):
                                                 verify=VERIFY)
             self.cookie = self.login_response.headers.get('Set-Cookie')
 
-            token = re.search(r'(^[\w\d-_=]+\.[\w\d-_=]+\.?[\w\d-_.+/=]*)', self.cookie)
+            token = re.search(r'(^[\w\d_=-]+\.[\w\d_=-]+\.?[\w\d_.+/=-]*)', self.cookie)
             if token is not None:
                 self.jwttoken = token.group(1)
             else:
