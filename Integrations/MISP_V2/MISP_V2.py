@@ -25,8 +25,7 @@ requests.packages.urllib3.disable_warnings()
 # Disable python warnings
 warnings.warn = warn
 
-if not demisto.params().get('proxy', False):
-    proxy = handle_proxy()
+proxy = handle_proxy()
 
 ''' GLOBALS/PARAMS '''
 MISP_KEY = demisto.params().get('api_key')
