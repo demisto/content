@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Suppress file type errors
+- display: Suppress file type error
   name: suppress_file_type_error
   defaultvalue: ""
   type: 8
@@ -359,4 +359,4 @@ script:
   subtype: python3
 tests:
 - Wildfire Test
-releaseNotes: "-"
+releaseNotes: "Add Suppress file type error parameter"
