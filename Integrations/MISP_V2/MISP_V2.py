@@ -149,7 +149,7 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
-def build_context(response: Union[dict, requests.Response]) -> dict:
+def build_context(response: Union[dict, requests.Response]) -> Union[dict, list]:
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
 
@@ -222,7 +222,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:
     return events
 
 
-def get_misp_threat_level(threat_level_id: str) -> str:
+def get_misp_threat_level(threat_level_id: str) -> str:  # type: ignore
     """Gets MISP's thread level and returning it in Demisto's format
 
     Args:
