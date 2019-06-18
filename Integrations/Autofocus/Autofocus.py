@@ -251,7 +251,7 @@ def get_fields_from_hit_object(result_object, response_dict_name):
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     for key, value in result_object.items():
         if key in af_params_dict:   # type: ignore
-            new_key = af_params_dict.get(key)
+            new_key = af_params_dict.get(key)   # type: ignore
             new_object[new_key] = value
         else:
             new_object[key] = value
@@ -261,7 +261,7 @@ def get_fields_from_hit_object(result_object, response_dict_name):
 def parse_hits_response(hits, response_dict_name):
     parsed_objects = []
     for hit in hits:
-        flattened_obj = {}
+        flattened_obj = {}  # type: ignore
         flattened_obj.update(hit.get('_source'))
         flattened_obj['_id'] = hit.get('_id')
         parsed_obj = get_fields_from_hit_object(flattened_obj, response_dict_name)
@@ -287,26 +287,26 @@ def get_session_details(session_id):
 def validate_if_line_needed(category, info_line):
     line = info_line.get('line')
     line_values = line.split(',')
-    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category).get('indexes')
+    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category).get('indexes')   # type: ignore
     if category == 'behavior':
-        risk_index = category_indexes.get('risk')
+        risk_index = category_indexes.get('risk')   # type: ignore
         risk = line_values[risk_index].strip()
         # only lines with risk higher the informational are considered
         return not risk == 'informational'
     elif category == 'registry':
-        action_index = category_indexes.get('action')
+        action_index = category_indexes.get('action')   # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions SetValueKey, CreateKey or RegSetValueEx are considered
         return action == 'SetValueKey' or action == 'CreateKey' or action == 'RegSetValueEx'
     elif category == 'file':
-        action_index = category_indexes.get('action')
+        action_index = category_indexes.get('action')   # type: ignore
         action = line_values[action_index].strip()
         benign_count = info_line.get('b') if info_line.get('b') else 0
         malicious_count = info_line.get('m') if info_line.get('m') else 0
         # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
         return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
     elif category == 'process':
-        action_index = category_indexes.get('action')
+        action_index = category_indexes.get('action')   # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions created, CreateKey or CreateProcessInternalW are considered
         return action == 'created' or action == 'CreateProcessInternalW'
@@ -315,11 +315,11 @@ def validate_if_line_needed(category, info_line):
 
 
 def get_data_from_line(line, category_name):
-    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')
+    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')  # type: ignore
     values = line.split(',')
     sub_categories = {}
-    for sub_category in category_indexes:
-        sub_category_index = category_indexes.get(sub_category)
+    for sub_category in category_indexes:   # type: ignore
+        sub_category_index = category_indexes.get(sub_category) # type: ignore
         sub_categories.update({
             sub_category: values[sub_category_index]
         })
@@ -330,7 +330,7 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
     sub_categories_list = []
     for item in sub_category_data:
         new_sub_category = {}
-        fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')
+        fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')  # type: ignore
         for field in fields_to_extract:
             new_sub_category[field] = item.get(field)
         sub_categories_list.append(new_sub_category)
