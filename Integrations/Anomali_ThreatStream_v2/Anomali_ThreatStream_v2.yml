@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Anomaliv2
+  id: Anomali ThreatStream v2
   version: -1
 configuration:
 - defaultvalue: https://api.threatstream.com
@@ -16,6 +16,16 @@ configuration:
   name: apikey
   required: true
   type: 4
+- defaultvalue: high
+  display: Threshold of the indicator.
+  name: default_threshold
+  options:
+  - low
+  - medium
+  - high
+  - very-high
+  required: true
+  type: 15
 - defaultvalue: 'false'
   display: Trust any certificate (insecure)
   name: insecure
@@ -25,9 +35,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Anomali ThreatStream to query and submit threats
+description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v2
-name: Anomaliv2
+name: Anomali ThreatStream v2
 script:
   commands:
   - arguments:
@@ -39,9 +49,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: high
       description: If Severity is greater or equal than the threshold, then the ip
-        will be considered malicious. By default is set to high.
+        will be considered malicious. Overides the default threshold from params if
+        defined.
       isArray: false
       name: threshold
       predefined:
@@ -140,9 +150,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: high
-      description: If Severity is greater or equal than the threshold, then the ip
-        will be considered malicious. By default is set to high.
+      description: If Severity is greater or equal than the threshold, then the domain
+        will be considered malicious. Overides the default threshold from params if
+        defined.
       isArray: false
       name: threshold
       predefined:
@@ -251,14 +261,14 @@ script:
     - default: false
       description: The md5 of file to check.
       isArray: false
-      name: md5
+      name: file
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: high
-      description: If Severity is greater or equal than the threshold, then the ip
-        will be considered malicious. By default is set to high.
+      description: If Severity is greater or equal than the threshold, then the md5
+        of file will be considered malicious. Overides the default threshold from
+        params if defined.
       isArray: false
       name: threshold
       predefined:
@@ -338,9 +348,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: high
       description: If Severity is greater or equal than the threshold, then the ip
-        will be considered malicious. By default is set to high
+        will be considered malicious. Overides the default threshold from params if
+        defined.
       isArray: false
       name: threshold
       predefined:
@@ -867,6 +877,7 @@ script:
       secret: false
     deprecated: false
     description: Returns the current status of report that was submitted to sandbox.
+      The report id is returned from threatstream-submit-to-sandbox command.
     execution: false
     name: threatstream-get-analysis-status
     outputs:
@@ -1356,9 +1367,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: high
-      description: If Severity is greater or equal than the threshold, then the ip
-        will be considered malicious. By default is set to high.
+      description: If Severity is greater or equal than the threshold, then the url
+        will be considered malicious. Overides the default threshold from params if
+        defined.
       isArray: false
       name: threshold
       predefined:
@@ -1442,4 +1453,4 @@ script:
   script: '-'
   type: python
 tests:
-  - 'ThreatStream-Test'
+- ThreatStream-Test
