@@ -140,7 +140,7 @@ class NitroESM(object):
                                                 self.params_json,
                                                 headers=self.v10_login_headers,
                                                 verify=VERIFY)
-            self.cookie = self.login_response.headers.get('Set-Cookie')
+            self.cookie = self.login_response.headers.get('Set-Cookie', '')
 
             token = re.search(r'(^[\w\d_=-]+\.[\w\d_=-]+\.?[\w\d_.+/=-]*)', self.cookie)
             if token is not None:
