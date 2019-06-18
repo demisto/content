@@ -188,9 +188,14 @@ script:
                         query = ("%s AND" % query)
                     if "time" in key:
                         query = ("%s %s=CAST('%s' AS TIMESTAMP)" % (query,key,cuts.get(key)))
+                        use_and=True
                     else:
-                        query = ("%s %s='%s'" % (query,key,cuts.get(key)))
-                    use_and=True
+                        if(type(cuts.get(key))==str or type(cuts.get(key))==unicode):
+                            query = ("%s %s='%s'" % (query,key,cuts.get(key)))
+                        if(type(cuts.get(key))==int):
+                            query = ("%s %s=%s" % (query,key,cuts.get(key)))
+                        use_and=True
+
             return query
 
     def apply_like_cuts(query, cuts):
@@ -590,6 +595,13 @@ script:
         limit = demisto.args().get('limit')
 
         time = demisto.args().get('time')
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query = "%s WHERE upt_day = %s" % (query, uptday)
+
         equal_cuts = {
                 "upt_asset_id":demisto.args().get('asset_id'),
                 "upt_hostname":demisto.args().get('host_name_is'),
@@ -653,6 +665,13 @@ script:
         time = demisto.args().get('time')
         query = "select * from process_open_sockets"
         limit = demisto.args().get('limit')
+
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query = "%s WHERE upt_day = %s" % (query, uptday)
 
         equal_cuts = {
                 "remote_address":demisto.args().get('ip'),
@@ -721,6 +740,13 @@ script:
         query = "select * from socket_events"
         limit = demisto.args().get('limit')
 
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query = "%s WHERE upt_day = %s" % (query, uptday)
+
         equal_cuts = {
                 "remote_address":demisto.args().get('ip'),
                 "upt_asset_id":demisto.args().get('asset_id'),
@@ -785,9 +811,15 @@ script:
         '''return process event information'''
         http_method = 'post'
         api_call = '/query'
+        time = demisto.args().get('time')
 
-        query=("SELECT * FROM socket_events WHERE upt_time <= CAST('%s' AS TIMESTAMP) AND remote_address='%s' ORDER BY upt_time DESC LIMIT 1" % \
-            (demisto.args().get('time'), demisto.args().get('ip')))
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query=("SELECT * FROM socket_events WHERE upt_day = %s AND upt_time <= CAST('%s' AS TIMESTAMP) AND remote_address='%s' ORDER BY upt_time DESC LIMIT 1" % \
+            (uptday, time, demisto.args().get('ip')))
 
         equal_cuts = {
             "upt_asset_id":demisto.args().get('asset_id'),
@@ -837,6 +869,13 @@ script:
         time = demisto.args().get('time')
         query = "select * from processes"
         limit = demisto.args().get('limit')
+
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query = "%s WHERE upt_day = %s" % (query, uptday)
 
         equal_cuts = {
                 "upt_asset_id":demisto.args().get('asset_id'),
@@ -904,6 +943,13 @@ script:
         query = "select * from process_events"
         limit = demisto.args().get('limit')
 
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query = "%s WHERE upt_day = %s" % (query, uptday)
+
         equal_cuts = {
                 "upt_asset_id":demisto.args().get('asset_id'),
                 "upt_hostname":demisto.args().get('host_name_is'),
@@ -966,18 +1012,24 @@ script:
         '''return process information'''
         http_method = 'post'
         api_call = '/query'
+        time = demisto.args().get('time')
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
 
         query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
-            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
+            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time,\
             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr ON aa.upt_hash=rr.upt_hash), \
-            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_add_time, \
+            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_day, upt_add_time, \
             coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
             SELECT * FROM new_proc WHERE pid=%s AND CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time" \
-            % (demisto.args().get('pid'), demisto.args().get('time')))
+            % (demisto.args().get('pid'), time))
 
         equal_cuts = {
+            "upt_day":uptday,
             "upt_asset_id":demisto.args().get('asset_id'),
             "upt_hostname":demisto.args().get('host_name_is')
             }
@@ -1016,9 +1068,15 @@ script:
         '''return process event information'''
         http_method = 'post'
         api_call = '/query'
+        time = demisto.args().get('time')
 
-        query=("SELECT * FROM process_events WHERE pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
-            (demisto.args().get('pid'), demisto.args().get('time')))
+        if time!=None:
+            day = time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query=("SELECT * FROM process_events WHERE upt_day = %s AND pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
+            (uptday, demisto.args().get('pid'), time))
 
         equal_cuts = {
             "upt_asset_id":demisto.args().get('asset_id'),
@@ -1065,18 +1123,24 @@ script:
         '''return parent process information'''
         http_method = 'post'
         api_call = '/query'
+        child_add_time = demisto.args().get('child_add_time')
+        if child_add_time!=None:
+            day = child_add_time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
 
         query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
-            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
+            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time,\
             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr ON aa.upt_hash=rr.upt_hash), \
-            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_add_time, \
+            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_day, upt_add_time, \
             coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
             SELECT * FROM new_proc WHERE pid=%s AND CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time" \
-            % (demisto.args().get('parent'), demisto.args().get('child_add_time')))
+            % (demisto.args().get('parent'), child_add_time))
 
         equal_cuts = {
+            "upt_day": uptday,
             "upt_asset_id":demisto.args().get('asset_id'),
             "upt_hostname":demisto.args().get('host_name_is')
             }
@@ -1115,9 +1179,15 @@ script:
         '''return process event information'''
         http_method = 'post'
         api_call = '/query'
+        child_add_time = demisto.args().get('child_add_time')
 
-        query=("SELECT * FROM process_events WHERE pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
-            (demisto.args().get('parent'), demisto.args().get('child_add_time')))
+        if child_add_time!=None:
+            day = child_add_time.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
+        query=("SELECT * FROM process_events WHERE upt_day = %s AND pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
+            (uptday, demisto.args().get('parent'), child_add_time))
 
         equal_cuts = {
             "upt_asset_id":demisto.args().get('asset_id'),
@@ -1169,11 +1239,17 @@ script:
         asset_id = demisto.args().get('asset_id')
         parent_start = demisto.args().get('parent_start_time')
         parent_end = demisto.args().get('parent_end_time')
+        if parent_start!=None:
+            day = parent_start.replace(" ","-")
+            day_list = day.split("-")
+            uptday = int("%s%s%s" % (str(day_list[0]),str(day_list[1]),str(day_list[2])))
+
         if parent_end==None:
             query = ("SELECT upt_time FROM process_events WHERE pid = %s AND upt_asset_id = '%s' \
             AND upt_time > CAST('%s' AS TIMESTAMP) ORDER BY upt_time ASC limit 1" % \
             (parent, asset_id, parent_start))
             query_type = 'global'
+
             post_data = {
                 'query': query,
                 'queryType': query_type
@@ -1187,13 +1263,13 @@ script:
         query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
-            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
+            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time,\
             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr on aa.upt_hash=rr.upt_hash), \
-            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_add_time, \
+            new_proc AS (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, pgroup, upt_hostname, upt_day, upt_add_time, \
             coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
-            SELECT * FROM new_proc WHERE parent = %s AND upt_asset_id = '%s' AND \
+            SELECT * FROM new_proc WHERE upt_day>=%s AND parent = %s AND upt_asset_id = '%s' AND \
             upt_add_time BETWEEN CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP) ORDER BY upt_add_time DESC" % \
-            (parent, asset_id, parent_start, parent_end))
+            (uptday, parent, asset_id, parent_start, parent_end))
 
         if limit != -1 and limit != None:
             query = ("%s LIMIT %s" % (query,limit))
@@ -3162,6 +3238,6 @@ script:
       description: name of query
       type: string
     description: Save a query to the Uptycs DB
-  dockerimage: uptycs/demisto:latest
+  dockerimage: bkschmolluptycs/demisto_uptycs:latest
   isfetch: true
   runonce: true
