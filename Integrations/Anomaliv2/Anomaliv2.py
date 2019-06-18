@@ -575,7 +575,7 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         ec = {'ThreatStream.Import.ImportID': imported_id}
         return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
     else:
-        return_outputs("The data was not imported. Check if valid arguments were passed")
+        return_outputs("The data was not imported. Check if valid arguments were passed", None)
 
 
 def get_model_list(model, limit="50"):
