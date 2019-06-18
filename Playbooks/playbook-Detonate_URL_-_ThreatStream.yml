@@ -223,7 +223,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Anomali_ThreatStream_v2
+                        simple: Anomali ThreatStream v2
                 - - operator: isEqualString
                     left:
                       value:
