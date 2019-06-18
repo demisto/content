@@ -1159,10 +1159,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: b561f8eb-e9be-4954-84b3-9906f9a8e677
+    taskid: 48978961-f56f-4b37-8302-389f0e4971e3
     type: regular
     task:
-      id: b561f8eb-e9be-4954-84b3-9906f9a8e677
+      id: 48978961-f56f-4b37-8302-389f0e4971e3
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -1177,8 +1177,7 @@ tasks:
     scriptarguments:
       data:
         simple: jojo
-      entryId:
-        simple: "123456654321"
+      entryId: {}
       filename:
         simple: lolo.xml
     separatecontext: false
@@ -1194,10 +1193,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: cb0c7767-2442-4ac2-8ad3-3cc227a8b114
+    taskid: 91586d36-8928-46c8-8317-1203d07a7d69
     type: regular
     task:
-      id: cb0c7767-2442-4ac2-8ad3-3cc227a8b114
+      id: 91586d36-8928-46c8-8317-1203d07a7d69
       version: -1
       name: wildfire-upload non supported file type
       description: Uploads a file to WildFire for analysis.
@@ -1210,7 +1209,9 @@ tasks:
       - "45"
     scriptarguments:
       upload:
-        simple: "123456654321"
+        complex:
+          root: File
+          accessor: EntryID
     separatecontext: false
     view: |-
       {
@@ -1224,10 +1225,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: e3c615fd-a8a4-4417-8d0f-24bf26ca2b7f
+    taskid: 26a05e42-a4f2-4e1f-8c22-fa6edb47e433
     type: regular
     task:
-      id: e3c615fd-a8a4-4417-8d0f-24bf26ca2b7f
+      id: 26a05e42-a4f2-4e1f-8c22-fa6edb47e433
       version: -1
       name: Comments of warning message to context
       description: "Takes the comments of a given entry ID and stores them in the
