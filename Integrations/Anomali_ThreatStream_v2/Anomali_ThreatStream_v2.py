@@ -18,6 +18,7 @@ API_KEY = demisto.params().get('apikey')
 SERVER = demisto.params().get('url', '').strip('/')
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/api/'
+DEFAULT_THRESHOLD = demisto.params().get('default_threshold', 'high')
 
 HEADERS = {
     'Content-Type': 'application/json'
@@ -408,13 +409,14 @@ def test_module():
     demisto.results('ok')
 
 
-def get_ip_reputation(ip, threshold="high", status="active,inactive"):
+def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given ip from ThreatStream and
         returns the indicator with highest severity score.
     """
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(params, ip)
+    threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     ip_context = get_ip_context(indicator, threshold)
     threat_ip_context = get_threat_generic_context(indicator)
@@ -429,13 +431,14 @@ def get_ip_reputation(ip, threshold="high", status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def get_domain_reputation(domain, threshold="high", status="active,inactive"):
+def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given domain from ThreatStream and
         returns the indicator with highest severity score.
     """
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(params, domain)
+    threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_domain_context(indicator, threshold)
     threat_domain_context = get_threat_generic_context(indicator)
@@ -450,13 +453,14 @@ def get_domain_reputation(domain, threshold="high", status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def get_file_reputation(md5, threshold="high", status="active,inactive"):
+def get_file_reputation(file, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given md5 of the file from ThreatStream and
         returns the indicator with highest severity score.
     """
-    params = build_params(value=md5, type="md5", status=status, limit=0)
-    indicator = search_indicator_by_params(params, md5)
+    params = build_params(value=file, type="md5", status=status, limit=0)
+    indicator = search_indicator_by_params(params, file)
+    threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     file_context = get_file_context(indicator, threshold)
     threat_file_context = get_threat_generic_context(indicator)
@@ -470,18 +474,19 @@ def get_file_reputation(md5, threshold="high", status="active,inactive"):
         'File(val.MD5 == obj.MD5)': file_context,
         'ThreatStream.File(val.MD5 == obj.MD5)': threat_file_context
     }
-    human_readable = tableToMarkdown(F"MD5 reputation for: {md5}", threat_file_context)
+    human_readable = tableToMarkdown(F"MD5 reputation for: {file}", threat_file_context)
 
     return_outputs(human_readable, ec, indicator)
 
 
-def get_url_reputation(url, threshold, status="active,inactive"):
+def get_url_reputation(url, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given url address from ThreatStream and
         returns the indicator with highest severity score.
     """
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(params, url)
+    threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_url_context(indicator, threshold)
     threat_url_context = get_threat_generic_context(indicator)
@@ -497,13 +502,14 @@ def get_url_reputation(url, threshold, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def get_email_reputation(email, threshold="high", status="active,inactive"):
+def get_email_reputation(email, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given email address from ThreatStream and
         returns the indicator with highest severity score.
     """
     params = build_params(value=email, type="email", status=status, limit=0)
     indicator = search_indicator_by_params(params, email)
+    threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     threat_email_context = get_threat_generic_context(indicator)
     threat_email_context['Email'] = threat_email_context.pop('Address')
