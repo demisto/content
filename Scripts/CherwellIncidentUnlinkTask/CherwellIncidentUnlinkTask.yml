@@ -26,6 +26,8 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.2.214
+subtype: python3
+releaseNotes: "-"
 tags: [Cherwell]
 dependson:
   must:

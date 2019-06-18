@@ -693,7 +693,6 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -749,6 +748,6 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-releaseNotes: "Fixed mistaken identification of excel files as word document. Word document check now ignores file info data"
+releaseNotes: "Word document check now ignores file info data"
 tests:
   - Extract Indicators From File - test
