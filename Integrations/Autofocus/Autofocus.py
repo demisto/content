@@ -319,7 +319,7 @@ def get_data_from_line(line, category_name):
     values = line.split(',')
     sub_categories = {}
     for sub_category in category_indexes:   # type: ignore
-        sub_category_index = category_indexes.get(sub_category) # type: ignore
+        sub_category_index = category_indexes.get(sub_category)     # type: ignore
         sub_categories.update({
             sub_category: values[sub_category_index]
         })
