@@ -116,10 +116,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 2fd9b929-7922-472b-8543-4b1eed010e55
+    taskid: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
     type: condition
     task:
-      id: 2fd9b929-7922-472b-8543-4b1eed010e55
+      id: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
       version: -1
       name: Is there a URL?
       description: Checks if there is at least one URL involved in the incident.
@@ -253,10 +253,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: e6dd67a7-858c-4f88-8c53-163fb75163f0
+    taskid: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
     type: condition
     task:
-      id: e6dd67a7-858c-4f88-8c53-163fb75163f0
+      id: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
       version: -1
       name: Are there indicators with scores?
       description: Checks whether there is at least one indicator with a DBotScore.
@@ -388,26 +388,155 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: e6c72e70-f70d-4174-8d29-8690080d3e16
+    taskid: a7d60152-f753-45f2-8dea-9937f5be9885
     type: regular
     task:
-      id: e6c72e70-f70d-4174-8d29-8690080d3e16
+      id: a7d60152-f753-45f2-8dea-9937f5be9885
       version: -1
       name: Set incident severity to "low"
       description: Sets the incident severity to "low".
-      scriptName: Set
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
-      append: {}
-      key:
-        simple: Severity
-      value:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
         simple: low
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -422,26 +551,155 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 28317c38-55d6-4b32-8c1e-5f5eb5d427f6
+    taskid: 63db02c9-0632-488f-89b4-cc9c3c83da58
     type: regular
     task:
-      id: 28317c38-55d6-4b32-8c1e-5f5eb5d427f6
+      id: 63db02c9-0632-488f-89b4-cc9c3c83da58
       version: -1
       name: Set incident severity to "medium"
       description: Sets the incident severity to "medium".
-      scriptName: Set
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "14"
     scriptarguments:
-      append: {}
-      key:
-        simple: Severity
-      value:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
         simple: medium
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -456,26 +714,155 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: a041165b-c919-443e-8c95-58f69ebb5ee6
+    taskid: cb522e09-996a-47b5-8fdc-5da898788702
     type: regular
     task:
-      id: a041165b-c919-443e-8c95-58f69ebb5ee6
+      id: cb522e09-996a-47b5-8fdc-5da898788702
       version: -1
       name: Set incident severity to "high"
       description: Sets the incident severity to "high".
-      scriptName: Set
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      append: {}
-      key:
-        simple: Severity
-      value:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
         simple: high
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -490,14 +877,16 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: d8a27696-4577-4150-8bae-5c56cc69c6d7
+    taskid: e3a4d27c-fdc8-4087-84ed-b335984f896f
     type: regular
     task:
-      id: d8a27696-4577-4150-8bae-5c56cc69c6d7
+      id: e3a4d27c-fdc8-4087-84ed-b335984f896f
       version: -1
       name: Manually investigate the incident
       description: A manual task that allows the analyst to manually investigate the
         incident, and resume the playbook when they choose to do so.
+      tags:
+      - manual
       type: regular
       iscommand: false
       brand: ""
@@ -517,14 +906,16 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 92ec7f68-b256-42ff-8a3f-4b96f87acaa9
+    taskid: a81fc1c4-dd81-451a-8bf6-ab1038ffa07c
     type: condition
     task:
-      id: 92ec7f68-b256-42ff-8a3f-4b96f87acaa9
+      id: a81fc1c4-dd81-451a-8bf6-ab1038ffa07c
       version: -1
       name: Is the email malicious or benign?
       description: Allows the analyst to decide whether the investigated email is
         malicious or benign, according to their findings from the manual investigation.
+      tags:
+      - manual
       type: condition
       iscommand: false
       brand: ""
@@ -641,14 +1032,16 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 7d9c114d-717a-4d7d-8f27-019e3c914a39
+    taskid: aeef0938-0752-477d-8b54-d4a3cfdaefc1
     type: regular
     task:
-      id: 7d9c114d-717a-4d7d-8f27-019e3c914a39
+      id: aeef0938-0752-477d-8b54-d4a3cfdaefc1
       version: -1
       name: Manually remediate the incident
       description: A manual task that allows the analyst to manually remediate the
         incident, and resume the playbook when they choose to do so.
+      tags:
+      - manual
       type: regular
       iscommand: false
       brand: ""
