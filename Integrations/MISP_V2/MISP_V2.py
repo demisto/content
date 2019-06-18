@@ -470,7 +470,7 @@ def create_event(ret_only_event_id: bool = False) -> Union[int, None]:
             'threat_level_id') in THREAT_LEVELS_NUMBERS else d_args.get('threat_level_id'),
         'analysis': ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get(
             'analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis'),
-        'info': d_args.get('info'),
+        'info': d_args.get('info') if d_args.get('info') else 'Event from Demisto',
         'date': d_args.get('date') if d_args.get('date') else get_time_now(),
         'published': True if d_args.get('published') == 'true' else False,
         'orgc_id': d_args.get('orgc_id'),
