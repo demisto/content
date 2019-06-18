@@ -755,6 +755,7 @@ tasks:
         simple: https://www.circl.lu/doc/misp/feed-osint/
       limit:
         simple: "1"
+    continueonerror: true
     separatecontext: false
     view: |-
       {
