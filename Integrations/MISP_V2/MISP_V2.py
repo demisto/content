@@ -148,7 +148,7 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
-def build_context(response: Union[dict, requests.Response]) -> Union[dict, list]:
+def build_context(response: Union[dict, requests.Response]) -> Union[dict, list, str]:
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
 
