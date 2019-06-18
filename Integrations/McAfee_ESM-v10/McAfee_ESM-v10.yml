@@ -718,4 +718,4 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: "packagify"
+releaseNotes: "fixed logout process"

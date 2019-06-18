@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 """ IMPORTS """
 import base64
 import json
@@ -12,7 +13,6 @@ import traceback
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
-# global for ignoring errors in fetch incident
 MAX_CASES_PER_FETCH = 30
 
 # by default filters only "Closed" cases
@@ -106,17 +106,12 @@ class NitroESM(object):
         self.esmhost = esmhost
         self.user = user
         self.passwd = passwd
-        self._build_login_urls()
+        self.url = 'https://{}/rs/esm/'.format(self.esmhost)
+        self.session_headers = {'Content-Type': 'application/json'}
         self._encode_login()
         self._build_params()
         self.is_logged_in = False
         self._case_statuses = None
-
-    def _build_login_urls(self):
-        """ Concatenate URLs """
-        self.url = 'https://{}/rs/esm/'.format(self.esmhost)
-        self.int_url = 'https://{}/ess'.format(self.esmhost)
-        self.login_url = '{}{}'.format(self.url, 'login')
 
     def _encode_login(self):
         self.b64_user = base64.b64encode(self.user.encode('utf-8')).decode()
@@ -135,37 +130,35 @@ class NitroESM(object):
 
     def login(self):
         try:
-            self.v10_login_headers = {'Content-Type': 'application/json'}
-            self.login_response = requests.post(self.login_url,
-                                                self.params_json,
-                                                headers=self.v10_login_headers,
-                                                verify=VERIFY)
-            self.cookie = self.login_response.headers.get('Set-Cookie', '')
-
-            token = re.search(r'(^[\w\d_=-]+\.[\w\d_=-]+\.?[\w\d_.+/=-]*)', self.cookie)
-            if token is not None:
-                self.jwttoken = token.group(1)
-            else:
+            login_response = requests.post(self.url + 'login',
+                                           json=self.params_json,
+                                           headers=self.session_headers,
+                                           verify=VERIFY)
+            jwttoken = login_response.cookies.get('JWTToken')
+            xsrf_token = login_response.headers.get('Xsrf-Token')
+            if jwttoken is None or xsrf_token is None:
                 return_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(
-                    self.login_url,
-                    self.login_response.status_code,
-                    self.login_response.text))
+                    self.url + 'login',
+                    login_response.status_code,
+                    login_response.text))
 
-            self.xsrf_token = self.login_response.headers.get('Xsrf-Token')
-            self.session_headers = {'Cookie': self.jwttoken,
-                                    'X-Xsrf-Token': self.xsrf_token,
-                                    'Content-Type': 'application/json'}
+            self.session_headers = {
+                'Cookie': 'JWTToken=' + jwttoken,
+                'X-Xsrf-Token': xsrf_token,
+                'Content-Type': 'application/json'
+            }
             self.is_logged_in = True
-            demisto.setIntegrationContext({
-                'session_headers': self.session_headers
-            })
+            # demisto.setIntegrationContext({
+            #     'session_headers': self.session_headers
+            # })
         except KeyError as e:
             return_error("Failed login\n error: {}".format(e))
 
     def logout(self):
         if self.is_logged_in:
             try:
-                requests.delete(self.url + 'userLogout',
+                url = self.url + ('v2/logout' if IS_V2_API else 'logout')
+                requests.delete(url,
                                 headers=self.session_headers,
                                 data=json.dumps(''),
                                 verify=VERIFY
@@ -179,7 +172,6 @@ class NitroESM(object):
         """ Send query to ESM, return JSON result """
         self.cmd = cmd
         self.query = query
-        self.url = 'https://{}/rs/esm/'.format(self.esmhost)
         self.result = requests.post(self.url + self.cmd,
                                     headers=self.session_headers,
                                     data=self.query, verify=VERIFY)
@@ -877,7 +869,8 @@ try:
             last_run['alarms'] = last_run['value']
         configuration_last_case = int(demisto.params().get('startingCaseID', 0))
 
-        start_alarms = last_run.get('alarms', (datetime.now() - timedelta(days=1) + timedelta(hours=TIMEZONE)).isoformat())
+        start_alarms = last_run.get('alarms',
+                                    (datetime.now() - timedelta(days=1) + timedelta(hours=TIMEZONE)).isoformat())
         last_case = last_run.get('cases', 0)
         # if last_case < configuration_last_case:
         last_case = max(last_case, configuration_last_case)
