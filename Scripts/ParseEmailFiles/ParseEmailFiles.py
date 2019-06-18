@@ -3554,11 +3554,6 @@ def main():
             "Failed to load file entry with entry id: {}. Error: {}".format(
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
-    # parse_only_headers = False
-    # max_depth = 3
-    # file_type = "rfc 822 mail text, ascii text, with crlf line terminators"
-    # file_name = "[WO0000001423906]Analisi mail spam.eml"
-    # file_path = "/Users/aazadaliyev/Downloads/[WO0000001423906]Analisi mail spam.eml"
     try:
         file_type_lower = file_type.lower()
         if 'composite document file v2 document' in file_type_lower \
