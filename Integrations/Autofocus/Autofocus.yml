@@ -317,6 +317,7 @@ script:
       description: HTTP requests made when the sample was executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Coverage
+      description: Sample coverage
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
       description: 'Sample behavior: created or modified files, started a process,
