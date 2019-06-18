@@ -1537,6 +1537,10 @@
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
+        },
+        {
+            "integrations": "MailListener-POP3",
+            "playbookID": "MailListener-POP3 - Test"
         }
     ],
     "skipped_tests": {
