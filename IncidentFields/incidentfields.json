@@ -166,10 +166,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -236,10 +238,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -271,10 +275,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -590,10 +596,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -695,10 +703,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -765,10 +775,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -868,10 +880,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -938,10 +952,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -973,10 +989,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -1008,10 +1026,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -1113,10 +1133,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -1148,10 +1170,12 @@
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"systemAssociatedTypes": [
-				"Phishing"
+				"Phishing",
+				"Phishing - Simple"
 			],
 			"associatedToAll": false,
 			"unmapped": false,
@@ -1651,5 +1675,6 @@
 			"unmapped": false,
 			"unsearchable": false
 		}
-	]
+	],
+	"releaseNotes": "Added fields for a future update."
 }
