@@ -445,6 +445,7 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
         'scope': scope,
         'tagScopes': tag_scopes
     }
+    print(data)
     path = '/top-tags/search/'
     resp = http_request(path, data=data, err_operation='Top tags operation failed')
     in_progress = resp.get('af_in_progress')
@@ -538,10 +539,6 @@ def search_samples_command():
     sort = args.get('sort')
     order = args.get('order')
     info = run_search('samples', query=query, scope=scope, size=max_results, sort=sort, order=order)
-    # info = {
-    #     'AFCookie': af_cookie,
-    #     'Status': status
-    # }
     md = tableToMarkdown(f'Search Samples Info:', info)
     demisto.results({
         'Type': entryTypes['note'],

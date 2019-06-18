@@ -26,7 +26,7 @@ script:
       description: The query to retrieve samples. You can build your query using the
         AF GUI, see integration description.
       isArray: false
-      name: advanced_query
+      name: query
       required: true
       secret: false
     - default: false
@@ -87,7 +87,7 @@ script:
       description: AutoFocus search ID. Use this ID to get search results. The AF
         Cookie expires 120 seconds after the search completes.
       type: String
-    - contextPath: AutoFocus.SamplesSearch.SearchStatus
+    - contextPath: AutoFocus.SamplesSearch.Status
       description: in progress / complete
       type: String
   - arguments:
@@ -95,7 +95,7 @@ script:
       description: The query to retrieve samples. You can build your query using the
         AF GUI, see integration description.
       isArray: false
-      name: advanced_query
+      name: query
       required: true
       secret: false
     - default: false
@@ -153,7 +153,7 @@ script:
       description: AutoFocus search ID. Use this ID to get search results. The AF
         Cookie expires 120 seconds after the search completes.
       type: String
-    - contextPath: AutoFocus.SessionsSearch.SearchStatus
+    - contextPath: AutoFocus.SessionsSearch.Status
       description: in progress / complete
       type: String
   - arguments:
@@ -307,7 +307,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get properties, behaviors, and activities observed for a sample
+    description: |-
+      Get properties, behaviors, and activities observed for a sample.
+      Run the command once to get the fields and os's under HTTP,Coverage,Behavior,Registry,Files,Processes,Connections,DNS.
     execution: false
     name: autofocus-sample-analysis
     outputs:
@@ -333,7 +335,7 @@ script:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Connections
       description: Connections to other hosts on the network when the sample was executed.
       type: Unknown
-    - contextPath: AutoFocus.SampleAnalysis.Analysis.DNS
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Dns
       description: DNS activity observed when the sample was executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
@@ -467,7 +469,7 @@ script:
       description: AutoFocus search ID. Use this ID to get search results. The AF
         Cookie expires 120 seconds after the search completes.
       type: String
-    - contextPath: AutoFocus.TopTagsSearch.SearchStatus
+    - contextPath: AutoFocus.TopTagsSearch.Status
       description: in progress / complete
       type: String
   - arguments:
@@ -500,3 +502,5 @@ script:
   runonce: false
   script: '-'
   type: python
+  tests:
+    - AutoFocus V2 test
