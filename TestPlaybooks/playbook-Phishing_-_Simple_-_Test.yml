@@ -215,7 +215,7 @@ tasks:
       comment:
         simple: Malicious MD5 for test
       indicator:
-        simple: 42914d6d213a20a2684064be5c80ffa9
+        simple: a790cf8ad94bdd47f4232d87fe7b25bdabaf66af
       miner:
         simple: Malicious
     reputationcalc: 1
