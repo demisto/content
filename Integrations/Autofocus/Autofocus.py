@@ -331,8 +331,8 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
     for item in sub_category_data:
         new_sub_category = {}
         fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')  # type: ignore
-        for field in fields_to_extract:
-            new_sub_category[field] = item.get(field)
+        for field in fields_to_extract:     # type: ignore
+            new_sub_category[field] = item.get(field)   # type: ignore
         sub_categories_list.append(new_sub_category)
     return sub_categories_list
 
@@ -366,7 +366,7 @@ def parse_sample_analysis_response(resp, filter_data_flag):
                 new_category[os_name] = os_sanitized_data
 
             category_dict = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name)
-            analysis.update({category_dict['display_name']: new_category})
+            analysis.update({category_dict['display_name']: new_category})  # type: ignore
 
         elif category_name == 'coverage':
             new_category = parse_coverage_sub_categories(category_data)
@@ -381,7 +381,7 @@ def sample_analysis(sample_id, os, filter_data_flag):
         'coverage': 'true'
     }
     if os:
-        data['platforms'] = [os]
+        data['platforms'] = [os]    # type: ignore
     result = http_request(path, data=data, err_operation='Sample analysis failed')
     analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
     return analysis_obj
