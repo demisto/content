@@ -255,6 +255,7 @@ def mirror_investigation():
             mirror['mirror_direction'] = mirror_direction
         if mirror_to:
             mirror['mirror_to'] = mirror_to
+        mirror['mirrored'] = False
         mirrors.append(mirror)
 
     if integration_context.get('bot_id'):
@@ -274,6 +275,9 @@ def mirror_investigation():
 
 
 def long_running_loop():
+    """
+    Runs in a long running container - checking for newly mirrored investigations.
+    """
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
@@ -289,7 +293,6 @@ def long_running_loop():
                         mirrors.append(mirror)
                         integration_context['mirrors'] = json.dumps(mirrors)
                         demisto.setIntegrationContext(integration_context)
-            #demisto.updateModuleHealth("")
             time.sleep(5)
         except Exception as e:
             demisto.updateModuleHealth('An error occurred: {}'.format(str(e)))
@@ -300,7 +303,7 @@ async def start_listening():
     Starts a Slack RTM client and checks for mirrored incidents.
     """
     loop = asyncio.get_event_loop()
-    rtm_client = slack.RTMClient(token=TOKEN, run_async=True, loop=loop)
+    rtm_client = slack.RTMClient(token=TOKEN, run_async=True, loop=loop, auto_reconnect=True)
     try:
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         await asyncio.gather(
@@ -349,6 +352,8 @@ async def listen(**payload):
 
         if mirror['mirror_direction'] == 'FromDemisto':
             return
+        if mirror['mirror_type'] == 'none':
+            return
 
         if not mirror['mirrored']:
             demisto.mirrorInvestigation(mirror['investigation_id'], mirror['mirror_type'],
@@ -371,7 +376,7 @@ async def listen(**payload):
             demisto.addEntry(id=mirror['investigation_id'],
                              entry=await clean_message(text), username=user.get('name', ''),
                              email=user.get('profile', {}).get('email', ''),
-                             footer='\n**From Slack**' if text[0] != '!' else '')
+                             footer='\n**From Slack**')
             # TODO: do we want to set context if we don't have text?
             demisto.setIntegrationContext({'mirrors': json.dumps(mirrors), 'users': json.dumps(users)})
         # Reset module health
@@ -420,7 +425,7 @@ def slack_send_file():
     comment = demisto.args().get('comment', '')
 
     file_path = demisto.getFilePath(entry_id)
-    with open('5520@a2cb0993-027d-40ec-83c2-0c7b29541f2a', 'r') as file:
+    with open(file_path['path'], 'rb') as file:
         data = file.read()
 
     file = {
@@ -430,8 +435,10 @@ def slack_send_file():
     }
 
     response = slack_send_request(to, channel, group, thread_id=thread_id, file=file)
-
-    demisto.results('File sent to Slack successfully.')
+    if response:
+        demisto.results('File sent to Slack successfully.')
+    else:
+        demisto.results('Could not send the file to Slack.')
 
 
 def send_message(destinations, entry, ignore_add_url, integration_context, message,
@@ -482,11 +489,11 @@ def send_file(destinations, file, integration_context, thread_id):
         for destination in destinations:
             if thread_id:
                 response = CLIENT.files_upload(channels=destination,
-                                               content=file['data'], filename=file['name'],
+                                               file=file['data'], filename=file['name'],
                                                initial_comment=file['comment'], thread_ts=thread_id)
             else:
                 response = CLIENT.files_upload(channels=destination,
-                                               content=file['data'], filename=file['name'],
+                                               file=file['data'], filename=file['name'],
                                                initial_comment=file['comment'])
     except SlackApiError as e:
         if str(e).find('not_in_channel') == -1:
@@ -499,11 +506,11 @@ def send_file(destinations, file, integration_context, thread_id):
         for destination in destinations:
             if thread_id:
                 response = CLIENT.files_upload(channels=destination,
-                                               content=file['data'], filename=file['name'],
+                                               file=file['data'], filename=file['name'],
                                                initial_comment=file['comment'], thread_ts=thread_id)
             else:
                 response = CLIENT.files_upload(channels=destination,
-                                               content=file['data'], filename=file['name'],
+                                               file=file['data'], filename=file['name'],
                                                initial_comment=file['comment'])
     return response
 
