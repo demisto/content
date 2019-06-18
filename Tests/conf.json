@@ -148,7 +148,8 @@
         },
         {
             "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test"
+            "playbookID": "MISP V2 Test",
+            "timeout": 600
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
