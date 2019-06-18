@@ -799,7 +799,7 @@ def alarm_events_to_entry(events):
             'DstIP': raw_event['destIp'],
             'DstPort': raw_event.get('destPort'),
 
-            # 'Raw' : raw_event, # temporary for vik
+            'Raw': raw_event,
         }
 
         fixed_events.append(event)
@@ -844,12 +844,6 @@ def users_to_entry(users):
     }
 
 
-@logger
-def get_minutes_left():
-    esm.cmdquery(cmd='sysGetMinutesLeft')
-    esm.fetch_all_fields()
-
-
 try:
     esm = NitroESM(ESM_URL, USERNAME, PASSWORD)
     esm.login()
@@ -891,6 +885,7 @@ try:
                 triggered_date = alarm['triggeredDate']
                 if next_run is None or next_run < triggered_date:
                     next_run = triggered_date
+                alarm['events'] = esm.list_alarm_events(alarm['ID'])
                 incidents.append({
                     'name': alarm['summary'],
                     'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'],
