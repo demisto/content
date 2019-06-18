@@ -148,7 +148,7 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
-def build_context(response: Union[dict, requests.Response]) -> Union[dict, list, str]:
+def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
 
@@ -803,12 +803,12 @@ def add_feed():
     limit_int = int(limit) if limit.isdigit() else 0
 
     osint_url = f'{url}/manifest.json'
-    req = requests.get(osint_url, verify=USE_SSL, proxies=proxy, headers=headers)
+    req = requests.get(osint_url, verify=USE_SSL, headers=headers)
     try:
         uri_list = req.json()
         events_numbers = list()
         for uri in uri_list:
-            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, proxies=proxy, headers=headers)
+            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers)
             try:
                 req = req.json()
             except ValueError:
