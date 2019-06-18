@@ -63,10 +63,18 @@ API_PARAM_DICT = {
         'Source Country Code': 'src_countrycode',
         'Source IP': 'src_ip',
         'Source Port': 'src_port',
-        'SHA256': 'sha256',
         'Time': 'tstamp',
         'Upload source': 'upload_srcPossible'
     },
+    'tag_class': {
+        'Actor': 'actor',
+        'Campaign': 'campaign',
+        'Exploit': 'exploit',
+        'Malicious Behavior': 'malicious_behavior',
+        'Malware Family': 'malware_family'
+
+    },
+
     'search_results': {
         'sha1': 'SHA1',
         'sha256': 'SHA256',
@@ -294,7 +302,7 @@ def validate_if_line_needed(category, info_line):
         action_index = category_indexes.get('action')
         action = line_values[action_index].strip()
         benign_count = info_line.get('b') if info_line.get('b') else 0
-        malicious_count = info_line.get('m') if info_line.get('m') else 1
+        malicious_count = info_line.get('m') if info_line.get('m') else 0
         # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
         return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
     elif category == 'process':
@@ -339,39 +347,43 @@ def parse_coverage_sub_categories(coverage_data):
     return {'coverage': new_coverage}
 
 
-def parse_lines_from_category(category_name, data):
+def parse_lines_from_os(category_name, data, filter_data_flag):
     new_lines = []
     for info_line in data:
-        if validate_if_line_needed(category_name, info_line):
+        if not filter_data_flag or validate_if_line_needed(category_name, info_line):
             new_sub_categories = get_data_from_line(info_line.get('line'), category_name)
             new_lines.append(new_sub_categories)
-    category_dict = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name)
-    new_category = {category_dict['display_name']: new_lines}
-    return new_category
+    return new_lines
 
 
-def parse_sample_analysis_response(resp, os):
+def parse_sample_analysis_response(resp, filter_data_flag):
     analysis = {}
-    for category_name, os_data in resp.items():
+    for category_name, category_data in resp.items():
         if category_name in SAMPLE_ANALYSIS_LINE_KEYS:
-            data = os_data.get(os)
-            new_category = parse_lines_from_category(category_name, data)
-            analysis.update(new_category)
+            new_category = {}
+            for os_name, os_data in category_data.items():
+                os_sanitized_data = parse_lines_from_os(category_name, os_data, filter_data_flag)
+                new_category[os_name] = os_sanitized_data
+
+            category_dict = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name)
+            analysis.update({category_dict['display_name']: new_category})
+
         elif category_name == 'coverage':
-            new_category = parse_coverage_sub_categories(os_data)
+            new_category = parse_coverage_sub_categories(category_data)
             analysis.update(new_category)
 
     return analysis
 
 
-def sample_analysis(sample_id, os):
+def sample_analysis(sample_id, os, filter_data_flag):
     path = f'/sample/{sample_id}/analysis'
     data = {
-        'platforms': [os],
         'coverage': 'true'
     }
+    if os:
+        data['platforms'] = [os]
     result = http_request(path, data=data, err_operation='Sample analysis failed')
-    analysis_obj = parse_sample_analysis_response(result, os)
+    analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
     return analysis_obj
 
 
@@ -401,7 +413,14 @@ def autofocus_tag_details(tag_name):
     return tag_info
 
 
-def autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42):
+def validate_tag_scopes(private, public, commodity, unit42):
+    if not private and not public and not commodity and not unit42:
+        return_error('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
+
+
+def autofocus_top_tags_search(scope, tag_class_display, private, public, commodity, unit42):
+    validate_tag_scopes(private, public, commodity, unit42)
+    tag_class = API_PARAM_DICT['tag_class'][tag_class_display]
     query = {
         "operator": "all",
         "children": [
@@ -413,13 +432,13 @@ def autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit
         ]
     }
     tag_scopes = list()
-    if private == 'True':
+    if private:
         tag_scopes.append('private')
-    if public == 'True':
+    if public:
         tag_scopes.append('public')
-    if commodity == 'True':
+    if commodity:
         tag_scopes.append('commodity')
-    if unit42 == 'True':
+    if unit42:
         tag_scopes.append('unit42')
     data = {
         'query': query,
@@ -455,6 +474,38 @@ def get_top_tags_results(af_cookie):
     in_progress = results.get('af_in_progress')
     status = 'in progress' if in_progress else 'complete'
     return top_tags, status
+
+
+def print_hr_by_category(category_name, category_data):
+    hr = content = f'### {string_to_table_header(category_name)}:\nNo entries'
+    if category_name == 'coverage':
+        content = category_data
+        if category_data:
+            hr = tableToMarkdown(f'{string_to_table_header(category_name)}:', category_data,
+                                 headerTransform=string_to_table_header)
+        else:
+            hr = f'### {string_to_table_header(category_name)}:\nNo entries'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': content,
+            'HumanReadable': hr
+        })
+    else:
+        for os_name, os_data in category_data.items():
+            content = os_data
+            table_header = f'{category_name}_{os_name}'
+            if os_data:
+                hr = tableToMarkdown(f'{string_to_table_header(table_header)}:', os_data,
+                                     headerTransform=string_to_table_header)
+            else:
+                hr = f'### {string_to_table_header(table_header)}:\nNo entries'
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': content,
+                'HumanReadable': hr
+            })
 
 
 ''' COMMANDS'''
@@ -564,7 +615,8 @@ def sample_analysis_command():
     args = demisto.args()
     sample_id = args.get('sample_id')
     os = args.get('os')
-    analysis = sample_analysis(sample_id, os)
+    filter_data = False if args.get('filter_data') == 'False' else True
+    analysis = sample_analysis(sample_id, os, filter_data)
     context = createContext(analysis, keyTransform=string_to_context_key)
     demisto.results({
         'Type': entryTypes['note'],
@@ -574,14 +626,7 @@ def sample_analysis_command():
         'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID)': {'ID': sample_id, 'Analysis': context}},
     })
     for category_name, category_data in analysis.items():
-        md = tableToMarkdown(f'{string_to_table_header(category_name)}:', category_data,
-                             headerTransform=string_to_table_header)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': category_data,
-            'HumanReadable': md
-        })
+        print_hr_by_category(category_name, category_data)
 
 
 def tag_details_command():
@@ -603,10 +648,10 @@ def top_tags_search_command():
     args = demisto.args()
     scope = args.get('scope')
     tag_class = args.get('class')
-    private = args.get('private')
-    public = args.get('public')
-    commodity = args.get('commodity')
-    unit42 = args.get('unit42')
+    private = True if args.get('private') == 'True' else False
+    public = True if args.get('public') == 'True' else False
+    commodity = True if args.get('commodity') == 'True' else False
+    unit42 = True if args.get('unit42') == 'True' else False
     info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
     md = tableToMarkdown(f'Top tags search Info:', info)
     demisto.results({

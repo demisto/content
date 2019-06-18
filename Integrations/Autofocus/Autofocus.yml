@@ -23,9 +23,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The query to retrieve samples
+      description: The query to retrieve samples. You can build your query using the
+        AF GUI, see integration description.
       isArray: false
-      name: query
+      name: advanced_query
       required: true
       secret: false
     - default: false
@@ -91,9 +92,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The query to retrieve samples
+      description: The query to retrieve samples. You can build your query using the
+        AF GUI, see integration description.
       isArray: false
-      name: query
+      name: advanced_query
       required: true
       secret: false
     - default: false
@@ -227,7 +229,7 @@ script:
       type: String
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Seen date
-      type: String
+      type: Date
     - contextPath: AutoFocus.SessionsResults.UploadSource
       description: Source uploaded the sample
       type: String
@@ -248,6 +250,28 @@ script:
     description: Get session details by session ID
     execution: false
     name: autofocus-get-session-details
+    outputs:
+    - contextPath: AutoFocus.Sessions.FileName
+      description: File name
+      type: String
+    - contextPath: AutoFocus.Sessions.ID
+      description: Session ID
+      type: String
+    - contextPath: AutoFocus.Sessions.Industry
+      description: Related industry
+      type: String
+    - contextPath: AutoFocus.Sessions.Region
+      description: Session regions
+      type: String
+    - contextPath: AutoFocus.Sessions.SHA256
+      description: SHA256
+      type: String
+    - contextPath: AutoFocus.Sessions.Seen
+      description: Seen date
+      type: Date
+    - contextPath: AutoFocus.Sessions.UploadSource
+      description: Source uploaded the sample
+      type: String
   - arguments:
     - default: false
       description: SHA256 of the sample to analyze
@@ -257,7 +281,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Analysis environment
+      description: Analysis environment
       isArray: false
       name: os
       predefined:
@@ -267,12 +291,56 @@ script:
       - static_analyzer
       - mac
       - bare_metal
-      required: true
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: 'If set to False the data returned will not be smartly filtered.
+        Note: we recomend setting this to True as setting this to Flase, will slow
+        the integration performance dramatically.'
+      isArray: false
+      name: filter_data
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Get properties, behaviors, and activities observed for a sample
     execution: false
     name: autofocus-sample-analysis
+    outputs:
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
+      description: HTTP requests made when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Coverage
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
+      description: 'Sample behavior: created or modified files, started a process,
+        spawned new processes, modified the registry, or installed browser help objects.'
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Registry
+      description: Registry settings and options that showed activity when the sample
+        was executed in the analysis environment.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Files
+      description: Files that showed activity as a result of the sample being executed
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Processes
+      description: Processes that showed activity when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Connections
+      description: Connections to other hosts on the network when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.DNS
+      description: DNS activity observed when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
+      description: |-
+        If the sample generates other program threads when
+        executed in the analysis environment, the mutex created when the programs start is listed along with the parent process.
+      type: Unknown
   - arguments:
     - default: false
       description: The public tag name, can be retreived from the top-tags command.
@@ -328,21 +396,28 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Tag class
+      description: |-
+        Tag class.
+        - Malware Family: group of malware that have shared properties or common function.
+        - Campaign:  targeted attack which might include several incidents or sets of activities.
+        - Actor: individual or group that initiates campaign using malware families.
+        - Exploit: an attack, that takes advantage
+        of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system.
+        - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your sys tem has been compromised.
       isArray: false
       name: class
       predefined:
-      - actor
-      - campaign
-      - family
-      - exploit
-      - malicious_behavior
-      - malware_family
+      - Actor
+      - Campaign
+      - Exploit
+      - Malicious Behavior
+      - Malware Family
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
+      description: Tag scope - private
       isArray: false
       name: private
       predefined:
@@ -353,6 +428,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
+      description: Tag scope - public
       isArray: false
       name: public
       predefined:
@@ -363,6 +439,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
+      description: Tag scope - commodity
       isArray: false
       name: commodity
       predefined:
@@ -373,6 +450,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
+      description: Tag scope - unit42
       isArray: false
       name: unit42
       predefined:
