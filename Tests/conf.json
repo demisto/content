@@ -1389,7 +1389,7 @@
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         },
         {
-            "playbookID": "Phishing - Simple - Test",
+            "playbookID": "Phishing - Core - Test",
             "integrations": [
                 "PhishTank",
                 "OpenPhish",
