@@ -1,6 +1,6 @@
-id: Intezer Testing v2
+id: Intezer Testing
 version: -1
-name: Intezer Testing v2
+name: Intezer Testing
 starttaskid: "0"
 tasks:
   "0":
@@ -89,10 +89,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 6f928872-f999-4c4c-83de-da25835714c0
+    taskid: 29d974db-1cc9-4bf5-8787-ab39fb4d2419
     type: regular
     task:
-      id: 6f928872-f999-4c4c-83de-da25835714c0
+      id: 29d974db-1cc9-4bf5-8787-ab39fb4d2419
       version: -1
       name: Verify Hash on DBot score
       scriptName: VerifyContext
@@ -107,7 +107,7 @@ tasks:
         simple: ${inputs.SHA256}
       fields: {}
       path:
-        simple: DBotScore.[0].Indicator
+        simple: DBotScore.Indicator
     separatecontext: false
     view: |-
       {
@@ -121,10 +121,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 5af01a46-4d41-4a52-8d0f-39c26163d72f
+    taskid: 6ea918e0-0f7c-4626-88cf-47868f17e253
     type: regular
     task:
-      id: 5af01a46-4d41-4a52-8d0f-39c26163d72f
+      id: 6ea918e0-0f7c-4626-88cf-47868f17e253
       version: -1
       name: Verify Vendor
       scriptName: VerifyContext
@@ -139,7 +139,7 @@ tasks:
         simple: Intezer
       fields: {}
       path:
-        simple: DBotScore.[0].Vendor
+        simple: DBotScore.Vendor
     separatecontext: false
     view: |-
       {
@@ -408,10 +408,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 4efbc1c1-4814-4f65-8319-900dded98dcf
+    taskid: ad9e20e8-e784-4ea4-824c-7583393bf588
     type: regular
     task:
-      id: 4efbc1c1-4814-4f65-8319-900dded98dcf
+      id: ad9e20e8-e784-4ea4-824c-7583393bf588
       version: -1
       name: Verify Vendor
       scriptName: VerifyContext
@@ -426,7 +426,7 @@ tasks:
         simple: Intezer
       fields: {}
       path:
-        simple: DBotScore.[0].Vendor
+        simple: DBotScore.Vendor
     separatecontext: false
     view: |-
       {
@@ -597,10 +597,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 3f19eee3-2c6d-4e13-8255-ebef68750ed4
+    taskid: dcde0c7b-27c0-437e-87ab-dd2991cc557f
     type: condition
     task:
-      id: 3f19eee3-2c6d-4e13-8255-ebef68750ed4
+      id: dcde0c7b-27c0-437e-87ab-dd2991cc557f
       version: -1
       name: Test enrichment with sha256 exist
       type: condition

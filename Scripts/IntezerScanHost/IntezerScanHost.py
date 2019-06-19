@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import uuid
 
-demisto.executeCommand('createNewIndicator', {'value': demisto.args()['host'], 'type': 'Hostname'})
+demisto.executeCommand('createNewIndicator', {'value': demisto.args()['host'], 'type': 'hostname'})
 endpoint_analysis_id = str(uuid.uuid4())
 scanner_result = demisto.executeCommand('IntezerRunScanner',
                                         {

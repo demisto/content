@@ -41,8 +41,8 @@ dbot_score_by_verdict = {
 
 def handle_response(response, acceptable_http_status_codes):
     if response.status_code not in acceptable_http_status_codes:
-        return_error('{} {}'.format(ERROR_PREFIX, http_status_to_error_massage.get(response.status_code,
-                                                                                   'Failed to perform request')))
+        error_msg = http_status_to_error_massage.get(response.status_code,"Failed to perform request")
+        return_error(f'{ERROR_PREFIX} {error_msg}')
 
     return response.json()
 
@@ -51,7 +51,7 @@ def get_session():
     response = requests.post(BASE_URL + '/get-access-token', json={'api_key': API_KEY}, verify=USE_SSL)
     response = handle_response(response, {200})
     session = requests.session()
-    session.headers['Authorization'] = 'Bearer {}'.format(response['result'])
+    session.headers['Authorization'] = f'Bearer {response["result"]}'
 
     return session
 
@@ -86,7 +86,7 @@ def handle_analyze_by_hash_response(response, file_hash):
             'Score': 0
         }
         hr = f'Hash {file_hash} does not exist on Intezer genome database'
-        ec = {'DBotScore': [dbot]}
+        ec = {'DBotScore': dbot}
         return_outputs(hr, ec)
         return
 
@@ -175,17 +175,17 @@ def enrich_dbot_and_display_file_analysis_results(result):
         file['Malicious'] = {'Vendor': 'Intezer'}
 
     presentable_result = '## Intezer File analysis result\n'
-    presentable_result += ' SHA256: {}\n'.format(sha256)
-    presentable_result += ' Verdict: **{}** ({})\n'.format(verdict, result['sub_verdict'])
+    presentable_result += f' SHA256: {sha256}\n'
+    presentable_result += f' Verdict: **{verdict}** ({result["sub_verdict"]})\n'
     if 'family_name' in result:
-        presentable_result += 'Family: **{}**\n'.format(result['family_name'])
-    presentable_result += '[Analysis Link]({})\n'.format(result['analysis_url'])
+        presentable_result += f'Family: **{result["family_name"]}**\n'
+    presentable_result += f'[Analysis Link]({result["analysis_url"]})\n'
 
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {
-            outputPaths['dbotscore']: [dbot],
-            outputPaths['file']: [file],
+            outputPaths['dbotscore']: dbot,
+            outputPaths['file']: file,
             'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}},
         'HumanReadable': presentable_result,
         'ContentsFormat': formats['json'],
@@ -208,15 +208,15 @@ def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=Non
     endpoint = {'Metadata': result}
 
     presentable_result = '## Intezer Endpoint analysis result\n'
-    presentable_result += 'Host Name: {}\n'.format(computer_name)
-    presentable_result += ' Verdict: **{}**\n'.format(verdict)
+    presentable_result += f'Host Name: {computer_name}\n'
+    presentable_result += f' Verdict: **{verdict}**\n'
     if result.get('families') is not None:
-        presentable_result += 'Families: **{}**\n'.format(result['families'])
-    presentable_result += ' Scan Time: {}\n'.format(result['scan_start_time'])
-    presentable_result += '[Analysis Link]({})\n'.format(result['analysis_url'])
+        presentable_result += f'Families: **{result["families"]}**\n'
+    presentable_result += f' Scan Time: {result["scan_start_time"]}\n'
+    presentable_result += f'[Analysis Link]({result["analysis_url"]})\n'
     ec = {
-             'DBotScore': [dbot],
-             'Endpoint': [endpoint],
+             'DBotScore': dbot,
+             'Endpoint': endpoint,
              'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
     }
     return_outputs(presentable_result, ec, result)

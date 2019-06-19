@@ -15,3 +15,4 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+releaseNotes: "New script D2Remove: Remove the D2 agent from the system using d2_remove command"

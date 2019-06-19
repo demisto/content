@@ -358,5 +358,6 @@ inputs:
   required: true
   description: The Intezer api-key
 outputs: []
+releaseNotes: "Added playbook Intezer - scan host: Uses Demisto's d2 agent to scan host using Intezer scanner."
 tests:
   - No Tests

@@ -31,3 +31,4 @@ scripttarget: 0
 timeout: 900ns
 runonce: false
 runas: DBotWeakRole
+releaseNotes: Added new script IntezerScanHost. Scans intezer host
