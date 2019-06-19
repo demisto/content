@@ -142,9 +142,6 @@ class NitroESM(object):
                 'Content-Type': 'application/json'
             }
             self.is_logged_in = True
-            # demisto.setIntegrationContext({
-            #     'session_headers': self.session_headers
-            # })
         except KeyError as e:
             return_error("Failed login\n error: {}".format(e))
 
