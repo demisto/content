@@ -1,4 +1,4 @@
-category: Authentication
+category: Network Security
 commonfields:
   id: Perch
   version: -1
@@ -33,7 +33,7 @@ configuration:
 - defaultvalue: v1
   display: API Version
   name: version
-  required: false
+  required: true
   type: 0
 description: Perch is a co-managed threat detection and response platform.
 display: Perch
@@ -203,6 +203,49 @@ script:
     description: Searches for Alerts in Perch.
     execution: false
     name: perch-search-alerts
+    outputs:
+    - contextPath: Perch.Alert.DestPort
+      description: Destination port of alert.
+      type: Number
+    - contextPath: Perch.Alert.SrcPort
+      description: Source port of alert.
+      type: Number
+    - contextPath: Perch.Alert.DestIP
+      description: Destination IP of alert.
+      type: Number
+    - contextPath: Perch.Alert.IndicatorID
+      description: Indicator ID of the alert.
+      type: Number
+    - contextPath: Perch.Alert.SrcIP
+      description: IP Address of the source.
+      type: String
+    - contextPath: Perch.Alert.SrcGeo.Country
+      description: Country of threat.
+      type: String
+    - contextPath: Perch.Alert.SrcGeo.Latitude
+      description: Latitude of detected threat.
+      type: Number
+    - contextPath: Perch.Alert.SrcGeo.Longitude
+      description: Longitude of detected threat.
+      type: Number
+    - contextPath: Perch.Alert.SensorID
+      description: ID of sensor reporting the threat.
+      type: Number
+    - contextPath: Perch.Alert.Title
+      description: Title of the alert.
+      type: String
+    - contextPath: Perch.Alert.Protocol
+      description: Protocol the alert was detected on.
+      type: String
+    - contextPath: Perch.Alert.ID
+      description: ID of the alert.
+      type: Number
+    - contextPath: Perch.Alert.ObservableID
+      description: ID of observable event.
+      type: Number
+    - contextPath: Perch.Alert.TS
+      description: Timestamp of alert.
+      type: Date
   - arguments:
     - default: false
       description: ID of the Community.
@@ -214,14 +257,159 @@ script:
     description: Gets community information by ID.
     execution: false
     name: perch-get-community
+    outputs:
+    - contextPath: Perch.Community.Allsectors
+      description: Indicates if community covers all sectors.
+      type: Boolean
+    - contextPath: Perch.Community.Credentialreq
+      description: Credentials required to interact with community.
+      type: Number
+    - contextPath: Perch.Community.Desc
+      description: Description of community.
+      type: String
+    - contextPath: Perch.Community.Id
+      description: ID of community.
+      type: Number
+    - contextPath: Perch.Community.Name
+      description: Name of community.
+      type: String
+    - contextPath: Perch.Community.Poweredby
+      description: Organization providing the feed.
+      type: String
+    - contextPath: Perch.Community.Selectablefeeds
+      description: Are the Feeds selectable.
+      type: Boolean
   - deprecated: false
     description: Lists all communities.
     execution: false
     name: perch-list-communities
-  - deprecated: false
+    outputs:
+    - contextPath: Perch.Community.Allsectors
+      description: Indicates if community covers all sectors.
+      type: Boolean
+    - contextPath: Perch.Community.Credentialreq
+      description: Credentials required to interact with community.
+      type: Number
+    - contextPath: Perch.Community.Desc
+      description: Description of community.
+      type: String
+    - contextPath: Perch.Community.Id
+      description: ID of community.
+      type: Number
+    - contextPath: Perch.Community.Name
+      description: Name of community.
+      type: String
+    - contextPath: Perch.Community.Poweredby
+      description: Organization providing the feed.
+      type: String
+    - contextPath: Perch.Community.Selectablefeeds
+      description: Are the Feeds selectable.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Communities to report the indicator to.
+      isArray: false
+      name: communities
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Confidence of findings.
+      isArray: false
+      name: confidence
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of indicator.
+      isArray: false
+      name: type
+      predefined:
+      - IP
+      - Domain
+      - URL
+      - REGEX
+      - File Hash
+      required: true
+      secret: false
+    - default: false
+      description: Indicator's value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Title for the indicator.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: Description of the indicator.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: TLP of the Indicator.
+      isArray: false
+      name: tlp
+      required: true
+      secret: false
+    - default: false
+      description: Operator of the indicator.
+      isArray: false
+      name: operator
+      required: false
+      secret: false
+    - default: false
+      description: When the indicator was first sighted.
+      isArray: false
+      name: first_sighting
+      required: false
+      secret: false
+    - default: false
+      description: Send a summary of the indicator via email.
+      isArray: false
+      name: email_summary
+      required: false
+      secret: false
+    deprecated: false
     description: Creates an indicator in Perch.
     execution: false
     name: perch-create-indicator
+    outputs:
+    - contextPath: Perch.Indicator.Confidence
+      description: Confidence of indicator.
+      type: Unknown
+    - contextPath: Perch.Indicator.UpdatedAt
+      description: Time Indicator was last updated.
+      type: Date
+    - contextPath: Perch.Indicator.TLP
+      description: TLP of the Indicator.
+      type: String
+    - contextPath: Perch.Indicator.Title
+      description: Title of the indicator.
+      type: String
+    - contextPath: Perch.Indicator.ID
+      description: ID of the indicator.
+      type: Number
+    - contextPath: Perch.Indicator.CreatedAt
+      description: Date indicator was created.
+      type: Date
+    - contextPath: Perch.Indicator.Team
+      description: ID of team.
+      type: Number
+    - contextPath: Perch.Indicator.PerchID
+      description: ID given by perch of the incident.
+      type: String
+    - contextPath: Perch.Indicator.CreatedBy
+      description: ID of incident's creator.
+      type: Number
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false
