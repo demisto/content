@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Authentication
 commonfields:
   id: AutoFocus V2
   version: -1
