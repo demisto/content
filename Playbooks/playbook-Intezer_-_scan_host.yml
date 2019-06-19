@@ -2,6 +2,7 @@ id: Intezer - scan host
 version: -1
 rolename:
   - Administrator
+fromversion: 4.0.0
 name: Intezer - scan host
 description: |-
   Uses Demisto D2 agent to scan a host using Intezer scanner.

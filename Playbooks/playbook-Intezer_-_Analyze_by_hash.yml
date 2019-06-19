@@ -1,6 +1,7 @@
 id: Intezer - Analyze by hash
 version: -1
 name: Intezer - Analyze by hash
+fromversion: 4.0.0
 description: Analyze the given file hash on Intezer Analyze and enrich the file reputation.
   Supports SHA256, SHA1, and MD5.
 starttaskid: "0"
