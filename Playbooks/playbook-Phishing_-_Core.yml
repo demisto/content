@@ -1,7 +1,7 @@
-id: Phishing - Simple
+id: Phishing - Core
 version: -1
 fromversion: 4.1.0
-name: Phishing - Simple
+name: Phishing - Core
 description: |-
   Provides a basic response to phishing incidents. Playbook features:
   - Calculates reputation for all indicators
@@ -1152,4 +1152,4 @@ inputs:
 outputs: []
 releaseNotes: "Demonstrates a basic approach for phishing incident response."
 tests:
-  - Phishing - Simple - Test
+  - Phishing - Core - Test

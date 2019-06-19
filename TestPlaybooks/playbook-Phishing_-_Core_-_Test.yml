@@ -1,8 +1,8 @@
-id: Phishing - Simple - Test
+id: Phishing - Core - Test
 version: -1
 fromversion: 4.1.0
-name: Phishing - Simple - Test
-description: A test for the Phishing - Simple playbook.
+name: Phishing - Core - Test
+description: A test for the Phishing - Core playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -243,9 +243,9 @@ tasks:
     task:
       id: 94b22083-6d4b-4bca-82fd-8e0e384d5512
       version: -1
-      name: Phishing - Simple
+      name: Phishing - Core
       description: ""
-      playbookName: Phishing - Simple
+      playbookName: Phishing - Core
       type: playbook
       iscommand: false
       brand: ""
