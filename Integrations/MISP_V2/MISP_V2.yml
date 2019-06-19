@@ -1258,3 +1258,4 @@ script:
   type: python
 tests:
 - MISP V2 Test
+releaseNotes: added misp-add-feed command
