@@ -3,7 +3,7 @@ version: -1
 name: Detonate File - ThreatStream
 fromversion: 4.5.0
 description: Detonate one or more files using the Anomali ThreatStream v2 integration.
-  This playbook returns relevant reports to the War Room and file reputations to the
+  This playbook returns relevant reports to the War Room, and file reputations to the
   context data.
 starttaskid: "0"
 tasks:
@@ -39,9 +39,8 @@ tasks:
     task:
       id: e58d872c-656f-4687-8279-50ff40cb4009
       version: -1
-      name: Is  Anomali ThreatStream v2 enabled?
-      description: Verify that there is a valid instance of Anomali ThreatStream v2
-        is enabled
+      name: Is Anomali ThreatStream v2 enabled?
+      description: Checks if there is a valid instance of the Anomali ThreatStream v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -121,7 +120,7 @@ tasks:
       id: 124792e1-e06a-4d0c-8dd4-2fd5fc125aee
       version: -1
       name: ThreatGrid Get Samples State
-      description: Returns report of file or URL that was submitted to sandbox.
+      description: Returns a report of the file or URL that was submitted to the sandbox.
       script: '|||threatstream-analysis-report'
       type: regular
       iscommand: true
@@ -187,7 +186,7 @@ tasks:
       name: GenericPolling
       description: |-
         Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        This playbook implements polling by continually running the command in Step /#2 until the operation completes.
         The remote action should have the following structure:
 
         1. Initiate the operation.
@@ -242,8 +241,8 @@ tasks:
       id: abdd7f0e-18af-4a32-8bd2-be620253a970
       version: -1
       name: Is there a file to detonate?
-      description: Checks whether there's a file to detonate - if not then the detonation
-        is skipped
+      description: Checks if there is a file to detonate. If no file is found, detonation
+        is skipped.
       type: condition
       iscommand: false
       brand: ""
@@ -279,7 +278,7 @@ tasks:
       id: 75b5f3a3-d25a-45d4-8477-76e6473d06fd
       version: -1
       name: Is the file size bigger than 0?
-      description: Check that fail size is bigger than 0
+      description: Checks if the fail size is larger than 0.
       type: condition
       iscommand: false
       brand: ""
@@ -318,7 +317,7 @@ tasks:
       id: 78cece2d-336e-41e1-89c8-a70deb8350ff
       version: -1
       name: ThreatStream Upload File
-      description: Detonates file or URL to the ThreatStream-hosted Sandbox.
+      description: Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
       script: '|||threatstream-submit-to-sandbox'
       type: regular
       iscommand: true
@@ -382,61 +381,61 @@ inputs:
   - key: PremiumSandbox
     value: {}
     required: false
-    description: Specify whether the premium sandbox should be used for detonation.
+    description: Specifies if the premium sandbox should be used for detonation.
   - key: Tags
     value: {}
     required: false
-    description: A comma-separated list of tags applied to this sample.
+    description: A CSV list of tags applied to this sample.
   - key: Interval
     value: {}
     required: false
-    description: Polling frequency - how often the polling command should run (minutes)
+    description: Polling frequency - how often the polling command should run (minutes).
   - key: Timeout
     value: {}
     required: false
-    description: How much time to wait before a timeout occurs (minutes)
+    description: Amount of time to wait before a timeout occurs (minutes).
 outputs:
   - contextPath: File.Malicious
-    description: The File malicious description
+    description: The file malicious description.
     type: unknown
   - contextPath: File.Malicious.Vendor
-    description: For malicious files, the vendor that made the decision
+    description: For malicious files, the vendor that made the decision.
     type: string
   - contextPath: File.Type
-    description: File type e.g. "PE"
+    description: 'File type, for example: "PE".'
     type: string
   - contextPath: File.Size
-    description: File size
+    description: File size.
     type: number
   - contextPath: File.MD5
-    description: MD5 hash of the file
+    description: MD5 hash of the file.
     type: string
   - contextPath: File.Name
-    description: Filename
+    description: File name.
     type: string
   - contextPath: File.SHA1
-    description: SHA1 hash of the file
+    description: SHA1 hash of the file.
     type: string
   - contextPath: File
-    description: The File object
+    description: The file object.
     type: unknown
   - contextPath: File.SHA256
-    description: SHA256 hash of the file
+    description: SHA256 hash of the file.
     type: string
   - contextPath: DBotScore
-    description: The DBotScore object
+    description: The DBotScore object.
     type: unknown
   - contextPath: DBotScore.Indicator
-    description: The indicator we tested
+    description: The indicator that was tested.
     type: string
   - contextPath: DBotScore.Type
-    description: The type of the indicator
+    description: The indicator type.
     type: string
   - contextPath: DBotScore.Vendor
-    description: Vendor used to calculate the score
+    description: Vendor used to calculate the score.
     type: string
   - contextPath: DBotScore.Score
-    description: The actual score
+    description: The actual score.
     type: number
   - contextPath: Sample.State
     description: The sample state.
