@@ -218,7 +218,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
                 tag_list.append({'Name': tag.get('name')})
             events[i]['Tag'] = tag_list
     events = replace_keys(events)  # type: ignore
-    return events
+    return events  # type: ignore
 
 
 def get_misp_threat_level(threat_level_id: str) -> str:  # type: ignore
