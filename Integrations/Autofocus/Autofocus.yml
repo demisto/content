@@ -1,46 +1,41 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocus V2
   version: -1
+name: AutoFocus V2
+display: Palo Alto AutoFocus V2
+category: Data Enrichment & Threat Intelligence
+description: Integration Template
 configuration:
 - display: API Key
   name: api_key
-  required: true
+  defaultvalue: ""
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  required: true
+- display: Trust any certificate (insecure)
   name: insecure
-  required: false
+  defaultvalue: "true"
   type: 8
+  required: false
 - display: Use system proxy
   name: proxy
-  required: false
+  defaultvalue: ""
   type: 8
-description: Integration Template
-display: Palo Alto AutoFocus V2
-name: AutoFocus V2
+  required: false
 script:
+  script: '-'
+  type: python
   commands:
-  - arguments:
-    - default: false
+  - name: autofocus-search-samples
+    arguments:
+    - name: query
+      required: true
       description: The query to retrieve samples. You can build your query using the
         AF GUI, see integration description.
-      isArray: false
-      name: query
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - name: max_results
       description: Number of results to provide.
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Field to sort by
-      isArray: false
-      name: sort
+      defaultValue: "30"
+    - name: sort
+      auto: PREDEFINED
       predefined:
       - App Name
       - App Packagename
@@ -53,35 +48,21 @@ script:
       - SHA1
       - SHA256
       - Ssdeep Fuzzy Hash
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Order of sort
-      isArray: false
-      name: order
+      description: Field to sort by
+    - name: order
+      auto: PREDEFINED
       predefined:
       - Ascending
       - Descending
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: ' Scope of search'
-      isArray: false
-      name: scope
+      description: Order of sort
+    - name: scope
+      required: true
+      auto: PREDEFINED
       predefined:
       - Private
       - Public
       - Global
-      required: true
-      secret: false
-    deprecated: false
-    description: 'Search for samples. To view results run autofocus-samples-search-results
-      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
-      search completes.'
-    execution: false
-    name: autofocus-search-samples
+      description: ' Scope of search'
     outputs:
     - contextPath: AutoFocus.SamplesSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
@@ -90,26 +71,20 @@ script:
     - contextPath: AutoFocus.SamplesSearch.Status
       description: in progress / complete
       type: String
-  - arguments:
-    - default: false
+    description: 'Search for samples. To view results run autofocus-samples-search-results
+      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
+      search completes.'
+  - name: autofocus-search-sessions
+    arguments:
+    - name: query
+      required: true
       description: The query to retrieve samples. You can build your query using the
         AF GUI, see integration description.
-      isArray: false
-      name: query
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - name: max_results
       description: Number of results to provide.
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Field to sort by
-      isArray: false
-      name: sort
+      defaultValue: "30"
+    - name: sort
+      auto: PREDEFINED
       predefined:
       - Application
       - Device Country
@@ -130,24 +105,13 @@ script:
       - SHA256
       - Time
       - Upload source
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Order of sort
-      isArray: false
-      name: order
+      description: Field to sort by
+    - name: order
+      auto: PREDEFINED
       predefined:
       - Ascending
       - Descending
-      required: false
-      secret: false
-    deprecated: false
-    description: 'Search for sessions. To view results run autofocus-sessions-search-results
-      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
-      search completes.'
-    execution: false
-    name: autofocus-search-sessions
+      description: Order of sort
     outputs:
     - contextPath: AutoFocus.SessionsSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
@@ -156,18 +120,15 @@ script:
     - contextPath: AutoFocus.SessionsSearch.Status
       description: in progress / complete
       type: String
-  - arguments:
-    - default: false
+    description: 'Search for sessions. To view results run autofocus-sessions-search-results
+      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
+      search completes.'
+  - name: autofocus-samples-search-results
+    arguments:
+    - name: af_cookie
+      required: true
       description: 'The AF Cookie for retrieving results of previous search. Note:
         The AF Cookie expires 120 seconds after the search completes.'
-      isArray: false
-      name: af_cookie
-      required: true
-      secret: false
-    deprecated: false
-    description: Get results of a previous samples search
-    execution: false
-    name: autofocus-samples-search-results
     outputs:
     - contextPath: AutoFocus.SamplesResults.Size
       description: File size in bytes
@@ -199,18 +160,13 @@ script:
     - contextPath: AutoFocus.SamplesResults.TagGroups
       description: Groups of relevant tags
       type: String
-  - arguments:
-    - default: false
+    description: Get results of a previous samples search
+  - name: autofocus-sessions-search-results
+    arguments:
+    - name: af_cookie
+      required: true
       description: 'The AF Cookie for retrieving results of previous search. Note:
         The AF Cookie expires 120 seconds after the search completes.'
-      isArray: false
-      name: af_cookie
-      required: true
-      secret: false
-    deprecated: false
-    description: Get results of a previous sessions search
-    execution: false
-    name: autofocus-sessions-search-results
     outputs:
     - contextPath: AutoFocus.SessionsResults.FileName
       description: File name
@@ -239,17 +195,12 @@ script:
     - contextPath: AutoFocus.SessionsResults.Tags
       description: Relevant tags
       type: String
-  - arguments:
-    - default: false
-      description: The session ID
-      isArray: false
-      name: session_id
+    description: Get results of a previous sessions search
+  - name: autofocus-get-session-details
+    arguments:
+    - name: session_id
       required: true
-      secret: false
-    deprecated: false
-    description: Get session details by session ID
-    execution: false
-    name: autofocus-get-session-details
+      description: The session ID
     outputs:
     - contextPath: AutoFocus.Sessions.FileName
       description: File name
@@ -272,18 +223,14 @@ script:
     - contextPath: AutoFocus.Sessions.UploadSource
       description: Source uploaded the sample
       type: String
-  - arguments:
-    - default: false
-      description: SHA256 of the sample to analyze
-      isArray: false
-      name: sample_id
+    description: Get session details by session ID
+  - name: autofocus-sample-analysis
+    arguments:
+    - name: sample_id
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Analysis environment
-      isArray: false
-      name: os
+      description: SHA256 of the sample to analyze
+    - name: os
+      auto: PREDEFINED
       predefined:
       - win7
       - winxp
@@ -291,27 +238,16 @@ script:
       - static_analyzer
       - mac
       - bare_metal
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'True'
+      description: Analysis environment
+    - name: filter_data
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
       description: 'If set to False the data returned will not be smartly filtered.
         Note: we recomend setting this to True as setting this to Flase, will slow
         the integration performance dramatically.'
-      isArray: false
-      name: filter_data
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    deprecated: false
-    description: |-
-      Get properties, behaviors, and activities observed for a sample.
-      Run the command once to get the fields and os's under HTTP,Coverage,Behavior,Registry,Files,Processes,Connections,DNS.
-    execution: false
-    name: autofocus-sample-analysis
+      defaultValue: "True"
     outputs:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
       description: HTTP requests made when the sample was executed.
@@ -344,17 +280,14 @@ script:
         If the sample generates other program threads when
         executed in the analysis environment, the mutex created when the programs start is listed along with the parent process.
       type: Unknown
-  - arguments:
-    - default: false
-      description: The public tag name, can be retreived from the top-tags command.
-      isArray: false
-      name: tag_name
+    description: |-
+      Get properties, behaviors, and activities observed for a sample.
+      Run the command once to get the fields and os's under HTTP,Coverage,Behavior,Registry,Files,Processes,Connections,DNS.
+  - name: autofocus-tag-details
+    arguments:
+    - name: tag_name
       required: true
-      secret: false
-    deprecated: false
-    description: Get details on a given tag
-    execution: false
-    name: autofocus-tag-details
+      description: The public tag name, can be retreived from the top-tags command.
     outputs:
     - contextPath: AutoFocus.Tag.TagName
       description: Tag simple name
@@ -384,21 +317,27 @@ script:
     - contextPath: AutoFocus.Tag.TagDefinitionStatus
       description: enabled/disabled/removing/rescoping
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Scope of the search
-      isArray: false
-      name: scope
+    description: Get details on a given tag
+  - name: autofocus-top-tags-search
+    arguments:
+    - name: scope
+      required: true
+      auto: PREDEFINED
       predefined:
       - industry
       - organization
       - all
       - global
+      description: Scope of the search
+    - name: class
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
+      auto: PREDEFINED
+      predefined:
+      - Actor
+      - Campaign
+      - Exploit
+      - Malicious Behavior
+      - Malware Family
       description: |-
         Tag class.
         - Malware Family: group of malware that have shared properties or common function.
@@ -407,64 +346,34 @@ script:
         - Exploit: an attack, that takes advantage
         of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system.
         - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your sys tem has been compromised.
-      isArray: false
-      name: class
+    - name: private
+      auto: PREDEFINED
       predefined:
-      - Actor
-      - Campaign
-      - Exploit
-      - Malicious Behavior
-      - Malware Family
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
+      - "True"
+      - "False"
       description: Tag scope - private
-      isArray: false
-      name: private
+      defaultValue: "False"
+    - name: public
+      auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
+      - "True"
+      - "False"
       description: Tag scope - public
-      isArray: false
-      name: public
+      defaultValue: "False"
+    - name: commodity
+      auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
+      - "True"
+      - "False"
       description: Tag scope - commodity
-      isArray: false
-      name: commodity
+      defaultValue: "False"
+    - name: unit42
+      auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
+      - "True"
+      - "False"
       description: Tag scope - unit42
-      isArray: false
-      name: unit42
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    deprecated: false
-    description: Perform a search to Identify the most popular tags
-    execution: false
-    name: autofocus-top-tags-search
+      defaultValue: "False"
     outputs:
     - contextPath: AutoFocus.TopTagsSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
@@ -473,18 +382,13 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: in progress / complete
       type: String
-  - arguments:
-    - default: false
+    description: Perform a search to Identify the most popular tags
+  - name: autofocus-top-tags-results
+    arguments:
+    - name: af_cookie
+      required: true
       description: 'The AF Cookie for retrieving results of previous search. Note:
         The AF Cookie expires 120 seconds after the search completes.'
-      isArray: false
-      name: af_cookie
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the results of a previous top tags search
-    execution: false
-    name: autofocus-top-tags-results
     outputs:
     - contextPath: AutoFocus.TopTagsResults.Count
       description: Amount of samples matched this tag.
@@ -498,11 +402,9 @@ script:
     - contextPath: AutoFocus.TopTagsResults.Lasthit
       description: Tag last encounter date.
       type: Date
+    description: Get the results of a previous top tags search
   dockerimage: demisto/python3:3.7.2.214
-  isfetch: false
   runonce: false
-  script: '-'
-  type: python
 releaseNotes: Created AutoFocus V2 integration in a package strcture
 tests:
   - AutoFocus V2 test
