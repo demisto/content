@@ -4,7 +4,7 @@ rolename:
 - Administrator
 name: Intezer - scan host
 description: |-
-  Uses Demisto's d2 agent to scan host using Intezer scanner.
+  Uses Demisto D2 agent to scan a host using Intezer scanner.
 
   Input:
   * Hostname (default: ${Endpoint.Hostname})
@@ -43,7 +43,7 @@ tasks:
       id: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
       version: -1
       name: Add the endpoint as a System to this incident
-      description: Add the relevant endpoint to the System
+      description: Adds the relevant endpoint to the System.
       scriptName: IncidentAddSystem
       type: regular
       iscommand: false
@@ -117,7 +117,7 @@ tasks:
       id: bfdb339a-a8b5-4b46-822c-23b4d515787e
       version: -1
       name: Does 'Host' input exist?
-      description: Check if a given value exists in the context. Will return 'no'
+      description: Checks if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
@@ -341,18 +341,18 @@ inputs:
   value:
     simple: 10.254.7.24
   required: true
-  description: Deploy D2 on target Host
+  description: Deploy Demist D2 agent on the target Host.
 - key: OS
   value:
     simple: windows
   required: false
-  description: The default OS type of target host
+  description: The default OS type of target host.
 - key: Credentials
   value:
     simple: Admin
   required: false
-  description: Name of the credential set from Demisto Settings -> Integrations ->
-    Credentials
+  description: Name of the credential set. Credentials are located in Demisto: Settings > Integrations >
+    Credentials.
 - key: INTEZER_API_KEY
   value: {}
   required: true
