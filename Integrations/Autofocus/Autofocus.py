@@ -445,7 +445,6 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
         'scope': scope,
         'tagScopes': tag_scopes
     }
-    print(data)
     path = '/top-tags/search/'
     resp = http_request(path, data=data, err_operation='Top tags operation failed')
     in_progress = resp.get('af_in_progress')
