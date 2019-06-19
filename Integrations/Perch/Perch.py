@@ -52,6 +52,11 @@ OBSERVABLE_TYPES_MAP = {
 ''' HELPER FUNCTIONS '''
 
 
+# Allows nested keys to be accessible
+def makehash():
+    return collections.defaultdict(makehash)
+
+
 def http_request(method, url_suffix, params=None, data=None, headers=None):
     res = requests.request(
         method,
@@ -74,8 +79,8 @@ def find_key_by_value(val, dic_map):
 
 
 def format_alerts(alert):
-    hr = collections.defaultdict()  # type: dict
-    ec = collections.defaultdict()  # type: dict
+    hr = makehash()  # type: dict
+    ec = makehash()  # type: dict
     if alert.get('id'):
         hr['ID'] = alert.get('id')
         ec['ID'] = alert.get('id')
@@ -258,8 +263,8 @@ def authenticate():
 
 
 def format_indicator(indicator):
-    hr = collections.defaultdict()  # type: dict
-    ec = collections.defaultdict()  # type: dict
+    hr = makehash()  # type: dict
+    ec = makehash()  # type: dict
     if indicator.get('id'):
         hr['ID'] = indicator.get('id')
         ec['ID'] = indicator.get('id')
