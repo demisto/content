@@ -3,9 +3,9 @@ from CommonServerPython import *
 
 ''' IMPORTS'''
 import requests
+import copy
 import json
 import sys
-import traceback
 from collections import defaultdict
 
 ''' INTEGRATION PARAMS '''
@@ -13,11 +13,12 @@ URL = 'http://api.perception-point.io/api/v1/{endpoint}'  # disable-secrets-dete
 INCIDENTS_ENDPOINT = 'scans/incidents/'
 RELEASE_ENDPOINT = 'quarantine/release/{id_}'
 
-USER_PARAMS = dict(demisto.params())  # create a copy of params
-SECURED = not USER_PARAMS.get('insecure')
+USER_PARAMS = demisto.params()
+SECURED = not USER_PARAMS.get('insecure', False)
 PP_TOKEN = USER_PARAMS.get('pp_token', None)
 if PP_TOKEN is None:
-    return_error('Perception Point token is mandatory. Please enter your token or contact PerceptionPoint support')
+    return_error('Perception Point token is mandatory. '
+                 'Please enter your token or contact PerceptionPoint support for assistance')
 try:
     API_MAX_LOOPS = int(USER_PARAMS.get('api_loops', 1))
 except Exception:
@@ -35,14 +36,16 @@ MALICIOUS = 'MAL'
 
 API_CURSOR_ARG = '_cursor'
 
+VERBOSE_VERDICT_PARAM = 'verbose_verdict[]'
+
 FETCH_INCIDENTS_TYPE = [{'demisto_param': 'fetch_malicious',
-                         'req_pname': 'verbose_verdict',
+                         'req_pname': VERBOSE_VERDICT_PARAM,
                          'req_pval': MALICIOUS},
                         {'demisto_param': 'fetch_blocked',
-                         'req_pname': 'verbose_verdict',
+                         'req_pname': VERBOSE_VERDICT_PARAM,
                          'req_pval': BLOCKED},
                         {'demisto_param': 'fetch_spam',
-                         'req_pname': 'verbose_verdict',
+                         'req_pname': VERBOSE_VERDICT_PARAM,
                          'req_pval': SPAM}]
 
 ''' HELPER FUNCTIONS '''
@@ -54,8 +57,6 @@ def build_fetch_incident_types(fetch_select):
         darg_input = fetch_select.get(darg['demisto_param'])
         if darg_input:
             fetch_type_dict[darg['req_pname']].append(darg.get('req_pval', darg_input))
-    for reqname, reqval in fetch_type_dict.iteritems():
-        fetch_type_dict[reqname] = ','.join(reqval)
     return dict(fetch_type_dict)
 
 
@@ -107,7 +108,11 @@ def build_request_url(api_action):
 def command_fetch_incidents():
     try:
         args_dict = demisto.args()
-        args_dict.update(USER_PARAMS)
+        user_params_copy = copy.deepcopy(USER_PARAMS)
+        user_params_copy.pop('insecure')
+        user_params_copy.pop('pp_token')
+        user_params_copy.pop('api_loops')
+        args_dict.update(user_params_copy)
         req_args = build_fetch_incident_types(args_dict)
         last_run_id = int(demisto.getLastRun().get('scan_id', 0))
         req_args[API_CURSOR_ARG] = last_run_id
@@ -143,7 +148,7 @@ def command_release_email():
                       'EntryContext': {'PP.Released': scan_id_to_release}}
                      )
         demisto.results(entry)
-    except Exception:
+    except Exception as e:
         return_error(
             'An error occurred while trying to release email. Please contact PerceptionPoint support')
 
@@ -163,6 +168,5 @@ except Exception as e:
     LOG(str(e))
     message = f'Unexpected error: {e}, traceback: \n'
     LOG(message)
-    traceback.print_exc()
     LOG.print_log()
     return_error(message)
