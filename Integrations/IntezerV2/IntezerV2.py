@@ -41,7 +41,7 @@ dbot_score_by_verdict = {
 
 def handle_response(response, acceptable_http_status_codes):
     if response.status_code not in acceptable_http_status_codes:
-        error_msg = http_status_to_error_massage.get(response.status_code,"Failed to perform request")
+        error_msg = http_status_to_error_massage.get(response.status_code, "Failed to perform request")
         return_error(f'{ERROR_PREFIX} {error_msg}')
 
     return response.json()
@@ -215,9 +215,9 @@ def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=Non
     presentable_result += f' Scan Time: {result["scan_start_time"]}\n'
     presentable_result += f'[Analysis Link]({result["analysis_url"]})\n'
     ec = {
-             'DBotScore': dbot,
-             'Endpoint': endpoint,
-             'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
+         'DBotScore': dbot,
+         'Endpoint': endpoint,
+         'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
     }
     return_outputs(presentable_result, ec, result)
 

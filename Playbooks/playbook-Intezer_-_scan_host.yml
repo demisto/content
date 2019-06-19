@@ -14,10 +14,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 816b1abc-8a51-4b98-8edb-8f200d16f878
+    taskid: 209ca9d9-6cd1-43d6-8917-34828b27d69a
     type: start
     task:
-      id: 816b1abc-8a51-4b98-8edb-8f200d16f878
+      id: 209ca9d9-6cd1-43d6-8917-34828b27d69a
       version: -1
       name: ""
       iscommand: false
@@ -35,12 +35,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
+    taskid: 85dde700-9f3a-41c8-8e00-028cf4b91808
     type: regular
     task:
-      id: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
+      id: 85dde700-9f3a-41c8-8e00-028cf4b91808
       version: -1
       name: Add the endpoint as a System to this incident
       description: Adds the relevant endpoint to the System.
@@ -76,12 +77,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 8f83acc7-0fd8-43e6-80e5-3f3133a9f68c
+    taskid: 24cabd05-fad2-4940-8241-3ee3763d4f8d
     type: regular
     task:
-      id: 8f83acc7-0fd8-43e6-80e5-3f3133a9f68c
+      id: 24cabd05-fad2-4940-8241-3ee3763d4f8d
       version: -1
       name: d2 agent - Scan host by Intezer
       scriptName: IntezerScanHost
@@ -109,12 +111,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: bfdb339a-a8b5-4b46-822c-23b4d515787e
+    taskid: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
     type: condition
     task:
-      id: bfdb339a-a8b5-4b46-822c-23b4d515787e
+      id: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
       version: -1
       name: Does 'Host' input exist?
       description: Checks if a given value exists in the context. Will return 'no'
@@ -141,12 +144,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
+    taskid: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
     type: title
     task:
-      id: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
+      id: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
       version: -1
       name: Done
       type: title
@@ -162,12 +166,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 15be02f6-c144-4fa9-8192-1357fe432edd
+    taskid: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
     type: condition
     task:
-      id: 15be02f6-c144-4fa9-8192-1357fe432edd
+      id: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
       version: -1
       name: Is the OS type Windows?
       scriptName: AreValuesEqual
@@ -196,12 +201,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 01357500-cfe2-4927-8c18-7f312292a404
+    taskid: 98eeed9c-3ef1-4a28-8347-537ae2c48945
     type: playbook
     task:
-      id: 01357500-cfe2-4927-8c18-7f312292a404
+      id: 98eeed9c-3ef1-4a28-8347-537ae2c48945
       version: -1
       name: GenericPolling
       description: |-
@@ -252,12 +258,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: aef64ffd-5f6c-4090-880c-51772b013102
+    taskid: d9b795b6-6dfe-4dca-80d4-2b988df75f76
     type: regular
     task:
-      id: aef64ffd-5f6c-4090-880c-51772b013102
+      id: d9b795b6-6dfe-4dca-80d4-2b988df75f76
       version: -1
       name: get-analysis-result
       script: Intezer v2|||intezer-get-analysis-result
@@ -288,15 +295,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: fbd19000-d042-4254-808b-4d29025806a8
+    taskid: 60302e3d-4e42-4237-8050-eb4ae370d90e
     type: regular
     task:
-      id: fbd19000-d042-4254-808b-4d29025806a8
+      id: 60302e3d-4e42-4237-8050-eb4ae370d90e
       version: -1
       name: D2-remove
-      scriptName: D2Remove
+      script: D2Remove
       type: regular
       iscommand: false
       brand: ""
@@ -320,6 +328,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -347,16 +356,16 @@ inputs:
     simple: windows
   required: false
   description: The default OS type of target host.
-- key: Credentials
-  value:
-    simple: Admin
-  required: false
-  description: Name of the credential set. Credentials are located in Demisto: Settings > Integrations >
-    Credentials.
 - key: INTEZER_API_KEY
   value: {}
   required: true
   description: The Intezer api-key
+- key: Credentials
+  value:
+    simple: Admin
+  required: false
+  description: 'Name of the credential set. Credentials are located in Demisto: Settings
+    > Integrations > Credentials.'
 outputs: []
 releaseNotes: "Added playbook Intezer - scan host: Uses Demisto's d2 agent to scan host using Intezer scanner."
 tests:
