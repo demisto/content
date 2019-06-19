@@ -183,24 +183,23 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: fe678a55-9b0b-429a-8da4-eddf0722af91
+    taskid: 38d51010-e7fe-4076-8ba3-d69b6cc7f455
     type: regular
     task:
-      id: fe678a55-9b0b-429a-8da4-eddf0722af91
+      id: 38d51010-e7fe-4076-8ba3-d69b6cc7f455
       version: -1
       name: autofocus-samples-search-results
       description: Get results of a previous samples search
-      script: '|||autofocus-samples-search-results'
+      script: AutoFocus V2|||autofocus-samples-search-results
       type: regular
       iscommand: true
-      brand: ""
+      brand: AutoFocus V2
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       af_cookie:
         simple: ${AutoFocus.SamplesSearch.AFCookie}
-      intermediate_results: {}
     separatecontext: false
     view: |-
       {
@@ -214,17 +213,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 0aa3ee86-1663-45ef-8f0e-c6ea76c8f2d1
+    taskid: e4c65f03-d3ab-46ca-815d-93efe8f578bf
     type: regular
     task:
-      id: 0aa3ee86-1663-45ef-8f0e-c6ea76c8f2d1
+      id: e4c65f03-d3ab-46ca-815d-93efe8f578bf
       version: -1
       name: autofocus-sessions-search-results
       description: Get results of a previous sessions search
-      script: '|||autofocus-sessions-search-results'
+      script: AutoFocus V2|||autofocus-sessions-search-results
       type: regular
       iscommand: true
-      brand: ""
+      brand: AutoFocus V2
     nexttasks:
       '#none#':
       - "8"
