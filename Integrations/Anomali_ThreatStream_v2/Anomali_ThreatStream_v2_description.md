@@ -1,2 +1,1 @@
- A user ID and API key is required to access ThreatStream through the APIs. If you do not have
-  these credentials, register at [http://ui.threatstream.com](http://ui.threatstream.com). 
+To access ThreatStream using the API, you need a user ID and API key. To get these credentials, register at [http://ui.threatstream.com](http://ui.threatstream.com). 
