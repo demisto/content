@@ -72,8 +72,8 @@ tasks:
       id: 4088078f-6c08-43c2-8410-3b87ca001645
       version: -1
       name: Acknowledge email
-      description: Sends an email to the user who reported the phishing email, telling
-        them that the email has been received and is being investigated.
+      description: Sends an email to the user who reported the phishing email, inoforming
+        them that the email was received and is being investigated.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -87,7 +87,7 @@ tasks:
       bcc: {}
       body:
         simple: |-
-          Thank you for reporting a potential phishing attempt. We are investigating your case, please wait for our final verdict. There is no need to do anything with the email for now.
+          Thank you for reporting the suspicious email, which we are actively investigating. Please do not interact with this email, such as opening or replying, until you hear back from the security team. 
 
           Sincerely,
           Demisto's Security Team
@@ -202,8 +202,7 @@ tasks:
       version: -1
       name: Can we take URL screenshots?
       description: Checks whether the user opted to get screenshots of URLs in the
-        playbook's "GetURLScreenshots" input, and whether the Rasterize integration
-        that will be used to produce such screenshots is enabled.
+        playbook's "GetURLScreenshots" input. Checks whether the Rasterize integration is enabled. 
       type: condition
       iscommand: false
       brand: ""
@@ -299,12 +298,12 @@ tasks:
       version: -1
       name: How severe is the incident?
       description: |-
-        Determines the severity of the incident, based on the score that was given to the indicators involved. The indicators are found in the DBotScore context key.
+        Determines the severity of the incident based on the score that was assigned to the indicators involved. The indicators are found in the DBotScore context key.
 
         The severity level is determined by the highest score given to any of the indicators:
         High - if there is a score higher than 2
         Medium - if there is a score that is equal to 2
-        Low = if there is a score that is equal to 1
+        Low - if there is a score that is equal to 1
       type: condition
       iscommand: false
       brand: ""
@@ -883,8 +882,7 @@ tasks:
       id: e3a4d27c-fdc8-4087-84ed-b335984f896f
       version: -1
       name: Manually investigate the incident
-      description: A manual task that allows the analyst to manually investigate the
-        incident, and resume the playbook when they choose to do so.
+      description: Pauses the playbook so the analyst can investigate the incdent, and manually resume the playbook when necessary.
       tags:
       - manual
       type: regular
@@ -912,8 +910,8 @@ tasks:
       id: a81fc1c4-dd81-451a-8bf6-ab1038ffa07c
       version: -1
       name: Is the email malicious or benign?
-      description: Allows the analyst to decide whether the investigated email is
-        malicious or benign, according to their findings from the manual investigation.
+      description: Pauses the playbook so the analyst can decides whether the investigated email is
+        malicious or benign.
       tags:
       - manual
       type: condition
@@ -943,8 +941,8 @@ tasks:
       id: 9b0470e1-8c93-485d-8b77-eaf1dc682487
       version: -1
       name: Update user that the email is malicious
-      description: Sends an email to the user who reported the phishing email, telling
-        them the email was found to be malicious.
+      description: Sends an email to the user who reported the phishing email, informing 
+        them that the email is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -958,7 +956,7 @@ tasks:
       bcc: {}
       body:
         simple: |-
-          We have investigated your case and decided that the email is malicious.
+          After investing the email you sent, we determined that the email is malicious. We appreciate your continued attention to suspcious emails.
 
           Sincerely,
           Demisto's Security Team
@@ -993,8 +991,8 @@ tasks:
       id: 53b80e1f-66a2-4e48-8265-3f27e8676545
       version: -1
       name: Update user that the email is benign
-      description: Sends an email to the user who reported the phishing email, telling
-        them the email was found to be benign.
+      description: Sends an email to the user who reported the phishing email, informing
+        them that the email is benign.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1038,8 +1036,8 @@ tasks:
       id: aeef0938-0752-477d-8b54-d4a3cfdaefc1
       version: -1
       name: Manually remediate the incident
-      description: A manual task that allows the analyst to manually remediate the
-        incident, and resume the playbook when they choose to do so.
+      description: Pauses the playbook so the analyst can manually remediate the
+        incident, and manually resume the playbook.
       tags:
       - manual
       type: regular
@@ -1152,8 +1150,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether the user wants the Rasterize integration to be used to produce
-    images of URLs that are involved in the incident. A value of True means that screenshots
+  description: Whether the user wants the Rasterize integration to produce
+    images of URLs that are involved in the incident. If "True", screenshots
     will be taken.
 outputs: []
 releaseNotes: "Demonstrates a basic approach for phishing incident response."
