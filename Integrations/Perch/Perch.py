@@ -52,11 +52,6 @@ OBSERVABLE_TYPES_MAP = {
 ''' HELPER FUNCTIONS '''
 
 
-# Allows nested keys to be accessible
-def makehash():
-    return collections.defaultdict(makehash)
-
-
 def http_request(method, url_suffix, params=None, data=None, headers=None):
     res = requests.request(
         method,
@@ -79,8 +74,8 @@ def find_key_by_value(val, dic_map):
 
 
 def format_alerts(alert):
-    hr = makehash()  # type: dict
-    ec = makehash()  # type: dict
+    hr = collections.defaultdict()  # type: dict
+    ec = collections.defaultdict()  # type: dict
     if alert.get('id'):
         hr['ID'] = alert.get('id')
         ec['ID'] = alert.get('id')
@@ -262,90 +257,9 @@ def authenticate():
     return headers
 
 
-def search_alerts():
-    headers = authenticate()
-    args = demisto.args()
-    params = alerts_params(args)
-    url = '/alerts'
-    res = http_request('GET', url, headers=headers, params=params)
-    res_results = res.get('results')
-    hr = ''
-    ec = {
-        "Perch": {
-            "Alert": []
-        }
-    }  # type: dict
-    for alert in res_results:
-        alert_hr, alert_ec = format_alerts(alert)
-        ec['Perch']['Alert'].append(alert_ec)
-        hr += tableToMarkdown('{title}'.format(title=alert_ec.get('Title')), alert_hr)
-    if len(res_results) == 0:
-        demisto.results('No results were found')
-    else:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': res_results,
-            'HumanReadable': hr,
-            'EntryContext': ec
-        })
-
-
-def list_communities():
-    headers = authenticate()
-    args = demisto.args()
-    params = alerts_params(args)
-    url = '/communities'
-    res = http_request('GET', url, headers=headers, params=params)
-    res_results = res.get('results')
-    hr = tableToMarkdown('Communities Found', res_results, headerTransform=string_to_table_header, removeNull=True)
-    ec = {
-        "Perch": {
-            "Community": []
-        }
-    }  # type: dict
-    for alert in res_results:
-        ec['Perch']['Community'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
-    if len(res_results) == 0:
-        demisto.results('No communities were found')
-    else:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': res_results,
-            'HumanReadable': hr,
-            'EntryContext': ec
-        })
-
-
-def get_community():
-    headers = authenticate()
-    args = demisto.args()
-    params = alerts_params(args)
-    id = args.get('id')
-    url = '/communities/{id}'.format(id=id)
-    res = http_request('GET', url, headers=headers, params=params)
-    if len(res) > 0:
-        hr = tableToMarkdown('Communities Found', res, headerTransform=string_to_table_header, removeNull=True)
-        ec = {
-            "Perch": {
-                "Community": createContext(res, keyTransform=string_to_context_key, removeNull=True)
-            }
-        }  # type: dict
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': res,
-            'HumanReadable': hr,
-            'EntryContext': ec
-        })
-    else:
-        demisto.results('No communities were found')
-
-
 def format_indicator(indicator):
-    hr = makehash()  # type: dict
-    ec = makehash()  # type: dict
+    hr = collections.defaultdict()  # type: dict
+    ec = collections.defaultdict()  # type: dict
     if indicator.get('id'):
         hr['ID'] = indicator.get('id')
         ec['ID'] = indicator.get('id')
@@ -388,7 +302,98 @@ def format_indicator(indicator):
     return hr, ec
 
 
-def create_indicator():
+def item_to_incident(item):
+    incident = {'name': 'Perch Incident: ' + item.get('title'),
+                'occurred': item.get('created_at'),
+                'rawJSON': json.dumps(item)}
+    return incident
+
+
+'''COMMAND FUNCTIONS'''
+
+
+def search_alerts_command():
+    headers = authenticate()
+    args = demisto.args()
+    params = alerts_params(args)
+    url = '/alerts'
+    res = http_request('GET', url, headers=headers, params=params)
+    res_results = res.get('results')
+    hr = ''
+    ec = {
+        "Perch": {
+            "Alert": []
+        }
+    }  # type: dict
+    for alert in res_results:
+        alert_hr, alert_ec = format_alerts(alert)
+        ec['Perch']['Alert'].append(alert_ec)
+        hr += tableToMarkdown('{title}'.format(title=alert_ec.get('Title')), alert_hr)
+    if len(res_results) == 0:
+        demisto.results('No results were found')
+    else:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': res_results,
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+
+def list_communities_command():
+    headers = authenticate()
+    args = demisto.args()
+    params = alerts_params(args)
+    url = '/communities'
+    res = http_request('GET', url, headers=headers, params=params)
+    res_results = res.get('results')
+    hr = tableToMarkdown('Communities Found', res_results, headerTransform=string_to_table_header, removeNull=True)
+    ec = {
+        "Perch": {
+            "Community": []
+        }
+    }  # type: dict
+    for alert in res_results:
+        ec['Perch']['Community'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
+    if len(res_results) == 0:
+        demisto.results('No communities were found')
+    else:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': res_results,
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+
+def get_community_command():
+    headers = authenticate()
+    args = demisto.args()
+    params = alerts_params(args)
+    id = args.get('id')
+    url = '/communities/{id}'.format(id=id)
+    res = http_request('GET', url, headers=headers, params=params)
+    if len(res) > 0:
+        hr = tableToMarkdown('Communities Found', res, headerTransform=string_to_table_header, removeNull=True)
+        ec = {
+            "Perch": {
+                "Community": createContext(res, keyTransform=string_to_context_key, removeNull=True)
+            }
+        }  # type: dict
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': res,
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+    else:
+        demisto.results('No communities were found')
+
+
+def create_indicator_command():
     headers = authenticate()
     args = demisto.args()
     raw_data = indicator_params(args)
@@ -413,24 +418,14 @@ def create_indicator():
     })
 
 
-def item_to_incident(item):
-    incident = {'name': 'Perch Incident: ' + item.get('title'),
-                'occurred': item.get('created_at'),
-                'rawJSON': json.dumps(item)}
-    return incident
-
-
-def fetch_alerts():
+def fetch_alerts_command():
     last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
     last_fetch = last_run.get('time')
     headers = authenticate()
     url = '/alerts'
-
     res = http_request('GET', url, headers=headers)
     items = res.get('results')
     items.sort(key=lambda r: r['created_at'])
-    # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch_raw = datetime.now() - timedelta(days=FETCH_TIME)
         last_fetch = date_to_timestamp(last_fetch_raw, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -438,7 +433,6 @@ def fetch_alerts():
     for item in items:
         incident = item_to_incident(item)
         incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        # Update last run and add incident if the incident is newer than last fetch
         if incident_date > last_fetch:
             incidents.append(incident)
             last_fetch = incident_date
@@ -461,15 +455,15 @@ demisto.info('Command being called is {}'.format(demisto.command()))
 
 try:
     if demisto.command() == 'perch-search-alerts':
-        search_alerts()
+        search_alerts_command()
     elif demisto.command() == 'perch-get-community':
-        get_community()
+        get_community_command()
     elif demisto.command() == 'perch-list-communities':
-        list_communities()
+        list_communities_command()
     elif demisto.command() == 'perch-create-indicator':
-        create_indicator()
+        create_indicator_command()
     elif demisto.command() == 'fetch-incidents':
-        fetch_alerts()
+        fetch_alerts_command()
     elif demisto.command() == 'test-module':
         test_module()
 
