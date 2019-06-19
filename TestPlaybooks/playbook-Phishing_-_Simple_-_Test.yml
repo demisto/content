@@ -61,6 +61,7 @@ tasks:
       id: 234e782b-208d-4d10-8597-202a7716c26a
       version: -1
       name: PhishingIncident - attachment
+      description: Creates a phishing incident.
       scriptName: PhishingIncident
       type: regular
       iscommand: false
@@ -90,7 +91,9 @@ tasks:
     task:
       id: b1d47b06-cb0f-4f3c-8b38-82e8b205c0c5
       version: -1
-      name: Close Manual review
+      name: Close manual review
+      description: Closes the manual task to pass the test successfully. The task
+        is tagged with the "manual" tag.
       scriptName: ScheduleCommand
       type: regular
       iscommand: false
@@ -100,7 +103,7 @@ tasks:
       - "3"
     scriptarguments:
       command:
-        simple: taskComplete id=manual parentPlaybookID=26
+        simple: '!taskComplete id=manual parentPlaybookID=26'
       cron:
         simple: '*/1 * * * *'
       endDate: {}
@@ -126,6 +129,7 @@ tasks:
       id: a66413f6-914d-4b37-8e42-c27484d4621d
       version: -1
       name: Delete context
+      description: Deletes the context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -204,6 +208,8 @@ tasks:
       id: eefb6e46-41be-434b-8141-63a2619382cc
       version: -1
       name: minemeld-add-to-miner
+      description: Adds a malicious indicator to a Minemeld miner so that it is later
+        detected as malicious.
       script: '|||minemeld-add-to-miner'
       type: regular
       iscommand: true

@@ -885,8 +885,6 @@ tasks:
       name: Manually investigate the incident
       description: A manual task that allows the analyst to manually investigate the
         incident, and resume the playbook when they choose to do so.
-      tags:
-      - manual
       type: regular
       iscommand: false
       brand: ""
@@ -914,8 +912,6 @@ tasks:
       name: Is the email malicious or benign?
       description: Allows the analyst to decide whether the investigated email is
         malicious or benign, according to their findings from the manual investigation.
-      tags:
-      - manual
       type: condition
       iscommand: false
       brand: ""
