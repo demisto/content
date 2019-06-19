@@ -131,6 +131,7 @@ script:
           type: number
         - contextPath: Report.Location
           description: Location of the report.
+          type: string
         - contextPath: Report.Reporter
           description: Reporter email address.
           type: string
@@ -158,9 +159,6 @@ script:
         - contextPath: Attachment.ID
           description: The ID number of the report that contains the attachment.
           type: string
-        - contextPath: File.Info
-          description: The threat classification assigned by Cylance.
-          type: string
         - contextPath: File.Size
           description: The date and time (in UTC) when the threat was found on the device.
           type: string
@@ -171,13 +169,13 @@ script:
           description: The name of the threat.
           type: string
         - contextPath: File.SHA1
-          description: The threat score assigned ny Cylance.
-          type: number
+          description: The SHA1 hash of the threat.
+          type: string
         - contextPath: File.SHA256
           description: The SHA256 hash of the threat.
           type: string
         - contextPath: File.MD5
-          description: The threat sub-classification assigned by Cylance.
+          description: The MD5 hash of the threat.
           type: string
       description: 'Retrieves an attachment by the attachment ID number. '
     - name: cofense-get-reporter
@@ -226,6 +224,7 @@ script:
           type: number
         - contextPath: Report.Location
           description: Location of the report.
+          type: string
         - contextPath: Report.Reporter
           description: Reporter email address.
           type: string
