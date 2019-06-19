@@ -394,10 +394,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 2e9b139f-9d3e-46b9-8027-9bacbe3faa85
+    taskid: 3e21e0c9-2005-4a78-86e4-acb8c3100fd9
     type: regular
     task:
-      id: 2e9b139f-9d3e-46b9-8027-9bacbe3faa85
+      id: 3e21e0c9-2005-4a78-86e4-acb8c3100fd9
       version: -1
       name: autofocus-sample-analysis
       description: |-
@@ -411,18 +411,14 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      coverage: {}
       filter_data: {}
+      id: {}
       os: {}
+      platforms: {}
       sample_id:
-        complex:
-          root: AutoFocus
-          accessor: SamplesResults.SHA256
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+        simple: dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993
+      sections: {}
     separatecontext: false
     view: |-
       {
