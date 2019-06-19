@@ -1,7 +1,7 @@
 id: Intezer - scan host
 version: -1
 rolename:
-- Administrator
+  - Administrator
 name: Intezer - scan host
 description: |-
   Uses Demisto D2 agent to scan a host using Intezer scanner.
@@ -20,6 +20,7 @@ tasks:
       id: 209ca9d9-6cd1-43d6-8917-34828b27d69a
       version: -1
       name: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:
@@ -86,6 +87,7 @@ tasks:
       id: 24cabd05-fad2-4940-8241-3ee3763d4f8d
       version: -1
       name: d2 agent - Scan host by Intezer
+      description: "Runs IntezerScanHost script"
       scriptName: IntezerScanHost
       type: regular
       iscommand: false
@@ -153,6 +155,7 @@ tasks:
       id: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
       version: -1
       name: Done
+      description: "Done"
       type: title
       iscommand: false
       brand: ""
@@ -175,6 +178,7 @@ tasks:
       id: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
       version: -1
       name: Is the OS type Windows?
+      description: "Checks if OS type is windows"
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -267,6 +271,7 @@ tasks:
       id: d9b795b6-6dfe-4dca-80d4-2b988df75f76
       version: -1
       name: get-analysis-result
+      description: "Runs intezer-get-analysis-result command"
       script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
@@ -304,6 +309,7 @@ tasks:
       id: 60302e3d-4e42-4237-8050-eb4ae370d90e
       version: -1
       name: D2-remove
+      description: "Runs D2Remove script"
       script: D2Remove
       type: regular
       iscommand: false

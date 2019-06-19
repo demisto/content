@@ -215,9 +215,9 @@ def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=Non
     presentable_result += f' Scan Time: {result["scan_start_time"]}\n'
     presentable_result += f'[Analysis Link]({result["analysis_url"]})\n'
     ec = {
-         'DBotScore': dbot,
-         'Endpoint': endpoint,
-         'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
+        'DBotScore': dbot,
+        'Endpoint': endpoint,
+        'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
     }
     return_outputs(presentable_result, ec, result)
 

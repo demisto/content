@@ -13,6 +13,7 @@ tasks:
       id: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
       version: -1
       name: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:

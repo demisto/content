@@ -13,6 +13,7 @@ tasks:
       id: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
       version: -1
       name: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:
@@ -281,6 +282,7 @@ tasks:
       id: e2064e11-e8c7-4881-8328-e95a83a81a1b
       version: -1
       name: Was result returned?
+      description: "Checks was result returned"
       type: condition
       iscommand: false
       brand: ""

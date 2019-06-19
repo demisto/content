@@ -32,3 +32,5 @@ timeout: 900ns
 runonce: false
 runas: DBotWeakRole
 releaseNotes: Added new script IntezerScanHost. Scans intezer host
+tests:
+  - no test (Impossible to mock test)
