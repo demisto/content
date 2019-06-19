@@ -1396,7 +1396,8 @@
                 "Palo Alto Minemeld",
                 "Rasterize",
                 "EWS Mail Sender"
-            ]
+            ],
+            "timeout" : 480
         },
         {
             "integrations": "ANYRUN",
