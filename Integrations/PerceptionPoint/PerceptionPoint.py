@@ -148,7 +148,7 @@ def command_release_email():
                       'EntryContext': {'PP.Released': scan_id_to_release}}
                      )
         demisto.results(entry)
-    except Exception as e:
+    except Exception:
         return_error(
             'An error occurred while trying to release email. Please contact PerceptionPoint support')
 
