@@ -35,4 +35,4 @@ type: python
 runonce: false
 fromversion: 3.5.0
 tests:
-  - No test
+  - GetIndicatorDBotScore Test

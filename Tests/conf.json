@@ -543,6 +543,9 @@
             "timeout": 240
         },
         {
+            "playbookdID": "GetIndicatorDBotScore Test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
