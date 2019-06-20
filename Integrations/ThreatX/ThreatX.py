@@ -29,10 +29,7 @@ USE_SSL = not demisto.params().get('insecure')
 def http_request(url_suffix, commands=None):
     state = demisto.getIntegrationContext()
 
-    if not state.get('session_token'):
-        session_token = None
-    else:
-        session_token = state.get('session_token')
+    session_token = state.get('session_token')
 
     if url_suffix != '/login':
         demisto.info('running request with url=%s with commands=%s' % (BASE_URL + url_suffix, commands))
@@ -47,10 +44,11 @@ def http_request(url_suffix, commands=None):
     if commands is not None:
         data.update(commands)
 
-    res = requests.request('POST',
-                           BASE_URL + url_suffix,
-                           verify=USE_SSL,
-                           json=data)
+    res = requests.post(
+        BASE_URL + url_suffix,
+        verify=USE_SSL,
+        json=data
+    )
 
     if res.status_code != requests.codes.ok:
         if url_suffix == '/login':
@@ -392,16 +390,12 @@ def get_entities_command():
     entity_ip = demisto.args().get('entity_ip', None)
     timeframe = demisto.args().get('timeframe', None)
     results = get_entities(entity_name, entity_id, entity_ip, timeframe)
-    e_risk = None
-    e_id = None
-    md = []
-    ec = {}
     dbot_scores = []
     ip_enrich = []
 
     for entity in results:
         risk_score = 0
-
+        e_risk = None
         # Grab the entity risk so we can set the Dbot score for the Actor IPs
         e_id = entity.get('id')
 
@@ -416,57 +410,52 @@ def get_entities_command():
 
         iplist = []
 
-        if 'actors' in entity:
-            for actor in entity['actors']:
-                if 'ip_address' in actor:
-                    ipdot = pretty_ip(actor['ip_address'])
-                    iplist.append(ipdot)
-                    actor['ip_address'] = ipdot
+        for actor in entity.get('actors', []):
+            if 'ip_address' in actor:
+                ipdot = pretty_ip(actor['ip_address'])
+                iplist.append(ipdot)
+                actor['ip_address'] = ipdot
 
-                try:
-                    actor['interval_time_start'] = pretty_time(actor['interval_time_start'])
-                except KeyError:
-                    pass
+            if 'interval_time_start' in actor:
+                actor['interval_time_start'] = pretty_time(actor['interval_time_start'])
 
-                try:
-                    actor['interval_time_stop'] = pretty_time(actor['interval_time_stop'])
-                except KeyError:
-                    pass
+            if 'interval_time_stop' in actor:
+                actor['interval_time_stop'] = pretty_time(actor['interval_time_stop'])
 
-                try:
-                    actor['fingerprint']['last_seen'] = pretty_time(actor['fingerprint']['last_seen'])
-                except KeyError:
-                    pass
+            if 'last_seen' in actor.get('fingerprint', {}):
+                actor['fingerprint']['last_seen'] = pretty_time(actor['fingerprint']['last_seen'])
 
-                dbscore = set_dbot_score(risk_score)
 
-                dbot_scores.append({
-                    'Vendor': 'ThreatX',
-                    'Indicator': ipdot,
-                    'Type': 'ip',
-                    'Score': dbscore
+            dbscore = set_dbot_score(risk_score)
+
+            dbot_scores.append({
+                'Vendor': 'ThreatX',
+                'Indicator': ipdot,
+                'Type': 'ip',
+                'Score': dbscore
+            })
+
+            if dbscore == 3:
+                ip_enrich.append({
+                    'Address': ipdot,
+                    'Malicious': {
+                        'Vendor': 'ThreatX',
+                        'Description': 'ThreatX risk score is ' + str(risk_score)
+                    }
+                })
+            else:
+                ip_enrich.append({
+                    'Address': ipdot
                 })
 
-                if dbscore == 3:
-                    ip_enrich.append({
-                        'Address': ipdot,
-                        'Malicious': {
-                            'Vendor': 'ThreatX',
-                            'Description': 'ThreatX risk score is ' + str(risk_score)
-                        }
-                    })
-                else:
-                    ip_enrich.append({
-                        'Address': ipdot
-                    })
+        md = {
+            'Name': entity['codename'],
+            'ID': e_id,
+            'IP Addresses': ', '.join(iplist),
+            'ThreatX Risk Score': risk_score
+        }
 
-        md.append({'Name': entity['codename'],
-                   'ID': e_id,
-                   'IP Addresses': ', '.join(iplist),
-                   'ThreatX Risk Score': risk_score
-                   })
-
-        ec.update({
+        ec = {
             'Threatx.Entity(val.ID && val.ID === obj.ID)': {
                 'ID': e_id,
                 'Name': entity['codename'],
@@ -475,7 +464,7 @@ def get_entities_command():
             },
             'DBotScore': dbot_scores,
             'IP(val.Address === obj.Address)': ip_enrich
-        })
+        }
 
     return_outputs(tableToMarkdown('Entities', md), ec, results)
 
