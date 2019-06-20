@@ -73,7 +73,7 @@ def convert_python_date_to_unix_millisecond(python_date_object):
 
 
 def increase_iso_by_x_days(date_in_iso_format, num_of_days):
-    iso_format = "%Y-%m-%dT%H:%M:%S"
+    # iso_format = "%Y-%m-%dT%H:%M:%S"
     date_in_python_format = convert_iso_string_to_python_date(date_in_iso_format)
     new_date_in_python_format = date_in_python_format + timedelta(days=int(num_of_days))
     new_date_in_iso_format = new_date_in_python_format.isoformat()
@@ -158,7 +158,7 @@ def get_alerts_helper(params):
 
     resp = req('GET', 'public/v1/data/alerts/alerts-list', params=params)
     if resp.status_code == 204:
-        r = []
+        r = []  # type: ignore
     else:
         r = resp.json()
 
@@ -300,7 +300,7 @@ def ask_analyst():
     """
     alert_id = demisto.getArg('alert-id')
     question = demisto.getArg('question')
-    r = req('POST', 'public/v1/data/alerts/ask-the-analyst/' + alert_id, json_data={'Question': question})
+    req('POST', 'public/v1/data/alerts/ask-the-analyst/' + alert_id, json_data={'Question': question})
     question_details = {'ID': alert_id, 'Question': question}
     demisto.results(
         {
@@ -321,7 +321,7 @@ def get_alert_activity():
     """
     alert_id = demisto.getArg('alert-id')
     r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id).json()
-    activities = []
+    # activities = []
 
     human_readables = []
     alert = {'ID': alert_id, 'Activities': []}
@@ -366,7 +366,7 @@ def change_severity():
     """
     alert_id = demisto.getArg('alert-id')
     severity = demisto.getArg('severity')
-    r = req('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data={'Severity': severity})
+    req('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data={'Severity': severity})
     severity_details = {'ID': alert_id, 'Severity': severity}
     demisto.results({
         'Type': entryTypes['note'],
@@ -402,7 +402,7 @@ def assign_alert():
     url = 'public/v1/data/alerts/assign-alert/' + alert_id
     if is_mssp:
         url += '?IsMssp=' + is_mssp
-    r = req('PATCH', url, json_data={'AssigneeID': assignee_id})
+    req('PATCH', url, json_data={'AssigneeID': assignee_id})
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': assign_details},
@@ -419,7 +419,7 @@ def unassign_alert():
     Unassign an alert
     """
     alert_id = demisto.getArg('alert-id')
-    r = req('PATCH', 'public/v1/data/alerts/unassign-alert/' + alert_id)
+    req('PATCH', 'public/v1/data/alerts/unassign-alert/' + alert_id)
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id}},
@@ -452,7 +452,7 @@ def close_alert():
     if free_text:
         json_data['Rate'] = rate
 
-    r = req('PATCH', url, json_data)
+    req('PATCH', url, json_data)
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': close_details},
@@ -471,7 +471,7 @@ def send_mail():
     alert_id = demisto.getArg('alert-id')
     emails = argToList(demisto.getArg('emails'))
     content = demisto.getArg('content')
-    r = req('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails, 'Content': content})
+    req('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails, 'Content': content})
     ec = {
         'ID': alert_id,
         'EmailID': emails,
@@ -505,7 +505,7 @@ def add_tag():
     """
     alert_id = demisto.getArg('alert-id')
     tag_name = demisto.getArg('tag-name')
-    r = req('PATCH', 'public/v1/data/alerts/add-tag/' + alert_id, json_data={'TagName': tag_name})
+    req('PATCH', 'public/v1/data/alerts/add-tag/' + alert_id, json_data={'TagName': tag_name})
     tag_info = {
         'TagName': tag_name,
         'ID': get_tag_id(alert_id, tag_name)
@@ -529,7 +529,7 @@ def remove_tag():
     """
     alert_id = demisto.getArg('alert-id')
     tag_id = demisto.getArg('tag-id')
-    r = req('PATCH', 'public/v1/data/alerts/remove-tag/' + alert_id, json_data={'TagID': tag_id})
+    req('PATCH', 'public/v1/data/alerts/remove-tag/' + alert_id, json_data={'TagID': tag_id})
     ec = {
         'ID': alert_id,
         'Tags': {'ID': tag_id}
@@ -549,7 +549,7 @@ def add_comment():
     """
     alert_id = demisto.getArg('alert-id')
     comment = demisto.getArg('comment')
-    r = req('PATCH', 'public/v1/data/alerts/add-comment/' + alert_id, json_data={'Comment': comment})
+    req('PATCH', 'public/v1/data/alerts/add-comment/' + alert_id, json_data={'Comment': comment})
     ec = {
         'ID': alert_id,
         'Comment': comment
@@ -646,7 +646,7 @@ def search_for_IOC():
     """
     Search for IOC by value
     """
-    value = demisto.getArg('value')
+    # value = demisto.getArg('value')
     r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters())
 
     if r.status_code != 204:
@@ -707,7 +707,7 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     lastRunObject = demisto.getLastRun()
     if not lastRunObject and lastRunObject.get('time'):
-        fetch_delta, _ = parse_date_range(demisto.getParam('fetch_delta', DEFAULT_TIME_RANGE), to_timestamp=True)
+        fetch_delta, _ = parse_date_range(demisto.params().get('fetch_delta', DEFAULT_TIME_RANGE), to_timestamp=True)
     else:
         fetch_delta = lastRunObject.get('time')
 
@@ -779,7 +779,7 @@ def takedown_request():
     Request alert takedown
     """
     alert_id = demisto.getArg('alert-id')
-    r = req('PATCH', 'public/v1/data/alerts/takedown-request/' + alert_id)
+    req('PATCH', 'public/v1/data/alerts/takedown-request/' + alert_id)
     ec = {
         'ID': alert_id,
     }
@@ -826,7 +826,7 @@ def update_ioc_blocklist_status():
             'Value': values[i],
             'BlocklistStatus': statuses[i]
         })
-    r = req('PATCH', 'public/v1/data/alerts/change-iocs-blocklist-status/' + alert_id, json_data={'Iocs': data})
+    req('PATCH', 'public/v1/data/alerts/change-iocs-blocklist-status/' + alert_id, json_data={'Iocs': data})
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': statuses}},
