@@ -149,8 +149,6 @@ def handle_filters(foundDateFrom=None):
         update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
     elif foundDateFrom:
         params['foundDateFrom'] = foundDateFrom
-        # params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
-        # params['sourceDateTo'] = now_date_in_unix_timestamp
     return params
 
 
@@ -731,7 +729,6 @@ def fetch_incidents():
                 })
     demisto.incidents(incidents)
     demisto.setLastRun({'time': now})
-    fetch_incidents()
 
 
 def get_iocs():
