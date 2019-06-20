@@ -523,7 +523,8 @@
         {
             "integrations": "Intezer v2",
             "playbookID": "Intezer Testing v2",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "timeout": 700
         },
         {
             "integrations": "FalconIntel",
