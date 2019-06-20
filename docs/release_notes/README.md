@@ -1,6 +1,5 @@
 # Release Notes
-
-Content releases are done every 2 weeks. 
+ 
 Release Notes tells the user what has changed in the new version of this integration (or any other content object). If the integration is new, simply write something to describe the integration.
 
 ## New ReleaseNotes Format
