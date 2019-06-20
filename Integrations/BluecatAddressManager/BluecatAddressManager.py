@@ -31,6 +31,9 @@ HEADERS = {
     'Accept': 'application/json'
 }
 TOKEN_LIFE_TIME_MINS = 5
+USER_CONF = demisto.params().get('conf_name')
+USERNAME = demisto.params().get('credentials').get('identifier')
+PASSWORD = demisto.params().get('credentials').get('password')
 
 ''' HELPER FUNCTIONS '''
 
@@ -116,7 +119,7 @@ def get_configuration():
 
     :return: User configuration id, or the first configuration id if no user configuration provided
     """
-    user_conf = demisto.params().get('conf_name')
+    user_conf = USER_CONF
     params = {
         'type': 'Configuration',
         'start': 0,
@@ -161,8 +164,8 @@ def properties_to_camelized_dict(properties):
 
 def get_token_request():
     url_args = {
-        'username': demisto.params().get('credentials').get('identifier'),
-        'password': demisto.params().get('credentials').get('password')
+        'username': USERNAME,
+        'password': PASSWORD
     }
     start_idx = 16
     end_delim = ' <-'
