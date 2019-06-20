@@ -43,6 +43,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: '￿Last date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"'
+  name: fetch_delta
+  defaultvalue: "1 day"
+  type: 0
+  required: false
 - display: Incident type
   name: incidentType
   defaultvalue: ""
