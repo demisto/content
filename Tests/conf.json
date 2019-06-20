@@ -1707,7 +1707,6 @@
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
-        "AlphaSOC Wisdom": "Test module issue",
-
+        "AlphaSOC Wisdom": "Test module issue"
     }
 }
