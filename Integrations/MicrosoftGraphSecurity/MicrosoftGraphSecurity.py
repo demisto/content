@@ -47,7 +47,8 @@ def get_encrypted(content: str, key: str) -> str:
     """
 
     Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be the tenant id
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
         key (str): encryption key from Demistobot
 
     Returns:
