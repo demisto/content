@@ -39,109 +39,109 @@ script:
   commands:
   - arguments:
     - default: false
-      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Temporarily block an IP or CIDR
+    description: Temporarily blocks an IP address or CIDR.
     execution: true
     name: threatx-block-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR blocked
+      description: IP address or CIDR that was blocked.
       type: string
   - arguments:
     - default: false
-      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Unblock a blocked IP or CIDR
+    description: Unblocks a blocked IP address or CIDR.
     execution: true
     name: threatx-unblock-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR unblocked
+      description: IP address or CIDR that was unblocked.
       type: Unknown
   - arguments:
     - default: false
-      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Add an IP or CIDR to the Blacklist
+    description: Adds an IP address or CIDR to the blacklist.
     execution: true
     name: threatx-blacklist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR blacklisted
+      description: IP address or CIDR that was added to the blacklist.
       type: string
   - arguments:
     - default: false
-      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Remove an IP or CIDR from the Blacklist
+    description: Removes an IP or CIDR from the blacklist.
     execution: true
     name: threatx-unblacklist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR unblacklisted
+      description: IP address or CIDR that was removed from the blacklist.
       type: string
   - arguments:
     - default: false
-      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Add an IP or CIDR to the Whitelist
+    description: Adds an IP address or CIDR to the whitelist.
     execution: true
     name: threatx-whitelist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR whitelisted
+      description: IP address or CIDR was added to the whitelist.
       type: string
   - arguments:
     - default: false
-      description: IP address or CIDR (e.g. 10.1.1.1 or 10.1.1.0/24)
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Remove an IP or CIDR from the Whitelist
+    description: Removes an IP address or CIDR from the whitelist.
     execution: true
     name: threatx-unwhitelist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR unwhitelisted
+      description: IP address or CIDR that was removed from the whitelist.
       type: string
   - arguments:
     - default: false
-      description: One or more comma separated Entity names
+      description: CSV list of Entity names.
       isArray: false
       name: entity_name
       required: false
       secret: false
     - default: false
-      description: One or more comma separated Entity ID hashes
+      description: CSV list of Entity ID hashes.
       isArray: false
       name: entity_id
       required: false
       secret: false
     - default: false
-      description: One or more comma separated Entity IP addresses
+      description: CSV list of Entity IP addresses.
       isArray: false
       name: entity_ip
       required: false
@@ -163,24 +163,24 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Get high-level Entity information via the Entity ID, Entity Name,
-      or Entity IP. Example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
+    description: 'Get high-level Entity information using the Entity ID, Entity Name,
+      or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
       entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long
       look-back timeframes for a large number of Entities can timeout.'
     execution: false
     name: threatx-get-entities
     outputs:
     - contextPath: Threatx.Entity.ID
-      description: ID hash of the Entity
+      description: ID hash of the entity.
       type: string
     - contextPath: Threatx.Entity.Name
-      description: Name of the Entity
+      description: Name of the entity.
       type: string
     - contextPath: Threatx.Entity.IP
-      description: IP address of the Entity
+      description: IP address of the entity.
       type: string
     - contextPath: Threatx.Entity.Risk
-      description: Risk score of the Entity
+      description: Risk score of the entity.
       type: Unknown
   - arguments:
     - default: false
@@ -191,29 +191,28 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the notes attached to an Entity by Entity ID
+    description: Returns the notes attached to an Entity, by Entity ID.
     execution: false
     name: threatx-get-entity-notes
     outputs:
     - contextPath: Threatx.Entity.Note
-      description: Notes attached to the Entity
+      description: Notes attached to the entity.
       type: number
     - contextPath: Threatx.Entity.ID
-      description: ID hash of the Entity
+      description: ID hash of the entity.
       type: Unknown
     - contextPath: Threatx.Entity.Note.content
-      description: Content of the Note
+      description: Content of the note.
       type: Unknown
     - contextPath: Threatx.Entity.Note.timestamp
-      description: Timestamp of the Note
+      description: Timestamp of the note.
       type: Unknown
     - contextPath: Threatx.Entity.Note.username
-      description: Author of the Note
+      description: Author of the note.
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. Note: this value can be retrieved using
-        the "!threatx-get-entities" command.'
+      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
       isArray: false
       name: entity_id
       required: true
@@ -225,7 +224,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Add a new note to the Entity. Example: !threatx-add-entity-note
+    description: 'Add a new note to the entity. For example: !threatx-add-entity-note
       entity_id=566056709695514809 message="test note"'
     execution: true
     name: threatx-add-entity-note
