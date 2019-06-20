@@ -30,10 +30,10 @@ script:
     arguments:
     - name: query
       required: true
-      description: The query to retrieve samples. You can build your query using the
-        AF GUI, see integration description.
+      description: The query for which to retrieve samples. For additional information on how to build your query using the
+        AF GUI, see the deatiled description.
     - name: max_results
-      description: Number of results to provide.
+      description: Number of results to return.
       defaultValue: "30"
     - name: sort
       auto: PREDEFINED
@@ -49,13 +49,13 @@ script:
       - SHA1
       - SHA256
       - Ssdeep Fuzzy Hash
-      description: Field to sort by
+      description: The field by which to sort the results.
     - name: order
       auto: PREDEFINED
       predefined:
       - Ascending
       - Descending
-      description: Order of sort
+      description: Result order ("Ascending" or "Descending").
     - name: scope
       required: true
       auto: PREDEFINED
@@ -63,26 +63,26 @@ script:
       - Private
       - Public
       - Global
-      description: ' Scope of search'
+      description: ' Scope of the search ("Private", "Public", or "Global").'
     outputs:
     - contextPath: AutoFocus.SamplesSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
         Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.SamplesSearch.Status
-      description: in progress / complete
+      description: Search status ("in progress" or "complete").
       type: String
-    description: 'Search for samples. To view results run autofocus-samples-search-results
-      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
+    description: 'Search for samples. To view results run the autofocus-samples-search-results command 
+      with the returned Af Cookie. The AF Cookie expires 120 seconds after the
       search completes.'
   - name: autofocus-search-sessions
     arguments:
     - name: query
       required: true
-      description: The query to retrieve samples. You can build your query using the
-        AF GUI, see integration description.
+      description: The query for which to retrieve samples. For additional information on how to build your query using the
+        AF GUI, see the deatiled description.
     - name: max_results
-      description: Number of results to provide.
+      description: Maximum number of results to return. Default is 30.
       defaultValue: "30"
     - name: sort
       auto: PREDEFINED
@@ -119,84 +119,82 @@ script:
         Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.SessionsSearch.Status
-      description: in progress / complete
+      description: Search status ("in progress" or "complete").
       type: String
-    description: 'Search for sessions. To view results run autofocus-sessions-search-results
-      with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after the
+    description: 'Search for sessions. To view results run the autofocus-sessions-search-results command
+      with the returned AF Cookie. The AF Cookie expires 120 seconds after the
       search completes.'
   - name: autofocus-samples-search-results
     arguments:
     - name: af_cookie
       required: true
-      description: 'The AF Cookie for retrieving results of previous search. Note:
-        The AF Cookie expires 120 seconds after the search completes.'
+      description: 'The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.'
     outputs:
     - contextPath: AutoFocus.SamplesResults.Size
-      description: File size in bytes
+      description: File size in bytes.
       type: String
     - contextPath: AutoFocus.SamplesResults.SHA1
-      description: File SHA1
+      description: SHA1 hash of the file.
       type: String
     - contextPath: AutoFocus.SamplesResults.SHA256
-      description: File SHA256
+      description: SHA256 hash of the file.
       type: String
     - contextPath: AutoFocus.SamplesResults.Created
-      description: Date created
+      description: Date created.
       type: Date
     - contextPath: AutoFocus.SamplesResults.Finished
-      description: Date finshed
+      description: Date finshed.
       type: Date
     - contextPath: AutoFocus.SamplesResults.Region
-      description: Sample region
+      description: Region of the sample.
       type: String
     - contextPath: AutoFocus.SamplesResults.FileType
-      description: File type
+      description: File type.
       type: String
     - contextPath: AutoFocus.SamplesResults.Tags
-      description: Attached tags
+      description: Attached tags.
       type: String
     - contextPath: AutoFocus.SamplesResults.Verdict
-      description: Sample verdict
+      description: Sample verdict.
       type: Number
     - contextPath: AutoFocus.SamplesResults.TagGroups
-      description: Groups of relevant tags
+      description: Groups of relevant tags.
       type: String
-    description: Get results of a previous samples search
+    description: Returns results of a previous samples search.
   - name: autofocus-sessions-search-results
     arguments:
     - name: af_cookie
       required: true
-      description: 'The AF Cookie for retrieving results of previous search. Note:
-        The AF Cookie expires 120 seconds after the search completes.'
+      description: 'The AF Cookie for retrieving results of a previous search. The AF Cookie expires 120 seconds after the search completes.'
     outputs:
     - contextPath: AutoFocus.SessionsResults.FileName
-      description: File name
+      description: File name.
       type: String
     - contextPath: AutoFocus.SessionsResults.ID
-      description: Session ID. Used to get session details
+      description: Session ID. Used to get session details.
       type: String
     - contextPath: AutoFocus.SessionsResults.Industry
-      description: Related industry
+      description: Related industry.
       type: String
     - contextPath: AutoFocus.SessionsResults.Region
-      description: Session regions
+      description: Session regions.
       type: String
     - contextPath: AutoFocus.SessionsResults.SHA256
-      description: SHA256
+      description: SHA256 hash of the file.
       type: String
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Seen date
       type: Date
     - contextPath: AutoFocus.SessionsResults.UploadSource
-      description: Source uploaded the sample
+      description: Source of the uploaded sample.
       type: String
     - contextPath: AutoFocus.SessionsResults.FileURL
-      description: File URL
+      description: File URL.
       type: String
     - contextPath: AutoFocus.SessionsResults.Tags
-      description: Relevant tags
+      description: Relevant tags.
       type: String
-    description: Get results of a previous sessions search
+    description: Returns results of a previous sessions search.
   - name: autofocus-get-session-details
     arguments:
     - name: session_id
@@ -204,22 +202,22 @@ script:
       description: The session ID
     outputs:
     - contextPath: AutoFocus.Sessions.FileName
-      description: File name
+      description: File name.
       type: String
     - contextPath: AutoFocus.Sessions.ID
-      description: Session ID
+      description: Session ID.
       type: String
     - contextPath: AutoFocus.Sessions.Industry
-      description: Related industry
+      description: Related industry.
       type: String
     - contextPath: AutoFocus.Sessions.Region
-      description: Session regions
+      description: Session regions.
       type: String
     - contextPath: AutoFocus.Sessions.SHA256
-      description: SHA256
+      description: SHA256 hash of the file.
       type: String
     - contextPath: AutoFocus.Sessions.Seen
-      description: Seen date
+      description: Seen date.
       type: Date
     - contextPath: AutoFocus.Sessions.UploadSource
       description: Source uploaded the sample
@@ -229,7 +227,7 @@ script:
     arguments:
     - name: sample_id
       required: true
-      description: SHA256 of the sample to analyze
+      description: SHA256 hash of the sample to analyze.
     - name: os
       auto: PREDEFINED
       predefined:
@@ -239,22 +237,21 @@ script:
       - static_analyzer
       - mac
       - bare_metal
-      description: Analysis environment
+      description: Analysis environment.
     - name: filter_data
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: 'If set to False the data returned will not be smartly filtered.
-        Note: we recomend setting this to True as setting this to Flase, will slow
-        the integration performance dramatically.'
+      description: 'If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance.
+        We recommend setting this to "True".'
       defaultValue: "True"
     outputs:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
       description: HTTP requests made when the sample was executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Coverage
-      description: Sample coverage
+      description: Sample coverage.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
       description: 'Sample behavior: created or modified files, started a process,
@@ -265,7 +262,7 @@ script:
         was executed in the analysis environment.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Files
-      description: Files that showed activity as a result of the sample being executed
+      description: Files that showed activity as a result of the sample being executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Processes
       description: Processes that showed activity when the sample was executed.
@@ -277,13 +274,11 @@ script:
       description: DNS activity observed when the sample was executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
-      description: |-
-        If the sample generates other program threads when
-        executed in the analysis environment, the mutex created when the programs start is listed along with the parent process.
+      description: the mutex created when the programs start is listed along with the parent process if the sample generates other program threads when
+        executed in the analysis environment.
       type: Unknown
-    description: |-
-      Get properties, behaviors, and activities observed for a sample.
-      Run the command once to get the fields and os's under HTTP,Coverage,Behavior,Registry,Files,Processes,Connections,DNS.
+    description: Returns properties, behaviors, and activities observed for a sample.
+      Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
   - name: autofocus-tag-details
     arguments:
     - name: tag_name
