@@ -8,7 +8,6 @@ pylint = "*"
 pytest = "*"
 pytest-mock = "*"
 flake8 = "*"
-v = {version = "*",editable = true}
 
 [packages]
 
