@@ -83,6 +83,8 @@ def auth_check(spf_data, dkim_data, dmarc_data, override_dict):
 
 
 '''MAIN FUNCTION'''
+
+
 def main():
     try:
         args = demisto.args()
