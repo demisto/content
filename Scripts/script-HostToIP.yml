@@ -1,0 +1,63 @@
+commonfields:
+  id: HostToIP
+  version: -1
+name: HostToIP
+script: |
+  import socket
+
+  HOST = demisto.args().get('host')
+
+  try:
+      ip_addr = socket.gethostbyname(HOST)
+  except Exception as e:
+      demisto.results({
+          "Type" : entryTypes["error"],
+          "ContentsFormat" : formats["text"],
+          "Contents" : "Couln't resolve the host info. Error information: \"{0}\"".format(str(e))
+      })
+      sys.exit(0)
+
+  if not ip_addr:
+      demisto.results({
+          "Type" : entryTypes["error"],
+          "ContentsFormat" : formats["text"],
+          "Contents" : "Received an error while trying to lookup the IP information"
+      })
+      sys.exit(0)
+
+
+  output = {
+      "Hostname" : HOST,
+      "IP" : ip_addr
+  }
+
+  context = {}
+  context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = output
+
+  md = tableToMarkdown("Host to IP", [output])
+
+  demisto.results({
+      'Type' : entryTypes['note'],
+      'Contents': context,
+      'ContentsFormat' : formats['json'],
+      'HumanReadable': md,
+      'ReadableContentsFormat' : formats['markdown'],
+      'EntryContext' : context
+  })
+type: python
+tags: []
+comment: Resolves a domain name to an IP address.  Similar to 'nslookup'.
+system: true
+enabled: true
+args:
+- name: host
+  required: true
+  default: true
+  description: The hostname to resolve
+outputs:
+- contextPath: Endpoint.IP
+  description: The endpoint IP.
+  type: string
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
