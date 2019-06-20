@@ -7,6 +7,10 @@
             "playbookID": "AlienVaultOTX Test"
         },
         {
+            "integrations": "Cofense Triage",
+            "playbookID": "Cofense Triage Test"
+        },
+        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
         },
@@ -578,6 +582,7 @@
         },
         {
             "integrations": "McAfee ESM-v10",
+            "instance_names": "v10.2.0",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
@@ -1584,7 +1589,8 @@
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
-        "Detonate File - FireEye AX - Test": "No instance"
+        "Detonate File - FireEye AX - Test": "No instance",
+        "Cofense Triage Test": "Creds only works on demo4"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1595,13 +1601,11 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
-        "McAfee Advanced Threat Defense": "License expired",
         "Cymon": "The service was discontinued since April 30th, 2019.",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
-        "McAfee Advanced Threat Defense": "no license, issue 16909",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1624,7 +1628,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "McAfee ESM-v10": "User name expired (issue 17407)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
