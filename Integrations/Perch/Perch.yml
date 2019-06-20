@@ -406,11 +406,11 @@ script:
       description: ID of incident's creator.
       type: Number
   dockerimage: demisto/python3:3.7.2.214
+  subtype: python3
   isfetch: true
   runonce: false
   script: ''
   type: python
-subtype: python3
 releaseNotes: Initial release of new Perch Integration
 tests:
 - Perch-Test
