@@ -1832,6 +1832,8 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
+releaseNotes: "-"
