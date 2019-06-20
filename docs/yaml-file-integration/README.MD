@@ -124,8 +124,8 @@ An explanation of these fields is as follows:
 | **description** | A description for the command |
 | **runonce** | Boolean to indicate if the function runs repeatedly|
 
-## Version, Notes and Tests
-The last section of the YAML file provides Demisto with information regarding what version is supported, release notes, and tests. See the example below:
+## Version and Tests
+The last section of the YAML file provides Demisto with information regarding what version is supported and tests. See the example below:
 
 ```yml
 fromversion: 4.1.0
