@@ -251,7 +251,7 @@ script:
       description: HTTP requests made when the sample was executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Coverage
-      description: Sample coverage.
+      description: WildFire signatures that matched to the sample.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
       description: 'Sample behavior: created or modified files, started a process,
