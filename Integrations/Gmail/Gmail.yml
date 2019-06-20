@@ -32,6 +32,10 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use System Proxy
+  name: proxy
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   defaultvalue: ""
@@ -836,3 +840,4 @@ script:
 tests:
   - Gmail Convert Html Test
   - GmailTest
+releaseNotes: Added proxy support
