@@ -22,11 +22,9 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
     demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/v1'
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+
+# Remove proxy if not set to true in params
+handle_proxy()
 
 TLP_MAP = {
     'WHITE': 0,
@@ -70,12 +68,16 @@ def http_request(method, url_suffix, params=None, data=None, headers=None):
         if res.status_code == 403:
             return_error('Connection forbidden. Please verify your API key is valid.')
         elif res.status_code not in {200, 201}:
-            return_error('Error in API call to Perch Integration [%d] - %s' % (res.status_code, res.reason))
+            return_error(f'Error in API call to Perch Integration [{res.status_code}] - {res.reason}')
 
     except requests.exceptions.ConnectionError as error:
-        return_error("Failed to establish a new connection: {error}".format(error=type(error)))
+        return_error(f"Failed to establish a new connection: {type(error)}")
 
-    return res.json()
+    try:
+        response = res.json()
+    except Exception as e:
+        return_error(f'Failed to parse JSON response: {str(e)}')
+    return response
 
 
 def find_key_by_value(val, dic_map):
@@ -339,7 +341,7 @@ def search_alerts_command():
     for alert in res_results:
         alert_hr, alert_ec = format_alerts(alert)
         ec['Perch']['Alert'].append(alert_ec)
-        hr += tableToMarkdown('{title}'.format(title=alert_ec.get('Title')), alert_hr)
+        hr += tableToMarkdown(f'{alert_ec.get("Title")}', alert_hr)
     if len(res_results) == 0:
         demisto.results('No results were found')
     else:
@@ -383,8 +385,8 @@ def get_community_command():
     headers = authenticate()
     args = demisto.args()
     params = alerts_params(args)
-    id = args.get('id')
-    url = '/communities/{id}'.format(id=id)
+    community_id = args.get('id')
+    url = f'/communities/{community_id}'
     res = http_request('GET', url, headers=headers, params=params)
     if len(res) > 0:
         hr = tableToMarkdown('Communities Found', res, headerTransform=string_to_table_header, removeNull=True)
@@ -419,7 +421,7 @@ def create_indicator_command():
         }
     }  # type: dict
     ec['Perch']['Indicator'].append(indicator_ec)
-    hr += tableToMarkdown('{title}'.format(title=indicator_hr.get('Title')), indicator_hr)
+    hr += tableToMarkdown(f'{indicator_hr.get("Title")}', indicator_hr)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -468,9 +470,7 @@ def test_module():
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-# LOG('Command being called is %s' % (demisto.command()))
-demisto.info('Command being called is {}'.format(demisto.command()))
+demisto.info(f'Command being called is {demisto.command()}')
 
 try:
     if demisto.command() == 'perch-search-alerts':
