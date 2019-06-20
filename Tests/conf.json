@@ -7,6 +7,10 @@
             "playbookID": "Cloaken-Test"
         },
         {
+            "integrations": "ThreatX",
+            "playbookID": "ThreatX-test"
+        },
+        {
             "integrations": "AlienVault OTX",
             "playbookID": "AlienVaultOTX Test"
         },
@@ -76,6 +80,9 @@
         {
             "playbookID": "DocumentationTest",
             "integrations": "ipinfo"
+        },
+        {
+            "playbookID": "playbook-checkEmailAuthenticity-test"
         },
         {
             "playbookID": "HighlightWords_Test"
