@@ -29,8 +29,9 @@ HEADERS = {
 HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
                  "ThreatLevelComments", "DateUpdated", "HostZone"]
 LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
-PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID","UserLogin" , "DateUpdated"]
-NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel", "DateUpdated", "HostZone", "BIP"]
+PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID", "UserLogin", "DateUpdated"]
+NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location",
+                   "ThreatLevel", "DateUpdated", "HostZone", "BIP"]
 
 
 ''' HELPER FUNCTIONS '''
@@ -145,6 +146,7 @@ def update_networks_keys(networks):
         new_networks.append(tmp_network)
     return new_networks
 
+
 def update_persons_keys(persons):
     new_persons = []
 
@@ -161,6 +163,7 @@ def update_persons_keys(persons):
         }
         new_persons.append(tmp_person)
     return new_persons
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -324,6 +327,7 @@ def get_networks(data_args):
     outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Network information:', context)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
