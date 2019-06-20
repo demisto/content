@@ -74,6 +74,9 @@
             "integrations": "ipinfo"
         },
         {
+            "playbookID": "playbook-checkEmailAuthenticity-test"
+        },
+        {
             "playbookID": "HighlightWords_Test"
 
         },

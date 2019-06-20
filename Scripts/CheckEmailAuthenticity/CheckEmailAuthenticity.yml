@@ -1,0 +1,208 @@
+args:
+- auto: PREDEFINED
+  default: false
+  description: A list of dictionaries of headers in the form of "Header name":"Header
+    value".
+  isArray: true
+  name: headers
+  predefined:
+  - admin
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=None. Could be Fail / Suspicious / Undetermined
+    / Pass
+  isArray: false
+  name: SPF_override_none
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=neutral. Could be Fail / Suspicious / Undetermined
+    / Pass
+  isArray: false
+  name: SPF_override_neutral
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=pass. Could be Fail / Suspicious / Undetermined
+    / Pass
+  isArray: false
+  name: SPF_override_pass
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=fail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_fail
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=softfail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_softfail
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=temperror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_temperror
+  required: false
+  secret: false
+- default: false
+  description: Override value for SPF=permerror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: SPF_override_permerror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=none. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_none
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=pass. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_pass
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=fail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_fail
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=policy. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_policy
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=neutral. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_neutral
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=temperror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_temperror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DKIM=permerror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DKIM_override_permerror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=none. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_none
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=pass. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_pass
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=fail. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_fail
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=temperror.Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_temperror
+  required: false
+  secret: false
+- default: false
+  description: Override value for DMARC=permerror. Could be Fail / Suspicious / Undetermined
+    /Pass
+  isArray: false
+  name: DMARC_override_permerror
+  required: false
+  secret: false
+comment: Checks Email authenticity based on its SPF, DMARC and DKIM
+commonfields:
+  id: 0974bb77-e56c-4a5b-861e-8a4a6d00c3eb
+  version: -1
+enabled: true
+name: CheckEmailAuthenticity
+outputs:
+- contextPath: Email.SPF.MessageID
+  description: SPF ID
+  type: String
+- contextPath: Email.SPF.Validation-Result
+  description: 'Validation Result. Could be: None / Neutral / Pass / Fail / SoftFail
+    / TempError / PermError'
+  type: String
+- contextPath: Email.SPF.Reason
+  description: Reason listed in SPF (if found)
+  type: String
+- contextPath: Email.SPF.Sender-IP
+  description: Email Sender IP
+  type: String
+- contextPath: Email.DKIM.Message-ID
+  description: 'Validation Result. Could be: None / Pass / Fail / Policy / Neutral
+    / Temperror / Permerror'
+  type: String
+- contextPath: Email.DKIM.Reason
+  description: DKIM Reason (if found)
+  type: String
+- contextPath: Email.DMARC.Message-ID
+  description: DMARC ID
+  type: String
+- contextPath: Email.DMARC.Validation-Result
+  description: 'DMARC Reason. Could be: None / Pass / Fail / Temperror / Permerror'
+  type: String
+- contextPath: Email.DMARC.Tags
+  description: DMARC Tags (if found)
+  type: String
+- contextPath: Email.DMARC.From-Domain
+  description: Sender's Domain
+  type: String
+- contextPath: Email.DKIM.Signing-Domain
+  description: Sender's Domain
+  type: String
+- contextPath: Email.AuthenticityCheck
+  description: 'Could be: Fail / Suspicious / Undetermined / Pass'
+  type: Unknown
+- contextPath: Email.DKIM
+  description: DKIM information extracted from the mail
+  type: Unknown
+- contextPath: Email.SPF
+  description: SPF information extracted from the mail
+  type: Unknown
+- contextPath: Email.DMARC
+  description: DMARC information extracted from the mail
+  type: Unknown
+script: '-'
+system: false
+tags:
+- phishing
+- ews
+- email
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
