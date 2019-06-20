@@ -128,4 +128,4 @@ script:
 releaseNotes: New Integration Intezer V2. Supports the new version of Intezer API. Supports endpoint analysis
   as well as File analysis
 tests:
-- Intezer Testing v2
+  - Intezer Testing v2
