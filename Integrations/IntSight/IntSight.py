@@ -6,7 +6,6 @@ import json
 import base64
 from datetime import datetime
 
-
 requests.packages.urllib3.disable_warnings()
 
 URL = demisto.getParam('server')
@@ -120,7 +119,7 @@ def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
     return params
 
 
-def handle_filters(time_delta=None):
+def handle_filters(foundDateFrom=None):
     """
     Apply filters to alert list
     """
@@ -146,14 +145,17 @@ def handle_filters(time_delta=None):
         if demisto.getArg(k):
             params[argsConversion.get(k) or k] = demisto.getArg(k)
     if demisto.getArg('time-delta'):
-        time_delta_in_days = time_delta or demisto.getArg('time-delta')
+        time_delta_in_days = demisto.getArg('time-delta')
         update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
+    elif foundDateFrom:
+        params['foundDateFrom'] = foundDateFrom
+        # params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        # params['sourceDateTo'] = now_date_in_unix_timestamp
     return params
 
 
 def get_alerts_helper(params):
-    demisto.info("Executing get_alerts with params:")
-    demisto.info(params)
+    demisto.info("Executing get_alerts with params: {}".format(params))
 
     resp = req('GET', 'public/v1/data/alerts/alerts-list', params=params)
     if resp.status_code == 204:
@@ -729,6 +731,7 @@ def fetch_incidents():
                 })
     demisto.incidents(incidents)
     demisto.setLastRun({'time': now})
+    fetch_incidents()
 
 
 def get_iocs():
