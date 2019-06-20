@@ -10,7 +10,7 @@ PROXY = handle_proxy("proxy", False)
 
 def get_client():
     server = demisto.params()["server_url"]
-    verify = not demisto.params().get('do_not_verify_ssl', False)
+    verify = not demisto.params().get('insecure', False)
     password = demisto.params()["credentials"]["password"]
     username = demisto.params()["credentials"]["identifier"]
     client = SyncClient(
@@ -40,9 +40,9 @@ if demisto.command() == 'cloaken-unshorten-url':
         # successfully unshortened the url
         url_data = response.get('data', {}).get('unshortened_url')
         cloaken_context = {
-            'original_url': url,
-            'unshortened_url': url_data,
-            'status': response_code
+            'OriginalURL': url,
+            'UnshortenedURL': url_data,
+            'Status': response_code
         }
         ec = {
             outputPaths['url']: {

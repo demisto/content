@@ -77,7 +77,7 @@ tasks:
         simple: https://bit.ly/1Gtg3vp
       fields: {}
       path:
-        simple: Cloaken.original_url
+        simple: Cloaken.OriginalURL
     separatecontext: false
     view: |-
       {
@@ -138,7 +138,7 @@ tasks:
         simple: https://www.paloaltonetworks.com/
       fields: {}
       path:
-        simple: Cloaken.unshortened_url
+        simple: Cloaken.UnshortenedURL
     separatecontext: false
     view: |-
       {
