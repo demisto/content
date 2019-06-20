@@ -2,7 +2,7 @@ commonfields:
   id: AutoFocus V2
   version: -1
 name: AutoFocus V2
-display: Palo Alto AutoFocus V2
+display: Palo Alto Networks AutoFocus V2
 category: Data Enrichment & Threat Intelligence
 description: Integration Template
 configuration:
