@@ -29,18 +29,20 @@ HEADERS = {
 HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
                  "ThreatLevelComments", "DateUpdated", "HostZone"]
 LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
+PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID","UserLogin" , "DateUpdated"]
+NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel", "DateUpdated", "HostZone", "BIP"]
+
 
 ''' HELPER FUNCTIONS '''
 
 
-def fix_hosts_response(hosts):
-    for item in hosts:
+def fix_location_value(items):
+    for item in items:
         location_val = str(item.get('location'))
         if location_val == '{u\'id\': -1}':
             item['location'] = 'NA'
 
-        item['hostStatus'] = item.pop('recordStatusName')
-    return hosts
+    return items
 
 
 def get_time_frame(time_frame, start_arg, end_arg):
@@ -82,6 +84,9 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
     if res.headers['Content-Type'] != 'application/json':
         return_error('invalid url or port: ' + BASE_URL)
 
+    if res.status_code == 404 and res.json()['message']:
+        return_error(res.json()['message'])
+
     if res.status_code not in {200, 201, 207}:
         return_error(
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
@@ -92,11 +97,12 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
 
 def get_host_by_id(host_id):
     res = http_request('GET', 'lr-admin-api/hosts/' + host_id)
-    return fix_hosts_response([res])
+    return fix_location_value([res])
 
 
 def update_hosts_keys(hosts):
     new_hosts = []
+
     for host in hosts:
         tmp_host = {
             'EntityId': host.get('entity').get('id'),
@@ -109,7 +115,7 @@ def update_hosts_keys(hosts):
             'HostZone': host.get('hostZone'),
             'RiskLevel': host.get('riskLevel'),
             'Location': host.get('location'),
-            'Status': host.get('hostStatus'),
+            'Status': host.get('recordStatusName'),
             'ThreatLevelComments': host.get('threatLevelComments'),
             'ID': host.get('id'),
             'OSType': host.get('osType')
@@ -117,6 +123,44 @@ def update_hosts_keys(hosts):
         new_hosts.append(tmp_host)
     return new_hosts
 
+
+def update_networks_keys(networks):
+    new_networks = []
+
+    for network in networks:
+        tmp_network = {
+            'EIP': network.get('eip'),
+            'HostStatus': network.get('recordStatusName'),
+            'Name': network.get('name'),
+            'RiskLevel': network.get('riskLevel'),
+            'EntityId': network.get('entity').get('id'),
+            'EntityName': network.get('entity').get('name'),
+            'Location': network.get('location'),
+            'ThreatLevel': network.get('threatLevel'),
+            'DateUpdated': network.get('dateUpdated'),
+            'HostZone': network.get('hostZone'),
+            'ID': network.get('id'),
+            'BIP': network.get('bip')
+        }
+        new_networks.append(tmp_network)
+    return new_networks
+
+def update_persons_keys(persons):
+    new_persons = []
+
+    for person in persons:
+        tmp_person = {
+            'ID': person.get('id'),
+            'DateUpdated': person.get('dateUpdated'),
+            'HostStatus': person.get('recordStatusName'),
+            'LastName': person.get('lastName'),
+            'FirstName': person.get('firstName'),
+            'IsAPIPerson': person.get('isAPIPerson'),
+            'UserID': person.get('user').get('id'),
+            'UserLogin': person.get('user').get('login')
+        }
+        new_persons.append(tmp_person)
+    return new_persons
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -147,7 +191,7 @@ def add_host(data_args):
     }
 
     res = http_request('POST', 'lr-admin-api/hosts/', json.dumps(data))
-    res = fix_hosts_response([res])
+    res = fix_location_value([res])
     context = createContext(update_hosts_keys(res), removeNull=True)
     outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
     return_outputs(readable_output=data_args.get('name') + " added successfully to " + data_args.get('entity-name'),
@@ -156,7 +200,12 @@ def add_host(data_args):
 
 def get_hosts(data_args):
     res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
-    res = fix_hosts_response(res)
+    res = fix_location_value(res)
+
+    id = data_args.get('host-id')
+    if id:
+        res = get_host_by_id(id)
+
     res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
     human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
@@ -250,6 +299,32 @@ def execute_query(data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=logs_response)
 
 
+def get_persons(data_args):
+    id = data_args.get('person-id')
+    if id:
+        res = [http_request('GET', 'lr-admin-api/persons/' + id)]
+    else:
+        res = http_request('GET', 'lr-admin-api/persons/')
+    res = update_persons_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Person information:', context, PERSON_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_networks(data_args):
+    id = data_args.get('network-id')
+    if id:
+        res = [http_request('GET', 'lr-admin-api/networks/' + id)]
+    else:
+        res = http_request('GET', 'lr-admin-api/networks/')
+    res = fix_location_value(res)
+    res = update_networks_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Network information:', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -269,6 +344,10 @@ def main():
             execute_query(demisto.args())
         elif demisto.command() == 'lr-update-host-status':
             change_status(demisto.args())
+        elif demisto.command() == 'lr-get-persons':
+            get_persons(demisto.args())
+        elif demisto.command() == 'lr-get-networks':
+            get_networks(demisto.args())
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
 

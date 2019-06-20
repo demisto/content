@@ -116,6 +116,12 @@ script:
       name: count
       required: false
       secret: false
+    - default: false
+      description: The LogRhythm host id.
+      isArray: false
+      name: host-id
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a list of hosts for a given entity, or an empty list if
       none is found.
@@ -407,9 +413,33 @@ script:
     - contextPath: Logrhythm.Host.OSType
       description: The type of the host OS.
       type: string
+  - arguments:
+    - default: false
+      description: The LogRhythm person id.
+      isArray: false
+      name: person-id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of persons
+    execution: false
+    name: lr-get-persons
+  - arguments:
+    - default: false
+      description: The LogRhythm network id.
+      isArray: false
+      name: network-id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of persons
+    execution: false
+    name: lr-get-networks
   isfetch: false
   runonce: false
   script: '-'
   type: python
 tests:
 - LogRhythm REST test
+releaseNotes: '- add lr-get-persons and lr-get-networks commands
+               - add host-id arg to lr-get-hosts-by-entity command'
