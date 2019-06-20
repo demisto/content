@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
-from requests.exceptions import MissingSchema, ConnectionError, InvalidSchema
+from requests.exceptions import MissingSchema, ConnectionError
 import json
 
 # Disable insecure warnings
