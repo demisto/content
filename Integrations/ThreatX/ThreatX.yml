@@ -45,7 +45,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Temporarily blocks an IP address or CIDR.
+    description: Temporarily blocks an IP address or CIDR. Default is 30 minutes.
     execution: true
     name: threatx-block-ip
     outputs:
