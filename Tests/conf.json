@@ -1546,7 +1546,7 @@
     ],
     "skipped_tests": {
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
-        "Autofocus": "Fails AF V2",
+        "autofocus_test": "Fails AF V2",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
@@ -1707,6 +1707,7 @@
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
-        "AlphaSOC Wisdom": "Test module issue"
+        "AlphaSOC Wisdom": "Test module issue",
+
     }
 }
