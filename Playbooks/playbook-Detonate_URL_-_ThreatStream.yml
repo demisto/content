@@ -4,7 +4,7 @@ name: Detonate URL - ThreatStream
 fromversion: 4.5.0
 description: |-
   Detonates one or more URLs using the Anomali ThreatStream v2 sandbox integration.
-  Returns relevant reports to the War Room and url reputations to the context data.
+  Returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       id: ebd0e978-215d-43e5-8ceb-54384a2f99ba
       version: -1
       name: ThreatStream Submit URL for Analysis
-      description: Detonates file or URL to the ThreatStream-hosted Sandbox.
+      description: Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
       script: '|||threatstream-submit-to-sandbox'
       type: regular
       iscommand: true
@@ -160,7 +160,7 @@ tasks:
       id: 6788a219-1746-44bf-8dfe-6b5c0ef9f311
       version: -1
       name: Is there a URL to detonate?
-      description: Look for URLs to detonate
+      description: Checks if there is at least one URL to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -196,8 +196,8 @@ tasks:
     task:
       id: 569601dc-c5d2-430b-8fe7-df84b0d9c3a9
       version: -1
-      name: Is  Anomali ThreatStream v2 enabled?
-      description: Check if integration instance is enabled
+      name: Is Anomali ThreatStream v2 enabled?
+      description: Checks if there is an active instance of the Anomali ThreatStream v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -252,7 +252,7 @@ tasks:
       id: a9f1b51f-cb92-456b-8597-ed0f6816bc9d
       version: -1
       name: ThreatStream Get Report
-      description: Returns report of file or URL that was submitted to sandbox.
+      description: Returns a report of the file or URL that was submitted to the sandbox.
       script: '|||threatstream-analysis-report'
       type: regular
       iscommand: true
@@ -297,13 +297,13 @@ inputs:
   value:
     simple: "5"
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: How often to execute polling (in minutes).
 - key: Timeout
   value:
     simple: "120"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop polling and to resume the playbook
+    (in minutes).
 - key: VM
   value: {}
   required: false
@@ -311,15 +311,15 @@ inputs:
 - key: SubmissionClassification
   value: {}
   required: false
-  description: Classification of the Sandbox submission.
+  description: Classification of the sandbox submission.
 - key: PremiumSandbox
   value: {}
   required: false
-  description: Specify whether the premium sandbox should be used for detonation.
+  description: Specifies if the premium sandbox should be used for detonation.
 - key: Tags
   value: {}
   required: false
-  description: A comma-separated list of tags applied to this sample.
+  description: A CSV list of tags applied to this sample.
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -484,7 +484,7 @@ outputs:
   description: The actual score.
   type: Number
 - contextPath: DBotScore.Type
-  description: Type of indicator.
+  description: The indicator type.
   type: String
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score.
