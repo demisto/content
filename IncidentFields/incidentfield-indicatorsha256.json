@@ -36,5 +36,5 @@
 	"sla": 0,
 	"threshold": 72,
 	"breachScript": "",
-	"releaseNotes": "new indicator field"
+	"releaseNotes": "Added the SHA256 hash indicator field."
 }
