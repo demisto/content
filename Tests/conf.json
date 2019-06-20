@@ -1397,7 +1397,7 @@
                 "Rasterize",
                 "EWS Mail Sender"
             ],
-            "timeout" : 480
+            "timeout" : 520
         },
         {
             "integrations": "ANYRUN",
