@@ -274,12 +274,13 @@ class MITMProxy:
         # Make sure process is up and running
         while not log_file_exists and seconds_since_init < PROXY_PROCESS_INIT_TIMEOUT:
             # Check if log file exist
-            log_file_exists = self.ami.call(['ls', log_file]) == 0
+            log_file_exists = silence_output(self.ami.call, ['ls', log_file], stdout='null', stderr='null') == 0
             time.sleep(PROXY_PROCESS_INIT_INTERVAL)
             seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
         if not log_file_exists:
             self.stop()
             raise Exception("Proxy process took to long to go up.")
+        print('Proxy process up and running. Took {} seconds'.format(seconds_since_init))
 
     def stop(self):
         if not self.process:

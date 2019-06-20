@@ -16,9 +16,10 @@ API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
 IS_OAUTH = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+IS_BASIC = USERNAME and (PASSWORD or API_TOKEN)
 
 # if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
-if not IS_OAUTH and not (USERNAME and (PASSWORD or API_TOKEN)):
+if not IS_OAUTH and not IS_BASIC:
     return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
 B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
 BASIC_AUTH = 'Basic ' + B64_AUTH
@@ -34,6 +35,8 @@ HEADERS = {
 if not IS_OAUTH:
     HEADERS['Authorization'] = BASIC_AUTH
 
+BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
+                       " longer supported, please use an API Token or OAuth"
 USE_SSL = not demisto.params().get('insecure', False)
 
 
@@ -60,7 +63,8 @@ def jira_req(method, resource_url, body='', link=False):
         except ValueError as ve:
             demisto.debug(str(ve))
             if result.status_code == 401:
-                return_error('Unauthorized request, please check authentication related parameters.')
+                return_error('Unauthorized request, please check authentication related parameters.'
+                             f'{BASIC_AUTH_ERROR_MSG if IS_BASIC else ""}')
             elif result.status_code == 404:
                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
             else:
@@ -198,7 +202,7 @@ def generate_md_context_get_issue(data):
 
 
 def generate_md_context_create_issue(data, project_name=None, project_key=None):
-    create_issue_obj = {"md": [], "context": {"Ticket": []}}
+    create_issue_obj = {"md": [], "context": {"Ticket": []}}  # type: ignore
     if project_name:
         data["projectName"] = project_name
 
@@ -492,10 +496,10 @@ def upload_file(entry_id, issue_id):
         'X-Atlassian-Token': 'no-check',
     }
     res = requests.post(
-        BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
+        url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
         headers=headers,
         files={'file': get_file(entry_id)},
-        auth=(USERNAME, PASSWORD),
+        auth=(USERNAME, API_TOKEN or PASSWORD),
         verify=USE_SSL
     )
 
