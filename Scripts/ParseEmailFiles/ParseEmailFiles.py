@@ -3405,19 +3405,17 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         attachment_file_name = os.path.basename(attachment_file_name)
 
                 if "message/rfc822" in part.get("Content-Type", "") \
-                        or ("application/octet-stream" in part.get("Content-Type", "")
-                            and "base64" in part.get("Content-Transfer-Encoding", "")
-                            and attachment_file_name.endswith(".eml")):
+                    or ("application/octet-stream" in part.get("Content-Type", "")
+                        and attachment_file_name.endswith(".eml")):
 
                     # .eml files
                     file_content = None
+                    encoded = "application/octet-stream" in part.get("Content-Type", "")
 
-                    base64_encoded = False
-                    if "base64" in part.get("Content-Transfer-Encoding", ""):
-                        base64_encoded = True
-                        file_content = part.get_payload()
+                    if encoded:
+                        file_content = part.get_payload(decode=True)
 
-                    elif not base64_encoded and isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
+                    elif isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
                         if attachment_file_name is None or attachment_file_name == "":
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
@@ -3426,9 +3424,12 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
                         file_content = part.get_payload()[0].as_string()
-                        demisto.results(fileResult(attachment_file_name, file_content))
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
+
+                    if file_content:
+                        # save the eml to war room as file entry
+                        demisto.results(fileResult(attachment_file_name, file_content))
 
                     if file_content and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
@@ -3436,11 +3437,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             f.write(file_content)
                             f.close()
                             inner_eml, inner_attached_emails = handle_eml(file_path=f.name,
-                                                                          b64=base64_encoded,
                                                                           file_name=attachment_file_name,
                                                                           max_depth=max_depth - 1)
                             attached_emails.append(inner_eml)
                             attached_emails.extend(inner_attached_emails)
+
                             return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                            outputs=None)
                         finally:
