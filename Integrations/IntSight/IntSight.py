@@ -6,9 +6,8 @@ import json
 import base64
 from datetime import datetime
 
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 URL = demisto.getParam('server')
 if URL[-1] != '/':
