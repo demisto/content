@@ -392,7 +392,8 @@ def get_entities_command():
     results = get_entities(entity_name, entity_id, entity_ip, timeframe)
     dbot_scores = []
     ip_enrich = []
-
+    human_readable = []
+    entities_context = []
     for entity in results:
         risk_score = 0
         e_risk = None
@@ -447,26 +448,27 @@ def get_entities_command():
                 ip_enrich.append({
                     'Address': ipdot
                 })
+        entities_context.append({
+            'ID': e_id,
+            'Name': entity['codename'],
+            'IP': iplist,
+            'Risk': risk_score
+        })
 
-        md = {
+        human_readable.append({
             'Name': entity['codename'],
             'ID': e_id,
             'IP Addresses': ', '.join(iplist),
             'ThreatX Risk Score': risk_score
-        }
+        })
 
-        ec = {
-            'Threatx.Entity(val.ID && val.ID === obj.ID)': {
-                'ID': e_id,
-                'Name': entity['codename'],
-                'IP': iplist,
-                'Risk': risk_score
-            },
-            'DBotScore': dbot_scores,
-            'IP(val.Address === obj.Address)': ip_enrich
-        }
+    ec = {
+        'Threatx.Entity(val.ID && val.ID === obj.ID)': entities_context,
+        'DBotScore': dbot_scores,
+        'IP(val.Address === obj.Address)': ip_enrich
+    }
 
-    return_outputs(tableToMarkdown('Entities', md), ec, results)
+    return_outputs(tableToMarkdown('Entities', human_readable), ec, results)
 
 
 @logger
