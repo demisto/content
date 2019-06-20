@@ -522,7 +522,8 @@
         },
         {
             "integrations": "Intezer v2",
-            "playbookID": "Intezer Testing v2"
+            "playbookID": "Intezer Testing v2",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "FalconIntel",
