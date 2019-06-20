@@ -790,5 +790,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: fetch incidents fixed
-tset:
+tests:
   - IntSights Test
