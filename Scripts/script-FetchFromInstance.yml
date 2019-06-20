@@ -2,7 +2,7 @@ commonfields:
   id: FetchFromInstance
   version: -1
 name: FetchFromInstance
-fromversion: 4.1.0
+fromversion: 4.0.0
 script: |-
   import re
   from distutils.util import strtobool
