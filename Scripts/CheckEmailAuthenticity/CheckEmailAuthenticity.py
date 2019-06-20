@@ -8,6 +8,12 @@ import traceback
 
 
 def get_spf(auth, spf):
+    """
+    Get SPF validation information
+    :param auth: authentication header value (if exist), contains the validation result and sender ip.
+    :param spf: spf header value (if exist), contains the validation result and sender ip.
+    :return: SPF validation information
+    """
     spf_context = {}
     if auth is None:
         spf_context['Validation-Result'] = spf.split(' ')[0].lower()
@@ -25,6 +31,11 @@ def get_spf(auth, spf):
 
 
 def get_dkim(auth):
+    """
+    Get DKIM validation information
+    :param auth: authentication header value (if exist), contains the validation result.
+    :return: DKIM validation information
+    """
     dkim_context = {}
     if auth is not None:
         result = re.search(r'dkim=(\w+)', auth)
@@ -40,6 +51,11 @@ def get_dkim(auth):
 
 
 def get_dmarc(auth):
+    """
+    Get DMARC validation information
+    :param auth: authentication header value (if exist), contains the validation result and sender ip.
+    :return: DMARC validation information
+    """
     dmarc_context = {}
     if auth is not None:
         result = re.search(r'dmarc=(\w+)', auth)
