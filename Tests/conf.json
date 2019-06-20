@@ -1684,6 +1684,7 @@
         "PhishTank": "Pending merge of branch proxy-unsecure-checks",
         "epo": "Pending merge of branch proxy-unsecure-checks",
         "Symantec Advanced Threat Protection": "Checking",
+        "Symantec Messaging Gateway": "Test playbook fails - unable to use playbacks due to 'Connection aborted., BadStatusLine('',)",
         "ReversingLabs A1000": "Checking",
         "Check Point": "Checking",
         "WhatsMyBrowser": "Checking",
