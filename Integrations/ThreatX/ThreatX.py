@@ -426,7 +426,6 @@ def get_entities_command():
             if 'last_seen' in actor.get('fingerprint', {}):
                 actor['fingerprint']['last_seen'] = pretty_time(actor['fingerprint']['last_seen'])
 
-
             dbscore = set_dbot_score(risk_score)
 
             dbot_scores.append({
