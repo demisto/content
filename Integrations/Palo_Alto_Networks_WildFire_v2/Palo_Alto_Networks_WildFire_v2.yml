@@ -359,4 +359,4 @@ script:
   subtype: python3
 tests:
 - Wildfire Test
-releaseNotes: "Add Suppress file type error parameter"
+releaseNotes: "Added the Suppress file type error parameter, which returns a warning entry (not an error entry) to the War Room for incorrect file types."
