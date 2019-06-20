@@ -138,6 +138,76 @@ script:
     - contextPath: AddressManager.ResponsePolicies.RedirectTarget
       description: Target of redirect in case of REDIRECT policy type
       type: String
+  - arguments:
+    - default: false
+      defaultValue: '0'
+      description: Start index to get the response policies from
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Limit on the number of response policies to get
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches all response policies in which the given domain is included
+    execution: false
+    name: bluecat-am-search-response-policies-by-domain
+    outputs:
+    - contextPath: AddressMaznager.ResponsePolicies.ID
+      description: ID of the responce policy
+      type: Number
+    - contextPath: AddressManager.ResponsePolicies.Name
+      description: Name of the responce policy
+      type: String
+    - contextPath: AddressManager.ResponsePolicies.Ttl
+      description: Time to live of the responce policy
+      type: Unknown
+    - contextPath: AddressManager.ResponsePolicies.Type
+      description: Type of the responce policy. Either BLACKLIST, BLACKHOLE, WHITELIST
+        or REDIRECT
+      type: String
+    - contextPath: AddressManager.ResponsePolicies.RedirectTarget
+      description: Target of redirect in case of REDIRECT policy type
+      type: String
+  - arguments:
+    - default: true
+      description: Id of the response policy to edit.
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: Domain to add to the response policy.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a domain to the given response policy.
+    execution: false
+    name: bluecat-am-response-policy-add-domain
+  - arguments:
+    - default: true
+      description: Id of the response policy to edit.
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: Domain to remove from the response policy.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a domain from the given response policy.
+    execution: false
+    name: bluecat-am-response-policy-remove-domain
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false

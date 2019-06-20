@@ -72,10 +72,14 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 202}:
-        err_msg = 'Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason)
-        if safe:
-            return None
-        return_error(err_msg)
+        try:
+            result_msg = res.json()
+        finally:
+            reason = result_msg if result_msg else res.reason
+            err_msg = f'Error in API call. code:{res.status_code}; reason: {reason}'
+            if safe:
+                return None
+            return_error(err_msg)
     return res.json()
 
 
@@ -257,17 +261,19 @@ def query_ipv6(ip):
 
 
 def get_response_policies_command():
-    raw_response_policies = get_response_policies()
+    start = demisto.getArg('start')
+    count = demisto.getArg('count')
+    raw_response_policies = get_response_policies(start, count)
     response_policies, hr = create_response_policies_result(raw_response_policies)
     return_outputs(hr, response_policies, raw_response_policies)
 
 
-def get_response_policies():
+def get_response_policies(start, count):
     params = {
         'parentId': CONF,
         'type': 'ResponsePolicy',
-        'start': demisto.getArg('start'),
-        'count': demisto.getArg('count'),
+        'start': start,
+        'count': count
     }
     return http_request('GET', '/getEntities', params=params)
 
@@ -285,6 +291,46 @@ def create_response_policies_result(raw_response_policies):
         hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
         response_policies.append(response_policy_obj)
     return {'AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
+
+
+def add_domain_response_policy_command():
+    policy_id = demisto.getArg('policy_id')
+    domain = demisto.getArg('domain')
+    raw_response = add_domain_response_policy(policy_id, domain)
+    error_msg = f'Failed to add {domain} to response policy {policy_id}, ' \
+                f'possibly the domain already exists in the response policy.'
+    if raw_response:
+        return_outputs(f'Successfully added {domain} to response policy {policy_id}', {}, raw_response)
+    else:
+        return_outputs(error_msg, {}, raw_response)
+
+
+def add_domain_response_policy(policy_id, domain):
+    params = {
+        'policyId': policy_id,
+        'itemName': domain
+    }
+    return http_request('POST', '/addResponsePolicyItem', params=params)
+
+
+def remove_domain_response_policy_command():
+    policy_id = demisto.getArg('policy_id')
+    domain = demisto.getArg('domain')
+    raw_response = remove_domain_response_policy(policy_id, domain)
+    error_msg = f'Failed to remove {domain} from response policy {policy_id}, ' \
+                f'possibly the domain doesn\'t exist in the response policy.'
+    if raw_response:
+        return_outputs(f'Successfully removed {domain} from response policy {policy_id}', {}, raw_response)
+    else:
+        return_outputs(error_msg, {}, raw_response)
+
+
+def remove_domain_response_policy(policy_id, domain):
+    params = {
+        'policyId': policy_id,
+        'itemName': domain
+    }
+    return http_request('DELETE', '/deleteResponsePolicyItem', params=params)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -310,6 +356,10 @@ def main():
             query_ipv6_command()
         elif command == 'bluecat-am-get-response-policies':
             get_response_policies_command()
+        elif command == 'bluecat-am-response-policy-add-domain':
+            add_domain_response_policy_command()
+        elif command == 'bluecat-am-response-policy-remove-domain':
+            remove_domain_response_policy_command()
 
     # Log exceptions
     except Exception as e:
