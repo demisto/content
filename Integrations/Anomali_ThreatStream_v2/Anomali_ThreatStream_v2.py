@@ -83,12 +83,6 @@ THREAT_MODEL_MAPPING = {
     'created_ts': 'CreatedTime',
 }
 
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -110,38 +104,24 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
         return_error("Got unauthorized from the server. Check the credentials.")
     elif res.status_code in {404}:
         command = demisto.command()
-        if command == 'threatstream-get-model-description' \
-                or command == 'threatstream-get-indicators-by-model' \
-                or command == 'threatstream-get-analysis-status' \
-                or command == 'threatstream-analysis-report':
+        if command in ['threatstream-get-model-description', 'threatstream-get-indicators-by-model',
+                       'threatstream-get-analysis-status', 'threatstream-analysis-report']:
             # in order to prevent raising en error in case model/indicator/report was not found
             return {}
         else:
             return_error("The resource not found. Check the endpoint.")
     elif res.status_code not in {200, 201, 202}:
-        return_error(f"Error in API call to ThreatStream {res.status_code} - {res.text}")
+        return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
 
     return res.json()
-
-
-def sort_by_severity(ioc):
-    """
-        Extract the severity value from the indicator and converts to integer.
-        The integer is received from SEVERITY_SCORE dictionary with possible values: 0, 1, 2, 3.
-        In case the indicator has no severity value, the indicator severity score is set to 0 (low).
-    """
-    try:
-        severity_value = ioc['meta']['severity']
-        return SEVERITY_SCORE[severity_value]
-    except KeyError:
-        return 0
 
 
 def find_worst_indicator(indicators):
     """
         Sorts list of indicators by severity score and returns one indicator with the highest severity.
+        In case the indicator has no severity value, the indicator severity score is set to 0 (low).
     """
-    indicators.sort(key=sort_by_severity, reverse=True)
+    indicators.sort(key=lambda ioc: SEVERITY_SCORE[ioc.get('meta', {}).get('severity', 'low')], reverse=True)
     return indicators[0]
 
 
@@ -149,12 +129,16 @@ def prepare_args(args):
     # removing empty keys that can be passed from playbook input
     args = {k: v for (k, v) in args.items() if v}
     if 'include_inactive' in args:
+        # special handling for ip, domain, file, url and threatstream-email-reputation commands
         args['status'] = "active,inactive" if args.pop('include_inactive') == 'True' else "active"
     if 'indicator_severity' in args:
+        # special handling for threatstream-get-indicators
         args['meta.severity'] = args.pop('indicator_severity', None)
     if 'tags_name' in args:
-        args['tags.name '] = args.pop('tags_name', None)
+        # special handling for threatstream-get-indicators
+        args['tags.name'] = args.pop('tags_name', None)
     if 'indicator_value' in args:
+        # special handling for threatstream-get-indicators
         args['value'] = args.pop('indicator_value', None)
 
     return args
@@ -168,42 +152,13 @@ def build_params(**params):
     return params
 
 
-def get_indicator_severity(indicator):
-    """
-        Extracts and returns severity value from indicator's nested key.
-        In case the severity value was not found in indicator dictionary,
-        the severity value will be low.
-    """
-    try:
-        severity = indicator['meta']['severity']
-    except KeyError:
-        severity = 'low'
-    finally:
-        return severity
-
-
-def camelize(src, delim=' '):
-    # check with the reviewer if this changes are in the common server python
-    # if so, the function can be deleted...
-    # the current version doesn't support python 3
-    def camelize_str(src_str, delim):
-        components = src_str.split(delim)
-        return ''.join(map(lambda x: x.title(), components))
-
-    if isinstance(src, list):
-        return list(map(lambda x: camelize(x, delim), src))
-
-    src = {camelize_str(k, delim): v for (k, v) in src.items()}
-    return src
-
-
 def get_dbot_context(indicator, threshold):
     """
          Builds and returns dictionary with Indicator, Type, Vendor and Score keys
          and values from the indicator that will be returned to context.
     """
     dbot_context = {DBOT_MAPPING[k]: v for (k, v) in indicator.items() if k in DBOT_MAPPING.keys()}
-    indicator_score = DBOT_SCORE[get_indicator_severity(indicator)]
+    indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
     # the indicator will be considered as malicious in case it's score is greater or equal to threshold
     dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
 
@@ -215,7 +170,7 @@ def mark_as_malicious(indicator, threshold, context):
         Marks indicator as malicious if severity of indicator is greater/equals to threshold and
         adds Malicious key to returned dictionary (context) in such case.
     """
-    severity = get_indicator_severity(indicator)
+    severity = indicator.get('meta', {}).get('severity', 'low')
 
     if SEVERITY_SCORE[severity] >= SEVERITY_SCORE[threshold]:
         context['Malicious'] = {
@@ -246,7 +201,7 @@ def get_ip_context(indicator, threshold):
     ip_context['Address'] = indicator.get('value', '')
     ip_context['Geo'] = {
         'Country': indicator.get('country', ''),
-        'Location': f"{indicator.get('latitude', '')},{indicator.get('longitude', '')}"
+        'Location': F"{indicator.get('latitude', '')},{indicator.get('longitude', '')}"
     }
     mark_as_malicious(indicator, threshold, ip_context)
 
@@ -366,14 +321,14 @@ def get_report_outputs(report, report_id):
         Returns human readable and entry context of the sandbox report
     """
     info = parse_info(report.get('info', {}))
-    info['ID'] = report_id
+    info['ReportID'] = report_id
     _, info['Verdict'] = get_submission_status(report_id, False)
     network = parse_network_lists(report.get('network', {}))
 
     hm = tableToMarkdown(F"Report {report_id} analysis results", info)
     ec = {
-        'ThreatStream.SandboxReport': info,
-        'ThreatStream.Network': network
+        'ThreatStream.Analysis': info,
+        'ThreatStream.Analysis.Network': network
     }
 
     return hm, ec
@@ -395,6 +350,20 @@ def parse_indicators_list(iocs_list):
             indicator['Tags'] = ",".join(list(map(lambda t: t.get('name', ''), tags)))
 
     return iocs_context
+
+
+def build_model_data(name, is_public, tlp, tags, intelligence, description):
+    """
+        Builds data dictionary that is used in Threat Model creation/update request.
+    """
+    data = {k: v for (k, v) in (('name', name), ('is_public', is_public), ('tlp', tlp), ('description', description))
+            if v}
+    if tags:
+        data['tags'] = tags if isinstance(tags, list) else [t.strip() for t in tags.split(',')]
+    if intelligence:
+        data['intelligence'] = intelligence if isinstance(intelligence, list) else [i.strip() for i in
+                                                                                    intelligence.split(',')]
+    return data
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -531,7 +500,7 @@ def get_passive_dns(value, type="ip", limit=50):
         Receives value and type of indicator and returns
         enrichment data for domain or ip.
     """
-    dns_results = http_request("GET", f"v1/pdns/{type}/{value}/", params=CREDENTIALS).get('results', None)
+    dns_results = http_request("GET", F"v1/pdns/{type}/{value}/", params=CREDENTIALS).get('results', None)
 
     if not dns_results:
         demisto.results(F"No Passive DNS enrichment data found for {value}")
@@ -555,9 +524,14 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    data = {k: v for k, v in locals().items() if k not in ['import_type', 'import_value']}
     files = None
     uploaded_file = None
+    data = {
+        'confidence': confidence,
+        'classification': classification,
+        'threat_type': threat_type,
+        'severity': severity
+    }
 
     if import_type == 'file-id':
         try:
@@ -594,7 +568,7 @@ def get_model_list(model, limit="50"):
     model_list = http_request("GET", F"v1/{model}/", params=params).get('objects', None)
 
     if not model_list:
-        demisto.results(f"No Threat Model {model.title()} found.")
+        demisto.results(F"No Threat Model {model.title()} found.")
         sys.exit()
 
     threat_list_context = list(map(lambda m: {THREAT_MODEL_MAPPING[k]: v for (k, v) in m.items() if
@@ -652,23 +626,17 @@ def get_iocs_by_model(model, id, limit="20"):
     return_outputs(human_readable, ec, iocs_list)
 
 
-def create_model(model, name, is_public="false", tlp="red", tags=None, intelligence=None, description=None):
+def create_model(model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None):
     """
         Creates Threat Model with basic parameters.
     """
-    data = {k: v for k, v in locals().items() if v and k not in ['model', 'tags', 'intelligence']}
-    if tags:
-        data['tags'] = [t.strip() for t in tags.split(',')]
-    if intelligence:
-        data['intelligence'] = [i.strip() for i in intelligence.split(',')]
+    data = build_model_data(name, is_public, tlp, tags, intelligence, description)
+    model_id = http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
 
-    created_id = http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
-
-    if created_id:
-        ec = {'ThreatStream.CreatedModel': {'ID': created_id, 'Model': model.title()}}
-        return_outputs(f"{model.title()} Threat Model was created with {created_id} id", ec, created_id)
+    if model_id:
+        get_iocs_by_model(model, model_id, limit="50")
     else:
-        demisto.results(f"{model.title()} Threat Model was not created. Check the input parameters")
+        demisto.results(F"{model.title()} Threat Model was not created. Check the input parameters")
 
 
 def update_model(model, model_id, name=None, is_public="false", tlp=None, tags=None, intelligence=None,
@@ -677,19 +645,9 @@ def update_model(model, model_id, name=None, is_public="false", tlp=None, tags=N
         Updates a ThreatStream model with parameters. In case one or more optional parameters are
         defined, the previous data is overridden.
     """
-    data = {k: v for k, v in locals().items() if v and k not in ['model', 'model_id', 'tags', 'intelligence']}
-    if tags:
-        data['tags'] = [t.strip() for t in tags.split(',')]
-    if intelligence:
-        data['intelligence'] = [i.strip() for i in intelligence.split(',')]
-
-    model_name = http_request("PATCH", f"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS).get('name',
-                                                                                                                 None)
-    if model_name:
-        demisto.results(f"The {model.title()} Threat Model with id {model_id} and name {model_name} was updated")
-    else:
-        demisto.results(
-            F"The {model.title()} Threat Model with id {model_id} was not updated. Check the input parameters")
+    data = build_model_data(name, is_public, tlp, tags, intelligence, description)
+    http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
+    get_iocs_by_model(model, model_id, limit="50")
 
 
 def supported_platforms(sandbox_type="default"):
@@ -728,8 +686,8 @@ def get_submission_status(report_id, output=True):
     platform = report_info.get('platform', '')
 
     if output:
-        report_outputs = {'ID': report_id, 'Status': status, 'Platform': platform, 'Verdict': verdict}
-        ec = {'ThreatStream.Sandbox(val.ID == obj.ID)': report_outputs}
+        report_outputs = {'ReportID': report_id, 'Status': status, 'Platform': platform, 'Verdict': verdict}
+        ec = {'ThreatStream.Analysis(val.ReportID == obj.ReportID)': report_outputs}
         return_outputs(tableToMarkdown(F"The analysis status for id {report_id}", report_outputs), ec, report_info)
     return status, verdict
 
@@ -772,8 +730,8 @@ def submit_report(submission_type, submission_value, submission_classification="
         report_id = report_info['id']
         report_status, _ = get_submission_status(report_id, False)
 
-        report_outputs = {'ID': report_id, 'Status': report_status, 'Platform': report_platform}
-        ec = {'ThreatStream.Sandbox': report_outputs}
+        report_outputs = {'ReportID': report_id, 'Status': report_status, 'Platform': report_platform}
+        ec = {'ThreatStream.Analysis': report_outputs}
         return_outputs(tableToMarkdown(F"The submission info for {submission_value}", report_outputs), ec, report_info)
     else:
         demisto.results(F"The submission of {submission_value} failed")
@@ -796,8 +754,10 @@ def add_tag_to_model(model_id, tags, model="intelligence"):
     """
         Adds tag to specific Threat Model. By default is set to intelligence (indicators).
     """
+    tags = tags if isinstance(tags, list) else tags.split(',')
+
     data = {
-        'tags': [{'name': t.strip(), 'tlp': 'red'} for t in tags.split(',')]
+        'tags': [{'name': t, 'tlp': 'red'} for t in tags]
     }
 
     res = http_request("POST", F"v1/{model}/{model_id}/tag/", params=CREDENTIALS, data=json.dumps(data))
@@ -829,60 +789,62 @@ def get_indicators(**kwargs):
     return_outputs(tableToMarkdown("The indicators results", iocs_context), ec, iocs_list)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
+    LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    args = prepare_args(demisto.args())
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'ip':
-        get_ip_reputation(**args)
-    elif demisto.command() == 'domain':
-        get_domain_reputation(**args)
-    elif demisto.command() == 'file':
-        get_file_reputation(**args)
-    elif demisto.command() == 'url':
-        get_url_reputation(**args)
-    elif demisto.command() == 'threatstream-email-reputation':
-        get_email_reputation(**args)
-    elif demisto.command() == 'threatstream-get-passive-dns':
-        get_passive_dns(**args)
-    elif demisto.command() == 'threatstream-import-indicator-with-approval':
-        import_ioc_with_approval(**args)
-    elif demisto.command() == 'threatstream-import-indicator-without-approval':
-        # will be implemented in the future
-        pass
-    elif demisto.command() == 'threatstream-get-model-list':
-        get_model_list(**args)
-    elif demisto.command() == 'threatstream-get-model-description':
-        get_model_description(**args)
-    elif demisto.command() == 'threatstream-get-indicators-by-model':
-        get_iocs_by_model(**args)
-    elif demisto.command() == 'threatstream-create-model':
-        create_model(**args)
-    elif demisto.command() == 'threatstream-update-model':
-        update_model(**args)
-    elif demisto.command() == 'threatstream-submit-to-sandbox':
-        submit_report(**args)
-    elif demisto.command() == 'threatstream-get-analysis-status':
-        get_submission_status(**args)
-    elif demisto.command() == 'threatstream-analysis-report':
-        get_report(**args)
-    elif demisto.command() == 'threatstream-supported-platforms':
-        supported_platforms(**args)
-    elif demisto.command() == 'threatstream-get-indicators':
-        get_indicators(**args)
-    elif demisto.command() == 'threatstream-add-tag-to-model':
-        add_tag_to_model(**args)
+    try:
+        handle_proxy()
+        args = prepare_args(demisto.args())
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'ip':
+            get_ip_reputation(**args)
+        elif demisto.command() == 'domain':
+            get_domain_reputation(**args)
+        elif demisto.command() == 'file':
+            get_file_reputation(**args)
+        elif demisto.command() == 'url':
+            get_url_reputation(**args)
+        elif demisto.command() == 'threatstream-email-reputation':
+            get_email_reputation(**args)
+        elif demisto.command() == 'threatstream-get-passive-dns':
+            get_passive_dns(**args)
+        elif demisto.command() == 'threatstream-import-indicator-with-approval':
+            import_ioc_with_approval(**args)
+        elif demisto.command() == 'threatstream-get-model-list':
+            get_model_list(**args)
+        elif demisto.command() == 'threatstream-get-model-description':
+            get_model_description(**args)
+        elif demisto.command() == 'threatstream-get-indicators-by-model':
+            get_iocs_by_model(**args)
+        elif demisto.command() == 'threatstream-create-model':
+            create_model(**args)
+        elif demisto.command() == 'threatstream-update-model':
+            update_model(**args)
+        elif demisto.command() == 'threatstream-submit-to-sandbox':
+            submit_report(**args)
+        elif demisto.command() == 'threatstream-get-analysis-status':
+            get_submission_status(**args)
+        elif demisto.command() == 'threatstream-analysis-report':
+            get_report(**args)
+        elif demisto.command() == 'threatstream-supported-platforms':
+            supported_platforms(**args)
+        elif demisto.command() == 'threatstream-get-indicators':
+            get_indicators(**args)
+        elif demisto.command() == 'threatstream-add-tag-to-model':
+            add_tag_to_model(**args)
 
-except Exception as e:
-    if isinstance(e, MissingSchema):
-        return_error("Not valid server url. Check url format")
-    elif isinstance(e, InvalidSchema):
-        return_error(e)
-    elif isinstance(e, ConnectionError):
-        return_error("The server is not reachable.")
-    else:
-        return_error(e)
+    except Exception as e:
+        if isinstance(e, MissingSchema):
+            return_error("Not valid server url. Check url format")
+        elif isinstance(e, ConnectionError):
+            return_error("The server is not reachable.")
+        else:
+            return_error(e)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
