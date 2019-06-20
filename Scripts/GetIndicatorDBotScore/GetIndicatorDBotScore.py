@@ -24,7 +24,7 @@ if not data:
     demisto.results("No results.")
     sys.exit(0)
 
-ec = {}
+ec = {}  # type: ignore
 ec["DBotScore"] = []
 
 for entry in data:

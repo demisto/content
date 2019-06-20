@@ -34,3 +34,5 @@ timeout: '0'
 type: python
 runonce: false
 fromversion: 3.5.0
+tests:
+  - no test
