@@ -280,17 +280,19 @@ def get_response_policies(start, count):
 
 def create_response_policies_result(raw_response_policies):
     response_policies = []
-    hr = '## Response Policies:\n'
-    for response_policy in raw_response_policies:
-        response_policy_obj = {
-            'ID': response_policy.get('id'),
-            'Name': response_policy.get('name'),
-            'Type': response_policy.get('type')
-        }
-        response_policy_obj.update(properties_to_camelized_dict(response_policy.get('properties')))
-        hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
-        response_policies.append(response_policy_obj)
-    return {'AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
+    if raw_response_policies:
+        hr = '## Response Policies:\n'
+        for response_policy in raw_response_policies:
+            response_policy_obj = {
+                'ID': response_policy.get('id'),
+                'Name': response_policy.get('name'),
+                'Type': response_policy.get('type')
+            }
+            response_policy_obj.update(properties_to_camelized_dict(response_policy.get('properties')))
+            hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
+            response_policies.append(response_policy_obj)
+        return {'AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
+    return {}, 'Could not find any response policy'
 
 
 def add_domain_response_policy_command():
@@ -333,6 +335,21 @@ def remove_domain_response_policy(policy_id, domain):
     return http_request('DELETE', '/deleteResponsePolicyItem', params=params)
 
 
+def search_response_policy_by_domain_command():
+    domain = demisto.getArg('domain')
+    raw_response_policies = search_response_policy_by_domain(domain)
+    response_policies, hr = create_response_policies_result(raw_response_policies)
+    return_outputs(hr, response_policies, raw_response_policies)
+
+
+def search_response_policy_by_domain(domain):
+    params = {
+        'configurationId': CONF,
+        'itemName': domain
+    }
+    return http_request('GET', '/findResponsePoliciesWithItem', params=params)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -356,6 +373,8 @@ def main():
             query_ipv6_command()
         elif command == 'bluecat-am-get-response-policies':
             get_response_policies_command()
+        elif command == 'bluecat-am-search-response-policies-by-domain':
+            search_response_policy_by_domain_command()
         elif command == 'bluecat-am-response-policy-add-domain':
             add_domain_response_policy_command()
         elif command == 'bluecat-am-response-policy-remove-domain':

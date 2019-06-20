@@ -122,7 +122,7 @@ script:
     execution: false
     name: bluecat-am-get-response-policies
     outputs:
-    - contextPath: AddressMaznager.ResponsePolicies.ID
+    - contextPath: AddressManager.ResponsePolicies.ID
       description: ID of the responce policy
       type: Number
     - contextPath: AddressManager.ResponsePolicies.Name
@@ -140,25 +140,17 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '0'
-      description: Start index to get the response policies from
+      description: Domain name to look by.
       isArray: false
-      name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Limit on the number of response policies to get
-      isArray: false
-      name: count
-      required: false
+      name: domain
+      required: true
       secret: false
     deprecated: false
     description: Searches all response policies in which the given domain is included
     execution: false
     name: bluecat-am-search-response-policies-by-domain
     outputs:
-    - contextPath: AddressMaznager.ResponsePolicies.ID
+    - contextPath: AddressManager.ResponsePolicies.ID
       description: ID of the responce policy
       type: Number
     - contextPath: AddressManager.ResponsePolicies.Name

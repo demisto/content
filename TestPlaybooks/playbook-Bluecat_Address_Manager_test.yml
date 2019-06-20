@@ -282,7 +282,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -343,7 +343,171 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 77576823-4efc-436d-80c7-521389d2e08d
+    type: regular
+    task:
+      id: 77576823-4efc-436d-80c7-521389d2e08d
+      version: -1
+      name: Add domain to response policy
+      description: Adds a domain to the given response policy.
+      script: '|||bluecat-am-response-policy-add-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain:
+        simple: kurwa.com
+      policy_id:
+        simple: "100930"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: caaeff26-ae32-4c46-8783-9ef4d64f3e56
+    type: regular
+    task:
+      id: caaeff26-ae32-4c46-8783-9ef4d64f3e56
+      version: -1
+      name: Search response policy by domain
+      description: Searches all response policies in which the given domain is included
+      script: '|||bluecat-am-search-response-policies-by-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      domain:
+        simple: kurwa.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 4abd96ec-a306-467d-802b-c1ce2711e9a2
+    type: condition
+    task:
+      id: 4abd96ec-a306-467d-802b-c1ce2711e9a2
+      version: -1
+      name: Assert response policy was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: AddressManager.ResponsePolicies.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100930"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b8f29c7c-58cd-4900-8e21-00c50aa71655
+    type: regular
+    task:
+      id: b8f29c7c-58cd-4900-8e21-00c50aa71655
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: ec1523d6-748d-4bf9-8606-2ea393282987
+    type: regular
+    task:
+      id: ec1523d6-748d-4bf9-8606-2ea393282987
+      version: -1
+      name: Remove domain from response policy
+      description: Removes a domain from the given response policy.
+      script: '|||bluecat-am-response-policy-remove-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: kurwa.com
+      policy_id:
+        simple: "100930"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -354,7 +518,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 2310,
         "width": 380,
         "x": 50,
         "y": 50
