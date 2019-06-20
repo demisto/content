@@ -29,66 +29,93 @@ def split_path(path):
     return path.split(delim, 1)
 
 
-def connect():
-    if not DOMAIN:
-        conn = SMBConnection(USER, PASSWORD, 'Demisto', NBNAME, is_direct_tcp=True)
+def connect(hostname, domain, user, password, nb_name, port):
+    if not domain:
+        connection = SMBConnection(user, password, 'Demisto', nb_name, is_direct_tcp=True)
     else:
-        conn = SMBConnection(USER, PASSWORD, 'Demisto', NBNAME, domain=DOMAIN, is_direct_tcp=True)
-    if not conn.connect(HOSTNAME, PORT):
+        connection = SMBConnection(user, password, 'Demisto', nb_name, domain=domain, is_direct_tcp=True)
+    if not connection.connect(hostname, port):
         return_error('Authentication failed, verify instance configuration parameters and try again.')
-    return conn
+    return connection
 
 
 ''' FUNCTIONS '''
 
 
-def download():
+def test_module():
+    if HOSTNAME and NBNAME:
+        connection = connect(hostname=HOSTNAME, domain=DOMAIN, user=USER, password=PASSWORD, nb_name=NBNAME, port=PORT)
+        demisto.results('ok')
+        connection.close()
+    else:
+        demisto.results('No hostname or NetBIOS name was configured, cannot perform a connection test.')
+
+
+def smb_download():
     share, path = split_path(demisto.getArg('file_path'))
-    with tempfile.NamedTemporaryFile() as file_obj:
-        file_attributes, filesize = conn.retrieveFile(share, path, file_obj)
-        file_obj.seek(0)
-        filename = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
-        if demisto.getArg('download_and_attach') == "yes":
-            demisto.results(fileResult(filename, file_obj.read()))
-        else:
-            demisto.results(file_obj.read())
+    hostname = demisto.args().get('hostname') if demisto.args().get('hostname') else HOSTNAME
+    nbname = demisto.args().get('nbname') if demisto.args().get('nbname') else NBNAME
+    domain = demisto.args().get('domain') if demisto.args().get('domain') else DOMAIN
+
+    if not hostname:
+        return_error('No hostname was configured for the integration, cannot establish connection.')
+    elif not nbname:
+        return_error('No NetBIOS name was configured for the integration, cannot establish connection.')
+    connection = connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nbname, port=PORT)
+    try:
+        with tempfile.NamedTemporaryFile() as file_obj:
+            file_attributes, filesize = connection.retrieveFile(share, path, file_obj)
+            file_obj.seek(0)
+            filename = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
+            if demisto.getArg('download_and_attach') == "yes":
+                demisto.results(fileResult(filename, file_obj.read()))
+            else:
+                demisto.results(file_obj.read())
+    finally:
+        connection.close()
 
 
-def upload():
+def smb_upload():
     share, path = split_path(demisto.getArg('file_path'))
     entryID = demisto.getArg('entryID')
     content = demisto.getArg('content')
-    if not entryID and not content:
-        raise Exception("smb-upload requires one of the following arguments: content, entryID.")
-    if entryID:
-        file = demisto.getFilePath(entryID)
-        filePath = file['path']
-        with open(filePath, mode='rb') as f:
-            content = f.read()
+    hostname = demisto.args().get('hostname') if demisto.args().get('hostname') else HOSTNAME
+    nbname = demisto.args().get('nbname') if demisto.args().get('nbname') else NBNAME
+    domain = demisto.args().get('domain') if demisto.args().get('domain') else DOMAIN
 
-    with tempfile.NamedTemporaryFile() as file_obj:
-        file_obj.write(content)
-        file_obj.seek(0)
-        file_bytes_transfered = conn.storeFile(share, path, file_obj)
-        demisto.results("Transfered {} bytes of data.".format(file_bytes_transfered))
+    if not hostname:
+        return_error('No hostname was configured for the integration, cannot establish connection.')
+    elif not nbname:
+        return_error('No NetBIOS name was configured for the integration, cannot establish connection.')
+    connection = connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nbname, port=PORT)
+    try:
+        if not entryID and not content:
+            raise Exception("smb-upload requires one of the following arguments: content, entryID.")
+        if entryID:
+            file = demisto.getFilePath(entryID)
+            filePath = file['path']
+            with open(filePath, mode='rb') as f:
+                content = f.read()
+
+        with tempfile.NamedTemporaryFile() as file_obj:
+            file_obj.write(content)
+            file_obj.seek(0)
+            file_bytes_transfered = connection.storeFile(share, path, file_obj)
+            demisto.results("Transfered {} bytes of data.".format(file_bytes_transfered))
+    finally:
+        connection.close()
 
 
 ''' EXECUTION CODE '''
 
+LOG('command is %s' % (demisto.command(),))
 
-LOG('command is %s' % (demisto.command(), ))
-handle_proxy()
-conn = connect()
 try:
     if demisto.command() == 'test-module':
-        demisto.results('ok')
+        test_module()
     elif demisto.command() == 'smb-download':
-        download()
+        smb_download()
     elif demisto.command() == 'smb-upload':
-        upload()
-except Exception, e:
-    LOG(e)
-    LOG.print_log()
-    return_error(e.message)
-finally:
-    conn.close()
+        smb_upload()
+except Exception as e:
+    return_error(str(e))
