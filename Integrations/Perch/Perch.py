@@ -21,7 +21,7 @@ FETCH_TIME = int(demisto.params().get('fetch_time', '7'))
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
-BASE_URL = SERVER + '/' + demisto.params().get('version')
+BASE_URL = SERVER + '/v1'
 if not demisto.params().get('proxy'):
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
@@ -58,16 +58,22 @@ def makehash():
 
 
 def http_request(method, url_suffix, params=None, data=None, headers=None):
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=headers
-    )
-    if res.status_code not in {200, 201}:
-        return_error('Error in API call to Perch Integration [%d] - %s' % (res.status_code, res.reason))
+    try:
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=headers
+        )
+        if res.status_code == 403:
+            return_error('Connection forbidden. Please verify your API key is valid.')
+        elif res.status_code not in {200, 201}:
+            return_error('Error in API call to Perch Integration [%d] - %s' % (res.status_code, res.reason))
+
+    except requests.exceptions.ConnectionError as error:
+        return_error("Failed to establish a new connection: {error}".format(error=type(error)))
 
     return res.json()
 
@@ -423,10 +429,8 @@ def create_indicator_command():
     })
 
 
-def fetch_alerts_command():
-    last_run = demisto.getLastRun()
+def fetch_alerts(last_run, headers):
     last_fetch = last_run.get('time')
-    headers = authenticate()
     url = '/alerts'
     res = http_request('GET', url, headers=headers)
     items = res.get('results')
@@ -441,13 +445,23 @@ def fetch_alerts_command():
         if incident_date > last_fetch:
             incidents.append(incident)
             last_fetch = incident_date
+    return last_fetch, incidents
+
+
+def fetch_alerts_command():
+    last_run = demisto.getLastRun()
+    headers = authenticate()
+    last_fetch, incidents = fetch_alerts(last_run, headers)
     demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
 
 
 def test_module():
     try:
-        authenticate()
+        headers = authenticate()
+        if demisto.params().get('isFetch'):
+            last_run = {'time': 1561017202}
+            fetch_alerts(last_run, headers)
         demisto.results('ok')
     except Exception as err:
         return_error(str(err))
