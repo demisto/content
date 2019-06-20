@@ -19,16 +19,16 @@ PARAMS = demisto.params()
 TENANT_ID = PARAMS.get('tenant_id')
 AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
-ENC_KEY = PARAMS.get('auth_key')
+ENC_KEY = PARAMS.get('enc_key')
 if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain'  # disable-secrets-detection
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
 else:
     TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 # Remove trailing slash to prevent wrong URL path to service
 URL = PARAMS.get('url')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 # Service base URL
-BASE_URL = str(SERVER) + '/v1.0'
+BASE_URL = SERVER + '/v1.0'
 APP_NAME = 'ms-graph-mail'
 
 USE_SSL = not PARAMS.get('insecure', False)
@@ -56,23 +56,62 @@ def epoch_seconds(d: datetime = None) -> int:
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
+def get_encrypted(content: str, key: str) -> str:
+    """
+
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+
+    Returns:
+        encrypted timestamp:content
+    """
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
 def get_access_token():
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get('access_token')
-    stored = integration_context.get('stored')
-    if access_token and stored:
-        if epoch_seconds() - stored < 60 * 60 - 30:
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
             return access_token
     headers = {'Accept': 'application/json'}
 
     dbot_response = requests.post(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
-        data={
+        data=json.dumps({
             'app_name': APP_NAME,
             'registration_id': AUTH_ID,
             'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
-        },
+        }),
         verify=USE_SSL
     )
     if dbot_response.status_code not in {200, 201}:
@@ -90,59 +129,30 @@ def get_access_token():
             if server_msg:
                 msg += ' Server message: {}'.format(server_msg)
         except Exception as ex:
-            demisto.error('Failed parsing error response: [{}]. Exception: {}'.format(err_response.content, ex))
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
         raise Exception(msg)
     try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
         parsed_response = dbot_response.json()
     except ValueError:
         raise Exception(
             'There was a problem in retrieving an updated access token.\n'
             'The response from the Demistobot server did not contain the expected content.'
         )
-    access_token = parsed_response.get('AccessToken')
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
 
     demisto.setIntegrationContext({
         'access_token': access_token,
-        'stored': epoch_seconds()
+        'valid_until': time_now + expires_in
     })
     return access_token
-
-
-def get_encrypted(auth_id: str, key: str) -> str:
-    """
-
-    Args:
-        auth_id (str): auth_id from Demistobot
-        key (str): key from Demistobot
-
-    Returns:
-
-    """
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-
-        Args:
-            enc_key (str):
-            string (str):
-
-        Returns:
-            bytes:
-        """
-        # String to bytes
-        enc_key = enc_key.encode()
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
-    now = epoch_seconds()
-    return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
 
 
 def error_parser(resp_err: requests.Response) -> str:
