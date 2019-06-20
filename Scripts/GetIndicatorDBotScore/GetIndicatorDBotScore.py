@@ -1,13 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 INDICATOR_TYPE_DICTIONARY = {
-    'IP'            : "ip",
-    'File SHA1'     : "file",
-    'File MD5'      : "file",
-    'File SHA256'   : "file",
-    'Email'         : "email",
-    'URL'           : "url"
+    'IP': "ip",
+    'File SHA1': "file",
+    'File MD5': "file",
+    'File SHA256': "file",
+    'Email': "email",
+    'URL': "url"
 }
 
 indicator = demisto.args()['indicator']
@@ -17,7 +18,7 @@ if True in [isError(entry) for entry in resp]:
     demisto.results(resp)
     sys.exit(0)
 
-data = demisto.get(resp[0],"Contents")
+data = demisto.get(resp[0], "Contents")
 
 if not data:
     demisto.results("No results.")
@@ -34,7 +35,7 @@ for entry in data:
         indicator_type = INDICATOR_TYPE_DICTIONARY[indicator_type]
 
     ec["DBotScore"].append({
-        "Indicator" : indicator,
+        "Indicator": indicator,
         "Type": indicator_type,
         "Vendor": source,
         "Score": score
@@ -43,9 +44,9 @@ for entry in data:
 md = tableToMarkdown("Indicator DBot Score", ec["DBotScore"])
 
 demisto.results({
-    "Type" : entryTypes["note"],
-    "ContentsFormat" : formats["json"],
-    "Contents" : ec,
-    "HumanReadable" : md,
-    "EntryContext" : ec
+    "Type": entryTypes["note"],
+    "ContentsFormat": formats["json"],
+    "Contents": ec,
+    "HumanReadable": md,
+    "EntryContext": ec
 })
