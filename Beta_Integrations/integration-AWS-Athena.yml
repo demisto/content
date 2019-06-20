@@ -1,5 +1,5 @@
 commonfields:
-  id: AWS - Athena
+  id: AWS - Athena - Beta
   version: -1
 name: AWS - Athena
 display: AWS - Athena
