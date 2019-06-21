@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cloaken",
+            "playbookID": "Cloaken-Test"
+        },
+        {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
         },
