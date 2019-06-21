@@ -6,9 +6,17 @@ script: |
   import socket
 
   HOST = demisto.args().get('host')
+  MULTI = True if demisto.args().get('multi').lower() == 'true' else False
+
+  ip_addr = None
 
   try:
-      ip_addr = socket.gethostbyname(HOST)
+      if MULTI:
+          ip_addr = socket.gethostbyname_ex(HOST)
+
+      else:
+          ip_addr = socket.gethostbyname(HOST)
+
   except Exception as e:
       demisto.results({
           "Type" : entryTypes["error"],
@@ -28,8 +36,12 @@ script: |
 
   output = {
       "Hostname" : HOST,
-      "IP" : ip_addr
   }
+
+  if MULTI:
+      output['IP'] = ip_addr[2]
+  else:
+      output['IP'] = ip_addr
 
   context = {}
   context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = output
@@ -46,7 +58,10 @@ script: |
   })
 type: python
 tags: []
-comment: Resolves a domain name to an IP address.  Similar to 'nslookup'.
+comment: |-
+  Resolves a domain name to an IP address.  Similar to 'nslookup'.  If muti=True, then it will return an array of all IP's the domain resolves to.
+
+  NOTE: This relies on the DNS settings of the host OS or on the Docker service/container, and on the configuration of the upstream DNS servers which are being queried.  If multi=true does not produce expected results (i.e. only one IP address returned when more than one IP is known to exist for the given host), the DNS servers' own configuration may be the cause (i.e. different DNS servers may return different results for the same host).  Changing the host OS DNS settings may require a restart of the Docker service or a reboot of the server in order to fully take effect.  A good method of troubleshooting is with 'dig @<someDNSserver> <hostname>'.
 system: true
 enabled: true
 args:
@@ -54,10 +69,17 @@ args:
   required: true
   default: true
   description: The hostname to resolve
+- name: multi
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Returns all matching IP's in an array
+  defaultValue: "false"
 outputs:
 - contextPath: Endpoint.IP
-  description: The endpoint IP.
-  type: string
+  description: The endpoint IP or an array of IP's.
+  type: unknown
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
