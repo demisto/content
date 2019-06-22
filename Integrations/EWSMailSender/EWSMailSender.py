@@ -200,6 +200,9 @@ def test_module():
     demisto.results('ok')
 
 
+config = None  # type: ignore
+
+
 def main():
     global config
     config = prepare()
@@ -216,7 +219,7 @@ def main():
             # see: https://blogs.msdn.microsoft.com/webdav_101/2018/06/02/you-are-doing-too-much-at-one-time-ewsmaxconcurrency-too-many-concurrent-connections-opened/ # noqa
             close_connections()
         except Exception as ex:
-            demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: ".format(ex))
+            demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: {}".format(ex))
 
     except Exception as e:
         import time
