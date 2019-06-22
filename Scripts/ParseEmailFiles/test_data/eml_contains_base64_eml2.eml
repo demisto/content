@@ -18,7 +18,7 @@ DONT REPLY - TEST EMAIL
 
 
 --Apple-Mail=_BDE60A45-737F-4DD9-B4BB-08441E472087
-Content-Type: application/octet-stream; name="message.eml"
+Content-Type: message/rfc822; name="message.eml"
 Content-Description: message.eml
 Content-Disposition: attachment; filename="message.eml"; size=15810;
 	creation-date="Thu, 13 Jun 2019 12:58:15 GMT";

@@ -1,6 +1,7 @@
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold
 from CommonServerPython import entryTypes
 import demistomock as demisto
+import pytest
 
 
 def exec_command_for_file(path):
@@ -370,45 +371,22 @@ def test_eml_contains_eml_with_status(mocker):
     assert results[0]['EntryContext']['Email'][1]['Subject'] == subject_attach
 
 
-def test_eml_contains_base64_encoded_eml(mocker):
-    def executeCommand(name, args=None):
-        if name == 'getFilePath':
-            return [
-                {
-                    'Type': entryTypes['note'],
-                    'Contents': {
-                        'path': 'test_data/Fwd_test-inner_attachment_eml.eml',
-                        'name': 'Fwd_test-inner_attachment_eml.eml'
-                    }
-                }
-            ]
-        elif name == 'getEntry':
-            return [
-                {
-                    'Type': entryTypes['file'],
-                    'FileMetadata': {
-                        'info': 'news or mail text, ASCII text'
-                    }
-                }
-            ]
-        else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
-
+@pytest.mark.parametrize('email_file', ['eml_contains_base64_eml.eml', 'eml_contains_base64_eml2.eml'])
+def test_eml_contains_base64_encoded_eml(mocker, email_file):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('test_data/' + email_file))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
 
     main()
-    assert demisto.results.call_count == 5
+    assert demisto.results.call_count == 3
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml'
-    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments']
-    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml (base64)'
+    assert 'message.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
