@@ -1,5 +1,5 @@
 id: Send Investigation Summary Reports Job
-version: -1
+version: 3
 name: Send Investigation Summary Reports Job
 description: 'Playbook should be run as a scheduled job at a recommended interval
   of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation
@@ -12,10 +12,10 @@ fromversion: "4.1.0"
 tasks:
   "0":
     id: "0"
-    taskid: 4e9d487f-0cee-410a-89d2-d3b76ddadb52
+    taskid: 3e73293a-7cab-422a-85ea-490384fe3c88
     type: start
     task:
-      id: 4e9d487f-0cee-410a-89d2-d3b76ddadb52
+      id: 3e73293a-7cab-422a-85ea-490384fe3c88
       version: -1
       name: ""
       iscommand: false
@@ -34,38 +34,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 34801cd5-bec3-488d-842a-4af6002bd6fd
-    type: playbook
-    task:
-      id: 34801cd5-bec3-488d-842a-4af6002bd6fd
-      version: -1
-      name: Send Investigation Summary Reports
-      playbookName: Send Investigation Summary Reports
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
-    taskid: 4e59af5f-4296-4b79-8f22-90d5f4df1333
+    taskid: ee47ccea-fdc2-4982-8b8e-77cc37a36129
     type: regular
     task:
-      id: 4e59af5f-4296-4b79-8f22-90d5f4df1333
+      id: ee47ccea-fdc2-4982-8b8e-77cc37a36129
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -75,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -96,10 +70,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 7141e181-846e-4f58-83e3-5e5f5d1f3d13
+    taskid: 7a0c8546-6aad-4d2a-80fc-7da070c87824
     type: regular
     task:
-      id: 7141e181-846e-4f58-83e3-5e5f5d1f3d13
+      id: 7a0c8546-6aad-4d2a-80fc-7da070c87824
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -118,6 +92,32 @@ tasks:
         "position": {
           "x": 450,
           "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: cf10b50c-b332-4c19-8961-c5ba96381228
+    type: playbook
+    task:
+      id: cf10b50c-b332-4c19-8961-c5ba96381228
+      version: -1
+      name: Send Investigation Summary Reports
+      playbookName: Send Investigation Summary Reports
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
         }
       }
     note: false
