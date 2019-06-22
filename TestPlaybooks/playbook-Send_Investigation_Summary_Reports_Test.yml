@@ -1,5 +1,5 @@
 id: Send Investigation Summary Reports - Test
-version: -1
+version: 1
 name: Send Investigation Summary Reports - Test
 description: 'Playbook should be run as a scheduled job at a recommended interval
   of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation
@@ -12,10 +12,10 @@ fromversion: "4.1.0"
 tasks:
   "0":
     id: "0"
-    taskid: 4e9d487f-0cee-410a-89d2-d3b76ddadb52
+    taskid: fc0a6190-d696-4466-8e5c-ab71401906aa
     type: start
     task:
-      id: 4e9d487f-0cee-410a-89d2-d3b76ddadb52
+      id: fc0a6190-d696-4466-8e5c-ab71401906aa
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 33d7fbb4-bb28-4be2-8cbb-2fbcf1620c6f
+    taskid: bbf0ddef-a046-4741-813a-7827763fda83
     type: playbook
     task:
-      id: 33d7fbb4-bb28-4be2-8cbb-2fbcf1620c6f
+      id: bbf0ddef-a046-4741-813a-7827763fda83
       version: -1
       name: Send Investigation Summary Reports
       description: 'Playbook will iterate over closed incidents and generate a summary
@@ -77,10 +77,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 4e59af5f-4296-4b79-8f22-90d5f4df1333
+    taskid: d44442a4-d24f-407c-8304-9857d65ba054
     type: regular
     task:
-      id: 4e59af5f-4296-4b79-8f22-90d5f4df1333
+      id: d44442a4-d24f-407c-8304-9857d65ba054
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -111,10 +111,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a02e7579-1333-4656-86aa-cd62b0353a20
+    taskid: be2ceee1-3c92-4985-8dd9-2f9fd265ddca
     type: title
     task:
-      id: a02e7579-1333-4656-86aa-cd62b0353a20
+      id: be2ceee1-3c92-4985-8dd9-2f9fd265ddca
       version: -1
       name: Test Completed
       description: commands.local.cmd.close.inv
@@ -134,10 +134,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: fd03a36a-81f4-46db-8d2a-636a6574a2af
+    taskid: 2fc5c77d-ea37-4d1c-8bfd-922085d846bf
     type: regular
     task:
-      id: fd03a36a-81f4-46db-8d2a-636a6574a2af
+      id: 2fc5c77d-ea37-4d1c-8bfd-922085d846bf
       version: -1
       name: Create Incident
       description: commands.local.cmd.create.inc
@@ -255,10 +255,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 89fc1675-d898-4349-8d22-e5fa1d7b0f7b
+    taskid: 56eeed89-f912-4de0-8940-f7c989ee1669
     type: regular
     task:
-      id: 89fc1675-d898-4349-8d22-e5fa1d7b0f7b
+      id: 56eeed89-f912-4de0-8940-f7c989ee1669
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -288,10 +288,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 1ec1f709-3039-445f-8419-b2aaa6c7635f
+    taskid: a7729fd7-8fac-4f29-86cd-5c4fd2ad147c
     type: regular
     task:
-      id: 1ec1f709-3039-445f-8419-b2aaa6c7635f
+      id: a7729fd7-8fac-4f29-86cd-5c4fd2ad147c
       version: -1
       name: Get Incident
       description: Searches Demisto incidents
@@ -336,10 +336,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: a4680974-c3d8-4680-8024-1fea9d876fad
+    taskid: 9e16a3f4-3990-415c-8497-e486e7b120b8
     type: condition
     task:
-      id: a4680974-c3d8-4680-8024-1fea9d876fad
+      id: 9e16a3f4-3990-415c-8497-e486e7b120b8
       version: -1
       name: Verify ReportSent is set
       description: Check if a given value exists in the context. Will return 'no'
@@ -369,10 +369,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: a69dc209-8061-4f99-8197-68e41169aed6
+    taskid: 281fa39b-c3d6-48a6-84e3-e1a019c4d59b
     type: regular
     task:
-      id: a69dc209-8061-4f99-8197-68e41169aed6
+      id: 281fa39b-c3d6-48a6-84e3-e1a019c4d59b
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -396,10 +396,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0357042f-8fb3-434b-8f31-3eae446ff778
+    taskid: 9693e88f-26ee-4a64-8177-f8de5173c2ea
     type: regular
     task:
-      id: 0357042f-8fb3-434b-8f31-3eae446ff778
+      id: 9693e88f-26ee-4a64-8177-f8de5173c2ea
       version: -1
       name: Wait 2 seconds
       description: Sleep for X seconds
