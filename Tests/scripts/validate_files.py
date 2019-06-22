@@ -364,7 +364,7 @@ def main():
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
-    parser.add_argument('-t', '--test-filter', type=str2bool, default=True, help='Check that tests are valid.')
+    parser.add_argument('-t', '--test-filter', type=str2bool, default=False, help='Check that tests are valid.')
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
