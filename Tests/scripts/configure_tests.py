@@ -525,8 +525,9 @@ def get_test_list(files_string, branch_name):
         print_warning('Running sample tests due to: {}'.format(','.join(sample_tests)))
         test_ids = get_test_ids(check_nightly_status=True)
         initial_tests_len = len(tests)
+        rand = random.Random(files_string + branch_name)
         while len(tests) != initial_tests_len + 3:
-            tests.add(random.choice(test_ids))
+            tests.add(rand.choice(test_ids))
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
