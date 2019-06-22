@@ -1,0 +1,139 @@
+id: Send Investigation Summary Reports Job
+version: -1
+name: Send Investigation Summary Reports Job
+description: 'Playbook should be run as a scheduled job at a recommended interval
+  of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation
+  Summary Reports" and closes the incident. Playbook by default will search all closed
+  incidents within the last hour. If you wish to run the playbook more frequently,
+  you should adjust the search query of the child playbook: Send Investigation Summary
+  Reports.'
+starttaskid: "0"
+fromversion: "4.1.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4e9d487f-0cee-410a-89d2-d3b76ddadb52
+    type: start
+    task:
+      id: 4e9d487f-0cee-410a-89d2-d3b76ddadb52
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 34801cd5-bec3-488d-842a-4af6002bd6fd
+    type: playbook
+    task:
+      id: 34801cd5-bec3-488d-842a-4af6002bd6fd
+      version: -1
+      name: Send Investigation Summary Reports
+      playbookName: Send Investigation Summary Reports
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4e59af5f-4296-4b79-8f22-90d5f4df1333
+    type: regular
+    task:
+      id: 4e59af5f-4296-4b79-8f22-90d5f4df1333
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 7141e181-846e-4f58-83e3-5e5f5d1f3d13
+    type: regular
+    task:
+      id: 7141e181-846e-4f58-83e3-5e5f5d1f3d13
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 655,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
