@@ -18,6 +18,7 @@ tasks:
       id: 3e73293a-7cab-422a-85ea-490384fe3c88
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -106,6 +107,7 @@ tasks:
       version: -1
       name: Send Investigation Summary Reports
       playbookName: Send Investigation Summary Reports
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -137,3 +139,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No Tests - Wrapper playbook for job only
