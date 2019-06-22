@@ -24,6 +24,7 @@ configuration:
   required: false
 script:
   script: '-'
+  subtype: python3
   type: python
   commands:
   - name: autofocus-search-samples
