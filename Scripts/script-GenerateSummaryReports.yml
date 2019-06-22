@@ -2,31 +2,34 @@ commonfields:
   id: GenerateSummaryReports
   version: -1
 name: GenerateSummaryReports
+fromversion: 4.1.0
 script: |
-  let res = [];
-  let ids = argToList(args.ids);
+  var res = [];
+  var ids = argToList(args.ids);
   if(!Array.isArray(ids)) {
       ids = [ids]; //single element case
   }
   ids = ids.filter(function(value, index, self) { // make sure array is unique
       return self.indexOf(value) === index;
   });
-  const ec = {SummaryReports: []};
+  var ec = {SummaryReports: []};
   ids.forEach(function(id) {
-      const reportEntries =  executeCommand("generateSummaryReport", {name: args.name, type: args.type, incidentId: id});
+      var reportEntries =  executeCommand("generateSummaryReport", {name: args.name, type: args.type, incidentId: id});
       res = res.concat(reportEntries);
       if(reportEntries[0] && reportEntries[0].File) {
           ec.SummaryReports.push({IncidentID: id, ReportName: args.name, File: reportEntries[0].File, FileID: reportEntries[0].FileID})
       }
       wait(1); //required to avoid generated file name conflicts
   });
-  res.push({
-      Type: entryTypes.note,
-      Contents: ec,
-      ContentsFormat: formats.json,
-      HumanReadable: tableToMarkdown("Summary Reports", ec.SummaryReports),
-      EntryContext: ec
-  });
+  if(ec.SummaryReports.length > 0) {
+      res.push({
+          Type: entryTypes.note,
+          Contents: ec,
+          ContentsFormat: formats.json,
+          HumanReadable: tableToMarkdown("Summary Reports", ec.SummaryReports),
+          EntryContext: ec
+      });
+  }
   return res;
 type: javascript
 tags:
@@ -58,5 +61,8 @@ outputs:
   description: File ID of the generated report
   type: string
 scripttarget: 0
+subtype: python2
 runonce: false
 runas: DBotWeakRole
+tests:
+  - Send Investigation Summary Reports - Test
