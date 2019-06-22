@@ -522,7 +522,7 @@ def get_test_list(files_string, branch_name):
         tests.add("Run all tests")
 
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
-        print_warning('Running sample tests due to: {}'.format(','.join(sample_tests)))
+        print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         test_ids = get_test_ids(check_nightly_status=True)
         initial_tests_len = len(tests)
         rand = random.Random(files_string + branch_name)
