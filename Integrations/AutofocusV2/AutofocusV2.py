@@ -17,7 +17,6 @@ API_KEY = PARAMS.get('api_key')
 SERVER = 'https://autofocus.paloaltonetworks.com'
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
-PROXY = PARAMS.get('proxy')
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 # Headers to be sent in requests
@@ -250,8 +249,8 @@ def get_fields_from_hit_object(result_object, response_dict_name):
     new_object = {}
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     for key, value in result_object.items():
-        if key in af_params_dict:   # type: ignore
-            new_key = af_params_dict.get(key)   # type: ignore
+        if key in af_params_dict:  # type: ignore
+            new_key = af_params_dict.get(key)  # type: ignore
             new_object[new_key] = value
         else:
             new_object[key] = value
@@ -287,26 +286,26 @@ def get_session_details(session_id):
 def validate_if_line_needed(category, info_line):
     line = info_line.get('line')
     line_values = line.split(',')
-    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category).get('indexes')   # type: ignore
+    category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category).get('indexes')  # type: ignore
     if category == 'behavior':
-        risk_index = category_indexes.get('risk')   # type: ignore
+        risk_index = category_indexes.get('risk')  # type: ignore
         risk = line_values[risk_index].strip()
         # only lines with risk higher the informational are considered
         return not risk == 'informational'
     elif category == 'registry':
-        action_index = category_indexes.get('action')   # type: ignore
+        action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions SetValueKey, CreateKey or RegSetValueEx are considered
         return action == 'SetValueKey' or action == 'CreateKey' or action == 'RegSetValueEx'
     elif category == 'file':
-        action_index = category_indexes.get('action')   # type: ignore
+        action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         benign_count = info_line.get('b') if info_line.get('b') else 0
         malicious_count = info_line.get('m') if info_line.get('m') else 0
         # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
         return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
     elif category == 'process':
-        action_index = category_indexes.get('action')   # type: ignore
+        action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions created, CreateKey or CreateProcessInternalW are considered
         return action == 'created' or action == 'CreateProcessInternalW'
@@ -318,8 +317,8 @@ def get_data_from_line(line, category_name):
     category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')  # type: ignore
     values = line.split(',')
     sub_categories = {}
-    for sub_category in category_indexes:   # type: ignore
-        sub_category_index = category_indexes.get(sub_category)     # type: ignore
+    for sub_category in category_indexes:  # type: ignore
+        sub_category_index = category_indexes.get(sub_category)  # type: ignore
         sub_categories.update({
             sub_category: values[sub_category_index]
         })
@@ -331,8 +330,8 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
     for item in sub_category_data:
         new_sub_category = {}
         fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')  # type: ignore
-        for field in fields_to_extract:     # type: ignore
-            new_sub_category[field] = item.get(field)   # type: ignore
+        for field in fields_to_extract:  # type: ignore
+            new_sub_category[field] = item.get(field)  # type: ignore
         sub_categories_list.append(new_sub_category)
     return sub_categories_list
 
@@ -342,7 +341,8 @@ def parse_coverage_sub_categories(coverage_data):
     for sub_category_name, sub_category_data in coverage_data.items():
         if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
-            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('display_name')    # type: ignore
+            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(
+                'display_name')  # type: ignore
             new_coverage[new_sub_category_name] = new_sub_category_data
     return {'coverage': new_coverage}
 
@@ -381,7 +381,7 @@ def sample_analysis(sample_id, os, filter_data_flag):
         'coverage': 'true'
     }
     if os:
-        data['platforms'] = [os]    # type: ignore
+        data['platforms'] = [os]  # type: ignore
     result = http_request(path, data=data, err_operation='Sample analysis failed')
     analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
     return analysis_obj
@@ -644,10 +644,10 @@ def top_tags_search_command():
     args = demisto.args()
     scope = args.get('scope')
     tag_class = args.get('class')
-    private = True if args.get('private') == 'True' else False
-    public = True if args.get('public') == 'True' else False
-    commodity = True if args.get('commodity') == 'True' else False
-    unit42 = True if args.get('unit42') == 'True' else False
+    private = args.get('private') == 'True'
+    public = args.get('public') == 'True'
+    commodity = args.get('commodity') == 'True'
+    unit42 = args.get('unit42') == 'True'
     info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
     md = tableToMarkdown(f'Top tags search Info:', info)
     demisto.results({
