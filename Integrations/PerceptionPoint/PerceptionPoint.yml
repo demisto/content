@@ -12,6 +12,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: No. of API loops
+  name: api_loops
+  defaultvalue: "1"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Fetch blocked incidents
   name: fetch_blocked
   defaultvalue: ""
@@ -24,16 +34,6 @@ configuration:
   required: false
 - display: Fetch malicious incidents
   name: fetch_malicious
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: No. of API loops
-  name: api_loops
-  defaultvalue: "1"
-  type: 0
-  required: false
-- display: Fetch incidents
-  name: isFetch
   defaultvalue: ""
   type: 8
   required: false
