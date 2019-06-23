@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
+import ipaddress
 
 
 # error class for token errors
@@ -186,18 +187,33 @@ def test_module():
     demisto.results('ok')
 
 
-def query_ipv4_command():
+def query_ip_command():
     ip = demisto.getArg('ip')
-    base_ip_raw_res = query_ipv4(ip)
-    base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
-    ip_object = {
-        'ID': base_ip_raw_res.get('id'),
-        'Name': base_ip_raw_res.get('name'),
-        'Parents': base_ip_parents
-    }
-    ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
-    hr = create_human_readable_ip(ip_object, ip)
-    return_outputs(hr, {'AddressManager.ipv4(obj.ID === val.ID)': ip_object}, base_ip_raw_res)
+    try:
+        if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address):
+            ip_type = 'IPv6'
+            base_ip_raw_res = query_ipv6(ip)
+        else:
+            ip_type = 'IPv4'
+            base_ip_raw_res = query_ipv4(ip)
+
+        base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
+        ip_object = {
+            'ID': base_ip_raw_res.get('id'),
+            'Name': base_ip_raw_res.get('name'),
+            'Parents': base_ip_parents,
+            'Type': ip_type
+        }
+        ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
+        ec = {
+            'BlueCat.AddressManager.IP(obj.ID === val.ID)': ip_object,
+            'IP(val.Address === obj.Address)': {'Address': ip}
+        }
+        hr = create_human_readable_ip(ip_object, ip)
+        return_outputs(hr, ec, base_ip_raw_res)
+
+    except ipaddress.AddressValueError:
+        return_error(f'Invalid IP: {ip}')
 
 
 def query_ipv4(ip):
@@ -241,20 +257,6 @@ def create_human_readable_ip(ip_object, ip_value):
     return hr
 
 
-def query_ipv6_command():
-    ip = demisto.getArg('ip')
-    base_ip_raw_res = query_ipv6(ip)
-    base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
-    ip_object = {
-        'ID': base_ip_raw_res.get('id'),
-        'Name': base_ip_raw_res.get('name'),
-        'Parents': base_ip_parents
-    }
-    ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
-    hr = create_human_readable_ip(ip_object, ip)
-    return_outputs(hr, {'AddressManager.ipv6(obj.ID === val.ID)': ip_object}, base_ip_raw_res)
-
-
 def query_ipv6(ip):
     params = {
         'containerId': CONF,
@@ -294,7 +296,7 @@ def create_response_policies_result(raw_response_policies):
             response_policy_obj.update(properties_to_camelized_dict(response_policy.get('properties')))
             hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
             response_policies.append(response_policy_obj)
-        return {'AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
+        return {'BlueCat.AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
     return {}, 'Could not find any response policy'
 
 
@@ -370,10 +372,8 @@ def main():
     try:
         if command == 'test-module':
             test_module()
-        elif command == 'bluecat-am-query-ipv4':
-            query_ipv4_command()
-        elif command == 'bluecat-am-query-ipv6':
-            query_ipv6_command()
+        elif command == 'bluecat-am-query-ip':
+            query_ip_command()
         elif command == 'bluecat-am-get-response-policies':
             get_response_policies_command()
         elif command == 'bluecat-am-search-response-policies-by-domain':

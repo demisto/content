@@ -63,15 +63,15 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: d8cc789c-5fcb-42fb-8bf4-64735aade40f
+    taskid: 7bf55664-5219-401b-86b6-23af760e6c26
     type: regular
     task:
-      id: d8cc789c-5fcb-42fb-8bf4-64735aade40f
+      id: 7bf55664-5219-401b-86b6-23af760e6c26
       version: -1
       name: Query ipv4
       description: Enriches an ipv4 with data about IP networks and blocks that it
         belongs to, linked IPs and mac addresses, etc.
-      script: '|||bluecat-am-query-ipv4'
+      script: '|||bluecat-am-query-ip'
       type: regular
       iscommand: true
       brand: ""
@@ -94,10 +94,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 1afc39fc-86a8-43a8-8a82-87285def1e5b
+    taskid: f6c9a0a7-5e03-49a1-84b0-badaf82ec67e
     type: condition
     task:
-      id: 1afc39fc-86a8-43a8-8a82-87285def1e5b
+      id: f6c9a0a7-5e03-49a1-84b0-badaf82ec67e
       version: -1
       name: Assert ipv4 results
       type: condition
@@ -114,8 +114,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ipv4.ID
+                root: BlueCat
+                accessor: AddressManager.IP.ID
             iscontext: true
           right:
             value:
@@ -124,8 +124,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ipv4.ID
+                root: BlueCat
+                accessor: AddressManager.IP.ID
             iscontext: true
           right:
             value:
@@ -134,12 +134,20 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ipv4.Parents.CIDR
+                root: BlueCat
+                accessor: AddressManager.IP.Parents.CIDR
             iscontext: true
           right:
             value:
               simple: 10.0.0.0/8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.10
     view: |-
       {
         "position": {
@@ -152,15 +160,15 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: a4bd6496-3bd5-4bf5-85d7-59fbfce10451
+    taskid: 0bca9d01-cdba-4888-84b8-68d786246d72
     type: regular
     task:
-      id: a4bd6496-3bd5-4bf5-85d7-59fbfce10451
+      id: 0bca9d01-cdba-4888-84b8-68d786246d72
       version: -1
       name: Query ipv6
-      description: Enriches an ipv6 with data about IP networks and blocks that it
+      description: Enriches an ipv4 with data about IP networks and blocks that it
         belongs to, linked IPs and mac addresses, etc.
-      script: '|||bluecat-am-query-ipv6'
+      script: '|||bluecat-am-query-ip'
       type: regular
       iscommand: true
       brand: ""
@@ -183,10 +191,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e1e6bd4f-2878-48df-80ac-cc778f3eb885
+    taskid: d5fce6f2-9df7-42c3-8fc7-071c0d3b81f9
     type: condition
     task:
-      id: e1e6bd4f-2878-48df-80ac-cc778f3eb885
+      id: d5fce6f2-9df7-42c3-8fc7-071c0d3b81f9
       version: -1
       name: Assert ipv6 results
       type: condition
@@ -203,8 +211,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ipv6.Address
+                root: BlueCat
+                accessor: AddressManager.IP.Address
             iscontext: true
           right:
             value:
@@ -213,8 +221,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ipv6.Parents.Prefix
+                root: BlueCat
+                accessor: AddressManager.IP.Parents.Prefix
             iscontext: true
           right:
             value:
@@ -223,12 +231,20 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ipv6.Parents.Type
+                root: BlueCat
+                accessor: AddressManager.IP.Parents.Type
             iscontext: true
           right:
             value:
               simple: IP6Block
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2000::20C:29FF:FEB9:8FD3
     view: |-
       {
         "position": {
@@ -271,10 +287,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 184dd380-934b-4812-836c-7b7774406031
+    taskid: 1e113a3f-d328-4f39-887e-f8342d85865c
     type: condition
     task:
-      id: 184dd380-934b-4812-836c-7b7774406031
+      id: 1e113a3f-d328-4f39-887e-f8342d85865c
       version: -1
       name: Assert response policies
       type: condition
@@ -291,8 +307,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ResponsePolicies.ID
+                root: BlueCat
+                accessor: AddressManager.ResponsePolicies.ID
             iscontext: true
           right:
             value:
@@ -301,8 +317,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ResponsePolicies.ResponsePolicyType
+                root: BlueCat
+                accessor: AddressManager.ResponsePolicies.ResponsePolicyType
             iscontext: true
           right:
             value:
@@ -311,8 +327,8 @@ tasks:
           left:
             value:
               complex:
-                root: AddressManager
-                accessor: ResponsePolicies.RedirectTarget
+                root: BlueCat
+                accessor: AddressManager.ResponsePolicies.RedirectTarget
             iscontext: true
           right:
             value:
@@ -413,10 +429,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 4abd96ec-a306-467d-802b-c1ce2711e9a2
+    taskid: f18f14bd-d05f-4267-8ebf-adaa03e4f40f
     type: condition
     task:
-      id: 4abd96ec-a306-467d-802b-c1ce2711e9a2
+      id: f18f14bd-d05f-4267-8ebf-adaa03e4f40f
       version: -1
       name: Assert response policy was found
       type: condition
@@ -432,7 +448,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: AddressManager.ResponsePolicies.ID
+              simple: BlueCat.AddressManager.ResponsePolicies.ID
             iscontext: true
           right:
             value:
