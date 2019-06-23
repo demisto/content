@@ -99,7 +99,7 @@ def get_token(new_token=False):
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
-        passed_mins = get_passed_mins(now, ctx.get('time'))
+        passed_mins = get_passed_mins(now, datetime.fromtimestamp(ctx.get('time')))
         if passed_mins >= TOKEN_LIFE_TIME_MINS:
             # token expired
             auth_token = get_token_request()
@@ -137,14 +137,14 @@ def get_configuration():
     return confs[0].get('id')
 
 
-def get_passed_mins(start_time, end_time_str):
+def get_passed_mins(start_time, end_time):
     """
         Returns the time passed in mins
         :param start_time: Start time in datetime
-        :param end_time_str: End time in str
+        :param end_time: End time in datetime
         :return: The passed mins in int
     """
-    time_delta = start_time - datetime.fromtimestamp(end_time_str)
+    time_delta = start_time - end_time
     return time_delta.seconds / 60
 
 
