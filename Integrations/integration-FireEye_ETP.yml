@@ -913,3 +913,6 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "add compatibility with python3"
+tests:
+- No Test
+
