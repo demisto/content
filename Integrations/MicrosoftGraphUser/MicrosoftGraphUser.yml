@@ -239,5 +239,7 @@ script:
   dockerimage: demisto/python3:3.7.2.200
   isfetch: false
   runonce: false
+  subtype: python3
+releaseNotes: "-"
 tests:
   - Microsoft Graph - Test
