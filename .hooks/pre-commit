@@ -4,7 +4,7 @@
 echo "Validating files..."
 if [[ -z "${WINDIR}" ]]
     then
-        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py
+        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py -t true
     else
         python Tests/scripts/validate_files.py
 fi
