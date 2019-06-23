@@ -51,4 +51,4 @@ script:
   script: '-'
   type: python
 tests:
-- MailListener-POP3 - Test
+- No test
