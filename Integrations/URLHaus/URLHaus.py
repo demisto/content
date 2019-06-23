@@ -12,33 +12,72 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-TOKEN = demisto.params().get('token')
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-# Service base URL
-BASE_URL = SERVER + '/api/v2.0/'
+
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
     'Accept': 'application/json'
 }
 # Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# if not demisto.params().get('proxy'):
+#     del os.environ['HTTP_PROXY']
+#     del os.environ['HTTPS_PROXY']
+#     del os.environ['http_proxy']
+#     del os.environ['https_proxy']
 
 
 ''' HELPER FUNCTIONS '''
+def urlhaus_http_request(method, url, data=None):
+    print(f'{method} {url}: {data}')
+    res = requests.request(method,
+                           url,
+                           verify=USE_SSL,
+                           data=data,
+                           headers=HEADERS)
+
+    if res.status_code != 200:
+        raise Exception('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+
+    return res.json()
+
+
+def query_url_information(url):
+    return urlhaus_http_request('POST',
+                         'https://urlhaus-api.abuse.ch/v1/url/', # disable-secrets-detection
+                         f'url={url}')
+
+
+def query_host_information(host):
+    return urlhaus_http_request('POST',
+                                'https://urlhaus-api.abuse.ch/v1/host/',# disable-secrets-detection
+                                f'host={host}')
+
+
+def query_payload_information(hash_type, hash):
+    return urlhaus_http_request('POST',
+                                'https://urlhaus-api.abuse.ch/v1/payload/',# disable-secrets-detection
+                                f'{hash_type}_hash={hash}')
+
+
+def query_tag_information(tag):
+    return urlhaus_http_request('POST',
+                                'https://urlhaus-api.abuse.ch/v1/tag/',# disable-secrets-detection
+                                f'tag={tag}')
+
+
+def query_signature_information(signature):
+    return urlhaus_http_request('POST',
+                                'https://urlhaus-api.abuse.ch/v1/signature/',# disable-secrets-detection
+                                f'signature={signature}')
+
+def download_malware_sample(sha256, dest):
+    res = requests.get(f'https://urlhaus-api.abuse.ch/v1/download/{sha256}/')# disable-secrets-detection
+    with open(dest, 'wb') as malware_sample:
+        malware_sample.write(res.content)
 
 
 def http_request(method, url_suffix, params=None, data=None):
@@ -174,20 +213,28 @@ def fetch_incidents():
 
 LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        fetch_incidents()
-    elif demisto.command() == 'example-get-items':
-        # An example command
-        get_items_command()
-
-# Log exceptions
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+#print(query_url_information('http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/'))
+#print(query_host_information('vektorex.com'))
+#print(query_payload_information('md5', '12c8aec5766ac3e6f26f2505e2f4a8f2'))
+#print(query_tag_information('Retefe'))
+#print(query_signature_information('Gozi'))
+print(download_malware_sample('254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b', 'here.zip'))
+exit()
+#
+# try:
+#     if demisto.command() == 'test-module':
+#         # This is the call made when pressing the integration test button.
+#         test_module()
+#         demisto.results('ok')
+#     elif demisto.command() == 'fetch-incidents':
+#         # Set and define the fetch incidents command to run after activated via integration settings.
+#         fetch_incidents()
+#     elif demisto.command() == 'example-get-items':
+#         # An example command
+#         get_items_command()
+#
+# # Log exceptions
+# except Exception, e:
+#     LOG(e.message)
+#     LOG.print_log()
+#     raise
