@@ -71,7 +71,6 @@ def convert_python_date_to_unix_millisecond(python_date_object):
 
 
 def increase_iso_by_x_days(date_in_iso_format, num_of_days):
-    # iso_format = "%Y-%m-%dT%H:%M:%S"
     date_in_python_format = convert_iso_string_to_python_date(date_in_iso_format)
     new_date_in_python_format = date_in_python_format + timedelta(days=int(num_of_days))
     new_date_in_iso_format = new_date_in_python_format.isoformat()
@@ -320,7 +319,6 @@ def get_alert_activity():
     """
     alert_id = demisto.getArg('alert-id')
     r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id).json()
-    # activities = []
 
     human_readables = []
     alert = {'ID': alert_id, 'Activities': []}
@@ -645,7 +643,6 @@ def search_for_IOC():
     """
     Search for IOC by value
     """
-    # value = demisto.getArg('value')
     r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters())
 
     if r.status_code != 204:
