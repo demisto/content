@@ -249,7 +249,7 @@ def create_ticket():
     hr = 'Ticket {} was created successfully.'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': raw_ticket_res.json(),
+        'Contents': raw_ticket_res.content,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
@@ -688,7 +688,7 @@ def add_comment_attachment(ticket_id, encoded, files_data):
     suffix_url = 'ticket/{}/comment'.format(ticket_id)
     comment = http_request('POST', suffix_url, files=files_data)
 
-    return comment.json()
+    return comment.content
 
 
 def add_comment():
