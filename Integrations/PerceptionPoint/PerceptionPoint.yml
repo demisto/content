@@ -5,7 +5,7 @@ name: PerceptionPoint
 display: PerceptionPoint
 category: Email Gateway
 description: Load incidents from Perception Point system and release falsely quarantined
-  emails
+  emails.
 configuration:
 - display: Token to use Perception Point's API
   name: pp_token
