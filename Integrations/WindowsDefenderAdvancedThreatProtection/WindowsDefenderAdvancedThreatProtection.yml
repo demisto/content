@@ -8,13 +8,17 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Tenant ID (as received from the admin consent - see detailed instructions
-    (?))
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
-  type: 0
-- display: Token (as received from the admin consent - see detailed instructions (?))
-  name: token
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
   required: true
   type: 4
 - display: Fetch incidents
@@ -38,13 +42,11 @@ configuration:
   name: fetch_severity
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
-  name: unsecure
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -541,9 +543,200 @@ script:
     - contextPath: MicrosoftATP.Alert.Determination
       description: Alert determination
       type: string
+  - arguments:
+    - default: true
+      description: The query to run.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Allows you to run programmatic queries like in Windows Defender
+      ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
+      only run a query on data from the last 30 days, The results will include a maximum
+      of 10,000 rows, The number of executions is limited (up to 15 calls per minute,
+      15 minutes of running time every hour and 4 hours of running time a day)'
+    execution: false
+    name: microsoft-atp-advanced-hunting
+    outputs:
+    - contextPath: MicrosoftATP.Hunt.Result
+      description: Results of the query.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Id of the machine on which the event was identified. Required.
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Severity of the alert.
+      isArray: false
+      name: severity
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: true
+      secret: false
+    - default: false
+      description: Title for the alert.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: Description of the alert.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: Action that is recommended to be taken by security officer when
+        analyzing the alert.
+      isArray: false
+      name: recommended_action
+      required: true
+      secret: false
+    - default: false
+      description: The time of the event, as obtained from the advanced query.
+      isArray: false
+      name: event_time
+      required: true
+      secret: false
+    - default: false
+      description: The reportId, as obtained from the advanced query.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: None
+      description: Category of the alert.
+      isArray: false
+      name: category
+      predefined:
+      - None
+      - SuspiciousActivity
+      - Malware
+      - CredentialTheft
+      - Exploit
+      - WebExploit
+      - DocumentExploit
+      - PrivilegeEscalation
+      - Persistence
+      - RemoteAccessTool
+      - CommandAndControl
+      - SuspiciousNetworkTraffic
+      - Ransomware
+      - MalwareDownload
+      - Reconnaissance
+      - WebFingerprinting
+      - Weaponization
+      - Delivery
+      - SocialEngineering
+      - CredentialStealing
+      - Installation
+      - Backdoor
+      - Trojan
+      - TrojanDownloader
+      - LateralMovement
+      - ExplorationEnumeration
+      - NetworkPropagation
+      - Exfiltration
+      - NotApplicable
+      - EnterprisePolicy
+      - General
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new alert entity using event data, as obtained from the
+      Advanced Hunting.
+    execution: false
+    name: microsoft-atp-create-alert
+    outputs:
+    - contextPath: MicrosoftATP.Alert.MachineID
+      description: Alert machine ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.RecommendedAction
+      description: Alert recommended action
+      type: string
+    - contextPath: MicrosoftATP.Alert.Title
+      description: Alert title
+      type: string
+    - contextPath: MicrosoftATP.Alert.Description
+      description: Alert description
+      type: string
+    - contextPath: MicrosoftATP.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: MicrosoftATP.Alert.Category
+      description: Alert category
+      type: string
+    - contextPath: MicrosoftATP.Alert.ReportID
+      description: Alert report ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.EventTime
+      description: Event time of the alert, as created by the user
+      type: date
+    - contextPath: MicrosoftATP.Alert.ID
+      description: ID of the created alert.
+      type: string
+    - contextPath: MicrosoftATP.Alert.Status
+      description: Status of the alert
+      type: string
+  - arguments:
+    - default: false
+      description: ID of the alert.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the user associated to a specific alert.
+    execution: false
+    name: microsoft-atp-get-alert-related-user
+    outputs:
+    - contextPath: MicrosoftATP.User.ID
+      description: ID of the related user.
+      type: string
+    - contextPath: MicrosoftATP.User.AlertID
+      description: ID of the alert.
+      type: string
+    - contextPath: MicrosoftATP.User.FirstSeen
+      description: First seen date of the related user.
+      type: date
+    - contextPath: MicrosoftATP.User.LastSeen
+      description: Last seen date of the related user.
+      type: date
+    - contextPath: MicrosoftATP.User.MostPrevalentMachineID
+      description: The most prevalent machine ID related to the user.
+      type: string
+    - contextPath: MicrosoftATP.User.LogonTypes
+      description: Types of logon for the related user.
+      type: string
+    - contextPath: MicrosoftATP.User.LogonCount
+      description: Log on machine count.
+      type: string
+    - contextPath: MicrosoftATP.User.DomainAdmin
+      description: Flag for user domain admin - set to true if related user is domain
+        admin.
+      type: boolean
+    - contextPath: MicrosoftATP.User.NetworkUser
+      description: Flag for network user only - set to true if related user is only
+        network user.
+      type: boolean
+  dockerimage: demisto/crypto:1.0.0.303
   isfetch: true
   runonce: false
   script: '-'
   type: python
+  subtype: python3
+releaseNotes: 'Added 3 new commands: - microsoft-atp-advanced-hunting - Run advanced
+  queries like you would using ATP portal. - microsoft-atp-create-alert - Create a
+  new alert entity using event data, as obtained from the Advanced Hunting. - microsoft-atp-get-alert-related-user
+  - Retrieves the user associated to a specific alert.'
 tests:
-- No test - TBD
+- Test - Windows Defender Advanced Threat Protection
