@@ -44,7 +44,11 @@ def handle_response(response, acceptable_http_status_codes):
         error_msg = http_status_to_error_massage.get(response.status_code, "Failed to perform request")
         return_error(f'{ERROR_PREFIX} {error_msg}')
 
-    return response.json()
+    try:
+        return response.json()
+    except json.decoder.JSONDecodeError:
+        # This error is unlikely to happen, as the return code should indicate of error beforehand
+        return_error('Response returned with no data. This might be an issue with Intezer. Please try again later')
 
 
 def get_session():
@@ -66,7 +70,7 @@ def check_is_available():
     return 'ok' if result.json()['is_available'] else None
 
 
-def analyze_by_hash():
+def analyze_by_hash_command():
     file_hash = demisto.getArg('file_hash')
     response = make_analyze_by_hash_request(file_hash)
     handle_analyze_by_hash_response(response, file_hash)
@@ -97,7 +101,7 @@ def handle_analyze_by_hash_response(response, file_hash):
     handle_analyze_response(response)
 
 
-def analyze_by_uploaded_file():
+def analyze_by_uploaded_file_command():
     response = make_analyze_by_file_request(demisto.getArg('file_entry_id'))
     handle_analyze_response(response)
 
@@ -120,7 +124,7 @@ def handle_analyze_response(response):
     return_outputs('Analysis created successfully', context_json, response)
 
 
-def check_analysis_status_and_get_results():
+def check_analysis_status_and_get_results_command():
     analysis_type = demisto.args().get('analysis_type', 'File')
     analysis_ids = argToList(demisto.args().get('analysis_id'))
     indicator_name = demisto.args().get('indicator_name')
@@ -237,11 +241,11 @@ def main():
         if demisto.command() == 'test-module':
             demisto.results(check_is_available())
         elif demisto.command() == 'intezer-analyze-by-hash':
-            analyze_by_hash()
+            analyze_by_hash_command()
         elif demisto.command() == 'intezer-analyze-by-file':
-            analyze_by_uploaded_file()
+            analyze_by_uploaded_file_command()
         elif demisto.command() == 'intezer-get-analysis-result':
-            check_analysis_status_and_get_results()
+            check_analysis_status_and_get_results_command()
     except Exception as e:
         return_error(str(e))
 
