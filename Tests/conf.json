@@ -1572,6 +1572,10 @@
         {
             "integrations": "Anomali ThreatStream v2",
             "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": "BluecatAddressManager",
+            "playbookID": "Bluecat Address Manager test"
         }
     ],
     "skipped_tests": {
