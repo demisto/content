@@ -107,3 +107,4 @@ script:
 defaultEnabled: true
 tests:
   - Rasterize Test
+releaseNotes: better errors suppression
