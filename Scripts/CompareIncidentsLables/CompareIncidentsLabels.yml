@@ -11,7 +11,7 @@ args:
   name: incident_id_2
   required: true
   secret: false
-comment: Compares the labels of two incidents. Returns the labels that are unique to each incident.
+comment: Compares the labels of two incidents. Returns the labels that are unique to each incident..
 commonfields:
   id: CompareIncidentsLabels
   version: -1
