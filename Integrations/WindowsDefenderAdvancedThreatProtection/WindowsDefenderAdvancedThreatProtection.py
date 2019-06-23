@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 requests.packages.urllib3.disable_warnings()
 
 if not demisto.params()['proxy']:
@@ -15,10 +17,17 @@ if not demisto.params()['proxy']:
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/api'
 TENANT_ID = demisto.params()['tenant_id']
-TOKEN = demisto.params()['token']
-USE_SSL = not demisto.params().get('unsecure', False)
+AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
+ENC_KEY = demisto.params()['enc_key']
+USE_SSL = not demisto.params().get('insecure', False)
 FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
 FETCH_STATUS = demisto.params().get('fetch_status').split(',')
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
+APP_NAME = 'ms-defender-atp'
 
 ''' HELPER FUNCTIONS '''
 
@@ -32,47 +41,121 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_token():
+def get_encrypted(content: str, key: str) -> str:
     """
-    Check if we have a valid token and if not get one
+
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+
+    Returns:
+        encrypted timestamp:content
     """
-    ctx = demisto.getIntegrationContext()
-    if ctx.get('token') and ctx.get('stored'):
-        if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
-            return ctx.get('token')
-    headers = {
-        'Authorization': TOKEN,
-        'Accept': 'application/json'
-    }
-    token_url = 'https://demistobot.demisto.com/atp-token'
-    r = requests.get(token_url, headers=headers, params={'tenant': TENANT_ID, 'product': 'ATP'}, verify=USE_SSL)
-    if r.status_code not in {200, 201}:
-        return_error('Error in authentication with the application. Please check the credentials.')
-    data = r.json()
-    if r.status_code != requests.codes.ok:
-        error_object = json.loads(data.get('detail'))
-        error_details = error_object.get('error_description')
-        if error_details:
-            return_error(error_details)
-        else:
-            return_error(error_object)
-    demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
-    return data.get('token')
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
+        }),
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
+    })
+    return access_token
 
 
 def http_request(method, url_suffix, json=None, params=None):
 
+    token = get_access_token()
     r = requests.request(
         method,
         BASE_URL + url_suffix,
         json=json,
         headers={
-            'Authorization': 'Bearer ' + get_token(),
+            'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         }
     )
     if r.status_code not in {200, 201}:
-        return_error('Error in API call to ATP [%d] - %s' % (r.status_code, r.reason))
+        error = r.json().get('error')
+        msg = error['message'] if 'message' in error else r.reason
+        return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
     if not r.text:
         return {}
     return r.json()
@@ -238,9 +321,9 @@ def get_machines_command():
             'HumanReadable': tableToMarkdown('Windows Defender ATP machines', output, removeNull=True),
             'EntryContext': ec
         }
-        demisto.results(entry)
     else:
-        demisto.results('No results found')
+        entry = 'No results found'  # type: ignore
+    demisto.results(entry)
 
 
 def get_machines():
@@ -307,9 +390,9 @@ def get_file_related_machines_command():
             'HumanReadable': tableToMarkdown(title, output, removeNull=True),
             'EntryContext': ec
         }
-        demisto.results(entry)
     else:
-        demisto.results('No results found')
+        entry = 'No results found'  # type: ignore
+    demisto.results(entry)
 
 
 def get_file_related_machines(file):
@@ -373,9 +456,9 @@ def get_machine_details_command():
             'HumanReadable': tableToMarkdown(title, output, removeNull=True),
             'EntryContext': ec
         }
-        demisto.results(entry)
     else:
-        demisto.results('No results found')
+        entry = 'No results found'  # type: ignore
+    demisto.results(entry)
 
 
 def get_machine_details(machine_id):
@@ -394,7 +477,7 @@ def block_file_command():
     severity = demisto.args().get('severity')
     recommended_actions = demisto.args().get('recommended_actions')
 
-    _ = block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions)
+    block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions)
 
 
 def block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions):
@@ -414,68 +497,6 @@ def block_file(file_sha1, comment, title, expiration_time, severity, recommended
     return response
 
 
-def get_user_related_machines_command():
-
-    user_id = demisto.args()['user_id']
-
-    machines = get_user_related_machines(user_id)['value']
-
-    if machines:
-        output = []
-        endpoint_context = []
-        for machine in machines:
-            current_machine_output = {
-                'ComputerDNSName': machine['computerDnsName'],
-                'ID': machine['id'],
-                'AgentVersion': machine['agentVersion'],
-                'FirstSeen': machine['firstSeen'],
-                'LastSeen': machine['lastSeen'],
-                'HealthStatus': machine['healthStatus'],
-                'IsAADJoined': machine['isAadJoined'],
-                'LastExternalIPAddress': machine['lastExternalIpAddress'],
-                'LastIPAddress': machine['lastIpAddress'],
-                'Tags': machine['machineTags'],
-                'OSBuild': machine['osBuild'],
-                'OSPlatform': machine['osPlatform'],
-                'RBACGroupID': machine['rbacGroupId'],
-                'RiskScore': machine['riskScore'],
-                'RelatedFile': file
-            }
-            current_endpoint_output = {
-                'Hostname': machine['computerDnsName'],
-                'IPAddress': machine['lastExternalIpAddress'],
-                'OS': machine['osPlatform']
-            }
-            rbac_group_name = machine.get('rbacGroupName')
-            if rbac_group_name:
-                current_machine_output['RBACGroupName'] = rbac_group_name
-            aad_device_id = machine.get('aadDeviceId')
-            if aad_device_id:
-                current_machine_output['AADDeviceID'] = aad_device_id
-            os_version = machine.get('osVersion')
-            if os_version:
-                current_machine_output['OSVersion'] = os_version
-                current_endpoint_output['OSVersion'] = os_version
-            output.append(current_machine_output)
-            endpoint_context.append(current_endpoint_output)
-        ec = {
-            'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
-        }
-        title = 'Windows Defender ATP machines related to file {}'.format(file)
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': machines,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, output, removeNull=True),
-            'EntryContext': ec
-        }
-        demisto.results(entry)
-    else:
-        demisto.results('No results found')
-
-
 def get_user_related_machines(user_id):
 
     cmd_url = '/users/{}/machines'.format(user_id)
@@ -489,7 +510,7 @@ def stop_and_quarantine_file_command():
     file_sha1 = demisto.args().get('file')
     comment = demisto.args().get('comment')
 
-    _ = stop_and_quarantine_file(machine_id, file_sha1, comment)
+    stop_and_quarantine_file(machine_id, file_sha1, comment)
 
 
 def stop_and_quarantine_file(machine_id, file_sha1, comment):
@@ -509,7 +530,7 @@ def run_antivirus_scan_command():
     scan_type = demisto.args().get('scan_type')
     comment = demisto.args().get('comment')
 
-    _ = run_antivirus_scan(machine_id, comment, scan_type)
+    run_antivirus_scan(machine_id, comment, scan_type)
 
     demisto.results('Antivirus scan successfully triggered')
 
@@ -539,7 +560,7 @@ def list_alerts_command():
         if (severity and severity != alert_severity) or (status and status != alert_status):
             continue
         current_alert_output = {}
-        for key, value in alert.iteritems():
+        for key, value in alert.items():
             if value or value is False:
                 current_alert_output[capitalize_first_letter(key).replace('Id', 'ID')] = value
         output.append(current_alert_output)
@@ -559,9 +580,9 @@ def list_alerts_command():
             'HumanReadable': tableToMarkdown(title, output, removeNull=True),
             'EntryContext': ec
         }
-        demisto.results(entry)
     else:
-        demisto.results('No results found')
+        entry = 'No results found'  # type: ignore
+    demisto.results(entry)
 
 
 def list_alerts():
@@ -598,7 +619,7 @@ def update_alert_command():
         json['determination'] = determination
         context['Determination'] = determination
 
-    _ = update_alert(alert_id, json)
+    update_alert(alert_id, json)
 
     ec = {
         'MicrosoftATP.Alert(val.ID && val.ID === obj.ID)': context
@@ -640,6 +661,132 @@ def get_alert_related_ips(alert_id):
     return response
 
 
+def get_advanced_hunting_command():
+    query = demisto.args().get('query')
+    response = get_advanced_hunting(query)
+    results = response.get('Results')
+    ec = {
+        'MicrosoftATP.Hunt.Result': results
+    }
+    hr = tableToMarkdown('Hunt results', results, removeNull=True)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': ec
+    }
+
+    demisto.results(entry)
+
+
+def get_advanced_hunting(query):
+    cmd_url = '/advancedqueries/run'
+    json = {
+        'Query': query
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+
+def create_alert_command():
+    args = demisto.args()
+    response = create_alert(
+        args.get('machine_id'),
+        args.get('severity'),
+        args.get('title'),
+        args.get('description'),
+        args.get('event_time'),
+        args.get('report_id'),
+        args.get('recommended_action'),
+        args.get('category')
+    )
+    output = {
+        'MachineID': response.get('machineId'),
+        'RecommendedAction': response.get('recommendedAction'),
+        'Title': response.get('title'),
+        'Description': response.get('description'),
+        'Severity': response.get('severity'),
+        'Category': response.get('Category'),
+        'ReportID': response.get('reportId'),
+        'ID': response.get('id'),
+        'Status': response.get('status')
+    }
+    output = {k: v for k, v in output.items() if v is not None}
+    ec = {
+        'MicrosoftATP.Alert': output
+    }
+    hr = tableToMarkdown('Alert created:', output)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': ec
+    }
+
+    demisto.results(entry)
+
+
+def create_alert(machine_id, severity, title, description, event_time, report_id, rec_action, category):
+    cmd_url = '/alerts/CreateAlertByReference'
+    json = {
+        'machineId': machine_id,
+        'severity': severity,
+        'title': title,
+        'description': description,
+        'eventTime': event_time,
+        'reportId': report_id
+    }
+    if rec_action:
+        json['recommendedAction'] = rec_action
+    if category:
+        json['category'] = category
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+
+def get_alert_related_user_command():
+    alert_id = demisto.args().get('id')
+    response = get_alert_related_user(alert_id)
+    output = {
+        'ID': response.get('id'),
+        'AlertID': alert_id,
+        'FirstSeen': response.get('firstSeen'),
+        'LastSeen': response.get('lastSeen'),
+        'MostPrevalentMachineID': response.get('mostPrevalentMachineId'),
+        'LogonTypes': response.get('logonTypes'),
+        'LogonCount': response.get('logOnMachinesCount'),
+        'DomainAdmin': response.get('isDomainAdmin'),
+        'NetworkUser': response.get('isOnlyNetworkUser')
+    }
+    ec = {
+        'MicrosoftATP.User(val.AlertID === obj.AlertID && val.ID === obj.ID)': output
+    }
+    hr = tableToMarkdown('Alert Related User:', output, removeNull=True)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': ec
+    }
+
+    demisto.results(entry)
+
+
+def get_alert_related_user(alert_id):
+    cmd_url = '/alerts/{}/user'.format(alert_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+
 def fetch_incidents():
 
     last_run = demisto.getLastRun()
@@ -659,9 +806,9 @@ def fetch_incidents():
         alert_creation_time = datetime.strptime(alert['alertCreationTime'][:-2], '%Y-%m-%dT%H:%M:%S.%f')
         alert_status = alert['status']
         alert_severity = alert['severity']
-        if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS \
-                and alert_severity in FETCH_SEVERITY:
-            _ = alert['id']
+        if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS and \
+                alert_severity in FETCH_SEVERITY:
+            # alert_id = alert['id']
             # alert['RelatedFiles'] = get_alert_related_files(alert_id)
             # alert['RelatedDomains'] = get_alert_related_domains(alert_id)
             # alert['RelatedIPs'] = get_alert_related_ips(alert_id)
@@ -678,9 +825,30 @@ def fetch_incidents():
 
 
 def test_function():
-    cmd_url = '/alerts?$top=1'
-    _ = http_request('GET', cmd_url)
-    demisto.results('ok')
+    token = get_access_token()
+    response = requests.get(
+        BASE_URL + '/alerts',
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        params={'$top': '1'},
+        verify=USE_SSL
+    )
+    try:
+        _ = response.json() if response.text else {}
+        if not response.ok:
+            return_error(f'API call to Windows Advanced Threat Protection. '
+                         f'Please check authentication related parameters. '
+                         f'[{response.status_code}] - {response.reason}')
+
+        demisto.results('ok')
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'API call to Windows Advanced Threat Protection failed, could not parse result. '
+                     f'Please check authentication related parameters. [{response.status_code}]')
 
 
 ''' EXECUTION CODE '''
@@ -712,9 +880,6 @@ try:
     elif demisto.command() == 'microsoft-atp-block-file':
         block_file_command()
 
-    elif demisto.command() == 'microsoft-atp-get-user-related-machines':
-        get_user_related_machines_command()
-
     elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
         stop_and_quarantine_file_command()
 
@@ -727,7 +892,14 @@ try:
     elif demisto.command() == 'microsoft-atp-update-alert':
         update_alert_command()
 
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error(e.message)
+    elif demisto.command() == 'microsoft-atp-advanced-hunting':
+        get_advanced_hunting_command()
+
+    elif demisto.command() == 'microsoft-atp-create-alert':
+        create_alert_command()
+
+    elif demisto.command() == 'microsoft-atp-get-alert-related-user':
+        get_alert_related_user_command()
+
+except Exception as e:
+    return_error(str(e))

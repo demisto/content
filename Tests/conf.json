@@ -866,6 +866,10 @@
             "playbookID": "Cisco-Meraki-Test"
         },
         {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
@@ -1597,7 +1601,7 @@
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "Microsoft Graph Test": "Test needs to be fixed and updated",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
@@ -1624,7 +1628,8 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
-        "Cofense Triage Test": "Creds only works on demo4"
+        "Cofense Triage Test": "Creds only works on demo4",
+        "Test - Windows Defender Advanced Threat Protection": "Test needs to be fixed and updated"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1674,7 +1679,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "MicrosoftGraphMail": "Inactive integration",
+        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
