@@ -228,10 +228,10 @@ def create_ticket():
     encoded = "content=" + urllib.quote_plus(data)
     if attachments:
         files_data.update({'content': (None, data)})
-        ticket_id = create_ticket_attachments_request(encoded, files_data)
+        raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
     else:
-        ticket_id = create_ticket_request(encoded)
-    ticket_id = re.findall('\d+', ticket_id.content)[-1]
+        raw_ticket_res = create_ticket_request(encoded)
+    ticket_id = re.findall('\d+', raw_ticket_res.content)[-1]
     if ticket_id == -1:
         return_error('Ticket creation failed')
 
@@ -250,7 +250,7 @@ def create_ticket():
     hr = 'Ticket {} was created successfully.'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': hr,
+        'Contents': raw_ticket_res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
