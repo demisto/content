@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
-TENANT = demisto.getParam('tenant')
+TENANT = demisto.getParam('tenant_id')
 AUTH_AND_TOKEN_URL = demisto.getParam('auth_id').split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = demisto.getParam('enc_key')
