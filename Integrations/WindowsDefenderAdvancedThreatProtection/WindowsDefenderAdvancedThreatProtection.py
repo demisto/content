@@ -838,7 +838,7 @@ def test_function():
         verify=USE_SSL
     )
     try:
-        data = response.json() if response.text else {}
+        _ = response.json() if response.text else {}
         if not response.ok:
             return_error(f'API call to Windows Advanced Threat Protection. '
                          f'Please check authentication related parameters. '
