@@ -39,7 +39,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '10.2'
-  display: 'Version: (one of 10.0, 10.1, 10.2, 10.3)'
+  display: 'Version: (one of 10.0, 10.1, 10.2, 10.3, 11.1)'
   name: version
   required: true
   type: 0
