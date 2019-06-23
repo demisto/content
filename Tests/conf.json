@@ -1524,6 +1524,11 @@
             "playbookID": "Ipstack_Test"
         },
         {
+
+            "integrations": "Perch",
+            "playbookID": "Perch-Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
         },
