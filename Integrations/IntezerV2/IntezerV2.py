@@ -48,7 +48,8 @@ def handle_response(response, acceptable_http_status_codes):
         return response.json()
     except json.decoder.JSONDecodeError:
         # This error is unlikely to happen, as the return code should indicate of error beforehand
-        return_error('Response returned with no data. This might be an issue with Intezer. Please try again later')
+        return_error(f'Response returned with no data. This might be an issue with Intezer.\nPlease try again later\n'
+                     f'Response content:\n{response.content}')
 
 
 def get_session():
