@@ -14,7 +14,7 @@ configuration:
   required: true
 - display: Trust any certificate (insecure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy
