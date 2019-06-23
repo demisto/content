@@ -866,7 +866,7 @@
             "playbookID": "Cisco-Meraki-Test"
         },
         {
-            "integrations": "Windows Defender Advanced Threat Protection",
+            "integrations": "Windows Defender ATP",
             "playbookID": "Test - Windows Defender Advanced Threat Protection"
         },
         {
