@@ -55,8 +55,8 @@ configuration:
   name: timezone
   required: false
   type: 0
-description: Run queries and receive alarms from Intel Security ESM
-display: McAfee ESM-v10
+description: Run queries and receive alarms from Intel Security ESM. Support version 10 and above.
+display: McAfee ESM v10 and v11
 name: McAfee ESM-v10
 script:
   commands:
