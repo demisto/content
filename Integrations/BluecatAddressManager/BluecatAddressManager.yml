@@ -180,6 +180,6 @@ script:
   runonce: false
   script: '-'
   type: python
-  subetype: python3
+  subtype: python3
 tests:
 - Bluecat Address Manager test
