@@ -320,7 +320,6 @@ def search_ticket():
     search_context = []
     data = raw_tickets.content.split('\n')
     data = data[2:]
-    raw_ticket_search = []
     for line in data:
         split_line = line.split(': ')
         search_ticket = get_ticket_request(split_line[0]).content
