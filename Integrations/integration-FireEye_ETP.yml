@@ -262,7 +262,7 @@ script:
     def search_messages_command():
 
         args = demisto.args()
-        if args.has_key('size'):
+        if 'size' in args.keys():
             # parse to int
             args['size'] = int(args['size'])
         if args.get('has_attachments') is not  None:
@@ -456,10 +456,10 @@ script:
 
         args = demisto.args()
 
-        if args.has_key('size'):
+        if 'size' in args.keys():
             args['size'] = int(args['size'])
 
-        if args.has_key('legacy_id'):
+        if 'legacy_id' in args.keys():
             args['legacy_id'] = int(args['legacy_id'])
 
         # get raw data
@@ -585,10 +585,10 @@ script:
         week_ago =  datetime.now() - timedelta(days=7)
         iso_format = "%Y-%m-%dT%H:%M:%S.%f"
 
-        if not last_run.has_key('last_modified'):
+        if 'last_modified' not in last_run.keys():
             # parse datetime to iso format string yyy-mm-ddThh:mm:ss.fff
             last_run['last_modified'] = week_ago.strftime(iso_format)[:-3]
-        if not last_run.has_key('last_created'):
+        if 'last_created' not in last_run.keys():
             last_run['last_created'] = week_ago.strftime(iso_format)
 
         alerts_raw_response = get_alerts_request(
@@ -597,7 +597,7 @@ script:
             raw_response=True
         )
         # end if no results returned
-        if not alerts_raw_response or not alerts_raw_response.has_key('data'):
+        if not alerts_raw_response or 'data' not in alerts_raw_response.keys():
             return
 
         alerts = alerts_raw_response['data']
