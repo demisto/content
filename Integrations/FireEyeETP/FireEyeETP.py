@@ -1,3 +1,11 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+'''
+IMPORTS
+'''
+
 from datetime import timedelta, datetime
 import requests
 import os
@@ -36,6 +44,7 @@ BASIC FUNCTIONS
 '''
 
 def set_proxies():
+
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
@@ -49,6 +58,7 @@ def listify(comma_separated_list):
     return comma_separated_list.split(',')
 
 def http_request(method, url, body=None, headers={}, url_params=None):
+
     '''
     returns the http response
     '''
@@ -79,6 +89,7 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     return response.json()
 
 def return_error_entry(message):
+
     entry = {
         'Type': entryTypes['error'],
         'Contents': e.message,
@@ -157,6 +168,7 @@ rejection_reason=None, sender_ip=None, status=None, status_not_in=None, last_mod
     return search_attributes
 
 def readable_message_data(message):
+
     return {
         'Message ID': message['id'],
         'Accepted Time': message['acceptedDateTime'],
@@ -167,6 +179,7 @@ def readable_message_data(message):
     }
 
 def message_context_data(message):
+
     context_data = copy.deepcopy(message)
 
     # remove 'attributes' level
@@ -329,6 +342,7 @@ def get_message_command():
         demisto.results(entry)
 
 def alert_readable_data_summery(alert):
+
     return {
         'Alert ID': alert['id'],
         'Alert Timestamp': alert['alert']['timestamp'],
@@ -343,6 +357,7 @@ def alert_readable_data_summery(alert):
     }
 
 def alert_readable_data(alert):
+
     return {
         'Alert ID': alert['id'],
         'Alert Timestamp': alert['alert']['timestamp'],
@@ -357,6 +372,7 @@ def alert_readable_data(alert):
     }
 
 def malware_readable_data(malware):
+
     return {
         'Name': malware['name'],
         'Domain': malware.get('domain'),
@@ -368,6 +384,7 @@ def malware_readable_data(malware):
     }
 
 def alert_context_data(alert):
+
     context_data = copy.deepcopy(alert)
     # remove 'attributes' level
     context_data.update(context_data.pop('attributes', {}))
@@ -456,6 +473,7 @@ def get_alerts_command():
     demisto.results(entry)
 
 def get_alert_request(alert_id):
+
     url = '{}/alerts/{}'.format(BASE_PATH, alert_id)
     response = http_request(
         'GET',
@@ -511,6 +529,7 @@ def get_alert_command():
 
 
 def parse_string_in_iso_format_to_datetime(iso_format_string):
+
     alert_last_modified = None
     try:
         alert_last_modified = datetime.strptime(iso_format_string, "%Y-%m-%dT%H:%M:%S.%f")
