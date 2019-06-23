@@ -10,7 +10,7 @@ configuration:
 - display: Token to use Perception Point's API
   name: pp_token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: No. of API loops
   name: api_loops
