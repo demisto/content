@@ -232,4 +232,3 @@ script:
   type: python
 tests:
 - DuoAdmin API test playbook
-releaseNotes: "Added the ability to use proxy and secured connection."

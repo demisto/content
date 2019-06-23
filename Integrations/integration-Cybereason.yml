@@ -1961,4 +1961,3 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "-"
