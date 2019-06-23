@@ -8,17 +8,20 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '995'
+  display: Port
   name: port
   required: false
   type: 0
-- name: email
+- display: Email
+  name: email
   required: true
   type: 0
-- name: password
+- display: Password
+  name: password
   required: true
   type: 4
 - defaultvalue: 'True'
-  display: use SSL
+  display: Use SSL connection
   name: ssl
   required: false
   type: 8
