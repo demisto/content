@@ -309,7 +309,26 @@
         "SplunkSearch",
         "WildfireReport"
       ],
-      "fromVersion": "5.0"
+      "fromVersion": "5.0",
+      "fileHashesPriority": [
+        "sha256",
+        "sha1",
+        "md5"
+      ],
+      "defaultMapping": {
+        "md5": {
+          "simple": "File.MD5",
+          "complex": null
+        },
+        "sha1": {
+          "simple": "File.SHA1",
+          "complex": null
+        },
+        "sha256": {
+          "simple": "File.SHA256",
+          "complex": null
+        }
+      }
     }
   ],
   "releaseNotes": "updated file reputations"
