@@ -4,7 +4,7 @@ commonfields:
 name: PerceptionPoint
 display: PerceptionPoint
 category: Email Gateway
-description: Load incidents from Perception Point system and release falsely quarantined
+description: Loads incidents from Perception Point and releases falsely quarantined
   emails.
 configuration:
 - display: Token to use Perception Point's API
@@ -27,7 +27,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: No. of API loops
+- display: Number of API loops
   name: api_loops
   defaultvalue: "1"
   type: 0
@@ -60,12 +60,12 @@ script:
     arguments:
     - name: scan_id
       required: true
-      description: The PP scan id of the email
+      description: The PP scan ID of the email.
     outputs:
     - contextPath: PP.Released
-      description: The scan ID of the released email
+      description: The scan ID of the released email.
       type: number
-    description: Resends an email that was falsely quarantined using the scan id
+    description: Resends an email that was falsely quarantined, using the scan ID.
   dockerimage: demisto/python3:3.7.2.214
   isfetch: true
   runonce: false
