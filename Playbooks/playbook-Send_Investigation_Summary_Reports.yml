@@ -1,8 +1,8 @@
 id: Send Investigation Summary Reports
 version: -1
 name: Send Investigation Summary Reports
-description: 'Playbook will iterate over closed incidents and generate a summary report
-  for each. Will then email all reports. '
+description: 'This playbook iterates over closed incidents, generates a summary report
+  for each closed incident, and emails the reports to specified users. '
 starttaskid: "0"
 fromversion: "4.1.0"
 tasks:
@@ -39,7 +39,7 @@ tasks:
       id: 22f91f1b-ad02-4439-85de-444c9cc9165c
       version: -1
       name: Find Closed Incidents
-      description: Searches Demisto incidents
+      description: Searches Demisto incidents to identify closed incidents.
       scriptName: SearchIncidents
       type: regular
       iscommand: false
@@ -88,7 +88,7 @@ tasks:
       id: b28d0033-ac09-4d02-84fc-c6d363d80f51
       version: -1
       name: Generate Summary Report
-      description: Generate report summaries for the passed incidents.
+      description: Generates report summaries for the passed incidents.
       scriptName: GenerateSummaryReports
       type: regular
       iscommand: false
@@ -320,8 +320,8 @@ tasks:
       id: 58e69d68-ff03-4356-8b8f-d61f60346c81
       version: -1
       name: Are there relevant closed incidents?
-      description: Check if there are any incidents without the ReportSent label.
-        Note that the same DT of this task is used in "Generate Summary Report" task.
+      description: Checks if there are any incidents without the ReportSent label.
+        Note that the same DT of this task is used in the "Generate Summary Report" task.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -363,12 +363,12 @@ inputs:
   value:
     simple: 
   required: true
-  description: Email address to mail the report to
+  description: Email address to mail the report to.
 - key: ReportName
   value:
     simple: Investigation Summary
   required: false
-  description: Report to generate
+  description: Reports to generate.
 - key: ReportType
   value:
     simple: pdf
