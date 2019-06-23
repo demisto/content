@@ -63,7 +63,7 @@ def get_user_emails():
             mails.append(msg)
         except Exception as e:
             demisto.error("Failed to get email with index " + index + 'from the server.')
-            raise str(e)
+            raise e
 
     return mails
 
@@ -313,7 +313,7 @@ def fetch_incidents():
         except Exception as e:
             demisto.error("failed to create incident from email, index = {}, subject = {}, date = {}".format(
                 msg['index'], msg['subject'], msg['date']))
-            raise str(e)
+            raise e
 
         temp_date = datetime.strptime(
             incident['occurred'], DATE_FORMAT)
