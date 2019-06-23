@@ -912,3 +912,4 @@ script:
       90 days old are not available.
   isfetch: true
   runonce: false
+releaseNotes: "add compatibility with python3"
