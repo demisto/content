@@ -1562,6 +1562,10 @@
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
         }
     ],
     "skipped_tests": {
