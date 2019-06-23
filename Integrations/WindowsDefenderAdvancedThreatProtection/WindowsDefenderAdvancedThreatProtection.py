@@ -406,7 +406,6 @@ def get_machine_details_command():
 
     machine_id = demisto.args()['machine_id']
     machine = get_machine_details(machine_id)
-
     if machine:
         output = []
         endpoint_context = []
