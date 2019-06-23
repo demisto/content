@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Windows Defender ATP
+  id: Windows Defender Advanced Threat Protection
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -53,8 +53,8 @@ configuration:
 description: Windows Defender Advanced Threat Protection (ATP) is a unified platform
   for preventative protection, post-breach detection, automated investigation, and
   response.
-display: Windows Defender ATP
-name: Windows Defender ATP
+display: Windows Defender Advanced Threat Protection
+name: Windows Defender Advanced Threat Protection
 script:
   commands:
   - arguments:
