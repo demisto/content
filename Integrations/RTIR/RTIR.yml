@@ -567,6 +567,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - RTIR Test

@@ -46,7 +46,7 @@ def ticket_to_incident(ticket):
                 'name': attachments[i]['Name']
             })
 
-        incident['attachment'] = incident_attachments
+        incident['attachment'] = incident_attachments  # type: ignore
     return incident
 
 
@@ -67,7 +67,7 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     if query:
         params.update(query)
 
-    response = SESSION.request(method, url, data=data, params=params, files=files)
+    response = SESSION.request(method, url, data=data, params=params, files=files)  # type: ignore
 
     # handle request failure
     if response.status_code not in {200}:
@@ -93,7 +93,7 @@ def login():
         'user': USERNAME,
         'pass': PASSWORD
     }
-    SESSION.post(SERVER, data=data)
+    SESSION.post(SERVER, data=data)  # type: ignore
 
 
 def logout():
@@ -226,7 +226,7 @@ def create_ticket():
 
     encoded = "content=" + urllib.quote_plus(data)
     if attachments:
-        files_data.update({'content': (None, data)})
+        files_data.update({'content': (None, data)})  # type: ignore
         raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
     else:
         raw_ticket_res = create_ticket_request(encoded)
@@ -712,7 +712,7 @@ def add_comment():
 
     encoded = "content=" + urllib.quote_plus(content)
     if attachments:
-        files_data.update({'content': (None, content)})
+        files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
         return_outputs('Added comment to ticket {} successfully.'.format(ticket_id), {}, comment)
     else:
