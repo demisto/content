@@ -1570,6 +1570,11 @@
             "playbookID": "Process Email - Generic for Rasterize"
         },
         {
+            "playbookID": "Send Investigation Summary Reports - Test",
+            "integrations": "EWS Mail Sender",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "Anomali ThreatStream v2",
             "playbookID": "ThreatStream-Test"
         },
