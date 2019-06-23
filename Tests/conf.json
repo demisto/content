@@ -1557,6 +1557,10 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "AutoFocus V2",
+            "playbookID": "AutoFocus V2 test"
+        },
+        {
             "playbookID": "Process Email - Generic for Rasterize"
         }
     ],
