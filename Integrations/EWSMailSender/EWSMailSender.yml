@@ -76,9 +76,11 @@ script:
     - name: attachNames
       description: A comma-separated list of names to the attachments to be send.
         Should be the same number of elements as attachIDs.
+    - name: attachCIDs
+      description: 'A comma-separated list of CIDs to embed attachments inside the email itself'
     description: Send email via EWS
   dockerimage: demisto/py-ews
 tests:
   - "EWS Mail Sender Test"
   - "EWS Mail Sender Test 2"
-releaseNotes: "Improved handling of EWS concurrency limits."
+releaseNotes: "Improved handling of EWS concurrency limits. Added support for attaching inline images using CID."
