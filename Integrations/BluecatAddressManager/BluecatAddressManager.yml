@@ -8,7 +8,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: https://192.168.0.1
-  display: Server URL (e.g. https://192.168.0.1)
+  display: Server URL (e.g., https://192.168.0.1)
   name: url
   required: true
   type: 0
@@ -42,108 +42,108 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enriches an ipv4 with data about IP networks and blocks that it belongs
+    description: Enriches an IP with data about IP networks and blocks that it belongs
       to, linked IPs and mac addresses, etc.
     execution: false
     name: bluecat-am-query-ip
     outputs:
     - contextPath: BlueCat.AddressManager.IP.ID
-      description: The address manager id of the ip
+      description: The address manager ID of the IP address.
       type: Number
     - contextPath: BlueCat.AddressManager.IP.Name
-      description: Name of the address
+      description: Name of the IP address.
       type: String
     - contextPath: BlueCat.AddressManager.IP.MacAddress
-      description: Corresponding MAC address
+      description: Corresponding MAC address.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Parents.ID
-      description: ID of the parent IP address
+      description: ID of the parent IP address.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Parents.Type
-      description: Type of the parent IP address
+      description: Type of the parent IP address.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Parents.Name
-      description: Name of the parent IP address
+      description: Name of the parent IP address.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Parents.CIDR
-      description: Classless Inter-Domain Routing
+      description: Classless Inter-Domain Routing.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Type
-      description: Type of ip
+      description: Type of IP address.
       type: String
     - contextPath: IP.Address
-      description: Adress of IP
+      description: Address of IP.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Parents.Prefix
-      description: Prefix of the IP address
+      description: Prefix of the IP address.
       type: String
   - arguments:
     - default: false
       defaultValue: '0'
-      description: Start index to get the response policies from
+      description: Start index from which to get the response policies. Default is 0.
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
       defaultValue: '30'
-      description: Limit on the number of response policies to get
+      description: Maximum number of response policies to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
-    description: Gets all response policies
+    description: Returns all response policies.
     execution: false
     name: bluecat-am-get-response-policies
     outputs:
     - contextPath: BlueCat.AddressManager.ResponsePolicies.ID
-      description: ID of the responce policy
+      description: ID of the response policy.
       type: Number
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Name
-      description: Name of the responce policy
+      description: Name of the response policy.
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Ttl
-      description: Time to live of the responce policy
+      description: Time to live (TTL) of the response policy.
       type: Unknown
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
-      description: Type of the responce policy. Either BLACKLIST, BLACKHOLE, WHITELIST
-        or REDIRECT
+      description: Type of the response policy (BLACKLIST, BLACKHOLE, WHITELIST,
+        or REDIRECT).
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
-      description: Target of redirect in case of REDIRECT policy type
+      description: Target of redirect, in case of REDIRECT policy type.
       type: String
   - arguments:
     - default: false
-      description: Domain name to look by.
+      description: Domain name by which to search.
       isArray: false
       name: domain
       required: true
       secret: false
     deprecated: false
-    description: Searches all response policies in which the given domain is included
+    description: Searches all response policies in which the given domain is included.
     execution: false
     name: bluecat-am-search-response-policies-by-domain
     outputs:
     - contextPath: BlueCat.AddressManager.ResponsePolicies.ID
-      description: ID of the responce policy
+      description: ID of the response policy.
       type: Number
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Name
-      description: Name of the responce policy
+      description: Name of the response policy.
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Ttl
-      description: Time to live of the responce policy
+      description: Time to live (TTL) of the response policy
       type: Unknown
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
-      description: Type of the responce policy. Either BLACKLIST, BLACKHOLE, WHITELIST
-        or REDIRECT
+      description: Type of the responce policy ( BLACKLIST, BLACKHOLE, WHITELIST,
+        or REDIRECT).
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
-      description: Target of redirect in case of REDIRECT policy type
+      description: Target of redirect, in case of REDIRECT policy type.
       type: String
   - arguments:
     - default: true
-      description: Id of the response policy to edit.
+      description: ID of the response policy to edit.
       isArray: false
       name: policy_id
       required: true
@@ -160,7 +160,7 @@ script:
     name: bluecat-am-response-policy-add-domain
   - arguments:
     - default: true
-      description: Id of the response policy to edit.
+      description: ID of the response policy to edit.
       isArray: false
       name: policy_id
       required: true
@@ -180,5 +180,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subetype: python3
 tests:
 - Bluecat Address Manager test
