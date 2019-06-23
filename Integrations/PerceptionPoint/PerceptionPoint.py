@@ -97,6 +97,11 @@ def get_pp_api_result(url, **kwargs):
         except Exception:
             res_content = {}
         return res_content
+    except requests.exceptions.HTTPError as err:
+        if 400 <= res.status_code < 500:
+            return_error('Invalid token')
+        else:
+            return_error(err)
     except Exception as err:
         return_error(err)
 
