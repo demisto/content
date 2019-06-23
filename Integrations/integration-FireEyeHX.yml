@@ -869,6 +869,47 @@ script:
         }
         demisto.results(entry)
 
+
+
+    def get_hosts_information():
+        """
+
+        return the host information to the war room, given an agentId or hostName from input.
+
+        """
+
+        offset = 0
+        hosts = []
+
+        #get all hosts
+        while True:
+            hosts_partial_results = get_hosts_request(offset=offset, limit=1000)
+            if not hosts_partial_results:
+                break
+            hosts.extend(hosts_partial_results)
+            offset = len(hosts)
+
+
+        hosts_entry  = [host_entry(host) for host in hosts]
+        md_table = tableToMarkdown(
+            'FireEye HX Get Hosts Information',
+            hosts_entry,
+            headers=HOST_MAIN_ATTRIBUTES
+        )
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': hosts,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md_table,
+            'EntryContext': {
+                "FireEyeHX.Hosts(obj._id==val._id)": hosts_entry,
+                "Endpoint(obj.ID==val.ID)": [ collect_endpoint_contxt(host)for host in hosts]
+            }
+        }
+        demisto.results(entry)
+
     def get_host_set_information():
         """
         return host set information to the war room according to given id or filters
@@ -2477,6 +2518,8 @@ script:
             get_host_set_information()
         elif command == 'fireeye-hx-append-conditions':
             append_conditions()
+        elif command == 'fireeye-hx-get-all-hosts-information':
+            get_hosts_information()
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
@@ -3245,6 +3288,55 @@ script:
         addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
     description: 'Add conditions to an indicator. Conditions can be MD5, hash values,
       domain names and IP addresses. '
+    - name: fireeye-hx-get-all-hosts-information
+      arguments: []
+      outputs:
+        - contextPath: FireEyeHX.Hosts._id
+          description: FireEye HX Agent ID.
+        - contextPath: FireEyeHX.Hosts.agent_version
+          description: The agent version.
+        - contextPath: FireEyeHX.Hosts.excluded_from_containment
+          description: Determines whether the host is excluded from containment.
+        - contextPath: FireEyeHX.Hosts.containment_missing_software
+          description: Boolean value to indicate for containment missing software.
+        - contextPath: FireEyeHX.Hosts.containment_queued
+          description: Determines whether the host is queued for containment.
+        - contextPath: FireEyeHX.Hosts.containment_state
+          description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+        - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
+          description: The number of conditions that have alerted for the host.
+        - contextPath: FireEyeHX.Hosts.stats.alerts
+          description: Total number of alerts, including exploit-detection alerts.
+        - contextPath: FireEyeHX.Hosts.stats.exploit_blocks
+          description: The number of blocked exploits on the host.
+        - contextPath: FireEyeHX.Hosts.stats.malware_alerts
+          description: The number of malware alerts associated with the host.
+        - contextPath: FireEyeHX.Hosts.hostname
+          description: The host name.
+        - contextPath: FireEyeHX.Hosts.domain
+          description: Domain name.
+        - contextPath: FireEyeHX.Hosts.timezone
+          description: Host time zone.
+        - contextPath: FireEyeHX.Hosts.primary_ip_address
+          description: The host IP address.
+        - contextPath: FireEyeHX.Hosts.last_poll_timestamp
+          description: The timestamp of the last system poll preformed on the host.
+        - contextPath: FireEyeHX.Hosts.initial_agent_checkin
+          description: Timestamp of the initial agent check-in.
+        - contextPath: FireEyeHX.Hosts.last_alert_timestamp
+          description: The time stamp of the last alert for the host.
+        - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
+          description: Time when the last exploit was blocked on the host. The value is
+            null if no exploits have been blocked.
+        - contextPath: FireEyeHX.Hosts.os.product_name
+          description: Specific operating system
+        - contextPath: FireEyeHX.Hosts.os.bitness
+          description: OS Bitness.
+        - contextPath: FireEyeHX.Hosts.os.platform
+          description: Family of operating systems. Valid values are win, osx, and linux.
+        - contextPath: FireEyeHX.Hosts.primary_mac
+          description: The host MAC address.
+      description: Get information on all hosts
   isfetch: true
   runonce: false
 tests:
