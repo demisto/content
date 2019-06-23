@@ -40,7 +40,6 @@ def connect_pop3_server():
         pop3_server_conn.pass_(PASSWORD)  # type: ignore
 
 
-
 def close_pop3_server_connection():
     global pop3_server_conn
     if pop3_server_conn is not None:
@@ -303,8 +302,6 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
 
     last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
-
-
     current_fetch = last_fetch
 
     incidents = []
@@ -359,6 +356,7 @@ def main():
         raise e
     finally:
         close_pop3_server_connection()
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
