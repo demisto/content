@@ -3409,7 +3409,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         and attachment_file_name.endswith(".eml")):
 
                     # .eml files
-                    file_content = None
+                    file_content = ""  # type: str
                     base64_encoded = "base64" in part.get("Content-Transfer-Encoding", "")
 
                     if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
