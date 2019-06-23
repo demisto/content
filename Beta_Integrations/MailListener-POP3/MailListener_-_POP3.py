@@ -29,18 +29,16 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 def connect_pop3_server():
     global pop3_server_conn
 
-    try:
-        if pop3_server_conn is None:
-            if SSL:
-                pop3_server_conn = poplib.POP3_SSL(SERVER, PORT)  # type: ignore
-            else:
-                pop3_server_conn = poplib.POP3(SERVER, PORT)  # type: ignore
+    if pop3_server_conn is None:
+        if SSL:
+            pop3_server_conn = poplib.POP3_SSL(SERVER, PORT)  # type: ignore
+        else:
+            pop3_server_conn = poplib.POP3(SERVER, PORT)  # type: ignore
 
-            pop3_server_conn.getwelcome()  # type: ignore
-            pop3_server_conn.user(EMAIL)  # type: ignore
-            pop3_server_conn.pass_(PASSWORD)  # type: ignore
-    except Exception as e:
-        raise e
+        pop3_server_conn.getwelcome()  # type: ignore
+        pop3_server_conn.user(EMAIL)  # type: ignore
+        pop3_server_conn.pass_(PASSWORD)  # type: ignore
+
 
 
 def close_pop3_server_connection():
@@ -51,8 +49,7 @@ def close_pop3_server_connection():
 
 
 def get_user_emails():
-    connect_pop3_server()
-    (resp_message, mails_list, octets) = pop3_server_conn.list()  # type: ignore
+    _, mails_list, _ = pop3_server_conn.list()  # type: ignore
 
     mails = []
     index = ''
@@ -66,22 +63,10 @@ def get_user_emails():
             msg['index'] = index
             mails.append(msg)
         except Exception as e:
-            raise Exception("Failed to get email with index " + index + 'from the server.\nError:' + str(e))
+            demisto.error("Failed to get email with index " + index + 'from the server.')
+            raise str(e)
 
     return mails
-
-
-def parse_time(t):
-    # there is only one time refernce is the string
-    base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
-
-    if all([sign, hours, minutes]):
-        seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
-        parsed_time = datetime.strptime(
-            base_time, '%a, %d %b %Y %H:%M:%S') + timedelta(seconds=seconds)
-        return parsed_time.isoformat() + 'Z'
-    else:
-        return datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
 
 def get_attachment_name(headers):
@@ -103,13 +88,6 @@ def get_attachment_name(headers):
     extension = re.match(r'.*[\\/]([\d\w]{2,4}).*', headers.get('content-type', 'txt')).group(1)  # type: ignore
 
     return name + '.' + extension
-
-
-def parse_unicode(text):
-    arr = list(set(re.findall('((=[0-9a-fA-F]{2}){2})', text)))
-    for item in arr:
-        text = text.replace(item[0], item[0].replace('=', '').decode('hex'))
-    return text
 
 
 def parse_base64(text):
@@ -223,13 +201,12 @@ def parse_mail_parts(parts):
                            for v in context_headers]
         headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
 
-        type = headers.get('content-type', 'text/plain')
+        content_type = headers.get('content-type', 'text/plain')
 
-        is_attachment = True if headers.get('content-disposition', '').startswith('attachment')\
-            or headers.get('x-attachment-id') or "image" in type\
-            else False
+        is_attachment = headers.get('content-disposition', '').startswith('attachment')\
+            or headers.get('x-attachment-id') or "image" in content_type
 
-        if 'multipart' in type or isinstance(part._payload, list):
+        if 'multipart' in content_type or isinstance(part._payload, list):
             part_body, part_html, part_attachments = parse_mail_parts(part._payload)
             body += part_body
             html += part_html
@@ -246,7 +223,7 @@ def parse_mail_parts(parts):
             if not isinstance(text, unicode):
                 text = text.decode('unicode-escape')
 
-            if 'text/html' in type:
+            if 'text/html' in content_type:
                 html += text
             else:
                 body += text
@@ -259,6 +236,11 @@ def parse_mail_parts(parts):
             })
 
     return body, html, attachments
+
+
+def parse_time(t):
+    base_time, _, _, _, _ = TIME_REGEX.findall(t)[0]
+    return datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
 
 def create_incident_labels(parsed_msg, headers):
@@ -319,10 +301,9 @@ def fetch_incidents():
     # handle first time fetch
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
-        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
-    else:
-        last_fetch = datetime.strptime(
-            last_fetch, DATE_FORMAT)
+
+    last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+
 
     current_fetch = last_fetch
 
@@ -335,8 +316,7 @@ def fetch_incidents():
         except Exception as e:
             demisto.error("failed to create incident from email, index = {}, subject = {}, date = {}".format(
                 msg['index'], msg['subject'], msg['date']))
-            LOG(str(e))
-            LOG.print_log()
+            raise str(e)
 
         temp_date = datetime.strptime(
             incident['occurred'], DATE_FORMAT)
@@ -350,15 +330,12 @@ def fetch_incidents():
             incidents.append(incident)
 
     demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
-    close_pop3_server_connection()
 
     return demisto.incidents(incidents)
 
 
 def test_module():
-    connect_pop3_server()
     resp_message, _, _ = pop3_server_conn.list()  # type: ignore
-    close_pop3_server_connection()
     if "OK" in resp_message:
         demisto.results('ok')
 
@@ -369,15 +346,19 @@ def test_module():
 def main():
     try:
         handle_proxy()
+        connect_pop3_server()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
         if demisto.command() == 'fetch-incidents':
             fetch_incidents()
             sys.exit(0)
-    except Exception:
-        raise
-
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise e
+    finally:
+        close_pop3_server_connection()
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
