@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cloaken",
+            "playbookID": "Cloaken-Test"
+        },
+        {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
         },
@@ -530,6 +534,12 @@
             "playbookID": "Intezer Testing",
             "nightly": true,
             "timeout": 500
+        },
+        {
+            "integrations": "Intezer v2",
+            "playbookID": "Intezer Testing v2",
+            "fromversion": "4.1.0",
+            "timeout": 700
         },
         {
             "integrations": "FalconIntel",
@@ -1520,6 +1530,11 @@
             "playbookID": "Ipstack_Test"
         },
         {
+
+            "integrations": "Perch",
+            "playbookID": "Perch-Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
         },
@@ -1548,7 +1563,15 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "AutoFocus V2",
+            "playbookID": "AutoFocus V2 test"
+        },
+        {
             "playbookID": "Process Email - Generic for Rasterize"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
         },
         {
             "integrations": "BluecatAddressManager",
