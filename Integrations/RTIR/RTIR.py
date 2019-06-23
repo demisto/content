@@ -93,12 +93,12 @@ def login():
         'user': USERNAME,
         'pass': PASSWORD
     }
-    response = SESSION.post(SERVER, data=data)
+    SESSION.post(SERVER, data=data)
 
 
 def logout():
     suffix_url = 'logout'
-    response = http_request('POST', suffix_url)
+    http_request('POST', suffix_url)
 
 
 def parse_ticket_data(raw_query):
@@ -159,7 +159,6 @@ def create_ticket_attachments_request(encoded, files_data):
 
 
 def create_ticket():
-    ticket_context = []
     queue = demisto.args().get('queue')
     data = 'id: ticket/new\nQueue: {}\n'.format(queue)
 
@@ -250,7 +249,7 @@ def create_ticket():
     hr = 'Ticket {} was created successfully.'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': raw_ticket_res,
+        'Contents': raw_ticket_res.json(),
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
@@ -419,11 +418,6 @@ def edit_ticket():
     arguments_given = False
     ticket_id = demisto.args().get('ticket-id')
     content = 'ID: ' + ticket_id
-    ticket_context = []
-    ticket = {
-        'ID': int(ticket_id)
-    }
-
     kwargs = {}
     subject = demisto.args().get('subject')
     if subject:
@@ -580,7 +574,6 @@ def get_ticket_history(ticket_id):
     headers = ['ID', 'Created', 'Creator', 'Description']
     data = raw_history.text.split('\n')
     data = data[4:]
-    raw_ticket_history = []
     for line in data:
         split_line = line.split(': ')
         current_raw_ticket_history = get_ticket_history_by_id(ticket_id, split_line[0]).content
@@ -696,7 +689,7 @@ def add_comment_attachment(ticket_id, encoded, files_data):
     suffix_url = 'ticket/{}/comment'.format(ticket_id)
     comment = http_request('POST', suffix_url, files=files_data)
 
-    return comment
+    return comment.json()
 
 
 def add_comment():
@@ -722,7 +715,7 @@ def add_comment():
     if attachments:
         files_data.update({'content': (None, content)})
         comment = add_comment_attachment(ticket_id, encoded, files_data)
-        demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
+        return_outputs('Added comment to ticket {} successfully.'.format(ticket_id), {}, comment)
     else:
         added_comment = add_comment_request(ticket_id, encoded)
         if '200' in added_comment.content:
