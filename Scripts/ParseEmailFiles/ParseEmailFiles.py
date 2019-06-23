@@ -3410,12 +3410,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                     # .eml files
                     file_content = None
-                    encoded = "application/octet-stream" in part.get("Content-Type", "")
+                    base64_encoded = "base64" in part.get("Content-Transfer-Encoding", "")
 
-                    if encoded:
-                        file_content = part.get_payload(decode=True)
-
-                    elif isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
+                    if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
                         if attachment_file_name is None or attachment_file_name == "":
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
@@ -3423,7 +3420,13 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
                             attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
-                        file_content = part.get_payload()[0].as_string()
+                        if base64_encoded:
+                            file_content = b64decode(part.get_payload()[0].as_string())
+                        else:
+                            file_content = part.get_payload()[0].as_string()
+
+                    elif isinstance(part.get_payload(), basestring) and base64_encoded:
+                        file_content = part.get_payload(decode=True)
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
 
