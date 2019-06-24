@@ -1770,7 +1770,7 @@ def get_indicators():
     sort_map = {
         'category': 'category',
         'activeSince': 'active_since',
-        'createdBy': 'created_by',  
+        'createdBy': 'created_by',
         'alerted': 'stats.alerted_agents'
     }
 
