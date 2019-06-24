@@ -28,6 +28,7 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
+            "instance_names": "ms_graph_mail_dev",
             "playbookID": "MicrosoftGraphMail-Test"
         },
         {
@@ -867,6 +868,7 @@
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_dev",
             "playbookID": "Test - Windows Defender Advanced Threat Protection"
         },
         {
@@ -882,10 +884,12 @@
         },
         {
             "integrations": "Microsoft Graph",
+            "instance_names": "ms_graph_security_dev",
             "playbookID": "Microsoft Graph Test"
         },
         {
             "integrations": "Microsoft Graph User",
+            "instance_names": "ms_graph_user_dev",
             "playbookID": "Microsoft Graph - Test"
         },
         {
@@ -1755,6 +1759,9 @@
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
         "AlphaSOC Wisdom": "Test module issue",
-        "Microsoft Graph": "Test"
+        "Microsoft Graph": "Test direct access to oproxy",
+        "MicrosoftGraphMail": "Test direct access to oproxy",
+        "Microsoft Graph User": "Test direct access to oproxy",
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }
