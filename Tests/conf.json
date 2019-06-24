@@ -1585,6 +1585,10 @@
         {
             "integrations": "BluecatAddressManager",
             "playbookID": "Bluecat Address Manager test"
+        },
+        {
+            "integrations": "MailListener - POP3",
+            "playbookID": "MailListener-POP3 - Test"
         }
     ],
     "skipped_tests": {
