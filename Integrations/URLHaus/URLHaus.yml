@@ -1,62 +1,41 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: URLhaus
   version: -1
-name: URLhaus
-display: URLhaus
-category: Data Enrichment & Threat Intelligence
-description: URLhaus has the goal of sharing malicious URLs that are being used for
-  malware distribution.
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: https://urlhaus-api.abuse.ch/v1/ # disable-secrets-detection
+  display: Server URL (e.g. https://192.168.0.1)
   name: url
-  defaultvalue: ' https://urlhaus-api.abuse.ch/v1/url/' # disable-secrets-detection
-  type: 0
   required: false
+  type: 0
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy
   name: proxy
-  defaultvalue: ""
+  required: false
   type: 8
+- name: threshold
   required: false
-- display: ""
-  name: threshold
-  defaultvalue: ""
   type: 0
-  required: false
+description: URLhaus has the goal of sharing malicious URLs that are being used for
+  malware distribution.
+display: URLhaus
+name: URLhaus
 script:
-  script: |-
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        demisto.results('ok')
-        sys.exit(0)
-    if demisto.command() == 'fetch-incidents':
-        # You can store the last run time...
-        demisto.setLastRun({'time': 'now'})
-        # And retrieve it for use later:
-        lastRun = demisto.getLastRun()
-        # lastRun is a dictionary, with value "now" for key "time".
-        # JSON of the incident type created by this integration
-        demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
-        sys.exit(0)
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
-
-    if demisto.command() == 'long-running-execution':
-      # Should have here an endless loop
-    `
-  type: python
   commands:
-  - name: url
-    arguments:
-    - name: url
-      required: true
+  - arguments:
+    - default: false
       description: URL to query
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve URL information from URLhaus
+    execution: false
+    name: url
     outputs:
     - contextPath: URL.Data
       description: The URL
@@ -84,6 +63,7 @@ script:
       type: string
     - contextPath: URLhaus.URL.Blacklist
       description: Blacklist status of the queried URL.
+      type: Unknown
     - contextPath: URLhaus.URL.Tags
       description: A list of tags associated with the queried malware URL.
       type: string
@@ -111,42 +91,62 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
       type: string
-    description: Retrieve URL information from URLhaus
-  - name: ip
-    arguments:
-    - name: ip
-      required: true
+  - arguments:
+    - default: false
       description: IP address to query
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve host information from URLhaus
+    execution: false
+    name: ip
     outputs:
     - contextPath: IP.Address
       description: IP address
       type: string
-    description: Retrieve host information from URLhaus
-  - name: domain
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: false
       description: domain to query
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve domain information from URLhaus
+    execution: false
+    name: domain
     outputs:
     - contextPath: Domain.Name
       description: The domain name e.g. google.com
       type: string
-    description: Retrieve domain information from URLhaus
-  - name: file
-    arguments:
-    - name: file
-      required: true
+  - arguments:
+    - default: false
       description: MD5 or SHA256 of the file to query
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve file information from URLhaus
+    execution: false
+    name: file
     outputs:
     - contextPath: File.Name
       description: Full Filename e.g. data.xls
       type: string
-    description: Retrieve file information from URLhaus
-  - name: urlhaus-download-sample
-    arguments:
-    - name: file
-      required: true
+  - arguments:
+    - default: false
       description: The sha256 of the file to download
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Download a malware sample from URLhaus
+    execution: false
+    name: urlhaus-download-sample
     outputs:
     - contextPath: File.Size
       description: File size
@@ -178,7 +178,8 @@ script:
     - contextPath: ' File.Extension'
       description: File extension
       type: string
-    description: Download a malware sample from URLhaus
   dockerimage: demisto/python3:3.7.3.286
+  isfetch: false
   runonce: false
-  subtype: python3
+  script: '-'
+  type: python
