@@ -96,3 +96,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - ParseEmailFiles-test
+releaseNotes: fixed issue 17131
