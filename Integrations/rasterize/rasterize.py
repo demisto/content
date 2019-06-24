@@ -20,6 +20,12 @@ RETURN_CODE = 0
 ERROR_MESSAGE = ''
 
 ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', True) else 11  # 11 := entryTypes['warning']
+LOG('\n############################\n')
+LOG('\nENTRY TYPE: {}\n'.format(ENTRY_TYPE))
+LOG('\n############################\n')
+LOG('\n############################\n')
+LOG('\nPARAMS: {}\n'.format(demisto.params()))
+LOG('\n############################\n')
 
 
 def rasterize_email_request(html, friendly_name):
