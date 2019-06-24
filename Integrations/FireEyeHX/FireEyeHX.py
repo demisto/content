@@ -22,12 +22,15 @@ HANDLE PROXY
 
 """
 
+
 def set_proxies():
+
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+
 
 """
 
@@ -83,7 +86,7 @@ HOST_SET_MAIN_ATTRIBUTES = [
     'ID',
     'Type'
 ]
-#scripts for data acquisitions
+# scripts for data acquisitions
 STANDART_INVESTIGATIVE_DETAILS_OSX = {
     "commands": [
         {
@@ -730,40 +733,46 @@ COMMAND HANDLERS
 
 """
 
+
 def get_token_request():
+
     """
     returns a token on successful request
     """
 
     url = '{}/token'.format(BASE_PATH)
 
-    #basic authentication
+    # basic authentication
     try:
         response = requests.request(
             'GET',
             url,
             headers=GET_HEADERS,
             verify=USE_SSL,
-            auth=(USERNAME,PASSWORD)
+            auth=(USERNAME, PASSWORD)
         )
     except requests.exceptions.SSLError as e:
-        LOG(e.message)
-        raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in the integration settings')
+        LOG(e)
+        raise ValueError('An SSL error occurred when trying to connect to the server.\
+        Consider configuring unsecure connection in the integration settings')
 
-    #handle request failure
-    if response.status_code not in range(200,205):
+    # handle request failure
+    if response.status_code not in range(200, 205):
         message = parse_error_response(response)
         raise ValueError('Token request failed with status code {}\n{}'.format(response.status_code, message))
-    #successful request
+    # successful request
     response_headers = response.headers
     token = response_headers.get('X-FeApi-Token')
     return token
 
+
 def get_token():
+
     token = get_token_request()
     if token:
         return token
-    raise ('Failed to get a token, unexpected response structure from the server')
+    raise Exception('Failed to get a token, unexpected response structure from the server')
+
 
 """
 
@@ -771,7 +780,9 @@ HOST INFORMATION
 
 """
 
+
 def get_host_by_agent_request(agent_id):
+
     """
     returns the response body
 
@@ -782,20 +793,22 @@ def get_host_by_agent_request(agent_id):
     """
     url = '{}/hosts/{}'.format(BASE_PATH, agent_id)
 
-
     response = http_request(
         'GET',
         url,
-        headers = GET_HEADERS
+        headers=GET_HEADERS
     )
 
-    #successful request
+    # successful request
     try:
         return response.json()['data']
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to get host information - unexpected response structure from the server.')
 
+
 def get_host_information():
+
     """
 
     return the host information to the war room, given an agentId or hostName from input.
@@ -806,7 +819,11 @@ def get_host_information():
     if not args.get('agentId') and not args.get('hostName'):
         raise ValueError('Please provide either agentId or hostName')
 
-    host = get_host_by_agent_request(args.get('agentId')) if args.get('agentId') else get_host_by_name_request(args.get('hostName'))
+    host = {}  # type: Dict[str, str]
+    if args.get('agentId'):
+        host = get_host_by_agent_request(args.get('agentId'))
+    else:
+        host = get_host_by_name_request(args.get('hostName'))
 
     md_table = tableToMarkdown(
         'FireEye HX Get Host Information',
@@ -828,8 +845,8 @@ def get_host_information():
     demisto.results(entry)
 
 
-
 def get_hosts_information():
+
     """
 
     return the host information to the war room, given an agentId or hostName from input.
@@ -837,9 +854,9 @@ def get_hosts_information():
     """
 
     offset = 0
-    hosts = []
+    hosts = []  # type: List[Dict[str, str]]
 
-    #get all hosts
+    # get all hosts
     while True:
         hosts_partial_results = get_hosts_request(offset=offset, limit=1000)
         if not hosts_partial_results:
@@ -847,8 +864,7 @@ def get_hosts_information():
         hosts.extend(hosts_partial_results)
         offset = len(hosts)
 
-
-    hosts_entry  = [host_entry(host) for host in hosts]
+    hosts_entry = [host_entry(host) for host in hosts]
     md_table = tableToMarkdown(
         'FireEye HX Get Hosts Information',
         hosts_entry,
@@ -863,12 +879,14 @@ def get_hosts_information():
         'HumanReadable': md_table,
         'EntryContext': {
             "FireEyeHX.Hosts(obj._id==val._id)": hosts_entry,
-            "Endpoint(obj.ID==val.ID)": [ collect_endpoint_contxt(host)for host in hosts]
+            "Endpoint(obj.ID==val.ID)": [collect_endpoint_contxt(host)for host in hosts]
         }
     }
     demisto.results(entry)
 
+
 def get_host_set_information():
+
     """
     return host set information to the war room according to given id or filters
 
@@ -887,38 +905,46 @@ def get_host_set_information():
     response = http_request(
         'GET',
         url,
-        headers = GET_HEADERS,
+        headers=GET_HEADERS,
         url_params=url_params
     )
-    host_sets = []
+    host_set = []  # type: List[Dict[str, str]]
     try:
-        host_sets = response.json()['data']
+        if args.get('hostSetID'):
+            data = response.json()['data']
+            host_set = [data]
+        else:
+            data = response.json()['data']
+            host_set = data.get('entries', [])
     except Exception as e:
-        raise ValueError('Failed to get host set information - unexpected response from the server.\n'+response.text)
+        LOG(e)
+        raise ValueError('Failed to get host set information - unexpected response from the server.\n' + response.text)
 
     md_table = "No host sets found"
-    host_sets_list = [host_sets] if args.get('hostSetID') else host_sets.get('entries', [])
-    if len(host_sets_list) > 0:
+    if len(host_set) > 0:
         md_table = tableToMarkdown(
             'FireEye HX Get Host Sets Information',
-            host_set_entry(host_sets_list),
+            host_set_entry(host_set),
             headers=HOST_SET_MAIN_ATTRIBUTES
         )
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': host_sets,
+        'Contents': host_set,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md_table,
         'EntryContext': {
-            "FireEyeHX.HostSets(obj._id==val._id)": host_sets_list
+            "FireEyeHX.HostSets(obj._id==val._id)": host_set
         }
     }
     demisto.results(entry)
 
-def get_hosts_request(limit=None, offset=None, has_active_threats=None, has_alerts=None, agent_version=None, containment_queued=None, containment_state=None,
-    host_name=None, os_platform=None, reported_clone=None, time_zone=None):
+
+def get_hosts_request(limit=None, offset=None, has_active_threats=None, has_alerts=None,
+                      agent_version=None, containment_queued=None, containment_state=None,
+                      host_name=None, os_platform=None, reported_clone=None, time_zone=None):
+
     """
     returns the response body
 
@@ -941,36 +967,41 @@ def get_hosts_request(limit=None, offset=None, has_active_threats=None, has_aler
         'reported_clone': reported_clone,
         'time_zone': time_zone
     }
-    #remove None values
-    url_params = { k:v for k,v in url_params.items() if v is not None}
+    # remove None values
+    url_params = {k: v for k, v in url_params.items() if v is not None}
 
     response = http_request(
         'GET',
         url,
-        url_params = url_params,
-        headers = GET_HEADERS
+        url_params=url_params,
+        headers=GET_HEADERS
     )
-    #successful request
+    # successful request
     try:
         return response.json()['data']['entries']
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to parse response body - unexpected response structure from the server.')
 
+
 def get_host_by_name_request(host_name):
+
     try:
         return get_hosts_request(host_name=host_name, limit=1)[0]
     except Exception as e:
         LOG(e)
         raise ValueError('Host {} not found.'.format(host_name))
 
+
 def get_all_agents_ids():
+
     """
     returns a list of all agents ids
     """
     offset = 0
-    hosts = []
+    hosts = []  # type: List[Dict[str, str]]
 
-    #get all hosts
+    # get all hosts
     while True:
         hosts_partial_results = get_hosts_request(offset=offset, limit=1000)
         if not hosts_partial_results:
@@ -979,7 +1010,9 @@ def get_all_agents_ids():
         offset = len(hosts)
     return [host.get('_id') for host in hosts]
 
+
 def get_agent_id(host_name):
+
     """
     returns the agent id given the host name
 
@@ -992,9 +1025,12 @@ def get_agent_id(host_name):
     try:
         return host['_id']
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to get agent id for host {}'.format(host_name))
 
+
 def collect_endpoint_contxt(host):
+
     return {
         'Hostname': host['hostname'],
         'ID': host['_id'],
@@ -1005,12 +1041,16 @@ def collect_endpoint_contxt(host):
         'OSVersion': host['os']['product_name']
     }
 
+
 """
 
 HOST CONTAINMENT
 
 """
+
+
 def containment_request(agent_id):
+
     """
 
     no return value on successful request
@@ -1021,15 +1061,17 @@ def containment_request(agent_id):
         'state': 'contain'
     }
 
-    response = http_request(
+    http_request(
         'POST',
         url,
-        body = body,
-        headers = POST_HEADERS
+        body=body,
+        headers=POST_HEADERS
     )
-    #no exception raised - successful request
+    # no exception raised - successful request
+
 
 def containment():
+
     """
 
     returns a success message to the war room
@@ -1038,16 +1080,16 @@ def containment():
 
     args = demisto.args()
 
-    #validate one of the arguments was passed
+    # validate one of the arguments was passed
     if not args:
         raise ValueError('Please provide either agentId or hostName')
 
-    #in case a hostName was given, set the agentId accordingly
+    # in case a hostName was given, set the agentId accordingly
     if args.get('hostName'):
         args['agentId'] = get_agent_id(args['hostName'])
 
     containment_request(args['agentId'])
-    #no exceptions raised->successful request
+    # no exceptions raised->successful request
 
     host = get_host_by_agent_request(args['agentId'])
     entry = {
@@ -1061,7 +1103,9 @@ def containment():
     }
     demisto.results(entry)
 
+
 def containment_cancellation_request(agent_id):
+
     """
 
     no return value on successful request
@@ -1069,14 +1113,16 @@ def containment_cancellation_request(agent_id):
     """
     url = '{}/hosts/{}/containment'.format(BASE_PATH, agent_id)
 
-    response = http_request(
+    http_request(
         'DELETE',
         url,
-        headers = GET_HEADERS
+        headers=GET_HEADERS
     )
-    #no exceptions are raised - successful request
+    # no exceptions are raised - successful request
+
 
 def containment_cancellation():
+
     """
 
     returns a success message to the war room
@@ -1085,16 +1131,16 @@ def containment_cancellation():
 
     args = demisto.args()
 
-    #validate one of the arguments was passed
+    # validate one of the arguments was passed
     if not args:
         raise ValueError('Please provide either agentId or hostName')
 
-    #in case a hostName was given, set the agentId accordingly
+    # in case a hostName was given, set the agentId accordingly
     if args.get('hostName'):
         args['agentId'] = get_agent_id(args['hostName'])
 
     containment_cancellation_request(args['agentId'])
-    #no exceptions raised->successful request
+    # no exceptions raised->successful request
 
     host = get_host_by_agent_request(args['agentId'])
     entry = {
@@ -1108,11 +1154,13 @@ def containment_cancellation():
     }
     demisto.results(entry)
 
+
 """
 
 ALERTS
 
 """
+
 
 def get_alert_request(alert_id):
 
@@ -1125,20 +1173,21 @@ def get_alert_request(alert_id):
     )
     return response.json().get('data')
 
+
 def get_alert():
 
     alert_id = demisto.args().get('alertId')
     alert = get_alert_request(alert_id)
 
     alert_table = tableToMarkdown(
-        'FireEye HX Get Alert #{}'.format(alert_id),
+        'FireEye HX Get Alert # {}'.format(alert_id),
         alert_entry(alert),
         headers=ALERT_MAIN_ATTRIBUTES
     )
 
     event_type = alert.get('event_type')
     event_type = 'NewEvent' if not event_type else event_type
-    event_type = re.sub("([a-z])([A-Z])","\g<1> \g<2>", event_type).title()
+    event_type = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title()
     event_table = tableToMarkdown(
         event_type,
         alert.get('event_values')
@@ -1157,8 +1206,10 @@ def get_alert():
     demisto.results(entry)
 
 
-def get_alerts_request(has_share_mode=None, resolution=None, agent_id=None, host_name=None, condition_id=None, limit=None,
-    offset=None, sort=None, min_id=None, event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
+def get_alerts_request(has_share_mode=None, resolution=None, agent_id=None, host_name=None,
+                       condition_id=None, limit=None, offset=None, sort=None, min_id=None,
+                       event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
+
     """
 
     returns the response body on successful request
@@ -1182,9 +1233,8 @@ def get_alerts_request(has_share_mode=None, resolution=None, agent_id=None, host
         'sort': sort
     }
 
-    #remove None values
-    body = {k:v for k,v in body.items() if v is not None}
-
+    # remove None values
+    body = {k: v for k, v in body.items() if v is not None}
 
     response = http_request(
         'GET',
@@ -1195,62 +1245,71 @@ def get_alerts_request(has_share_mode=None, resolution=None, agent_id=None, host
     try:
         return response.json()['data']['entries']
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to parse response body')
 
+
 def get_all_alerts(has_share_mode=None, resolution=None, agent_id=None, condition_id=None, limit=None,
-    sort=None, min_id=None, event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
+                   sort=None, min_id=None, event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
+
     """
 
     returns a list of alerts, all results up to limit
 
     """
     offset = 0
-    alerts = []
+    alerts = []  # type: List[Dict[str, str]]
 
     max_records = limit or float('inf')
 
     while len(alerts) < max_records:
         alerts_partial_results = get_alerts_request(
-            has_share_mode = has_share_mode,
-            resolution = resolution,
-            agent_id = agent_id,
-            condition_id = condition_id,
-            event_at = event_at,
-            alert_id = alert_id,
-            matched_at = matched_at,
-            reported_at = reported_at,
-            source = source,
-            min_id = min_id,
-            offset = offset,
-            limit = limit or 100,
-            sort = sort
+            has_share_mode=has_share_mode,
+            resolution=resolution,
+            agent_id=agent_id,
+            condition_id=condition_id,
+            event_at=event_at,
+            alert_id=alert_id,
+            matched_at=matched_at,
+            reported_at=reported_at,
+            source=source,
+            min_id=min_id,
+            offset=offset,
+            limit=limit or 100,
+            sort=sort
         )
-        #empty list
+        # empty list
         if not alerts_partial_results:
             break
         alerts.extend(alerts_partial_results)
         offset = len(alerts)
 
-    #remove access results
+    # remove access results
     if len(alerts) > max_records:
-        alerts[max_records-1 : -1] = []
+        alerts[int(max_records) - 1: -1] = []
 
     return alerts
+
 
 def general_context_from_event(alert):
 
     def file_context(values):
+
         return {
             'Name': values.get('fileWriteEvent/fileName'),
             'MD5': values.get('fileWriteEvent/md5'),
             'Extension': values.get('fileWriteEvent/fileExtension'),
             'Path': values.get('fileWriteEvent/fullPath')
         }
+
     def ip_context(values):
+
         return {
-            'Address' : values.get('ipv4NetworkEvent/remoteIP')
+            'Address': values.get('ipv4NetworkEvent/remoteIP')
         }
+
     def registry_key_context(values):
+
         return {
             'Path': values.get('regKeyEvent/path'),
             'Name': values.get('regKeyEvent/valueName'),
@@ -1262,13 +1321,15 @@ def general_context_from_event(alert):
         'regKeyEvent': registry_key_context
     }
 
-    if context_map.get(alert['event_type']):
-        return context_map.get(alert['event_type'])(alert['event_values'])
+    if context_map.get(alert['event_type']) is not None:
+        f = context_map[alert['event_type']]
+        return f(alert['event_values'])
     return None
+
 
 def collect_context(alerts):
 
-    #collect_context
+    # collect_context
     files = []
     ips = []
     registry_keys = []
@@ -1286,6 +1347,7 @@ def collect_context(alerts):
 
 
 def get_alerts():
+
     """
 
     returns a list of alerts to the war room
@@ -1294,9 +1356,9 @@ def get_alerts():
 
     args = demisto.args()
     source = []
-    #add source type
+    # add source type
     if args.get('MALsource'):
-        source.append ('mal')
+        source.append('mal')
     if args.get('EXDsource'):
         source.append('exd')
     if args.get('IOCsource'):
@@ -1313,7 +1375,7 @@ def get_alerts():
     }
 
     if args.get('sort'):
-        args['sort'] = '{}+{}'.format(sort_map.get(args['sort']),args.get('sortOrder', 'ascending'))
+        args['sort'] = '{}+{}'.format(sort_map.get(args['sort']), args.get('sortOrder', 'ascending'))
 
     if args.get('hostName'):
         args['agentId'] = get_agent_id(args.get('hostName'))
@@ -1322,21 +1384,21 @@ def get_alerts():
         args['limit'] = int(args['limit'])
 
     alerts = get_all_alerts(
-        has_share_mode = args.get("hasShareMode"),
-        resolution = args.get('resolution'),
-        agent_id = args.get('agentId'),
-        condition_id = args.get('conditionId'),
-        event_at = args.get('eventAt'),
-        alert_id = args.get('alertId'),
-        matched_at = args.get('matchedAt'),
-        reported_at = args.get('reportedAt'),
-        source = source,
-        min_id = args.get('min_id'),
-        limit = args.get('limit'),
-        sort = args.get('sort')
+        has_share_mode=args.get("hasShareMode"),
+        resolution=args.get('resolution'),
+        agent_id=args.get('agentId'),
+        condition_id=args.get('conditionId'),
+        event_at=args.get('eventAt'),
+        alert_id=args.get('alertId'),
+        matched_at=args.get('matchedAt'),
+        reported_at=args.get('reportedAt'),
+        source=source,
+        min_id=args.get('min_id'),
+        limit=args.get('limit'),
+        sort=args.get('sort')
     )
 
-    #parse each alert to a record displayed in the human readable table
+    # parse each alert to a record displayed in the human readable table
     alerts_entries = [alert_entry(alert) for alert in alerts]
 
     files, ips, registry_keys = collect_context(alerts)
@@ -1362,7 +1424,9 @@ def get_alerts():
     }
     demisto.results(entry)
 
+
 def suppress_alert_request(alert_id):
+
     """
 
     no return value on successful request
@@ -1371,12 +1435,14 @@ def suppress_alert_request(alert_id):
 
     url = '{}/alerts/{}'.format(BASE_PATH, alert_id)
 
-    response = http_request(
+    http_request(
         'DELETE',
         url
     )
 
+
 def suppress_alert():
+
     """
 
     returns a success message to the war room
@@ -1386,7 +1452,7 @@ def suppress_alert():
     alert_id = demisto.args().get('alertId')
 
     suppress_alert_request(alert_id)
-    #no exceptions raised->successful request
+    # no exceptions raised->successful request
 
     entry = {
         'Type': entryTypes['note'],
@@ -1395,12 +1461,16 @@ def suppress_alert():
     }
     demisto.results(entry)
 
+
 """
 
 INDICATORS
 
 """
+
+
 def new_indicator_request(category):
+
     """
     Create a new indicator
     """
@@ -1409,15 +1479,17 @@ def new_indicator_request(category):
     response = http_request(
         'POST',
         url,
-        headers = GET_HEADERS
+        headers=GET_HEADERS
     )
     try:
         return response.json().get('data')
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to parse response body, unexpected response structure from the server.')
 
 
 def create_indicator():
+
     """
     Get new indicator details
     returns a success message to the war room
@@ -1427,7 +1499,7 @@ def create_indicator():
 
     response = new_indicator_request(category)
 
-    md_table =  {
+    md_table = {
         'ID': response.get('_id'),
     }
     entry = {
@@ -1442,7 +1514,9 @@ def create_indicator():
     }
     demisto.results(entry)
 
+
 def append_conditions_request(name, category, body):
+
     """
     Append conditions to indicator request
     """
@@ -1452,13 +1526,15 @@ def append_conditions_request(name, category, body):
     response = http_request(
         'PATCH',
         url,
-        conditions_params = body,
-        headers = PATCH_HEADERS
+        conditions_params=body,
+        headers=PATCH_HEADERS
     )
 
     return response.json()
 
+
 def append_conditions():
+
     """
     Append conditions to indicator
     no return value on successfull request
@@ -1471,7 +1547,7 @@ def append_conditions():
 
     response = append_conditions_request(name, category, body)
 
-    md_table =  {
+    md_table = {
         'Name': name,
         'Category': category,
         'Conditions': body
@@ -1486,7 +1562,9 @@ def append_conditions():
     }
     demisto.results(entry)
 
+
 def get_indicator_request(category, name):
+
     """
 
     returns a json object representing an indicator
@@ -1502,7 +1580,9 @@ def get_indicator_request(category, name):
     )
     return response.json().get('data')
 
+
 def get_indicator_conditions_request(category, name, limit=None, offset=None, enabled=None, has_alerts=None):
+
     """
 
     returns a list of json objects, each representing an indicator condition
@@ -1516,8 +1596,8 @@ def get_indicator_conditions_request(category, name, limit=None, offset=None, en
         'enabled': enabled,
         'has_alerts': has_alerts
     }
-    #remove None values
-    url_params = { k:v for k,v in url_params.items() if v is not None}
+    # remove None values
+    url_params = {k: v for k, v in url_params.items() if v is not None}
 
     response = http_request(
         'GET',
@@ -1528,14 +1608,16 @@ def get_indicator_conditions_request(category, name, limit=None, offset=None, en
     try:
         return response.json()['data']['entries']
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to parse response body')
+
 
 def get_all_enabled_conditions(indicator_category, indicator_name):
 
     offset = 0
-    conditions =[]
+    conditions = []   # type: List[Dict[str, str]]
 
-    #get all results
+    # get all results
     while True:
         conditions_partial_results = get_indicator_conditions_request(
             indicator_category,
@@ -1549,7 +1631,9 @@ def get_all_enabled_conditions(indicator_category, indicator_name):
         offset = len(conditions)
     return conditions
 
+
 def get_indicator_conditions():
+
     """
 
     returns a list of enabled conditions assosiated with a specific indicator to the war room
@@ -1582,6 +1666,7 @@ def get_indicator_conditions():
     }
     demisto.results(entry)
 
+
 def get_indicator():
 
     args = demisto.args()
@@ -1609,7 +1694,9 @@ def get_indicator():
     }
     demisto.results(entry)
 
-def get_indicators_request(category=None, search=None, limit=None, offset=None, share_mode=None, sort=None, created_by=None, alerted=None):
+
+def get_indicators_request(category=None, search=None, limit=None, offset=None,
+                           share_mode=None, sort=None, created_by=None, alerted=None):
 
     url = '{}/indicators'.format(BASE_PATH)
     if category:
@@ -1625,8 +1712,8 @@ def get_indicators_request(category=None, search=None, limit=None, offset=None, 
         'stats.alerted_agents': alerted
     }
 
-    #remove None value
-    url_params = { k:v for k,v in url_params.items() if v}
+    # remove None value
+    url_params = {k: v for k, v in url_params.items() if v}
 
     response = http_request(
         'GET',
@@ -1637,20 +1724,22 @@ def get_indicators_request(category=None, search=None, limit=None, offset=None, 
     try:
         response_body = response.json()
         data = response_body['data']
-        #no results found
+        # no results found
         if data['total'] == 0:
             return None
         return data['entries']
     except Exception as e:
+        LOG(e)
         raise ValueError('Failed to parse response body')
+
 
 def get_all_indicators(category=None, search=None, share_mode=None, sort=None, created_by=None, alerted=None, limit=None):
 
     max_records = limit or float('inf')
-    offset=0
-    indicators = []
+    offset = 0
+    indicators = []   # type: List[Dict[str, str]]
 
-    #get all results
+    # get all results
     while len(indicators) < max_records:
         indicators_partial_results = get_indicators_request(
             category=category,
@@ -1667,11 +1756,12 @@ def get_all_indicators(category=None, search=None, share_mode=None, sort=None, c
         indicators.extend(indicators_partial_results)
         offset = len(indicators)
 
-    #remove access results
+    # remove access results
     if len(indicators) > max_records:
-        indicators[max_records-1 : -1] = []
+        indicators[int(max_records) - 1: -1] = []
 
     return indicators
+
 
 def get_indicators():
 
@@ -1691,7 +1781,7 @@ def get_indicators():
     if args.get('sort'):
         args['sort'] = sort_map.get(args.get('sort'))
 
-    #get all results
+    # get all results
     indicators = get_all_indicators(
         category=args.get('category'),
         search=args.get('searchTerm'),
@@ -1722,17 +1812,19 @@ def get_indicators():
     }
     demisto.results(entry)
 
+
 """
 
 SEARCH
 
 """
 
+
 def search_request(query, host_set=None, hosts=None, exhaustive=False):
 
     url = '{}/searches'.format(BASE_PATH)
 
-    body = { 'query': query }
+    body = {'query': query}
 
     if host_set:
         body['host_set'] = {'_id': int(host_set)}
@@ -1752,11 +1844,13 @@ def search_request(query, host_set=None, hosts=None, exhaustive=False):
     except Exception as e:
         raise e
     if response.status_code == 409:
-        LOG(e.message)
-        raise ValueError('Request unsuccessful because the search limits (10 existing searches or 5 running searches) have been exceeded')
+        raise ValueError('Request unsuccessful because the search limits \
+        (10 existing searches or 5 running searches) have been exceeded')
     return response.json().get('data')
 
+
 def get_search_information_request(search_id):
+
     """
 
     returns the search information represented by a json object.
@@ -1772,7 +1866,9 @@ def get_search_information_request(search_id):
     )
     return response.json().get('data')
 
+
 def get_search_results_request(search_id):
+
     """
 
     returns the search results represented by a json object.
@@ -1788,14 +1884,16 @@ def get_search_results_request(search_id):
     )
     return response.json().get('data', {}).get('entries', [])
 
+
 def stop_search_request(search_id):
+
     """
 
     returns the search information represented by a json object.
 
     """
 
-    url = '{}/searches/{}/actions/stop'.format(BASE_PATH,search_id)
+    url = '{}/searches/{}/actions/stop'.format(BASE_PATH, search_id)
 
     response = http_request(
         'POST',
@@ -1804,20 +1902,24 @@ def stop_search_request(search_id):
     )
     return response.json()
 
+
 def delete_search_request(search_id):
+
     """
 
     no return value on successful request
 
     """
 
-    url = '{}/searches/{}'.format(BASE_PATH,search_id)
-    response = http_request(
+    url = '{}/searches/{}'.format(BASE_PATH, search_id)
+    http_request(
         'DELETE',
         url
     )
 
+
 def search_results_to_context(results, search_id):
+
     for res in results:
         res["SearchID"] = search_id
         res["HostID"] = res.get("host", {}).get("_id")
@@ -1830,6 +1932,8 @@ def search_results_to_context(results, search_id):
             resData.update(resData.get("data", {}))
             del resData['data']
     return results
+
+
 def start_search():
 
     args = demisto.args()
@@ -1837,12 +1941,12 @@ def start_search():
     '''
     to search all hosts past none of the arguments?
 
-    #validate at list one of the arguments 'agentsIds', 'hostsNames', 'hostSet' was passed
-    if not any([args.get('agentsIds'),args.get('hostsNames'),args.get('hostSet'), args.get('searchAllHosts')]):
+    # validate at list one of the arguments 'agentsIds', 'hostsNames', 'hostSet' was passed
+    if not any([args.get('agentsIds'), args.get('hostsNames'), args.get('hostSet'), args.get('searchAllHosts')]):
         raise ValueError('Please provide one of the followings: agentsIds, hostsNames, hostSet')
     '''
 
-    agents_ids = []
+    agents_ids = []  # type: List[Dict[str, str]]
     if args.get('agentsIds'):
         agents_ids = args['agentsIds'].split(',')
     elif args.get('hostsNames'):
@@ -1852,12 +1956,12 @@ def start_search():
                 agent_id = get_agent_id(name)
                 agents_ids.append(agent_id)
             except Exception as e:
-                LOG(e.message)
+                LOG(e)
                 pass
         if not agents_ids:
             raise ValueError('None of the host names were matched with an agent')
 
-    #limit can't exceed 1000.
+    # limit can't exceed 1000.
     limit = args.get('limit')
     if not limit or limit > 1000:
         limit = 1000
@@ -1884,17 +1988,21 @@ def start_search():
         query,
         hosts=agents_ids,
         host_set=args.get('hostSet'),
-        exhaustive=args.get('exhaustive')=='yes'
+        exhaustive=args.get('exhaustive') == 'yes'
     )
 
     search_id = search.get('_id')
 
-    #loop to get search status once a minute. break on: search has stopped, matched results exceeded limit, or no more pending hosts.
+    '''
+    loop to get search status once a minute. break on: search has stopped, matched
+    results exceeded limit, or no more pending hosts.
+    '''
+
     while True:
         search_info = get_search_information_request(search_id)
-        matched = search_info.get('stats', {}).get('search_state', {}).get('MATCHED',0)
-        pending = search_info.get('stats', {}).get('search_state', {}).get('PENDING',0)
-        if search_info.get('state')=='STOPPED' or matched >= limit or pending == 0 :
+        matched = search_info.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
+        pending = search_info.get('stats', {}).get('search_state', {}).get('PENDING', 0)
+        if search_info.get('state') == 'STOPPED' or matched >= limit or pending == 0:
             break
         time.sleep(60)
 
@@ -1913,21 +2021,21 @@ def start_search():
     }
     demisto.results(entry)
 
-    #finally stop or delete the search
+    # finally stop or delete the search
     possible_error_message = None
     try:
         if args.get('stopSearch') == 'stop':
             possible_error_message = 'Failed to stop search'
             stop_search_request(search_id)
-        #no need to stop a search before deleting it.
+        # no need to stop a search before deleting it.
         if args.get('stopSearch') == 'stopAndDelete':
             possible_error_message = 'Failed to delete search'
             delete_search_request(search_id)
         possible_error_message = None
     except Exception as e:
-        LOG('{}\n{}'.format(possible_error_message, e.message))
+        LOG('{}\n{}'.format(possible_error_message, e))
         pass
-    #add warning entry if neccessery
+    # add warning entry if neccessery
     if possible_error_message:
         warning_entry = {
             'Type': entryTypes['note'],
@@ -1935,6 +2043,7 @@ def start_search():
             'ContentsFormat': formats['text'],
         }
         demisto.results(warning_entry)
+
 
 """
 
@@ -1955,8 +2064,8 @@ def file_acquisition_request(agent_id, file_name, file_path, comment=None, exter
         'req_use_api': req_use_api
     }
 
-    #remove None values
-    body = {k:v for k,v in body.items() if v is not None}
+    # remove None values
+    body = {k: v for k, v in body.items() if v is not None}
 
     response = http_request(
         'POST',
@@ -1966,6 +2075,7 @@ def file_acquisition_request(agent_id, file_name, file_path, comment=None, exter
     )
 
     return response.json().get('data')
+
 
 def file_acquisition_package_request(acquisition_id):
 
@@ -1977,6 +2087,7 @@ def file_acquisition_package_request(acquisition_id):
     )
 
     return response.content
+
 
 def file_acquisition_information_request(acquisition_id):
 
@@ -1990,7 +2101,9 @@ def file_acquisition_information_request(acquisition_id):
 
     return response.json().get('data')
 
+
 def delete_file_acquisition_request(acquisition_id):
+
     """
 
     no return value on successful request
@@ -1999,12 +2112,14 @@ def delete_file_acquisition_request(acquisition_id):
 
     url = '{}/acqs/files/{}'.format(BASE_PATH, acquisition_id)
 
-    response = http_request(
+    http_request(
         'DELETE',
         url
     )
 
+
 def delete_file_acquisition():
+
     """
 
     returns a success message to the war room
@@ -2012,7 +2127,7 @@ def delete_file_acquisition():
     """
     acquisition_id = demisto.args().get('acquisitionId')
     delete_file_acquisition_request(acquisition_id)
-    #successful request
+    # successful request
 
     return {
         'Type': entryTypes['note'],
@@ -2068,6 +2183,7 @@ def file_acquisition():
     demisto.results(entry)
     demisto.results(fileResult('{}.zip'.format(os.path.splitext(args.get('fileName'))[0]), acquired_file))
 
+
 def data_acquisition_request(agent_id, script_name, script):
 
     url = '{}/hosts/{}/live'.format(BASE_PATH, agent_id)
@@ -2085,6 +2201,7 @@ def data_acquisition_request(agent_id, script_name, script):
 
     return response.json()['data']
 
+
 def data_acquisition_information_request(acquisition_id):
 
     url = '{}/acqs/live/{}'.format(BASE_PATH, acquisition_id)
@@ -2100,7 +2217,7 @@ def data_acquisition_information_request(acquisition_id):
 
 def data_collection_request(acquisition_id):
 
-    url ='{}/acqs/live/{}.mans'.format(BASE_PATH, acquisition_id)
+    url = '{}/acqs/live/{}.mans'.format(BASE_PATH, acquisition_id)
 
     response = http_request(
         'GET',
@@ -2108,6 +2225,7 @@ def data_collection_request(acquisition_id):
     )
 
     return response.content
+
 
 def data_acquisition():
     """
@@ -2118,7 +2236,7 @@ def data_acquisition():
 
     args = demisto.args()
 
-    #validate the host name or agent ID was passed
+    # validate the host name or agent ID was passed
     if not args.get('hostName') and not args.get('agentId'):
         raise ValueError('Please provide either agentId or hostName')
 
@@ -2131,12 +2249,11 @@ def data_acquisition():
     if args.get('hostName'):
         args['agentId'] = get_agent_id(args['hostName'])
 
-    #determine whether to use the default script
+    # determine whether to use the default script
     sys = args.get('defaultSystemScript')
     if sys:
         args['script'] = json.dumps(SYS_SCRIPT_MAP[sys])
         args['scriptName'] = '{}DefaultScript'.format(sys)
-
 
     acquisition_info = data_acquisition_request(
         args['agentId'],
@@ -2147,8 +2264,8 @@ def data_acquisition():
     acquisition_id = acquisition_info.get('_id')
 
     LOG('Acquisition request was successful. Waiting for acquisition process to be complete.')
-    #loop to inquire acquisition state every 30 seconds
-    #break when state is complete
+    # loop to inquire acquisition state every 30 seconds
+    # break when state is complete
     while True:
         acquisition_info = data_acquisition_information_request(acquisition_id)
         if acquisition_info.get('state') == 'COMPLETE':
@@ -2160,7 +2277,7 @@ def data_acquisition():
     if acquisition_info.get('error_message'):
         message = acquisition_info.get('error_message')
 
-    #output file and acquisition information to the war room
+    # output file and acquisition information to the war room
     data = data_collection_request(acquisition_id)
     entry = {
         'Type': entryTypes['note'],
@@ -2173,7 +2290,9 @@ def data_acquisition():
     demisto.results(entry)
     demisto.results(fileResult('agent_{}_data.mans'.format(args['agentId']), data))
 
+
 def delete_data_acquisition_request(acquisition_id):
+
     """
 
     no return value on successful request
@@ -2182,12 +2301,14 @@ def delete_data_acquisition_request(acquisition_id):
 
     url = '{}/acqs/live/{}'.format(BASE_PATH, acquisition_id)
 
-    response = http_request(
+    http_request(
         'DELETE',
         url
     )
 
+
 def delete_data_acquisition():
+
     """
 
     returns a success message to the war room
@@ -2195,13 +2316,15 @@ def delete_data_acquisition():
     """
     acquisition_id = demisto.args().get('acquisitionId')
     delete_data_acquisition_request(acquisition_id)
-    #successful request
+    # successful request
 
     return {
         'Type': entryTypes['note'],
         'Contents': 'data acquisition {} deleted successfuly'.format(acquisition_id),
         'ContentsFormat': formats['text'],
     }
+
+
 """
 
 FETCH INCIDENTS
@@ -2212,22 +2335,22 @@ FETCH INCIDENTS
 def fetch_incidents():
 
     lastRun = demisto.getLastRun()
-    alerts = []
+    alerts = []  # type: List[Dict[str, str]]
     if lastRun and lastRun.get('min_id'):
-        #get all alerts with id greater than min_id
+        # get all alerts with id greater than min_id
         alerts = get_all_alerts(
             min_id=lastRun.get('min_id'),
             sort='_id+ascending'
         )
-        #results are sorted in ascending order - the last alert holds the greatest id
+        # results are sorted in ascending order - the last alert holds the greatest id
         min_id = alerts[-1].get('_id') if alerts else None
     else:
-        #get the last 100 alerts
+        # get the last 100 alerts
         alerts = get_all_alerts(
             sort='_id+descending',
             limit=100
         )
-        #results are sorted in descending order - the first alert holds the greatest id
+        # results are sorted in descending order - the first alert holds the greatest id
         min_id = alerts[0].get('_id') if alerts else None
 
     incidents = [parse_alert_to_incident(alert) for alert in alerts]
@@ -2250,8 +2373,8 @@ def parse_alert_to_incident(alert):
     event_indicator = event_indicators_map.get(event_type)
 
     incident_name = '{event_type_parsed}: {indicator}'.format(
-        event_type_parsed=re.sub("([a-z])([A-Z])","\g<1> \g<2>", event_type).title(),
-        indicator= event_values.get(event_indicator)
+        event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
+        indicator=event_values.get(event_indicator)
     )
 
     incident = {
@@ -2260,31 +2383,35 @@ def parse_alert_to_incident(alert):
     }
     return incident
 
+
 """
 
 ENTRY ENTITIES
 
 """
+
+
 def indicator_entry(indicator):
 
     indicator_entry = {
-        'OS' : ', '.join(indicator.get('platforms',[])),
+        'OS': ', '.join(indicator.get('platforms', [])),
         'Name': indicator.get('name'),
         'Created By': indicator.get('created_by'),
         'Active Since': indicator.get('active_since'),
         'Category': indicator.get('category', {}).get('name'),
         'Signature': indicator.get('signature'),
-        'Active Condition': indicator.get('stats',{}).get('active_conditions'),
-        'Hosts With Alerts': indicator.get('stats',{}).get('alerted_agents'),
-        'Source Alerts': indicator.get('stats',{}).get('source_alerts')
+        'Active Condition': indicator.get('stats', {}).get('active_conditions'),
+        'Hosts With Alerts': indicator.get('stats', {}).get('alerted_agents'),
+        'Source Alerts': indicator.get('stats', {}).get('source_alerts')
     }
     return indicator_entry
+
 
 def host_entry(host):
 
     host_entry = {
         'Host Name': host.get('hostname'),
-        'Last Poll':  host.get('last_poll_timestamp'),
+        'Last Poll': host.get('last_poll_timestamp'),
         'Agent ID': host.get('_id'),
         'Agent Version': host.get('agent_version'),
         'Host IP': host.get('primary_ip_address'),
@@ -2295,6 +2422,7 @@ def host_entry(host):
     }
     return host_entry
 
+
 def host_set_entry(host_sets):
     host_set_entries = [{
         'Name': host_set.get('name'),
@@ -2302,6 +2430,7 @@ def host_set_entry(host_sets):
         'Type': host_set.get('type')
     } for host_set in host_sets]
     return host_set_entries
+
 
 def alert_entry(alert):
 
@@ -2313,6 +2442,7 @@ def alert_entry(alert):
     }
     return alert_entry
 
+
 def condition_entry(condition):
 
     indicator_entry = {
@@ -2323,16 +2453,17 @@ def condition_entry(condition):
     }
     return indicator_entry
 
+
 def host_results_md_entry(host_entry):
 
     results = host_entry.get('results', [])
-    host_info = host_entry.get('host',{})
+    host_info = host_entry.get('host', {})
     entries = []
     for result in results:
-        data = result.get('data',{})
+        data = result.get('data', {})
         entry = {
             'Item Type': result.get('type'),
-            'Summary': ' '.join(['**{}** {}'.format(k,v) for k,v in data.items()])
+            'Summary': ' '.join(['**{}** {}'.format(k, v) for k, v in data.items()])
         }
         entries.append(entry)
 
@@ -2343,11 +2474,13 @@ def host_results_md_entry(host_entry):
     )
     return md_table
 
+
 """
 
 ADDITIONAL FUNCTIONS
 
 """
+
 
 def http_request(method, url, body=None, headers={}, url_params=None, conditions_params=None):
     """
@@ -2356,7 +2489,7 @@ def http_request(method, url, body=None, headers={}, url_params=None, conditions
 
     """
 
-    #add token to headers
+    # add token to headers
     headers['X-FeApi-Token'] = TOKEN
 
     request_kwargs = {
@@ -2364,39 +2497,41 @@ def http_request(method, url, body=None, headers={}, url_params=None, conditions
         'verify': USE_SSL
     }
 
-    #add optional arguments if specified
+    # add optional arguments if specified
     if body:
-        #request_kwargs['data'] = ' '.join(format(x, 'b') for x in bytearray(json.dumps(body)))
+        # request_kwargs['data'] = ' '.join(format(x, 'b') for x in bytearray(json.dumps(body)))
         request_kwargs['data'] = json.dumps(body)
     if url_params:
         request_kwargs['params'] = url_params
     if conditions_params:
         request_kwargs['data'] = conditions_params
 
-
     LOG('attempting {} request sent to {} with arguments:\n{}'.format(method, url, json.dumps(request_kwargs, indent=4)))
     try:
         response = requests.request(
-        method,
-        url,
-        **request_kwargs
-    )
+            method,
+            url,
+            **request_kwargs
+        )
     except requests.exceptions.SSLError as e:
-        LOG(e.message)
-        raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in the integration settings.')
+        LOG(e)
+        raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in \
+        the integration settings.')
 
-    #handle request failure
-    if response.status_code not in range(200,205):
+    # handle request failure
+    if response.status_code not in range(200, 205):
         message = parse_error_response(response)
         raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, message))
 
     return response
 
+
 def logout():
+
     url = '{}/token'.format(BASE_PATH)
 
     try:
-        response = http_request(
+        http_request(
             'DELETE',
             url
         )
@@ -2405,23 +2540,30 @@ def logout():
         raise e
     LOG('logout successfuly')
 
+
 def parse_error_response(response):
+
     try:
         res = response.json()
         msg = res.get('message')
         if res.get('details') is not None and res.get('details')[0].get('message') is not None:
-            msg = msg + "\n"+json.dumps(res.get('details')[0])
+            msg = msg + "\n" + json.dumps(res.get('details')[0])
     except Exception as e:
+        LOG(e)
         return response.text
     return msg
 
+
 def return_error_entry(message):
+
     error_entry = {
         'Type': entryTypes['error'],
         'Contents': message,
         'ContentsFormat': formats['text']
     }
+
     demisto.results(error_entry)
+
 
 """
 
@@ -2429,17 +2571,18 @@ EXECUTION
 
 """
 
+
 set_proxies()
 
 command = demisto.command()
 LOG('Running command "{}"'.format(command))
 
-#ask for a token using user credentials
+# ask for a token using user credentials
 TOKEN = get_token()
 
 try:
     if command == 'test-module':
-        #token generated - credentials are valid
+        # token generated - credentials are valid
         demisto.results('ok')
     elif command == 'fetch-incidents':
         fetch_incidents()
@@ -2469,7 +2612,7 @@ try:
     elif command == 'fireeye-hx-data-acquisition':
         data_acquisition()
     elif command == 'fireeye-hx-delete-data-acquisition':
-        delete_data_acquisition_request()
+        delete_data_acquisition()
     elif command == 'fireeye-hx-search':
         start_search()
     elif command == 'fireeye-hx-get-host-set-information':
@@ -2479,8 +2622,8 @@ try:
     elif command == 'fireeye-hx-get-all-hosts-information':
         get_hosts_information()
 except ValueError as e:
-    LOG(e.message)
+    LOG(e)
     LOG.print_log()
-    return_error(e.message)
+    return_error(e)
 finally:
     logout()
