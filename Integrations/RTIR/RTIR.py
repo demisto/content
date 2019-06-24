@@ -250,7 +250,7 @@ def create_ticket():
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': raw_ticket_res.content,
-        'ContentsFormat': formats['json'],
+        'ContentsFormat': formats['text'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
         'EntryContext': ec
