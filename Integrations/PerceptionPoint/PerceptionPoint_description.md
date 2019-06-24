@@ -1,5 +1,5 @@
 ## Get your PerceptionPoint API token
-To get an API token, contact PerceptionPoint support.
+To get an API token, contact PerceptionPoint support. 
 
 ## API token use cases
 To set the number of results to return, specify the parameter "No. of API loops". Each loop returns a maximum of 20 items.
