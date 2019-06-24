@@ -111,7 +111,34 @@ script:
     outputs:
     - contextPath: IP.Address
       description: IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: Vendor reporting the malicious status
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: Description of the malicious url
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
       type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: URLhaus.IP.FirstSeen
+      description: When the IP was seen for the first time (UTC)
+      type: Date
+    - contextPath: URLhaus.IP.Blacklists
+      description: The status of the IP in different blacklists
+      type: Unknown
+    - contextPath: URLhaus.IP.URLs
+      description: URLs observed on this IP
+      type: unknown
   - arguments:
     - default: false
       description: domain to query
@@ -127,6 +154,33 @@ script:
     - contextPath: Domain.Name
       description: The domain name e.g. google.com
       type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: URLhaus.Domain.FirstSeen
+      description: When the IP was seen for the first time (UTC)
+      type: Date
+    - contextPath: URLhaus.Domain.Blacklists
+      description: The status of the domain in different blacklists
+      type: Unknown
+    - contextPath: URLhaus.Domain.URLs
+      description: URLs observed on this domain
+      type: unknown
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor reporting the malicious status
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain
+      type: String
   - arguments:
     - default: false
       description: MD5 or SHA256 of the file to query
