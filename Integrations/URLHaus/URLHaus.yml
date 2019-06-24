@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 0
 - display: Compromised is malicious
-  name: compropmised_is_malicious
+  name: compromised_is_malicious
   required: false
   type: 8
 description: URLhaus has the goal of sharing malicious URLs that are being used for
