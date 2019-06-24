@@ -718,4 +718,4 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: "packagify"
+releaseNotes: "Fixed logout process.\nAdded event information to fetched alarms."

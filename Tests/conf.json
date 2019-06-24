@@ -3,8 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cloaken",
+            "playbookID": "Cloaken-Test"
+        },
+        {
+            "integrations": "ThreatX",
+            "playbookID": "ThreatX-test"
+        },
+        {
             "integrations": "AlienVault OTX",
             "playbookID": "AlienVaultOTX Test"
+        },
+        {
+            "integrations": "Cofense Triage",
+            "playbookID": "Cofense Triage Test"
         },
         {
             "integrations": "Minerva Labs Anti-Evasion Platform",
@@ -68,6 +80,9 @@
         {
             "playbookID": "DocumentationTest",
             "integrations": "ipinfo"
+        },
+        {
+            "playbookID": "playbook-checkEmailAuthenticity-test"
         },
         {
             "playbookID": "HighlightWords_Test"
@@ -521,6 +536,12 @@
             "timeout": 500
         },
         {
+            "integrations": "Intezer v2",
+            "playbookID": "Intezer Testing v2",
+            "fromversion": "4.1.0",
+            "timeout": 700
+        },
+        {
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
@@ -843,6 +864,10 @@
         {
             "integrations": "Cisco Meraki",
             "playbookID": "Cisco-Meraki-Test"
+        },
+        {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection"
         },
         {
             "integrations": "Tanium",
@@ -1509,6 +1534,11 @@
             "playbookID": "Ipstack_Test"
         },
         {
+
+            "integrations": "Perch",
+            "playbookID": "Perch-Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
         },
@@ -1537,7 +1567,28 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "AutoFocus V2",
+            "playbookID": "AutoFocus V2 test"
+        },
+        {
             "playbookID": "Process Email - Generic for Rasterize"
+        },
+        {
+            "playbookID": "Send Investigation Summary Reports - Test",
+            "integrations": "EWS Mail Sender",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": "BluecatAddressManager",
+            "playbookID": "Bluecat Address Manager test"
+        },
+        {
+            "integrations": "MailListener - POP3",
+            "playbookID": "MailListener-POP3 - Test"
         }
     ],
     "skipped_tests": {
@@ -1554,7 +1605,7 @@
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "Microsoft Graph Test": "Test needs to be fixed and updated",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
@@ -1580,7 +1631,9 @@
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
-        "Detonate File - FireEye AX - Test": "No instance"
+        "Detonate File - FireEye AX - Test": "No instance",
+        "Cofense Triage Test": "Creds only works on demo4",
+        "Test - Windows Defender Advanced Threat Protection": "Test needs to be fixed and updated"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1630,7 +1683,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "MicrosoftGraphMail": "Inactive integration",
+        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
