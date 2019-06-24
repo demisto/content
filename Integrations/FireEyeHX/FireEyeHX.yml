@@ -42,7 +42,7 @@ configuration:
     type: 13
     required: false
 script:
-  script: ""
+  script: '-'
   type: python
   commands:
     - name: fireeye-hx-host-containment
