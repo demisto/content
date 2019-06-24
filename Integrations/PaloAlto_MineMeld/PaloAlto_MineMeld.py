@@ -204,7 +204,7 @@ def remove_indicator_from_miner(MineMeldClient, miner, indicators):
         for indicator in indicators:
             indicator_from_list = updated_miner_list.pop(indicator, None)
             if not indicator_from_list:
-                return_error('Did not find indicator on miner {}'.format(indicator, miner))
+                return_error('Did not find indicator {} on miner {}'.format(indicator, miner))
 
     MineMeldClient.upload(miner, '[{}]'.format(','.join(updated_miner_list.values())))
 
