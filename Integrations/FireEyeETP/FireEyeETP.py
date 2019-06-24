@@ -32,7 +32,7 @@ MESSAGE_STATUS = demisto.params().get('message_status')
 
 
 '''
-SAERCH ATTRIBUTES VALID VALUES
+SEARCH ATTRIBUTES VALID VALUES
 '''
 
 REJECTION_REASONS = ['ETP102', 'ETP103', 'ETP104', 'ETP200', 'ETP201', 'ETP203', 'ETP204', 'ETP205',
@@ -646,6 +646,6 @@ try:
     if demisto.command() == 'fireeye-etp-get-alert':
         get_alert_command()
 except ValueError as e:
-    LOG(e.message)
+    LOG(e)
     LOG.print_log()
-    return_error_entry(e.message)
+    return_error_entry(e)
