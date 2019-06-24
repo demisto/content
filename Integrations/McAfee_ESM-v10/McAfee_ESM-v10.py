@@ -168,7 +168,7 @@ class NitroESM(object):
         if not no_validation:
             if no_answer:
                 if result.status_code != 200:
-                    raise RuntimeError(
+                    raise ValueError(
                         'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(result.status_code,
                                                                                              result.text))
             else:
@@ -179,7 +179,7 @@ class NitroESM(object):
                     return res
                 except Exception as e:  # noqa: E722
                     LOG(str(e))
-                    raise RuntimeError(
+                    raise ValueError(
                         'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(result.status_code,
                                                                                              result.text))
 
