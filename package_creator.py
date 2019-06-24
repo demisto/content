@@ -11,6 +11,7 @@ import re
 
 DIR_TO_PREFIX = {
     'Integrations': 'integration',
+    'Beta_Integrations': 'integration',
     'Scripts': 'script'
 }
 
