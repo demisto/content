@@ -26,6 +26,7 @@ LOG('\n############################\n')
 LOG('\n############################\n')
 LOG('\nPARAMS: {}\n'.format(demisto.params()))
 LOG('\n############################\n')
+LOG.print_log()
 
 
 def rasterize_email_request(html, friendly_name):
