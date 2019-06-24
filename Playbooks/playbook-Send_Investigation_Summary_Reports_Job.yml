@@ -1,0 +1,143 @@
+id: Send Investigation Summary Reports Job
+version: -1
+name: Send Investigation Summary Reports Job
+description: 'You should run this playbook as a scheduled job, whicn should run at an interval
+  of once every 15 minutes. This playbook functions by calling the sub-playbook: "Send Investigation
+  Summary Reports", and closes the incident. By default, the playbook will search all incidents closed
+  within the last hour. If you want to run the playbook more frequently,
+  you should adjust the search query of the child playbook: "Send Investigation Summary".
+  Reports.'
+starttaskid: "0"
+fromversion: "4.1.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3e73293a-7cab-422a-85ea-490384fe3c88
+    type: start
+    task:
+      id: 3e73293a-7cab-422a-85ea-490384fe3c88
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ee47ccea-fdc2-4982-8b8e-77cc37a36129
+    type: regular
+    task:
+      id: ee47ccea-fdc2-4982-8b8e-77cc37a36129
+      version: -1
+      name: Clear Context
+      description: Deletes a field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 7a0c8546-6aad-4d2a-80fc-7da070c87824
+    type: regular
+    task:
+      id: 7a0c8546-6aad-4d2a-80fc-7da070c87824
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: cf10b50c-b332-4c19-8961-c5ba96381228
+    type: playbook
+    task:
+      id: cf10b50c-b332-4c19-8961-c5ba96381228
+      version: -1
+      name: Send Investigation Summary Reports
+      playbookName: Send Investigation Summary Reports
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 655,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No Tests - Wrapper playbook for job only
