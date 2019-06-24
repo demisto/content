@@ -1605,7 +1605,6 @@
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
-        "Microsoft Graph Test": "Test needs to be fixed and updated",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
@@ -1755,6 +1754,7 @@
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
-        "AlphaSOC Wisdom": "Test module issue"
+        "AlphaSOC Wisdom": "Test module issue",
+        "Microsoft Graph": "Test"
     }
 }
