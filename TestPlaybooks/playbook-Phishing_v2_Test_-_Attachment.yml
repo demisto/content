@@ -215,7 +215,7 @@ tasks:
       comment:
         simple: Malicious website for test
       indicator:
-        simple: https://moviepropit.com/eas/chase/home/
+        simple: http://tpb.crushus.com/www.paperstreetcash.com
       miner:
         simple: Malicious
     reputationcalc: 1
