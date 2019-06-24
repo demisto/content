@@ -1,0 +1,226 @@
+id: Cloaken-Test
+version: -1
+name: Cloaken-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f4b91054-a03a-4d96-8a2f-55b416a8e4df
+    type: start
+    task:
+      id: f4b91054-a03a-4d96-8a2f-55b416a8e4df
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 130b93f2-ac76-4727-8747-922cd92b8918
+    type: regular
+    task:
+      id: 130b93f2-ac76-4727-8747-922cd92b8918
+      version: -1
+      name: cloaken
+      description: unshorten a url
+      script: '|||cloaken-unshorten-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: https://bit.ly/1Gtg3vp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9cb6a5c5-bcad-48ee-81ad-956a09e22da9
+    type: regular
+    task:
+      id: 9cb6a5c5-bcad-48ee-81ad-956a09e22da9
+      version: -1
+      name: Verify Original Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: https://bit.ly/1Gtg3vp
+      fields: {}
+      path:
+        simple: Cloaken.OriginalURL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d1ef050a-40c1-4b48-8d20-8a76999f6464
+    type: regular
+    task:
+      id: d1ef050a-40c1-4b48-8d20-8a76999f6464
+      version: -1
+      name: Verify URL Data
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: https://www.paloaltonetworks.com/
+      fields: {}
+      path:
+        simple: URL.Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 08492adc-fbe2-4edf-82d5-cb83b366eadc
+    type: regular
+    task:
+      id: 08492adc-fbe2-4edf-82d5-cb83b366eadc
+      version: -1
+      name: Verify unshortened
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: https://www.paloaltonetworks.com/
+      fields: {}
+      path:
+        simple: Cloaken.UnshortenedURL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 14374e25-c797-4ff6-8247-6eac99388468
+    type: regular
+    task:
+      id: 14374e25-c797-4ff6-8247-6eac99388468
+      version: -1
+      name: malformed cloaken
+      description: unshorten a url
+      script: '|||cloaken-unshorten-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: htt://test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 1a6ab2be-980a-4cae-855b-99bd4d9135d8
+    type: regular
+    task:
+      id: 1a6ab2be-980a-4cae-855b-99bd4d9135d8
+      version: -1
+      name: unavailable cloaken
+      description: unshorten a url
+      script: '|||cloaken-unshorten-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        simple: htt://tesfsadfasgjoixzcocivzxlcvzxcvzxccvzxcxvasdgqerhrjh.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
