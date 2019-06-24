@@ -1,86 +1,184 @@
-category: Authentication
 commonfields:
-  id: URLHaus
+  id: URLhaus
   version: -1
+name: URLhaus
+display: URLhaus
+category: Data Enrichment & Threat Intelligence
+description: URLhaus has the goal of sharing malicious URLs that are being used for
+  malware distribution.
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: https://example.net # disable-secrets-detection
-  display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://192.168.0.1)
   name: url
-  required: true
+  defaultvalue: ' https://urlhaus-api.abuse.ch/v1/url/' # disable-secrets-detection
   type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
-  name: insecure
   required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy
   name: proxy
-  required: false
+  defaultvalue: ""
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
   required: false
+- display: ""
+  name: threshold
+  defaultvalue: ""
   type: 0
-description: Integration Template
-display: URLHaus
-name: URLHaus
+  required: false
 script:
-  commands:
-  - arguments:
-    - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
-      isArray: false
-      name: is_active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Get items from service.
-    execution: false
-    name: example-get-items
-    outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
-  isfetch: false
-  runonce: false
-  script: '-'
+  script: |-
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'fetch-incidents':
+        # You can store the last run time...
+        demisto.setLastRun({'time': 'now'})
+        # And retrieve it for use later:
+        lastRun = demisto.getLastRun()
+        # lastRun is a dictionary, with value "now" for key "time".
+        # JSON of the incident type created by this integration
+        demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
+        sys.exit(0)
+    # You can use demisto.args()[argName] to get a specific arg. args are strings.
+    # You can use demisto.params()[paramName] to get a specific params.
+    # Params are of the type given in the integration page creation.
+
+    if demisto.command() == 'long-running-execution':
+      # Should have here an endless loop
+    `
   type: python
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL to query
+    outputs:
+    - contextPath: URL.Data
+      description: The URL
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor reporting the malicious status
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious url
+      type: string
+    - contextPath: URLhaus.URL.ID
+      description: Unique idendifier of the URLhaus database entry
+      type: string
+    - contextPath: URLhaus.URL.Status
+      description: The current status of the URL.
+      type: string
+    - contextPath: URLhaus.URL.Host
+      description: The extracted host of the malware URL (IP address or domain name/FQDN)
+      type: string
+    - contextPath: URLhaus.URL.DateAdded
+      description: Date the URL was added to URLHaus
+      type: date
+    - contextPath: URLhaus.URL.Threat
+      description: The threat corresponding to this malware URL.
+      type: string
+    - contextPath: URLhaus.URL.Blacklist
+      description: Blacklist status of the queried URL.
+    - contextPath: URLhaus.URL.Tags
+      description: A list of tags associated with the queried malware URL.
+      type: string
+    - contextPath: URLhaus.URL.PayloadName
+      description: Payload file name
+      type: string
+    - contextPath: URLhaus.URL.PayloadType
+      description: Payload file type
+      type: string
+    - contextPath: URLhaus.URL.PayloadMD5
+      description: MD5 hash of the HTTP response body (payload)
+      type: string
+    - contextPath: URLhaus.URL.PayloadVT
+      description: Results from Virustotal about the payload
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    description: Retrieve URL information from URLhaus
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address to query
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    description: Retrieve host information from URLhaus
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: domain to query
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name e.g. google.com
+      type: string
+    description: Retrieve domain information from URLhaus
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: MD5 or SHA256 of the file to query
+    outputs:
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls
+      type: string
+    description: Retrieve file information from URLhaus
+  - name: urlhaus-download-sample
+    arguments:
+    - name: file
+      required: true
+      description: The sha256 of the file to download
+    outputs:
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.SHA1
+      description: File sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File sha256
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: File SSDeep
+      type: string
+    - contextPath: File.EntryID
+      description: 'File entry ID '
+      type: string
+    - contextPath: File.Info
+      description: File information
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.MD5
+      description: File md5
+      type: string
+    - contextPath: ' File.Extension'
+      description: File extension
+      type: string
+    description: Download a malware sample from URLhaus
+  dockerimage: demisto/python3:3.7.3.286
+  runonce: false
+  subtype: python3
