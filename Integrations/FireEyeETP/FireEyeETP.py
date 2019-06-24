@@ -14,8 +14,7 @@ import re
 import copy
 import json
 # disable insecure warnings
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 
 '''
