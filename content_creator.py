@@ -9,7 +9,7 @@ import zipfile
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
-                'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
+                'Classifiers', 'Layouts', 'IncidentFields', 'Connections', 'Beta_Integrations']
 
 TEST_DIR = 'TestPlaybooks'
 
