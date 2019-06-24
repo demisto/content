@@ -15,6 +15,7 @@ import sys
 import glob
 import logging
 import argparse
+import subprocess
 
 from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
@@ -363,6 +364,7 @@ def main():
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
+    parser.add_argument('-t', '--test-filter', type=str2bool, default=False, help='Check that tests are valid.')
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
@@ -373,7 +375,11 @@ def main():
     files_validator = FilesValidator(is_circle)
     if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check):
         sys.exit(1)
-
+    if options.test_filter:
+        try:
+            subprocess.check_call(["./Tests/scripts/configure_tests.py", "-s", "true"])
+        except Exception:
+            sys.exit(1)
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
     sys.exit(0)
 
