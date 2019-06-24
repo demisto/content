@@ -16,9 +16,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- name: threshold
+- defaultvalue: '1'
+  display: Blacklists appearances threshold
+  name: threshold
   required: false
   type: 0
+- display: Compromised is malicious
+  name: compropmised_is_malicious
+  required: false
+  type: 8
 description: URLhaus has the goal of sharing malicious URLs that are being used for
   malware distribution.
 display: URLhaus
