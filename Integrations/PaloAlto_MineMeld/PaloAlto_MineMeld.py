@@ -1,18 +1,15 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import logging
-import argparse
 import urllib2
 import json
 import base64
 import ssl
 import os.path
 import os
-import sys
 import time
 import re
-from urlparse import urljoin
+from urlparse import urljoin  # type: ignore
 
 # globals and constants
 IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
@@ -20,20 +17,22 @@ IPV6_CLASS = 'minemeld.ft.local.YamlIPv6FT'
 URL_CLASS = 'minemeld.ft.local.YamlURLFT'
 DOMAIN_CLASS = 'minemeld.ft.local.YamlDomainFT'
 LOCALDB_CLASS = 'minemeld.ft.localdb.Miner'
-SUPPORTED_MINER_CLASSES = [IPV4_CLASS,IPV6_CLASS,URL_CLASS,DOMAIN_CLASS,LOCALDB_CLASS]
+SUPPORTED_MINER_CLASSES = [IPV4_CLASS, IPV6_CLASS, URL_CLASS, DOMAIN_CLASS, LOCALDB_CLASS]
 SERVER_URL = demisto.params()['url']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_PROXY = demisto.params()['proxy']
-WHITELISTS = []
-BLACKLISTS = []
+WHITELISTS = []  # type: ignore
+BLACKLISTS = []  # type: ignore
 WHITELISTS = argToList(demisto.params().get('whitelist'))
 BLACKLISTS = argToList(demisto.params().get('blacklist'))
 
 if not USE_PROXY:
     os.environ['NO_PROXY'] = SERVER_URL
 if not isinstance(WHITELISTS, (list)) or not isinstance(BLACKLISTS, (list)):
-    return_error('Either blacklist or whitelist params were misconfigured - expecting comma seperated list, ex: miner_a,miner_b,miner_c')
+    return_error(
+        'Either blacklist or whitelist params were misconfigured - expecting comma seperated list, ex: miner_a,miner_b,miner_c')
+
 
 # API class
 class APIClient(object):
@@ -60,7 +59,6 @@ class APIClient(object):
             else:
                 return_error('CA path should be a file or a directory: {}'.format(capath))
 
-
     def _call_api(self, uri, data=None, headers=None, method=None):
         if headers is None:
             headers = {}
@@ -74,7 +72,7 @@ class APIClient(object):
         )
 
         if method is not None:
-            api_request.get_method = lambda: method
+            api_request.get_method = lambda: method  # type: ignore
 
         try:
             result = urllib2.urlopen(
@@ -96,13 +94,11 @@ class APIClient(object):
 
         return content
 
-
     def get_all_nodes(self):
         content = self._call_api('/status/minemeld')
         minemeld_status = json.loads(content)['result']
 
         return minemeld_status
-
 
     def validate_miner(self, miner):
         content = self._call_api('/status/minemeld')
@@ -118,31 +114,30 @@ class APIClient(object):
         return_error('Miner {} was not found in miners list'.format(miner))
         return False
 
-
     def retrieve_miner(self, miner):
         content = self._call_api('/config/data/{}_indicators?t={}'.format(miner, self.data_file_type))
         return json.loads(content)['result']
-
 
     def upload(self, miner, data):
         if self.data_file_type == 'localdb':
             ts = time.time()
             self._call_api(
                 '/config/data/{}_indicators/append?_{}&h={}&t={}'.format(miner, ts, miner, self.data_file_type),
-                data = data,
-                headers = { 'Content-Type': 'application/json' },
-                method = 'POST'
+                data=data,
+                headers={'Content-Type': 'application/json'},
+                method='POST'
             )
             return
 
         self._call_api(
             '/config/data/{}_indicators?h={}'.format(miner, miner),
-            data = data,
-            headers = { 'Content-Type': 'application/json' },
-            method = 'PUT'
+            data=data,
+            headers={'Content-Type': 'application/json'},
+            method='PUT'
         )
 
-#system funcs
+
+# system funcs
 def get_miner_list(MineMeldClient, miner, type_=False):
     MineMeldClient.validate_miner(miner)
     miner_list = MineMeldClient.retrieve_miner(miner)
@@ -154,7 +149,7 @@ def add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment='')
     updated_miner_list = {
         e['indicator']: json.dumps(e, sort_keys=True) for e in miner_list
     }
-    request_params = {}
+    request_params = {}  # type: ignore
 
     if not isinstance(indicators, list):
         indicators = indicators.split(',')
@@ -163,19 +158,19 @@ def add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment='')
         type_ = ''
 
     for indicator in indicators:
-            if MineMeldClient.data_file_type == 'localdb':
-                request_params = {
-                    'indicator': indicator,
-                    'comment': comment,
-                    'type': type_,
-                    'ttl': 'disabled'
-                }
-            else:
-                request_params = {
-                    'indicator': indicator,
-                    'comment': comment
-                }
-            updated_miner_list[indicator] = json.dumps(request_params)
+        if MineMeldClient.data_file_type == 'localdb':
+            request_params = {
+                'indicator': indicator,
+                'comment': comment,
+                'type': type_,
+                'ttl': 'disabled'
+            }
+        else:
+            request_params = {
+                'indicator': indicator,
+                'comment': comment
+            }
+        updated_miner_list[indicator] = json.dumps(request_params)
 
     MineMeldClient.upload(miner, '[{}]'.format(','.join(updated_miner_list.values())))
 
@@ -185,7 +180,7 @@ def remove_indicator_from_miner(MineMeldClient, miner, indicators):
     updated_miner_list = {
         e['indicator']: json.dumps(e, sort_keys=True) for e in miner_list
     }
-    request_params = {}
+    request_params = {}  # type: ignore
 
     if not isinstance(indicators, list):
         indicators = indicators.split(',')
@@ -193,7 +188,7 @@ def remove_indicator_from_miner(MineMeldClient, miner, indicators):
     if MineMeldClient.data_file_type == 'localdb':
         # check that all indicators to remove are on localdb miner
         miner_list_indicators = [o['indicator'] for o in miner_list]
-        contain_all_indicators =  all(elem in miner_list_indicators for elem in indicators)
+        contain_all_indicators = all(elem in miner_list_indicators for elem in indicators)
         if not contain_all_indicators:
             return_error('Did not find all indicators on miner'.format(miner))
 
@@ -214,11 +209,11 @@ def remove_indicator_from_miner(MineMeldClient, miner, indicators):
     MineMeldClient.upload(miner, '[{}]'.format(','.join(updated_miner_list.values())))
 
 
-def get_indicators_from_miner(miner_name,indicator_value=False):
+def get_indicators_from_miner(miner_name, indicator_value=False):
     result_indicator = []
     miner_list = get_miner_list(MineMeldClient, miner_name)
     for indicator in miner_list:
-        if indicator['indicator'] == indicator_value or indicator_value is False :
+        if indicator['indicator'] == indicator_value or indicator_value is False:
             indicator['miner'] = miner_name
             result_indicator.append(indicator)
 
@@ -229,17 +224,37 @@ def get_indicator_type(indicator):
     indicator_type = ''
 
     if not indicator_type:
-        url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', indicator) # guardrails-disable-line
+        url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                         indicator)  # guardrails-disable-line
         if url:
             indicator_type = 'URL'
 
     if not indicator_type:
-        ipv4 = re.findall('^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$', indicator)
+        ipv4 = re.findall(
+            '^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+            indicator)
         if ipv4 and not indicator_type:
             indicator_type = 'IPv4'
 
     if not indicator_type:
-        ipv6 = re.findall('^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)$', indicator)
+        ipv6 = re.findall(
+            '^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4]'
+            '[0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]'
+            '{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|'
+            '25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]'
+            '{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)'
+            '{3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::'
+            '(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]'
+            '|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}'
+            '[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]'
+            '|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'
+            '(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'
+            '(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]'
+            '|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'
+            '(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|'
+            '25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|'
+            '(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)$',
+            indicator)
         if ipv6:
             indicator_type = 'IPv6'
 
@@ -251,26 +266,25 @@ def get_indicator_type(indicator):
     return indicator_type
 
 
-
-#commands
+# commands
 def domain():
     domain = demisto.args()['domain']
-    #output vars
-    result_indicator = []
+    # output vars
+    result_indicator = []  # type: ignore
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}
-    entry_context = {}
+    indicator_context_data = {}  # type: ignore
+    entry_context = {}  # type: ignore
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
-        result_indicator = get_indicators_from_miner(blacklist,domain)
+        result_indicator = get_indicators_from_miner(blacklist, domain)
         if result_indicator:
             dbotscore = 3
             break
     if dbotscore != 3:
         for whitelist in WHITELISTS:
-            result_indicator = get_indicators_from_miner(whitelist,domain)
+            result_indicator = get_indicators_from_miner(whitelist, domain)
             if result_indicator:
                 dbotscore = 1
                 break
@@ -286,7 +300,7 @@ def domain():
     if result_indicator:
         miner_name = result_indicator[0]['miner']
         # add only malicious to context
-        if dbotscore ==3:
+        if dbotscore == 3:
             indicator_context_data = {
                 'MineMeld': {
                     'Indicators': result_indicator
@@ -300,7 +314,7 @@ def domain():
         else:
             indicator_context_data = {
                 'MineMeld': {
-                    'Miner': { 'name': miner_name } ,
+                    'Miner': {'name': miner_name},
                     'Indicators': result_indicator
                 },
                 'Name': domain
@@ -308,9 +322,9 @@ def domain():
 
         entry_context = {
             'DBotScore': dbotscore_list,
-            outputPaths['domain']:  indicator_context_data,
+            outputPaths['domain']: indicator_context_data,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
         result_text = 'MineMeld Domain found at miner: {}'.format(miner_name)
     else:
@@ -318,7 +332,7 @@ def domain():
         entry_context = {
             'DBotScore': dbotscore_list,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
 
     demisto.results({
@@ -333,22 +347,22 @@ def domain():
 
 def url():
     url = demisto.args()['url']
-    #output vars
-    result_indicator = []
+    # output vars
+    result_indicator = []  # type: ignore
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}
-    entry_context = {}
+    indicator_context_data = {}  # type: ignore
+    entry_context = {}  # type: ignore
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
-        result_indicator = get_indicators_from_miner(blacklist,url)
+        result_indicator = get_indicators_from_miner(blacklist, url)
         if result_indicator:
             dbotscore = 3
             break
     if dbotscore != 3:
         for whitelist in WHITELISTS:
-            result_indicator = get_indicators_from_miner(whitelist,url)
+            result_indicator = get_indicators_from_miner(whitelist, url)
             if result_indicator:
                 dbotscore = 1
                 break
@@ -364,7 +378,7 @@ def url():
     if result_indicator:
         miner_name = result_indicator[0]['miner']
         # add only malicious to context
-        if dbotscore ==3:
+        if dbotscore == 3:
             indicator_context_data = {
                 'MineMeld': {
                     'Indicators': result_indicator
@@ -378,7 +392,7 @@ def url():
         else:
             indicator_context_data = {
                 'MineMeld': {
-                    'Miner': { 'name': miner_name } ,
+                    'Miner': {'name': miner_name},
                     'Indicators': result_indicator
                 },
                 'Data': url
@@ -386,9 +400,9 @@ def url():
 
         entry_context = {
             'DBotScore': dbotscore_list,
-            outputPaths['url']:  indicator_context_data,
+            outputPaths['url']: indicator_context_data,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
         result_text = 'MineMeld URL found at miner: {}'.format(miner_name)
     else:
@@ -396,7 +410,7 @@ def url():
         entry_context = {
             'DBotScore': dbotscore_list,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
 
     demisto.results({
@@ -411,22 +425,22 @@ def url():
 
 def file():
     file = demisto.args()['file']
-    #output vars
-    result_indicator = []
+    # output vars
+    result_indicator = []  # type: ignore
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}
-    entry_context = {}
+    indicator_context_data = {}  # type: ignore
+    entry_context = {}  # type: ignore
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
-        result_indicator = get_indicators_from_miner(blacklist,file)
+        result_indicator = get_indicators_from_miner(blacklist, file)
         if result_indicator:
             dbotscore = 3
             break
     if dbotscore != 3:
         for whitelist in WHITELISTS:
-            result_indicator = get_indicators_from_miner(whitelist,file)
+            result_indicator = get_indicators_from_miner(whitelist, file)
             if result_indicator:
                 dbotscore = 1
                 break
@@ -442,7 +456,7 @@ def file():
     if result_indicator:
         miner_name = result_indicator[0]['miner']
         # add only malicious to context
-        if dbotscore ==3:
+        if dbotscore == 3:
             indicator_context_data = {
                 'MineMeld': {
                     'Indicators': result_indicator
@@ -456,7 +470,7 @@ def file():
         else:
             indicator_context_data = {
                 'MineMeld': {
-                    'Miner': { 'name': miner_name } ,
+                    'Miner': {'name': miner_name},
                     'Indicators': result_indicator
                 },
                 get_hash_type(file): file
@@ -464,9 +478,9 @@ def file():
 
         entry_context = {
             'DBotScore': dbotscore_list,
-            outputPaths['file']:  indicator_context_data,
+            outputPaths['file']: indicator_context_data,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
         result_text = 'MineMeld File found at miner: {}'.format(miner_name)
     else:
@@ -474,7 +488,7 @@ def file():
         entry_context = {
             'DBotScore': dbotscore_list,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
 
     demisto.results({
@@ -489,22 +503,22 @@ def file():
 
 def ip():
     ip = demisto.args()['ip']
-    #output vars
-    result_indicator = []
+    # output vars
+    result_indicator = []  # type: ignore
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}
-    entry_context = {}
+    indicator_context_data = {}  # type: ignore
+    entry_context = {}  # type: ignore
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
-        result_indicator = get_indicators_from_miner(blacklist,ip)
+        result_indicator = get_indicators_from_miner(blacklist, ip)
         if result_indicator:
             dbotscore = 3
             break
     if dbotscore != 3:
         for whitelist in WHITELISTS:
-            result_indicator = get_indicators_from_miner(whitelist,ip)
+            result_indicator = get_indicators_from_miner(whitelist, ip)
             if result_indicator:
                 dbotscore = 1
                 break
@@ -520,7 +534,7 @@ def ip():
     if result_indicator:
         miner_name = result_indicator[0]['miner']
         # add only malicious to context
-        if dbotscore ==3:
+        if dbotscore == 3:
             indicator_context_data = {
                 'MineMeld': {
                     'Indicators': result_indicator
@@ -534,7 +548,7 @@ def ip():
         else:
             indicator_context_data = {
                 'MineMeld': {
-                    'Miner': { 'name': miner_name } ,
+                    'Miner': {'name': miner_name},
                     'Indicators': result_indicator
                 },
                 'Address': ip
@@ -544,7 +558,7 @@ def ip():
             'DBotScore': dbotscore_list,
             outputPaths['ip']: indicator_context_data,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
         result_text = 'MineMeld IP found at miner: {}'.format(miner_name)
     else:
@@ -552,7 +566,7 @@ def ip():
         entry_context = {
             'DBotScore': dbotscore_list,
             'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
         }
 
     demisto.results({
@@ -587,16 +601,17 @@ def get_all_miner_names():
         'Contents': supported_miners,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(result_text, supported_miners, ['name','indicators','class']),
+        'HumanReadable': tableToMarkdown(result_text, supported_miners, ['name', 'indicators', 'class']),
         'EntryContext': {
             'MineMeld.Miner(val.name == obj.name)': supported_miners
         }
     })
 
+
 def get_indicator_from_miner():
     miner_name = demisto.args()['miner']
     indicator = demisto.args()['indicator']
-    supported_miners = []
+    supported_miners = []  # type: ignore
 
     supported_miners = get_indicators_from_miner(miner_name, indicator)
 
@@ -612,7 +627,7 @@ def get_indicator_from_miner():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(result_text, supported_miners, ['indicator', 'type', 'comment']),
         'EntryContext': {
-            'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
+            'MineMeld.Miner(val.name == obj.name)': {'name': miner_name},
             'MineMeld.Indicators(val.miner == obj.miner && val.indicator == obj.indicator)': supported_miners
         }
     })
@@ -620,7 +635,7 @@ def get_indicator_from_miner():
 
 def retrieve_miner_indicators():
     miner_name = demisto.args()['miner']
-    result_list = []
+    result_list = []  # type: ignore
     markdown_headers = ['indicator', 'comment', 'type']
     miners_context = []
 
@@ -637,12 +652,12 @@ def retrieve_miner_indicators():
                         'class': miner['class']
                     }
                 )
-                miner_list =  get_indicators_from_miner(miner['name'])
+                miner_list = get_indicators_from_miner(miner['name'])
                 result_list.extend(miner_list)
 
     else:
         result_list = get_indicators_from_miner(miner_name)
-        miners_context = { 'name': miner_name }
+        miners_context = {'name': miner_name}  # type: ignore
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -662,8 +677,8 @@ def update_miner():
     indicators = argToList(demisto.args()['indicator'])
     if len(indicators) < 1:
         return_error('Insert at least 1 indicator')
-    type_ = demisto.args().get('type',get_indicator_type(indicators[0]))
-    comment = demisto.args().get('comment','')
+    type_ = demisto.args().get('type', get_indicator_type(indicators[0]))
+    comment = demisto.args().get('comment', '')
 
     for indicator in indicators:
         if ' ' in indicator:
@@ -681,7 +696,8 @@ def test():
     if MineMeldClient.get_all_nodes():
         demisto.results('ok')
 
-#code starts here
+
+# code starts here
 
 MineMeldClient = APIClient(
     url=SERVER_URL,
