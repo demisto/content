@@ -44,7 +44,7 @@ configuration:
     type: 0
     required: false
 script:
-  script: ''
+  script: '-'
   type: python
   commands:
     - name: fireeye-etp-search-messages

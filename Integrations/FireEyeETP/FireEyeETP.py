@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 '''
 IMPORTS
 '''
@@ -16,6 +17,7 @@ import json
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+
 '''
 GLOBAL VARS
 '''
@@ -28,20 +30,23 @@ HTTP_HEADERS = {
 USE_SSL = not demisto.params().get('unsecure')
 MESSAGE_STATUS = demisto.params().get('message_status')
 
+
 '''
 SAERCH ATTRIBUTES VALID VALUES
 '''
 
-REJECTION_REASONS = [
-'ETP102', 'ETP103', 'ETP104', 'ETP200', 'ETP201', 'ETP203','ETP204', 'ETP205',
-'ETP300', 'ETP301', 'ETP302', 'ETP401','ETP402', 'ETP403', 'ETP404', 'ETP405']
+REJECTION_REASONS = ['ETP102', 'ETP103', 'ETP104', 'ETP200', 'ETP201', 'ETP203', 'ETP204', 'ETP205',
+                     'ETP300', 'ETP301', 'ETP302', 'ETP401', 'ETP402', 'ETP403', 'ETP404', 'ETP405']
 
 STATUS_VALUES = ["accepted", "deleted", "delivered", "delivered (retroactive)", "dropped",
-"dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"]
+                 "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing",
+                 "quarantined", "rejected", "temporary failure"]
+
 
 '''
 BASIC FUNCTIONS
 '''
+
 
 def set_proxies():
 
@@ -51,11 +56,13 @@ def set_proxies():
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
+
 def listify(comma_separated_list):
 
     if isinstance(comma_separated_list, list):
         return comma_separated_list
     return comma_separated_list.split(',')
+
 
 def http_request(method, url, body=None, headers={}, url_params=None):
 
@@ -63,7 +70,7 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     returns the http response
     '''
 
-    #add API key to headers
+    # add API key to headers
     headers['x-fireeye-api-key'] = API_KEY
 
     request_kwargs = {
@@ -71,7 +78,7 @@ def http_request(method, url, body=None, headers={}, url_params=None):
         'verify': USE_SSL
     }
 
-    #add optional arguments if specified
+    # add optional arguments if specified
     if body is not None:
         request_kwargs['data'] = json.dumps(body)
     if url_params is not None:
@@ -83,21 +90,23 @@ def http_request(method, url, body=None, headers={}, url_params=None):
         url,
         **request_kwargs
     )
-    #handle request failure
-    if response.status_code not in range(200,205):
+    # handle request failure
+    if response.status_code not in range(200, 205):
         raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response.text))
     return response.json()
+
 
 def return_error_entry(message):
 
     entry = {
         'Type': entryTypes['error'],
-        'Contents': e.message,
+        'Contents': message,
         'ContentsFormat': formats['text'],
     }
     demisto.results(entry)
 
-def to_search_attribute_object(value, filter=None, is_list=False ,valid_values=None):
+
+def to_search_attribute_object(value, filter=None, is_list=False, valid_values=None):
 
     values = listify(value) if is_list else value
     if valid_values:
@@ -114,12 +123,13 @@ def to_search_attribute_object(value, filter=None, is_list=False ,valid_values=N
 
 
 def format_search_attributes(from_email=None, from_email_not_in=None, recipients=None,
-recipients_not_in=None, subject=None, from_accepted_date_time=None, to_accepted_date_time=None,
-rejection_reason=None, sender_ip=None, status=None, status_not_in=None, last_modified_date_time=None, domains=None):
+                             recipients_not_in=None, subject=None, from_accepted_date_time=None,
+                             to_accepted_date_time=None, rejection_reason=None, sender_ip=None, status=None,
+                             status_not_in=None, last_modified_date_time=None, domains=None):
 
-    search_attributes = {}
+    search_attributes = {}  # type: Dict
 
-    #handle from_email attribute
+    # handle from_email attribute
     if from_email and from_email_not_in:
         raise ValueError('Only one of the followings can be specified: from_email, from_email_not_in')
     if from_email:
@@ -127,15 +137,15 @@ rejection_reason=None, sender_ip=None, status=None, status_not_in=None, last_mod
     elif from_email_not_in:
         search_attributes['fromEmail'] = to_search_attribute_object(from_email_not_in, filter='not in', is_list=True)
 
-    #handle recipients attributes
+    # handle recipients attributes
     if recipients and recipients_not_in:
         raise ValueError('Only one of the followings can be specified: recipients, recipients_not_in')
     if recipients:
-        search_attributes['recipients'] =  to_search_attribute_object(recipients, filter='in', is_list=True)
+        search_attributes['recipients'] = to_search_attribute_object(recipients, filter='in', is_list=True)
     elif recipients_not_in:
         search_attributes['recipients'] = to_search_attribute_object(recipients_not_in, filter='not in', is_list=True)
 
-    #handle status attributes
+    # handle status attributes
     if status and status_not_in:
         raise ValueError('Only one of the followings can be specified: status, status_not_in')
     if status:
@@ -146,13 +156,14 @@ rejection_reason=None, sender_ip=None, status=None, status_not_in=None, last_mod
     if subject:
         search_attributes['subject'] = to_search_attribute_object(subject, filter='in', is_list=True)
     if rejection_reason:
-        search_attributes['rejectionReason'] = to_search_attribute_object(rejection_reason, is_list=True, valid_values=REJECTION_REASONS)
+        search_attributes['rejectionReason'] = to_search_attribute_object(rejection_reason, is_list=True,
+                                                                          valid_values=REJECTION_REASONS)
     if sender_ip:
         search_attributes['senderIP'] = to_search_attribute_object(sender_ip, filter='in', is_list=True)
     if domains:
         search_attributes['domains'] = to_search_attribute_object(domains, is_list=True)
     if from_accepted_date_time and to_accepted_date_time:
-        search_attribute['period'] = {
+        search_attributes['period'] = {
             'range': {
                 'fromAcceptedDateTime': from_accepted_date_time,
                 'toAcceptedDateTime': to_accepted_date_time
@@ -164,8 +175,9 @@ rejection_reason=None, sender_ip=None, status=None, status_not_in=None, last_mod
         search_attributes["lastModifiedDateTime"] = {
             'value': last_modified_date_time[operator_ends_at:],
             'filter': last_modified_date_time[:operator_ends_at]
-            }
+        }
     return search_attributes
+
 
 def readable_message_data(message):
 
@@ -178,6 +190,7 @@ def readable_message_data(message):
         'Message Status': message['status']
     }
 
+
 def message_context_data(message):
 
     context_data = copy.deepcopy(message)
@@ -186,12 +199,12 @@ def message_context_data(message):
     context_data.update(context_data.pop('attributes', {}))
 
     # parse email sddresses
-    match =  re.search('<(.*)>', context_data['senderHeader'].replace('\\"',''))
+    match = re.search('<(.*)>', context_data['senderHeader'].replace('\\"', ''))
     context_data['from'] = match.group() if match else context_data['senderHeader']
 
     if context_data.get('recipientHeader') is None:
-            context_data['recipients'] = []
-            return context_data
+        context_data['recipients'] = []
+        return context_data
 
     recipients = []
     for recipient_header in context_data.get('recipientHeader', []):
@@ -201,6 +214,7 @@ def message_context_data(message):
     context_data['recipients'] = ','.join(recipients)
 
     return context_data
+
 
 def search_messages_request(attributes={}, has_attachments=None, max_message_size=None):
 
@@ -223,13 +237,14 @@ def search_messages_request(attributes={}, has_attachments=None, max_message_siz
         return []
     return response['data']
 
+
 def search_messages_command():
 
     args = demisto.args()
     if 'size' in args.keys():
         # parse to int
         args['size'] = int(args['size'])
-    if args.get('has_attachments') is not  None:
+    if args.get('has_attachments') is not None:
         # parse to boolean
         args['hasAttachments'] = args['hasAttachments'] == 'true'
 
@@ -249,7 +264,7 @@ def search_messages_command():
         domains=args.get('domains')
     )
 
-    #raw data
+    # raw data
     messages_raw = search_messages_request(search_attributes, args.get('hasAttachments'), args.get('size'))
 
     # create context data
@@ -283,6 +298,7 @@ def search_messages_command():
     }
     demisto.results(entry)
 
+
 def get_message_request(message_id):
 
     url = '{}/messages/{}'.format(BASE_PATH, message_id)
@@ -293,6 +309,7 @@ def get_message_request(message_id):
     if response['meta']['total'] == 0:
         return {}
     return response['data'][0]
+
 
 def get_message_command():
 
@@ -341,6 +358,7 @@ def get_message_command():
         }
         demisto.results(entry)
 
+
 def alert_readable_data_summery(alert):
 
     return {
@@ -355,6 +373,7 @@ def alert_readable_data_summery(alert):
         'Email Accepted': alert['email']['timestamp']['accepted'],
         'Threat Intel': alert['ati']
     }
+
 
 def alert_readable_data(alert):
 
@@ -371,6 +390,7 @@ def alert_readable_data(alert):
         'Sevirity': alert['alert']['severity']
     }
 
+
 def malware_readable_data(malware):
 
     return {
@@ -383,12 +403,14 @@ def malware_readable_data(malware):
         'SID': malware['sid']
     }
 
+
 def alert_context_data(alert):
 
     context_data = copy.deepcopy(alert)
     # remove 'attributes' level
     context_data.update(context_data.pop('attributes', {}))
     return context_data
+
 
 def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
 
@@ -420,6 +442,7 @@ def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_i
         return []
     return response['data']
 
+
 def get_alerts_command():
 
     args = demisto.args()
@@ -441,7 +464,7 @@ def get_alerts_command():
     # create context data
     alerts_context = [alert_context_data(alert) for alert in alerts_raw]
 
-    #create readable data
+    # create readable data
     alerts_readable_data = [alert_readable_data_summery(alert) for alert in alerts_context]
     alerts_summery_headers = [
         'Alert ID',
@@ -472,6 +495,7 @@ def get_alerts_command():
     }
     demisto.results(entry)
 
+
 def get_alert_request(alert_id):
 
     url = '{}/alerts/{}'.format(BASE_PATH, alert_id)
@@ -482,6 +506,7 @@ def get_alert_request(alert_id):
     if response['meta']['total'] == 0:
         return {}
     return response['data'][0]
+
 
 def get_alert_command():
 
@@ -498,7 +523,8 @@ def get_alert_command():
             'Alert Details',
             readable_data
         )
-        malware_data = [malware_readable_data(malware) for malware in alert_context['alert']['explanation']['malware_detected']['malware']]
+        data = alert_context['alert']['explanation']['malware_detected']['malware']
+        malware_data = [malware_readable_data(malware) for malware in data]
         malware_md_table = tableToMarkdown(
             'Malware Details',
             malware_data
@@ -540,6 +566,7 @@ def parse_string_in_iso_format_to_datetime(iso_format_string):
             alert_last_modified = datetime.strptime(iso_format_string, "%Y-%m-%dT%H:%M")
     return alert_last_modified
 
+
 def parse_alert_to_incident(alert):
 
     context_data = alert_context_data(alert)
@@ -549,10 +576,11 @@ def parse_alert_to_incident(alert):
     }
     return incident
 
+
 def fetch_incidents():
 
     last_run = demisto.getLastRun()
-    week_ago =  datetime.now() - timedelta(days=7)
+    week_ago = datetime.now() - timedelta(days=7)
     iso_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     if 'last_modified' not in last_run.keys():
@@ -562,8 +590,8 @@ def fetch_incidents():
         last_run['last_created'] = week_ago.strftime(iso_format)
 
     alerts_raw_response = get_alerts_request(
-        from_last_modified_on = last_run['last_modified'],
-        size = 100,
+        from_last_modified_on=last_run['last_modified'],
+        size=100,
         raw_response=True
     )
     # end if no results returned
@@ -594,6 +622,7 @@ def fetch_incidents():
 
     demisto.incidents(incidents)
     demisto.setLastRun(last_run)
+
 
 '''
 EXECUTION
