@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import traceback
 import json
 import requests
+from datetime import datetime as dt
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -27,7 +28,7 @@ if not demisto.params().get('proxy'):
 
 THRESHOLD = int(demisto.params().get('threshold', 1))
 
-COMPROMISED_IS_MALICIOUS = demisto.params().get('compropmised_is_malicious', False)
+COMPROMISED_IS_MALICIOUS = demisto.params().get('compromised_is_malicious', False)
 
 # Headers to be sent in requests
 HEADERS = {
@@ -120,7 +121,7 @@ def url_command():
                 'Data': url
             },
             'DBotScore': {
-                'Type': 'URL',
+                'Type': 'url',
                 'Vendor': 'URLhaus',
                 'Indicator': url
             }
@@ -128,30 +129,32 @@ def url_command():
 
         if url_information['query_status'] == 'ok':
             # URLHaus output
+            date_added = dt.strptime(url_information.get('date_added', '1970-01-01 00:00:00 UTC'),
+                                     '%Y-%m-%d %H:%M:%S UTC').strftime('%Y-%m-%dT%H:%M:%S')
             urlhaus_data = {
-                'ID': url_information['id'],
-                'Status': url_information['url_status'],
-                'Host': url_information['host'],
-                'DateAdded': url_information['date_added'],  # TODO - is UTC ok?
-                'Threat': url_information['threat'],
-                'Blacklist': url_information['blacklists'],
-                'Tags': url_information['tags']
+                'ID': url_information.get('id', ''),
+                'Status': url_information.get('url_status', ''),
+                'Host': url_information.get('host', ''),
+                'DateAdded': date_added,
+                'Threat': url_information.get('threat', ''),
+                'Blacklist': url_information.get('blacklists', {}),
+                'Tags': url_information.get('tags', [])
             }
 
             payloads = []
-            for payload in url_information['payloads']:
+            for payload in url_information.get('payloads', []):
                 payloads.append({
-                    'Name': payload['filename'] if payload['filename'] else 'unknown',
-                    'Type': payload['file_type'],
-                    'MD5': payload['response_md5'],
-                    'VT': payload['virustotal']
+                    'Name': payload.get('filename', 'unknown'),
+                    'Type': payload.get('file_type', ''),
+                    'MD5': payload.get('response_md5', ''),
+                    'VT': payload.get('virustotal', None)
                 })
 
             urlhaus_data['Payloads'] = payloads
 
             # DBot score calculation
             blacklist_appearances = []
-            for blacklist, status in url_information['blacklists'].items():
+            for blacklist, status in url_information.get('blacklists', {}).items():
                 if blacklist == 'spamhaus_dbl':
                     if status.endswith('domain') or (status.startswith('abused') and COMPROMISED_IS_MALICIOUS):
                         blacklist_appearances.append((blacklist, status))
@@ -172,6 +175,7 @@ def url_command():
                         description += f'Listed as {appearance[1]} in {appearance[0]}. '
                     else:
                         raise Exception('Unknown blacklist format in the response')
+
                 ec['URL']['Malicious']['Description'] = description
             elif len(blacklist_appearances) > 0:
                 ec['DBotScore']['Score'] = 2
@@ -180,8 +184,45 @@ def url_command():
 
             ec['URLhaus.URL(val.ID && val.ID === obj.ID)'] = urlhaus_data
 
+            human_readable = f'## URLhaus reputation for {url}\n' \
+                f'URLhaus link: {url_information.get("urlhaus_reference", "None")}\n' \
+                f'Threat: {url_information.get("threat", "")}\n' \
+                f'Date added: {date_added}'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': url_information,
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
         elif url_information['query_status'] == 'no_results':
             ec['DBotScore']['Score'] = 0
+
+            human_readable = f'## URLhaus reputation for {url}\n' \
+                f'No results!'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': url_information,
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+        elif url_information['query_status'] == 'invalid_url':
+            human_readable = f'## URLhaus reputation for {url}\n' \
+                f'Invalid URL!'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': url_information,
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
         else:
             demisto.results({
                 'Type': entryTypes['error'],
@@ -189,18 +230,9 @@ def url_command():
                 'Contents': f'Query results = {url_information["query_status"]}'
             })
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': url_information,
-            'EntryContext': ec
-        })
-
-        demisto.results(url_information)
-    except Exception as e:
+    except Exception:
         demisto.debug(traceback.format_exc())
-        return_error(f'Failed getting url data, please verify the arguments and parameters')
-
+        return_error('Failed getting url data, please verify the arguments and parameters')
 
 # def get_items_command():
 #     """
@@ -296,13 +328,6 @@ def url_command():
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
-
-# print(query_url_information('http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/'))
-# print(query_host_information('vektorex.com'))
-# print(query_payload_information('md5', '12c8aec5766ac3e6f26f2505e2f4a8f2'))
-# print(query_tag_information('Retefe'))
-# print(query_signature_information('Gozi'))
-# print(download_malware_sample('254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b', 'here.zip'))
 
 try:
     if demisto.command() == 'test-module':
