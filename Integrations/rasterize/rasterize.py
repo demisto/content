@@ -26,6 +26,9 @@ LOG('\n############################\n')
 LOG('\n############################\n')
 LOG('\nPARAMS: {}\n'.format(demisto.params()))
 LOG('\n############################\n')
+LOG('\n############################\n')
+LOG('\ndemisto.params().get("with_error", True): {}\n'.format(demisto.params().get('with_error', True)))
+LOG('\n############################\n')
 LOG.print_log()
 
 
