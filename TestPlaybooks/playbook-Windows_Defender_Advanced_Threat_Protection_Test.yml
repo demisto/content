@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 65
         }
       }
     note: false
@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1625
         }
       }
     note: false
@@ -70,7 +70,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1800
         }
       }
     note: false
@@ -94,10 +94,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 3d62dd21-74c1-4283-8162-b584c8364167
+    taskid: 9029bb75-f6ff-44bc-8245-8c3d1173f147
     type: regular
     task:
-      id: 3d62dd21-74c1-4283-8162-b584c8364167
+      id: 9029bb75-f6ff-44bc-8245-8c3d1173f147
       version: -1
       name: Get machine related to file
       script: '|||microsoft-atp-get-file-related-machines'
@@ -109,13 +109,13 @@ tasks:
       - "5"
     scriptarguments:
       file:
-        simple: a6c80ce949469cc86f6c22355f4d3bb8773fc634
+        simple: fc0250ce9de08fbd0853fea81e44e305f7c1e383
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -123,10 +123,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 6a6aa82d-1856-42c9-8ab7-82c74ab4abe0
+    taskid: 6cba4e5f-b745-49ba-8a08-1f540488ff7f
     type: condition
     task:
-      id: 6a6aa82d-1856-42c9-8ab7-82c74ab4abe0
+      id: 6cba4e5f-b745-49ba-8a08-1f540488ff7f
       version: -1
       name: Assert right machine was fetched
       type: condition
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -175,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2675
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 750
         }
       }
     note: false
@@ -238,10 +238,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 4549f480-8ed0-43d6-8768-71ad19c18e9e
+    taskid: a6da792d-ebb5-4778-8ec8-942a0ba034e5
     type: regular
     task:
-      id: 4549f480-8ed0-43d6-8768-71ad19c18e9e
+      id: a6da792d-ebb5-4778-8ec8-942a0ba034e5
       version: -1
       name: Isolate machine
       script: '|||microsoft-atp-isolate-machine'
@@ -262,7 +262,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 575
         }
       }
     note: false
@@ -295,7 +295,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 925
         }
       }
     note: false
@@ -328,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1100
         }
       }
     note: false
@@ -360,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1275
         }
       }
     note: false
@@ -395,40 +395,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 1b154832-0984-4bdf-8d11-010450d99618
-    type: regular
-    task:
-      id: 1b154832-0984-4bdf-8d11-010450d99618
-      version: -1
-      name: Get time
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
+          "y": 1450
         }
       }
     note: false
@@ -436,10 +403,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 926d8c0c-2d4a-41c1-8636-ea8f24d3d017
+    taskid: 72a464bb-36ae-434d-8d42-84839de17b50
     type: regular
     task:
-      id: 926d8c0c-2d4a-41c1-8636-ea8f24d3d017
+      id: 72a464bb-36ae-434d-8d42-84839de17b50
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -450,35 +417,36 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      category: {}
+      category:
+        simple: None
       description:
         simple: Created for test
       event_time:
-        simple: 2019-05-22T13:19:30.1610718Z
+        simple: 2019-06-09T15:52:30.7637799Z
       machine_id:
-        simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: MachineId
       recommended_action:
         simple: None
       report_id:
-        simple: "18710"
+        simple: "69020"
       severity:
         simple: Medium
       title:
-        complex:
-          root: TimeNow
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'Test_alert:'
-              suffix: {}
+        simple: Test_alert2019-06-09T15:52:30.7637799Z
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2325
         }
       }
     note: false
@@ -497,7 +465,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "20"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -513,7 +481,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2500
         }
       }
     note: false
@@ -542,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 1975
         }
       }
     note: false
@@ -561,7 +529,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -580,7 +548,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2150
         }
       }
     note: false
@@ -591,10 +559,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2835,
+        "height": 2675,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }
