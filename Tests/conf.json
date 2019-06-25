@@ -1325,6 +1325,12 @@
 
         },
         {
+            "playbookID": "HTTPListRedirects - Test 2"
+        },
+        {
+            "playbookID": "HTTPRedirectList Test"
+        },
+        {
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
