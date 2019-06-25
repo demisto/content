@@ -330,3 +330,23 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         __delete_integrations_instances(client, module_instances)
 
     return playbook_state, inc_id
+
+
+def disable_all_integrations(client):
+    """
+    Disable all enabled integrations. Should be called at start of test loop to start out clean
+
+    Arguments:
+        client -- demisto py client
+    """
+    integrations_res = client.req('POST', '/settings/integration/search', {'size': 1000})
+    if 'instances' not in integrations_res:
+        print("No integrations instances found to disable all")
+        return
+    to_disable = []
+    for instance in integrations_res['instances']:
+        if instance.get('enabled') == 'true':
+            print("Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"), instance.get("brand")))
+            to_disable.append(instance)
+    if len(to_disable) > 0:
+        __disable_integrations_instances(client, to_disable)
