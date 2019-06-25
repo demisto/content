@@ -159,11 +159,12 @@ class NitroESM(object):
                 demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e),))
 
     @logger
-    def cmdquery(self, cmd, query=None, no_answer=False, no_validation=False):
+    def cmdquery(self, cmd, query=None, params=None, no_answer=False, no_validation=False):
         """ Send query to ESM, return JSON result """
         LOG('querying endpoint: {}'.format(cmd))
         result = requests.post(self.url + cmd,
                                headers=self.session_headers,
+                               params=params,
                                data=query, verify=VERIFY)
         if not no_validation:
             if no_answer:
@@ -288,12 +289,21 @@ class NitroESM(object):
         if time_range == 'CUSTOM' and (not custom_start or not custom_end):
             return_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
+        params = {
+            'pageSize': 50,
+            'pageNumber': 1,
+            'triggeredTimeRange': time_range
+        }
+
         if VERSION.startswith('11.'):
-            cmd = 'alarmGetTriggeredAlarms?pageSize=500&pageNumber=1&triggeredTimeRange=' + time_range
+            cmd = 'alarmGetTriggeredAlarms'
         else:
-            cmd = 'alarmGetTriggeredAlarmsPaged?pageSize=500&pageNumber=1&triggeredTimeRange=' + time_range
+            cmd = 'alarmGetTriggeredAlarmsPaged'
         if time_range == 'CUSTOM':
-            cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
+            params.update({
+                'customStart': custom_start,
+                'customEnd': custom_end,
+            })
 
         query = ''
         if assigned_user == 'ME':
@@ -302,7 +312,7 @@ class NitroESM(object):
         elif assigned_user:
             query = json.dumps({'assignedUser': self.get_user_obj(assigned_user)})
 
-        res = self.cmdquery(cmd, query)
+        res = self.cmdquery(cmd, query, params=params)
 
         for alarm in res:
             alarm['ID'] = alarm['id']['value']
@@ -578,7 +588,7 @@ class NitroESM(object):
 
         cmd = 'caseEditCase'
         query = json.dumps({'caseDetail': case})
-        self.cmdquery(cmd, query, True)
+        self.cmdquery(cmd, query, no_answer=True)
 
         return
 
@@ -858,7 +868,8 @@ def main():
             start_alarms = last_run.get('alarms')
             if start_alarms is None:
                 start_alarms, _ = parse_date_range(demisto.params()['alarm_fetch_time'],
-                                                   date_format='%Y/%m/%dT%H:%M:%S', timezone=TIMEZONE)
+                                                   date_format='%Y-%m-%dT%H:%M:%S.%f', timezone=TIMEZONE)
+
             last_case = last_run.get('cases', 0)
             # if last_case < configuration_last_case:
             last_case = max(last_case, configuration_last_case)
