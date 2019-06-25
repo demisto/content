@@ -1182,7 +1182,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1193,7 +1194,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
