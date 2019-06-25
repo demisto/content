@@ -3,8 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cloaken",
+            "playbookID": "Cloaken-Test"
+        },
+        {
+            "integrations": "ThreatX",
+            "playbookID": "ThreatX-test"
+        },
+        {
             "integrations": "AlienVault OTX",
             "playbookID": "AlienVaultOTX Test"
+        },
+        {
+            "integrations": "Cofense Triage",
+            "playbookID": "Cofense Triage Test"
         },
         {
             "integrations": "Minerva Labs Anti-Evasion Platform",
@@ -16,6 +28,7 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
+            "instance_names": "ms_graph_mail_dev",
             "playbookID": "MicrosoftGraphMail-Test"
         },
         {
@@ -68,6 +81,9 @@
         {
             "playbookID": "DocumentationTest",
             "integrations": "ipinfo"
+        },
+        {
+            "playbookID": "playbook-checkEmailAuthenticity-test"
         },
         {
             "playbookID": "HighlightWords_Test"
@@ -521,6 +537,12 @@
             "timeout": 500
         },
         {
+            "integrations": "Intezer v2",
+            "playbookID": "Intezer Testing v2",
+            "fromversion": "4.1.0",
+            "timeout": 700
+        },
+        {
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
@@ -578,6 +600,7 @@
         },
         {
             "integrations": "McAfee ESM-v10",
+            "instance_names": "v10.2.0",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
@@ -844,6 +867,11 @@
             "playbookID": "Cisco-Meraki-Test"
         },
         {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_dev",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
@@ -856,10 +884,12 @@
         },
         {
             "integrations": "Microsoft Graph",
+            "instance_names": "ms_graph_security_dev",
             "playbookID": "Microsoft Graph Test"
         },
         {
             "integrations": "Microsoft Graph User",
+            "instance_names": "ms_graph_user_dev",
             "playbookID": "Microsoft Graph - Test"
         },
         {
@@ -1508,6 +1538,11 @@
             "playbookID": "Ipstack_Test"
         },
         {
+
+            "integrations": "Perch",
+            "playbookID": "Perch-Test"
+        },
+        {
             "integrations": "Forescout",
             "playbookID": "Forescout-Test"
         },
@@ -1536,7 +1571,28 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "AutoFocus V2",
+            "playbookID": "AutoFocus V2 test"
+        },
+        {
             "playbookID": "Process Email - Generic for Rasterize"
+        },
+        {
+            "playbookID": "Send Investigation Summary Reports - Test",
+            "integrations": "EWS Mail Sender",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": "BluecatAddressManager",
+            "playbookID": "Bluecat Address Manager test"
+        },
+        {
+            "integrations": "MailListener - POP3",
+            "playbookID": "MailListener-POP3 - Test"
         }
     ],
     "skipped_tests": {
@@ -1553,7 +1609,6 @@
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
@@ -1579,7 +1634,8 @@
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
-        "Detonate File - FireEye AX - Test": "No instance"
+        "Detonate File - FireEye AX - Test": "No instance",
+        "Cofense Triage Test": "Creds only works on demo4"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1590,13 +1646,12 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
-        "McAfee Advanced Threat Defense": "License expired",
         "Cymon": "The service was discontinued since April 30th, 2019.",
+        "FireEye ETP": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
-        "McAfee Advanced Threat Defense": "no license, issue 16909",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
@@ -1619,7 +1674,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "McAfee ESM-v10": "User name expired (issue 17407)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1632,7 +1686,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "MicrosoftGraphMail": "Inactive integration",
+        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1645,6 +1699,10 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Image OCR": "Does not perform network traffic",
+        "Server Message Block (SMB)": "Does not perform http communication",
+        "Active Directory Query v2": "Does not perform http communication",
+        "dnstwist": "Does not peform http communication",
         "Autofocus": "JS integration, problem listed in issue 15544",
         "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
         "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
@@ -1700,6 +1758,10 @@
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
-        "AlphaSOC Wisdom": "Test module issue"
+        "AlphaSOC Wisdom": "Test module issue",
+        "Microsoft Graph": "Test direct access to oproxy",
+        "MicrosoftGraphMail": "Test direct access to oproxy",
+        "Microsoft Graph User": "Test direct access to oproxy",
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }

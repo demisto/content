@@ -15,6 +15,7 @@ import sys
 import glob
 import logging
 import argparse
+import subprocess
 
 from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
@@ -275,9 +276,14 @@ class FilesValidator(object):
         Args:
             old_format_files(set): file names which are in the old format.
         """
-        if old_format_files:
+        invalid_files = []
+        for f in old_format_files:
+            yaml_data = get_yaml(f)
+            if 'toversion' not in yaml_data:  # we only fail on old format if no toversion (meaning it is latest)
+                invalid_files.append(f)
+        if invalid_files:
             print_error("You must update the following files to the new package format. The files are:\n{}".format(
-                '\n'.join(list(old_format_files))))
+                '\n'.join(list(invalid_files))))
             self._is_valid = False
 
     def validate_committed_files(self, branch_name, is_backward_check=True):
@@ -333,7 +339,7 @@ class FilesValidator(object):
         if not self.conf_json_validator.is_valid_conf_json():
             self._is_valid = False
 
-        if branch_name != 'master':
+        if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
         else:
@@ -358,6 +364,7 @@ def main():
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
+    parser.add_argument('-t', '--test-filter', type=str2bool, default=False, help='Check that tests are valid.')
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
@@ -368,7 +375,11 @@ def main():
     files_validator = FilesValidator(is_circle)
     if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check):
         sys.exit(1)
-
+    if options.test_filter:
+        try:
+            subprocess.check_call(["./Tests/scripts/configure_tests.py", "-s", "true"])
+        except Exception:
+            sys.exit(1)
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
     sys.exit(0)
 

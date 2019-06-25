@@ -1,11 +1,1 @@
-{
-  "installDate": "0001-01-01T00:00:00Z",
-  "assetId": "REPLACE_THIS_WITH_CI_BUILD_NUM",
-  "releaseNotes": "## Demisto Content Release Notes for version 2.5.0",
-  "modified": "REPLACE_THIS_WITH_RELEASE_DATE",
-  "ignoreGit": false,
-  "releaseDate": "REPLACE_THIS_WITH_RELEASE_DATE",
-  "version": -1,
-  "release": "2.5.0",
-  "id": ""
-}
+{"releaseDate": "2019-06-02T17:18:36.0+00:00", "release": "19.5.1", "version": -1, "id": "", "installDate": "0001-01-01T00:00:00Z", "assetId": 1, "releaseNotes": "## Demisto Content Release Notes for version 19.5.1 (1)\n##### Published on 02 June 2019\n### Integrations\n\n####  3 New Integrations\n- __Ipstack__\nOne of the leading IP to geolocation \nAPIs and global IP database services worldwide.\n\n.\n- __Looker__\nUse the Looker integration to query an explore, save queries as looks, run looks, and fetch look results as incidents.\n- __Palo Alto Networks PAN-OS__\nManage Palo Alto Networks Firewalls and Panorama. Make sure you read the Detailed Instructions section.\n\n####  2 Improved Integrations\n- __Palo Alto Networks WildFire v2__\nreturn wildfire-report as pdf file.\n- __FortiGate__\nAdded enhancement to update-policy, enabled keeping the existing data.\n\n##### Removed Integrations\n- __Panorama__\n\n---\n### Scripts\n\n####  2 Improved Scripts\n- __CommonServerPython__\nCamelize support for Python3. Fixed bug in Camelize function.\n- __IncidentAddSystem__\nAdded a new engine argument.\n\n---\n### Playbooks\n\n####  2 Improved Playbooks\n- __WildFire - Detonate file__\nEnable using WildFire and WildFire-v2 integrations to run the playbook.\n- __Extract Indicators From File - Generic__\nFixed mistaken identification of excel files as word documents.\n", "modified": "2019-06-02T17:18:36.0+00:00", "ignoreGit": false}
