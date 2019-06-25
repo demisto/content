@@ -377,8 +377,12 @@ def main():
         sys.exit(1)
     if options.test_filter:
         try:
+            print_color("Updating idset. Be patient if this is the first time...", LOG_COLORS.YELLOW)
+            subprocess.check_output(["./Tests/scripts/update_id_set.py"])
+            print_color("Checking that we have tests for all content...", LOG_COLORS.YELLOW)
             subprocess.check_call(["./Tests/scripts/configure_tests.py", "-s", "true"])
-        except Exception:
+        except Exception as ex:
+            print_color("Failed validating tests: {}".format(ex), LOG_COLORS.RED)
             sys.exit(1)
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
     sys.exit(0)

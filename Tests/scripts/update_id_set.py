@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import re
 import os
 import glob
@@ -509,5 +511,9 @@ if __name__ == '__main__':
         re_create_id_set()
 
     else:
-        print("Updating the id_set.json")
-        update_id_set()
+        if os.path.isfile('./Tests/id_set.json'):
+            print("Updating the id_set.json")
+            update_id_set()
+        else:
+            print("./Tests/id_set.json is missing. Recreating...")
+            re_create_id_set()
