@@ -3081,7 +3081,7 @@ def panorama_get_traffic_logs_command():
                                              removeNull=True),
             'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_logs_output}
         })
-    else:  # FIN
+    else:  # FINa
         query_traffic_logs_output['Status'] = 'Completed'
         logs = result['response']['result']['log']['logs']
 
