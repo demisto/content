@@ -29,7 +29,7 @@ CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '
 apostrophe = "'"
 SESSION = requests.session()
 REFERER = demisto.params().get('referer')
-HEADERS = {'referer': REFERER } if REFERER else {}
+HEADERS = {'referer': REFERER} if REFERER else {}
 
 ''' HELPER FUNCTIONS '''
 
