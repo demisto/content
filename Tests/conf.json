@@ -1200,22 +1200,26 @@
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 600,
             "nightly": true,
+            "instance_names": "rasterize_no_errors",
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
             "timeout": 500,
             "nightly": true,
+            "instance_names": "rasterize_no_errors",
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
