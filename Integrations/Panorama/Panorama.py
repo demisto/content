@@ -2832,6 +2832,9 @@ def panorama_refresh_edl_command():
     })
 
 
+''' IP Tags '''
+
+
 @logger
 def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
     entry: str = ''
@@ -2931,6 +2934,173 @@ def panorama_unregister_ip_tag_command():
         'ReadableContentsFormat': formats['text'],
         'HumanReadable': 'Unregistered ip-tag successfully'
     })
+
+
+''' Traffic Logs '''
+
+
+@logger
+def panorama_query_traffic_logs(query, number_of_logs, direction):
+    params = {
+        'type': 'log',
+        'log-type': 'traffic',
+        'key': API_KEY
+    }
+    if query:
+        params['query'] = query
+    if number_of_logs:
+        params['nlogs']: number_of_logs
+    if direction:
+        params['dir'] = direction
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_query_traffic_logs_command():
+    """
+    Query the traffic logs
+    """
+    query = demisto.args().get('query')
+    number_of_logs = demisto.args().get('number_of_logs')
+    direction = demisto.args().get('direction')
+
+    result = panorama_query_traffic_logs(query, number_of_logs, direction)
+
+
+    if result['response']['@status'] != 'success':
+        return_error('Query traffic logs failed')
+
+    query_traffic_output = {
+        'JobID': result['response']['result']['job'],
+        'Status': 'Pending'
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Query Traffic Logs:', query_traffic_output, ['JobID', 'Status'],
+                                         removeNull=True),
+        'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_output}
+    })
+
+
+@logger
+def panorama_get_traffic_logs(job_id):
+    params = {
+        'action': 'get',
+        'type': 'log',
+        'job-id': job_id,
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_check_traffic_logs_status_command():
+    job_id = demisto.args().get('job_id')
+    result = panorama_get_traffic_logs(job_id)
+
+    if result['response']['@status'] != 'success':
+        return_error('Check Traffic logs query status failed')
+
+    query_traffic_status_output = {
+        'JobID': job_id,
+        'Status': 'Pending'
+    }
+
+    if result['response']['result']['job']['status'] == 'FIN':
+        query_traffic_status_output['Status'] = 'Completed'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Query Traffic Logs status:', query_traffic_status_output, ['JobID', 'Status'],
+                                         removeNull=True),
+        'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_status_output}
+    })
+
+
+def prettify_traffic_logs(traffic_logs):
+    pretty_traffic_logs_arr = []
+    for traffic_log in traffic_logs:
+        pretty_traffic_log = {
+            'Action': traffic_log['action'],
+            'ActionSource': traffic_log['action_source'],
+            'Application': traffic_log['app'],
+            'Category': traffic_log['category'],
+            'DeviceName': traffic_log['device_name'],
+            'StartTime': traffic_log['start'],
+            'ReceiveTime': traffic_log['receive_time'],
+            'Destination': traffic_log['dst'],
+            'DestinationPort': traffic_log['dport'],
+            'Source': traffic_log['src'],
+            'SourcePort': traffic_log['sport'],
+            'Protocol': traffic_log['proto'],
+        }
+        pretty_traffic_logs_arr.append(pretty_traffic_log)
+
+    return pretty_traffic_logs_arr
+
+
+def panorama_get_traffic_logs_command():
+    job_id = demisto.args().get('job_id')
+    result = panorama_get_traffic_logs(job_id)
+
+    if result['response']['@status'] != 'success':
+        return_error('Check Traffic logs query status failed')
+
+    query_traffic_logs_output = {
+        'JobID': job_id,
+        'Status': 'Pending'
+    }
+
+    if result['response']['result']['job']['status'] != 'FIN':
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Traffic Logs status:', query_traffic_logs_output,
+                                             ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_logs_output}
+        })
+    else:  # FIN
+        query_traffic_logs_output['Status'] = 'Completed'
+        logs = result['response']['result']['log']['logs']
+
+        if logs['@count'] == 0:
+            demisto.results('No traffic logs matched the query')
+        else:
+            pretty_traffic_logs = prettify_traffic_logs(logs['entry'])
+            query_traffic_logs_output['Logs'] = pretty_traffic_logs
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Query Traffic Logs:', query_traffic_logs_output,
+                                                 ['JobID', 'Status'],
+                                                 removeNull=True),
+                'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_logs_output}
+            })
 
 
 ''' EXECUTION '''
@@ -3093,6 +3263,16 @@ def main():
 
         elif demisto.command() == 'panorama-delete-rule':
             panorama_delete_rule_command()
+
+        # Traffic Logs
+        elif demisto.command() == 'panorama-query-traffic-logs':
+            panorama_query_traffic_logs_command()
+
+        elif demisto.command() == 'panorama-check-traffic-logs-status':
+            panorama_check_traffic_logs_status_command()
+
+        elif demisto.command() == 'panorama-get-traffic-logs':
+            panorama_get_traffic_logs_command()
 
         # Pcaps
         elif demisto.command() == 'panorama-list-pcaps':

@@ -1,8 +1,7 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama_copy
   version: -1
-fromversion: 3.0.0
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -35,8 +34,8 @@ configuration:
   type: 0
 description: Manage Palo Alto Networks Firewalls and Panorama. Make sure you read
   the Detailed Instructions section.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS22
+name: Panorama_copy
 script:
   commands:
   - arguments:
@@ -178,6 +177,18 @@ script:
       description: target number of the firewall. use only on Panorama instance
       isArray: false
       name: target
+      required: false
+      secret: false
+    - default: false
+      description: Job ID
+      isArray: false
+      name: job-id
+      required: false
+      secret: false
+    - default: false
+      description: Query string
+      isArray: false
+      name: query
       required: false
       secret: false
     deprecated: false
@@ -1827,13 +1838,83 @@ script:
     description: Unregisters IP addresses from a tag
     execution: false
     name: panorama-unregister-ip-tag
-  isfetch: false
+  - arguments:
+    - default: false
+      description: Specify the match criteria for the logs. This is similar to the
+        query provided in the web interface under the Monitor tab when viewing the
+        logs.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Specify the number of logs to retrieve. The default is 100 when
+        the parameter is not specified. The maximum is 5000.
+      isArray: false
+      name: number_of_logs
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: backward
+      description: Specify whether logs are shown oldest first (forward) or newest
+        first (backward). Default is backward.
+      isArray: false
+      name: direction
+      predefined:
+      - backward
+      - forward
+      required: false
+      secret: false
+    deprecated: false
+    description: Query traffic logs
+    execution: false
+    name: panorama-query-traffic-logs
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID of the query
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Check traffic logs query status
+    execution: false
+    name: panorama-check-traffic-logs-status
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID of the query
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves traffic log query data by job id
+    execution: false
+    name: panorama-get-traffic-logs
   dockerimage: demisto/python3:3.7.3.221
+  isfetch: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: "Bug Fix - failed listing address groups, addresses where only 1 object was present."
+releaseNotes: Bug Fix - failed listing address groups, addresses where only 1 object
+  was present.
+fromversion: 3.0.0
