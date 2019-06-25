@@ -411,6 +411,5 @@ script:
   runonce: false
   script: ''
   type: python
-releaseNotes: Initial release of new Perch Integration
 tests:
 - Perch-Test

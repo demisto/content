@@ -9,6 +9,5 @@
     "SplunkSearch",
     "WildfireReport"
   ],
-  "toVersion": "3.0.1",
-  "releaseNotes": "updated file reputations"
+  "toVersion": "3.0.1"
 }
