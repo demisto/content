@@ -28,8 +28,6 @@ FETCH_QUEUE = demisto.params()['fetch_queue']
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
 SESSION = requests.session()
-REFERER = demisto.params().get('referer')
-HEADERS = {'Referer': REFERER} if REFERER else {}
 
 ''' HELPER FUNCTIONS '''
 
@@ -251,7 +249,7 @@ def create_ticket():
     hr = 'Ticket {} was created successfully.'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': raw_ticket_res.content,
+        'Contents': hr,
         'ContentsFormat': formats['text'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
