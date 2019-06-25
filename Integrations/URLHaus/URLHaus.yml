@@ -99,48 +99,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: IP address to query
-      isArray: false
-      name: ip
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieve host information from URLhaus
-    execution: false
-    name: ip
-    outputs:
-    - contextPath: IP.Address
-      description: IP address
-      type: String
-    - contextPath: IP.Malicious.Vendor
-      description: Vendor reporting the malicious status
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: Description of the malicious url
-      type: String
-    - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
-    - contextPath: URLhaus.IP.FirstSeen
-      description: When the IP was seen for the first time (UTC)
-      type: Date
-    - contextPath: URLhaus.IP.Blacklists
-      description: The status of the IP in different blacklists
-      type: Unknown
-    - contextPath: URLhaus.IP.URLs
-      description: URLs observed on this IP
-      type: unknown
-  - arguments:
-    - default: false
       description: domain to query
       isArray: false
       name: domain
@@ -185,7 +143,18 @@ script:
     - default: false
       description: MD5 or SHA256 of the file to query
       isArray: false
-      name: file
+      name: hash
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: MD5
+      description: MD5 or SHA256
+      isArray: false
+      name: hash_type
+      predefined:
+      - MD5
+      - ' SHA256'
       required: true
       secret: false
     deprecated: false
@@ -193,9 +162,48 @@ script:
     execution: false
     name: file
     outputs:
-    - contextPath: File.Name
-      description: Full Filename e.g. data.xls
-      type: string
+    - contextPath: "File.Size\t"
+      description: Size of the file in bytes
+      type: Number
+    - contextPath: File.MD5
+      description: MD5 Hash of the file
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: String
+    - contextPath: URLhaus.File.MD5
+      description: MD5 Hash of the file
+      type: String
+    - contextPath: URLhaus.File.SHA256
+      description: SHA256 hash of the file
+      type: String
+    - contextPath: URLhaus.File.Type
+      description: File type guessed by URLhaus (e.g. exe, doc, etc)
+      type: String
+    - contextPath: URLhaus.File.Size
+      description: File size in bytes
+      type: Number
+    - contextPath: URLhaus.File.Signature
+      description: Malware familiy
+      type: String
+    - contextPath: URLhaus.File.FirstSeen
+      description: UTC time when URLhaus has first seen this file (payload)
+      type: Date
+    - contextPath: URLhaus.File.LastSeen
+      description: UTC time when URLhaus has last seen this file (payload)
+      type: Date
+    - contextPath: URLhaus.File.DownloadLink
+      description: Location (URL) where you can download a copy of this file
+      type: String
+    - contextPath: URLhaus.File.VirusTotal.Percent
+      description: AV detection in percent (e.g. 24.14)
+      type: Number
+    - contextPath: URLhaus.File.VirusTotal.Link
+      description: Link to the Virustotal report
+      type: String
+    - contextPath: URLhaus.File.URLs
+      description: A list of malware URLs associated with this payload (max 100)
+      type: Unknown
   - arguments:
     - default: false
       description: The sha256 of the file to download
