@@ -81,4 +81,3 @@ script:
 tests:
   - "EWS Mail Sender Test"
   - "EWS Mail Sender Test 2"
-releaseNotes: "Improved handling of EWS concurrency limits."
