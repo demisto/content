@@ -35,6 +35,5 @@
 	"defaultRows": null,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": "",
-	"releaseNotes": "Added the Associated File Names indicator field, which displays files associated with a file hash."
+	"breachScript": ""
 }

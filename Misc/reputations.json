@@ -184,6 +184,5 @@
       "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
     }
-  ],
-  "releaseNotes": "updated file reputations"
+  ]
 }
