@@ -855,8 +855,10 @@ def main():
                 last_run['alarms'] = last_run['value']
             configuration_last_case = int(demisto.params().get('startingCaseID', 0))
 
-            start_alarms = last_run.get('alarms',
-                                        (datetime.now() - timedelta(days=1) + timedelta(hours=TIMEZONE)).isoformat())
+            start_alarms = last_run.get('alarms')
+            if start_alarms is None:
+                start_alarms, _ = parse_date_range(demisto.params()['alarm_fetch_time'],
+                                                   date_format='%Y/%m/%dT%H:%M:%S', timezone=TIMEZONE)
             last_case = last_run.get('cases', 0)
             # if last_case < configuration_last_case:
             last_case = max(last_case, configuration_last_case)
