@@ -67,7 +67,7 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     if query:
         params.update(query)
 
-    response = SESSION.request(method, url, data=data, params=params, files=files, headers=HEADERS)  # type: ignore
+    response = SESSION.request(method, url, data=data, params=params, files=files)  # type: ignore
 
     # handle request failure
     if response.status_code not in {200}:
