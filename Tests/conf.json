@@ -28,7 +28,6 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "instance_names": "ms_graph_mail_dev",
             "playbookID": "MicrosoftGraphMail-Test"
         },
         {
@@ -868,7 +867,6 @@
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev",
             "playbookID": "Test - Windows Defender Advanced Threat Protection"
         },
         {
@@ -884,12 +882,10 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "instance_names": "ms_graph_security_dev",
             "playbookID": "Microsoft Graph Test"
         },
         {
             "integrations": "Microsoft Graph User",
-            "instance_names": "ms_graph_user_dev",
             "playbookID": "Microsoft Graph - Test"
         },
         {
