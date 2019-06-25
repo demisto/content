@@ -28,6 +28,8 @@ FETCH_QUEUE = demisto.params()['fetch_queue']
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
 SESSION = requests.session()
+REFERER = demisto.params().get('referer')
+HEADERS = {'referer': REFERER } if REFERER else {}
 
 ''' HELPER FUNCTIONS '''
 
@@ -67,7 +69,7 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     if query:
         params.update(query)
 
-    response = SESSION.request(method, url, data=data, params=params, files=files)  # type: ignore
+    response = SESSION.request(method, url, data=data, params=params, files=files, headers=HEADERS)  # type: ignore
 
     # handle request failure
     if response.status_code not in {200}:
