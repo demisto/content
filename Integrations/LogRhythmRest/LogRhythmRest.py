@@ -29,9 +29,8 @@ HEADERS = {
 HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
                  "ThreatLevelComments", "DateUpdated", "HostZone"]
 LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
-PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID", "UserLogin", "DateUpdated"]
-NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location",
-                   "ThreatLevel", "DateUpdated", "HostZone", "BIP"]
+PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID","UserLogin" , "DateUpdated"]
+NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel", "DateUpdated", "HostZone", "BIP"]
 
 
 ''' HELPER FUNCTIONS '''
@@ -85,10 +84,13 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
     if res.headers['Content-Type'] != 'application/json':
         return_error('invalid url or port: ' + BASE_URL)
 
-    if res.status_code == 404 and res.json()['message']:
-        return_error(res.json()['message'])
+    if res.status_code == 404:
+        if res.json().get('message'):
+            return_error(res.json().get('message'))
+        else:
+            return_error('No data returned')
 
-    if res.status_code not in {200, 201, 207}:
+    if res.status_code not in {200, 201, 202, 207}:
         return_error(
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
                                                                           res.json()['message']))
@@ -146,7 +148,6 @@ def update_networks_keys(networks):
         new_networks.append(tmp_network)
     return new_networks
 
-
 def update_persons_keys(persons):
     new_persons = []
 
@@ -163,7 +164,6 @@ def update_persons_keys(persons):
         }
         new_persons.append(tmp_person)
     return new_persons
-
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -201,17 +201,28 @@ def add_host(data_args):
                    outputs=outputs, raw_response=res)
 
 
-def get_hosts(data_args):
+def get_hosts_by_entity(data_args):
     res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
     res = fix_location_value(res)
-
-    id = data_args.get('host-id')
-    if id:
-        res = get_host_by_id(id)
-
     res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
     human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
+    outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_hosts(data_args):
+    id = data_args.get('host-id')
+    if id:
+        res = get_host_by_id(id)
+    else:
+        res = http_request('GET', 'lr-admin-api/hosts?count=' + data_args['count'])
+
+    demisto.info(res)
+    res = fix_location_value(res)
+    res = update_hosts_keys(res)
+    context = createContext(res, removeNull=True)
+    human_readable = tableToMarkdown('Hosts information:', res, HOSTS_HEADERS)
     outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -307,11 +318,11 @@ def get_persons(data_args):
     if id:
         res = [http_request('GET', 'lr-admin-api/persons/' + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/persons/')
+        res = http_request('GET', 'lr-admin-api/persons' + '?count=' + data_args['count'])
     res = update_persons_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Person information:', context, PERSON_HEADERS)
+    human_readable = tableToMarkdown('Persons information:', context, PERSON_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
@@ -320,14 +331,36 @@ def get_networks(data_args):
     if id:
         res = [http_request('GET', 'lr-admin-api/networks/' + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/networks/')
+        res = http_request('GET', 'lr-admin-api/networks' + '?count=' + data_args['count'])
     res = fix_location_value(res)
     res = update_networks_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Network information:', context)
+    human_readable = tableToMarkdown('Networks information:', context)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
+
+def get_logs_by_alarm(data_args):
+    id = data_args.get('alarm-id')
+    res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+    res = json.loads(res['Data']['DrillDownResults']['RuleBlocks'][0]['DrillDownLogs'])
+
+    if isinstance(res, list):
+        for item in res:
+            item['LogMessage'] = json.loads(xml2json(str(item['logMessage'])))
+            del item['logMessage']
+    else:
+        res['LogMessage'] = json.loads(xml2json(str(res['logMessage'])))
+        del res['logMessage']
+
+    alarm = {}
+    alarm['AlarmId'] = id
+    alarm['AlarmLogs'] = res
+
+    context = createContext(alarm, removeNull=True)
+    outputs = {'Logrhythm.Alarm(val.AlarmId === obj.AlarmId)': context}
+    human_readable = tableToMarkdown('Logs for alarm ' + id + ':', alarm['AlarmLogs'])
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -343,6 +376,8 @@ def main():
         elif demisto.command() == 'lr-add-host':
             add_host(demisto.args())
         elif demisto.command() == 'lr-get-hosts-by-entity':
+            get_hosts_by_entity(demisto.args())
+        elif demisto.command() == 'lr-get-hosts':
             get_hosts(demisto.args())
         elif demisto.command() == 'lr-execute-query':
             execute_query(demisto.args())
@@ -352,6 +387,8 @@ def main():
             get_persons(demisto.args())
         elif demisto.command() == 'lr-get-networks':
             get_networks(demisto.args())
+        elif demisto.command() == 'lr-get-drilldown-alarm-by-id':
+            get_logs_by_alarm(demisto.args())
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
 
