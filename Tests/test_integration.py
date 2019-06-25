@@ -349,7 +349,7 @@ def disable_all_integrations(client):
         return
     to_disable = []
     for instance in int_instances['instances']:
-        if instance.get('enabled') == 'true':
+        if instance.get('enabled') == 'true' and instance.get("isIntegrationScript"):
             print("Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"), instance.get("brand")))
             to_disable.append(instance)
     if len(to_disable) > 0:
