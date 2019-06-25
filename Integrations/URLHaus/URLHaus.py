@@ -53,6 +53,13 @@ def http_request(method, command, data=None):
     return res
 
 
+def reformat_date(date):
+    try:
+        return dt.strptime(date.rstrip(' UTC'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S')
+    except Exception:
+        return 'Unknown'
+
+
 def query_url_information(url):
     return http_request('POST',
                         'url',
@@ -67,7 +74,7 @@ def query_host_information(host):
 
 def query_payload_information(hash_type, hash):
     return http_request('POST',
-                        'https://urlhaus-api.abuse.ch/v1/payload/',  # disable-secrets-detection
+                        'payload',
                         f'{hash_type}_hash={hash}')
 
 
@@ -143,8 +150,7 @@ def url_command():
 
         if url_information['query_status'] == 'ok':
             # URLHaus output
-            date_added = dt.strptime(url_information.get('date_added', '1970-01-01 00:00:00 UTC'),
-                                     '%Y-%m-%d %H:%M:%S UTC').strftime('%Y-%m-%dT%H:%M:%S')
+            date_added = reformat_date(url_information.get('date_added'))
             urlhaus_data = {
                 'ID': url_information.get('id', ''),
                 'Status': url_information.get('url_status', ''),
@@ -230,97 +236,6 @@ def url_command():
         return_error('Failed getting url data, please verify the arguments and parameters')
 
 
-def ip_command():
-    ip = demisto.args()['ip']
-
-    try:
-        ip_information = query_host_information(ip).json()
-
-        ec = {
-            'URL': {
-                'Data': ip
-            },
-            'DBotScore': {
-                'Type': 'ip',
-                'Vendor': 'URLhaus',
-                'Indicator': ip
-            }
-        }
-
-        if ip_information['query_status'] == 'ok':
-            # URLHaus output
-            first_seen = dt.strptime(ip_information.get('date_added', '1970-01-01 00:00:00 UTC'),
-                                     '%Y-%m-%d %H:%M:%S UTC').strftime('%Y-%m-%dT%H:%M:%S')
-
-            urlhaus_data = {
-                'FirstSeen': first_seen,
-                'Blacklist': ip_information.get('blacklists', {}),
-                'URLs': ip_information.get('urls', [])
-            }
-
-            # DBot score calculation
-            dbot_score, description = calculate_dbot_score(ip_information.get('blacklists', {}), THRESHOLD,
-                                                           COMPROMISED_IS_MALICIOUS)
-
-            ec['DBotScore']['Score'] = dbot_score
-            if dbot_score == 3:
-                ec['IP']['Malicious'] = {
-                    'Vendor': 'URLhaus',
-                    'Description': description
-                }
-
-            ec['URLhaus.IP(val.Address && val.Address === obj.Address)'] = urlhaus_data
-
-            human_readable = f'## URLhaus reputation for {ip}\n' \
-                f'URLhaus link: {ip_information.get("urlhaus_reference", "None")}\n' \
-                f'First seen: {first_seen}'
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': ip_information,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
-        elif ip_information['query_status'] == 'no_results':
-            ec['DBotScore']['Score'] = 0
-
-            human_readable = f'## URLhaus reputation for {ip}\n' \
-                f'No results!'
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': ip_information,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
-        elif ip_information['query_status'] == 'invalid_host':
-            human_readable = f'## URLhaus reputation for {ip}\n' \
-                f'Invalid IP!'
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': ip_information,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
-        else:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'ContentsFormat': formats['text'],
-                'Contents': f'Query results = {ip_information["query_status"]}'
-            })
-
-    except Exception:
-        demisto.debug(traceback.format_exc())
-        return_error('Failed getting IP data, please verify the arguments and parameters')
-
-
 def domain_command():
     domain = demisto.args()['domain']
 
@@ -340,8 +255,7 @@ def domain_command():
 
         if domain_information['query_status'] == 'ok':
             # URLHaus output
-            first_seen = dt.strptime(domain_information.get('firstseen', '1970-01-01 00:00:00 UTC'),
-                                     '%Y-%m-%d %H:%M:%S UTC').strftime('%Y-%m-%dT%H:%M:%S')
+            first_seen = reformat_date(domain_information.get('firstseen'))
 
             urlhaus_data = {
                 'FirstSeen': first_seen,
@@ -411,6 +325,104 @@ def domain_command():
         demisto.debug(traceback.format_exc())
         return_error('Failed getting domain data, please verify the arguments and parameters')
 
+
+
+
+
+def file_command():
+    hash = demisto.args()['hash']
+    hash_type = demisto.args()['hash_type'].lower()
+    if hash_type not in ['md5', 'sha256']:
+        return_error('Only accepting MD5 or SHA256 hash types')
+
+    try:
+        file_information = query_payload_information(hash_type, hash).json()
+
+        if file_information['query_status'] == 'ok' and file_information['md5_hash']:
+            # URLHaus output
+            first_seen = reformat_date(file_information.get('firstseen'))
+            last_seen = reformat_date(file_information.get('lastseen'))
+
+            urlhaus_data = {
+                'MD5': file_information.get('md5_hash', ''),
+                'SHA256': file_information.get('sha256_hash', ''),
+                'Type': file_information.get('file_type', ''),
+                'Size': int(file_information.get('file_size', '')),
+                'Signature': file_information.get('signature', ''),
+                'FirstSeen': first_seen,
+                'LastSeen': last_seen,
+                'DownloadLink': file_information.get('urlhaus_download', ''),
+                'URLs': file_information.get('urls', [])
+            }
+
+            virus_total_data = file_information.get('virustotal')
+            if virus_total_data:
+                urlhaus_data['VirusTotal'] = {
+                    'Percent': float(file_information.get('virustotal', {'percent': 0})['percent']),
+                    'Link': file_information.get('virustotal', {'link': ''})['link']
+                }
+
+            ec = {
+                'File': {
+                    'Size': urlhaus_data['Size'],
+                    'MD5': urlhaus_data['MD5'],
+                    'SHA256': urlhaus_data['SHA256']
+                },
+                'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
+            }
+
+            human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
+                f'URLhaus link: {urlhaus_data["DownloadLink"]}\n' \
+                f'Signature: {urlhaus_data["Signature"]}\n' \
+                f'MD5: {urlhaus_data["MD5"]}\n' \
+                f'SHA256: {urlhaus_data["SHA256"]}\n' \
+                f'First seen: {first_seen}\n' \
+                f'Last seen: {last_seen}\n'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': file_information,
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+        elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
+                file_information['query_status'] == 'no_results':
+            human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
+                f'No results!'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': file_information,
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+            })
+        elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
+            human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
+                f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': file_information,
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+            })
+        else:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': f'Query results = {file_information["query_status"]}'
+            })
+
+    except Exception:
+        print(traceback.format_exc())
+        demisto.debug(traceback.format_exc())
+        return_error('Failed getting file data, please verify the arguments and parameters')
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -422,10 +434,10 @@ try:
         demisto.results('ok')
     elif demisto.command() == 'url':
         url_command()
-    elif demisto.command() == 'ip':
-        ip_command()
     elif demisto.command() == 'domain':
         domain_command()
+    elif demisto.command() == 'file':
+        file_command()
 
 # Log exceptions
 except Exception as e:
