@@ -1,6 +1,6 @@
-id: HTTPListRedirects - Test 2
+id: HTTPListRedirects - Test SSL
 version: -1
-name: HTTPListRedirects - Test 2
+name: HTTPListRedirects - Test SSL
 description: 'Playbook to test HTTPListRedirects with bad ssl'
 starttaskid: "0"
 tasks:

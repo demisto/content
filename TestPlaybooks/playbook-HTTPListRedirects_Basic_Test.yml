@@ -1,6 +1,6 @@
-id: HTTPRedirectList Test
+id: HTTPListRedirects Basic Test
 version: -1
-name: HTTPRedirectList Test
+name: HTTPListRedirects Basic Test 
 starttaskid: "0"
 tasks:
   "0":

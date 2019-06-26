@@ -1325,10 +1325,10 @@
 
         },
         {
-            "playbookID": "HTTPListRedirects - Test 2"
+            "playbookID": "HTTPListRedirects - Test SSL"
         },
         {
-            "playbookID": "HTTPRedirectList Test"
+            "playbookID": "HTTPListRedirects Basic Test"
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
