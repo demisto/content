@@ -1,1 +1,11 @@
-{"releaseDate": "2019-06-26T14:22:59.0+00:00", "release": "19.6.1", "version": -1, "id": "", "installDate": "0001-01-01T00:00:00Z", "assetId": 1234, "releaseNotes": "## Demisto Content Release Notes for version 19.6.1 (1234)\n##### Published on 26 June 2019\n### Integrations\n\n####  Improved Integrations\n- __Palo Alto Networks PAN-OS__\nBug Fix - failed listing address groups, addresses where only 1 object was present.\n\n---\n### Scripts\n\n####  Improved Scripts\n- __HTTPListRedirects__\nAdded trust_any_certificate and use_system_proxy options.\n", "modified": "2019-06-26T14:22:59.0+00:00", "ignoreGit": false}
+{
+  "installDate": "0001-01-01T00:00:00Z",
+  "assetId": "REPLACE_THIS_WITH_CI_BUILD_NUM",
+  "releaseNotes": "## Demisto Content Release Notes for version 2.5.0",
+  "modified": "REPLACE_THIS_WITH_RELEASE_DATE",
+  "ignoreGit": false,
+  "releaseDate": "REPLACE_THIS_WITH_RELEASE_DATE",
+  "version": -1,
+  "release": "2.5.0",
+  "id": ""
+}
