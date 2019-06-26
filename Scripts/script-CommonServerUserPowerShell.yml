@@ -1,7 +1,7 @@
 commonfields:
-  id: CommonServerUserPowershell
+  id: CommonServerUserPowerShell
   version: -1
-name: CommonServerUserPowershell
+name: CommonServerUserPowerShell
 script: ""
 type: powershell
 tags:

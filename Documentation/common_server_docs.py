@@ -214,8 +214,8 @@ def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
     pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.py',
                                              'CommonServerPython', 'python')
-    psDoc, isErrorPS = createPsDocumentation('./Scripts/CommonServerPowershell/CommonServerPowershell.ps1',
-                                             'CommonServerPowershell', 'powershell')
+    psDoc, isErrorPS = createPsDocumentation('./Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
+                                             'CommonServerPowerShell', 'powershell')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 
     if isErrorJS or isErrorPy or isErrorPS or not finalDoc:
