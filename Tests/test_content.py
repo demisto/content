@@ -6,6 +6,7 @@ import random
 import argparse
 import requests
 from time import sleep
+from datetime import datetime
 
 import demisto
 from slackclient import SlackClient
@@ -23,7 +24,7 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
 
-SERVICE_RESTART_TIMEOUT = 90
+SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
 
@@ -448,12 +449,21 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
 def restart_demisto_service(ami, c):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
+    exit_code = 1
     for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
         sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        res = c.Login()
-        if exit_code == 0 and res.status_code == 200:
-            return
+        if exit_code != 0:
+            exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
+        if exit_code == 0:
+            print("{}: Checking login to the server...".format(datetime.now()))
+            try:
+                res = c.Login()
+                if res.status_code == 200:
+                    return
+                else:
+                    print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
+            except Exception as ex:
+                print_error("Failed verifying server start via login: {}".format(ex))
 
     raise Exception('Timeout waiting for demisto service to restart')
 
