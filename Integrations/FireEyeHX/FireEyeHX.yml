@@ -856,6 +856,5 @@ script:
       description: Get information on all hosts
   isfetch: true
   runonce: false
-releaseNotes: "add 'fireeye-hx-get-all-hosts-information' command"
 tests:
   - FireEye HX Test

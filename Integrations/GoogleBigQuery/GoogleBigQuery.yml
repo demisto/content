@@ -92,4 +92,3 @@ script:
   dockerimage: demisto/bigquery:1.0.0.239
   subtype: python3
   runonce: false
-releaseNotes: "-"
