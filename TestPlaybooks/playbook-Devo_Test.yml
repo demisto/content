@@ -111,8 +111,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      from:
-        simple: 2018-10-07T08:00:00Z
+      from: {}
       limit: {}
       query: {}
       queryId:
