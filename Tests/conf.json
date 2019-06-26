@@ -29,12 +29,12 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev",
+            "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -888,12 +888,12 @@
         {
             "integrations": "Windows Defender Advanced Threat Protection",
             "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev",
+            "instance_names": "windows_defender_atp_dev"
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
             "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_prod",
+            "instance_names": "windows_defender_atp_prod"
         },
         {
             "integrations": "Tanium",
