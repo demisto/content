@@ -567,7 +567,7 @@ class IntegrationLogger(object):
                 self.messages.append(message.message.encode('utf-8'))
             else:
                 # try encode the message itself
-                self.messages.append(message.decode('utf-8'))
+                self.messages.append(message.encode('utf-8'))
 
     def print_log(self, verbose=False):
         if self.messages:
