@@ -523,4 +523,3 @@ outputs:
   type: number
 tests:
   - Wildfire Test
-releaseNotes: Bug fix - WildFire supports detonation of OOXML, not XML.
