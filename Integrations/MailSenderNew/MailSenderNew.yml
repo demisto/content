@@ -102,3 +102,4 @@ script:
   runonce: false
 tests:
   - Mail Sender (New) Test
+releaseNotes: "Support for Internationalized Headers. Fix for new lines in message subject."
