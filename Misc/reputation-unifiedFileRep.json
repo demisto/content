@@ -27,6 +27,11 @@
     "sha256": {
       "simple": "File.SHA256",
       "complex": null
+    },
+    "ssdeep": {
+      "simple": "File.SSDeep",
+      "complex": null
     }
-  }
+  },
+  "releaseNotes": "updated file reputations"
 }
