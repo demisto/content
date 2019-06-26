@@ -93,12 +93,10 @@ class FilesValidator(object):
             if file_status.lower().startswith('r'):
                 file_status = 'r'
                 file_path = file_data[2]
+
             if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
-                dir_path = os.path.dirname(file_path)
-                try:
-                    file_path = list(filter(lambda x: not x.endswith('unified.yml'), glob.glob(dir_path + "/*.yml")))[0]
-                except IndexError:
-                    continue
+                # naming convention - code file and yml file in packages must have same name.
+                file_path = os.path.splitext(file_path)[0] + '.yml'
             elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
 
