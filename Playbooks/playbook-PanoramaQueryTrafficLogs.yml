@@ -390,6 +390,6 @@ inputs:
   required: false
   description: action for the query
 outputs: []
-releaseNotes: "Query traffic logs in a PAN-OS Firewall or Panorama devices, and waits for the results using GenericPooling.
+releaseNotes: "Query traffic logs in a PAN-OS Firewall or Panorama devices, and waits for the results using GenericPooling."
 tests:
 - palo_alto_firewall_test_pb
