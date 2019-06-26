@@ -36,30 +36,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
+      description: Endpoint ID
       isArray: true
-      name: item_ids
+      name: endpoint_id
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
-      isArray: false
-      name: is_active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
-      isArray: false
-      name: limit
-      required: false
       secret: false
     deprecated: false
     description: Get items from service.
@@ -75,6 +55,8 @@ script:
     - contextPath: Example.Item.CreatedDate
       description: Item creation date
       type: date
+  - deprecated: false
+    execution: false
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
