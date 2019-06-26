@@ -32,7 +32,8 @@ class StructureValidator(object):
         CLASSIFIER_REGEX,
         SCRIPT_YML_REGEX,
         INCIDENT_FIELD_REGEX,
-        MISC_REGEX
+        MISC_REGEX,
+        REPUTATION_REGEX
     ]
     SKIPPED_SCHEMAS = [
         TEST_DATA_REGEX,
@@ -44,7 +45,8 @@ class StructureValidator(object):
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
         INTEGRATION_JS_REGEX,
-        INTEGRATION_PY_REGEX
+        INTEGRATION_PY_REGEX,
+        REPUTATION_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -59,7 +61,7 @@ class StructureValidator(object):
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
         INCIDENT_FIELDS_REGEX: "incidentfields",
-        INCIDENT_FIELD_REGEX: "incidentfield"
+        INCIDENT_FIELD_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"
