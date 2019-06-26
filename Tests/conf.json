@@ -28,7 +28,13 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test"
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -881,7 +887,13 @@
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection"
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_dev"
+        },
+        {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_prod"
         },
         {
             "integrations": "Tanium",
@@ -896,11 +908,23 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test"
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_dev"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_prod"
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test"
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_dev"
+        },
+        {
+            "integrations": "Microsoft Graph User",
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_prod"
         },
         {
             "integrations": "RedLock",
