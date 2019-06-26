@@ -2939,20 +2939,50 @@ def panorama_unregister_ip_tag_command():
 ''' Traffic Logs '''
 
 
+def build_traffic_logs_query(source=None, destination=None, receive_time=None, application=None, to_port=None, action=None):
+    query = ''
+    if source and len(source) > 0:
+        query += '(addr.src in ' + source + ')'
+    if destination and len(destination) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(addr.dst in ' + source + ')'
+    if receive_time and len(receive_time) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(receive_time geq ' + receive_time + ')'
+    if application and len(application) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(app eq ' + application + ')'
+    if to_port and len(to_port) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(port.dst eq ' + to_port + ')'
+    if action and len(action) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(action eq ' + action + ')'
+    return query
+
+
 @logger
-def panorama_query_traffic_logs(query, number_of_logs, direction):
+def panorama_query_traffic_logs(number_of_logs, direction, query,
+                                source, destination, receive_time, application, to_port, action):
     params = {
         'type': 'log',
         'log-type': 'traffic',
         'key': API_KEY
     }
-    if query:
+
+    if query and len(query) > 0:
         params['query'] = query
+    else:
+        params['query'] = build_traffic_logs_query(source, destination, receive_time, application, to_port, action)
     if number_of_logs:
-        params['nlogs']: number_of_logs
+        params['nlogs'] = number_of_logs
     if direction:
         params['dir'] = direction
-
     result = http_request(
         URL,
         'GET',
@@ -2966,12 +2996,22 @@ def panorama_query_traffic_logs_command():
     """
     Query the traffic logs
     """
-    query = demisto.args().get('query')
     number_of_logs = demisto.args().get('number_of_logs')
     direction = demisto.args().get('direction')
+    query = demisto.args().get('query')
+    source = demisto.args().get('source')
+    destination = demisto.args().get('destination')
+    receive_time = demisto.args().get('receive_time')
+    application = demisto.args().get('application')
+    to_port = demisto.args().get('to_port')
+    action = demisto.args().get('action')
 
-    result = panorama_query_traffic_logs(query, number_of_logs, direction)
+    if query and (source or destination or receive_time or application or to_port or action):
+        return_error('Use the query argument or the '
+                     'source, destination, receive_time, application, to_port, action arguments to build your query')
 
+    result = panorama_query_traffic_logs(number_of_logs, direction, query,
+                                         source, destination, receive_time, application, to_port, action)
 
     if result['response']['@status'] != 'success':
         return_error('Query traffic logs failed')
@@ -3015,7 +3055,7 @@ def panorama_check_traffic_logs_status_command():
     result = panorama_get_traffic_logs(job_id)
 
     if result['response']['@status'] != 'success':
-        return_error('Check Traffic logs query status failed')
+        return_error('Query Traffic logs failed')
 
     query_traffic_status_output = {
         'JobID': job_id,
@@ -3039,22 +3079,41 @@ def panorama_check_traffic_logs_status_command():
 def prettify_traffic_logs(traffic_logs):
     pretty_traffic_logs_arr = []
     for traffic_log in traffic_logs:
-        pretty_traffic_log = {
-            'Action': traffic_log['action'],
-            'ActionSource': traffic_log['action_source'],
-            'Application': traffic_log['app'],
-            'Category': traffic_log['category'],
-            'DeviceName': traffic_log['device_name'],
-            'StartTime': traffic_log['start'],
-            'ReceiveTime': traffic_log['receive_time'],
-            'Destination': traffic_log['dst'],
-            'DestinationPort': traffic_log['dport'],
-            'Source': traffic_log['src'],
-            'SourcePort': traffic_log['sport'],
-            'Protocol': traffic_log['proto'],
-        }
-        pretty_traffic_logs_arr.append(pretty_traffic_log)
+        pretty_traffic_log = {}
+        if 'action' in traffic_log:
+            pretty_traffic_log['Action'] = traffic_log['action']
+        if 'action_source' in traffic_log:
+            pretty_traffic_log['ActionSource'] = traffic_log['action_source']
+        if 'application' in traffic_log:
+            pretty_traffic_log['Application'] = traffic_log['application']
+        if 'category' in traffic_log:
+            pretty_traffic_log['Category'] = traffic_log['category']
+        if 'device_name' in traffic_log:
+            pretty_traffic_log['DeviceName'] = traffic_log['device_name']
+        if 'dst' in traffic_log:
+            pretty_traffic_log['Destination'] = traffic_log['dst']
+        if 'dport' in traffic_log:
+            pretty_traffic_log['DestinationPort'] = traffic_log['dport']
+        if 'from' in traffic_log:
+            pretty_traffic_log['FromZone'] = traffic_log['from']
+        if 'proto' in traffic_log:
+            pretty_traffic_log['Protocol'] = traffic_log['proto']
+        if 'rule' in traffic_log:
+            pretty_traffic_log['Rule'] = traffic_log['rule']
+        if 'receive_time' in traffic_log:
+            pretty_traffic_log['ReceiveTime'] = traffic_log['receive_time']
+        if 'session_end_reason' in traffic_log:
+            pretty_traffic_log['SessionEndReason'] = traffic_log['session_end_reason']
+        if 'src' in traffic_log:
+            pretty_traffic_log['Source'] = traffic_log['src']
+        if 'sport' in traffic_log:
+            pretty_traffic_log['SourcePort'] = traffic_log['sport']
+        if 'start' in traffic_log:
+            pretty_traffic_log['StartTime'] = traffic_log['start']
+        if 'to' in traffic_log:
+            pretty_traffic_log['ToZone'] = traffic_log['to']
 
+        pretty_traffic_logs_arr.append(pretty_traffic_log)
     return pretty_traffic_logs_arr
 
 
@@ -3063,7 +3122,7 @@ def panorama_get_traffic_logs_command():
     result = panorama_get_traffic_logs(job_id)
 
     if result['response']['@status'] != 'success':
-        return_error('Check Traffic logs query status failed')
+        return_error('Query Traffic logs failed')
 
     query_traffic_logs_output = {
         'JobID': job_id,
@@ -3077,28 +3136,25 @@ def panorama_get_traffic_logs_command():
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Query Traffic Logs status:', query_traffic_logs_output,
-                                             ['JobID', 'Status'],
-                                             removeNull=True),
+                                             ['JobID', 'Status'], removeNull=True),
             'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_logs_output}
         })
-    else:  # FINa
+    else:  # FIN
         query_traffic_logs_output['Status'] = 'Completed'
         logs = result['response']['result']['log']['logs']
-
-        if logs['@count'] == 0:
+        if logs['@count'] == '0':
             demisto.results('No traffic logs matched the query')
         else:
             pretty_traffic_logs = prettify_traffic_logs(logs['entry'])
             query_traffic_logs_output['Logs'] = pretty_traffic_logs
-
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Query Traffic Logs:', query_traffic_logs_output,
-                                                 ['JobID', 'Status'],
-                                                 removeNull=True),
+                'HumanReadable': tableToMarkdown('Query Traffic Logs:', pretty_traffic_logs,
+                                                 ['JobID', 'Source', 'SourcePort', 'Destination', 'DestinationPort',
+                                                  'Application', 'Action'], removeNull=True),
                 'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_logs_output}
             })
 
