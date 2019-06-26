@@ -971,7 +971,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+      - "48"
     scriptarguments:
       facet: {}
       group: {}
@@ -996,31 +996,61 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "46":
-    id: "46"
-    taskid: 08db4fcf-0ffc-4370-846e-d32f499a72d6
-    type: regular
+  "48":
+    id: "48"
+    taskid: ce3cab3a-8c0f-417d-84f9-1a81cfb18bb3
+    type: condition
     task:
-      id: 08db4fcf-0ffc-4370-846e-d32f499a72d6
+      id: ce3cab3a-8c0f-417d-84f9-1a81cfb18bb3
       version: -1
-      name: Get process by pid
+      name: Check results
       description: Gets basic process information for segment (segment_id) of process
         (process_id)
-      script: '|||cb-get-process'
-      type: regular
-      iscommand: true
+      type: condition
+      iscommand: false
       brand: ""
-    scriptarguments:
-      pid:
-        simple: "3944"
-      segid:
-        simple: "1559607588140"
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Process.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 77710dc3c7ba83c79a3d1643ad3f3c89
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 40d056a5-7a2b-48f7-8305-364a9190d425
+    type: title
+    task:
+      id: 40d056a5-7a2b-48f7-8305-364a9190d425
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 550,
-          "y": 1550
+          "y": 1740
         }
       }
     note: false
