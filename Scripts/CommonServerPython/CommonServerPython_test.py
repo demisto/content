@@ -24,8 +24,8 @@ INFO = {'b': 1,
 def test_xml():
     import json
 
-    xml = "<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name>" \
-          "</employee></work>"
+    xml = b"<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name>" \
+          b"</employee></work>"
     jsonExpected = '{"work": {"employee": [{"id": "100", "name": "foo"}, {"id": "200", "name": "goo"}]}}'
 
     jsonActual = xml2json(xml)
@@ -36,7 +36,7 @@ def test_xml():
     assert jsonDict['work']['employee'][1]['name'] == "goo", 'name of second employee must be goo'
 
     xmlActual = json2xml(jsonActual)
-    assert xmlActual == xml, "expected\n" + xml + "\n to equal \n" + xmlActual
+    assert xmlActual == xml, "expected:\n{}\nto equal:\n{}".format(xml, xmlActual)
 
 
 def toEntry(table):
