@@ -8,7 +8,6 @@ import argparse
 from collections import OrderedDict
 from multiprocessing import Pool, cpu_count
 import time
-import traceback
 
 from Tests.scripts.constants import *
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
@@ -275,7 +274,8 @@ def get_script_package_data(package_path):
         package_path = os.path.join(package_path, '')
     yml_files = glob.glob(package_path + '*.yml')
     if not yml_files:
-        raise Exception("No yml files found in package path: {}. Is this really a package dir? If not remove it.".format(package_path)) 
+        raise Exception("No yml files found in package path: {}. "
+                        "Is this really a package dir? If not remove it.".format(package_path))
     yml_path = yml_files[0]
     code_type = get_yaml(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
