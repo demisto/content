@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -41,9 +41,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
       indicator:
         simple: e1112134b6dcc8bed54e0e34d8ac272795e73d74
@@ -52,96 +49,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: e1ac6551-2244-4245-8e30-6edf8a4ccc8a
-    type: condition
-    task:
-      id: e1ac6551-2244-4245-8e30-6edf8a4ccc8a
-      version: -1
-      name: Assert dbot score
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: DBotScore
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: b28c9021-41a7-4407-884f-3d054bd912c8
-    type: regular
-    task:
-      id: b28c9021-41a7-4407-884f-3d054bd912c8
-      version: -1
-      name: Delete context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 1c0e978b-b9aa-4f53-8df9-50037932e0b6
-    type: title
-    task:
-      id: 1c0e978b-b9aa-4f53-8df9-50037932e0b6
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
+          "y": 370
         }
       }
     note: false
@@ -162,7 +70,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "8"
+      - "2"
     scriptarguments:
       comment:
         simple: SHA1 test hash
@@ -184,37 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: b1b20f4c-8b81-4572-80ae-e2ca8896ece0
-    type: regular
-    task:
-      id: b1b20f4c-8b81-4572-80ae-e2ca8896ece0
-      version: -1
-      name: Sleep 5 seconds
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 195
         }
       }
     note: false
@@ -225,7 +103,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 415,
         "width": 380,
         "x": 50,
         "y": 50
