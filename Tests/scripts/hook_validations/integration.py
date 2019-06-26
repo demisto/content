@@ -7,6 +7,7 @@ from Tests.test_utils import print_error, get_yaml
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 class IntegrationValidator(object):
     """IntegrationValidator is designed to validate the correctness of the file structure we enter to content repo. And
     also try to catch possible Backward compatibility breaks due to the preformed changes.
