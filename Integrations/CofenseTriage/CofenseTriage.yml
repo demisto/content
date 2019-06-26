@@ -248,4 +248,3 @@ script:
   runonce: false
 tests:
   - Cofense Triage Test
-releaseNotes: Cofense Triage new integration

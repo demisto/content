@@ -28,8 +28,13 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "instance_names": "ms_graph_mail_dev",
-            "playbookID": "MicrosoftGraphMail-Test"
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -882,8 +887,13 @@
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection"
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_dev"
+        },
+        {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_prod"
         },
         {
             "integrations": "Tanium",
@@ -898,13 +908,23 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "instance_names": "ms_graph_security_dev",
-            "playbookID": "Microsoft Graph Test"
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_dev"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_prod"
         },
         {
             "integrations": "Microsoft Graph User",
-            "instance_names": "ms_graph_user_dev",
-            "playbookID": "Microsoft Graph - Test"
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_dev"
+        },
+        {
+            "integrations": "Microsoft Graph User",
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_prod"
         },
         {
             "integrations": "RedLock",
@@ -1329,6 +1349,12 @@
 
         },
         {
+            "playbookID": "HTTPListRedirects - Test SSL"
+        },
+        {
+            "playbookID": "HTTPListRedirects Basic Test"
+        },
+        {
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
@@ -1649,8 +1675,7 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
-        "Cofense Triage Test": "Creds only works on demo4",
-        "Test - Windows Defender Advanced Threat Protection": "Test needs to be fixed and updated"
+        "Cofense Triage Test": "Creds only works on demo4"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1662,6 +1687,7 @@
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
+        "FireEye ETP": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
