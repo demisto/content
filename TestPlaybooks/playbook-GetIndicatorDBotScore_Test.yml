@@ -27,38 +27,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 64cc4a6d-3bb9-454e-817e-232f8ef6860d
-    type: regular
-    task:
-      id: 64cc4a6d-3bb9-454e-817e-232f8ef6860d
-      version: -1
-      name: file_command_enrichment_test_script_helper
-      scriptName: file_command_enrichment_test_script_helper
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
-    taskid: e38cf94b-3327-4d03-8c3f-bce56271f644
+    taskid: fe0f0294-e058-4fde-8100-040ed5d9b181
     type: regular
     task:
-      id: e38cf94b-3327-4d03-8c3f-bce56271f644
+      id: fe0f0294-e058-4fde-8100-040ed5d9b181
       version: -1
       name: Get Indicator DBot Score
       description: Add into the incident's context the system internal DBot score
@@ -69,10 +43,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "3"
     scriptarguments:
       indicator:
-        simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
+        simple: e1112134b6dcc8bed54e0e34d8ac272795e73d74
     separatecontext: false
     view: |-
       {
@@ -111,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -132,7 +106,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     scriptarguments:
       all:
         simple: "yes"
@@ -167,37 +141,50 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 21bc4d8d-cb81-471e-8670-e93d9dbb1eae
+  "7":
+    id: "7"
+    taskid: 15b11383-5e38-410c-884a-faedf29b9673
     type: regular
     task:
-      id: 21bc4d8d-cb81-471e-8670-e93d9dbb1eae
+      id: 15b11383-5e38-410c-884a-faedf29b9673
       version: -1
-      name: Wait 5 seconds
-      description: Sleep for X seconds
-      scriptName: Sleep
+      name: Create Indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+      - "2"
     scriptarguments:
-      seconds:
-        simple: "5"
+      comment:
+        simple: SHA1 test hash
+      customFields: {}
+      merge: {}
+      relatedIncidents: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      source:
+        simple: Test Indicator
+      sourceTimeStamp: {}
+      type:
+        simple: SHA1
+      value:
+        simple: e1112134b6dcc8bed54e0e34d8ac272795e73d74
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 370
         }
       }
     note: false
@@ -208,7 +195,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50
