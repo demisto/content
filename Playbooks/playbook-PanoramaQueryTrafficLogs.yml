@@ -13,6 +13,7 @@ tasks:
       id: 7de51952-0933-4b9c-8bf1-b9bd0a1e887d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -92,6 +93,7 @@ tasks:
       id: 0c582d23-1783-4574-82db-35350df254ff
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -201,6 +203,7 @@ tasks:
       id: eec80951-45c2-4823-8f68-e6a27deb77e0
       version: -1
       name: Filter JobID
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -255,6 +258,7 @@ tasks:
       id: 0d71170a-8e17-41f5-8d33-15294a1dcd6e
       version: -1
       name: GenericPolling
+      description: ""
       playbookName: GenericPolling
       type: playbook
       iscommand: false
