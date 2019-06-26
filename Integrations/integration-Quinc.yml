@@ -188,12 +188,7 @@ script:
         'ips': { 'targets' : [args['targetIP']]},
         'Volatile' : {
           'Operation': 12,
-          'IncludeProcessTree' : True,
-          'ProcessTreeOptions' : {
-            'DetectHiddenProcesses' : True,
-            'IncludeDlls' : True,
-            'IncludeSockets' : True
-          }
+          'IncludeProcessTree' : True
         }
       }
       res = send_request('POST',  QUINC_URL + url, json.dumps(data))
