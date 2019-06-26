@@ -29,11 +29,13 @@ def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
 
 
-def run_command(command, is_silenced=True):
+def run_command(command, is_silenced=True, exit_on_error=True):
     """Run a bash command in the shell.
 
     Args:
         command (string): The string of the command you want to execute.
+        is_silenced (bool): Whether to print command output.
+        exit_on_error (bool): Whether to exit on command error.
 
     Returns:
         string. The output of the command you are trying to execute.
@@ -45,9 +47,12 @@ def run_command(command, is_silenced=True):
 
     output, err = p.communicate()
     if err:
-        print_error("Failed to run command " + command)
-        print_error('error details:\n{}'.format(err))
-        sys.exit(1)
+        if exit_on_error:
+            print_error('Failed to run command {}\nerror details:\n{}'.format(command, err))
+            sys.exit(1)
+        else:
+            raise RuntimeError('Failed to run command {}\nerror details:\n{}'.format(command, err))
+
     return output
 
 
@@ -133,6 +138,11 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
+def get_release_notes_file_path(file_path):
+    file_name = os.path.basename(file_path)
+    return os.path.join('Releases', 'LatestRelease', os.path.splitext(file_name)[0] + '.md')
 
 
 def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):

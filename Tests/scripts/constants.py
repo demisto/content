@@ -75,7 +75,7 @@ DIR_LIST = [
     BETA_INTEGRATIONS_DIR
 ]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd'] + ['r{:03}'.format(i) for i in range(101)]
+KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
 CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 

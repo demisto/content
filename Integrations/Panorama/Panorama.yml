@@ -1836,4 +1836,3 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: "Bug Fix - failed listing address groups, addresses where only 1 object was present."
