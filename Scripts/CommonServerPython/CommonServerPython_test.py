@@ -100,8 +100,8 @@ def test_tbl_to_md_multiline():
     # escaping characters: multiline + md-chars
     data = copy.deepcopy(DATA)
     for i, d in enumerate(data):
-        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1, )
-        d['header_3'] = 'c%d|1' % (i + 1, )
+        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
+        d['header_3'] = 'c%d|1' % (i + 1,)
 
     table = tableToMarkdown('tableToMarkdown test with multiline', data)
     expected_table = '''### tableToMarkdown test with multiline
@@ -430,3 +430,9 @@ def test_get_error_need_raise_error_on_non_error_input():
         get_error(execute_command_results)
 
     assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+
+
+def test_logger():
+    from CommonServerPython import LOG
+    LOG(u'€')
+    LOG(Exception(u'€'))
