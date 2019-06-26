@@ -28,6 +28,5 @@
       "simple": "File.SHA256",
       "complex": null
     }
-  },
-  "releaseNotes": "updated file reputations"
+  }
 }

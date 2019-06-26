@@ -401,6 +401,5 @@ script:
     description: Get the results of a previous top tags search
   dockerimage: demisto/python3:3.7.2.214
   runonce: false
-releaseNotes: Created AutoFocus V2 integration in a package strcture
 tests:
   - AutoFocus V2 test

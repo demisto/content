@@ -734,9 +734,5 @@ script:
   script: '-'
   type: python
   subtype: python3
-releaseNotes: 'Added 3 new commands: - microsoft-atp-advanced-hunting - Run advanced
-  queries like you would using ATP portal. - microsoft-atp-create-alert - Create a
-  new alert entity using event data, as obtained from the Advanced Hunting. - microsoft-atp-get-alert-related-user
-  - Retrieves the user associated to a specific alert.'
 tests:
 - Test - Windows Defender Advanced Threat Protection
