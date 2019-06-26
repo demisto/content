@@ -33,8 +33,8 @@ try:
         if label not in inc1_labels:
             in2not1.append(label)
 
-    md = tableToMarkdown("Labels in issue {} but not in issue {}".format(inc1, inc2), in1not2)
-    md += "\n" + tableToMarkdown("Labels in issue {1} but not in issue {0}".format(inc1, inc2), in2not1)
+    md = tableToMarkdown("Labels of incident {} but not of incident {}".format(inc1, inc2), in1not2)
+    md += "\n" + tableToMarkdown("Labels of incident  {1} but not of incident {0}".format(inc1, inc2), in2not1)
 
     if not in2not1 and not in1not2:
         md = "No different labels."
