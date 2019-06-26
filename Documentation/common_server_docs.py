@@ -180,7 +180,7 @@ def createPsDocumentation(path, origin, language):
         description = parameters[0].split('.DESCRIPTION')[1].strip()
         if not description:
             isErrorPS = True
-            print("Missing description for in PS function {}.\n".format(function_name))
+            print("Missing description for PS function {}.\n".format(function_name))
         function_doc['description'] = description
 
         arguments = []
