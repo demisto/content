@@ -2528,4 +2528,3 @@ script:
   type: python
 tests:
 - Carbon Black Enterprise Protection V2 Test
-releaseNotes: "-"
