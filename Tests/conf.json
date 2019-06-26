@@ -468,6 +468,10 @@
             "playbookID": "Wildfire Test"
         },
         {
+            "integrations": "WildFire-v2",
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
+        },
+        {
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
