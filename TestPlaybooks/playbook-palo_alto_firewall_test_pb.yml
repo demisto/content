@@ -836,7 +836,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7975
+          "y": 8470
         }
       }
     note: false
@@ -1494,7 +1494,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "91"
     scriptarguments:
       IPs:
         simple: 10.10.10.10
@@ -1511,6 +1511,91 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "90":
+    id: "90"
+    taskid: ca74034c-bd7b-40e3-8392-9b6cbcb03784
+    type: playbook
+    task:
+      id: ca74034c-bd7b-40e3-8392-9b6cbcb03784
+      version: -1
+      name: PanoramaQueryTrafficLogs
+      playbookName: PanoramaQueryTrafficLogs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "91":
+    id: "91"
+    taskid: 0037bbab-6c07-4d6d-8e1a-bfeda0b28f5d
+    type: title
+    task:
+      id: 0037bbab-6c07-4d6d-8e1a-bfeda0b28f5d
+      version: -1
+      name: Traffic Logs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "92":
+    id: "92"
+    taskid: b0a44184-db2c-471f-86a3-a2a42722e713
+    type: regular
+    task:
+      id: b0a44184-db2c-471f-86a3-a2a42722e713
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1519,7 +1604,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7990,
+        "height": 8485,
         "width": 380,
         "x": 50,
         "y": 50

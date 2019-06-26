@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama_copy
+  id: Panorama
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -34,8 +34,8 @@ configuration:
   type: 0
 description: Manage Palo Alto Networks Firewalls and Panorama. Make sure you read
   the Detailed Instructions section.
-display: Palo Alto Networks PAN-OS22
-name: Panorama_copy
+display: Palo Alto Networks PAN-OS
+name: Panorama
 script:
   commands:
   - arguments:
@@ -1867,6 +1867,42 @@ script:
       - forward
       required: false
       secret: false
+    - default: false
+      description: source address for the query
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: destination address for the query
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - default: false
+      description: receive_time greater than for the query, e.g, YYYY/MM/DD HH:MM:SS
+      isArray: false
+      name: receive_time
+      required: false
+      secret: false
+    - default: false
+      description: application for the query
+      isArray: false
+      name: application
+      required: false
+      secret: false
+    - default: false
+      description: to_port(destination port) for the query
+      isArray: false
+      name: to_port
+      required: false
+      secret: false
+    - default: false
+      description: action for the query
+      isArray: false
+      name: action
+      required: false
+      secret: false
     deprecated: false
     description: Query traffic logs
     execution: false
@@ -1907,6 +1943,61 @@ script:
     description: Retrieves traffic log query data by job id
     execution: false
     name: panorama-get-traffic-logs
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Action
+      description: Action of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ActionSource
+      description: Action source of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Application
+      description: Application of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Category
+      description: Category of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.DeviceName
+      description: Device name of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Destination
+      description: Destination of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.DestinationPort
+      description: Destination port of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.FromZone
+      description: From zone of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Protocol
+      description: Protocol of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ReceiveTime
+      description: Receive time of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Rule
+      description: Rule of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.SessionEndReason
+      description: Session end reason of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Source
+      description: Source of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.SourcePort
+      description: Source port of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.StartTime
+      description: Start time of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ToZone
+      description: To zone of the traffic log
+      type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
@@ -1915,6 +2006,6 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: Bug Fix - failed listing address groups, addresses where only 1 object
-  was present.
+releaseNotes: "Bug Fix - failed listing address groups, addresses where only 1 object was present.
+              Support investigating traffic logs use-case using th commands: 'panorama-query-traffic-logs', 'panorama-check-traffic-logs-status', 'panorama-get-traffic-logs'"
 fromversion: 3.0.0
