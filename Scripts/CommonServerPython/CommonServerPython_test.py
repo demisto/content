@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult
 
 import copy
 import pytest
@@ -431,3 +432,11 @@ def test_get_error_need_raise_error_on_non_error_input():
         get_error(execute_command_results)
 
     assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+
+
+def test_fileResult(mocker):
+    test_data = "this is a test"
+    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
+    res = fileResult("test.txt", test_data)
+    assert res['File'] == "test.txt"
