@@ -1,0 +1,1 @@
+Support equal sign (=) in email indicator
