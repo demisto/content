@@ -1,0 +1,1463 @@
+category: Endpoint
+commonfields:
+  id: SentinelOne RC
+  version: -1
+configuration:
+- display: Server URL (e.g. https://usea1.sentinelone.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '5'
+  display: Threats minimum risk level when importing incidents (0-10)
+  name: fetch_threat_rank
+  required: false
+  type: 0
+description: End point protection
+display: SentinelOne RC
+name: SentinelOne RC
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: A list of agent IDs (Comma separated list). You can also enter
+        only one agent ID and decommission it.
+      isArray: false
+      name: agentIds
+      required: false
+      secret: false
+    - default: false
+      description: List of Site IDs to filter by
+      isArray: false
+      name: siteIds
+      required: false
+      secret: false
+    - default: false
+      description: Only include uninstalled agents
+      isArray: false
+      name: isUninstalled
+      required: false
+      secret: false
+    - default: false
+      description: Include active, decommissioned or both
+      isArray: false
+      name: isDecommissioned
+      required: false
+      secret: false
+    - default: false
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: Device''s physical addresses will be matched if they start with
+        the search term only (instead of being matched if they contain the term).'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A list of network groups
+      isArray: false
+      name: groupIds
+      required: false
+      secret: false
+    - default: false
+      description: Include all agents matching this saved filter
+      isArray: false
+      name: filterId
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Decommissions all agents matching the input filter. Note: One of
+      the following filter arguments must be supplied: ids, groupIds, filterId.'
+    execution: false
+    name: sentinelone-agents-decommission
+    outputs:
+    - contextPath: SentinelOne.Agents.Decommission.Date
+      description: Recommission date and time (UTC)
+      type: date
+    - contextPath: SentinelOne.Agents.Decommission.Decommissioned
+      description: Boolean to check if the agent is decommissioned or not
+      type: boolean
+    - contextPath: SentinelOne.Agents.Decommission.AffectedCount
+      description: Number of agents affected in decommission request.
+      type: number
+  - arguments:
+    - default: false
+      description: Filter by computer name
+      isArray: false
+      name: computer_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filter by scan status. Example: "started,aborted".'
+      isArray: false
+      name: scan_status
+      predefined:
+      - started
+      - none
+      - finished
+      - aborted
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Included OS types. Example: "windows".'
+      isArray: true
+      name: os_type
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+      required: false
+      secret: false
+    - default: false
+      description: 'Endpoints created after or at this timestamp. Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_at
+      required: false
+      secret: false
+    - default: false
+      description: 'Include agents with at least this amount of active threats. Example:
+        "5".'
+      isArray: false
+      name: min_active_threats
+      required: false
+      secret: false
+    deprecated: false
+    description: List all agents matching the input filter.
+    execution: false
+    name: sentinelone-list-agents
+    outputs:
+    - contextPath: SentinelOne.Agents.NetworkStatus
+      description: The agent network status
+      type: string
+    - contextPath: SentinelOne.Agents.ID
+      description: The agent ID
+      type: string
+    - contextPath: SentinelOne.Agents.AgentVersion
+      description: The agent software version
+      type: string
+    - contextPath: SentinelOne.Agents.IsDecomissioned
+      description: Is the agent decommissioned
+      type: boolean
+    - contextPath: SentinelOne.Agents.IsActive
+      description: Is the agent active
+      type: boolean
+    - contextPath: SentinelOne.Agents.LastActiveDate
+      description: The last active date of the agent
+      type: date
+    - contextPath: SentinelOne.Agents.RegisteredAt
+      description: The registration date of the agent
+      type: date
+    - contextPath: SentinelOne.Agents.ExternalIP
+      description: The agent IP address
+      type: string
+    - contextPath: SentinelOne.Agents.ThreatCount
+      description: Number of active threats
+      type: number
+    - contextPath: SentinelOne.Agents.EncryptedApplications
+      description: Is disk encryption on
+      type: boolean
+    - contextPath: SentinelOne.Agents.OSName
+      description: Name of operation system
+      type: string
+    - contextPath: SentinelOne.Agents.ComputerName
+      description: Name of agent computer
+      type: string
+    - contextPath: SentinelOne.Agents.Domain
+      description: Domain name of agent
+      type: string
+    - contextPath: SentinelOne.Agents.CreatedAt
+      description: Agent creation time
+      type: date
+    - contextPath: SentinelOne.Agents.SiteName
+      description: Site name involved with the agent.
+      type: string
+  - arguments:
+    - default: false
+      description: The agents ids
+      isArray: true
+      name: agentIds
+      required: true
+      secret: false
+    deprecated: false
+    description: Sends a "connect to network" command to all agents matching the input
+      filter.
+    execution: false
+    name: sentinelone-agents-unquarantine
+    outputs:
+    - contextPath: SentinelOne.Agents.UnQuarantine.Date
+      description: Recommission date and time (UTC)
+      type: date
+    - contextPath: SentinelOne.Agents.UnQuarantine.UnQuarantined
+      description: A boolean to check if the respective agent was quarantined or not.
+      type: boolean
+    - contextPath: SentinelOne.Agents.UnQuarantine.AffectedCount
+      description: Number of agents affected per request.
+      type: number
+  - arguments:
+    - default: false
+      description: List of Site IDs to filter by
+      isArray: false
+      name: siteIds
+      required: false
+      secret: false
+    - default: false
+      description: Include all agents matching this saved filter
+      isArray: false
+      name: filterId
+      required: false
+      secret: false
+    - default: false
+      description: A list of Agent IDs
+      isArray: false
+      name: agentIds
+      required: false
+      secret: false
+    - default: false
+      description: Only include uninstalled agents
+      isArray: false
+      name: isUninstalled
+      required: false
+      secret: false
+    - default: false
+      description: Include active, decommissioned or both
+      isArray: false
+      name: isDecommissioned
+      required: false
+      secret: false
+    - default: false
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: Device''s physical addresses will be matched if they start with
+        the search term only (instead of being matched if they contain the term).'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A list of network groups
+      isArray: false
+      name: groupIds
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends an uninstall command to all agents matching the input filter.
+    execution: false
+    name: sentinelone-agents-uninstall
+    outputs:
+    - contextPath: SentinelOne.Agents. Uninstall.Date
+      description: Recommission date and time (UTC)
+      type: date
+    - contextPath: SentinelOne.Agents. Uninstall .Uninstalled
+      description: A boolean to check if the respective agent was quarantined or not.
+      type: boolean
+    - contextPath: SentinelOne.Agents.Uninstall.AffectedCount
+      description: Number of agents affected per request.
+      type: number
+  - arguments:
+    - default: false
+      description: A list of Agent IDs (Comma separated fields). You can also use
+        only one Agent ID and quarantine it.
+      isArray: false
+      name: agentIds
+      required: false
+      secret: false
+    - default: false
+      description: List of Site IDs to filter by
+      isArray: false
+      name: siteIds
+      required: false
+      secret: false
+    - default: false
+      description: Only include uninstalled agents
+      isArray: false
+      name: isUninstalled
+      required: false
+      secret: false
+    - default: false
+      description: Include active, decommissioned or both
+      isArray: false
+      name: isDecommissioned
+      required: false
+      secret: false
+    - default: false
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: Device''s physical addresses will be matched if they start with
+        the search term only (instead of being matched if they contain the term).'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A list of network groups
+      isArray: false
+      name: groupIds
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Sends a "disconnect from network" command to all agents matching
+      the input filter. Note: One of the following filter arguments must be supplied:
+      ids, groupIds, filterId.'
+    execution: true
+    name: sentinelone-agents-quarantine
+    outputs:
+    - contextPath: SentinelOne.Agents.Quarantine.Date
+      description: Recommission date and time (UTC)
+      type: date
+    - contextPath: SentinelOne.Agents.Quarantine.Quarantined
+      description: A boolean to check if the respective agent was quarantined or not.
+      type: boolean
+    - contextPath: SentinelOne.Agents.Quarantine.AffectedCount
+      description: Number of agents affected per request.
+      type: number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Exclusion item type Can be file_type, path, white_hash, certificate
+        or browser
+      isArray: false
+      name: exclusion_type
+      predefined:
+      - file_type
+      - path
+      - white_hash
+      - certificate
+      - browser
+      required: true
+      secret: false
+    - default: false
+      description: Value of the exclusion item based valid for the exclusion list
+        type
+      isArray: false
+      name: exclusion_value
+      required: true
+      secret: false
+    - default: false
+      description: OS type Can be windows, windows_legacy, macos or linux. Need OS
+        type for hash exclusions.
+      isArray: false
+      name: os_type
+      required: true
+      secret: false
+    - default: false
+      description: Description for adding the item.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Exclusion mode (path exclusion only) Can be suppress, disable_in_process_monitor_deep,
+        disable_in_process_monitor, disable_all_monitors or disable_all_monitors_deep
+      isArray: false
+      name: exclusion_mode
+      required: false
+      secret: false
+    - default: false
+      description: Excluded path for a path exclusion list
+      isArray: false
+      name: path_exclusion_type
+      required: false
+      secret: false
+    - default: false
+      description: List of Site IDs to filter by (Either siteIds or groupIds is mandatory)
+      isArray: true
+      name: site_ids
+      required: false
+      secret: false
+    - default: false
+      description: List of Group IDs to filter by (Either siteIds or groupIds is mandatory)
+      isArray: true
+      name: group_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Create exclusion item matching the input filter
+    execution: false
+    name: sentinelone-create-exclusion-item
+    outputs:
+    - contextPath: SentinelOne.Exclusions.ID
+      description: The whitelisted entity id.
+      type: string
+    - contextPath: SentinelOne.Exclusions.Type
+      description: The whitelisted item type.
+      type: string
+    - contextPath: SentinelOne.Exclusions.CreatedAt
+      description: The time whitelist item was created.
+      type: date
+  - arguments:
+    - default: false
+      description: 'List of ids to filter by. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: item_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'List of Os types to filter by. Example: "windows".'
+      isArray: true
+      name: os_types
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Type. Example: "file_type".'
+      isArray: false
+      name: exclusion_type
+      predefined:
+      - file_type
+      - path
+      - white_hash
+      - certificate
+      - browser
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of items to be retrieved.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: 'Skip first number of items (0-1000). Example: "150".'
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    deprecated: false
+    description: List all exclusion items matching the input filter.
+    execution: false
+    name: sentinelone-get-exclusion-list
+    outputs:
+    - contextPath: SentinelOne.Exclusions.ID
+      description: The item ID
+      type: string
+    - contextPath: SentinelOne.Exclusions.Type
+      description: The exclusion item type.
+      type: string
+    - contextPath: SentinelOne.Exclusions.CreatedAt
+      description: Timestamp when the item added.
+      type: date
+    - contextPath: SentinelOne.Exclusions.Value
+      description: Value of the item added.
+      type: string
+    - contextPath: SentinelOne.Exclusions.Source
+      description: Source of the item added.
+      type: string
+    - contextPath: SentinelOne.Exclusions.UserID
+      description: User ID added the item.
+      type: string
+    - contextPath: SentinelOne.Exclusions.UpdatedAt
+      description: Timestamp when the item updated.
+      type: date
+    - contextPath: SentinelOne.Exclusions.OsType
+      description: OS Type involved.
+      type: string
+    - contextPath: SentinelOne.Exclusions.UserName
+      description: User name added the item
+      type: string
+    - contextPath: SentinelOne.Exclusions.Mode
+      description: 'List of modes to filter by (Path exclusions only). Example: "suppress".'
+      type: string
+  - arguments:
+    - default: false
+      description: The content hash.
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Get hash reputation.
+    execution: false
+    name: sentinelone-get-hash-reputation
+    outputs:
+    - contextPath: SentinelOne.Hashes.Rank
+      description: The hash reputation measure in a 1-10 scale
+      type: string
+    - contextPath: SentinelOne.Hashes.Hash
+      description: The content hash.
+      type: string
+  - arguments:
+    - default: false
+      description: The content hash.
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Get hash classification.
+    execution: false
+    name: sentinelone-get-hash-classification
+    outputs:
+    - contextPath: SentinelOne.Hashes.Hash
+      description: The content hash.
+      type: string
+    - contextPath: SentinelOne.Hashes.Classification
+      description: The hash classification type.
+      type: string
+    - contextPath: SentinelOne.Hashes.ClassificationSource
+      description: The hash classification source.
+      type: string
+  - arguments:
+    - default: false
+      description: The threat's ID
+      isArray: false
+      name: threat_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get threat details by using its ID.
+    execution: false
+    name: sentinelone-get-threat
+    outputs:
+    - contextPath: SentinelOne.Threats.ID
+      description: The threat ID
+      type: string
+    - contextPath: SentinelOne.Threats.Agent.ID
+      description: Affected agent ID
+      type: string
+    - contextPath: SentinelOne.Threats.Agent.Version
+      description: The agent software version
+      type: string
+    - contextPath: SentinelOne.Threats.CreatedDate
+      description: The occurrence date
+      type: date
+    - contextPath: SentinelOne.Threats.Description
+      description: The threat description
+      type: string
+    - contextPath: SentinelOne.Threats.Agent.OsType
+      description: Agent OS Type
+      type: string
+    - contextPath: SentinelOne.Threats.Resolved
+      description: Resolved threat
+      type: boolean
+    - contextPath: SentinelOne.Threats.MitigationReport
+      description: Mitigation report
+      type: string
+    - contextPath: SentinelOne.Threats.MitigationStatus
+      description: Threat status
+      type: string
+    - contextPath: SentinelOne.Threats.Agent.NetworkStatus
+      description: Agent network status
+      type: string
+    - contextPath: SentinelOne.Threats.MaliciousProcessArguments
+      description: Malicious Process Arguments
+      type: string
+    - contextPath: SentinelOne.Threats.MaliciousGroupID
+      description: The file group ID
+      type: string
+    - contextPath: SentinelOne.Threats.File.ID
+      description: The file object ID
+      type: string
+    - contextPath: SentinelOne.Threats.File.Path
+      description: The file path
+      type: string
+    - contextPath: SentinelOne.Threats.File.ContentHash
+      description: The file content hash
+      type: string
+    - contextPath: SentinelOne.Threats.File.IsSystem
+      description: Is system file
+      type: string
+    - contextPath: SentinelOne.Threats.File.DisplayName
+      description: File name
+      type: string
+    - contextPath: SentinelOne.Threats.CreatedAt
+      description: Threat object creation time
+      type: string
+    - contextPath: SentinelOne.Threats.UpdatedAt
+      description: Threat object updated time
+      type: string
+    - contextPath: SentinelOne.Threats.Site.Name
+      description: Site name involved
+      type: string
+    - contextPath: SentinelOne.Threats.Classification
+      description: Classification type
+      type: string
+    - contextPath: SentinelOne.Threats.Indicators
+      description: Indicators present in the threat
+      type: string
+    - contextPath: SentinelOne.Threats.Name
+      description: Threat Name
+      type: string
+    - contextPath: SentinelOne.Threats.Agent.ComputerName
+      description: Agent Computer Name
+      type: string
+    - contextPath: SentinelOne.Threats.Agent.Infected
+      description: Agent infected
+      type: string
+    - contextPath: SentinelOne.Threats.Rank
+      description: Agent Rank allotted
+      type: string
+    - contextPath: SentinelOne.Threats.Site.ID
+      description: Site ID involved
+      type: string
+  - arguments:
+    - default: false
+      description: Threat's content hash.
+      isArray: false
+      name: content_hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Mitigation statuses list. Example: "suspicious".'
+      isArray: true
+      name: mitigation_status
+      predefined:
+      - mitigated
+      - active
+      - blocked
+      - suspicious
+      - pending
+      - suspicious_resolved
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats created before certain date.  Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_before
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats created after certain date.  Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats created until certain date (including the date).  Example:
+        "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_until
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats created from certain date (including the date).  Example:
+        "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_from
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats updated before certain date.  Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: updated_before
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats updated after certain date.  Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: updated_after
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats updated until certain date (including the date).  Example:
+        "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: updated_until
+      required: false
+      secret: false
+    - default: false
+      description: 'Search for threats updated from certain date (including the date).  Example:
+        "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: updated_from
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Get only resolved threats (boolean)
+      isArray: false
+      name: resolved
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: Threat display name. (Does not have to be exact match, can provide
+        only part of name)
+      isArray: false
+      name: display_name_like
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of threats
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit the number of threats in the response. Default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Full free text search for fields: content_hash, file_display_name,
+        file_path, computer_name, uuid'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: 'List of threat IDs. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: threat_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ' List of threat classifications to search (comma-separated list).  Example
+        : Malware, Network, Benign etc.'
+      isArray: false
+      name: classifications
+      predefined:
+      - Engine
+      - Static
+      - Cloud
+      - Behavioral
+      required: false
+      secret: false
+    - default: false
+      description: Risk levels threshold to retrieve, number from 1(low) to 10(high)
+      isArray: false
+      name: rank
+      required: false
+      secret: false
+    deprecated: false
+    description: Get threats using a variety of filters.
+    execution: false
+    name: sentinelone-get-threats
+    outputs:
+    - contextPath: SentinelOne.Threats.ID
+      description: The threat ID
+      type: string
+    - contextPath: SentinelOne.Threats.AgentComputerName
+      description: The agent computer name
+      type: string
+    - contextPath: SentinelOne.Threats.CreatedDate
+      description: File created date
+      type: date
+    - contextPath: SentinelOne.Threats.SiteID
+      description: The site ID
+      type: string
+    - contextPath: SentinelOne.Threats.Classification
+      description: Classification name
+      type: string
+    - contextPath: SentinelOne.Threats.MitigationStatus
+      description: The agent Status
+      type: string
+    - contextPath: SentinelOne.Threats.AgentID
+      description: The agent ID.
+      type: string
+    - contextPath: SentinelOne.Threats.Rank
+      description: Number 1-10 representing cloud reputation
+      type: number
+    - contextPath: SentinelOne.Threats.MarkedAsBenign
+      description: Marked as benign
+      type: boolean
+  - arguments:
+    - default: false
+      description: 'List of Group IDs to filter by. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: group_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Get dashboard threat summary.
+    execution: false
+    name: sentinelone-threat-summary
+    outputs:
+    - contextPath: SentinelOne.ThreatSummary.Active
+      description: Active number of threats in the system.
+      type: number
+    - contextPath: SentinelOne.ThreatSummary.Total
+      description: Total number of threats in the system.
+      type: number
+    - contextPath: SentinelOne.ThreatSummary.Mitigated
+      description: Number of threats mitigated in the system.
+      type: number
+    - contextPath: SentinelOne.ThreatSummary.Suspicious
+      description: Suspicious number of threats in the system.
+      type: number
+    - contextPath: SentinelOne.ThreatSummary.Blocked
+      description: Number of threats blocked in the system.
+      type: number
+  - arguments:
+    - default: false
+      description: A list of threat IDs (Comma separated list).
+      isArray: true
+      name: threat_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Scope to be used for exclusions
+      isArray: false
+      name: target_scope
+      predefined:
+      - group
+      - site
+      - tenant
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark suspicious threats as threats
+    execution: false
+    name: sentinelone-mark-as-threat
+    outputs:
+    - contextPath: SentinelOne.Threats.ID
+      description: The threat ID.
+      type: string
+    - contextPath: SentinelOne.Threats.MarkedAsThreat
+      description: A boolean to check if the suspicious threat was marked as threat
+        successfully or not.
+      type: boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Mitigation action. Example: "rollback-remediation".'
+      isArray: false
+      name: action
+      predefined:
+      - kill
+      - quarantine
+      - un-quarantine
+      - remediate
+      - rollback-remediation
+      required: true
+      secret: false
+    - default: false
+      description: A list of threat IDs (Comma separated list).
+      isArray: true
+      name: threat_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Apply a mitigation action to a group of threats matching the input
+      filter.
+    execution: false
+    name: sentinelone-mitigate-threat
+    outputs:
+    - contextPath: SentinelOne.Threats.ID
+      description: The threat ID.
+      type: string
+    - contextPath: SentinelOne.Threats.Mitigated
+      description: A boolean to check if the  threat was mitigated successfully or
+        not.
+      type: boolean
+    - contextPath: SentinelOne.Threats.Mitigation.Action
+      description: Number of threats affected.
+      type: string
+  - arguments:
+    - default: false
+      description: A list of threat IDs (Comma separated list).
+      isArray: true
+      name: threat_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Resolve threat by its ID.
+    execution: false
+    name: sentinelone-resolve-threat
+    outputs:
+    - contextPath: SentinelOne.Threats.ID
+      description: The threat ID
+      type: string
+    - contextPath: SentinelOne.Threats.Resolved
+      description: A boolean to check if the  threat was resolved successfully or
+        not
+      type: boolean
+  - arguments:
+    - default: false
+      description: List of Site IDs to filter by
+      isArray: true
+      name: siteIds
+      required: false
+      secret: false
+    - default: false
+      description: Include all agents matching this saved filter
+      isArray: false
+      name: filterId
+      required: false
+      secret: false
+    - default: false
+      description: A list of Agent IDs
+      isArray: true
+      name: agentIds
+      required: false
+      secret: false
+    - default: false
+      description: Only include uninstalled agents
+      isArray: false
+      name: isUninstalled
+      required: false
+      secret: false
+    - default: false
+      description: Include active, decommissioned or both
+      isArray: false
+      name: isDecommissioned
+      required: false
+      secret: false
+    - default: false
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: Device''s physical addresses will be matched if they start with
+        the search term only (instead of being matched if they contain the term).'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A list of network groups
+      isArray: true
+      name: groupIds
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Sends a shutdown command to all agents matching the input filter.
+      Note: One of the following filter arguments must be supplied: ids, groupIds,
+      filterId.'
+    execution: false
+    name: sentinelone-agents-shutdown
+    outputs:
+    - contextPath: SentinelOne.Agents.Shutdown.Date
+      description: Shutdown date and time (UTC)
+      type: number
+    - contextPath: SentinelOne.Agents.Shutdown.IsShutdown
+      description: A boolean to check if the agent is shutdown successfully or not.
+      type: boolean
+    - contextPath: SentinelOne.Agents.Shutdown.Affected
+      description: Number of agents affected
+      type: number
+  - arguments:
+    - default: false
+      description: List of Site IDs to filter by
+      isArray: true
+      name: site_ids
+      required: false
+      secret: false
+    - default: false
+      description: A list of Agent IDs (Comma separated list). You can also use only
+        one Agent ID and recommission it.
+      isArray: true
+      name: agent_ids
+      required: false
+      secret: false
+    - default: false
+      description: Only include uninstalled agents
+      isArray: false
+      name: is_uninstalled
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Include active, decommissioned or both
+      isArray: false
+      name: is_decommissioned
+      predefined:
+      - active
+      - decommissioned
+      - both
+      required: false
+      secret: false
+    - default: false
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: Device''s physical addresses will be matched if they start with
+        the search term only (instead of being matched if they contain the term).'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A list of network groups
+      isArray: true
+      name: group_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a restart command to all agents matching the input filter.
+    execution: false
+    name: sentinelone-agents-recommission
+    outputs:
+    - contextPath: SentinelOne.Agents.Recommission.Date
+      description: Recommission date and time (UTC)
+      type: date
+    - contextPath: SentinelOne.Agents.Recommission.Recommissioned
+      description: A boolean to check if the agent was restarted successfully or not.
+      type: boolean
+    - contextPath: SentinelOne.Agents.Recommission.Affected
+      description: Number of agents affected
+      type: number
+  - arguments:
+    - default: false
+      description: The agent ID
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details of an agent by its ID.
+    execution: false
+    name: sentinelone-get-agent
+    outputs:
+    - contextPath: SentinelOne.Agents.NetworkStatus
+      description: The agent network status
+      type: string
+    - contextPath: SentinelOne.Agents.ID
+      description: The agent ID
+      type: string
+    - contextPath: SentinelOne.Agents.AgentVersion
+      description: The agent software version
+      type: string
+    - contextPath: SentinelOne.Agents.IsDecomissioned
+      description: Is the agent decommissioned
+      type: boolean
+    - contextPath: SentinelOne.Agents.IsActive
+      description: Is the agent active
+      type: boolean
+    - contextPath: SentinelOne.Agents.LastActiveDate
+      description: The last active date of the agent
+      type: date
+    - contextPath: SentinelOne.Agents.RegisteredAt
+      description: The registration date of the agent
+      type: date
+    - contextPath: SentinelOne.Agents.ExternalIP
+      description: The agent IP address
+      type: string
+    - contextPath: SentinelOne.Agents.ThreatCount
+      description: Number of active threats
+      type: number
+    - contextPath: SentinelOne.Agents.EncryptedApplications
+      description: Is disk encryption on
+      type: boolean
+    - contextPath: SentinelOne.Agents.OSName
+      description: Name of operation system
+      type: string
+    - contextPath: SentinelOne.Agents.ComputerName
+      description: Name of agent computer
+      type: string
+    - contextPath: SentinelOne.Agents.Domain
+      description: Domain name of agent
+      type: string
+    - contextPath: SentinelOne.Agents.CreatedAt
+      description: Agent creation time
+      type: date
+    - contextPath: SentinelOne.Agents.SiteName
+      description: Site name involved with the agent.
+      type: string
+  - arguments:
+    - default: false
+      description: The content hash to be added to blacklist.
+      isArray: false
+      name: contentHash
+      required: false
+      secret: false
+    - default: false
+      description: List of sha1 hashes to be added to blacklist.
+      isArray: false
+      name: contentHashes
+      required: false
+      secret: false
+    - default: false
+      description: The threat IDs to be added to blacklist.
+      isArray: false
+      name: threatIds
+      required: false
+      secret: false
+    - default: false
+      description: Site IDs which can be used to find related threat hashes.
+      isArray: false
+      name: siteIds
+      required: false
+      secret: false
+    deprecated: false
+    description: Add threat hash to blacklist.
+    execution: false
+    name: sentinelone-add-threat-to-blacklist
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: limit number of retrieved results. (0 for all results)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Return an export of all threat static indicators.
+    execution: false
+    name: sentinelone-get-static-indicators
+    outputs:
+    - contextPath: SentinelOne.Indicators.ID
+      description: ID of the indicator.
+      type: number
+    - contextPath: SentinelOne.Indicators.Description
+      description: Description of the indicator.
+      type: string
+    - contextPath: SentinelOne.Indicators. CategoryName
+      description: Category name of the indicator.
+      type: string
+    - contextPath: SentinelOne.Indicators.CategoryID
+      description: Category ID of the indicator.
+      type: number
+  - arguments:
+    - default: false
+      description: 'Timestamp of last update. Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: updated_at
+      required: false
+      secret: false
+    - default: false
+      description: 'Full text search for fields: name, account_name'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Site type. Example: "Trial".'
+      isArray: false
+      name: site_type
+      predefined:
+      - Trial
+      - Paid
+      - POC
+      - DEV
+      - NFR
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If sent return only sites that support this features. Example:
+        "firewall-control".'
+      isArray: false
+      name: features
+      predefined:
+      - firewall-control
+      - device-control
+      - ioc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Site state. Example: "active".'
+      isArray: false
+      name: state
+      predefined:
+      - active
+      - deleted
+      - expired
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The suite of product features active for this site. Example: "Core".'
+      isArray: false
+      name: suite
+      predefined:
+      - Core
+      - Complete
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Show sites the user has Admin privileges to
+      isArray: false
+      name: admin_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Account id. Example: "225494730938493804".'
+      isArray: false
+      name: account_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Name. Example: "My Site".'
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: 'Timestamp of site creation. Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_at
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: 'Limit the number of results. Example : limit = 10'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'List of site id''s to search for. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: List all sites with filtering options.
+    execution: false
+    name: sentinelone-get-sites
+    outputs:
+    - contextPath: SentinelOne.Sites.Creator
+      description: The creator name.
+      type: string
+    - contextPath: SentinelOne.Sites.Name
+      description: The site name.
+      type: string
+    - contextPath: SentinelOne.Sites.Type
+      description: The site type.
+      type: string
+    - contextPath: SentinelOne.Sites.AccountName
+      description: The account name.
+      type: string
+    - contextPath: SentinelOne.Sites.State
+      description: The site state.
+      type: string
+    - contextPath: SentinelOne.Sites.HealthStatus
+      description: The health status of the site.
+      type: boolean
+    - contextPath: SentinelOne.Sites.Suite
+      description: The suite site belongs to.
+      type: string
+    - contextPath: SentinelOne.Sites.ActiveLicenses
+      description: Number of active licenses on the site.
+      type: number
+    - contextPath: SentinelOne.Sites.ID
+      description: ID of the site.
+      type: string
+    - contextPath: SentinelOne.Sites.TotalLicenses
+      description: Number of total licenses on the site.
+      type: number
+    - contextPath: SentinelOne.Sites.CreatedAt
+      description: Timestamp when the site was created.
+      type: date
+    - contextPath: SentinelOne.Sites.Expiration
+      description: Timestamp when the site will get expired.
+      type: string
+    - contextPath: SentinelOne.Sites.UnlimitedLicenses
+      description: Unlimited licenses boolean.
+      type: boolean
+  - arguments:
+    - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a site by id.
+    execution: false
+    name: sentinelone-get-site
+    outputs:
+    - contextPath: SentinelOne.Sites.Creator
+      description: The creator name.
+      type: string
+    - contextPath: SentinelOne.Sites.Name
+      description: The site name.
+      type: string
+    - contextPath: SentinelOne.Sites.Type
+      description: The site type.
+      type: string
+    - contextPath: SentinelOne.Sites.AccountName
+      description: The account name.
+      type: string
+    - contextPath: SentinelOne.Sites.State
+      description: The site state.
+      type: string
+    - contextPath: SentinelOne.Sites.HealthStatus
+      description: The health status of the site.
+      type: boolean
+    - contextPath: SentinelOne.Sites.Suite
+      description: The suite site belongs to.
+      type: string
+    - contextPath: SentinelOne.Sites.ActiveLicenses
+      description: Number of active licenses on the site.
+      type: number
+    - contextPath: SentinelOne.Sites.ID
+      description: ID of the site.
+      type: string
+    - contextPath: SentinelOne.Sites.TotalLicenses
+      description: Number of total licenses on the site.
+      type: number
+    - contextPath: SentinelOne.Sites.CreatedAt
+      description: Timestamp when the site was created.
+      type: date
+    - contextPath: SentinelOne.Sites.Expiration
+      description: Timestamp when the site will get expired.
+      type: string
+    - contextPath: SentinelOne.Sites.UnlimitedLicenses
+      description: Unlimited licenses boolean.
+      type: boolean
+    - contextPath: SentinelOne.Sites.AccountID
+      description: Account ID
+      type: string
+    - contextPath: SentinelOne.Sites.IsDefault
+      description: Is site default
+      type: boolean
+  - arguments:
+    - default: false
+      description: 'Site ID. Example: "225494730938493804".'
+      isArray: false
+      name: site_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Reactivates an expired site.
+    execution: false
+    name: sentinelone-reactivate-site
+    outputs:
+    - contextPath: SentinelOne.Sites.ID
+      description: ID of the site.
+      type: string
+    - contextPath: SentinelOne.Sites.Reactivated
+      description: A boolean to check if the site was reactivated or not.
+      type: boolean
+  - arguments:
+    - default: false
+      description: 'ID of the site to be expired. Site ID. Example: "225494730938493804".'
+      isArray: false
+      name: site_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Expire a site now.
+    execution: false
+    name: sentinelone-expire-site
+    outputs:
+    - contextPath: SentinelOne.Sites.ID
+      description: ID of the site.
+      type: string
+    - contextPath: SentinelOne.Sites.Expired
+      description: A boolean to check if the site was expired or not.
+      type: boolean
+  - arguments:
+    - default: false
+      description: 'ID of the site to be delelted. Site ID. Example: "225494730938493804".'
+      isArray: false
+      name: site_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a site now.
+    execution: false
+    name: sentinelone-delete-site
+    outputs:
+    - contextPath: SentinelOne.Sites.ID
+      description: ID of the site.
+      type: string
+    - contextPath: SentinelOne.Sites.Deleted
+      description: A boolean to check if the site was deleted or not.
+      type: boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The IOC type to be searched
+      isArray: false
+      name: indicator
+      predefined:
+      - Dst.IP
+      - Dst.Port
+      - File.FullName
+      - File.MD5
+      - File.SHA1
+      - File.SHA256
+      - Network.URL
+      - PID
+      - Process.Name
+      - src.IP
+      - src.Port
+      - User
+      required: true
+      secret: false
+    - default: false
+      description: The IOC value to be searched
+      isArray: false
+      name: indicatorValue
+      required: true
+      secret: false
+    - default: false
+      description: 'Events created after this timestamp. Example: "2018-02-19T16:32:00.000Z".'
+      isArray: false
+      name: fromDate
+      required: false
+      secret: false
+    - default: false
+      description: 'Events created before or at this timestamp. Example: "2018-02-20T16:32:00.000Z".'
+      isArray: false
+      name: toDate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events that are related to specified indicators, either fromDate
+      or toDate are mandatory.
+    execution: false
+    name: sentinelone-search-indicators
+    outputs:
+    - contextPath: SentinelOne.Event.ID
+      description: The ID of the event
+      type: string
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+image: ''
+releaseNotes: "New integration - SentinelOne V2"
+tests:
+  - no tests
