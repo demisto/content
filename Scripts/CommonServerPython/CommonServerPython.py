@@ -560,14 +560,16 @@ class IntegrationLogger(object):
         try:
             self.messages.append(str(message))
 
-        except UnicodeEncodeError:
+        except UnicodeEncodeError as ex:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
-            if isinstance(message, Exception) and hasattr(message, 'message'):
-                self.messages.append(message.message.encode('utf-8'))
-            else:
+            if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
+                self.messages.append(message.args[0].encode('utf-8', 'replace'))
+            elif isinstance(message, STRING_OBJ_TYPES):
                 # try encode the message itself
-                self.messages.append(message.encode('utf-8'))
+                self.messages.append(message.encode('utf-8', 'replace'))
+            else:
+                self.messages.append("Failed encoding message with error: {}".format(ex))
 
     def print_log(self, verbose=False):
         if self.messages:
