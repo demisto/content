@@ -5,8 +5,8 @@ This script is used to validate the files in Content repository. Specifically fo
 3) Valid yml/json schema
 4) Having ReleaseNotes if applicable.
 
-It can be run to check only commited changes (if the first argument is 'true') or all the files in the repo.
-Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
+It can be run to check only committed changes (if the first argument is 'true') or all the files in the repo.
+Note - if it is run for all the files in the repo it won't check releaseNotes, use `release_notes.py`
 for that task.
 """
 import os
@@ -93,12 +93,10 @@ class FilesValidator(object):
             if file_status.lower().startswith('r'):
                 file_status = 'r'
                 file_path = file_data[2]
+
             if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
-                dir_path = os.path.dirname(file_path)
-                try:
-                    file_path = list(filter(lambda x: not x.endswith('unified.yml'), glob.glob(dir_path + "/*.yml")))[0]
-                except IndexError:
-                    continue
+                # naming convention - code file and yml file in packages must have same name.
+                file_path = os.path.splitext(file_path)[0] + '.yml'
             elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
 
