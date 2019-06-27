@@ -94,7 +94,7 @@ class FilesValidator(object):
                 file_status = 'r'
                 file_path = file_data[2]
 
-            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
+            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' and not file_path.endswith('_test.py'):
                 # naming convention - code file and yml file in packages must have same name.
                 file_path = os.path.splitext(file_path)[0] + '.yml'
             elif file_path.endswith('.js') or file_path.endswith('.py'):
