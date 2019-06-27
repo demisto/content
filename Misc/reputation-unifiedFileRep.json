@@ -33,6 +33,5 @@
       "simple": "File.SSDeep",
       "complex": null
     }
-  },
-  "releaseNotes": "updated file reputations"
+  }
 }

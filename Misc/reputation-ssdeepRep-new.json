@@ -6,6 +6,5 @@
   "details": "ssdeep",
   "enhancementScriptNames": [],
   "disabled": true,
-  "fromVersion": "5.0.0",
-  "releaseNotes": "updated file reputations"
+  "fromVersion": "5.0.0"
 }

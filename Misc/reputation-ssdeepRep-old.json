@@ -5,6 +5,5 @@
   "reputationScriptName": "",
   "details": "ssdeep",
   "enhancementScriptNames": [],
-  "toVersion": "4.5.0",
-  "releaseNotes": "updated file reputations"
+  "toVersion": "4.5.0"
 }
