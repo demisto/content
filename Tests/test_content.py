@@ -11,7 +11,7 @@ from datetime import datetime
 import demisto
 from slackclient import SlackClient
 
-from Tests.test_integration import test_integration
+from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
@@ -524,6 +524,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+
+    disable_all_integrations(c)
 
     if is_ami:
         # move all mock tests to the top of the list
