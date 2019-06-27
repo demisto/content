@@ -124,19 +124,16 @@ An explanation of these fields is as follows:
 | **description** | A description for the command |
 | **runonce** | Boolean to indicate if the function runs repeatedly|
 
-## Version, Notes and Tests
-The last section of the YAML file provides Demisto with information regarding what version is supported, release notes, and tests. See the example below:
+## Version and Tests
+The last section of the YAML file provides Demisto with information regarding what version is supported and tests. See the example below:
 
 ```yml
 fromversion: 4.1.0
-releaseNotes: "Changed some outputs"
 tests:
   - Sample Integration Test
 ```
 
 From version indicates the server version that is supported with the integration. If the server version is below the fromversion, the integration will not display in the Settings area.
-
-Release Notes tells the user what has changed in the new version of this integration. If the integration is new, simply write something to describe the integration.
 
 Tests instructs the Demisto CircleCI tool which test to run to verify that the integration is working. 
 
