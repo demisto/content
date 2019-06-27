@@ -650,7 +650,10 @@ def flattenCell(data, is_pretty=True):
         string_list = []
         for d in data:
             try:
-                string_list.append(str(d))
+                if IS_PY3 and isinstance(d, bytes):
+                    string_list.append(d.decode('utf-8'))
+                else:
+                    string_list.append(str(d))
             except UnicodeEncodeError:
                 string_list.append(d.encode('utf-8'))
 
@@ -786,6 +789,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = list(t[0].keys())
+        headers.sort()
 
     if removeNull:
         headers_aux = headers[:]
@@ -1001,7 +1005,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = "\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
