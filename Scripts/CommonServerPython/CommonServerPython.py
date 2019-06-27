@@ -74,7 +74,7 @@ dbotscores = {
 }
 
 
-###### Fix fetching credentials from vault instances ######
+# ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
     for k, v in demisto.params().items():
@@ -923,7 +923,7 @@ def fileResult(filename, data, file_type=None):
        :type filename: ``str``
        :param filename: The name of the file to be created (required)
 
-       :type data: ``str``
+       :type data: ``str`` or ``bytes``
        :param data: The file data (required)
 
        :type file_type: ``str``
@@ -935,6 +935,10 @@ def fileResult(filename, data, file_type=None):
     if file_type is None:
         file_type = entryTypes['file']
     temp = demisto.uniqueFile()
+    # pylint: disable=undefined-variable
+    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore
+        data = data.encode('utf-8')
+    # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}

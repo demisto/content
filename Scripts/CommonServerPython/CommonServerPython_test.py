@@ -5,6 +5,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult
 
 import copy
+import os
 import pytest
 
 INFO = {'b': 1,
@@ -434,9 +435,24 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
 
 
-def test_fileResult(mocker):
-    test_data = "this is a test"
+@pytest.mark.parametrize('data,data_expected', [
+                        ("this is a test", b"this is a test"),
+                        (u"עברית", u"עברית".encode('utf-8')),
+                        (b"binary data\x15\x00", b"binary data\x15\x00"),
+                        ])  # noqa: E124
+def test_fileResult(mocker, request, data, data_expected):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
-    res = fileResult("test.txt", test_data)
+    file_name = "1_test_file_result"
+
+    def cleanup():
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
+
+    request.addfinalizer(cleanup)
+    res = fileResult("test.txt", data)
     assert res['File'] == "test.txt"
+    with open(file_name, 'rb') as f:
+        assert f.read() == data_expected
