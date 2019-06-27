@@ -299,4 +299,3 @@ script:
   runonce: false
 tests:
   - Jira-v2-Test
-releaseNotes: "Basic auth is no longer supported - error message update"

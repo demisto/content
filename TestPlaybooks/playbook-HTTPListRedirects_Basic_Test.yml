@@ -1,0 +1,115 @@
+id: HTTPListRedirects Basic Test
+version: -1
+name: HTTPListRedirects Basic Test 
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 644d0119-d0f8-42fe-8b41-6817cbd64096
+    type: start
+    task:
+      id: 644d0119-d0f8-42fe-8b41-6817cbd64096
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: fda4c2c5-4b4f-444f-874e-8e8d29c6792f
+    type: regular
+    task:
+      id: fda4c2c5-4b4f-444f-874e-8e8d29c6792f
+      version: -1
+      name: HTTPListRedirects
+      description: List the redirects for a given URL
+      scriptName: HTTPListRedirects
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context: ""
+      url: http://httpbin.org/redirect/3
+      useHead: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ac5a2dfd-ce92-4dea-8c8f-19649401c25e
+    type: condition
+    task:
+      id: ac5a2dfd-ce92-4dea-8c8f-19649401c25e
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      left: ${.=val.URL.length}
+      right: "4"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: a8b77a5a-c9c8-4afb-87d9-c35d3ab9d539
+    type: regular
+    task:
+      id: a8b77a5a-c9c8-4afb-87d9-c35d3ab9d539
+      version: -1
+      name: Close incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: Done
+      reason: All good
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
