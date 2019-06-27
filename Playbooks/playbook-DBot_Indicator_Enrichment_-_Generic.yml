@@ -506,4 +506,3 @@ outputs:
   type: number
 tests:
   - no test
-releaseNotes: "-"
