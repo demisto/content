@@ -552,11 +552,22 @@ class IntegrationLogger(object):
       :return: No data returned
       :rtype: ``None``
     """
+
     def __init__(self, ):
         self.messages = []  # type: list
 
     def __call__(self, message):
-        self.messages.append('%s' % (message, ))
+        try:
+            self.messages.append(str(message))
+
+        except UnicodeEncodeError:
+            # could not decode the message
+            # if message is an Exception, try encode the exception's message
+            if isinstance(message, Exception) and hasattr(message, 'message'):
+                self.messages.append(message.message.encode('utf-8'))
+            else:
+                # try encode the message itself
+                self.messages.append(message.encode('utf-8'))
 
     def print_log(self, verbose=False):
         if self.messages:
