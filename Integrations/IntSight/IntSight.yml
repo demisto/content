@@ -809,6 +809,5 @@ script:
     description: Get alert's CSV file in case of credentials leakage or leaked credit cards alerts
   isfetch: true
   runonce: false
-releaseNotes: added command to get csv file from alert
 tests:
   - IntSights Test
