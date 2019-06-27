@@ -474,7 +474,7 @@ def fetch_incidents():
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
     demisto.setLastRun({'id': offense_id})
-    return incidents
+    return unicode_to_str_recur(incidents)
 
 
 # Finds the last page position for QRadar query that receives a range parameter
