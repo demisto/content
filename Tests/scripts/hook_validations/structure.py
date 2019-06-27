@@ -45,7 +45,8 @@ class StructureValidator(object):
         SCRIPT_JS_REGEX,
         SCRIPT_PS_REGEX,
         INTEGRATION_JS_REGEX,
-        INTEGRATION_PY_REGEX
+        INTEGRATION_PY_REGEX,
+        INTEGRATION_PS_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
