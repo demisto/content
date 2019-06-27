@@ -153,14 +153,6 @@
       ]
     },
     {
-      "id": "ssdeepRep",
-      "version": -1,
-      "regex": "",
-      "reputationScriptName": "",
-      "details": "ssdeep",
-      "enhancementScriptNames": []
-    },
-    {
       "id": "domainRep",
       "version": -1,
       "regex": "",
