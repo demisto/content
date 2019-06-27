@@ -102,8 +102,8 @@ def test_tbl_to_md_multiline():
     # escaping characters: multiline + md-chars
     data = copy.deepcopy(DATA)
     for i, d in enumerate(data):
-        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1, )
-        d['header_3'] = 'c%d|1' % (i + 1, )
+        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
+        d['header_3'] = 'c%d|1' % (i + 1,)
 
     table = tableToMarkdown('tableToMarkdown test with multiline', data)
     expected_table = '''### tableToMarkdown test with multiline
@@ -456,3 +456,16 @@ def test_fileResult(mocker, request, data, data_expected):
     assert res['File'] == "test.txt"
     with open(file_name, 'rb') as f:
         assert f.read() == data_expected
+
+
+# Error that always returns a unicode string to it's str representation
+class SpecialErr(Exception):
+    def __str__(self):
+        return u"מיוחד"
+
+
+def test_logger():
+    from CommonServerPython import LOG
+    LOG(u'€')
+    LOG(Exception(u'€'))
+    LOG(SpecialErr(12))
