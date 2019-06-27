@@ -315,6 +315,7 @@ def test_camelize():
     assert camelize(non_camalized2, '_') == expected_output2
 
 
+# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
 def test_date_to_timestamp():
     assert date_to_timestamp('2018-11-06T08:56:41') == 1541494601000
     assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
