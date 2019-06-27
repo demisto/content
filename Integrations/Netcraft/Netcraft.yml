@@ -226,4 +226,3 @@ script:
     description: Escalates a takedown.
   runonce: false
   subtype: python3
-releaseNotes: "-"

@@ -1,0 +1,10 @@
+{
+  "id": "ssdeepRep",
+  "version": -1,
+  "regex": "",
+  "reputationScriptName": "",
+  "details": "ssdeep",
+  "enhancementScriptNames": [],
+  "disabled": true,
+  "fromVersion": "5.0.0"
+}
