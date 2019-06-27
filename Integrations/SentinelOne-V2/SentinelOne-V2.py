@@ -68,7 +68,7 @@ def test_module():
     """
     Performs basic get request to get activities types.
     """
-    accounts = http_request('GET', 'activities/types')
+    http_request('GET', 'activities/types')
     return True
 
 
@@ -77,11 +77,11 @@ def get_threats_command():
     Gets a list of threats.
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     content_hash = demisto.args().get('content_hash')
     mitigation_status = argToList(demisto.args().get('mitigation_status'))
@@ -102,11 +102,13 @@ def get_threats_command():
     limit = int(demisto.args().get('limit', 50))
     classifications = argToList(demisto.args().get('classifications', []))
     rank = int(demisto.args().get('rank', 0))
+
     # Make request and get raw response
-    threats = get_threats_request(content_hash, mitigation_status, created_at_lt, created_at_gt, created_at_lte,
-                                  created_at_gte, updated_at_lt, updated_at_gt, updated_at_lte, updated_at_gte,
+    threats = get_threats_request(content_hash, mitigation_status, created_before, created_after, created_until,
+                                  created_from, updated_before, updated_after, updated_until, updated_from,
                                   resolved, display_name_like, query, threat_ids, site_ids, skip, limit,
                                   classifications)
+
     # Parse response into context & content entries
     if threats:
         title = 'Sentinel One - Getting Threat List \n' + \
@@ -149,23 +151,23 @@ def get_threats_command():
     })
 
 
-def get_threats_request(content_hash=None, mitigation_status=None, created_at_lt=None, created_at_gt=None,
-                        created_at_lte=None, created_at_gte=None, updated_at_lt=None, updated_at_gt=None,
-                        updated_at_lte=None, updated_at_gte=None, resolved=None, display_name_like=None, query=None,
+def get_threats_request(content_hash=None, mitigation_status=None, created_before=None, created_after=None,
+                        created_until=None, created_from=None, updated_before=None, updated_after=None,
+                        updated_until=None, updated_from=None, resolved=None, display_name_like=None, query=None,
                         threat_ids=None, site_ids=None, skip=None, limit=None, classifications=None):
     endpoint_url = 'threats'
 
     params = {
         'contentHash': content_hash,
         'mitigationStatus': mitigation_status,
-        'created_at__lt': created_at_lt,
-        'created_at__gt': created_at_gt,
-        'created_at__lte': created_at_lte,
-        'created_at__gte': created_at_gte,
-        'updated_at__lt': updated_at_lt,
-        'updated_at__gt': updated_at_gt,
-        'updated_at__lte': updated_at_lte,
-        'updated_at__gte': updated_at_gte,
+        'created_at__lt': created_before,
+        'created_at__gt': created_after,
+        'created_at__lte': created_until,
+        'created_at__gte': created_from,
+        'updated_at__lt': updated_before,
+        'updated_at__gt': updated_after,
+        'updated_at__lte': updated_until,
+        'updated_at__gte': updated_from,
         'resolved': resolved,
         'displayName__like': display_name_like,
         'query': query,
@@ -189,7 +191,6 @@ def get_threat_command():
     Gets details about a specific threat using ID.
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -199,10 +200,13 @@ def get_threat_command():
     agent_context = {}
     site = {}
     title = ''
+
     # Get arguments
     threat_id = argToList(demisto.args().get('threat_id', []))
+
     # Make request and get raw response
     threats = get_threat_request(threat_id)
+
     # Parse response into context & content entries
     if threats:
         title = 'Sentinel One - Getting Threat Details \n' + \
@@ -320,15 +324,17 @@ def get_hash_reputation_command():
     Get hash reputation.
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = {}
     title = ''
+
     # Get arguments
     hash_ = demisto.args().get('hash')
+
     # Make request and get raw response
     hash_reputation = get_hash_reputation_request(hash_)
+
     # Parse response into context & content entries
     if hash_reputation:
         title = 'Sentinel One - Hash Reputation \n' + \
@@ -366,15 +372,17 @@ def get_hash_classification_command():
     Get hash classification.
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = {}
     title = ''
+
     # Get arguments
     hash_ = demisto.args().get('hash')
+
     # Make request and get raw response
     hash_classification = get_hash_classification_request(hash_)
+
     # Parse response into context & content entries
     if hash_classification:
         title = 'Sentinel One - Hash Classification \n' + \
@@ -425,12 +433,14 @@ def mark_as_threat_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
+
     # Get arguments
     threat_ids = argToList(demisto.args().get('threat_ids'))
     target_scope = demisto.args().get('target_scope')
+
     # Make request and get raw response
     affected_threats = mark_as_threat_request(threat_ids, target_scope)
+
     # Parse response into context & content entries
     if affected_threats.get('affected') and int(affected_threats.get('affected')) > 0:
         title = 'Total of ' + str(affected_threats.get('affected')) + ' provided threats were marked successfully'
@@ -490,12 +500,14 @@ def mitigate_threat_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
+
     # Get arguments
     threat_ids = argToList(demisto.args().get('threat_ids'))
     action = demisto.args().get('action')
+
     # Make request and get raw response
     mitigated_threats = mitigate_threat_request(threat_ids, action)
+
     # Parse response into context & content entries
     if mitigated_threats.get('affected') and int(mitigated_threats.get('affected')) > 0:
         mitigated = True
@@ -556,11 +568,13 @@ def resolve_threat_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
+
     # Get arguments
     threat_ids = argToList(demisto.args().get('threat_ids'))
+
     # Make request and get raw response
     resolved_threats = resolve_threat_request(threat_ids)
+
     # Parse response into context & content entries
     if resolved_threats.get('affected') and int(resolved_threats.get('affected')) > 0:
         resolved = True
@@ -619,14 +633,17 @@ def get_exclusion_list_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     item_ids = argToList(demisto.args().get('item_ids', []))
     os_types = argToList(demisto.args().get('os_types', []))
     exclusion_type = demisto.args().get('exclusion_type')
     limit = int(demisto.args().get('limit', 10))
     skip = int(demisto.args().get('skip', 0))
+
     # Make request and get raw response
     exclusion_items = get_exclusion_list_request(item_ids, os_types, exclusion_type, limit, skip)
+
     # Parse response into context & content entries
     if exclusion_items:
         title = 'Sentinel One - Listing exclusion items \n' + \
@@ -699,6 +716,7 @@ def create_exclusion_item_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     group_ids = argToList(demisto.args().get('group_ids', []))
     site_ids = argToList(demisto.args().get('site_ids', []))
@@ -708,9 +726,11 @@ def create_exclusion_item_command():
     description = demisto.args().get('description')
     exclusion_mode = demisto.args().get('exclusion_mode')
     path_exclusion_type = demisto.args().get('path_exclusion_type')
+
     # Make request and get raw response
     new_item = create_exclusion_item_request(exclusion_type, exclusion_value, os_type, description, exclusion_mode,
                                              path_exclusion_type, group_ids, site_ids)
+
     # Parse response into context & content entries
     if new_item:
         title = 'Sentinel One - Adding an exclusion item \n' + \
@@ -777,12 +797,15 @@ def get_static_indicators_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     limit = int(demisto.args().get('limit', 50))
+
     # Make request and get raw response
     static_indicators = get_static_indicators_request()
     if limit:
         static_indicators = static_indicators[:limit]
+
     # Parse response into context & content entries
     if static_indicators:
         title = 'Sentinel One - Getting Static Indicators \n' + \
@@ -835,6 +858,7 @@ def get_sites_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     updated_at = demisto.args().get('updated_at')
     query = demisto.args().get('query')
@@ -848,9 +872,11 @@ def get_sites_command():
     created_at = demisto.args().get('created_at')
     limit = int(demisto.args().get('limit', 50))
     site_ids = argToList(demisto.args().get('site_ids', []))
+
     # Make request and get raw response
     sites, all_sites = get_sites_request(updated_at, query, site_type, features, state, suite, admin_only, account_id,
                                          site_name, created_at, limit, site_ids)
+
     # Parse response into context & content entries
     if sites:
         title = 'Sentinel One - Gettin List of Sites \n' + \
@@ -936,10 +962,13 @@ def get_site_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     site_id = demisto.args().get('site_id')
+
     # Make request and get raw response
     site = get_site_request(site_id)
+
     # Parse response into context & content entries
     if site:
         title = 'Sentinel One - Summary About Site: ' + site_id + '\n' + \
@@ -1012,10 +1041,13 @@ def expire_site_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     site_id = demisto.args().get('site_id')
+
     # Make request and get raw response
     site = expire_site_request(site_id)
+
     # Parse response into context & content entries
     if site:
         title = 'Sentinel One - Expire Site: ' + site_id + '\n' + 'Site has been expired successfully'
@@ -1057,10 +1089,13 @@ def delete_site_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     site_id = demisto.args().get('site_id')
+
     # Make request and get raw response
     site = delete_site_request(site_id)
+
     # Parse response into context & content entries
     if site:
         title = 'Sentinel One - Delete Site: ' + site_id + '\n' + 'Site has been deleted successfully'
@@ -1102,10 +1137,13 @@ def reactivate_site_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     site_id = demisto.args().get('site_id')
+
     # Make request and get raw response
     site = reactivate_site_request(site_id)
+
     # Parse response into context & content entries
     if site:
         title = 'Sentinel One - Reactivated Site: ' + site_id + '\n' + 'Site has been reactivated successfully'
@@ -1151,11 +1189,14 @@ def get_threat_summary_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     site_ids = argToList(demisto.args().get('site_ids', []))
     group_ids = argToList(demisto.args().get('group_ids', []))
+
     # Make request and get raw response
     threat_summary = get_threat_summary_request(site_ids, group_ids)
+
     # Parse response into context & content entries
     if threat_summary:
         title = 'Sentinel One - Dashboard Threat Summary'
@@ -1205,14 +1246,17 @@ def list_agents_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     active_threats = demisto.args().get('min_active_threats')
     computer_name = demisto.args().get('computer_name')
     scan_status = demisto.args().get('scan_status')
     os_type = demisto.args().get('os_type')
     created_at = demisto.args().get('created_at')
+
     # Make request and get raw response
     agents = list_agents_request(active_threats, computer_name, scan_status, os_type, created_at)
+
     # Parse response into context & content entries
     if agents:
         title = 'Sentinel One - List of Agents \n ' \
@@ -1294,12 +1338,14 @@ def get_agent_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     agent_id = demisto.args().get('agent_id')
+
     # Make request and get raw response
     agent = get_agent_request(agent_id)
-    # Parse response into context & content entries
 
+    # Parse response into context & content entries
     if agent:
         title = 'Sentinel One - Get Agent Details \nProvides details for the following agent ID : ' + agent_id
         contents.append({
@@ -1374,6 +1420,7 @@ def restart_agents_command():
     context = {}
     context_entries = []
     title = ''
+
     # Get arguments
     query = demisto.args().get('query', '')
     is_decommissioned = demisto.args().get('is_decommissioned', '')
@@ -1381,6 +1428,7 @@ def restart_agents_command():
     site_ids = argToList(demisto.args().get('site_ids'))
     agent_ids = argToList(demisto.args().get('agent_ids'))
     group_ids = argToList(demisto.args().get('group_ids'))
+
     # Translate is_decommissioned from user choice into boolean array
     if is_decommissioned == 'active':
         is_decommissioned = [True, False]
@@ -1390,8 +1438,10 @@ def restart_agents_command():
         is_decommissioned = [True, True]
     else:
         is_decommissioned = [False, False]
+
     # Make request and get raw response
     affected_agents = restart_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids)
+
     # Parse response into context & content entries
     if affected_agents:
         if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
@@ -1452,6 +1502,7 @@ def shutdown_agents_command():
     contents = []
     context = {}
     context_entries = []
+
     # Get arguments
     query = demisto.args().get('query', '')
     is_decommissioned = demisto.args().get('isDecommissioned', '')
@@ -1459,6 +1510,7 @@ def shutdown_agents_command():
     site_ids = argToList(demisto.args().get('siteIds'))
     agent_ids = argToList(demisto.args().get('agentIds'))
     group_ids = argToList(demisto.args().get('groupIds'))
+
     # Translate is_decommissioned from user choice into boolean array
     if is_decommissioned == 'active':
         is_decommissioned = [True, False]
@@ -1468,8 +1520,10 @@ def shutdown_agents_command():
         is_decommissioned = [True, True]
     else:
         is_decommissioned = [False, False]
+
     # Make request and get raw response
     affected_agents = shutdown_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids)
+
     # Parse response into context & content entries
     if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
         affected = True
@@ -1528,6 +1582,7 @@ def disconnect_agents_command():
     contents = []
     context = {}
     context_entries = []
+
     # Get arguments
     query = demisto.args().get('query', '')
     is_decommissioned = demisto.args().get('isDecommissioned', '')
@@ -1535,6 +1590,7 @@ def disconnect_agents_command():
     site_ids = argToList(demisto.args().get('siteIds'))
     agent_ids = argToList(demisto.args().get('agentIds'))
     group_ids = argToList(demisto.args().get('groupIds'))
+
     # Translate is_decommissioned from user choice into boolean array
     if is_decommissioned == 'active':
         is_decommissioned = [True, False]
@@ -1544,9 +1600,11 @@ def disconnect_agents_command():
         is_decommissioned = [True, True]
     else:
         is_decommissioned = [False, False]
+
     # Make request and get raw response
     affected_agents = disconnect_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids,
                                                 group_ids)
+
     # Parse response into context & content entries
     if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
         affected = True
@@ -1605,6 +1663,7 @@ def uninstall_agents_command():
     contents = []
     context = {}
     context_entries = []
+
     # Get arguments
     query = demisto.args().get('query', '')
     is_decommissioned = demisto.args().get('isDecommissioned', '')
@@ -1612,6 +1671,7 @@ def uninstall_agents_command():
     site_ids = argToList(demisto.args().get('siteIds'))
     agent_ids = argToList(demisto.args().get('agentIds'))
     group_ids = argToList(demisto.args().get('groupIds'))
+
     # Translate is_decommissioned from user choice into boolean array
     if is_decommissioned == 'active':
         is_decommissioned = [True, False]
@@ -1621,8 +1681,10 @@ def uninstall_agents_command():
         is_decommissioned = [True, True]
     else:
         is_decommissioned = [False, False]
+
     # Make request and get raw response
     affected_agents = uninstall_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids)
+
     # Parse response into context & content entries
     if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
         affected = True
@@ -1681,6 +1743,7 @@ def decommission_agents_command():
     contents = []
     context = {}
     context_entries = []
+
     # Get arguments
     query = demisto.args().get('query', '')
     is_decommissioned = demisto.args().get('isDecommissioned', '')
@@ -1688,6 +1751,7 @@ def decommission_agents_command():
     site_ids = argToList(demisto.args().get('siteIds'))
     agent_ids = argToList(demisto.args().get('agentIds'))
     group_ids = argToList(demisto.args().get('groupIds'))
+
     # Translate is_decommissioned from user choice into boolean array
     if is_decommissioned == 'active':
         is_decommissioned = [True, False]
@@ -1697,9 +1761,11 @@ def decommission_agents_command():
         is_decommissioned = [True, True]
     else:
         is_decommissioned = [False, False]
+
     # Make request and get raw response
     affected_agents = decommission_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids,
                                                   group_ids)
+
     # Parse response into context & content entries
     if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
         affected = True
@@ -1758,10 +1824,13 @@ def connect_agents_command():
     contents = []
     context = {}
     context_entries = []
+
     # Get arguments
     agent_ids = argToList(demisto.args().get('agentIds'))
+
     # Make request and get raw response
     affected_agents = connect_agents_request(agent_ids)
+
     # Parse response into context & content entries
     if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
         affected = True
@@ -1815,14 +1884,17 @@ def search_indicators_command():
     contents = []
     context = {}
     context_entries = []
+
     # Get arguments
     indicator = demisto.args().get('indicator')
     indicator_value = demisto.args().get('indicatorValue')
     from_date = demisto.args().get('fromDate')
     to_date = demisto.args().get('toDate')
+
     # Make request and get raw response
     query = indicator + '=' + '\"' + indicator_value + '\"'
     records = search_indicators_request(query, from_date, to_date)
+
     # Parse response into context & content entries
     for record in records:
         event = record.get('event')
