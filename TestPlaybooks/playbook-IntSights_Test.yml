@@ -499,6 +499,33 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: ab2d2a20-5d45-4f97-8d93-8c90b4fd21dc
+    type: regular
+    task:
+      id: ab2d2a20-5d45-4f97-8d93-8c90b4fd21dc
+      version: -1
+      name: get csv file
+      script: '|||intsights-get-csv'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      alert-id:
+        simple: 5d13bc1a816f0d0007473d31
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

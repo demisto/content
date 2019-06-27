@@ -787,8 +787,28 @@ script:
       description: The IntSight's mssp sub account's company name
       type: String
     description: Get all mssp sub accounts
+  - name: intsights-get-csv
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert ID
+    outputs:
+    - contextPath: File.MD5
+      description: MD5 found in parsed file
+    - contextPath: File.SHA1
+      description: SHA1 found in parsed file
+    - contextPath: File.SHA256
+      description: SHA256 found in parsed file
+    - contextPath: File.MD5
+      description: MD5 found in parsed file
+    - contextPath: File.Extension
+      description: Extension of the file
+    - contextPath: File.Size
+      description: Size of the file in bytes
+    description: Get alert's CSV file in case of credentials leakage or leaked credit cards alerts
   isfetch: true
   runonce: false
-releaseNotes: fetch incidents fixed
+releaseNotes: added command to get csv file from alert
 tests:
   - IntSights Test

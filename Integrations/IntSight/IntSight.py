@@ -461,6 +461,17 @@ def close_alert():
     })
 
 
+def get_csv():
+    """
+    Get alert's CSV file in case of credentials leakage or leaked credit cards alerts
+    """
+    alert_id = demisto.getArg('alert-id')
+    url = 'public/v1/data/alerts/csv-file/' + alert_id
+
+    res = req('GET', url)
+    demisto.results(fileResult(filename='csv-file-{}.csv'.format(alert_id), data=res.text))
+
+
 def send_mail():
     """
     Send email with the alert details and a question
@@ -943,5 +954,7 @@ elif demisto.command() == 'intsights-update-ioc-blocklist-status':
     update_ioc_blocklist_status()
 elif demisto.command() == 'intsights-close-alert':
     close_alert()
+elif demisto.command() == 'intsights-get-csv':
+    get_csv()
 else:
     return_error('Unrecognized command: ' + demisto.command())
