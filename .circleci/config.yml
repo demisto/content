@@ -67,7 +67,7 @@ jobs:
       - run:
           name: Build Content Descriptor
           when: always
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
+          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
       - run:
           name: Common Server Documentation
           when: always
