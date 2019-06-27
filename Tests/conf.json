@@ -1292,6 +1292,11 @@
             "timeout": 500
         },
         {
+            "integrations": "Cofense Intelligence",
+            "playbookID": "Test - Cofense Intelligence",
+            "timeout": 500
+        },
+        {
             "playbookID": "GDPRContactAuthorities Test"
         },
         {
