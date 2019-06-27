@@ -153,14 +153,6 @@
       ]
     },
     {
-      "id": "ssdeepRep",
-      "version": -1,
-      "regex": "",
-      "reputationScriptName": "",
-      "details": "ssdeep",
-      "enhancementScriptNames": []
-    },
-    {
       "id": "domainRep",
       "version": -1,
       "regex": "",
@@ -184,6 +176,5 @@
       "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
     }
-  ],
-  "releaseNotes": "updated file reputations"
+  ]
 }

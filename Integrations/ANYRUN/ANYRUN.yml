@@ -441,4 +441,3 @@ script:
   type: python
 tests:
 - ANYRUN-Test
-releaseNotes: "-"

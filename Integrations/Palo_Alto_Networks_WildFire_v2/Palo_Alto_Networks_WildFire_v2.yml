@@ -359,4 +359,3 @@ script:
   subtype: python3
 tests:
 - Wildfire Test
-releaseNotes: "Add Return warning entry for unsupported file types parameter"
