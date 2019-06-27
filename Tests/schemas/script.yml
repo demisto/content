@@ -71,6 +71,9 @@ mapping:
     type: bool
   runas:
     type: str
+  subtype:
+    type: str
+    enum: ['python2', 'python3']
 
 # script->args
 schema;argument_schema:

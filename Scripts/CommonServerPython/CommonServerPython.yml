@@ -12,6 +12,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Logger support for Python3."
 tests:
   - TestCommonPython
+releaseNotes: "improved support for encoding in logger"

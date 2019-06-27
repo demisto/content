@@ -1,0 +1,129 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Intezer v2
+  version: -1
+configuration:
+- display: API Key
+  name: APIKey
+  required: true
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Malware detection and analysis based on code reuse
+display: Intezer v2
+name: Intezer v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and
+      MD5
+    execution: false
+    name: intezer-analyze-by-hash
+    outputs:
+    - contextPath: Intezer.Analysis.ID
+      description: Intezer analysis id
+      type: string
+    - contextPath: Intezer.Analysis.Status
+      description: status of the analysis
+      type: string
+    - contextPath: Intezer.Analysis.Type
+      description: type of the analysis
+      type: string
+  - arguments:
+    - default: true
+      description: The file entry id to upload
+      isArray: false
+      name: file_entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks file reputation for uploaded file (up to 32MB)
+    execution: false
+    name: intezer-analyze-by-file
+    outputs:
+    - contextPath: Intezer.Analysis.ID
+      description: Intezer analysis id
+      type: string
+    - contextPath: Intezer.Analysis.Status
+      description: status of the analysis
+      type: string
+    - contextPath: Intezer.Analysis.Type
+      description: type of the analysis
+      type: string
+  - arguments:
+    - default: false
+      description: The analysis ID we want to get results for
+      isArray: true
+      name: analysis_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: File
+      description: The type of the analysis
+      isArray: false
+      name: analysis_type
+      predefined:
+      - File
+      - Endpoint
+      required: false
+      secret: false
+    - default: false
+      description: indicator to classify
+      isArray: false
+      name: indicator_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Check the analysis status and get analysis result, support file and
+      endpoint analysis
+    execution: false
+    name: intezer-get-analysis-result
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: Unknown
+    - contextPath: Endpoint.Metadata
+      description: Metadata returned from Intezer analysis (endpoint analysis id,
+        endpoint analysis url, families,  verdict, host_name)
+      type: Unknown
+  dockerimage: demisto/python3:3.7.3.286
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+  - Intezer Testing v2

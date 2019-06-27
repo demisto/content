@@ -1,0 +1,104 @@
+commonfields:
+  id: Mail Sender (New)
+  version: -1
+name: Mail Sender (New)
+display: Mail Sender (New)
+category: Messaging
+description: Send emails implemented in Python with embedded image support
+configuration:
+- display: Mail server hostname or IP address
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: SMTP Port
+  name: port
+  defaultvalue: "25"
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Sender address
+  name: from
+  defaultvalue: noreply@demisto.com
+  type: 0
+  required: true
+- display: Fully Qualified Domain Name (FQDN) - used in EHLO
+  name: fqdn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Use TLS for connection
+  name: tls
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: send-mail
+    arguments:
+    - name: to
+      default: true
+      description: Email addresses for the 'To' field
+      isArray: true
+    - name: cc
+      description: Email addresses for the 'Cc' field
+      isArray: true
+    - name: bcc
+      description: Email addresses for the 'Bcc' field
+      isArray: true
+    - name: subject
+      description: Subject for the email to be sent
+    - name: body
+      description: The contents (body) of the email to be sent in plain text
+    - name: htmlBody
+      description: The contents (body) of the email to be sent in HTML format
+    - name: replyTo
+      description: Address that should be used to reply to the message
+    - name: attachIDs
+      description: A comma-separated list of IDs of war room entries that contain
+        the files that should be attached to the email
+      isArray: true
+    - name: attachNames
+      description: A comma-separated list to rename file-names of corresponding attachments
+        IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename
+        first and third file - attachNames=file_name1,,file_name3)
+      isArray: true
+    - name: attachCIDs
+      description: A comma-separated list of CIDs to embed attachments inside the
+        email itself
+      isArray: true
+    - name: transientFile
+      description: Desired name for attached file. Multiple files are supported as
+        comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+    - name: transientFileContent
+      description: Content for attached file. Multiple files are supported as comma-separated
+        list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+    - name: transientFileCID
+      description: CID for attached file if we want it inline. Multiple files are
+        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
+        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+    - name: templateParams
+      description: 'Replace {varname} variables with values from this argument. Expected
+        values are in the form of a JSON document like {"varname": {"value": "some
+        value", "key": "context key"}}. Each var name can either be provided with
+        the value or a context key to retrieve the value from.'
+    description: Send an email
+  runonce: false
+tests:
+  - Mail Sender (New) Test
