@@ -374,6 +374,5 @@ inputs:
   description: 'Name of the credential set. Credentials are located in Demisto: Settings
     > Integrations > Credentials.'
 outputs: []
-releaseNotes: "Added playbook Intezer - scan host: Uses Demisto's d2 agent to scan host using Intezer scanner."
 tests:
   - No Tests

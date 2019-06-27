@@ -16,6 +16,8 @@ After you have done the above, we will look at Demisto and get started on your f
 
 [Understanding the YAML file structure](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD)
 
+[Updating Release Notes](https://github.com/demisto/content/blob/master/docs/release_notes/README.MD)
+
 [Creating playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD)
 
 ## Code Conventions

@@ -982,6 +982,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file.
   type: unknown
-releaseNotes: "Word document check now ignores file info data"
 tests:
   - Extract Indicators From File - Generic v2 - Test
