@@ -158,7 +158,7 @@ def docker_image_create(docker_base_image, requirements):
 def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
     workdir = '/devwork'
     pylint_files = get_lint_files(project_dir)
-    run_params = ['docker', 'create', '-v', workdir, '-w', workdir,
+    run_params = ['docker', 'create', '-u', '{}:4000'.format(os.getuid()), '-v', workdir, '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
     if no_test:
         run_params.extend(['-e', 'PYTEST_SKIP=1'])
