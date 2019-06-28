@@ -25,8 +25,12 @@ RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
 
 
-def get_docker_image(script_obj):
-    return script_obj.get('dockerimage') or DEF_DOCKER
+def get_docker_images(script_obj):
+    imgs = [script_obj.get('dockerimage') or DEF_DOCKER]
+    alt_imgs = script_obj.get('alt_dockerimages')
+    if alt_imgs:
+        imgs.extend(alt_imgs)
+    return imgs
 
 
 def print_v(msg):
@@ -239,25 +243,26 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     if script_type != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
         return 1
-    docker = get_docker_image(script_obj)
-    print_v("Using docker image: {}".format(docker))
-    py_num = get_python_version(project_dir, docker)
-    setup_dev_files(project_dir)
-    try:
-        if not args.no_flake8:
-            run_flake8(project_dir, py_num)
-        if not args.no_mypy:
-            run_mypy(project_dir, py_num)
-        if not args.no_test or not args.no_pylint:
-            requirements = get_dev_requirements(py_num)
-            docker_image_created = docker_image_create(docker, requirements)
-            docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
-    except subprocess.CalledProcessError as ex:
-        sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
-        return 2
-    finally:
-        sys.stdout.flush()
-        sys.stderr.flush()
+    dockers = get_docker_images(script_obj)
+    for docker in dockers:
+        print_v("Using docker image: {}".format(docker))
+        py_num = get_python_version(project_dir, docker)
+        setup_dev_files(project_dir)
+        try:
+            if not args.no_flake8:
+                run_flake8(project_dir, py_num)
+            if not args.no_mypy:
+                run_mypy(project_dir, py_num)
+            if not args.no_test or not args.no_pylint:
+                requirements = get_dev_requirements(py_num)
+                docker_image_created = docker_image_create(docker, requirements)
+                docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
+        except subprocess.CalledProcessError as ex:
+            sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
+            return 2
+        finally:
+            sys.stdout.flush()
+            sys.stderr.flush()
     return 0
 
 

@@ -595,7 +595,10 @@
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "Rasterize"
+            ],
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
