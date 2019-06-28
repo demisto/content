@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import yaml
 import argparse
@@ -25,8 +25,6 @@ def extract_code(yml_path, output_path, demisto_mock, commonserver=None, yml_typ
         script = yml_data['script']
         if yml_type == INTEGRATION:  # in integration the script is stored at a second level
             script = script['script']
-        if type(script) == str:  # pyyaml may return either a unicode or str depending upon the content of script
-            script = unicode(script)
     with open(output_path, 'w', encoding='utf-8') as code_file:
         if demisto_mock:
             code_file.write(u"import demistomock as demisto\n")
