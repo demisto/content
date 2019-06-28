@@ -36,7 +36,7 @@ script: |-
       sys.exit(0)
   allowReply = demisto.get(demisto.args(), 'allowReply')
   if allowReply:
-      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent', 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag'})
+      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'replyEntriesTag': demisto.get(demisto.args()})
       if isError(res[0]):
           demisto.results(res)
           sys.exit(0)
