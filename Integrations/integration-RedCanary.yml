@@ -182,11 +182,16 @@ script:
     def get_endpoint_user_context(res=None, endpoint_user_id=None):
         if res is None:
             res = http_get('/endpoint_users/{}'.format(endpoint_user_id))['data']
-
-        return [{
-                'Username' : endpoint_user['attributes']['username'].split('\\')[1],
-                'Hostname' : endpoint_user['attributes']['username'].split('\\')[0],
-            } for endpoint_user in res]
+        endpoint_users = []
+        for endpoint_user in res:
+            if "\\" in endpoint_user['attributes']['username']:
+                user = {'Username' : endpoint_user['attributes']['username'].split('\\')[1],
+                        'Hostname' : endpoint_user['attributes']['username'].split('\\')[0]}
+            else:
+                user = {'Username' : endpoint_user['attributes']['username'],
+                        'Hostname' : ''}
+            endpoint_users.append(user)
+        return endpoint_users
 
 
 
