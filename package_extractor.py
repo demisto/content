@@ -55,7 +55,7 @@ def extract_image(yml_path, output_path, yml_type=None):
     print("Extracting image to: {} ...".format(output_path))
     with open(yml_path, 'rb') as yml_file:
         yml_data = yaml.safe_load(yml_file)
-        image_b64 = yml_data['image'].split(',')[1]
+        image_b64 = yml_data['image'].split(',')[1].encode('utf-8')
     with open(output_path, 'wb') as image_file:
         image_file.write(base64.decodebytes(image_b64))
     return 0
@@ -80,7 +80,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     yml_type = get_yml_type(yml_path, yml_type)
     code_file = "{}/{}.py".format(output_path, base_name)
     extract_code(yml_path, code_file, demisto_mock, commonserver, yml_type)
-    extract_image(yml_path, "{}/{}_image.py".format(output_path, base_name), yml_type)
+    extract_image(yml_path, "{}/{}_image.png".format(output_path, base_name), yml_type)
     yaml_out = "{}/{}.yml".format(output_path, base_name)
     print("Creating yml file: {} ...".format(yaml_out))
     ryaml = YAML()
@@ -90,6 +90,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     script_obj = yaml_obj
     if yml_type == INTEGRATION:
         script_obj = yaml_obj['script']
+        del yaml_obj['image'] 
     if script_obj['type'] != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_obj['type']))
         return 1
@@ -113,10 +114,10 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     except FileNotFoundError:
         print_color("pipenv install skipped! It doesn't seem you have pipenv installed.\n"
                     "Make sure to install it with: pip3 install pipenv.\n"
-                    "Then run in the package dir: pipenn install --dev", LOG_COLORS.YELLOW)
+                    "Then run in the package dir: pipenv install --dev", LOG_COLORS.YELLOW)
     print_color("\nCompleted: setting up package: {}\n".format(arg_path), LOG_COLORS.GREEN)
     print("Next steps: \n"
-          "* Install additional py packages needed for unit testsing (if needed): pipenv install <package>\n"
+          "* Install additional py packages for unit testsing (if needed): pipenv install <package>\n"
           "* Create unit tests\n"
           "* Check linting and unit tests by running: ./Tests/scripts/pkg_dev_test_tasks.py -d {}\n".format(arg_path))
     return 0
