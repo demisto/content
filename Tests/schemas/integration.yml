@@ -53,6 +53,10 @@ mapping:
         required: yes
       dockerimage:
         type: str
+      alt_dockerimages:
+        type: seq
+        sequence:
+        - type: str
       isfetch:
         type: bool
       commands:
