@@ -5,13 +5,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 64d71122-bc73-4528-8841-c6247607bfc2
+    taskid: 797fab46-879d-4884-8802-e1597a841895
     type: start
     task:
-      id: 64d71122-bc73-4528-8841-c6247607bfc2
+      id: 797fab46-879d-4884-8802-e1597a841895
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -30,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: d7a3d135-83da-4106-88df-5855da6e1f88
+    taskid: e2876f95-dcb0-4ffc-85d4-cccee64bd5ab
     type: regular
     task:
-      id: d7a3d135-83da-4106-88df-5855da6e1f88
+      id: e2876f95-dcb0-4ffc-85d4-cccee64bd5ab
       version: -1
       name: Check auto enrich with unicode chars of URL
       description: Prints text to war room (Markdown supported)
@@ -61,10 +60,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: fe744764-5ebd-44c8-8a94-c4278658e87c
+    taskid: 03a9ba0c-a93b-4f0c-83af-f6c2b9f3fb0f
     type: condition
     task:
-      id: fe744764-5ebd-44c8-8a94-c4278658e87c
+      id: 03a9ba0c-a93b-4f0c-83af-f6c2b9f3fb0f
       version: -1
       name: Check inline extraction
       type: condition
@@ -99,13 +98,12 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 7808c689-4ba3-46fa-87e7-256f77b7d21d
+    taskid: b3edd106-e3b9-43f7-8321-7c961176ec4c
     type: title
     task:
-      id: 7808c689-4ba3-46fa-87e7-256f77b7d21d
+      id: b3edd106-e3b9-43f7-8321-7c961176ec4c
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
