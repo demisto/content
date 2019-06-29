@@ -19,25 +19,24 @@ configuration:
   defaultvalue: SUSPICIOUS
   type: 0
   required: false
-- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or
-    MALICIOUS)'
+- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
+    or MALICIOUS)'
   name: defaultdbotscoreDomain
   defaultvalue: SUSPICIOUS
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     DEFAULT_DBOT_SCORE_EMAIL = params.defaultdbotscoreEmail == 'SUSPICIOUS' ? 2 : 3;
     DEFAULT_DBOT_SCORE_DOMAIN = params.defaultdbotscoreDomain == 'SUSPICIOUS' ? 2 : 3;
 
-    var sendRequest = function(url) {
+    function sendRequest(url) {
         var res = http(
             url,
             {
                 Method: 'GET',
                 Headers: {
                     'Accept': ['application/json'],
-                    'User-Agent' : ['DBOT-API'],
                 }
             },
             false,
@@ -57,14 +56,16 @@ script:
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
         return obj;
-    };
+    }
 
-    var fixDesc = function(desc) {
+
+    function fixDesc(desc) {
         var newDesc = desc.replace(/<a href="(.+?)"(.+?)\>(.+?)<\/a>/g,'[$3]($1)');
         return newDesc;
     }
 
-    var dataToMd = function(type,arg,obj) {
+
+    function dataToMd(type,arg,obj) {
         var md = "### Have I Been Pwned query for " + type.toLowerCase() + ": *" + arg + "*\n";
         if (obj && obj.length>0) {
             for (var i=0;i<obj.length;i++) {
@@ -79,15 +80,18 @@ script:
         }
         return md;
     }
+
+
     function addCompromised(context, path, obj) {
       obj['properties_to_append'] = ['Compromised'];
       context[path] = obj;
     }
 
-    var emailToEc = function(email,obj) {
+
+    function emailToEc(email,obj) {
         var compSites = [];
         obj.forEach(function (item) {
-            compSites.push(item.Domain);
+            compSites.push(item.Title);
         });
         compSites = compSites.sort();
         var compEmail = {};
@@ -102,7 +106,7 @@ script:
                 emailContext.Malicious = {
                     Vendor: 'Pwned',
                     Description: 'The email has been compromised',
-                }
+                };
             }
             addCompromised(compEmail, outputPaths.email, emailContext);
         }
@@ -115,7 +119,9 @@ script:
         compEmail.DBotScore = dBotScore;
         return compEmail;
     }
-    var domainToEc = function(domain,obj) {
+
+
+    function domainToEc(domain,obj) {
         var compSites = [];
         obj.forEach(function (item) {
             compSites.push(item.Domain);
@@ -146,7 +152,8 @@ script:
         };
         compDomain.DBotScore = dBotScore;
         return compDomain;
-    };
+    }
+
 
     switch (command) {
         case 'test-module':
@@ -182,7 +189,7 @@ script:
     - contextPath: Account.Email.Compromised.Vendor
       description: For comporomised emails, the vendor that made the decision
       type: string
-    - contextPath: Account.Email.Reason
+    - contextPath: Account.Email.Compromised.Reason
       description: For comporomised emails, the reason for the vendor to make the
         compromised decision
       type: string
@@ -334,4 +341,4 @@ script:
     description: Check if domain has been compromised
   runonce: false
 tests:
-  - Pwned test
+- Pwned test
