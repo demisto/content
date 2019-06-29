@@ -341,4 +341,4 @@ script:
     description: Check if domain has been compromised
   runonce: false
 tests:
-- Pwned test
+  - Pwned test
