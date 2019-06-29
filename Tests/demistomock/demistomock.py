@@ -487,7 +487,18 @@ def getIntegrationContext():
     return integrationContext
 
 
-def incidents(incidents):
+def incidents(incidents=None):
+    """
+    In Scripts this returns the `Incidents` list from the context
+
+    In integrations this is used to return incidents to the server
+
+    Arguments:
+        incidents {list with objects} -- List with incident objects
+
+    Returns:
+        [type] -- [description]
+    """
     return results(
         {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
     )
