@@ -81,8 +81,8 @@ tasks:
           left:
             value:
               complex:
-                root: DBotScore
-                accessor: Indicator
+                root: URL
+                accessor: Data
             iscontext: true
           right:
             value:
