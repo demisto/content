@@ -34,12 +34,11 @@ def print_v(msg):
         print(msg)
 
 
-def get_python_version(project_dir, docker_image):
+def get_python_version(docker_image):
     """
     Get the python version of a docker image
 
     Arguments:
-        project_dir {string} -- project directory
         docker_image {string} -- Docker image being used by the project
 
     Return:
@@ -61,6 +60,19 @@ def get_python_version(project_dir, docker_image):
     return py_num
 
 
+def get_pipenv_dir(py_version):
+    """
+    Get the direcotry holding pipenv files for the specified python version
+
+    Arguments:
+        py_version {float} -- python version as 2.7 or 3.7
+
+    Returns:
+        string -- full path to the pipenv dir
+    """
+    return "{}{}".format(ENVS_DIRS_BASE, int(py_version))
+
+
 def get_dev_requirements(py_version):
     """
     Get the requirements for the specified py version.
@@ -74,7 +86,7 @@ def get_dev_requirements(py_version):
     Returns:
         string -- requirement required for the project
     """
-    env_dir = "{}{}".format(ENVS_DIRS_BASE, int(py_version))
+    env_dir = get_pipenv_dir(py_version)
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
     requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True,
                                            stderr=stderr_out)
@@ -102,7 +114,10 @@ def docker_image_create(docker_base_image, requirements):
 
     if ':' not in docker_base_image:
         docker_base_image += ':latest'
-    target_image = 'devtest' + docker_base_image + '-' + hashlib.md5(requirements.encode('utf-8')).hexdigest()
+    with open(CONTAINER_SETUP_SCRIPT, "rb") as f:
+        setup_script_data = f.read()
+    md5 = hashlib.md5(requirements.encode('utf-8') + setup_script_data).hexdigest()
+    target_image = 'devtest' + docker_base_image + '-' + md5
     lock_file = ".lock-" + target_image.replace("/", "-")
     try:
         if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
@@ -156,9 +171,9 @@ def docker_image_create(docker_base_image, requirements):
 
 
 def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
-    workdir = '/devwork'
+    workdir = '/devwork'  # this is setup in CONTAINER_SETUP_SCRIPT
     pylint_files = get_lint_files(project_dir)
-    run_params = ['docker', 'create', '-u', '{}:4000'.format(os.getuid()), '-v', workdir, '-w', workdir,
+    run_params = ['docker', 'create', '-u', '{}:4000'.format(os.getuid()), '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
     if no_test:
         run_params.extend(['-e', 'PYTEST_SKIP=1'])
@@ -241,7 +256,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         return 1
     docker = get_docker_image(script_obj)
     print_v("Using docker image: {}".format(docker))
-    py_num = get_python_version(project_dir, docker)
+    py_num = get_python_version(docker)
     setup_dev_files(project_dir)
     try:
         if not args.no_flake8:

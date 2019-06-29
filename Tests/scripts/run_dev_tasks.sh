@@ -27,6 +27,10 @@ fi
 
 if [ -z "${PYTEST_SKIP}" -a -z "${PYTEST_FAIL_NO_TESTS}" ]; then
     echo "collecting tests..."
+    ls -la 
+    ls -ld
+    touch .test-this
+    ls -la
     collect_res=$(python -m pytest --collect-only 2>&1)
     case "$collect_res" in
         *"errors"*)
