@@ -1,0 +1,136 @@
+id: URL regex - Test
+version: -1
+name: URL regex - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 64d71122-bc73-4528-8841-c6247607bfc2
+    type: start
+    task:
+      id: 64d71122-bc73-4528-8841-c6247607bfc2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d7a3d135-83da-4106-88df-5855da6e1f88
+    type: regular
+    task:
+      id: d7a3d135-83da-4106-88df-5855da6e1f88
+      version: -1
+      name: Check auto enrich with unicode chars of URL
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: www.joe◦.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: fe744764-5ebd-44c8-8a94-c4278658e87c
+    type: condition
+    task:
+      id: fe744764-5ebd-44c8-8a94-c4278658e87c
+      version: -1
+      name: Check inline extraction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: www.joe◦.com
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 7808c689-4ba3-46fa-87e7-256f77b7d21d
+    type: title
+    task:
+      id: 7808c689-4ba3-46fa-87e7-256f77b7d21d
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
