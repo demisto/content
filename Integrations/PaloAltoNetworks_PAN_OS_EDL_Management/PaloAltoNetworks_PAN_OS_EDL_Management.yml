@@ -1,0 +1,246 @@
+category: Utilities
+commonfields:
+  id: palo_alto_networks_pan_os_edl_management
+  version: -1
+configuration:
+- display: Hostname or IP of server
+  name: hostname
+  required: true
+  type: 0
+- display: server port
+  name: port
+  required: false
+  type: 0
+- display: SSH credentials to server (username and certificate)
+  name: Authentication
+  required: true
+  type: 9
+- display: SSH extra parameters (e.g., "-c ChaCha20")
+  name: ssh_extra_params
+  required: false
+  type: 0
+- display: SCP extra parameters (e.g., "-c ChaCha20 -l 8000")
+  name: scp_extra_params
+  required: false
+  type: 0
+- display: Document root (e.g., var/www/html/files)
+  name: document_root
+  required: false
+  type: 0
+description: This integration enables you to manage and edit files located on a remote
+  web server via SSH using integration context as Single Source of Truth.
+display: Palo Alto Networks PAN-OS EDL Management
+name: palo_alto_networks_pan_os_edl_management
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Unique path to the file on a remote server.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Displays the contents of the specified remote file located in the War Room.
+    execution: false
+    name: pan-os-edl-get-external-file
+  - arguments:
+    - default: false
+      description: Unique path to the file on a remote server.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: String to search for in the remote file.
+      isArray: false
+      name: search_string
+      required: true
+      secret: false
+    deprecated: false
+    description: Searches for a string in a remote file.
+    execution: false
+    name: pan-os-edl-search-external-file
+  - arguments:
+    - default: false
+      description: List from the instance context with which to override the remote file.
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique path to file
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Prints the updated remote file to the War Room. Default is "false".
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: List items.
+      isArray: true
+      name: list_items
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: add
+      description: Whether to add to, or remove from the list. Default is "add".
+      isArray: false
+      name: add_or_remove
+      predefined:
+      - add
+      - remove
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the instance context with the specified list name and list items, and
+      then overrides the path of the remote file with the internal list.
+    execution: true
+    name: pan-os-edl-update
+  - arguments:
+    - default: false
+      description: Unique path to the file on a remote server.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: List name.
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: merge
+      description: Update type. "Merge" adds non-duplicate values, "Override"
+        deletes existing data in the internal list. Default is "merge".
+      isArray: false
+      name: type
+      predefined:
+      - merge
+      - override
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Prints the updated internal list to the War Room. Default is "false".
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates internal list data with the contents of a remote file.
+    execution: true
+    name: pan-os-edl-update-from-external-file
+  - arguments:
+    - default: false
+      description: Unique path to the file on a remote server.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a file from a remote server.
+    execution: true
+    name: pan-os-edl-delete-external-file
+  - arguments:
+    - default: false
+      description: List name.
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Displays internal list data in the War Room.
+    execution: false
+    name: pan-os-edl-print-internal-list
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: List data destination. Default is "file".
+      isArray: false
+      name: destination
+      predefined:
+      - file
+      - incident_context
+      required: true
+      secret: false
+    - default: false
+      description: List name.
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    outputs:
+      - contextPath: PANOSEDL.ListItems
+        description: Items of the internal list.
+        type: string
+      - contextPath: PANOSEDL.ListName
+        description: Name of the internal list.
+        type: string
+    deprecated: false
+    description: Dumps (copies) instance context to either the incident context or a file.
+    execution: false
+    name: pan-os-edl-dump-internal-list
+  - deprecated: false
+    description: Displays instance context list names.
+    execution: false
+    name: pan-os-edl-list-internal-lists
+  - arguments:
+    - default: false
+      description: Name of list
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - default: false
+      description: String to search for in the remote file.
+      isArray: false
+      name: search_string
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for a string in internal list.
+    execution: false
+    name: pan-os-edl-search-internal-list
+  - arguments:
+    - default: false
+      description: List name.
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique path to the file on a remote server.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Compares internal list and external file contents.
+    execution: false
+    name: pan-os-edl-compare
+  dockerimage: demisto/openssh:1.0.0.305
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- PAN OS EDL Management - Test

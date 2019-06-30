@@ -32,8 +32,10 @@ entryTypes = {
     'userManagement': 6,
     'image': 7,
     'plagroundError': 8,
+    'playgroundError': 8,
     'entryInfoFile': 9,
-    'map': 15
+    'map': 15,
+    'widget': 17
 }
 formats = {
     'html': 'html',
@@ -72,7 +74,7 @@ dbotscores = {
 }
 
 
-###### Fix fetching credentials from vault instances ######
+# ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
     for k, v in demisto.params().items():
@@ -550,11 +552,24 @@ class IntegrationLogger(object):
       :return: No data returned
       :rtype: ``None``
     """
+
     def __init__(self, ):
         self.messages = []  # type: list
 
     def __call__(self, message):
-        self.messages.append('%s' % (message, ))
+        try:
+            self.messages.append(str(message))
+
+        except UnicodeEncodeError as ex:
+            # could not decode the message
+            # if message is an Exception, try encode the exception's message
+            if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
+                self.messages.append(message.args[0].encode('utf-8', 'replace'))
+            elif isinstance(message, STRING_OBJ_TYPES):
+                # try encode the message itself
+                self.messages.append(message.encode('utf-8', 'replace'))
+            else:
+                self.messages.append("Failed encoding message with error: {}".format(ex))
 
     def print_log(self, verbose=False):
         if self.messages:
@@ -648,7 +663,10 @@ def flattenCell(data, is_pretty=True):
         string_list = []
         for d in data:
             try:
-                string_list.append(str(d))
+                if IS_PY3 and isinstance(d, bytes):
+                    string_list.append(d.decode('utf-8'))
+                else:
+                    string_list.append(str(d))
             except UnicodeEncodeError:
                 string_list.append(d.encode('utf-8'))
 
@@ -784,6 +802,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = list(t[0].keys())
+        headers.sort()
 
     if removeNull:
         headers_aux = headers[:]
@@ -917,7 +936,7 @@ def fileResult(filename, data, file_type=None):
        :type filename: ``str``
        :param filename: The name of the file to be created (required)
 
-       :type data: ``str``
+       :type data: ``str`` or ``bytes``
        :param data: The file data (required)
 
        :type file_type: ``str``
@@ -929,6 +948,10 @@ def fileResult(filename, data, file_type=None):
     if file_type is None:
         file_type = entryTypes['file']
     temp = demisto.uniqueFile()
+    # pylint: disable=undefined-variable
+    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore
+        data = data.encode('utf-8')
+    # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
@@ -999,7 +1022,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = "\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -1349,14 +1372,16 @@ def camelize(src, delim=' '):
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
     """
+
     def camelize_str(src_str, delim):
+        if callable(getattr(src_str, "decode", None)):
+            src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
-        return ''.join(map(lambda x: x.decode('utf-8').title(), components))
+        return ''.join(map(lambda x: x.title(), components))
 
     if isinstance(src, list):
-        return map(lambda x: camelize(x, delim), src)
-    src = {camelize_str(k, delim): v for k, v in src.iteritems()}
-    return src
+        return [camelize(x, delim) for x in src]
+    return {camelize_str(k, delim): v for k, v in src.items()}
 
 
 # Constants for common merge paths
@@ -1371,6 +1396,33 @@ outputPaths = {
     'email': 'Account.Email(val.Address && val.Address == obj.Address)',
     'dbotscore': 'DBotScore'
 }
+
+
+def replace_in_keys(src, existing='.', new='_'):
+    """
+        Replace a substring in all of the keys of a dictionary (or list of dictionaries)
+
+        :type src: ``dict`` or ``list``
+        :param src: The dictionary (or list of dictionaries) with keys that need replacement. (required)
+
+        :type existing: ``str``
+        :param existing: substring to replace.
+
+        :type new: ``str``
+        :param new: new substring that will replace the existing substring.
+
+        :return: The dictionary (or list of dictionaries) with keys after substring replacement.
+        :rtype: ``dict`` or ``list``
+    """
+    def replace_str(src_str):
+        if callable(getattr(src_str, "decode", None)):
+            src_str = src_str.decode('utf-8')
+        return src_str.replace(existing, new)
+
+    if isinstance(src, list):
+        return [replace_in_keys(x, existing, new) for x in src]
+    return {replace_str(k): v for k, v in src.items()}
+
 
 # ############################## REGEX FORMATTING ###############################
 regexFlags = re.M  # Multi line matching
