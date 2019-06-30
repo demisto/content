@@ -423,7 +423,7 @@ def get_entities_command():
             if 'interval_time_stop' in actor:
                 actor['interval_time_stop'] = pretty_time(actor['interval_time_stop'])
 
-            if 'fingerprint' in actor and actor.get('fingerprint') is not None:           
+            if 'fingerprint' in actor and actor.get('fingerprint') is not None:
                 if 'last_seen' in actor.get('fingerprint', {}):
                     actor['fingerprint']['last_seen'] = pretty_time(actor['fingerprint']['last_seen'])
 
