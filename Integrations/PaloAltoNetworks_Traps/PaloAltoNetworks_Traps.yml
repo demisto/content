@@ -42,21 +42,29 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Get endpoint details by agent id.
     execution: false
     name: traps-get-endpoint-by-id
     outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
+    - contextPath: Traps.Endpoint.ID
+      description: Endpoint ID
+      type: String
+    - contextPath: Traps.Endpoint.Name
+      description: Endpoint name
+      type: String
+    - contextPath: Traps.Endpoint.Domain
+      description: Endpoint domain
       type: date
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Endpoint ID
+      isArray: false
+      name: endpoint_id
+      required: false
+      secret: false
+    deprecated: false
     execution: false
+    name: traps-endpoint-files-retrieve
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
