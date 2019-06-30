@@ -43,24 +43,38 @@ handle_proxy()
 OUTPUTS = {
     'get_endpoint_by_id': {
         'ID': 'guid',
-        'name': 'name',
-        'domain': 'domain',
-        'platform': 'platform',
-        'status': 'status',
-        'ip': 'ip',
-        'computer_sid': 'computerSid',
-        'is_compromised': 'compromised',
-        'os_version': 'osVersion',
-        'os_product_type': 'osProductType',
-        'os_product_name': 'osProductName',
-        'is_64': 'is64',
-        'last_seen': 'lastSeen',
-        'last_user': 'lastUser'
+        'Name': 'name',
+        'Domain': 'domain',
+        'Platform': 'platform',
+        'Status': 'status',
+        'IP': 'ip',
+        'ComputerSid': 'computerSid',
+        'IsCompromised': 'compromised',
+        'OsVersion': 'osVersion',
+        'OsProductType': 'osProductType',
+        'OsProductName': 'osProductName',
+        'Is64': 'is64',
+        'LastSeen': 'lastSeen',
+        'LastUser': 'lastUser'
     }
 
 }
 
+# OUTPUT_EXCEPTIONS
+
 ''' HELPER FUNCTIONS '''
+
+
+def create_output(data, type='context'):
+    new_data = {}
+    for key, val in data.items():
+        new_key = ''
+        if type == 'context':
+            new_key = string_to_context_key(key)
+        elif type == 'md':
+            new_key = string_to_table_header(key)
+        new_data[new_key] = val
+    return new_data
 
 
 def http_request(method, url_suffix, test=False, params=None, data=None, operation_err=None):
@@ -74,8 +88,8 @@ def http_request(method, url_suffix, test=False, params=None, data=None, operati
             data=data,
             headers=HEADERS
         )
-    except requests.exceptions.ConnectionError:
-        return_error(f'Invalid server address')
+    except requests.exceptions.ConnectionError as err:
+        return_error(f'Error connecting to Traps server check your connection and you server address')
     return parse_http_response(res, operation_err, test)
 
 
@@ -83,10 +97,12 @@ def parse_http_response(resp, operation_err_message, test=False):
     try:
         resp.raise_for_status()
         return resp.json() if not test else resp.text
-    # except requests.exceptions.HTTPError as err:
     # Handle error responses gracefully
-    except Exception as err:
-        return_error(f'{operation_err_message}: {err}')
+    except requests.exceptions.HTTPError as err:
+        try:
+            err_message = resp.json().get('message')
+        except Exception as err:
+            return_error(f'{operation_err_message}: {err}')
 
 
 # def item_to_incident(item):
@@ -122,8 +138,13 @@ def parse_data_from_responce(endpoint_data):
 
 def get_endpoint_by_id(endpoint_id):
     path = f'agents/{endpoint_id}'
-    endpoint_data = http_request('GET', path, operation_err=f'Get endpoint {endpoint_id} failed')
+    endpoint_data = http_request('GET', path, operation_err=f'Get endpoint {endpoint_id} failed ')
     return parse_data_from_responce(endpoint_data), endpoint_data
+
+
+def endpoint_files_retrieve(endpoint_id):
+    path = f'agents/{endpoint_id}/files-retrieve'
+    endpoint_data = http_request('POST', path, operation_err=f'Endpoint {endpoint_id} file retrieve failed ')
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -138,12 +159,20 @@ def get_endpoint_by_id_command():
     args = demisto.args()
     endpoint_id = args.get('endpoint_id')
     endpoint_data, raw_data = get_endpoint_by_id(endpoint_id)
-    endpoint = {'Name': endpoint_data.get('name'),
-                'Data': createContext(endpoint_data, keyTransform=string_to_context_key())}
-    md = tableToMarkdown(f'Endpoint {endpoint_id} data:', endpoint_data, headerTransform=string_to_table_header())
-    context = {'Traps.Endpoints(val.Data.ID == obj.Data.ID)': endpoint}
+    # endpoint = {'Name': endpoint_data.get('name'),
+    #             'Data': createContext(endpoint_data, keyTransform=string_to_context_key())}
+    md = tableToMarkdown(f'Endpoint {endpoint_id} data:', endpoint_data, headerTransform=pascalToSpace)
+    context = {'Traps.Endpoint(val.Data.ID == obj.Data.ID)': createContext(endpoint_data)}
     return_outputs(md, context, raw_response=raw_data)
 
+
+def endpoint_files_retrieve_command():
+    args = demisto.args()
+    endpoint_id = args.get('endpoint_id')
+    endpoint_files_retrieve(endpoint_id)
+
+
+# def traps_endpoint_isolate_command():
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -156,8 +185,11 @@ try:
         test_module_command()
         demisto.results('ok')
     elif demisto.command() == 'traps-get-endpoint-by-id':
-        # An example command
         get_endpoint_by_id_command()
+    elif demisto.command() == 'traps-endpoint-files-retrieve':
+        endpoint_files_retrieve_command()
+    # elif demisto.command() == 'traps-endpoint-isolate':
+    #     traps_endpoint_isolate_command()
 
 # Log exceptions
 except Exception as e:
