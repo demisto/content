@@ -3,8 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
+import os
 import traceback
 import requests
+import zipfile
+import io
 from datetime import datetime as dt
 
 # Disable insecure warnings
@@ -60,6 +63,13 @@ def reformat_date(date):
         return 'Unknown'
 
 
+def extract_zipped_buffer(buffer):
+    with io.BytesIO() as bio:
+        bio.write(buffer)
+        with zipfile.ZipFile(bio) as z:
+            return z.read(z.namelist()[0])
+
+
 def query_url_information(url):
     return http_request('POST',
                         'url',
@@ -78,22 +88,9 @@ def query_payload_information(hash_type, hash):
                         f'{hash_type}_hash={hash}')
 
 
-def query_tag_information(tag):
-    return http_request('POST',
-                        'https://urlhaus-api.abuse.ch/v1/tag/',  # disable-secrets-detection
-                        f'tag={tag}')
-
-
-def query_signature_information(signature):
-    return http_request('POST',
-                        'https://urlhaus-api.abuse.ch/v1/signature/',  # disable-secrets-detection
-                        f'signature={signature}')
-
-
-def download_malware_sample(sha256, dest):
-    res = requests.get(f'https://urlhaus-api.abuse.ch/v1/download/{sha256}/')  # disable-secrets-detection
-    with open(dest, 'wb') as malware_sample:
-        malware_sample.write(res.content)
+def download_malware_sample(sha256):
+    return http_request('GET',
+                        f'download/{sha256}')
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -326,9 +323,6 @@ def domain_command():
         return_error('Failed getting domain data, please verify the arguments and parameters')
 
 
-
-
-
 def file_command():
     hash = demisto.args()['hash']
     hash_type = demisto.args()['hash_type'].lower()
@@ -423,6 +417,23 @@ def file_command():
         return_error('Failed getting file data, please verify the arguments and parameters')
 
 
+def urlhaus_download_sample_command():
+    file_sha256 = demisto.args()['file']
+    res = download_malware_sample(file_sha256)
+
+    try:
+        if res.json()['query_status'] == 'not_found':
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': res.content,
+                'HumanReadable': f'No results for SHA256: {file_sha256}',
+                'HumanReadableFormat': formats['markdown']
+            })
+    except json.JSONDecodeError:
+        demisto.results(fileResult(file_sha256, extract_zipped_buffer(res.content)))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -438,6 +449,8 @@ try:
         domain_command()
     elif demisto.command() == 'file':
         file_command()
+    elif demisto.command() == 'urlhaus-download-sample':
+        urlhaus_download_sample_command()
 
 # Log exceptions
 except Exception as e:
