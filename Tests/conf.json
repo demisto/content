@@ -212,7 +212,7 @@
             "nightly": true
         },
         {
-            "integrations": "VxStream",
+            "integrations": "Hybrid Analysis",
             "playbookID": "Detonate File - HybridAnalysis - Test",
             "timeout": 2400
         },
@@ -595,7 +595,10 @@
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "Rasterize"
+            ],
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
