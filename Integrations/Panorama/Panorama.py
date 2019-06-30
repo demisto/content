@@ -110,12 +110,12 @@ def http_request(uri: str, method: str, headers: Dict = {},
     # if pcap download
     if params.get('type') == 'export':
         return result
+
     json_result = json.loads(xml2json(result.text))
 
     # handle non success
     if json_result['response']['@status'] != 'success':
         if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
-
             # catch non existing object error and display a meaningful message
             if json_result['response']['msg']['line'] == 'No such node':
                 return_error(
@@ -124,7 +124,8 @@ def http_request(uri: str, method: str, headers: Dict = {},
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
                     json_result['response']['msg']['line'].find('job') != -1 and \
-                    json_result['response']['msg']['line'].find('not found') != -1:
+                    (json_result['response']['msg']['line'].find('not found') != -1 or
+                     json_result['response']['msg']['line'].find('No such query job')) != -1:
                 return_error('Invalid Job ID error: ' + json_result['response']['msg']['line'])
 
             # catch already at the top/bottom error for rules and return this as an entry.note
