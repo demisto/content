@@ -4,7 +4,7 @@ commonfields:
 name: AutoFocus V2
 display: Palo Alto Networks AutoFocus V2
 category: Data Enrichment & Threat Intelligence
-description: Integration Template
+description: Palo Alto Networks AutoFocus enables you to distinguish the most important threats from everyday commodity attacks.
 configuration:
 - display: API Key
   name: api_key
