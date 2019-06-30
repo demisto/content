@@ -124,8 +124,8 @@ def http_request(uri: str, method: str, headers: Dict = {},
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
                     json_result['response']['msg']['line'].find('job') != -1 and \
-                    (json_result['response']['msg']['line'].find('not found') != -1 or
-                     json_result['response']['msg']['line'].find('No such query job')) != -1:
+                    (json_result['response']['msg']['line'].find('not found') != -1
+                     or json_result['response']['msg']['line'].find('No such query job')) != -1:
                 return_error('Invalid Job ID error: ' + json_result['response']['msg']['line'])
 
             # catch already at the top/bottom error for rules and return this as an entry.note
