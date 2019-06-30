@@ -503,6 +503,8 @@ def panorama_push_status_command():
 
 
 def prettify_addresses_arr(addresses_arr: list) -> List:
+    if not isinstance(addresses_arr, list):
+        return prettify_address(addresses_arr)
     pretty_addresses_arr = []
     for address in addresses_arr:
         pretty_address = {
@@ -726,6 +728,8 @@ def panorama_delete_address_command():
 
 
 def prettify_address_groups_arr(address_groups_arr: list) -> List:
+    if not isinstance(address_groups_arr, list):
+        return prettify_address_group(address_groups_arr)
     pretty_address_groups_arr = []
     for address_group in address_groups_arr:
         pretty_address_group = {
