@@ -213,7 +213,7 @@ script:
       secret: false
     deprecated: false
     description: Download a malware sample from URLhaus
-    execution: false
+    execution: true
     name: urlhaus-download-sample
     outputs:
     - contextPath: File.Size
