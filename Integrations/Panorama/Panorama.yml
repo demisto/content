@@ -1832,8 +1832,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-releaseNotes: Add log_forwarding argument to panorama-create-rule, panorama-custom-block-rule
-  commands. argument is only available for panorama instances. added type checking.

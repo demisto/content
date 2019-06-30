@@ -1,0 +1,13 @@
+{
+  "id": "hashRep",
+  "version": -1,
+  "regex": "\\b[a-fA-F\\d]{32}\\b",
+  "reputationScriptName": "DataHashReputation",
+  "details": "File MD5",
+  "enhancementScriptNames": [
+    "FileReputation",
+    "SplunkSearch",
+    "WildfireReport"
+  ],
+  "toVersion": "3.0.1"
+}
