@@ -389,12 +389,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of Site IDs to filter by (Either siteIds or groupIds is mandatory)
-      isArray: true
-      name: site_ids
-      required: false
-      secret: false
-    - default: false
       description: List of Group IDs to filter by (Either siteIds or groupIds is mandatory)
       isArray: true
       name: group_ids
@@ -451,13 +445,6 @@ script:
       description: Limit the number of items to be retrieved.
       isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: 'Skip first number of items (0-1000). Example: "150".'
-      isArray: false
-      name: skip
       required: false
       secret: false
     deprecated: false
@@ -536,99 +523,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The threat's ID
-      isArray: false
-      name: threat_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Get threat details by using its ID.
-    execution: false
-    name: sentinelone-get-threat
-    outputs:
-    - contextPath: SentinelOne.Threats.ID
-      description: The threat ID
-      type: string
-    - contextPath: SentinelOne.Threats.Agent.ID
-      description: Affected agent ID
-      type: string
-    - contextPath: SentinelOne.Threats.Agent.Version
-      description: The agent software version
-      type: string
-    - contextPath: SentinelOne.Threats.CreatedDate
-      description: The occurrence date
-      type: date
-    - contextPath: SentinelOne.Threats.Description
-      description: The threat description
-      type: string
-    - contextPath: SentinelOne.Threats.Agent.OsType
-      description: Agent OS Type
-      type: string
-    - contextPath: SentinelOne.Threats.Resolved
-      description: Resolved threat
-      type: boolean
-    - contextPath: SentinelOne.Threats.MitigationReport
-      description: Mitigation report
-      type: string
-    - contextPath: SentinelOne.Threats.MitigationStatus
-      description: Threat status
-      type: string
-    - contextPath: SentinelOne.Threats.Agent.NetworkStatus
-      description: Agent network status
-      type: string
-    - contextPath: SentinelOne.Threats.MaliciousProcessArguments
-      description: Malicious Process Arguments
-      type: string
-    - contextPath: SentinelOne.Threats.MaliciousGroupID
-      description: The file group ID
-      type: string
-    - contextPath: SentinelOne.Threats.File.ID
-      description: The file object ID
-      type: string
-    - contextPath: SentinelOne.Threats.File.Path
-      description: The file path
-      type: string
-    - contextPath: SentinelOne.Threats.File.ContentHash
-      description: The file content hash
-      type: string
-    - contextPath: SentinelOne.Threats.File.IsSystem
-      description: Is system file
-      type: string
-    - contextPath: SentinelOne.Threats.File.DisplayName
-      description: File name
-      type: string
-    - contextPath: SentinelOne.Threats.CreatedAt
-      description: Threat object creation time
-      type: string
-    - contextPath: SentinelOne.Threats.UpdatedAt
-      description: Threat object updated time
-      type: string
-    - contextPath: SentinelOne.Threats.Site.Name
-      description: Site name involved
-      type: string
-    - contextPath: SentinelOne.Threats.Classification
-      description: Classification type
-      type: string
-    - contextPath: SentinelOne.Threats.Indicators
-      description: Indicators present in the threat
-      type: string
-    - contextPath: SentinelOne.Threats.Name
-      description: Threat Name
-      type: string
-    - contextPath: SentinelOne.Threats.Agent.ComputerName
-      description: Agent Computer Name
-      type: string
-    - contextPath: SentinelOne.Threats.Agent.Infected
-      description: Agent infected
-      type: string
-    - contextPath: SentinelOne.Threats.Rank
-      description: Agent Rank allotted
-      type: string
-    - contextPath: SentinelOne.Threats.Site.ID
-      description: Site ID involved
-      type: string
-  - arguments:
-    - default: false
       description: Threat's content hash.
       isArray: false
       name: content_hash
@@ -674,32 +568,6 @@ script:
       name: created_from
       required: false
       secret: false
-    - default: false
-      description: 'Search for threats updated before certain date.  Example: "2018-02-27T04:49:26.257525Z".'
-      isArray: false
-      name: updated_before
-      required: false
-      secret: false
-    - default: false
-      description: 'Search for threats updated after certain date.  Example: "2018-02-27T04:49:26.257525Z".'
-      isArray: false
-      name: updated_after
-      required: false
-      secret: false
-    - default: false
-      description: 'Search for threats updated until certain date (including the date).  Example:
-        "2018-02-27T04:49:26.257525Z".'
-      isArray: false
-      name: updated_until
-      required: false
-      secret: false
-    - default: false
-      description: 'Search for threats updated from certain date (including the date).  Example:
-        "2018-02-27T04:49:26.257525Z".'
-      isArray: false
-      name: updated_from
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
@@ -716,12 +584,6 @@ script:
         only part of name)
       isArray: false
       name: display_name_like
-      required: false
-      secret: false
-    - default: false
-      description: Skip a number of threats
-      isArray: false
-      name: skip
       required: false
       secret: false
     - default: false
@@ -742,12 +604,6 @@ script:
       description: 'List of threat IDs. Example: "225494730938493804,225494730938493915".'
       isArray: true
       name: threat_ids
-      required: false
-      secret: false
-    - default: false
-      description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
-      isArray: true
-      name: site_ids
       required: false
       secret: false
     - auto: PREDEFINED
@@ -806,12 +662,6 @@ script:
       description: 'List of Group IDs to filter by. Example: "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
-      required: false
-      secret: false
-    - default: false
-      description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
-      isArray: true
-      name: site_ids
       required: false
       secret: false
     deprecated: false
@@ -981,12 +831,6 @@ script:
       description: Number of agents affected
       type: number
   - arguments:
-    - default: false
-      description: List of Site IDs to filter by
-      isArray: true
-      name: site_ids
-      required: false
-      secret: false
     - default: false
       description: A list of Agent IDs (Comma separated list). You can also use only
         one Agent ID and recommission it.
@@ -1244,12 +1088,6 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
-      description: 'List of site id''s to search for. Example: "225494730938493804,225494730938493915".'
-      isArray: true
-      name: site_ids
-      required: false
-      secret: false
     deprecated: false
     description: List all sites with filtering options.
     execution: false
@@ -1453,11 +1291,107 @@ script:
     - contextPath: SentinelOne.Event.ID
       description: The ID of the event
       type: string
+  - arguments:
+    - default: false
+      description: 'Return activities created after this timestamp. Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    - default: false
+      description: Email of the user who invoked the activity (If applicable)
+      isArray: false
+      name: user_emails
+      required: false
+      secret: false
+    - default: false
+      description: 'List of Group IDs to filter by. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: group_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Return activities created before or at this timestamp. Example:
+        "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Include internal activities hidden from display. Example: "False".'
+      isArray: false
+      name: include_hidden
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter activities by specific activity IDs. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: activities_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Return activities created before this timestamp. Example: "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_before
+      required: false
+      secret: false
+    - default: false
+      description: 'Return activities related to specified threats. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: threats_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Return only these activity codes (comma-separated list). Example:
+        "52,53,71,72".'
+      isArray: true
+      name: activity_types
+      required: false
+      secret: false
+    - default: false
+      description: 'The user who invoked the activity (If applicable). Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: user_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Return activities created after or at this timestamp. Example:
+        "2018-02-27T04:49:26.257525Z".'
+      isArray: false
+      name: created_from
+      required: false
+      secret: false
+    - default: false
+      description: 'Return activities created within this range (inclusive). Example:
+        "1514978764288-1514978999999".'
+      isArray: false
+      name: created_between
+      required: false
+      secret: false
+    - default: false
+      description: 'Return activities related to specified agents. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: agent_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Limit number of returned items (1-100). Example: "10".'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of activities.
+    execution: false
+    name: sentinelone-get-activities
   isfetch: true
   runonce: false
   script: '-'
   type: python
-image: ''
-releaseNotes: "New integration - SentinelOne V2"
+releaseNotes: New integration - SentinelOne V2
 tests:
-  - no tests
+- no tests
