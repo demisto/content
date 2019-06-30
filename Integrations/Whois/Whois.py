@@ -6,7 +6,7 @@ import socket
 import sys
 from codecs import encode, decode
 
-ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else 11  # 11 := entryTypes['warning']
+ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
 
 # flake8: noqa
 
