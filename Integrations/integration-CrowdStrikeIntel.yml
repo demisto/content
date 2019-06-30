@@ -110,7 +110,13 @@ script:
     }
 
     function dateToEpoch(d) {
-        return d ? new Date(d).getTime() : null;
+        if (d) {
+            var epoch = String(new Date(d).getTime());
+            var trimmedEpoch = epoch.substring(0, epoch.length - 3);
+            return trimmedEpoch;
+        } else {
+            return null;
+        }
     }
 
     function add(a, k, ok, f) {
