@@ -72,11 +72,10 @@ def test_module():
     return True
 
 
-def get_activities_request(created_after=None, user_emails=None, group_ids=None, created_until=None, skip=None,
+def get_activities_request(created_after=None, user_emails=None, group_ids=None, created_until=None,
                            activities_ids=None, include_hidden=None, created_before=None, threats_ids=None,
-                           sort_order=None, cursor=None, site_ids=None, activity_types=None, user_ids=None,
-                           skip_count=None, created_from=None, created_between=None, agent_ids=None, sort_by=None,
-                           limit=None, count_only=None):
+                           activity_types=None, user_ids=None, created_from=None, created_between=None, agent_ids=None,
+                           limit=None):
 
     endpoint_url = 'activities'
 
@@ -85,23 +84,16 @@ def get_activities_request(created_after=None, user_emails=None, group_ids=None,
         'userEmails': user_emails,
         'groupIds': group_ids,
         'created_at__lte': created_until,
-        'skip': skip,
         'ids': activities_ids,
         'includeHidden': include_hidden,
         'created_at__lt': created_before,
         'threatIds': threats_ids,
-        'sortOrder': sort_order,
-        'cursor': cursor,
-        'siteIds': site_ids,
         'activityTypes': activity_types,
         'userIds': user_ids,
-        'skipCount': skip_count,
         'created_at__gte': created_from,
         'createdAt_between': created_between,
         'agentsIds': agent_ids,
-        'sortBy': sort_by,
-        'limit': limit,
-        'countOnly': count_only
+        'limit': limit
     }
 
     response = http_request('GET', endpoint_url, params)
@@ -124,27 +116,20 @@ def get_activities_command():
     user_emails = demisto.args().get('user_emails')
     group_ids = argToList(demisto.args().get('group_ids', []))
     created_until = demisto.args().get('created_until')
-    skip = int(demisto.args().get('skip', 0))
     activities_ids = argToList(demisto.args().get('activities_ids', []))
     include_hidden = demisto.args().get('include_hidden')
     created_before = demisto.args().get('created_before')
     threats_ids = argToList(demisto.args().get('threats_ids', []))
-    sort_order = demisto.args().get('sort_order')
-    cursor = demisto.args().get('cursor')
-    site_ids = argToList(demisto.args().get('site_ids'))
     activity_types = argToList(demisto.args().get('activity_types', []))
     user_ids = argToList(demisto.args().get('user_ids', []))
-    skip_count = demisto.args().get('skip_count')
     created_from = demisto.args().get('created_from')
     created_between = demisto.args().get('created_between')
     agent_ids = argToList(demisto.args().get('agent_ids', []))
-    sort_by = demisto.args().get('sort_by')
     limit = int(demisto.args().get('limit', 50))
-    count_only = demisto.args().get('count_only')
-    activities = get_activities_request(created_after, user_emails, group_ids, created_until, skip, activities_ids,
-                                        include_hidden, created_before, threats_ids, sort_order, cursor, site_ids,
-                                        activity_types, user_ids, skip_count, created_from, created_between, agent_ids,
-                                        sort_by, limit, count_only)
+
+    activities = get_activities_request(created_after, user_emails, group_ids, created_until, activities_ids,
+                                        include_hidden, created_before, threats_ids,
+                                        activity_types, user_ids, created_from, created_between, agent_ids, limit)
     if activities:
         for activity in activities:
             contents.append({
@@ -186,25 +171,17 @@ def get_threats_command():
     created_after = demisto.args().get('created_after')
     created_until = demisto.args().get('created_until')
     created_from = demisto.args().get('created_from')
-    updated_before = demisto.args().get('updated_before')
-    updated_after = demisto.args().get('updated_after')
-    updated_until = demisto.args().get('updated_until')
-    updated_from = demisto.args().get('updated_from')
     resolved = bool(strtobool(demisto.args().get('resolved', 'false')))
-    display_name_like = demisto.args().get('display_name_like')
+    display_name = demisto.args().get('display_name_like')
     query = demisto.args().get('query', '')
     threat_ids = argToList(demisto.args().get('threat_ids', []))
-    site_ids = argToList(demisto.args().get('site_ids', []))
-    skip = int(demisto.args().get('skip', 0))
-    limit = int(demisto.args().get('limit', 50))
+    limit = int(demisto.args().get('limit', 20))
     classifications = argToList(demisto.args().get('classifications', []))
     rank = int(demisto.args().get('rank', 0))
 
     # Make request and get raw response
     threats = get_threats_request(content_hash, mitigation_status, created_before, created_after, created_until,
-                                  created_from, updated_before, updated_after, updated_until, updated_from,
-                                  resolved, display_name_like, query, threat_ids, site_ids, skip, limit,
-                                  classifications)
+                                  created_from, resolved, display_name, query, threat_ids, limit, classifications)
 
     # Parse response into context & content entries
     if threats:
@@ -222,7 +199,8 @@ def get_threats_command():
                     'Agent ID': threat.get('agentId'),
                     'Site Name': threat.get('siteName'),
                     'Rank': threat.get('rank'),
-                    'Marked As Benign': threat.get('markedAsBenign')
+                    'Marked As Benign': threat.get('markedAsBenign'),
+                    'File Content Hash': threat.get('fileContentHash')
                 })
                 context_entries.append({
                     'ID': threat.get('id'),
@@ -233,7 +211,20 @@ def get_threats_command():
                     'MitigationStatus': threat.get('mitigationStatus'),
                     'AgentID': threat.get('agentId'),
                     'Rank': threat.get('rank'),
-                    'MarkedAsBenign': threat.get('markedAsBenign')
+                    'MarkedAsBenign': threat.get('markedAsBenign'),
+                    'FileContentHash': threat.get('fileContentHash'),
+                    'InQuarantine': threat.get('inQuarantine'),
+                    'FileMaliciousContent': threat.get('fileMaliciousContent'),
+                    'ThreatName': threat.get('threatName'),
+                    'FileSha256': threat.get('fileSha256'),
+                    'AgentOsType': threat.get('agentOsType'),
+                    'Description': threat.get('description'),
+                    'FileDisplayName': threat.get('fileDisplayName'),
+                    'FilePath': threat.get('filePath'),
+                    'Username': threat.get('username')
+
+
+
                 })
 
         context['SentinelOne.Threats(val.ID && val.ID === obj.ID)'] = context_entries
@@ -249,9 +240,9 @@ def get_threats_command():
 
 
 def get_threats_request(content_hash=None, mitigation_status=None, created_before=None, created_after=None,
-                        created_until=None, created_from=None, updated_before=None, updated_after=None,
-                        updated_until=None, updated_from=None, resolved=None, display_name_like=None, query=None,
-                        threat_ids=None, site_ids=None, skip=None, limit=None, classifications=None):
+                        created_until=None, created_from=None, resolved=None, display_name=None, query=None,
+                        threat_ids=None, limit=None, classifications=None):
+
     endpoint_url = 'threats'
 
     params = {
@@ -261,147 +252,12 @@ def get_threats_request(content_hash=None, mitigation_status=None, created_befor
         'created_at__gt': created_after,
         'created_at__lte': created_until,
         'created_at__gte': created_from,
-        'updated_at__lt': updated_before,
-        'updated_at__gt': updated_after,
-        'updated_at__lte': updated_until,
-        'updated_at__gte': updated_from,
         'resolved': resolved,
-        'displayName__like': display_name_like,
+        'displayName__like': display_name,
         'query': query,
         'ids': threat_ids,
-        'siteIds': site_ids,
-        'skip': skip,
         'limit': limit,
-        'classifications': classifications
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_threat_command():
-    """
-    Gets details about a specific threat using ID.
-    """
-    # Init main vars
-    contents = []
-    context = {}
-    context_entries = []
-    title = ''
-
-    # Get arguments
-    threat_id = argToList(demisto.args().get('threat_id', []))
-
-    # Make request and get raw response
-    threats = get_threat_request(threat_id)
-
-    # Parse response into context & content entries
-    if threats:
-        title = 'Sentinel One - Getting Threat Details \n' + \
-                'Provides details for the following threat ID : ' + threat_id
-
-        for threat in threats:
-            mitigation_report = threat.get('mitigationReport')
-            mitigation_report_readable = ''
-            if isinstance(mitigation_report, dict):
-                for report, status in mitigation_report.iteritems():
-                    mitigation_report_readable += report + ': ' + str(status.get('status')) + '\n'
-
-            file_contents = {
-                'ID': threat.get('fileObjectId'),
-                'Path': threat.get('filePath'),
-                'Content Hash': threat.get('fileContentHash'),
-                'Is System': threat.get('fileIsSystem'),
-                'Display Name': threat.get('fileDisplayName')
-            }
-            file_context = {
-                'ID': threat.get('fileObjectId'),
-                'Path': threat.get('filePath'),
-                'ContentHash': threat.get('fileContentHash'),
-                'IsSystem': threat.get('fileIsSystem'),
-                'DisplayName': threat.get('fileDisplayName')
-            }
-            agent_contents = {
-                'ID': threat.get('agentId'),
-                'Version': threat.get('agentVersion'),
-                'Os Type': threat.get('agentOsType'),
-                'Network Status': threat.get('agentNetworkStatus'),
-                'Computer Name': threat.get('agentComputerName'),
-                'Infected': threat.get('agentInfected')
-            }
-            agent_context = {
-                'ID': threat.get('agentId'),
-                'Version': threat.get('agentVersion'),
-                'OsType': threat.get('agentOsType'),
-                'NetworkStatus': threat.get('agentNetworkStatus'),
-                'ComputerName': threat.get('agentComputerName'),
-                'Infected': threat.get('agentInfected')
-            }
-            site = {
-                'ID': threat.get('siteId'),
-                'Name': threat.get('siteName')
-            }
-
-            contents.append({
-                'ID': threat.get('id'),
-                'Description': threat.get('description'),
-                'Mitigation Report': mitigation_report_readable,
-                'Mitigation Status': threat.get('mitigationStatus'),
-                'Resolved': threat.get('resolved'),
-                'Rank': threat.get('rank'),
-                'Name': threat.get('threatName'),
-                'Indicators': threat.get('indicators'),
-                'Classification': threat.get('classification'),
-                'Created Date': threat.get('createdDate'),
-                'Created At': threat.get('createdAt'),
-                'Updated At': threat.get('mitigationStatus'),
-                'Malicious Group ID': threat.get('maliciousGroupId'),
-                'Malicious Process Arguments': threat.get('maliciousProcessArguments'),
-                'Site': site,
-                'Agent': agent_contents,
-                'File': file_contents
-            })
-            context_entries.append({
-                'ID': threat.get('id'),
-                'Description': threat.get('description'),
-                'MitigationReport': mitigation_report_readable,
-                'MitigationStatus': threat.get('mitigationStatus'),
-                'Resolved': threat.get('resolved'),
-                'Rank': threat.get('rank'),
-                'Name': threat.get('threatName'),
-                'Indicators': threat.get('indicators'),
-                'Classification': threat.get('classification'),
-                'CreatedDate': threat.get('createdDate'),
-                'CreatedAt': threat.get('createdAt'),
-                'UpdatedAt': threat.get('mitigationStatus'),
-                'MaliciousGroupID': threat.get('maliciousGroupId'),
-                'MaliciousProcessArguments': threat.get('maliciousProcessArguments'),
-                'Site': site,
-                'Agent': agent_context,
-                'File': file_context
-            })
-
-        context['SentinelOne.Threats(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def get_threat_request(threat_id):
-    endpoint_url = 'threats'
-
-    params = {
-        'ids': threat_id
+        'classifications': classifications,
     }
 
     response = http_request('GET', endpoint_url, params)
@@ -430,7 +286,7 @@ def get_hash_reputation_command():
     # Parse response into context & content entries
     if hash_reputation:
         title = 'Sentinel One - Hash Reputation \n' + \
-                'Provides hash reputation (rank from 0 to 10) for the following hash : ' + hash_
+                'Provides hash reputation (rank from 0 to 10):'
         contents = context_entries = {
             'Rank': hash_reputation.get('rank'),
             'Hash': hash_,
@@ -466,7 +322,6 @@ def get_hash_classification_command():
     # Init main vars
     contents = []
     context = {}
-    context_entries = {}
     title = ''
 
     # Get arguments
@@ -503,6 +358,7 @@ def get_hash_classification_command():
 
 
 def get_hash_classification_request(hash_):
+
     endpoint_url = 'hashes/' + hash_ + '/classification'
 
     response = http_request('GET', endpoint_url)
@@ -1131,7 +987,6 @@ def expire_site_command():
     headers = []
     contents = []
     context = {}
-    context_entries = []
     title = ''
 
     # Get arguments
@@ -1179,7 +1034,6 @@ def delete_site_command():
     headers = []
     contents = []
     context = {}
-    context_entries = []
     title = ''
 
     # Get arguments
@@ -1227,7 +1081,6 @@ def reactivate_site_command():
     headers = []
     contents = []
     context = {}
-    context_entries = []
     title = ''
 
     # Get arguments
@@ -1279,7 +1132,6 @@ def get_threat_summary_command():
     headers = []
     contents = []
     context = {}
-    context_entries = []
     title = ''
 
     # Get arguments
@@ -1510,7 +1362,6 @@ def restart_agents_command():
     headers = []
     contents = []
     context = {}
-    context_entries = []
     title = ''
 
     # Get arguments
@@ -1591,9 +1442,7 @@ def shutdown_agents_command():
     """
     # Init main vars
     headers = []
-    contents = []
     context = {}
-    context_entries = []
 
     # Get arguments
     query = demisto.args().get('query', '')
@@ -1671,9 +1520,7 @@ def disconnect_agents_command():
     """
     # Init main vars
     headers = []
-    contents = []
     context = {}
-    context_entries = []
 
     # Get arguments
     query = demisto.args().get('query', '')
@@ -1752,9 +1599,7 @@ def uninstall_agents_command():
     """
     # Init main vars
     headers = []
-    contents = []
     context = {}
-    context_entries = []
 
     # Get arguments
     query = demisto.args().get('query', '')
@@ -1815,6 +1660,7 @@ def uninstall_agents_request(query, is_decommissioned, is_uninstalled, site_ids,
             "isDecommissioned": is_decommissioned,
             "query": query
         },
+
         "data": {}
     }
 
@@ -1832,9 +1678,7 @@ def decommission_agents_command():
     """
     # Init main vars
     headers = []
-    contents = []
     context = {}
-    context_entries = []
 
     # Get arguments
     query = demisto.args().get('query', '')
@@ -1913,9 +1757,7 @@ def connect_agents_command():
     """
     # Init main vars
     headers = []
-    contents = []
     context = {}
-    context_entries = []
 
     # Get arguments
     agent_ids = argToList(demisto.args().get('agentIds'))
@@ -2035,7 +1877,7 @@ def search_indicators_request(query, from_date, to_date):
     }
 
     response = http_request('GET', endpoint_url, params)
-    raise Exception(json.dumps(response))
+    # raise Exception(json.dumps(response))
     if response.get('errors'):
         return_error(response.get('errors'))
     if 'data' in response:
@@ -2090,8 +1932,6 @@ try:
         get_activities_command()
     elif demisto.command() == 'sentinelone-get-threats':
         get_threats_command()
-    elif demisto.command() == 'sentinelone-get-threat':
-        get_threat_command()
     elif demisto.command() == 'sentinelone-mark-as-threat':
         mark_as_threat_command()
     elif demisto.command() == 'sentinelone-mitigate-threat':
