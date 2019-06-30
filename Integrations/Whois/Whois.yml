@@ -147,8 +147,8 @@ script:
       description: ID of the domain
       type: string
     - contextPath: Domain.Whois.QueryStatus
-      description: The result of the command. Success/Failed
-      type: Unknown
+      description: The result of the command(Success/Failed).
+      type: string
   dockerimage: demisto/ippysocks
   isfetch: false
   runonce: false
@@ -157,6 +157,4 @@ script:
 defaultEnabled: false
 tests:
 - whois_test
-releaseNotes: "- Updates existing domains. \n- changed error logic to warnings by\
-  \ default \n- handled unsupported domains \n- changed outputs"
 fromversion: 4.1.0

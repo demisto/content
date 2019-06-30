@@ -6,8 +6,6 @@ import socket
 import sys
 from codecs import encode, decode
 
-RETURN_CODE = 0
-ERROR_MESSAGE = ''
 ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else 11  # 11 := entryTypes['warning']
 
 # flake8: noqa
@@ -7200,9 +7198,6 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
 
 
 def get_root_server(domain):
-    global RETURN_CODE, ERROR_MESSAGE
-    RETURN_CODE = 0
-    ERROR_MESSAGE = ''
     ext = domain.split(".")[-1]
     for dble in dble_ext:
         if domain.endswith(dble):
@@ -7213,48 +7208,39 @@ def get_root_server(domain):
         try:
             host = entry["host"]
         except KeyError:
-            RETURN_CODE = -1
-            ERROR_MESSAGE = "this domain is not supported"
-
-        if RETURN_CODE == 0:
-            return host
-        else:
             context = ({
-                'Domain(val.Name && val.Name == obj.Name)': {
+                outputPaths['domain']: {
                     'Name': domain,
-                    'Whois': {'QueryStatus': 'Failed'}
+                    'Whois': {
+                        'QueryStatus': 'Failed'
+                    }
                 },
             })
-            demisto.results(
-                {
-                    'ContentsFormat': 'text',
-                    'Type': ENTRY_TYPE,
-                    'Contents': 'Whois returned - ' + ERROR_MESSAGE,
-                    'EntryContext': context
-                }
-            )
-            sys.exit(RETURN_CODE)
+            demisto.results({
+                'ContentsFormat': 'text',
+                'Type': ENTRY_TYPE,
+                'Contents': 'The domain - {} - is not supported by the Whois service'.format(domain),
+                'EntryContext': context
+            })
+            sys.exit(-1)
+
+        return host
+
     else:
         raise WhoisException("No root WHOIS server found for domain.")
 
 
 def whois_request(domain, server, port=43):
-    global RETURN_CODE, ERROR_MESSAGE
-    RETURN_CODE = 0
-    ERROR_MESSAGE = ''
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((server, port))
     except socket.error as msg:
-        RETURN_CODE = -1
-        ERROR_MESSAGE = "Couldnt connect with the socket-server: %s" % msg
-
-    if RETURN_CODE == -1:
         context = ({
-            'Domain(val.Name && val.Name == obj.Name)': {
+            outputPaths['domain']: {
                 'Name': domain,
-                'Whois': {'QueryStatus': 'Failed'}
+                'Whois': {
+                    'QueryStatus': 'Failed'
+                }
             },
         })
 
@@ -7262,11 +7248,11 @@ def whois_request(domain, server, port=43):
             {
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'Whois returned - ' + ERROR_MESSAGE,
+                'Contents': 'Whois returned - Couldnt connect with the socket-server: {}'.format(msg),
                 'EntryContext': context
             }
         )
-        sys.exit(RETURN_CODE)
+        sys.exit(-1)
 
     else:
         sock.send(("%s\r\n" % domain).encode("utf-8"))
@@ -8306,14 +8292,13 @@ def whois_command():
             ec['BillingAdmin'] = contacts['billing']
     if 'emails' in whois_result:
         ec['Emails'] = whois_result.get('emails')
-        ec['Emails'] = whois_result.get('emails')
         md['Emails'] = whois_result.get('emails')
 
     ec['QueryStatus'] = 'Success'
     md['QueryStatus'] = 'Success'
 
     context = ({
-        'Domain(val.Name && val.Name == obj.Name)': {
+        outputPaths['domain']: {
             'Name': domain,
             'Whois': ec
         },
@@ -8346,4 +8331,4 @@ try:
         whois_command()
 except Exception as e:
     LOG(e)
-    return_error(e.message)
+    return_error(str(e))
