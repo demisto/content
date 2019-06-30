@@ -3013,9 +3013,15 @@ def panorama_query_traffic_logs_command():
     result = panorama_query_traffic_logs(number_of_logs, direction, query,
                                          source, destination, receive_time, application, to_port, action)
 
-    if result['response']['@status'] != 'success':
-        return_error('Query traffic logs failed')
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = '. Reason is: ' + result['response']['msg']['line']
+            return_error('Query traffic logs failed' + message)
+        else:
+            return_error('Query traffic logs failed')
 
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+        return_error('Missing JobID in response')
     query_traffic_output = {
         'JobID': result['response']['result']['job'],
         'Status': 'Pending'
@@ -3054,14 +3060,21 @@ def panorama_check_traffic_logs_status_command():
     job_id = demisto.args().get('job_id')
     result = panorama_get_traffic_logs(job_id)
 
-    if result['response']['@status'] != 'success':
-        return_error('Query Traffic logs failed')
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = '. Reason is: ' + result['response']['msg']['line']
+            return_error('Query traffic logs failed' + message)
+        else:
+            return_error('Query traffic logs failed')
 
     query_traffic_status_output = {
         'JobID': job_id,
         'Status': 'Pending'
     }
 
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']\
+            or 'status' not in result['response']['result']['job']:
+        return_error('Missing JobID status in response')
     if result['response']['result']['job']['status'] == 'FIN':
         query_traffic_status_output['Status'] = 'Completed'
 
@@ -3121,13 +3134,21 @@ def panorama_get_traffic_logs_command():
     job_id = demisto.args().get('job_id')
     result = panorama_get_traffic_logs(job_id)
 
-    if result['response']['@status'] != 'success':
-        return_error('Query Traffic logs failed')
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = '. Reason is: ' + result['response']['msg']['line']
+            return_error('Query traffic logs failed' + message)
+        else:
+            return_error('Query traffic logs failed')
 
     query_traffic_logs_output = {
         'JobID': job_id,
         'Status': 'Pending'
     }
+
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']\
+            or 'status' not in result['response']['result']['job']:
+        return_error('Missing JobID status in response')
 
     if result['response']['result']['job']['status'] != 'FIN':
         demisto.results({
@@ -3141,6 +3162,10 @@ def panorama_get_traffic_logs_command():
         })
     else:  # FIN
         query_traffic_logs_output['Status'] = 'Completed'
+        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result']\
+                or 'logs' not in result['response']['result']['log']:
+            return_error('Missing logs in response')
+
         logs = result['response']['result']['log']['logs']
         if logs['@count'] == '0':
             demisto.results('No traffic logs matched the query')
