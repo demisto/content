@@ -370,6 +370,10 @@
             "timeout": 600
         },
         {
+            "integrations": "Symantec Site Review",
+            "playbookID": "Symantec Site Review Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
