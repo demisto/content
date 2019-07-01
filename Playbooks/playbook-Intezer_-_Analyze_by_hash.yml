@@ -400,7 +400,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
   type: number
-releaseNotes: "Added playbook Intezer - Analyze by hash. Analyze the given hash on Intezer Analyze and enrich the file reputation.
-  Supports SHA256, SHA1 and MD5."
 tests:
   - No Tests

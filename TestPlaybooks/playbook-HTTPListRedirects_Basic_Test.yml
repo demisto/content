@@ -1,6 +1,6 @@
-id: 150778e9-90ca-4c28-873e-f050f2c6d3a3
-version: 3
-name: HTTPRedirectList Test
+id: HTTPListRedirects Basic Test
+version: -1
+name: HTTPListRedirects Basic Test 
 starttaskid: "0"
 tasks:
   "0":
