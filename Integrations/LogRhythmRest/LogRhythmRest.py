@@ -536,7 +536,7 @@ def get_logs_by_alarm(data_args):
 def get_alarm_data(data_args):
     id = data_args.get('alarm-id')
     res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
-    #res = json.loads(RESPONSE)
+    # res = json.loads(RESPONSE)
     alarm_data = res['Data']['DrillDownResults']
     alarm_summaries = res['Data']['DrillDownResults']['RuleBlocks']
     del alarm_data['RuleBlocks']
@@ -563,7 +563,7 @@ def get_alarm_data(data_args):
 def get_alarm_events(data_args):
     id = data_args.get('alarm-id')
     res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
-    #res = json.loads(RESPONSE)
+    # res = json.loads(RESPONSE)
     res = res['Data']['DrillDownResults']['RuleBlocks']
 
     events = []
@@ -580,6 +580,7 @@ def get_alarm_events(data_args):
     outputs = {'Logrhythm.Alarm(val.AlarmID === obj.AlarmID)': context}
     human_readable = tableToMarkdown('Alarm events information:', events)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
