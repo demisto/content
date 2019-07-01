@@ -7,9 +7,10 @@ import sys
 import base64
 import subprocess
 import shutil
+import tempfile
 from io import open
 from Tests.test_utils import print_color, LOG_COLORS
-from Tests.scripts.pkg_dev_test_tasks import get_docker_image, get_python_version, get_pipenv_dir
+from Tests.scripts.pkg_dev_test_tasks import get_docker_images, get_python_version, get_pipenv_dir
 
 INTEGRATION = 'integration'
 SCRIPT = 'script'
@@ -90,7 +91,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     script_obj = yaml_obj
     if yml_type == INTEGRATION:
         script_obj = yaml_obj['script']
-        del yaml_obj['image'] 
+        del yaml_obj['image']
     if script_obj['type'] != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_obj['type']))
         return 1
@@ -105,12 +106,22 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
                     "Make sure to install it with: pip install autopep8.\n"
                     "Then run: autopep8 -i {}".format(code_file), LOG_COLORS.YELLOW)
     print("Detecting python version and setting up pipenv files ...")
-    py_ver = get_python_version(get_docker_image(script_obj))
+    docker = get_docker_images(script_obj)[0]
+    py_ver = get_python_version(docker)
     pip_env_dir = get_pipenv_dir(py_ver)
     shutil.copy("{}/Pipfile".format(pip_env_dir), output_path)
     shutil.copy("{}/Pipfile.lock".format(pip_env_dir), output_path)
     try:
         subprocess.call(["pipenv", "install", "--dev"], cwd=output_path)
+        print("Installing all py requirements from docker: [{}] into pipenv".format(docker))
+        requirements = subprocess.check_output(["docker", "run", "--rm", docker,
+                                                "pip", "freeze", "--disable-pip-version-check"],
+                                               universal_newlines=True, stderr=subprocess.DEVNULL).strip()
+        fp = tempfile.NamedTemporaryFile(delete=False)
+        fp.write(requirements.encode('utf-8'))
+        fp.close()
+        subprocess.check_call(["pipenv", "install", "-r", fp.name], cwd=output_path)
+        os.unlink(fp.name)
     except FileNotFoundError:
         print_color("pipenv install skipped! It doesn't seem you have pipenv installed.\n"
                     "Make sure to install it with: pip3 install pipenv.\n"
