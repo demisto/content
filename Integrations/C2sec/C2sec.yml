@@ -26,6 +26,10 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
 script:
   script: '-'
   type: python
@@ -78,7 +82,7 @@ script:
       description: Scan ID
       type: number
     - contextPath: C2sec.Scan.result
-      description: The scan result.
+      description: The scan result status.
       type: string
     description: Initiate a rescan for companies inside portfolio
   - name: irisk-query-issues
@@ -90,7 +94,7 @@ script:
       description: The ID of the issue.
       type: string
     - contextPath: C2sec.Issue.Asset
-      description: The asset the issue is using.
+      description: Asset associated with the issues. Example, ip addresses, website URLs, etc.
       type: string
     - contextPath: C2sec.Issue.Component
       description: The component used in the issue.
@@ -131,7 +135,17 @@ script:
     - contextPath: C2sec.Query.Domain
       description: The domain name being queried.
       type: string
-    - contextPath: C2sec.Query.data
-      description: Query Result
+    - contextPath: C2sec.Query.data.component
+      description: The component being used for the query.
+      type: string
+    - contextPath: C2sec.Query.data.appdetail
+      description: Details about the app being checked.
+      type: string
+    - contextPath: C2sec.Query.data.info
+      description: Info regarding the data being processed.
+      type: string
+    - contextPath: C2sec.Query.data.website
+      description: Website address being processed.
+      type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false

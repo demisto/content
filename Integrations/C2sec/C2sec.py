@@ -169,7 +169,7 @@ try:
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test = addcompany(demisto.params()['domainName'], newscan='false')
-        if not isinstance(test, tuple):
+        if isinstance(test, dict):
             demisto.results("ok")
         else:
             demisto.results(test)
