@@ -4,7 +4,7 @@ commonfields:
   version: -1
 fromversion: 3.0.0
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g., https://192.168.0.1)
   name: server
   required: true
   type: 0
@@ -25,15 +25,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Device group - Only for Panorama instance
+- display: Device group - Panorama instances only
   name: device_group
   required: false
   type: 0
-- display: Vsys - Only for Firewall instance
+- display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
-description: Manage Palo Alto Networks Firewalls and Panorama. Make sure you read
+description: Manage Palo Alto Networks Firewall and Panorama. Make sure you read
   the Detailed Instructions section.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -62,8 +62,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category parameter. e.g. when exporting a configuration file use
-        category=configuration
+      description: Category parameter, for example, when exporting a configuration file use
+        "category=configuration".
       isArray: false
       name: category
       required: false
@@ -1970,34 +1970,34 @@ script:
       description: Destination of the traffic log
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.DestinationPort
-      description: Destination port of the traffic log
+      description: Destination port of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.FromZone
-      description: From zone of the traffic log
+      description: From zone of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.Protocol
-      description: Protocol of the traffic log
+      description: Protocol of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.ReceiveTime
-      description: Receive time of the traffic log
+      description: Receive time of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.Rule
-      description: Rule of the traffic log
+      description: Rule of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.SessionEndReason
-      description: Session end reason of the traffic log
+      description: Session end reason of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.Source
-      description: Source of the traffic log
+      description: Source of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.SourcePort
-      description: Source port of the traffic log
+      description: Source port of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.StartTime
       description: Start time of the traffic log
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.ToZone
-      description: To zone of the traffic log
+      description: To zone of the traffic log.
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
