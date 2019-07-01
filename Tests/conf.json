@@ -1613,6 +1613,9 @@
             "playbookID": "LogRhythm REST test"
         },
         {
+            "playbookID": "URL regex - Test"
+        },
+        {
             "integrations": "AlienVault USM Anywhere",
             "playbookID": "AlienVaultUSMAnywhereTest"
         },
