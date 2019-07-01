@@ -574,10 +574,32 @@ script:
     description: get alarm logs
     execution: false
     name: lr-get-drilldown-alarm-by-id
+  - arguments:
+    - default: false
+      description: The alarm ID
+      isArray: false
+      name: alarm-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves alarm data
+    execution: false
+    name: lr-get-alarm-data
+  - arguments:
+    - default: false
+      description: The alarm ID
+      isArray: false
+      name: alarm-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a list of events by alarm id
+    execution: false
+    name: lr-get-alarm-events
   isfetch: false
   runonce: false
   script: '-'
   type: python
 tests:
 - LogRhythm REST test
-releaseNotes: 'add lr-get-drilldown-alarm-by-id and lr-get-hosts commands'
+releaseNotes: add lr-get-alarm-data and lr-get-alarm-events commands

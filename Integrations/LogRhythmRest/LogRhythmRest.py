@@ -33,8 +33,175 @@ PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "U
 NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel",
                    "DateUpdated", "HostZone", "BIP"]
 
+PIF_TYPES = {
+    "1": "Direction",
+    "2": "Priority",
+    "3": "Normal Message Date",
+    "4": "First Normal Message Date",
+    "5": "Last Normal Message Date",
+    "6": "Count",
+    "7": "MessageDate",
+    "8": "Entity",
+    "9": "Log Source",
+    "10": "Log Source Host",
+    "11": "Log Source Type",
+    "12": "Log Class Type",
+    "13": "Log Class",
+    "14": "Common Event",
+    "15": "MPE Rule",
+    "16": "Source",
+    "17": "Destination",
+    "18": "Service",
+    "19": "Known Host",
+    "20": "Known Host (Origin)",
+    "21": "Known Host (Impacted)",
+    "22": "Known Service",
+    "23": "IP",
+    "24": "IP Address (Origin)",
+    "25": "IP Address (Impacted)",
+    "26": "Host Name",
+    "27": "Host Name (Origin)",
+    "28": "Host Name (Impacted)",
+    "29": "Port (Origin)",
+    "30": "Port (Impacted)",
+    "31": "Protocol",
+    "32": "User (Origin)",
+    "33": "User (Impacted)",
+    "34": "Sender",
+    "35": "Recipient",
+    "36": "Subject",
+    "37": "Object",
+    "38": "Vendor Message ID",
+    "39": "Vendor Message Name",
+    "40": "Bytes In",
+    "41": "Bytes Out",
+    "42": "Items In",
+    "43": "Items Out",
+    "44": "Duration",
+    "45": "Time Start",
+    "46": "Time End",
+    "47": "Process",
+    "48": "Amount",
+    "49": "Quantity",
+    "50": "Rate",
+    "51": "Size",
+    "52": "Domain (Impacted)",
+    "53": "Group",
+    "54": "URL",
+    "55": "Session",
+    "56": "Sequence",
+    "57": "Network (Origin)",
+    "58": "Network (Impacted)",
+    "59": "Location (Origin)",
+    "60": "Country (Origin)",
+    "61": "Region (Origin)",
+    "62": "City (Origin)",
+    "63": "Location (Impacted)",
+    "64": "Country (Impacted)",
+    "65": "Region (Impacted)",
+    "66": "City (Impacted)",
+    "67": "Entity (Origin)",
+    "68": "Entity (Impacted)",
+    "69": "Zone (Origin)",
+    "70": "Zone (Impacted)",
+    "72": "Zone",
+    "73": "User",
+    "74": "Address",
+    "75": "MAC",
+    "76": "NATIP",
+    "77": "Interface",
+    "78": "NATPort",
+    "79": "Entity (Impacted or Origin)",
+    "80": "RootEntity",
+    "100": "Message",
+    "200": "MediatorMsgID",
+    "201": "MARCMsgID",
+    "1040": "MAC (Origin)",
+    "1041": "MAC (Impacted)",
+    "1042": "NATIP (Origin)",
+    "1043": "NATIP (Impacted)",
+    "1044": "Interface (Origin)",
+    "1045": "Interface (Impacted)",
+    "1046": "PID",
+    "1047": "Severity",
+    "1048": "Version",
+    "1049": "Command",
+    "1050": "ObjectName",
+    "1051": "NATPort (Origin)",
+    "1052": "NATPort (Impacted)",
+    "1053": "Domain (Origin)",
+    "1054": "Hash",
+    "1055": "Policy",
+    "1056": "Vendor Info",
+    "1057": "Result",
+    "1058": "Object Type",
+    "1059": "CVE",
+    "1060": "UserAgent",
+    "1061": "Parent Process Id",
+    "1062": "Parent Process Name",
+    "1063": "Parent Process Path",
+    "1064": "Serial Number",
+    "1065": "Reason",
+    "1066": "Status",
+    "1067": "Threat Id",
+    "1068": "Threat Name",
+    "1069": "Session Type",
+    "1070": "Action",
+    "1071": "Response Code",
+    "1072": "User (Origin) Identity ID",
+    "1073": "User (Impacted) Identity ID",
+    "1074": "Sender Identity ID",
+    "1075": "Recipient Identity ID",
+    "1076": "User (Origin) Identity",
+    "1077": "User (Impacted) Identity",
+    "1078": "Sender Identity",
+    "1079": "Recipient Identity",
+    "1080": "User (Origin) Identity Domain",
+    "1081": "User (Impacted) Identity Domain",
+    "1082": "Sender Identity Domain",
+    "1083": "Recipient Identity Domain",
+    "1084": "User (Origin) Identity Company",
+    "1085": "User (Impacted) Identity Company",
+    "1086": "Sender Identity Company",
+    "1087": "Recipient Identity Company",
+    "1088": "User (Origin) Identity Department",
+    "1089": "User (Impacted) Identity Department",
+    "1090": "Sender Identity Department",
+    "1091": "Recipient Identity Department",
+    "1092": "User (Origin) Identity Title",
+    "1093": "User (Impacted) Identity Title",
+    "1094": "Sender Identity Title",
+    "1095": "Recipient Identity Title",
+    "10001": "Source Or Destination",
+    "10002": "Port (Origin or Impacted)",
+    "10003": "Network (Origin or Impacted)",
+    "10004": "Location (Origin or Impacted)",
+    "10005": "Country (Origin or Impacted)",
+    "10006": "Region (Origin or Impacted)",
+    "10007": "City (Origin or Impacted)",
+    "10008": "Bytes In/Out",
+    "10009": "Items In/Out"
+}
+
+ALARM_STATUS = {
+    "0": "Waiting",
+    "1": "In queue",
+    "2": "Sent to SvcHost",
+    "3": "Queued for retry",
+    "4": "Completed",
+}
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def fix_date_values(item):
+    date_keys = ['normalDateMin', 'normalDate', 'normalMsgDateMax', 'logDate']
+
+    for key in date_keys:
+        if item.get(key):
+            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0).\
+                strftime('%Y-%m-%d %H:%M:%S')
 
 
 def fix_location_value(items):
@@ -366,6 +533,54 @@ def get_logs_by_alarm(data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
+def get_alarm_data(data_args):
+    id = data_args.get('alarm-id')
+    res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+    #res = json.loads(RESPONSE)
+    alarm_data = res['Data']['DrillDownResults']
+    alarm_summaries = res['Data']['DrillDownResults']['RuleBlocks']
+    del alarm_data['RuleBlocks']
+    alarm_data['AIEMsgXml'] = json.loads(xml2json(str(alarm_data.get('AIEMsgXml')))).get('aie')
+    alarm_data['Status'] = ALARM_STATUS[str(alarm_data['Status'])]
+
+    DDS_summaries = []
+    for block in alarm_summaries:
+        for item in block['DDSummaries']:
+            item['PIFType'] = PIF_TYPES[str(item['PIFType'])]
+            del item['DrillDownSummaryLogs']
+            DDS_summaries.append(item)
+
+    alarm_data['AlarmSummaries'] = DDS_summaries
+
+    context = createContext(alarm_data, removeNull=True)
+    outputs = {'Logrhythm.Alarm(val.AlarmID === obj.AlarmID)': context}
+
+    del alarm_data['AlarmSummaries']
+    human_readable = tableToMarkdown('Alarm information:', alarm_data) + tableToMarkdown('Alarm summaries:', DDS_summaries)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_alarm_events(data_args):
+    id = data_args.get('alarm-id')
+    res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+    #res = json.loads(RESPONSE)
+    res = res['Data']['DrillDownResults']['RuleBlocks']
+
+    events = []
+
+    for block in res:
+        logs = json.loads(block['DrillDownLogs'])
+        for log in logs:
+            fix_date_values(log)
+            events.append((log))
+
+    ec = {"AlarmID": int(id), "Events": events}
+
+    context = createContext(ec, removeNull=True)
+    outputs = {'Logrhythm.Alarm(val.AlarmID === obj.AlarmID)': context}
+    human_readable = tableToMarkdown('Alarm events information:', events)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -393,6 +608,10 @@ def main():
             get_networks(demisto.args())
         elif demisto.command() == 'lr-get-drilldown-alarm-by-id':
             get_logs_by_alarm(demisto.args())
+        elif demisto.command() == 'lr-get-alarm-data':
+            get_alarm_data(demisto.args())
+        elif demisto.command() == 'lr-get-alarm-events':
+            get_alarm_events(demisto.args())
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
 
