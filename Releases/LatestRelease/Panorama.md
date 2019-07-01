@@ -1,0 +1,1 @@
+Bug Fix - failed listing address groups, addresses where only 1 object was present.

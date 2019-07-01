@@ -225,3 +225,4 @@ script:
       description: The ID of the takedown to escalate.
     description: Escalates a takedown.
   runonce: false
+  subtype: python3

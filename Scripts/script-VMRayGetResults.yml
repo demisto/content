@@ -44,6 +44,5 @@ dependson:
   - VMRay|||get_job_sample
 timeout: 0s
 deprecated: true
-releaseNotes: Script deprecated
 tests:
 - No tests

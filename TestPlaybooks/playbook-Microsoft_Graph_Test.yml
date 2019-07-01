@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c8ff64e8-8ae7-4de3-86bb-f9c28cdcc8ce
+    taskid: 36ae70b3-d522-46f7-8edd-edad6bed20d3
     type: start
     task:
-      id: c8ff64e8-8ae7-4de3-86bb-f9c28cdcc8ce
+      id: 36ae70b3-d522-46f7-8edd-edad6bed20d3
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -25,23 +25,25 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: a9430872-d104-4a85-8bc8-3ca8a939a7b6
+    taskid: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
     type: regular
     task:
-      id: a9430872-d104-4a85-8bc8-3ca8a939a7b6
+      id: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
       version: -1
       name: msg-search-alerts
       description: List alerts (security issues) within a customer's tenant that Microsoft
         or partner security solutions have identified.
-      script: Microsoft Graph|||msg-search-alerts
+      script: '|||msg-search-alerts'
       type: regular
       iscommand: true
-      brand: Microsoft Graph
+      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       category: {}
       filter: {}
@@ -54,107 +56,40 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: f1abf1da-85f1-43b3-8595-df7e575ee722
+    taskid: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
     type: regular
     task:
-      id: f1abf1da-85f1-43b3-8595-df7e575ee722
+      id: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
-      script: Microsoft Graph|||msg-get-alert-details
+      script: '|||msg-get-alert-details'
       type: regular
       iscommand: true
-      brand: Microsoft Graph
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       alert_id:
-        simple: ${MsGraph.Alert.ID}
+        complex:
+          root: MsGraph
+          accessor: Alert.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       fields_to_include: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: e2556b00-9b65-42cf-816d-5932b36d494e
-    type: regular
-    task:
-      id: e2556b00-9b65-42cf-816d-5932b36d494e
-      version: -1
-      name: msg-update-alert
-      description: Update an editable alert property within any integrated solution
-        to keep alert status and assignments in sync across solutions using its reference
-        ID.
-      script: Microsoft Graph|||msg-update-alert
-      type: regular
-      iscommand: true
-      brand: Microsoft Graph
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      alert_id:
-        simple: ${MsGraph.Alert.ID}
-      assigned_to: {}
-      closed_date_time: {}
-      comments: {}
-      feedback:
-        simple: truePositive
-      provider_information:
-        simple: ${MsGraph.Alert.Provider}
-      status: {}
-      tags: {}
-      vendor_information:
-        simple: ${MsGraph.Alert.Vendor}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: bd7911e9-27a6-46da-805c-7cabd76341d1
-    type: regular
-    task:
-      id: bd7911e9-27a6-46da-805c-7cabd76341d1
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: EventDate,Vendor,Provider,Status,CreatedDate,Title,ID,Severity,Category
-      path:
-        simple: MsGraph.Alert
     separatecontext: false
     view: |-
       {
@@ -164,12 +99,81 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+    type: regular
+    task:
+      id: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+      version: -1
+      name: msg-update-alert
+      description: Update an editable alert property within any integrated solution
+        to keep alert status and assignments in sync across solutions using its reference
+        ID.
+      script: '|||msg-update-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: MsGraph
+          accessor: Alert.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      assigned_to: {}
+      closed_date_time: {}
+      comments: {}
+      feedback:
+        simple: truePositive
+      provider_information:
+        complex:
+          root: MsGraph
+          accessor: Alert.Provider
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      status: {}
+      tags: {}
+      vendor_information:
+        complex:
+          root: MsGraph
+          accessor: Alert.Vendor
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 1762ff95-00cb-4076-8806-4af2d19f0623
+    taskid: 194f6263-ef14-4a71-8893-44f08fd98579
     type: title
     task:
-      id: 1762ff95-00cb-4076-8806-4af2d19f0623
+      id: 194f6263-ef14-4a71-8893-44f08fd98579
       version: -1
       name: Done
       type: title
@@ -180,16 +184,158 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 24a65117-5c3a-4f45-8b38-977dc051a253
+    type: condition
+    task:
+      id: 24a65117-5c3a-4f45-8b38-977dc051a253
+      version: -1
+      name: Verify msg-search-alerts output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraph
+                accessor: Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+    type: regular
+    task:
+      id: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d1da2962-1337-4a67-83d7-3b3d5403421a
+    type: regular
+    task:
+      id: d1da2962-1337-4a67-83d7-3b3d5403421a
+      version: -1
+      name: msg-get-users
+      description: Retrieve a list of user objects.
+      script: '|||msg-get-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: c39a2080-bd13-433b-807e-9c49e8916e53
+    type: regular
+    task:
+      id: c39a2080-bd13-433b-807e-9c49e8916e53
+      version: -1
+      name: msg-get-user
+      description: Retrieve the properties and relationships of user object.
+      script: '|||msg-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      user_id:
+        complex:
+          root: MsGraph
+          accessor: User
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: avishai@demistodev.onmicrosoft.com
+              field:
+                value:
+                  simple: Email
+              getField:
+                value:
+                  simple: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50

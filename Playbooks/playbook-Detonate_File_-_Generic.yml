@@ -1032,4 +1032,3 @@ outputs:
   type: String
 tests:
 - Detonate File - Generic Test
-releaseNotes: added vmray and FireEye AX
