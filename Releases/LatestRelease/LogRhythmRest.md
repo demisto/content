@@ -1,0 +1,3 @@
+- Added 2 new commands:
+  - lr-get-alarm-data
+  - lr-get-alarm-events
