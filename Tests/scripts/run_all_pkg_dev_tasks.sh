@@ -10,7 +10,7 @@
 if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
     if [ -z "$CIRCLE_BRANCH" ]; then
         CIRCLE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo "CIRCLE_BRANCH set to: ${CIRCLE_BRANCH}"
+        echo "Using following branch for comparison: ${CIRCLE_BRANCH}"
     fi
     # default compare against master
     DIFF_COMPARE=origin/master...${CIRCLE_BRANCH}
