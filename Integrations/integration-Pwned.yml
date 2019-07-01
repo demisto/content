@@ -100,7 +100,7 @@ script:
             score = DEFAULT_DBOT_SCORE_EMAIL;
             var emailContext = {
                 'Address': email,
-                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
+                'Compromised': {Vendor:'Pwned', Reporters: compSites.join(', ')}
             };
             if (DEFAULT_DBOT_SCORE_EMAIL === 3){
                 emailContext.Malicious = {
@@ -124,7 +124,7 @@ script:
     function domainToEc(domain,obj) {
         var compSites = [];
         obj.forEach(function (item) {
-            compSites.push(item.Domain);
+            compSites.push(item.Title);
         });
         compSites = compSites.sort();
         var compDomain = {};
@@ -133,7 +133,7 @@ script:
             score = DEFAULT_DBOT_SCORE_DOMAIN;
             var domainContext = {
                 'Name': domain,
-                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')},
+                'Compromised': {Vendor:'Pwned', Reporters: compSites.join(', ')},
             };
             if (DEFAULT_DBOT_SCORE_DOMAIN === 3){
                 domainContext.Malicious = {
@@ -189,8 +189,8 @@ script:
     - contextPath: Account.Email.Compromised.Vendor
       description: For comporomised emails, the vendor that made the decision
       type: string
-    - contextPath: Account.Email.Compromised.Reason
-      description: For comporomised emails, the reason for the vendor to make the
+    - contextPath: Account.Email.Compromised.Reporters
+      description: For comporomised emails, the reporters for the vendor to make the
         compromised decision
       type: string
     - contextPath: Account.Email.Address
@@ -229,8 +229,8 @@ script:
     - contextPath: Domain.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision
       type: string
-    - contextPath: Domain.Compromised.Reason
-      description: For compromised domains, the reason for the vendor to make the
+    - contextPath: Domain.Compromised.Reporters
+      description: For compromised domains, the reporters for the vendor to make the
         compromised decision
       type: string
     - contextPath: Domain.Name

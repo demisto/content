@@ -418,7 +418,7 @@ tasks:
             value:
               complex:
                 root: Account
-                accessor: Email.Compromised.Reason
+                accessor: Email.Compromised.Reporters
             iscontext: true
           right:
             value:
