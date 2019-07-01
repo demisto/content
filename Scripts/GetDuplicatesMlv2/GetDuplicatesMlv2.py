@@ -467,7 +467,7 @@ def main():
 
     MAX_INCIDENTS = int(demisto.args().get('maxNumberOfIncidents', 1000))
     TIME_DIFF_HOURS = int(demisto.args().get('timeFrameHours', 72))
-    IGNORE_CLOSED_INCIDENTS = (demisto.args()['ignoreClosedIncidents'] == 'yes')
+    IGNORE_CLOSED_INCIDENTS = demisto.args().get('ignoreClosedIncidents', 'yes') == 'yes'
     MAX_INDICATORS = MAX_INCIDENTS * 100
     THRESHOLD = float(demisto.args().get('threshold', 0.5))
     TIME_FIELD = demisto.args().get('timeField', 'created')
