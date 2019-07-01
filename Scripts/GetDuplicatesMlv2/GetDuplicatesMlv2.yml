@@ -97,3 +97,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
+tests:
+  - dedup_-_generic_-_test
