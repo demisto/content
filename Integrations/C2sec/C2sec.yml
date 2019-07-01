@@ -47,8 +47,6 @@ script:
     outputs:
     - contextPath: C2Sec.Company.result
       description: Add Company Result
-    - contextPath: C2Sec.Company.workitemid
-      description: C2Sec Scan ID
     description: Add a company into portfolio
   - name: irisk-query-workitem
     arguments:
@@ -57,7 +55,19 @@ script:
       description: Domain whose status to be checked
     outputs:
     - contextPath: C2sec.Scan.workitemid
-      description: Scan ID
+      description: The ID of the current scan.
+      type: number
+    - contextPath: C2sec.Scan.domain
+      description: The scanned domain name.
+      type: string
+    - contextPath: C2sec.Scan.completeTime
+      description: The time in which the scan was completed.
+      type: date
+    - contextPath: C2sec.Scan.creationTime
+      description: The time in which the scan was initiated.
+      type: date
+    - contextPath: C2sec.Scan.status
+      description: The status of the current scan.(processing/completed)
       type: number
     description: Query workitem status
   - name: irisk-rescan-company
@@ -68,14 +78,36 @@ script:
     - contextPath: C2sec.Scan.workitemid
       description: Scan ID
       type: number
+    - contextPath: C2sec.Scan.result
+      description: The scan result.
+      type: string
     description: Initiate a rescan for companies inside portfolio
   - name: irisk-query-issues
     arguments:
     - name: domain
       description: Domain to be queried (if empty default domain it will be used)
     outputs:
-    - contextPath: C2sec.Issues
-      description: List of issues discovered on the domain
+    - contextPath: C2sec.Issue.ID
+      description: The ID of the issue.
+      type: string
+    - contextPath: C2sec.Issue.asset
+      description: The asset the issue is using.
+      type: string
+    - contextPath: C2sec.Issue.component
+      description: The component used in the issue.
+      type: string
+    - contextPath: C2sec.Issue.componentDisplay
+      description: The display name of the component being used.
+      type: string
+    - contextPath: C2sec.Issue.details
+      description: The details for the issue.
+      type: string
+    - contextPath: C2sec.Issue.issue
+      description: The name of the issue.
+      type: string
+    - contextPath: C2sec.Issue.severity
+      description: The severity of the issue.
+      type: string
     description: Query identified issues for companies in the portfolio
   - name: irisk-query-component
     arguments:
@@ -94,8 +126,11 @@ script:
     - contextPath: C2sec.Query.component
       description: Component Name
       type: string
-    - contextPath: C2sec.Query.status
+    - contextPath: C2sec.Query.result
       description: Query Status
+      type: string
+    - contextPath: C2sec.Query.domain
+      description: The domain name being queried.
       type: string
     - contextPath: C2sec.Query.data
       description: Query Result
