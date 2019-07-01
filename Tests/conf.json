@@ -551,6 +551,9 @@
             "timeout": 700
         },
         {
+            "playbookID": "stripChars - Test"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD Upload File"
         },
