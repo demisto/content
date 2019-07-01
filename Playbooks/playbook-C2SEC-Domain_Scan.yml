@@ -164,7 +164,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: C2sec.Issues.component
+              simple: C2sec.Issue.component
             iscontext: true
           right:
             value:
@@ -233,7 +233,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: C2sec.Issues.component
+              simple: C2sec.Issue.component
             iscontext: true
           right:
             value:

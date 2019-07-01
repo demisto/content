@@ -1,0 +1,103 @@
+commonfields:
+  id: C2sec
+  version: -1
+name: C2sec
+display: C2sec
+category: Data Enrichment & Threat Intelligence
+description: Understand Your Cyber Exposure as Easy as a Google Search
+configuration:
+- display: API URL (e.g https://api.c2sec.com/api)
+  name: endpointURL
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Default Domain Name
+  name: domainName
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: irisk-add-company
+    arguments:
+    - name: domain
+      description: Domain to be added into the portfolio (if empty default domain
+        it will be used)
+    - name: newscan
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Flag to indicate whether we would always start a new scan for the
+        domain
+      defaultValue: "true"
+    outputs:
+    - contextPath: C2Sec.Company.result
+      description: Add Company Result
+    - contextPath: C2Sec.Company.workitemid
+      description: C2Sec Scan ID
+    description: Add a company into portfolio
+  - name: irisk-query-workitem
+    arguments:
+    - name: id
+      required: true
+      description: Domain whose status to be checked
+    outputs:
+    - contextPath: C2sec.Scan.workitemid
+      description: Scan ID
+      type: number
+    description: Query workitem status
+  - name: irisk-rescan-company
+    arguments:
+    - name: domain
+      description: Domain to be rescaned (if empty default domain it will be used)
+    outputs:
+    - contextPath: C2sec.Scan.workitemid
+      description: Scan ID
+      type: number
+    description: Initiate a rescan for companies inside portfolio
+  - name: irisk-query-issues
+    arguments:
+    - name: domain
+      description: Domain to be queried (if empty default domain it will be used)
+    outputs:
+    - contextPath: C2sec.Issues
+      description: List of issues discovered on the domain
+    description: Query identified issues for companies in the portfolio
+  - name: irisk-query-component
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to be queried (if empty default domain it will be used)
+    - name: component
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - credential
+      - network
+      - application
+      description: Component to be queried
+    outputs:
+    - contextPath: C2sec.Query.component
+      description: Component Name
+      type: string
+    - contextPath: C2sec.Query.status
+      description: Query Status
+      type: string
+    - contextPath: C2sec.Query.data
+      description: Query Result
+    description: Query Data for specific component for companies in the portfolio
+  runonce: false
