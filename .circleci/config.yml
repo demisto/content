@@ -10,11 +10,12 @@ jobs:
       - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.5.1"
+      CONTENT_VERSION: "19.6.1"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "33441eb94314f3779b8c17b0540f0394be4b6c20" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "2b79070447764c60c574ca5cdfa07bffc64d39c1" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Prepare Environment
           when: always
@@ -66,7 +67,7 @@ jobs:
       - run:
           name: Build Content Descriptor
           when: always
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
+          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
       - run:
           name: Common Server Documentation
           when: always
@@ -78,7 +79,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - setup_remote_docker
       - run:
           name: Run Unit Testing and Lint
           when: always

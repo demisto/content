@@ -481,6 +481,6 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: "-"
+  subtype: python3
 tests:
 - Forescout-Test

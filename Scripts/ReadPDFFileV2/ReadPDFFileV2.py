@@ -102,6 +102,14 @@ def get_pdf_metadata(file_path):
         line_arr = line.split(':')
         if len(line_arr) > 1:
             key = line_arr[0]
+            # camelize key
+            if ' ' in key:
+                if 'PDF' in key:
+                    key = key.title().replace('Pdf', 'PDF').replace(' ', '')
+
+                else:
+                    key = key.title().replace(' ', '')
+
             # handle values with and without ':'
             value = ''
             for i in range(1, len(line_arr)):

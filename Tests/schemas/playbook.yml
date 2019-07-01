@@ -162,6 +162,10 @@ mapping:
     type: seq
     sequence:
     - type: str
+  rolename:
+    type: seq
+    sequence:
+    - type: str
 
 
 # playbook->tasks
