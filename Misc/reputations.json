@@ -56,76 +56,9 @@
       "fromVersion": "3.5.1"
     },
     {
-      "id": "hashRep",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{32}\\b",
-      "reputationScriptName": "DataHashReputation",
-      "details": "File MD5",
-      "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkSearch",
-        "WildfireReport"
-      ],
-      "toVersion": "3.0.1"
-    },
-    {
-      "id": "hashRep",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{32}\\b",
-      "reputationCommand": "file",
-      "details": "File MD5",
-      "contextValue": "MD5",
-      "contextPath": "File(val.MD5 && val.MD5 === obj.MD5)",
-      "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkPySearch"
-      ],
-      "fromVersion": "3.1.0"
-    },
-    {
-      "id": "hashRepSHA1",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{40}\\b",
-      "reputationScriptName": "DataHashReputation",
-      "details": "File SHA-1",
-      "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkSearch",
-        "WildfireReport"
-      ],
-      "toVersion": "3.0.1"
-    },
-    {
-      "id": "hashRepSHA1",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{40}\\b",
-      "reputationCommand": "file",
-      "details": "File SHA-1",
-      "contextValue": "SHA1",
-      "contextPath": "File(val.SHA1 && val.SHA1 === obj.SHA1)",
-      "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkPySearch"
-      ],
-      "fromVersion": "3.1.0"
-    },
-    {
-      "id": "hashRepSHA256",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{64}\\b",
-      "reputationCommand": "file",
-      "details": "File SHA-256",
-      "contextValue": "SHA256",
-      "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256)",
-      "enhancementScriptNames": [
-        "FileReputation"
-      ],
-      "fromVersion": "3.1.0"
-    },
-    {
       "id": "emailRep",
       "version": -1,
-      "regex": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "regex": "\\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
       "details": "Email",
       "reputationCommand": "email",
       "contextValue": "Address",
@@ -164,7 +97,7 @@
     {
       "id": "urlRep",
       "version": -1,
-      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?",
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9\\x{0000}-\\x{FFFF}]+\\[?\\.\\]?)+[-A-Z0-9\\x{0000}-\\x{FFFF}]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9\\x{0000}-\\x{FFFF}+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9\\x{0000}-\\x{FFFF}+&@#\\/%=~_$\\(\\);])?",
       "reputationCommand": "url",
       "details": "URL",
       "enhancementScriptNames": [
@@ -218,14 +151,6 @@
       "enhancementScriptNames": [
         "ADGetUser"
       ]
-    },
-    {
-      "id": "ssdeepRep",
-      "version": -1,
-      "regex": "",
-      "reputationScriptName": "",
-      "details": "ssdeep",
-      "enhancementScriptNames": []
     },
     {
       "id": "domainRep",

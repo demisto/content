@@ -28,7 +28,13 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test"
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -206,7 +212,7 @@
             "nightly": true
         },
         {
-            "integrations": "VxStream",
+            "integrations": "Hybrid Analysis",
             "playbookID": "Detonate File - HybridAnalysis - Test",
             "timeout": 2400
         },
@@ -250,6 +256,20 @@
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.0",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
             "nightly": true
@@ -350,6 +370,10 @@
             "timeout": 600
         },
         {
+            "integrations": "Symantec Site Review",
+            "playbookID": "Symantec Site Review Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -446,6 +470,10 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
         },
         {
             "integrations": "GRR",
@@ -564,11 +592,17 @@
             "timeout": 240
         },
         {
+            "playbookID": "GetIndicatorDBotScore Test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "Rasterize"
+            ],
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
@@ -867,7 +901,13 @@
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection"
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_dev"
+        },
+        {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_prod"
         },
         {
             "integrations": "Tanium",
@@ -882,11 +922,23 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test"
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_dev"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_prod"
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test"
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_dev"
+        },
+        {
+            "integrations": "Microsoft Graph User",
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_prod"
         },
         {
             "integrations": "RedLock",
@@ -1178,7 +1230,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1189,18 +1242,20 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 600,
-            "nightly": true,
+            "nightly": true,            
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1211,7 +1266,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1309,6 +1365,12 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "playbookID": "HTTPListRedirects - Test SSL"
+        },
+        {
+            "playbookID": "HTTPListRedirects Basic Test"
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
@@ -1551,6 +1613,9 @@
             "playbookID": "LogRhythm REST test"
         },
         {
+            "playbookID": "URL regex - Test"
+        },
+        {
             "integrations": "AlienVault USM Anywhere",
             "playbookID": "AlienVaultUSMAnywhereTest"
         },
@@ -1631,8 +1696,7 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
-        "Cofense Triage Test": "Creds only works on demo4",
-        "Test - Windows Defender Advanced Threat Protection": "Test needs to be fixed and updated"
+        "Cofense Triage Test": "Creds only works on demo4"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1644,6 +1708,7 @@
         "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
+        "FireEye ETP": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1695,6 +1760,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
@@ -1755,6 +1821,9 @@
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
         "AlphaSOC Wisdom": "Test module issue",
-        "Microsoft Graph": "Test"
+        "Microsoft Graph": "Test direct access to oproxy",
+        "MicrosoftGraphMail": "Test direct access to oproxy",
+        "Microsoft Graph User": "Test direct access to oproxy",
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }
