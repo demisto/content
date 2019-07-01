@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 URL = demisto.getParam('server')
 TOKEN = demisto.getParam('token')
 USE_SSL = not demisto.params().get('insecure', False)
+FILE_TYPE_SUPPRESS_ERROR = demisto.getParam('suppress_file_type_error')
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
@@ -93,9 +94,18 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
             sys.exit(0)
 
     if result.status_code < 200 or result.status_code >= 300:
-        if result.status_code in ERROR_DICT:
-            return_error(
-                f'Request Failed with status: {result.status_code} Reason is: {ERROR_DICT[str(result.status_code)]}')
+        if str(result.status_code) in ERROR_DICT:
+            if result.status_code == 418 and FILE_TYPE_SUPPRESS_ERROR:
+                demisto.results({
+                    'Type': 11,
+                    'Contents': f'Request Failed with status: {result.status_code}'
+                                f' Reason is: {ERROR_DICT[str(result.status_code)]}',
+                    'ContentsFormat': formats['text']
+                })
+                sys.exit(0)
+            else:
+                return_error(f'Request Failed with status: {result.status_code}'
+                             f' Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
             return_error(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
     if result.text.find("Forbidden. (403)") != -1:
@@ -502,7 +512,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
 
-        if 'evidence' in report:
+        if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
                     if '-md5' in report["evidence"]["file"]["entry"]:

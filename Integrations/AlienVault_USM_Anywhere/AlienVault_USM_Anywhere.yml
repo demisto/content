@@ -402,6 +402,7 @@ script:
       description: Event subcategory.
       type: String
   dockerimage: demisto/python3:3.7.3.286
+  subtype: python3
   isfetch: true
   runonce: false
   script: '-'
