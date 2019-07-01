@@ -33,8 +33,7 @@ script:
   - name: irisk-add-company
     arguments:
     - name: domain
-      description: Domain to be added into the portfolio (if empty default domain
-        it will be used)
+      description: Domain to be added into the portfolio (if empty default domain will be used)
     - name: newscan
       required: true
       auto: PREDEFINED
@@ -46,13 +45,13 @@ script:
       defaultValue: "true"
     outputs:
     - contextPath: C2Sec.Company.result
-      description: Add Company Result
+      description: result status of adding the new company.
     description: Add a company into portfolio
   - name: irisk-query-workitem
     arguments:
     - name: id
       required: true
-      description: Domain whose status to be checked
+      description: Domain workitemid whose status to be checked
     outputs:
     - contextPath: C2sec.Scan.workitemid
       description: The ID of the current scan.
@@ -73,7 +72,7 @@ script:
   - name: irisk-rescan-company
     arguments:
     - name: domain
-      description: Domain to be rescaned (if empty default domain it will be used)
+      description: Domain to be rescaned (if empty default domain will be used)
     outputs:
     - contextPath: C2sec.Scan.workitemid
       description: Scan ID
@@ -113,7 +112,7 @@ script:
     arguments:
     - name: domain
       required: true
-      description: Domain to be queried (if empty default domain it will be used)
+      description: Domain to be queried (if empty default domain will be used)
     - name: component
       required: true
       auto: PREDEFINED

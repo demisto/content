@@ -365,7 +365,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: C2sec
+                        simple: C2sec irisk
                 - - operator: isEqualString
                     left:
                       value:
