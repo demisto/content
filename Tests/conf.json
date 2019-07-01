@@ -1724,7 +1724,6 @@
         "Threat Grid": "instance problem (issue 16197)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
-        "IntSights": "Account Expired (issue #16351)",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
