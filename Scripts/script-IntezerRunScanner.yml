@@ -38,4 +38,3 @@ runonce: false
 runas: Administrator
 tests:
   - no test
-releaseNotes: "Running the Intezer Endpoint Analysis Scanner"

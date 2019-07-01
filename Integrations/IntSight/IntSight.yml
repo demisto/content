@@ -789,6 +789,5 @@ script:
     description: Get all mssp sub accounts
   isfetch: true
   runonce: false
-releaseNotes: fetch incidents fixed
 tests:
   - IntSights Test

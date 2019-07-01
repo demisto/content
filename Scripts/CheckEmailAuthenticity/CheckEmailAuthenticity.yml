@@ -204,4 +204,3 @@ timeout: '0'
 type: python
 runas: DBotWeakRole
 runonce: false
-releaseNotes: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.

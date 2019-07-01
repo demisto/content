@@ -553,14 +553,6 @@ tasks:
           right:
             value:
               simple: low
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ThreatStream.Indicators.Status
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {

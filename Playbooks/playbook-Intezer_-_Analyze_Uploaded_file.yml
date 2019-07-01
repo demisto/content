@@ -347,7 +347,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
   type: number
-releaseNotes: "Added playbook Intezer - Analyze Uploaded file:
-  Analyze uploaded file to Intezer Analyze and enrich the file reputation."
 tests:
   - No Tests

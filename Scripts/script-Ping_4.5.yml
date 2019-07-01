@@ -57,4 +57,3 @@ type: python
 runonce: false
 tests: [Ping Test Playbook]
 toversion: 4.5.0
-releaseNotes: "-"

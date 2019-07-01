@@ -361,6 +361,5 @@ script:
   script: '-'
   type: python
   subtype: python3
-releaseNotes: "-"
 tests:
 - Microsoft Graph - Test
