@@ -49,10 +49,14 @@ mapping:
         required: yes
       type:
         type: str
-        enum: ['javascript', 'python']
+        enum: ['javascript', 'python', 'powershell']
         required: yes
       dockerimage:
         type: str
+      alt_dockerimages:
+        type: seq
+        sequence:
+        - type: str
       isfetch:
         type: bool
       commands:
