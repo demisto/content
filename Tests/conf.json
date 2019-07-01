@@ -212,7 +212,7 @@
             "nightly": true
         },
         {
-            "integrations": "VxStream",
+            "integrations": "Hybrid Analysis",
             "playbookID": "Detonate File - HybridAnalysis - Test",
             "timeout": 2400
         },
@@ -368,6 +368,10 @@
             "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
+        },
+        {
+            "integrations": "Symantec Site Review",
+            "playbookID": "Symantec Site Review Test"
         },
         {
             "integrations": [
@@ -595,7 +599,10 @@
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "Rasterize"
+            ],
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
@@ -1604,6 +1611,9 @@
         {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
+        },
+        {
+            "playbookID": "URL regex - Test"
         },
         {
             "integrations": "AlienVault USM Anywhere",

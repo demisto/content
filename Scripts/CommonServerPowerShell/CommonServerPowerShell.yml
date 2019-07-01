@@ -1,9 +1,9 @@
 commonfields:
-  id: CommonServerPython
+  id: CommonServerPowerShell
   version: -1
-name: CommonServerPython
+name: CommonServerPowerShell
 script: ''
-type: python
+type: powershell
 tags:
 - infra
 - server
@@ -12,7 +12,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-alt_dockerimages: # used for unit testing
-  - demisto/python3:3.7.3.286
+fromversion: 5.0.0
 tests:
-  - TestCommonPython
+  - No test - TODO
