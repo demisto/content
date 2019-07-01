@@ -128,7 +128,7 @@ tasks:
       - "2"
     scriptarguments:
       id:
-        simple: ${C2sec.ScanRequest.workitemid}
+        simple: ${C2sec.Scan.workitemid}
     separatecontext: false
     view: |-
       {
