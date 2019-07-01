@@ -88,7 +88,7 @@ tasks:
       id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
       version: -1
       name: Waiting for polling to complete (Automated Task)
-      description: This task will complete automatically whe polling is complete.
+      description: This task will complete automatically when polling is complete.
       tags:
       - polling
       type: condition
