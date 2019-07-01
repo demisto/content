@@ -86,18 +86,18 @@ def queryIssues(domain):
         for issue in call.json()['issueList']:
             context = {
                 'ID': issue['id'],
-                'issue': issue['issue'],
-                'severity': issue['severity'],
-                'component': issue['component'],
-                'componentDisplay': issue['componentDisplay'],
-                'details': issue['detail'],
-                'asset': issue['asset'],
-                'rec': issue['rec'],
+                'Issue': issue['issue'],
+                'Severity': issue['severity'],
+                'Component': issue['component'],
+                'ComponentDisplay': issue['componentDisplay'],
+                'Details': issue['detail'],
+                'Asset': issue['asset'],
+                'Rec': issue['rec'],
             }
             contexts.append(context)
 
-        md = tableToMarkdown('Query Issues Result', contexts, ['ID', 'issue', 'severity', 'component',
-                                                               'componentDisplay', 'details', 'asset', 'rec'])
+        md = tableToMarkdown('Query Issues Result', contexts,
+                             ['ID', 'Issue', 'Severity', 'Component', 'ComponentDisplay', 'Details', 'Asset', 'Rec'])
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -144,10 +144,10 @@ def queryComponent(domain, component):
         resp = call.json()
         if 'data' in resp:
             for index, _ in enumerate(resp['data']):
-                resp['data'][index]['component'] = component
+                resp['data'][index]['Component'] = component
 
-        resp['domain'] = domain
-        md = tableToMarkdown('Query Component Result', resp, ['result', 'domain', 'component'],
+        resp['Domain'] = domain
+        md = tableToMarkdown('Query Component Result', resp, ['result', 'Domain', 'component'],
                              metadata="The results can be found in the context")
 
         return {

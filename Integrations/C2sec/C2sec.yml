@@ -1,8 +1,8 @@
 commonfields:
-  id: C2sec
+  id: C2sec irisk
   version: -1
-name: C2sec
-display: C2sec
+name: C2sec irisk
+display: C2sec irisk
 category: Data Enrichment & Threat Intelligence
 description: Understand Your Cyber Exposure as Easy as a Google Search
 configuration:
@@ -90,22 +90,22 @@ script:
     - contextPath: C2sec.Issue.ID
       description: The ID of the issue.
       type: string
-    - contextPath: C2sec.Issue.asset
+    - contextPath: C2sec.Issue.Asset
       description: The asset the issue is using.
       type: string
-    - contextPath: C2sec.Issue.component
+    - contextPath: C2sec.Issue.Component
       description: The component used in the issue.
       type: string
-    - contextPath: C2sec.Issue.componentDisplay
+    - contextPath: C2sec.Issue.ComponentDisplay
       description: The display name of the component being used.
       type: string
-    - contextPath: C2sec.Issue.details
+    - contextPath: C2sec.Issue.Details
       description: The details for the issue.
       type: string
-    - contextPath: C2sec.Issue.issue
+    - contextPath: C2sec.Issue.Issue
       description: The name of the issue.
       type: string
-    - contextPath: C2sec.Issue.severity
+    - contextPath: C2sec.Issue.Severity
       description: The severity of the issue.
       type: string
     description: Query identified issues for companies in the portfolio
@@ -129,7 +129,7 @@ script:
     - contextPath: C2sec.Query.result
       description: Query Status
       type: string
-    - contextPath: C2sec.Query.domain
+    - contextPath: C2sec.Query.Domain
       description: The domain name being queried.
       type: string
     - contextPath: C2sec.Query.data
