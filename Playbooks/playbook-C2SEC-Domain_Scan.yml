@@ -445,3 +445,5 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs: []
+tests:
+  - No test - covered in the C2sec test
