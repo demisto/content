@@ -321,7 +321,12 @@ script:
                     if (!ec.DBotScore) {
                         ec.DBotScore = [];
                     }
-                    ec.DBotScore.push({Indicator: res.obj[i].indicator, Type: dbotType, Vendor: 'CrowdStrike', Score: dbotScore});
+                    ec.DBotScore.push({
+                        Indicator: res.obj[i].indicator,
+                        Type: dbotType,
+                        Vendor: 'CrowdStrike',
+                        Score: dbotScore
+                    });
                 }
                 found = true;
             }
@@ -333,14 +338,22 @@ script:
             Type: entryTypes.note,
             Contents: res.body,
             ContentsFormat: formats.json,
+            IgnoreAutoExtract: true,
             HumanReadable: md,
             EntryContext: ec
         };
     }
 
     function doIndicator(ind, type, title, appendContextFunc) {
-        var a = {equal: ind};
-        var res = doReq('GET', 'indicator/'+ VERSION +'/search/indicator', a);
+        var a = {'indicator.equal': ind};
+        if (type === 'hash') {
+            var hashType = ind.length === 32 ? 'hash_md5' : ind.length === 40 ? 'hash_sha1' : 'hash_sha256';
+            a['type.equal'] = hashType;
+        } else {
+            a['type.equal'] = type;
+        }
+
+        var res = doReq('GET', 'indicator/'+ VERSION +'/search', a);
         var md = '## ' + title + ': ' + ind + '\n';
         var ec = {};
         var found = false;
@@ -356,7 +369,12 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: dbotScore}; // ok to override, we expect only one
+                ec.DBotScore = {
+                    Indicator: ind,
+                    Type: type,
+                    Vendor: 'CrowdStrike',
+                    Score: dbotScore
+                }; // ok to override, we expect only one
                 found = true;
             }
         }
@@ -368,6 +386,7 @@ script:
             Type: entryTypes.note,
             Contents: res.body,
             ContentsFormat: formats.json,
+            IgnoreAutoExtract: true,
             HumanReadable: md,
             EntryContext: ec
         };
@@ -383,7 +402,7 @@ script:
     }
 
     function doIP(ip) {
-        return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
+        return doIndicator(ip, 'ip_address', 'Falcon Intel IP reputation for', function(ec) {
             addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     }
