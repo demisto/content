@@ -55,8 +55,8 @@ def http_request(method, full_url, data=None, params=None):
     try:
         return res.json()
 
-    except Exception as ex:
-        return res.text
+    except ValueError as err:
+        return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
 
 
 """
@@ -70,15 +70,16 @@ def update_content(page_id, content_title, space_key, content_body, content_type
         content_data['space'] = {"key": space_key}
     if content_title is not None:
         content_data['title'] = content_title
+
     content_data['body'] = {
         "storage": {
             "value": content_body,
             "representation":"storage"
-            }
         }
+    }
     content_data['version'] = {
         "number": content_version
-        }
+    }
 
     full_url = BASE_URL + '/content/' + page_id
 
@@ -109,12 +110,12 @@ def update_content_command():
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
     # headers must be array of strings (which column should appear in the table)
-    md = tableToMarkdown('Updated Content', content, ['ID', 'Title', 'Type'])
+    md = tableToMarkdown('Updated Content', content, ['ID', 'Title', 'Type', 'Body'])
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': content,
+        'Contents': raw_content,
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Content(val.ID == obj.ID)': content
@@ -165,12 +166,12 @@ def create_content_command():
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
     # headers must be array of strings (which column should appear in the table)
-    md = tableToMarkdown('New Content', content, ['ID', 'Title', 'Type'])
+    md = tableToMarkdown('New Content', content, ['ID', 'Title', 'Type', 'Body'])
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': content,
+        'Contents': raw_content,
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Content(val.ID == obj.ID)': content
@@ -222,7 +223,7 @@ def create_space_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': space,
+        'Contents': raw_space,
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Space(val.ID == obj.ID)': space
@@ -272,7 +273,7 @@ def get_content_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': content_list,
+        'Contents': raw_content,
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Content(val.ID == obj.ID)': content_list
@@ -330,7 +331,7 @@ def search_content_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': searches,
+        'Contents': raw_search,
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Content(val.ID == obj.ID)': searches
@@ -364,7 +365,7 @@ def list_spaces_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': spaces,
+        'Contents': space_list,
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Space(val.ID == obj.ID)': spaces
@@ -406,12 +407,13 @@ def delete_content_command():
         })
 
 def test():
-
     full_url = BASE_URL + '/user/current'
     res = http_request('GET', full_url)
 
     if not res:
-        return_error('Test failed. Check URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+        return_error('Test failed. Check URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(
+            full_url, res.status_code, res.text))
+
     demisto.results('ok')
 
 """
