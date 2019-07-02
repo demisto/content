@@ -59,19 +59,19 @@ outputs:
 - contextPath: Demisto.Project.Key
   description: ''
   type: String
-- contextPath: Demisto.Project.Projecttypekey
+- contextPath: Demisto.Project.ProjectTypeKey
   description: ''
   type: String
 - contextPath: Demisto.Status.Id
   description: ''
   type: Number
-- contextPath: Demisto.Status.Statuscategory.Key
+- contextPath: Demisto.Status.StatusCategory.Key
   description: ''
   type: String
-- contextPath: Demisto.Status.Statuscategory.Colorname
+- contextPath: Demisto.Status.StatusCategory.Colorname
   description: ''
   type: String
-- contextPath: Demisto.Status.Statuscategory.Name
+- contextPath: Demisto.Status.StatusCategory.Name
   description: ''
   type: String
 """
@@ -84,7 +84,12 @@ def flatten_json(nested_json):
     out = {}
 
     def flatten(x, name=''):
-        name = name.title() if CAMELIZE else name
+        # capitalize first letter in each key
+        try:
+            name = name[0].upper() + name[1:] if CAMELIZE else name
+        except IndexError:
+            name = name.title() if CAMELIZE else name
+
         if isinstance(x, dict):
             for a in x:
                 flatten(x[a], name + a + '.')
