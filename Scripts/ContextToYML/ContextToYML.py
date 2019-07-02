@@ -77,10 +77,7 @@ outputs:
 """
 
 VERBOSE = demisto.getArg('verbose') == 'true'
-CAMELIZE = demisto.getArg('camelize', 'false') == 'true'
-
-# todo: delete
-MOCK = '{"id":12131,"description":"desc","summary":"do-not-delete","created":"2019-03-25T16:13:13.188+0200","issuetype":{"id":10004,"name":"Bug"},"project":{"id":10001,"key":"SOC","projectTypeKey":"software"},"status":{"id":10003,"StatusCategory":{"key":"new","colorName":"blue-gray","name":"To Do"}}}'
+CAMELIZE = demisto.getArg('camelize') == 'true'
 
 
 def flatten_json(nested_json):
@@ -133,7 +130,7 @@ def parse_json(data, command_name, base_path):
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
-    command_name = demisto.args().get("command_name",'')
+    command_name = demisto.args().get("command_name", '')
     base_path = demisto.args().get("base_path", '')
     entry_id = demisto.getArg("json_file_entry_id")
     json_file_as_text = demisto.getArg("json_file_as_text")
