@@ -318,6 +318,5 @@ outputs:
 - contextPath: CylanceProtectDevice
   description: The device information about the hostname that was enriched.
   type: unknown
-releaseNotes: "Fixed a bug where the playbook would fail if Cylance Protect v2 was not enabled."
 tests:
   - no test (tested as part of Endpoint Enrichment v2.1)
