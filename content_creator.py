@@ -9,7 +9,7 @@ import zipfile
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
-                'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
+                'Classifiers', 'Layouts', 'IncidentFields', 'Connections', 'Beta_Integrations']
 
 TEST_DIR = 'TestPlaybooks'
 
@@ -158,7 +158,7 @@ def main(circle_artifacts):
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
-    shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
+    shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
 
     print 'finished create content artifact at %s' % (circle_artifacts, )
 
