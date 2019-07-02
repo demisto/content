@@ -1,0 +1,1 @@
+fix bug in lr-get-alarm-events-by-id command when there are no events for the alarm
