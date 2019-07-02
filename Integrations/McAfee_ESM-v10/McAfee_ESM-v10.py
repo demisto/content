@@ -115,35 +115,32 @@ class NitroESM(object):
         return 'NitroESM("{}", "{}")'.format(self.url, self.user)
 
     def login(self):
-        try:
-            b64_user = base64.b64encode(self.user.encode('utf-8')).decode()
-            b64_passwd = base64.b64encode(self.passwd.encode('utf-8')).decode()
-            params = {
-                "username": b64_user,
-                "password": b64_passwd,
-                "locale": "en_US",
-                "os": "Win32"
-            }
-            login_response = requests.post(self.url + 'login',
-                                           json=params,
-                                           headers=self.session_headers,
-                                           verify=VERIFY)
-            jwttoken = login_response.cookies.get('JWTToken')
-            xsrf_token = login_response.headers.get('Xsrf-Token')
-            if jwttoken is None or xsrf_token is None:
-                return_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(
-                    self.url + 'login',
-                    login_response.status_code,
-                    login_response.text))
+        b64_user = base64.b64encode(self.user.encode('utf-8')).decode()
+        b64_passwd = base64.b64encode(self.passwd.encode('utf-8')).decode()
+        params = {
+            "username": b64_user,
+            "password": b64_passwd,
+            "locale": "en_US",
+            "os": "Win32"
+        }
+        login_response = requests.post(self.url + 'login',
+                                       json=params,
+                                       headers=self.session_headers,
+                                       verify=VERIFY)
+        jwttoken = login_response.cookies.get('JWTToken')
+        xsrf_token = login_response.headers.get('Xsrf-Token')
+        if jwttoken is None or xsrf_token is None:
+            raise Exception("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(
+                self.url + 'login',
+                login_response.status_code,
+                login_response.text))
 
-            self.session_headers = {
-                'Cookie': 'JWTToken=' + jwttoken,
-                'X-Xsrf-Token': xsrf_token,
-                'Content-Type': 'application/json'
-            }
-            self.is_logged_in = True
-        except KeyError as e:
-            return_error("Failed login\n error: {}".format(e))
+        self.session_headers = {
+            'Cookie': 'JWTToken=' + jwttoken,
+            'X-Xsrf-Token': xsrf_token,
+            'Content-Type': 'application/json'
+        }
+        self.is_logged_in = True
 
     def logout(self):
         if self.is_logged_in:
@@ -187,7 +184,7 @@ class NitroESM(object):
     @logger
     def execute_query(self, time_range, custom_start, custom_end, filters, fields, query_type):
         if time_range == 'CUSTOM' and (not custom_start or not custom_end):
-            return_error('you must specify customStart and customEnd when timeRange is CUSTOM')
+            raise ValueError('you must specify customStart and customEnd when timeRange is CUSTOM')
 
         cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if IS_V2_API else '', query_type,)
 
@@ -233,7 +230,7 @@ class NitroESM(object):
             else:
                 time.sleep(60)
 
-        return_error('Waited more {} min for query results : {}'.format(max_wait, result_id))
+        raise ValueError('Waited more than {} min for query results : {}'.format(max_wait, result_id))
 
     @logger
     def fetch_results(self, result_id):
@@ -287,7 +284,7 @@ class NitroESM(object):
     @logger
     def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
         if time_range == 'CUSTOM' and (not custom_start or not custom_end):
-            return_error('you must specify customStart and customEnd when timeRange is CUSTOM')
+            raise ValueError('you must specify customStart and customEnd when timeRange is CUSTOM')
 
         params = {
             'pageSize': 50,
