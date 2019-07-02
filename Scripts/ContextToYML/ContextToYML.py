@@ -3,26 +3,26 @@ from CommonServerPython import *
 import yaml
 
 """
-This script parse a Context output into yml formatted file with the context path of each field. 
+This script parse a Context output into yml formatted file with the context path of each field.
 For example:
 
-{  
+{
     "id":12131,
     "description":"desc",
     "summary":"do-not-delete",
     "created":"2019-03-25T16:13:13.188+0200",
-    "issuetype":{  
+    "issuetype":{
         "id":10004,
         "name":"Bug"
     },
-    "project":{  
+    "project":{
         "id":10001,
         "key":"SOC",
         "projectTypeKey":"software"
     },
-    "status":{  
+    "status":{
         "id":10003,
-            "StatusCategory":{  
+            "StatusCategory":{
                 "key":"new",
                 "colorName":"blue-gray",
                 "name":"To Do"
