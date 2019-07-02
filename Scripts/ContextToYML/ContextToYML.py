@@ -162,4 +162,4 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
         'Contents': yaml_output,
         'HumanReadable': yaml_output,
     })
-    demisto.results(fileResult(filename, yaml_output.encode(), file_type=entryTypes['entryInfoFile']))
+    demisto.results(fileResult(filename, yaml_output, file_type=entryTypes['entryInfoFile']))
