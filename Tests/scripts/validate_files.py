@@ -151,12 +151,12 @@ class FilesValidator(object):
             modified_files = modified_files - set(non_committed_deleted_files)
             added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
 
-            new_added_files = set([])
-            for added_file in added_files:
-                if added_file in non_committed_added_files:
-                    new_added_files.add(added_file)
+            # new_added_files = set([])
+            # for added_file in added_files:
+            #     if added_file in non_committed_added_files:
+            #         new_added_files.add(added_file)
 
-            added_files = new_added_files
+            # added_files = new_added_files
 
         return modified_files, added_files, old_format_files
 
