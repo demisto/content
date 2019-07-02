@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1945
         }
       }
     note: false
@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 2120
         }
       }
     note: false
@@ -115,7 +115,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -134,7 +134,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -175,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2675
+          "y": 2995
         }
       }
     note: false
@@ -194,7 +194,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 895
         }
       }
     note: false
@@ -262,7 +262,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 720
         }
       }
     note: false
@@ -295,7 +295,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 1245
         }
       }
     note: false
@@ -328,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1420
         }
       }
     note: false
@@ -360,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1595
         }
       }
     note: false
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1770
         }
       }
     note: false
@@ -446,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2325
+          "y": 2645
         }
       }
     note: false
@@ -481,7 +481,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2500
+          "y": 2820
         }
       }
     note: false
@@ -510,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1975
+          "y": 2295
         }
       }
     note: false
@@ -548,7 +548,67 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2150
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: ad3ca42e-ccf5-47de-88cd-88caef88dd3a
+    type: regular
+    task:
+      id: ad3ca42e-ccf5-47de-88cd-88caef88dd3a
+      version: -1
+      name: Wait for isolation to complete
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: bc9d59f7-5362-475a-838b-0f017d9efdf6
+    type: regular
+    task:
+      id: bc9d59f7-5362-475a-838b-0f017d9efdf6
+      version: -1
+      name: Wait before starting isolation
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -559,10 +619,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2675,
+        "height": 3010,
         "width": 380,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
