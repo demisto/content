@@ -1,0 +1,38 @@
+commonfields:
+  id: ContextToYML
+  version: -1
+name: ContextToYML
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: command_name
+  description: Command name.
+- name: base_path
+  description: Base path for context outputs.
+- name: json_file_entry_id
+  description: Raw output file in json format. Will return context outputs as should
+    be in the yml file.
+- name: json_file_as_text
+  description: Raw output file in json format as text, or context output of the command.
+    Will return context outputs as should be in the yml file.
+- name: camelize
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: if true, returns camelized keys in context
+  defaultValue: "true"
+- name: verbose
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: if true, prints the json before converting to yml.
+  defaultValue: "false"
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.7.3.221
+runas: DBotWeakRole
+comment: Turns context output into yml formatted file with the context path of each field.
