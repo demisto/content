@@ -16,8 +16,8 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = demisto.params().get('token')
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-demisto.params()['url']
+SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
+    else demisto.params()['url']
 USE_SSL = not demisto.params().get('unsecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 5))
@@ -150,6 +150,198 @@ def get_activities_command():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sentinel One Activities', contents, headers, removeNull=True),
+        'EntryContext': context
+    })
+
+
+def get_groups_request(group_type=None, group_ids=None, group_id=None, is_default=None, name=None, query=None,
+                       rank=None, limit=None):
+
+    endpoint_url = 'groups'
+
+    params = {
+        'type': group_type,
+        'groupIds': group_ids,
+        'id': group_id,
+        'isDefault': is_default,
+        'name': name,
+        'query': query,
+        'rank': rank,
+        'limit': limit
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_groups_command():
+    """
+    Gets the group data.
+    """
+
+    context = {}
+    contents = []
+    headers = ['ID', 'Name', 'Type', 'Creator', 'Creator ID', 'Created at', 'Rank']
+
+    group_type = demisto.args().get('type')
+    group_id = demisto.args().get('id')
+    group_ids = argToList(demisto.args().get('groupIds', []))
+    is_default = demisto.args().get('isDefault')
+    name = demisto.args().get('name')
+    query = demisto.args().get('query')
+    rank = demisto.args().get('rank')
+    limit = int(demisto.args().get('limit', 50))
+
+    groups = get_groups_request(group_type, group_id, group_ids, is_default, name, query, rank, limit)
+    if groups:
+        for group in groups:
+            contents.append({
+                'ID': group.get('id'),
+                'Type': group.get('type'),
+                'Name': group.get('name'),
+                'Creator ID': group.get('creatorId'),
+                'Creator': group.get('creator'),
+                'Created at': group.get('createdAt'),
+                'Rank': group.get('rank')
+            })
+
+        context['SentinelOne.Group(val.ID && val.ID === obj.ID)'] = groups
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sentinel One Groups', contents, headers, removeNull=True),
+        'EntryContext': context
+    })
+
+
+def delete_group_request(group_id=None):
+
+    endpoint_url = 'groups/' + group_id
+
+    response = http_request('DELETE', endpoint_url)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def delete_group():
+    """
+    Deletes a group by ID.
+    """
+    group_id = demisto.args().get('group_id')
+
+    delete_group_request(group_id)
+    demisto.results('The group was deleted successfully')
+
+
+def move_agent_request(group_id, agents_id):
+
+    endpoint_url = 'groups/' + group_id + '/move-agents'
+
+    payload = {
+        "filter": {
+            "agentIds": agents_id
+        }
+    }
+
+    response = http_request('PUT', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def move_agent_to_group_command():
+    """
+    Move agents to a new group.
+    """
+    group_id = demisto.args().get('group_id')
+    agents_id = argToList(demisto.args().get('agents_ids'))
+    context = {}
+
+    agents_groups = move_agent_request(group_id, agents_id)
+
+    # Parse response into context & content entries
+    if agents_groups.get('agentsMoved') and int(agents_groups.get('agentsMoved')) > 0:
+        agents_moved = True
+    else:
+        agents_moved = False
+    date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+    context_entries = contents = {
+        'Date': date_time_utc,
+        'AgentsMoved': agents_groups.get('agentsMoved'),
+        'AffectedAgents': agents_moved
+    }
+
+    context['SentinelOne.Agents(val.Date && val.Date === obj.Date)'] = context_entries
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sentinel One - Shutdown Agents \n' + 'Total of: ' + str(
+            agents_groups.get('AgentsMoved')) + ' agents were Shutdown successfully', contents, removeNull=True),
+        'EntryContext': context
+    })
+
+
+def get_agent_processes_request(agents_ids=None):
+
+    endpoint_url = 'agents/processes'
+
+    params = {
+        'ids': agents_ids
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_agent_processes():
+    """
+    Retrieve running processes for a specific agent.
+    Note: This feature is obsolete and an empty array will always be returned
+    """
+    headers = ['ProcessName', 'StartTime', 'Pid', 'MemoryUsage', 'CpuUsage', 'ExecutablePath']
+    contents = []
+    context = {}
+    agents_ids = demisto.args().get('agents_ids')
+
+    processes = get_agent_processes_request(agents_ids)
+
+    if processes:
+        for process in processes:
+            contents.append({
+                'ProcessName': process.get('processName'),
+                'CpuUsage': process.get('cpuUsage'),
+                'MemoryUsage': process.get('memoryUsage'),
+                'StartTime': process.get('startTime'),
+                'ExecutablePath': process.get('executablePath'),
+                'Pid': process.get('pid')
+            })
+        context['SentinelOne.Agents(val.Pid && val.Pid === obj.Pid)'] = processes
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sentinel One Agent processes', contents, headers, removeNull=True),
         'EntryContext': context
     })
 
@@ -587,10 +779,9 @@ def get_exclusion_list_command():
     os_types = argToList(demisto.args().get('os_types', []))
     exclusion_type = demisto.args().get('exclusion_type')
     limit = int(demisto.args().get('limit', 10))
-    skip = int(demisto.args().get('skip', 0))
 
     # Make request and get raw response
-    exclusion_items = get_exclusion_list_request(item_ids, os_types, exclusion_type, limit, skip)
+    exclusion_items = get_exclusion_list_request(item_ids, os_types, exclusion_type, limit)
 
     # Parse response into context & content entries
     if exclusion_items:
@@ -635,15 +826,15 @@ def get_exclusion_list_command():
     })
 
 
-def get_exclusion_list_request(item_ids, os_types, exclusion_type, limit, skip):
+def get_exclusion_list_request(item_ids, os_types, exclusion_type, limit):
+
     endpoint_url = 'exclusions'
 
     params = {
         "ids": item_ids,
         "osTypes": os_types,
         "type": exclusion_type,
-        "limit": limit,
-        "skip": skip
+        "limit": limit
     }
 
     response = http_request('GET', endpoint_url, params)
@@ -875,12 +1066,13 @@ def get_sites_command():
 
 def get_sites_request(updated_at, query, site_type, features, state, suite, admin_only, account_id, site_name,
                       created_at, limit, site_ids):
+
     endpoint_url = 'sites'
 
     params = {
         "updatedAt": updated_at,
         "query": query,
-        "updatedAt": site_type,
+        "siteType": site_type,
         "features": features,
         "state": state,
         "suite": suite,
@@ -1019,53 +1211,6 @@ def expire_site_request(site_id):
     endpoint_url = 'sites/' + site_id + '/expire-now'
 
     response = http_request('POST', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def delete_site_command():
-    """
-    Delete specific site by ID
-    """
-    # Init main vars
-    headers = []
-    contents = []
-    context = {}
-    title = ''
-
-    # Get arguments
-    site_id = demisto.args().get('site_id')
-
-    # Make request and get raw response
-    site = delete_site_request(site_id)
-
-    # Parse response into context & content entries
-    if site:
-        title = 'Sentinel One - Delete Site: ' + site_id + '\n' + 'Site has been deleted successfully'
-        context_entries = contents = {
-            'ID': site.get('id'),
-            'Deleted': site.get('success')
-        }
-
-        context['SentinelOne.Sites(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def delete_site_request(site_id):
-    endpoint_url = 'sites/' + site_id
-
-    response = http_request('DELETE', endpoint_url)
     if response.get('errors'):
         return_error(response.get('errors'))
     if response.get('data'):
@@ -1354,535 +1499,92 @@ def get_agent_request(agent_id):
     return {}
 
 
-def restart_agents_command():
-    """
-    Sends a restart command to all agents matching the input filter
-    """
-    # Init main vars
-    headers = []
-    contents = []
-    context = {}
-    title = ''
+def create_query_request(query, from_date, to_date):
 
-    # Get arguments
-    query = demisto.args().get('query', '')
-    is_decommissioned = demisto.args().get('is_decommissioned', '')
-    is_uninstalled = bool(strtobool(demisto.args().get('is_uninstalled', 'false')))
-    site_ids = argToList(demisto.args().get('site_ids'))
-    agent_ids = argToList(demisto.args().get('agent_ids'))
-    group_ids = argToList(demisto.args().get('group_ids'))
-
-    # Translate is_decommissioned from user choice into boolean array
-    if is_decommissioned == 'active':
-        is_decommissioned = [True, False]
-    elif is_decommissioned == 'decommissioned':
-        is_decommissioned = [False, True]
-    elif is_decommissioned == 'both':
-        is_decommissioned = [True, True]
-    else:
-        is_decommissioned = [False, False]
-
-    # Make request and get raw response
-    affected_agents = restart_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids)
-
-    # Parse response into context & content entries
-    if affected_agents:
-        if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
-            affected = True
-            title = 'Sentinel One - Recommission Agents \n' + 'Total of: ' + str(
-                affected_agents.get('affected')) + ' agents were recommissioned successfully'
-        else:
-            affected = False
-            title = 'Sentinel One - Recommission Agents'
-        date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-        context_entries = contents = {
-            'Date': date_time_utc,
-            'AffectedCount': affected_agents.get('affected'),
-            'Recommissioned': affected
-        }
-
-        context['SentinelOne.Agents.Recommission(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def restart_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids):
-    endpoint_url = 'agents/actions/restart-machine'
+    endpoint_url = 'dv/init-query'
 
     payload = {
-        "filter": {
-            "groupIds": group_ids,
-            "siteIds": site_ids,
-            "ids": agent_ids,
-            "isUninstalled": is_uninstalled,
-            "isDecommissioned": is_decommissioned,
-            "query": query
-        },
-        "data": {}
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def shutdown_agents_command():
-    """
-    Sends a shutdown command to all agents matching the input filter
-    """
-    # Init main vars
-    headers = []
-    context = {}
-
-    # Get arguments
-    query = demisto.args().get('query', '')
-    is_decommissioned = demisto.args().get('isDecommissioned', '')
-    is_uninstalled = bool(strtobool(demisto.args().get('isUninstalled', 'false')))
-    site_ids = argToList(demisto.args().get('siteIds'))
-    agent_ids = argToList(demisto.args().get('agentIds'))
-    group_ids = argToList(demisto.args().get('groupIds'))
-
-    # Translate is_decommissioned from user choice into boolean array
-    if is_decommissioned == 'active':
-        is_decommissioned = [True, False]
-    elif is_decommissioned == 'decommissioned':
-        is_decommissioned = [False, True]
-    elif is_decommissioned == 'both':
-        is_decommissioned = [True, True]
-    else:
-        is_decommissioned = [False, False]
-
-    # Make request and get raw response
-    affected_agents = shutdown_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids)
-
-    # Parse response into context & content entries
-    if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
-        affected = True
-    else:
-        affected = False
-    date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    context_entries = contents = {
-        'Date': date_time_utc,
-        'AffectedCount': affected_agents.get('affected'),
-        'IsShutdown': affected
-    }
-
-    context['SentinelOne.Agents.Shutdown(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Shutdown Agents \n' + 'Total of: ' + str(
-            affected_agents.get('affected')) + ' agents were Shutdown successfully', contents, headers,
-                                         removeNull=True),
-        'EntryContext': context
-    })
-
-
-def shutdown_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids):
-    endpoint_url = 'agents/actions/shutdown'
-
-    payload = {
-        "filter": {
-            "groupIds": group_ids,
-            "siteIds": site_ids,
-            "ids": agent_ids,
-            "isUninstalled": is_uninstalled,
-            "isDecommissioned": is_decommissioned,
-            "query": query
-        },
-        "data": {}
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def disconnect_agents_command():
-    """
-    Sends a "disconnect from network command to all agents matching the input filter
-    """
-    # Init main vars
-    headers = []
-    context = {}
-
-    # Get arguments
-    query = demisto.args().get('query', '')
-    is_decommissioned = demisto.args().get('isDecommissioned', '')
-    is_uninstalled = bool(strtobool(demisto.args().get('isUninstalled', 'false')))
-    site_ids = argToList(demisto.args().get('siteIds'))
-    agent_ids = argToList(demisto.args().get('agentIds'))
-    group_ids = argToList(demisto.args().get('groupIds'))
-
-    # Translate is_decommissioned from user choice into boolean array
-    if is_decommissioned == 'active':
-        is_decommissioned = [True, False]
-    elif is_decommissioned == 'decommissioned':
-        is_decommissioned = [False, True]
-    elif is_decommissioned == 'both':
-        is_decommissioned = [True, True]
-    else:
-        is_decommissioned = [False, False]
-
-    # Make request and get raw response
-    affected_agents = disconnect_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids,
-                                                group_ids)
-
-    # Parse response into context & content entries
-    if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
-        affected = True
-    else:
-        affected = False
-    date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    context_entries = contents = {
-        'Date': date_time_utc,
-        'AffectedCount': affected_agents.get('affected'),
-        'Quarantined': affected
-    }
-
-    context['SentinelOne.Agents.Quarantine(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Quarantine Agents \n' + 'Total of: ' + str(
-            affected_agents.get('affected')) + ' agents were quarantined successfully', contents, headers,
-                                         removeNull=True),
-        'EntryContext': context
-    })
-
-
-def disconnect_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids):
-    endpoint_url = 'agents/actions/disconnect'
-
-    payload = {
-        "filter": {
-            "groupIds": group_ids,
-            "siteIds": site_ids,
-            "ids": agent_ids,
-            "isUninstalled": is_uninstalled,
-            "isDecommissioned": is_decommissioned,
-            "query": query
-        },
-        "data": {}
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def uninstall_agents_command():
-    """
-    Sends an uninstall command to all agents matching the input filter
-    """
-    # Init main vars
-    headers = []
-    context = {}
-
-    # Get arguments
-    query = demisto.args().get('query', '')
-    is_decommissioned = demisto.args().get('isDecommissioned', '')
-    is_uninstalled = bool(strtobool(demisto.args().get('isUninstalled', 'false')))
-    site_ids = argToList(demisto.args().get('siteIds'))
-    agent_ids = argToList(demisto.args().get('agentIds'))
-    group_ids = argToList(demisto.args().get('groupIds'))
-
-    # Translate is_decommissioned from user choice into boolean array
-    if is_decommissioned == 'active':
-        is_decommissioned = [True, False]
-    elif is_decommissioned == 'decommissioned':
-        is_decommissioned = [False, True]
-    elif is_decommissioned == 'both':
-        is_decommissioned = [True, True]
-    else:
-        is_decommissioned = [False, False]
-
-    # Make request and get raw response
-    affected_agents = uninstall_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids)
-
-    # Parse response into context & content entries
-    if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
-        affected = True
-    else:
-        affected = False
-    date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    context_entries = contents = {
-        'Date': date_time_utc,
-        'AffectedCount': affected_agents.get('affected'),
-        'Uninstalled': affected
-    }
-
-    context['SentinelOne.Agents.Uninstall(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Uninstall Agents \n' + 'Total of: ' + str(
-            affected_agents.get('affected')) + ' agents were uninstalled successfully', contents, headers,
-                                         removeNull=True),
-        'EntryContext': context
-    })
-
-
-def uninstall_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids):
-    endpoint_url = 'agents/actions/uninstall'
-
-    payload = {
-        "filter": {
-            "groupIds": group_ids,
-            "siteIds": site_ids,
-            "ids": agent_ids,
-            "isUninstalled": is_uninstalled,
-            "isDecommissioned": is_decommissioned,
-            "query": query
-        },
-
-        "data": {}
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def decommission_agents_command():
-    """
-    Decommissions all agents matching the input filter
-    """
-    # Init main vars
-    headers = []
-    context = {}
-
-    # Get arguments
-    query = demisto.args().get('query', '')
-    is_decommissioned = demisto.args().get('isDecommissioned', '')
-    is_uninstalled = bool(strtobool(demisto.args().get('isUninstalled', 'false')))
-    site_ids = argToList(demisto.args().get('siteIds'))
-    agent_ids = argToList(demisto.args().get('agentIds'))
-    group_ids = argToList(demisto.args().get('groupIds'))
-
-    # Translate is_decommissioned from user choice into boolean array
-    if is_decommissioned == 'active':
-        is_decommissioned = [True, False]
-    elif is_decommissioned == 'decommissioned':
-        is_decommissioned = [False, True]
-    elif is_decommissioned == 'both':
-        is_decommissioned = [True, True]
-    else:
-        is_decommissioned = [False, False]
-
-    # Make request and get raw response
-    affected_agents = decommission_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids,
-                                                  group_ids)
-
-    # Parse response into context & content entries
-    if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
-        affected = True
-    else:
-        affected = False
-    date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    context_entries = contents = {
-        'Date': date_time_utc,
-        'AffectedCount': affected_agents.get('affected'),
-        'Decommissioned': affected
-    }
-
-    context['SentinelOne.Agents.Decommission(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Decommission Agents \n' + 'Total of: ' + str(
-            affected_agents.get('affected')) + ' agents were decommissioned successfully', contents, headers,
-                                         removeNull=True),
-        'EntryContext': context
-    })
-
-
-def decommission_agents_request(query, is_decommissioned, is_uninstalled, site_ids, agent_ids, group_ids):
-    endpoint_url = 'agents/actions/decommission'
-
-    payload = {
-        "filter": {
-            "groupIds": group_ids,
-            "siteIds": site_ids,
-            "ids": agent_ids,
-            "isUninstalled": is_uninstalled,
-            "isDecommissioned": is_decommissioned,
-            "query": query
-        },
-        "data": {}
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def connect_agents_command():
-    """
-    Sends a "connect to network" command to all agents matching the input filter
-    """
-    # Init main vars
-    headers = []
-    context = {}
-
-    # Get arguments
-    agent_ids = argToList(demisto.args().get('agentIds'))
-
-    # Make request and get raw response
-    affected_agents = connect_agents_request(agent_ids)
-
-    # Parse response into context & content entries
-    if affected_agents.get('affected') and int(affected_agents.get('affected')) > 0:
-        affected = True
-    else:
-        affected = False
-    date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    context_entries = contents = {
-        'Date': date_time_utc,
-        'AffectedCount': affected_agents.get('affected'),
-        'UnQuarantined': affected
-    }
-
-    context['SentinelOne.Agents.UnQuarantine(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - UnQuarantine Agents \n' + 'Total of: ' + str(
-            affected_agents.get('affected')) + ' agents were un-quarantined successfully', contents, headers,
-                                         removeNull=True),
-        'EntryContext': context
-    })
-
-
-def connect_agents_request(agent_ids):
-    endpoint_url = 'agents/actions/connect'
-
-    payload = {
-        "filter": {
-            "ids": agent_ids
-        },
-        "data": {}
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def search_indicators_command():
-    """
-    Retrieve Deep Visibility events from query
-    """
-    # Init main vars
-    headers = []
-    contents = []
-    context = {}
-    context_entries = []
-
-    # Get arguments
-    indicator = demisto.args().get('indicator')
-    indicator_value = demisto.args().get('indicatorValue')
-    from_date = demisto.args().get('fromDate')
-    to_date = demisto.args().get('toDate')
-
-    # Make request and get raw response
-    query = indicator + '=' + '\"' + indicator_value + '\"'
-    records = search_indicators_request(query, from_date, to_date)
-
-    # Parse response into context & content entries
-    for record in records:
-        event = record.get('event')
-        process = record.get('process')
-        contents.append({
-            'Event Type': agent.get('id'),
-            'Endpoint': agent.get('networkStatus'),
-            'User': agent.get('agentVersion'),
-            'Time': agent.get('isDecommissioned'),
-            'Parent Process ID': agent.get('isActive'),
-            'Process Name': agent.get('lastActiveDate'),
-            'Parent Process Name': agent.get('registeredAt'),
-            'Process ID': agent.get('externalIp'),
-            'SHA1': agent.get('activeThreats'),
-            'CMD': agent.get('encryptedApplications'),
-            'Image Path': agent.get('osName'),
-            'Parent Process Start Time': agent.get('computerName'),
-            'Process Start Time': agent.get('domain'),
-            'Group ID': agent.get('createdAt')
-        })
-        context_entries.append({
-
-        })
-
-    context['SentinelOne.Event(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(
-            'Sentinel One - Get Events Using Query \nProvides details for events matching the query search terms',
-            contents, headers, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def search_indicators_request(query, from_date, to_date):
-    endpoint_url = 'ioc/events'
-
-    params = {
         "query": query,
         "fromDate": from_date,
         "toDate": to_date
     }
 
-    response = http_request('GET', endpoint_url, params)
-    # raise Exception(json.dumps(response))
+    response = http_request('POST', endpoint_url, data=payload)
     if response.get('errors'):
         return_error(response.get('errors'))
     if 'data' in response:
         return response.get('data')
     return {}
+
+
+def create_query():
+
+    query = demisto.args().get('query')
+    from_date = demisto.args().get('from_date')
+    to_date = demisto.args().get('to_date')
+
+    query_id = create_query_request(query, from_date, to_date)
+
+    demisto.results('The query ID is ' + query_id)
+
+
+def get_events_request(query_id=None, limit=None):
+
+    endpoint_url = 'events'
+
+    params = {
+        'query_id': query_id,
+        'limit': limit
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_events():
+    """
+    Get all Deep Visibility events from query
+    """
+    contents = []
+    context_entries = []
+    context = {}
+
+    query_id = demisto.args().get('query_id')
+    limit = int(demisto.args().get('limit', 10))
+
+    events = get_events_request(query_id, limit)
+    if events:
+        for event in events:
+            contents.append({
+                'sha1': event.get('sha1'),
+                'dstIp': event.get('dstIp'),
+                'srcIp': event.get('srcIp'),
+                'fileFullName': event.get('fileFullName'),
+                'processName': event.get('processName')
+            })
+
+            context_entries.append({
+                'sha1': event.get('sha1'),
+                'dstIp': event.get('dstIp'),
+                'srcIp': event.get('srcIp'),
+                'fileFullName': event.get('fileFullName'),
+                'processName': event.get('processName')
+            })
+
+        context['SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)'] = context_entries
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('SentinelOne Events', contents, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def fetch_incidents():
@@ -1954,8 +1656,6 @@ try:
         get_sites_command()
     elif demisto.command() == 'sentinelone-get-site':
         get_site_command()
-    elif demisto.command() == 'sentinelone-delete-site':
-        delete_site_command()
     elif demisto.command() == 'sentinelone-expire-site':
         expire_site_command()
     elif demisto.command() == 'sentinelone-reactivate-site':
@@ -1964,20 +1664,18 @@ try:
         list_agents_command()
     elif demisto.command() == 'sentinelone-get-agent':
         get_agent_command()
-    elif demisto.command() == 'sentinelone-agents-recommission':
-        restart_agents_command()
-    elif demisto.command() == 'sentinelone-agents-shutdown':
-        shutdown_agents_command()
-    elif demisto.command() == 'sentinelone-agents-quarantine':
-        disconnect_agents_command()
-    elif demisto.command() == 'sentinelone-agents-uninstall':
-        uninstall_agents_command()
-    elif demisto.command() == 'sentinelone-agents-decommission':
-        decommission_agents_command()
-    elif demisto.command() == 'sentinelone-agents-unquarantine':
-        connect_agents_command()
-    elif demisto.command() == 'sentinelone-search-indicators':
-        search_indicators_command()
+    elif demisto.command() == 'sentinelone-get-groups':
+        get_groups_command()
+    elif demisto.command() == 'sentinelone-move-agent':
+        move_agent_to_group_command()
+    elif demisto.command() == 'sentinelone-delete-group':
+        delete_group()
+    elif demisto.command() == 'sentinelone-agent-processes':
+        get_agent_processes()
+    elif demisto.command() == 'sentinelone-create-query':
+        create_query()
+    elif demisto.command() == 'sentinelone-get-events':
+        get_events()
 
 
 except Exception as e:

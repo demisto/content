@@ -57,12 +57,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of Site IDs to filter by
-      isArray: false
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
       description: Only include uninstalled agents
       isArray: false
       name: isUninstalled
@@ -227,12 +221,6 @@ script:
       type: number
   - arguments:
     - default: false
-      description: List of Site IDs to filter by
-      isArray: false
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
       description: Include all agents matching this saved filter
       isArray: false
       name: filterId
@@ -290,12 +278,6 @@ script:
         only one Agent ID and quarantine it.
       isArray: false
       name: agentIds
-      required: false
-      secret: false
-    - default: false
-      description: List of Site IDs to filter by
-      isArray: false
-      name: siteIds
       required: false
       secret: false
     - default: false
@@ -771,12 +753,6 @@ script:
       type: boolean
   - arguments:
     - default: false
-      description: List of Site IDs to filter by
-      isArray: true
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
       description: Include all agents matching this saved filter
       isArray: false
       name: filterId
@@ -957,12 +933,6 @@ script:
       description: The threat IDs to be added to blacklist.
       isArray: false
       name: threatIds
-      required: false
-      secret: false
-    - default: false
-      description: Site IDs which can be used to find related threat hashes.
-      isArray: false
-      name: siteIds
       required: false
       secret: false
     deprecated: false
