@@ -17,8 +17,7 @@ DIR_TO_PREFIX = {
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
-    'javascript': '.js',
-    'powershell': '.ps1'
+    'javascript': '.js'
 }
 
 IMAGE_PREFIX = 'data:image/png;base64,'
