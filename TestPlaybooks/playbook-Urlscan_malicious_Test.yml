@@ -603,14 +603,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
+      - - operator: containsString
           left:
             value:
-              simple: demisto.com
+              complex:
+                root: URLScan
+                accessor: httpTransaction
+            iscontext: true
           right:
             value:
-              simple: URLScan.httpTransaction
-            iscontext: true
+              simple: http://demisto.com
     view: |-
       {
         "position": {
