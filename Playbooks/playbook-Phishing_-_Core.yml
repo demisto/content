@@ -1150,6 +1150,5 @@ inputs:
     images of URLs that are involved in the incident. If "True", screenshots
     will be taken.
 outputs: []
-releaseNotes: "Demonstrates a basic approach for phishing incident response."
 tests:
   - Phishing - Core - Test
