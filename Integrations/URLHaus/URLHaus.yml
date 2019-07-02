@@ -163,7 +163,7 @@ script:
       name: hash_type
       predefined:
       - MD5
-      - ' SHA256'
+      - SHA256
       required: true
       secret: false
     deprecated: false
@@ -171,7 +171,7 @@ script:
     execution: false
     name: file
     outputs:
-    - contextPath: "File.Size\t"
+    - contextPath: File.Size
       description: Size of the file in bytes
       type: Number
     - contextPath: File.MD5
@@ -241,7 +241,7 @@ script:
       description: File SSDeep
       type: string
     - contextPath: File.EntryID
-      description: 'File entry ID '
+      description: File entry ID
       type: string
     - contextPath: File.Info
       description: File information
@@ -252,7 +252,7 @@ script:
     - contextPath: File.MD5
       description: File md5
       type: string
-    - contextPath: ' File.Extension'
+    - contextPath: File.Extension
       description: File extension
       type: string
   dockerimage: demisto/python3:3.7.3.286
