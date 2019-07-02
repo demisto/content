@@ -335,4 +335,3 @@ script:
   runonce: false
 tests:
   - Pwned test
-releaseNotes: '-'

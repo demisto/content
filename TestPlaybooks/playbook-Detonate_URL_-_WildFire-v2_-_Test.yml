@@ -1,0 +1,103 @@
+id: Detonate URL - WildFire-v2 - Test
+version: -1
+name: Detonate URL - WildFire-v2 - Test
+description: |-
+  test pb of:
+  Detonate URL - WildFire-v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7b08d14f-61ff-4c65-8e9a-34916f9a1c80
+    type: start
+    description: ""
+    task:
+      id: 7b08d14f-61ff-4c65-8e9a-34916f9a1c80
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f261928d-18cb-45f5-81f0-e7b3cbd725d0
+    type: regular
+    task:
+      id: f261928d-18cb-45f5-81f0-e7b3cbd725d0
+      version: -1
+      name: set remote file url
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: http://www.software995.net/bin/pdf995s.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: fe26ed3b-d9ac-4235-8f23-602d1e85ca48
+    type: playbook
+    task:
+      id: fe26ed3b-d9ac-4235-8f23-602d1e85ca48
+      version: -1
+      name: Detonate URL - WildFire-v2
+      playbookName: Detonate URL - WildFire-v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
