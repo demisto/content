@@ -514,3 +514,9 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
 
 def updateModuleHealth(error):
     return ""
+
+def directMessage(message, username = None, email = None, anyoneCanOpenIncidents = None):
+    return ""
+
+def createIncidents(incidents, lastRun = None):
+    return []
