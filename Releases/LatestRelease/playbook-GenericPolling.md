@@ -1,1 +1,1 @@
-Improved tooltip for the dt argument
+Improved the tooltip for the **dt** argument.
