@@ -8325,6 +8325,7 @@ def test_command():
 ''' EXECUTION CODE '''
 LOG('command is {}'.format(str(demisto.command())))
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_command()
     elif demisto.command() == 'whois':
