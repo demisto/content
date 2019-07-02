@@ -16,6 +16,10 @@ configuration:
   name: url
   required: true
   type: 0
+- display: API Key ID
+  name: apikey_id
+  required: true
+  type: 4
 - display: API Key
   name: apikey
   required: true
@@ -374,18 +378,6 @@ script:
       - RESOLVED_DUPLICATE
       - RESOLVED_FALSE_POSITIVE
       - RESOLVED_OTHER
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Update incident severity
-      isArray: false
-      name: manual_severity
-      predefined:
-      - NONE
-      - LOW
-      - MEDIUM
-      - HIGH
       required: false
       secret: false
     - default: false

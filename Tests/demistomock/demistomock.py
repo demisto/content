@@ -487,7 +487,13 @@ def getIntegrationContext():
     return integrationContext
 
 
-def incidents(incidents):
+def incidents(incidents=None):
+    if incidents is None:
+        return {
+            "name": "incident_1",
+            "playbookName": "XDR Demo"
+        }
+
     return results(
         {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
     )

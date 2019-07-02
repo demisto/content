@@ -10,14 +10,13 @@ INCIDENT_IN_DEMISTO = {
     "closeReason": "",
     "modified": "2019-06-02T11:15:09.323251+03:00",
     "CustomFields": {
-        "xdrseverity": "high",
         "xdrincidentid": "697567",
         "xdrurl": "http://example.com/incident-view/697567",
         "xdrdescription": "WildFire Malware detected on host HostNameFFM8VIP9",
         "xdralertcount": 1,
         "xdrstatus": "new"
     },
-    "severity": 0,
+    "severity": 1,
     "name": "#697567 - WildFire Malware detected on host HostNameFFM8VIP9",
     "created": "2019-06-02T11:13:54.674006+03:00",
     "sourceBrand": "Palo Alto Networks Cortext XDR IR"
@@ -32,7 +31,7 @@ INCIDENT_FROM_XDR = {
     "med_severity_alert_count": 0,
     "detection_time": None,
     "user_count": 1,
-    "severity": "high",
+    "severity": "low",
     "alerts": [
         {
             "category": "WildFirePostDetection",
@@ -95,8 +94,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
     incident_id = "100"
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity"
     }
 
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
@@ -105,7 +103,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
     is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
                                                                           incident_id,
                                                                           fields_mapping)
-
+    print(update_args)
     assert not is_modified
 
 
@@ -127,15 +125,13 @@ def test_compare_incident_in_demisto_vs_xdr_context___status_was_modified():
     incident_id = "100"
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity"
     }
 
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
     incident_in_demisto["CustomFields"]["xdrstatus"] = "closed"
 
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
-
 
     is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
                                                                           incident_id,
@@ -166,8 +162,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___severity_was_modified():
     incident_id = "100"
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity"
     }
 
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
@@ -205,8 +200,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___status_and_severity_was_mo
     incident_id = "100"
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity"
     }
 
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
@@ -246,14 +240,15 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     """
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity"
     }
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest, incident_from_xdr_in_context, fields_mapping)
+    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest,
+                                                                                  incident_from_xdr_in_context,
+                                                                                  fields_mapping)
 
     assert not is_modified
 
@@ -278,8 +273,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     """
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity",
     }
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
@@ -318,12 +312,11 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     """
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "xdrseverity",
-        "manual_severity": "severity"
+        "severity": "severity"
     }
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
-    incident_in_xdr_latest["manual_severity"] = "medium"
+    incident_in_xdr_latest["severity"] = "medium"
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
@@ -338,7 +331,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     } == update_args
 
 
-def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_manual_severity_changed():
+def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_status_and_severity_changed():
     """
     Given
     - incident from xdr - latest

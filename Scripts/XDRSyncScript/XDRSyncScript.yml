@@ -73,12 +73,6 @@ args:
   required: false
   secret: false
 - default: false
-  description: manual_severity field name in Demisto
-  isArray: false
-  name: manual_severity
-  required: false
-  secret: false
-- default: false
   description: notes field name in Demisto
   isArray: false
   name: notes
@@ -135,10 +129,12 @@ args:
   name: xdr_incident_from_previous_run
   required: false
   secret: false
-comment: This script compares between Demisto incident and incident in XDR and updates both incidents mutually.
-  This script always uses xdr-get-incident-extra-data and outputs to the context the whole incident JSON.
-  If the incident in XDR updated then Demisto incident will be updated accordingly and playbook will rerun.
-  If incident in Demisto updated then the script will execute xdr-update-incident and update the incident in XDR.
+comment: This script compares between Demisto incident and incident in XDR and updates
+  both incidents mutually. This script always uses xdr-get-incident-extra-data and
+  outputs to the context the whole incident JSON. If the incident in XDR updated then
+  Demisto incident will be updated accordingly and playbook will rerun. If incident
+  in Demisto updated then the script will execute xdr-update-incident and update the
+  incident in XDR.
 commonfields:
   id: XDRSyncScript
   version: -1

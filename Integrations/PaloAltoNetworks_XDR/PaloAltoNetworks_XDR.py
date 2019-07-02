@@ -22,8 +22,9 @@ SERVER = demisto.params()['url'][:-1] \
 
 USE_SSL = not demisto.params().get('insecure', False)
 API_KEY = demisto.params().get('apikey')
+API_KEY_ID = demisto.params().get('apikey_id')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-BASE_URL = SERVER + '/api/webapp/public_api/v1'
+BASE_URL = SERVER + '/public_api/v1'
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -46,7 +47,7 @@ def convert_epoch_to_milli(ts):
     return int(ts)
 
 
-def convert_datetime_to_epoch(the_time = 0):
+def convert_datetime_to_epoch(the_time=0):
     if the_time is None:
         return None
     else:
@@ -58,12 +59,12 @@ def convert_datetime_to_epoch(the_time = 0):
             return 0
 
 
-def convert_datetime_to_epoch_milis(the_time=0):
+def convert_datetime_to_epoch_millis(the_time=0):
     return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
 
 
 def generate_current_epoch_utc():
-    return convert_datetime_to_epoch_milis(datetime.now(timezone.utc))
+    return convert_datetime_to_epoch_millis(datetime.now(timezone.utc))
 
 
 def generate_key():
@@ -78,16 +79,28 @@ def create_auth(api_key):
     return nonce, timestamp, m.hexdigest()
 
 
-nonce, timestamp, auth = create_auth(API_KEY)
+# nonce, timestamp, auth = create_auth(API_KEY)
+nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
+auth_key = "%s%s%s" % (API_KEY, nonce, timestamp)
+auth_key = auth_key.encode("utf-8")
+api_key_hash = hashlib.sha256(auth_key).hexdigest()
 
 # Headers to be sent in requests
+# HEADERS_2 = {
+#     'Authorization': auth,
+#     'x-xdr-auth-id': API_KEY_ID,
+#     'x-xdr-nonce': nonce,
+#     'x-xdr-timestamp': timestamp,
+#     'Content-Type': 'application/json',
+#     'Accept': 'application/json'
+# }
+
 HEADERS = {
-    'Authorization': auth,
-    'x-xdr-auth-id': '1',
-    'x-xdr-nonce': nonce,
-    'x-xdr-timestamp': timestamp,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    "x-xdr-timestamp": timestamp,
+    "x-xdr-nonce": nonce,
+    "x-xdr-auth-id": str(API_KEY_ID),
+    "Authorization": api_key_hash
 }
 
 ''' HELPER FUNCTIONS '''
@@ -110,7 +123,7 @@ def http_request(method, url_suffix, params=None, data=None):
             error = res.json().get('reply')
             raise ValueError('Error occurred while doing HTTP request.\nURL: {}\nstatus_code: {}\nerr_code: {}'
                              '\nerr_message: {}\n{}'
-                             .format(BASE_URL+url_suffix, res.status_code, error.get('err_code'),
+                             .format(BASE_URL + url_suffix, res.status_code, error.get('err_code'),
                                      error.get('err_msg'), error.get('err_extra')))
 
         raise ValueError('Error in API call to Palo Alto Networks XDR [%d] - %s' % (res.status_code, res.reason))
@@ -459,4 +472,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-

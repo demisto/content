@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from dateutil import parser
 import copy
+from typing import Optional, Dict
 
 
 # XDR_FIELDS
@@ -57,7 +58,7 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
 
     incident_in_demisto_was_modified = False
 
-    xdr_update_args = {}
+    xdr_update_args: Dict[str, Optional[str]] = {}
 
     if modified_in_demisto > modified_in_xdr_in_context:
         if ASSIGNED_USER_MAIL_XDR_FIELD in fields_mapping:
@@ -136,33 +137,6 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
                         xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = "none"
                     else:
                         xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = severity_current
-
-        if MANUAL_SEVERITY_XDR_FIELD in fields_mapping:
-            field_name_in_demisto = fields_mapping[MANUAL_SEVERITY_XDR_FIELD]
-
-            severity_previous = xdr_incident_in_context[MANUAL_SEVERITY_XDR_FIELD]
-
-            if field_name_in_demisto == "severity":
-                # if field mapped to original demisto severity field then we should get it directly from incident
-                severity_current = incident_in_demisto.get(field_name_in_demisto)
-
-                severity_mapping = {
-                    0: None,
-                    1: "low",
-                    2: "medium",
-                    3: "high",
-                    4: "high"
-                }
-                if severity_mapping[severity_current] != severity_previous:
-                    incident_in_demisto_was_modified = True
-                    xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = severity_mapping[severity_current]
-
-            else:
-                severity_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
-
-                if severity_current != severity_previous:
-                    incident_in_demisto_was_modified = True
-                    xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = severity_current
 
         if RESOLVE_COMMENT_XDR_FIELD in fields_mapping:
             field_name_in_demisto = fields_mapping[RESOLVE_COMMENT_XDR_FIELD]
@@ -271,9 +245,9 @@ def xdr_incident_sync(incident_id, fields_mapping, playbook_name_to_run, xdr_inc
         return
 
     incident_in_demisto_was_modified, xdr_update_args = compare_incident_in_demisto_vs_xdr_context(
-                                                                                    incident_in_demisto,
-                                                                                    xdr_incident_from_previous_run,
-                                                                                    incident_id, fields_mapping)
+        incident_in_demisto,
+        xdr_incident_from_previous_run,
+        incident_id, fields_mapping)
 
     if incident_in_demisto_was_modified:
         # update xdr and finish the script
@@ -316,9 +290,9 @@ def xdr_incident_sync(incident_id, fields_mapping, playbook_name_to_run, xdr_inc
         return
 
     incident_in_xdr_was_modified, demisto_update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(
-                                                                                    latest_incident_in_xdr,
-                                                                                    xdr_incident_from_previous_run,
-                                                                                    fields_mapping)
+        latest_incident_in_xdr,
+        xdr_incident_from_previous_run,
+        fields_mapping)
 
     if incident_in_xdr_was_modified:
         demisto.debug("the incident in xdr was modified, updating the incident in demisto")
