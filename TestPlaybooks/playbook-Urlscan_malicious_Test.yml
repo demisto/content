@@ -612,7 +612,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://demisto.com
+              simple: demisto.com
     view: |-
       {
         "position": {
