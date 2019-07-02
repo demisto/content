@@ -177,6 +177,5 @@ script:
   dockerimage: demisto/vertica:1.0.0.150
   runonce: false
   subtype: python3
-releaseNotes: "-"
 tests:
   - Vertica Test
