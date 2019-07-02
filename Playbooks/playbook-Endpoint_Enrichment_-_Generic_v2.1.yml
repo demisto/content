@@ -792,6 +792,5 @@ outputs:
   description: The device information about the hostname that was enriched using Cylance
     Protect v2.
   type: unknown
-releaseNotes: "Enrichment using CrowdStrike FalconHost is now done directly using tasks instead of using a sub-playbook. Improved endpoint enrichment playbook visually."
 tests:
   - Endpoint Enrichment - Generic v2.1 - Test
