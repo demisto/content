@@ -1347,15 +1347,34 @@ def return_error(message, error=''):
         :return: Error entry object
         :rtype: ``dict``
     """
-    LOG(message)
+    if isinstance(message, Exception):
+        # log the exception's message
+        LOG(str(message))
+
+    else:
+        LOG(message)
+
     if error:
         LOG(error)
+
     LOG.print_log()
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(message)
-    })
+
+    # in case function is called from an automation
+    if not hasattr(demisto, 'command'):
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': str(message)
+        })
+
+    # in case function is called from an integration, and not fetching
+    elif demisto.command() != 'fetch-incidents':
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': str(message)
+        })
+
     sys.exit(0)
 
 
